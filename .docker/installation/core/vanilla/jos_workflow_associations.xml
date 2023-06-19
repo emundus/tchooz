@@ -14,32 +14,5 @@
    <key Table="#__workflow_associations" Non_unique="1" Key_name="idx_stage_id" Seq_in_index="1" Column_name="stage_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__workflow_associations" Non_unique="1" Key_name="idx_extension" Seq_in_index="1" Column_name="extension" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__workflow_associations">
-   <row>
-    <field name="item_id">55</field>
-    <field name="stage_id">1</field>
-    <field name="extension">com_content.article</field>
-   </row>
-   <row>
-    <field name="item_id">56</field>
-    <field name="stage_id">1</field>
-    <field name="extension">com_content.article</field>
-   </row>
-   <row>
-    <field name="item_id">57</field>
-    <field name="stage_id">1</field>
-    <field name="extension">com_content.article</field>
-   </row>
-   <row>
-    <field name="item_id">58</field>
-    <field name="stage_id">1</field>
-    <field name="extension">com_content.article</field>
-   </row>
-   <row>
-    <field name="item_id">59</field>
-    <field name="stage_id">1</field>
-    <field name="extension">com_content.article</field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

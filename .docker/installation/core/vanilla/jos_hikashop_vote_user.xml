@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_vote_user">
+   <field Field="vote_user_id" Type="int" Null="NO" Key="PRI" Extra="" />
+   <field Field="vote_user_user_id" Type="varchar(255)" Null="NO" Key="PRI" Extra="" />
+   <field Field="vote_user_useful" Type="tinyint" Null="NO" Key="" Extra="" />
+   <key Table="#__hikashop_vote_user" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="vote_user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_vote_user" Non_unique="0" Key_name="PRIMARY" Seq_in_index="2" Column_name="vote_user_user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

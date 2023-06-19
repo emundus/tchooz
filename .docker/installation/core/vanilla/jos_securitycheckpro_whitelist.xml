@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
- <database name="">
-  <table_structure name="#__securitycheckpro_whitelist">
-   <field Field="ip" Type="varchar(255)" Null="NO" Key="PRI" Extra="" />
-   <key Table="#__securitycheckpro_whitelist" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="ip" Collation="A" Null="" Index_type="BTREE" Sub_part="191" Comment="" />
-  </table_structure>
- </database>
-</mysqldump>

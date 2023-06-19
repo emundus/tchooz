@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_setup_thesis">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
    <field Field="subject" Type="varchar(256)" Null="NO" Key="" Extra="" />
    <field Field="ordering" Type="int" Null="NO" Key="" Extra="" />
    <field Field="published" Type="tinyint(1)" Null="NO" Key="" Default="1" Extra="" />

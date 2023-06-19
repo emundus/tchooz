@@ -1,0 +1,2388 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_currency">
+   <field Field="currency_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="currency_symbol" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="currency_code" Type="varchar(255)" Null="NO" Key="UNI" Extra="" />
+   <field Field="currency_format" Type="varchar(255)" Null="NO" Key="" Default="%i" Extra="" />
+   <field Field="currency_name" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="currency_published" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="currency_rate" Type="decimal(17,6)" Null="NO" Key="" Default="1.000000" Extra="" />
+   <field Field="currency_locale" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="currency_displayed" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="currency_percent_fee" Type="decimal(4,2)" Null="NO" Key="" Default="0.00" Extra="" />
+   <field Field="currency_modified" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__hikashop_currency" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="currency_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_currency" Non_unique="0" Key_name="currency_code" Seq_in_index="1" Column_name="currency_code" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__hikashop_currency">
+   <row>
+    <field name="currency_id">1</field>
+    <field name="currency_symbol">€</field>
+    <field name="currency_code">EUR</field>
+    <field name="currency_format">%n</field>
+    <field name="currency_name">Euro</field>
+    <field name="currency_published">1</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale">a:13:{s:17:&quot;mon_decimal_point&quot;;s:1:&quot;,&quot;;s:17:&quot;mon_thousands_sep&quot;;s:1:&quot;.&quot;;s:12:&quot;mon_grouping&quot;;s:1:&quot;3&quot;;s:13:&quot;positive_sign&quot;;s:0:&quot;&quot;;s:13:&quot;negative_sign&quot;;s:1:&quot;-&quot;;s:15:&quot;int_frac_digits&quot;;i:2;s:11:&quot;frac_digits&quot;;i:2;s:13:&quot;p_cs_precedes&quot;;i:0;s:14:&quot;p_sep_by_space&quot;;i:1;s:13:&quot;n_cs_precedes&quot;;i:0;s:14:&quot;n_sep_by_space&quot;;i:1;s:11:&quot;p_sign_posn&quot;;i:1;s:11:&quot;n_sign_posn&quot;;i:1;}</field>
+    <field name="currency_displayed">1</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">2</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">USD</field>
+    <field name="currency_format">%n</field>
+    <field name="currency_name">United States dollar</field>
+    <field name="currency_published">1</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale">a:13:{s:17:&quot;mon_decimal_point&quot;;s:1:&quot;.&quot;;s:17:&quot;mon_thousands_sep&quot;;s:1:&quot;,&quot;;s:12:&quot;mon_grouping&quot;;s:1:&quot;3&quot;;s:13:&quot;positive_sign&quot;;s:0:&quot;&quot;;s:13:&quot;negative_sign&quot;;s:1:&quot;-&quot;;s:15:&quot;int_frac_digits&quot;;i:2;s:11:&quot;frac_digits&quot;;i:2;s:13:&quot;p_cs_precedes&quot;;i:1;s:14:&quot;p_sep_by_space&quot;;i:0;s:13:&quot;n_cs_precedes&quot;;i:1;s:14:&quot;n_sep_by_space&quot;;i:0;s:11:&quot;p_sign_posn&quot;;i:4;s:11:&quot;n_sign_posn&quot;;i:4;}</field>
+    <field name="currency_displayed">1</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">3</field>
+    <field name="currency_symbol">¥</field>
+    <field name="currency_code">JPY</field>
+    <field name="currency_format">%n</field>
+    <field name="currency_name">Japanese yen</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale">a:13:{s:17:&quot;mon_decimal_point&quot;;s:1:&quot;,&quot;;s:17:&quot;mon_thousands_sep&quot;;s:1:&quot; &quot;;s:12:&quot;mon_grouping&quot;;s:1:&quot;3&quot;;s:13:&quot;positive_sign&quot;;s:0:&quot;&quot;;s:13:&quot;negative_sign&quot;;s:1:&quot;-&quot;;s:15:&quot;int_frac_digits&quot;;i:0;s:11:&quot;frac_digits&quot;;i:0;s:13:&quot;p_cs_precedes&quot;;i:0;s:14:&quot;p_sep_by_space&quot;;i:1;s:13:&quot;n_cs_precedes&quot;;i:0;s:14:&quot;n_sep_by_space&quot;;i:1;s:11:&quot;p_sign_posn&quot;;i:1;s:11:&quot;n_sign_posn&quot;;i:1;}</field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">4</field>
+    <field name="currency_symbol">£</field>
+    <field name="currency_code">GBP</field>
+    <field name="currency_format">%n</field>
+    <field name="currency_name">British pound</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale">a:13:{s:17:&quot;mon_decimal_point&quot;;s:1:&quot;.&quot;;s:17:&quot;mon_thousands_sep&quot;;s:1:&quot;,&quot;;s:12:&quot;mon_grouping&quot;;s:1:&quot;3&quot;;s:13:&quot;positive_sign&quot;;s:0:&quot;&quot;;s:13:&quot;negative_sign&quot;;s:1:&quot;-&quot;;s:15:&quot;int_frac_digits&quot;;i:2;s:11:&quot;frac_digits&quot;;i:2;s:13:&quot;p_cs_precedes&quot;;i:1;s:14:&quot;p_sep_by_space&quot;;i:1;s:13:&quot;n_cs_precedes&quot;;i:1;s:14:&quot;n_sep_by_space&quot;;i:1;s:11:&quot;p_sign_posn&quot;;i:1;s:11:&quot;n_sign_posn&quot;;i:1;}</field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">5</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">CAD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Canadian dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale">a:13:{s:17:&quot;mon_decimal_point&quot;;s:1:&quot;.&quot;;s:17:&quot;mon_thousands_sep&quot;;s:1:&quot;,&quot;;s:12:&quot;mon_grouping&quot;;s:1:&quot;3&quot;;s:13:&quot;positive_sign&quot;;s:0:&quot;&quot;;s:13:&quot;negative_sign&quot;;s:1:&quot;-&quot;;s:15:&quot;int_frac_digits&quot;;i:2;s:11:&quot;frac_digits&quot;;i:2;s:13:&quot;p_cs_precedes&quot;;i:1;s:14:&quot;p_sep_by_space&quot;;i:0;s:13:&quot;n_cs_precedes&quot;;i:1;s:14:&quot;n_sep_by_space&quot;;i:0;s:11:&quot;p_sign_posn&quot;;i:4;s:11:&quot;n_sign_posn&quot;;i:4;}</field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">6</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">AUD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Australian dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale">a:13:{s:17:&quot;mon_decimal_point&quot;;s:1:&quot;.&quot;;s:17:&quot;mon_thousands_sep&quot;;s:1:&quot;,&quot;;s:12:&quot;mon_grouping&quot;;s:1:&quot;3&quot;;s:13:&quot;positive_sign&quot;;s:0:&quot;&quot;;s:13:&quot;negative_sign&quot;;s:1:&quot;-&quot;;s:15:&quot;int_frac_digits&quot;;i:2;s:11:&quot;frac_digits&quot;;i:2;s:13:&quot;p_cs_precedes&quot;;i:1;s:14:&quot;p_sep_by_space&quot;;i:0;s:13:&quot;n_cs_precedes&quot;;i:1;s:14:&quot;n_sep_by_space&quot;;i:0;s:11:&quot;p_sign_posn&quot;;i:4;s:11:&quot;n_sign_posn&quot;;i:4;}</field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">7</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">NZD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">New Zealand dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale">a:13:{s:17:&quot;mon_decimal_point&quot;;s:1:&quot;,&quot;;s:17:&quot;mon_thousands_sep&quot;;s:1:&quot;.&quot;;s:12:&quot;mon_grouping&quot;;s:1:&quot;3&quot;;s:13:&quot;positive_sign&quot;;s:0:&quot;&quot;;s:13:&quot;negative_sign&quot;;s:1:&quot;-&quot;;s:15:&quot;int_frac_digits&quot;;i:2;s:11:&quot;frac_digits&quot;;i:2;s:13:&quot;p_cs_precedes&quot;;i:1;s:14:&quot;p_sep_by_space&quot;;i:0;s:13:&quot;n_cs_precedes&quot;;i:1;s:14:&quot;n_sep_by_space&quot;;i:0;s:11:&quot;p_sign_posn&quot;;i:4;s:11:&quot;n_sign_posn&quot;;i:4;}</field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">8</field>
+    <field name="currency_symbol">؋</field>
+    <field name="currency_code">AFN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Afghan afghani</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">9</field>
+    <field name="currency_symbol">Lek</field>
+    <field name="currency_code">ALL</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Albanian lek</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">10</field>
+    <field name="currency_symbol">د.ج</field>
+    <field name="currency_code">DZD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Algerian dinar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">11</field>
+    <field name="currency_symbol">Kz </field>
+    <field name="currency_code">AOA</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Angolan kwanza</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">12</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">ARS</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Argentine peso</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">13</field>
+    <field name="currency_symbol">դր.</field>
+    <field name="currency_code">AMD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Armenian dram</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">14</field>
+    <field name="currency_symbol">ƒ</field>
+    <field name="currency_code">AWG</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Aruban florin</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">15</field>
+    <field name="currency_symbol">ман</field>
+    <field name="currency_code">AZN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Azerbaijani manat</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">16</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">BSD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Bahamian dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">17</field>
+    <field name="currency_symbol">ب.د</field>
+    <field name="currency_code">BHD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Bahraini dinar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">18</field>
+    <field name="currency_symbol">৳</field>
+    <field name="currency_code">BDT</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Bangladeshi taka</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">19</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">BBD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Barbadian dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">20</field>
+    <field name="currency_symbol">p.</field>
+    <field name="currency_code">BYR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Belarusian ruble</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">21</field>
+    <field name="currency_symbol">BZ$</field>
+    <field name="currency_code">BZD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Belize dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">22</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">BMD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Bermudian dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">23</field>
+    <field name="currency_symbol">BTN</field>
+    <field name="currency_code">BTN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Bhutanese ngultrum</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">24</field>
+    <field name="currency_symbol">$b</field>
+    <field name="currency_code">BOB</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Bolivian boliviano</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">25</field>
+    <field name="currency_symbol">XBA</field>
+    <field name="currency_code">XBA</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Bond Markets</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">26</field>
+    <field name="currency_symbol">KM</field>
+    <field name="currency_code">BAM</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Bosnia and Herzegovina convert</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">27</field>
+    <field name="currency_symbol">P</field>
+    <field name="currency_code">BWP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Botswana pula</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">28</field>
+    <field name="currency_symbol">R$</field>
+    <field name="currency_code">BRL</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Brazilian real</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">29</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">BND</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Brunei dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">30</field>
+    <field name="currency_symbol">лв</field>
+    <field name="currency_code">BGN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Bulgarian lev</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">31</field>
+    <field name="currency_symbol">Fr </field>
+    <field name="currency_code">BIF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Burundian franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">32</field>
+    <field name="currency_symbol">៛</field>
+    <field name="currency_code">KHR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Cambodian riel</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">33</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">CVE</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Cape Verdean escudo</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">34</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">KYD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Cayman Islands dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">35</field>
+    <field name="currency_symbol">Fr </field>
+    <field name="currency_code">XAF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Central African CFA franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">36</field>
+    <field name="currency_symbol">Fr </field>
+    <field name="currency_code">XPF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">CFP franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">37</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">CLP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Chilean peso</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">38</field>
+    <field name="currency_symbol">元</field>
+    <field name="currency_code">CNY</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Chinese renminbi yuan</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">39</field>
+    <field name="currency_symbol">XTS</field>
+    <field name="currency_code">XTS</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Codes specif</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">40</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">COP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Colombian peso</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">41</field>
+    <field name="currency_symbol">Fr </field>
+    <field name="currency_code">KMF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Comorian franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">42</field>
+    <field name="currency_symbol">Fr </field>
+    <field name="currency_code">CDF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Congolese franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">43</field>
+    <field name="currency_symbol">₡</field>
+    <field name="currency_code">CRC</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Costa Rican colón</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">44</field>
+    <field name="currency_symbol">kn</field>
+    <field name="currency_code">HRK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Croatian kuna</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">45</field>
+    <field name="currency_symbol">₱</field>
+    <field name="currency_code">CUP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Cuban peso</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">46</field>
+    <field name="currency_symbol">Kč</field>
+    <field name="currency_code">CZK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Czech koruna</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">47</field>
+    <field name="currency_symbol">kr</field>
+    <field name="currency_code">DKK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Danish krone</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">48</field>
+    <field name="currency_symbol">Fr </field>
+    <field name="currency_code">DJF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Djiboutian franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">49</field>
+    <field name="currency_symbol">RD$</field>
+    <field name="currency_code">DOP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Dominican peso</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">50</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">XCD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">East Caribbean dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">51</field>
+    <field name="currency_symbol">£</field>
+    <field name="currency_code">EGP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Egyptian pound</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">52</field>
+    <field name="currency_symbol">Nfk </field>
+    <field name="currency_code">ERN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Eritrean nakfa</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">53</field>
+    <field name="currency_symbol">kr</field>
+    <field name="currency_code">EEK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Estonian kroon</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">54</field>
+    <field name="currency_symbol">ETB</field>
+    <field name="currency_code">ETB</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Ethiopian birr</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">55</field>
+    <field name="currency_symbol">XBB</field>
+    <field name="currency_code">XBB</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">European Mon</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">56</field>
+    <field name="currency_symbol">XBD</field>
+    <field name="currency_code">XBD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">European Uni</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">57</field>
+    <field name="currency_symbol">XBC</field>
+    <field name="currency_code">XBC</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">European Uni</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">58</field>
+    <field name="currency_symbol">£</field>
+    <field name="currency_code">FKP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Falkland pound</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">59</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">FJD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Fijian dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">60</field>
+    <field name="currency_symbol">D </field>
+    <field name="currency_code">GMD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Gambian dalasi</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">61</field>
+    <field name="currency_symbol">ლ</field>
+    <field name="currency_code">GEL</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Georgian lari</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">62</field>
+    <field name="currency_symbol">₵</field>
+    <field name="currency_code">GHS</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Ghanaian cedi</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">63</field>
+    <field name="currency_symbol">£</field>
+    <field name="currency_code">GIP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Gibraltar pound</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">64</field>
+    <field name="currency_symbol">Gold</field>
+    <field name="currency_code">XAU</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Gold</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">65</field>
+    <field name="currency_symbol">Q</field>
+    <field name="currency_code">GTQ</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Guatemalan quetzal</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">66</field>
+    <field name="currency_symbol">GWP</field>
+    <field name="currency_code">GWP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Guinea-Bissa</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">67</field>
+    <field name="currency_symbol">Fr </field>
+    <field name="currency_code">GNF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Guinean franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">68</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">GYD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Guyanese dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">69</field>
+    <field name="currency_symbol">G </field>
+    <field name="currency_code">HTG</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Haitian gourde</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">70</field>
+    <field name="currency_symbol">L</field>
+    <field name="currency_code">HNL</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Honduran lempira</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">71</field>
+    <field name="currency_symbol">元</field>
+    <field name="currency_code">HKD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Hong Kong dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">72</field>
+    <field name="currency_symbol">Ft</field>
+    <field name="currency_code">HUF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Hungarian forint</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">73</field>
+    <field name="currency_symbol">kr</field>
+    <field name="currency_code">ISK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Icelandic króna</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">74</field>
+    <field name="currency_symbol">₨</field>
+    <field name="currency_code">INR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Indian rupee</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">75</field>
+    <field name="currency_symbol">Rp</field>
+    <field name="currency_code">IDR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Indonesian rupiah</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">76</field>
+    <field name="currency_symbol">﷼</field>
+    <field name="currency_code">IRR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Iranian rial</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">77</field>
+    <field name="currency_symbol">ع.د</field>
+    <field name="currency_code">IQD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Iraqi dinar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">78</field>
+    <field name="currency_symbol">₪</field>
+    <field name="currency_code">ILS</field>
+    <field name="currency_format">%n</field>
+    <field name="currency_name">Israeli new sheqel</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale">a:13:{s:17:&quot;mon_decimal_point&quot;;s:1:&quot;,&quot;;s:17:&quot;mon_thousands_sep&quot;;s:0:&quot;&quot;;s:12:&quot;mon_grouping&quot;;s:1:&quot;3&quot;;s:13:&quot;positive_sign&quot;;s:0:&quot;&quot;;s:13:&quot;negative_sign&quot;;s:1:&quot;-&quot;;s:15:&quot;int_frac_digits&quot;;i:0;s:11:&quot;frac_digits&quot;;i:0;s:13:&quot;p_cs_precedes&quot;;i:0;s:14:&quot;p_sep_by_space&quot;;i:1;s:13:&quot;n_cs_precedes&quot;;i:0;s:14:&quot;n_sep_by_space&quot;;i:1;s:11:&quot;p_sign_posn&quot;;i:1;s:11:&quot;n_sign_posn&quot;;i:1;}</field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">79</field>
+    <field name="currency_symbol">J$</field>
+    <field name="currency_code">JMD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Jamaican dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">80</field>
+    <field name="currency_symbol">د.ا</field>
+    <field name="currency_code">JOD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Jordanian dinar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">81</field>
+    <field name="currency_symbol">лв</field>
+    <field name="currency_code">KZT</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Kazakhstani tenge</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">82</field>
+    <field name="currency_symbol">Sh </field>
+    <field name="currency_code">KES</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Kenyan shilling</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">83</field>
+    <field name="currency_symbol">د.ك</field>
+    <field name="currency_code">KWD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Kuwaiti dinar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">84</field>
+    <field name="currency_symbol">лв</field>
+    <field name="currency_code">KGS</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Kyrgyzstani som</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">85</field>
+    <field name="currency_symbol">₭</field>
+    <field name="currency_code">LAK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Lao kip</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">86</field>
+    <field name="currency_symbol">Ls</field>
+    <field name="currency_code">LVL</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Latvian lats</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">87</field>
+    <field name="currency_symbol">£</field>
+    <field name="currency_code">LBP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Lebanese pound</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">88</field>
+    <field name="currency_symbol">L </field>
+    <field name="currency_code">LSL</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Lesotho loti</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">89</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">LRD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Liberian dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">90</field>
+    <field name="currency_symbol">ل.د</field>
+    <field name="currency_code">LYD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Libyan dinar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">91</field>
+    <field name="currency_symbol">Lt</field>
+    <field name="currency_code">LTL</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Lithuanian litas</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">92</field>
+    <field name="currency_symbol">P </field>
+    <field name="currency_code">MOP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Macanese pataca</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">93</field>
+    <field name="currency_symbol">ден</field>
+    <field name="currency_code">MKD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Macedonian denar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">94</field>
+    <field name="currency_symbol">MGA</field>
+    <field name="currency_code">MGA</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Malagasy ariary</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">95</field>
+    <field name="currency_symbol">MK </field>
+    <field name="currency_code">MWK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Malawian kwacha</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">96</field>
+    <field name="currency_symbol">RM</field>
+    <field name="currency_code">MYR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Malaysian ringgit</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">97</field>
+    <field name="currency_symbol">ރ.</field>
+    <field name="currency_code">MVR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Maldivian rufiyaa</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">98</field>
+    <field name="currency_symbol">UM </field>
+    <field name="currency_code">MRO</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Mauritanian ouguiya</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">99</field>
+    <field name="currency_symbol">₨</field>
+    <field name="currency_code">MUR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Mauritian rupee</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">100</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">MXN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Mexican peso</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">101</field>
+    <field name="currency_symbol">MXV</field>
+    <field name="currency_code">MXV</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Mexican Unid</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">102</field>
+    <field name="currency_symbol">L </field>
+    <field name="currency_code">MDL</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Moldovan leu</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">103</field>
+    <field name="currency_symbol">₮</field>
+    <field name="currency_code">MNT</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Mongolian tögrög</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">104</field>
+    <field name="currency_symbol">د.م.</field>
+    <field name="currency_code">MAD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Moroccan dirham</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">105</field>
+    <field name="currency_symbol">MT</field>
+    <field name="currency_code">MZN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Mozambican metical</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">106</field>
+    <field name="currency_symbol">BOV</field>
+    <field name="currency_code">BOV</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Mvdol</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">107</field>
+    <field name="currency_symbol">K </field>
+    <field name="currency_code">MMK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Myanmar kyat</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">108</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">NAD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Namibian dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">109</field>
+    <field name="currency_symbol">₨</field>
+    <field name="currency_code">NPR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Nepalese rupee</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">110</field>
+    <field name="currency_symbol">ƒ</field>
+    <field name="currency_code">ANG</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Netherlands Antillean gulden</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">111</field>
+    <field name="currency_symbol">NT$</field>
+    <field name="currency_code">TWD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">New Taiwan dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">112</field>
+    <field name="currency_symbol">C$</field>
+    <field name="currency_code">NIO</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Nicaraguan córdoba</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">113</field>
+    <field name="currency_symbol">₦</field>
+    <field name="currency_code">NGN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Nigerian naira</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">114</field>
+    <field name="currency_symbol">₩</field>
+    <field name="currency_code">KPW</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">North Korean won</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">115</field>
+    <field name="currency_symbol">kr</field>
+    <field name="currency_code">NOK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Norwegian krone</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">116</field>
+    <field name="currency_symbol">﷼</field>
+    <field name="currency_code">OMR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Omani rial</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">117</field>
+    <field name="currency_symbol">₨</field>
+    <field name="currency_code">PKR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Pakistani rupee</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">118</field>
+    <field name="currency_symbol">XPD</field>
+    <field name="currency_code">XPD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Palladium</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">119</field>
+    <field name="currency_symbol">B/.</field>
+    <field name="currency_code">PAB</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Panamanian balboa</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">120</field>
+    <field name="currency_symbol">K </field>
+    <field name="currency_code">PGK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Papua New Guinean kina</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">121</field>
+    <field name="currency_symbol">₲</field>
+    <field name="currency_code">PYG</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Paraguayan guaraní</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">122</field>
+    <field name="currency_symbol">S/.</field>
+    <field name="currency_code">PEN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Peruvian nuevo sol</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">123</field>
+    <field name="currency_symbol">₱</field>
+    <field name="currency_code">PHP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Philippine peso</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">124</field>
+    <field name="currency_symbol">XPT</field>
+    <field name="currency_code">XPT</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Platinum</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">125</field>
+    <field name="currency_symbol">zł</field>
+    <field name="currency_code">PLN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Polish Złoty</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">126</field>
+    <field name="currency_symbol">﷼</field>
+    <field name="currency_code">QAR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Qatari riyal</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">127</field>
+    <field name="currency_symbol">lei</field>
+    <field name="currency_code">RON</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Romanian leu</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">128</field>
+    <field name="currency_symbol">руб</field>
+    <field name="currency_code">RUB</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Russian ruble</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">129</field>
+    <field name="currency_symbol">Fr </field>
+    <field name="currency_code">RWF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Rwandan franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">130</field>
+    <field name="currency_symbol">£</field>
+    <field name="currency_code">SHP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Saint Helenian pound</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">131</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">SVC</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Salvadoran colón</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">132</field>
+    <field name="currency_symbol">T </field>
+    <field name="currency_code">WST</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Samoan tala</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">133</field>
+    <field name="currency_symbol">Db </field>
+    <field name="currency_code">STD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">São Tomé and Príncipe dobra</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">134</field>
+    <field name="currency_symbol">﷼</field>
+    <field name="currency_code">SAR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Saudi riyal</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">135</field>
+    <field name="currency_symbol">XDR</field>
+    <field name="currency_code">XDR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">SDR</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">136</field>
+    <field name="currency_symbol">Дин.</field>
+    <field name="currency_code">RSD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Serbian dinar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">137</field>
+    <field name="currency_symbol">₨</field>
+    <field name="currency_code">SCR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Seychellois rupee</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">138</field>
+    <field name="currency_symbol">Le </field>
+    <field name="currency_code">SLL</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Sierra Leonean leone</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">139</field>
+    <field name="currency_symbol">XAG</field>
+    <field name="currency_code">XAG</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Silver</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">140</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">SGD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Singapore dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">141</field>
+    <field name="currency_symbol">Sk </field>
+    <field name="currency_code">SKK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Slovak koruna</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">142</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">SBD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Solomon Islands dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">143</field>
+    <field name="currency_symbol">S</field>
+    <field name="currency_code">SOS</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Somali shilling</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">144</field>
+    <field name="currency_symbol">R</field>
+    <field name="currency_code">ZAR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">South African rand</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">145</field>
+    <field name="currency_symbol">₩</field>
+    <field name="currency_code">KRW</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">South Korean won</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">147</field>
+    <field name="currency_symbol">SS£ </field>
+    <field name="currency_code">SSP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">South Sudanese pound</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">146</field>
+    <field name="currency_symbol">₨</field>
+    <field name="currency_code">LKR</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Sri Lankan rupee</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">148</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">SRD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Surinamese dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">149</field>
+    <field name="currency_symbol">L </field>
+    <field name="currency_code">SZL</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Swazi lilangeni</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">150</field>
+    <field name="currency_symbol">kr</field>
+    <field name="currency_code">SEK</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Swedish krona</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">151</field>
+    <field name="currency_symbol">CHF</field>
+    <field name="currency_code">CHF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Swiss franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">152</field>
+    <field name="currency_symbol">£</field>
+    <field name="currency_code">SYP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Syrian pound</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">153</field>
+    <field name="currency_symbol">ЅМ</field>
+    <field name="currency_code">TJS</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Tajikistani somoni</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">154</field>
+    <field name="currency_symbol">Sh </field>
+    <field name="currency_code">TZS</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Tanzanian shilling</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">155</field>
+    <field name="currency_symbol">฿</field>
+    <field name="currency_code">THB</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Thai baht</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">156</field>
+    <field name="currency_symbol">XXX</field>
+    <field name="currency_code">XXX</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">The codes as</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">157</field>
+    <field name="currency_symbol">T$ </field>
+    <field name="currency_code">TOP</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Tongan paʻanga</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">158</field>
+    <field name="currency_symbol">TT$</field>
+    <field name="currency_code">TTD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Trinidad and Tobago dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">159</field>
+    <field name="currency_symbol">د.ت</field>
+    <field name="currency_code">TND</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Tunisian dinar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">160</field>
+    <field name="currency_symbol">YTL</field>
+    <field name="currency_code">TRY</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Turkish new lira</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">161</field>
+    <field name="currency_symbol">m </field>
+    <field name="currency_code">TMM</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Turkmenistani manat</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">162</field>
+    <field name="currency_symbol">Sh </field>
+    <field name="currency_code">UGX</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Ugandan shilling</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">163</field>
+    <field name="currency_symbol">XFU</field>
+    <field name="currency_code">XFU</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">UIC-Franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">164</field>
+    <field name="currency_symbol">₴</field>
+    <field name="currency_code">UAH</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Ukrainian hryvnia</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">165</field>
+    <field name="currency_symbol">COU</field>
+    <field name="currency_code">COU</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Unidad de Va</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">166</field>
+    <field name="currency_symbol">CLF</field>
+    <field name="currency_code">CLF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Unidades de </field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">167</field>
+    <field name="currency_symbol">د.إ</field>
+    <field name="currency_code">AED</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">United Arab Emirates dirham</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">168</field>
+    <field name="currency_symbol">UYI</field>
+    <field name="currency_code">UYI</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Uruguay Peso</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">169</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">UYU</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Uruguayan peso</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">170</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">USN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">US Dollar (Next Day)</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">171</field>
+    <field name="currency_symbol">$</field>
+    <field name="currency_code">USS</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">US Dollar (Second Day)</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">172</field>
+    <field name="currency_symbol">лв</field>
+    <field name="currency_code">UZS</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Uzbekistani som</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">173</field>
+    <field name="currency_symbol">Vt </field>
+    <field name="currency_code">VUV</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Vanuatu vatu</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">174</field>
+    <field name="currency_symbol">Bs</field>
+    <field name="currency_code">VEF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Venezuelan bolívar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">175</field>
+    <field name="currency_symbol">₫</field>
+    <field name="currency_code">VND</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Vietnamese Dong</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">176</field>
+    <field name="currency_symbol">Fr </field>
+    <field name="currency_code">XOF</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">West African CFA franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">177</field>
+    <field name="currency_symbol">€</field>
+    <field name="currency_code">CHE</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">WIR Euro</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">178</field>
+    <field name="currency_symbol">CHW</field>
+    <field name="currency_code">CHW</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">WIR Franc</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">179</field>
+    <field name="currency_symbol">﷼</field>
+    <field name="currency_code">YER</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Yemeni rial</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">180</field>
+    <field name="currency_symbol">ZK </field>
+    <field name="currency_code">ZMW</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Zambian kwacha</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">181</field>
+    <field name="currency_symbol">Z$</field>
+    <field name="currency_code">ZWD</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Zimbabwean dollar</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+   <row>
+    <field name="currency_id">182</field>
+    <field name="currency_symbol">p.</field>
+    <field name="currency_code">BYN</field>
+    <field name="currency_format">%i</field>
+    <field name="currency_name">Belarusian ruble</field>
+    <field name="currency_published">0</field>
+    <field name="currency_rate">1.000000</field>
+    <field name="currency_locale"></field>
+    <field name="currency_displayed">0</field>
+    <field name="currency_percent_fee">0.00</field>
+    <field name="currency_modified">0</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

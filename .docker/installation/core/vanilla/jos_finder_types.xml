@@ -8,32 +8,5 @@
    <key Table="#__finder_types" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__finder_types" Non_unique="0" Key_name="title" Seq_in_index="1" Column_name="title" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__finder_types">
-   <row>
-    <field name="id">1</field>
-    <field name="title">Category</field>
-    <field name="mime"></field>
-   </row>
-   <row>
-    <field name="id">2</field>
-    <field name="title">Contact</field>
-    <field name="mime"></field>
-   </row>
-   <row>
-    <field name="id">3</field>
-    <field name="title">Article</field>
-    <field name="mime"></field>
-   </row>
-   <row>
-    <field name="id">4</field>
-    <field name="title">News Feed</field>
-    <field name="mime"></field>
-   </row>
-   <row>
-    <field name="id">5</field>
-    <field name="title">Tag</field>
-    <field name="mime"></field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

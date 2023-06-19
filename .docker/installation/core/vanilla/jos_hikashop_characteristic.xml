@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_characteristic">
+   <field Field="characteristic_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="characteristic_parent_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="characteristic_value" Type="varchar(255)" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="characteristic_alias" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="characteristic_display_type" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="characteristic_params" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="characteristic_ordering" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="characteristic_display_method" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="characteristic_values_on_listing" Type="tinyint" Null="YES" Key="" Default="0" Extra="" />
+   <key Table="#__hikashop_characteristic" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="characteristic_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

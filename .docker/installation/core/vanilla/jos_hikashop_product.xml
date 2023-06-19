@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_product">
+   <field Field="product_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="product_parent_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="product_name" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="product_description" Type="longtext" Null="NO" Key="" Extra="" />
+   <field Field="product_quantity" Type="int" Null="NO" Key="" Default="-1" Extra="" />
+   <field Field="product_code" Type="varchar(255)" Null="NO" Key="UNI" Extra="" />
+   <field Field="product_published" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_hit" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_created" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_sale_start" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_sale_end" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_delay_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_tax_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_type" Type="varchar(255)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="product_vendor_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_manufacturer_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_url" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="product_weight" Type="decimal(12,3) unsigned" Null="NO" Key="" Default="0.000" Extra="" />
+   <field Field="product_keywords" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="product_weight_unit" Type="varchar(255)" Null="NO" Key="" Default="kg" Extra="" />
+   <field Field="product_modified" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_meta_description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="product_dimension_unit" Type="varchar(255)" Null="NO" Key="" Default="m" Extra="" />
+   <field Field="product_width" Type="decimal(12,3)" Null="NO" Key="" Default="0.000" Extra="" />
+   <field Field="product_length" Type="decimal(12,3)" Null="NO" Key="" Default="0.000" Extra="" />
+   <field Field="product_height" Type="decimal(12,3)" Null="NO" Key="" Default="0.000" Extra="" />
+   <field Field="product_max_per_order" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="product_access" Type="varchar(255)" Null="NO" Key="" Default="all" Extra="" />
+   <field Field="product_group_after_purchase" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="product_min_per_order" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="product_contact" Type="smallint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_display_quantity_field" Type="smallint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_last_seen_date" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="product_sales" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="product_waitlist" Type="smallint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_layout" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="product_average_score" Type="float" Null="NO" Key="" Extra="" />
+   <field Field="product_total_vote" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_page_title" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="product_alias" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="product_price_percentage" Type="decimal(15,7)" Null="NO" Key="" Default="0.0000000" Extra="" />
+   <field Field="product_msrp" Type="decimal(15,7)" Null="YES" Key="" Default="0.0000000" Extra="" />
+   <field Field="product_canonical" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="product_warehouse_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="product_quantity_layout" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="product_sort_price" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="product_description_raw" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="product_description_type" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="product_option_method" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="product_condition" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <key Table="#__hikashop_product" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="product_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_product" Non_unique="0" Key_name="product_code" Seq_in_index="1" Column_name="product_code" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_product" Non_unique="1" Key_name="product_parent_id" Seq_in_index="1" Column_name="product_parent_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_product" Non_unique="1" Key_name="product_main_index" Seq_in_index="1" Column_name="product_type" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_product" Non_unique="1" Key_name="product_main_index" Seq_in_index="2" Column_name="product_quantity" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_product" Non_unique="1" Key_name="product_main_index" Seq_in_index="3" Column_name="product_published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

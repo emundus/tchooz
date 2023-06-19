@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_download">
+   <field Field="file_id" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
+   <field Field="order_id" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
+   <field Field="file_pos" Type="int" Null="NO" Key="PRI" Default="1" Extra="" />
+   <field Field="download_number" Type="int" Null="NO" Key="" Default="1" Extra="" />
+   <key Table="#__hikashop_download" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="file_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_download" Non_unique="0" Key_name="PRIMARY" Seq_in_index="2" Column_name="order_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_download" Non_unique="0" Key_name="PRIMARY" Seq_in_index="3" Column_name="file_pos" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

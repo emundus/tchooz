@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_logs">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="timestamp" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="timestamp" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
    <field Field="user_id_from" Type="int" Null="NO" Key="MUL" Extra="" />
    <field Field="user_id_to" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="fnum_to" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />

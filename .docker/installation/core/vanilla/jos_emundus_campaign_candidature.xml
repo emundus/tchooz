@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_campaign_candidature">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
    <field Field="applicant_id" Type="int" Null="NO" Key="MUL" Extra="" />
    <field Field="user_id" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="campaign_id" Type="int" Null="NO" Key="MUL" Extra="" />

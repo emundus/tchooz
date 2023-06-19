@@ -5,7 +5,7 @@
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
    <field Field="fnum" Type="varchar(28)" Null="NO" Key="MUL" Extra="" />
    <field Field="id_tag" Type="int" Null="NO" Key="MUL" Extra="" />
-   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
    <field Field="user_id" Type="int" Null="NO" Key="MUL" Default="62" Extra="" />
    <key Table="#__emundus_tag_assoc" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_tag_assoc" Non_unique="0" Key_name="fnum_2" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />

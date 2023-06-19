@@ -10,7 +10,7 @@
    <field Field="imptotal" Type="int" Null="NO" Key="" Default="0" Extra="" />
    <field Field="impmade" Type="int" Null="NO" Key="" Default="0" Extra="" />
    <field Field="clicks" Type="int" Null="NO" Key="" Default="0" Extra="" />
-   <field Field="clickurl" Type="varchar(200)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="clickurl" Type="varchar(2048)" Null="NO" Key="" Default="" Extra="" />
    <field Field="state" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
    <field Field="catid" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
    <field Field="description" Type="text" Null="NO" Key="" Extra="" />

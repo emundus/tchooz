@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_orderstatus">
+   <field Field="orderstatus_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="orderstatus_namekey" Type="varchar(255)" Null="NO" Key="UNI" Extra="" />
+   <field Field="orderstatus_name" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="orderstatus_description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="orderstatus_published" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="orderstatus_ordering" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="orderstatus_email_params" Type="longtext" Null="YES" Key="" Extra="" />
+   <field Field="orderstatus_links_params" Type="longtext" Null="YES" Key="" Extra="" />
+   <field Field="orderstatus_color" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <key Table="#__hikashop_orderstatus" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="orderstatus_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_orderstatus" Non_unique="0" Key_name="orderstatus_namekey" Seq_in_index="1" Column_name="orderstatus_namekey" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__hikashop_orderstatus">
+   <row>
+    <field name="orderstatus_id">1</field>
+    <field name="orderstatus_namekey">created</field>
+    <field name="orderstatus_name">Created</field>
+    <field name="orderstatus_description">When a customer finishes a checkout, an order is created with the status created</field>
+    <field name="orderstatus_published">1</field>
+    <field name="orderstatus_ordering">1</field>
+    <field name="orderstatus_email_params"></field>
+    <field name="orderstatus_links_params"></field>
+    <field name="orderstatus_color"></field>
+   </row>
+   <row>
+    <field name="orderstatus_id">2</field>
+    <field name="orderstatus_namekey">confirmed</field>
+    <field name="orderstatus_name">Confirmed</field>
+    <field name="orderstatus_description">When the payment is confirmed or that the payment is done at delivery the order becomes confirmed</field>
+    <field name="orderstatus_published">1</field>
+    <field name="orderstatus_ordering">2</field>
+    <field name="orderstatus_email_params"></field>
+    <field name="orderstatus_links_params"></field>
+    <field name="orderstatus_color"></field>
+   </row>
+   <row>
+    <field name="orderstatus_id">3</field>
+    <field name="orderstatus_namekey">cancelled</field>
+    <field name="orderstatus_name">cancelled</field>
+    <field name="orderstatus_description">When an order is cancelled before receiving a payment</field>
+    <field name="orderstatus_published">1</field>
+    <field name="orderstatus_ordering">3</field>
+    <field name="orderstatus_email_params"></field>
+    <field name="orderstatus_links_params"></field>
+    <field name="orderstatus_color"></field>
+   </row>
+   <row>
+    <field name="orderstatus_id">4</field>
+    <field name="orderstatus_namekey">refunded</field>
+    <field name="orderstatus_name">refunded</field>
+    <field name="orderstatus_description">When an order is cancelled after receiving a payment</field>
+    <field name="orderstatus_published">1</field>
+    <field name="orderstatus_ordering">4</field>
+    <field name="orderstatus_email_params"></field>
+    <field name="orderstatus_links_params"></field>
+    <field name="orderstatus_color"></field>
+   </row>
+   <row>
+    <field name="orderstatus_id">5</field>
+    <field name="orderstatus_namekey">shipped</field>
+    <field name="orderstatus_name">shipped</field>
+    <field name="orderstatus_description">When an order has been shipped</field>
+    <field name="orderstatus_published">1</field>
+    <field name="orderstatus_ordering">5</field>
+    <field name="orderstatus_email_params"></field>
+    <field name="orderstatus_links_params"></field>
+    <field name="orderstatus_color"></field>
+   </row>
+   <row>
+    <field name="orderstatus_id">6</field>
+    <field name="orderstatus_namekey">pending</field>
+    <field name="orderstatus_name">pending</field>
+    <field name="orderstatus_description">When an order is created and the payment is still pending</field>
+    <field name="orderstatus_published">1</field>
+    <field name="orderstatus_ordering">6</field>
+    <field name="orderstatus_email_params"></field>
+    <field name="orderstatus_links_params"></field>
+    <field name="orderstatus_color"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

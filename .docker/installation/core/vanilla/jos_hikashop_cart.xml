@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_cart">
+   <field Field="cart_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="user_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="session_id" Type="varchar(255)" Null="NO" Key="MUL" Extra="" />
+   <field Field="cart_modified" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cart_type" Type="varchar(25)" Null="NO" Key="" Default="cart" Extra="" />
+   <field Field="cart_coupon" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="cart_currency_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cart_payment_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cart_shipping_ids" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="cart_billing_address_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cart_shipping_address_ids" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="cart_name" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="cart_current" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cart_share" Type="varchar(255)" Null="NO" Key="" Default="nobody" Extra="" />
+   <field Field="cart_params" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="cart_fields" Type="longtext" Null="YES" Key="" Extra="" />
+   <field Field="cart_ip" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <key Table="#__hikashop_cart" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="cart_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_cart" Non_unique="1" Key_name="user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_cart" Non_unique="1" Key_name="session_id" Seq_in_index="1" Column_name="session_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

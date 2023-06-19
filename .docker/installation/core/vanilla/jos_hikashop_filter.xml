@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_filter">
+   <field Field="filter_id" Type="smallint unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="filter_name" Type="varchar(250)" Null="NO" Key="" Extra="" />
+   <field Field="filter_namekey" Type="varchar(50)" Null="NO" Key="UNI" Extra="" />
+   <field Field="filter_published" Type="tinyint unsigned" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="filter_type" Type="varchar(50)" Null="YES" Key="" Extra="" />
+   <field Field="filter_category_id" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="filter_ordering" Type="smallint unsigned" Null="YES" Key="" Default="99" Extra="" />
+   <field Field="filter_options" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="filter_data" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="filter_access" Type="varchar(250)" Null="NO" Key="" Default="all" Extra="" />
+   <field Field="filter_direct_application" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="filter_value" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="filter_category_childs" Type="tinyint unsigned" Null="NO" Key="" Extra="" />
+   <field Field="filter_height" Type="int unsigned" Null="NO" Key="" Extra="" />
+   <field Field="filter_deletable" Type="tinyint unsigned" Null="NO" Key="" Extra="" />
+   <field Field="filter_dynamic" Type="tinyint unsigned" Null="NO" Key="" Extra="" />
+   <key Table="#__hikashop_filter" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="filter_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_filter" Non_unique="0" Key_name="filter_namekey" Seq_in_index="1" Column_name="filter_namekey" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

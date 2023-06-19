@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_filters">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="time_date" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="time_date" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
    <field Field="user" Type="int" Null="NO" Key="MUL" Extra="" />
    <field Field="name" Type="varchar(255)" Null="NO" Key="" Extra="" />
    <field Field="constraints" Type="text" Null="NO" Key="" Extra="" />

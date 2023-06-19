@@ -121,6 +121,21 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
                 echo >&2 "Joomla installation in progress..."
 
                 php installation/joomla.php install --site-name="$TCHOOZ_SITENAME" --admin-user="$TCHOOZ_SYSADMIN_LAST_NAME-$TCHOOZ_SYSADMIN_FIRST_NAME" --admin-username="$TCHOOZ_SYSADMIN_USERNAME" --admin-password="$TCHOOZ_SYSADMIN_PASSWORD" --admin-email="$TCHOOZ_SYSADMIN_MAIL" --db-type=mysql --db-host="$JOOMLA_DB_HOST" --db-user="$JOOMLA_DB_USER" --db-pass="$JOOMLA_DB_PASSWORD" --db-name="$JOOMLA_DB_NAME" --db-prefix="jos_" -n
+
+                echo >&2 "Copy of Gantry 5 Helium template in progress..."
+
+                cp /installation/templates/g5_helium/templateDetails.xml templates/g5_helium/templateDetails.xml
+                cp -r /installation/templates/g5_helium/custom/config templates/g5_helium/custom/config
+
+                echo >&2 "We prepare the installation of the Tchooz component..."
+
+                php cli/joomla.php database:import --folder=".docker/installation/core/vanilla"
+
+                echo >&2 "Create coordinator user..."
+
+                php cli/joomla.php user:add --username="$TCHOOZ_COORD_USERNAME" --name="$TCHOOZ_COORD_LAST_NAME $TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator"
+
+                echo >&2 "Awesome ! Your Tchooz website is ready !"
         fi
 
         # Ensure the MySQL Database is created

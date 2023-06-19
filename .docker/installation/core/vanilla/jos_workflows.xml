@@ -37,10 +37,10 @@
     <field name="extension">com_content.article</field>
     <field name="default">1</field>
     <field name="ordering">1</field>
-    <field name="created">2023-04-06 13:47:53</field>
-    <field name="created_by">650</field>
-    <field name="modified">2023-04-06 13:47:53</field>
-    <field name="modified_by">650</field>
+    <field name="created">2023-06-19 11:41:35</field>
+    <field name="created_by">247</field>
+    <field name="modified">2023-06-19 11:41:35</field>
+    <field name="modified_by">247</field>
     <field name="checked_out_time"></field>
     <field name="checked_out"></field>
    </row>

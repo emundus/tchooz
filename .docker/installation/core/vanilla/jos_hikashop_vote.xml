@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_vote">
+   <field Field="vote_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="vote_ref_id" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="vote_type" Type="varchar(15)" Null="NO" Key="" Extra="" />
+   <field Field="vote_user_id" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="vote_rating" Type="float" Null="NO" Key="" Extra="" />
+   <field Field="vote_comment" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="vote_useful" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="vote_pseudo" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="vote_ip" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="vote_email" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="vote_date" Type="int unsigned" Null="NO" Key="" Extra="" />
+   <field Field="vote_published" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
+   <key Table="#__hikashop_vote" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="vote_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

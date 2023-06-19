@@ -1,0 +1,994 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_config">
+   <field Field="config_namekey" Type="varchar(200)" Null="NO" Key="PRI" Extra="" />
+   <field Field="config_value" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="config_default" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__hikashop_config" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="config_namekey" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__hikashop_config">
+   <row>
+    <field name="config_namekey">level</field>
+    <field name="config_value">Business</field>
+    <field name="config_default">Business</field>
+   </row>
+   <row>
+    <field name="config_namekey">version</field>
+    <field name="config_value">4.7.3</field>
+    <field name="config_default">4.7.3</field>
+   </row>
+   <row>
+    <field name="config_namekey">bounce_email</field>
+    <field name="config_value"></field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">add_names</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">encoding_format</field>
+    <field name="config_value">base64</field>
+    <field name="config_default">base64</field>
+   </row>
+   <row>
+    <field name="config_namekey">charset</field>
+    <field name="config_value">UTF-8</field>
+    <field name="config_default">UTF-8</field>
+   </row>
+   <row>
+    <field name="config_namekey">word_wrapping</field>
+    <field name="config_value">150</field>
+    <field name="config_default">150</field>
+   </row>
+   <row>
+    <field name="config_namekey">embed_images</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">embed_files</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">multiple_part</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">allowedfiles</field>
+    <field name="config_value">zip,doc,docx,pdf,xls,txt,gz,gzip,rar,jpg,jpeg,gif,tar.gz,xlsx,pps,csv,bmp,epg,ico,odg,odp,ods,odt,png,svg,webp,ppt,xcf,wmv,avi,mkv,mp3,ogg,flac,wma,fla,flv,mp4,wav,aac,mov,epub</field>
+    <field name="config_default">zip,doc,docx,pdf,xls,txt,gz,gzip,rar,jpg,jpeg,gif,tar.gz,xlsx,pps,csv,bmp,epg,ico,odg,odp,ods,odt,png,svg,webp,ppt,xcf,wmv,avi,mkv,mp3,ogg,flac,wma,fla,flv,mp4,wav,aac,mov,epub</field>
+   </row>
+   <row>
+    <field name="config_namekey">allowedimages</field>
+    <field name="config_value">gif,jpg,jpeg,png,svg,webp</field>
+    <field name="config_default">gif,jpg,jpeg,png,svg,webp</field>
+   </row>
+   <row>
+    <field name="config_namekey">uploadfolder</field>
+    <field name="config_value">images/com_hikashop/upload/</field>
+    <field name="config_default">images/com_hikashop/upload/</field>
+   </row>
+   <row>
+    <field name="config_namekey">uploadsecurefolder</field>
+    <field name="config_value">media/com_hikashop/upload/safe/</field>
+    <field name="config_default">media/com_hikashop/upload/safe/</field>
+   </row>
+   <row>
+    <field name="config_namekey">editor</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_next</field>
+    <field name="config_value">1251990901</field>
+    <field name="config_default">1251990901</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_last</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_fromip</field>
+    <field name="config_value"></field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_report</field>
+    <field name="config_value"></field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_frequency</field>
+    <field name="config_value">900</field>
+    <field name="config_default">900</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_sendreport</field>
+    <field name="config_value">2</field>
+    <field name="config_default">2</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_fullreport</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_savereport</field>
+    <field name="config_value">2</field>
+    <field name="config_default">2</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_savepath</field>
+    <field name="config_value">media/com_hikashop/upload/safe/logs/report_918143119.log</field>
+    <field name="config_default">media/com_hikashop/upload/safe/logs/report_918143119.log</field>
+   </row>
+   <row>
+    <field name="config_namekey">payment_log_file</field>
+    <field name="config_value">media/com_hikashop/upload/safe/logs/report_611722379.log</field>
+    <field name="config_default">media/com_hikashop/upload/safe/logs/report_611722379.log</field>
+   </row>
+   <row>
+    <field name="config_namekey">notification_created</field>
+    <field name="config_value"></field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">notification_accept</field>
+    <field name="config_value"></field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">notification_refuse</field>
+    <field name="config_value"></field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">bootstrap_design</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">characteristics_values_sorting</field>
+    <field name="config_value">ordering</field>
+    <field name="config_default">ordering</field>
+   </row>
+   <row>
+    <field name="config_namekey">popup_mode</field>
+    <field name="config_value">vex</field>
+    <field name="config_default">vex</field>
+   </row>
+   <row>
+    <field name="config_namekey">force_canonical_urls</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">opacity</field>
+    <field name="config_value">100</field>
+    <field name="config_default">100</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_number_format</field>
+    <field name="config_value">{automatic_code}</field>
+    <field name="config_default">{automatic_code}</field>
+   </row>
+   <row>
+    <field name="config_namekey">checkout_cart_delete</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">variant_default_publish</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">force_ssl</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">simplified_registration</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">tax_zone_type</field>
+    <field name="config_value">billing</field>
+    <field name="config_default">billing</field>
+   </row>
+   <row>
+    <field name="config_namekey">discount_before_tax</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">default_type</field>
+    <field name="config_value">individual</field>
+    <field name="config_default">individual</field>
+   </row>
+   <row>
+    <field name="config_namekey">main_tax_zone</field>
+    <field name="config_value">1375</field>
+    <field name="config_default">1375</field>
+   </row>
+   <row>
+    <field name="config_namekey">main_currency</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_created_status</field>
+    <field name="config_value">created</field>
+    <field name="config_default">created</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_confirmed_status</field>
+    <field name="config_value">confirmed</field>
+    <field name="config_default">confirmed</field>
+   </row>
+   <row>
+    <field name="config_namekey">invoice_order_statuses</field>
+    <field name="config_value">confirmed,shipped</field>
+    <field name="config_default">confirmed,shipped</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_status_for_download</field>
+    <field name="config_value">shipped,confirmed</field>
+    <field name="config_default">shipped,confirmed</field>
+   </row>
+   <row>
+    <field name="config_namekey">partner_valid_status</field>
+    <field name="config_value">confirmed,shipped</field>
+    <field name="config_default">confirmed,shipped</field>
+   </row>
+   <row>
+    <field name="config_namekey">cancelled_order_status</field>
+    <field name="config_value">cancelled,refunded</field>
+    <field name="config_default">cancelled,refunded</field>
+   </row>
+   <row>
+    <field name="config_namekey">cancellable_order_status</field>
+    <field name="config_value"></field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">order_unpaid_statuses</field>
+    <field name="config_value">created</field>
+    <field name="config_default">created</field>
+   </row>
+   <row>
+    <field name="config_namekey">download_time_limit</field>
+    <field name="config_value">2592000</field>
+    <field name="config_default">2592000</field>
+   </row>
+   <row>
+    <field name="config_namekey">click_validity_period</field>
+    <field name="config_value">2592000</field>
+    <field name="config_default">2592000</field>
+   </row>
+   <row>
+    <field name="config_namekey">click_min_delay</field>
+    <field name="config_value">86400</field>
+    <field name="config_default">86400</field>
+   </row>
+   <row>
+    <field name="config_namekey">partner_currency</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">allow_currency_selection</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">partner_click_fee</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">partner_lead_fee</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">ajax_add_to_cart</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">partner_percent_fee</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">partner_flat_fee</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">affiliate_terms</field>
+    <field name="config_value"></field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">download_number_limit</field>
+    <field name="config_value">50</field>
+    <field name="config_default">50</field>
+   </row>
+   <row>
+    <field name="config_namekey">button_style</field>
+    <field name="config_value">normal</field>
+    <field name="config_default">normal</field>
+   </row>
+   <row>
+    <field name="config_namekey">readmore</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">menu_style</field>
+    <field name="config_value">content_top</field>
+    <field name="config_default">content_top</field>
+   </row>
+   <row>
+    <field name="config_namekey">show_cart_image</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">thumbnail</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">thumbnail_x</field>
+    <field name="config_value">100</field>
+    <field name="config_default">100</field>
+   </row>
+   <row>
+    <field name="config_namekey">thumbnail_y</field>
+    <field name="config_value">100</field>
+    <field name="config_default">100</field>
+   </row>
+   <row>
+    <field name="config_namekey">product_image_x</field>
+    <field name="config_value">100</field>
+    <field name="config_default">100</field>
+   </row>
+   <row>
+    <field name="config_namekey">product_image_y</field>
+    <field name="config_value">100</field>
+    <field name="config_default">100</field>
+   </row>
+   <row>
+    <field name="config_namekey">image_x</field>
+    <field name="config_value"></field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">image_y</field>
+    <field name="config_value"></field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">add_webp_images</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">max_x_popup</field>
+    <field name="config_value">760</field>
+    <field name="config_default">760</field>
+   </row>
+   <row>
+    <field name="config_namekey">max_y_popup</field>
+    <field name="config_value">480</field>
+    <field name="config_default">480</field>
+   </row>
+   <row>
+    <field name="config_namekey">vat_check</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">default_translation_publish</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">multilang_display</field>
+    <field name="config_value">popups</field>
+    <field name="config_default">popups</field>
+   </row>
+   <row>
+    <field name="config_namekey">volume_symbols</field>
+    <field name="config_value">m,dm,cm,mm,in,ft,yd</field>
+    <field name="config_default">m,dm,cm,mm,in,ft,yd</field>
+   </row>
+   <row>
+    <field name="config_namekey">weight_symbols</field>
+    <field name="config_value">kg,g,mg,lb,oz,ozt</field>
+    <field name="config_default">kg,g,mg,lb,oz,ozt</field>
+   </row>
+   <row>
+    <field name="config_namekey">store_address</field>
+    <field name="config_value">ACME Corporation
+Guildhall
+PO Box 270, London
+United Kingdom</field>
+    <field name="config_default">ACME Corporation
+Guildhall
+PO Box 270, London
+United Kingdom</field>
+   </row>
+   <row>
+    <field name="config_namekey">checkout</field>
+    <field name="config_value">login_address_shipping_payment_confirm_coupon_cart_status_fields,end</field>
+    <field name="config_default">login_address_shipping_payment_confirm_coupon_cart_status_fields,end</field>
+   </row>
+   <row>
+    <field name="config_namekey">display_checkout_bar</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">show_vote_product</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">affiliate_advanced_stats</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">cart_retaining_period</field>
+    <field name="config_value">2592000</field>
+    <field name="config_default">2592000</field>
+   </row>
+   <row>
+    <field name="config_namekey">default_params</field>
+    <field name="config_value">YTozNDp7czoxNDoiYm9yZGVyX3Zpc2libGUiO3M6MToiMiI7czoxMToiYWRkX3RvX2NhcnQiO3M6MToiMSI7czoxMjoiY29udGVudF90eXBlIjtzOjc6InByb2R1Y3QiO3M6MTE6ImxheW91dF90eXBlIjtzOjM6ImRpdiI7czo3OiJjb2x1bW5zIjtzOjE6IjEiO3M6NToibGltaXQiO3M6MjoiMjEiO3M6OToib3JkZXJfZGlyIjtzOjM6IkFTQyI7czoxMToiZmlsdGVyX3R5cGUiO3M6MToiMCI7czoxOToic2VsZWN0cGFyZW50bGlzdGluZyI7czoxOiIyIjtzOjE1OiJtb2R1bGVjbGFzc19zZngiO3M6MDoiIjtzOjc6Im1vZHVsZXMiO3M6MDoiIjtzOjE5OiJjb250ZW50X3N5bmNocm9uaXplIjtzOjE6IjEiO3M6MTU6InVzZV9tb2R1bGVfbmFtZSI7czoxOiIwIjtzOjEzOiJwcm9kdWN0X29yZGVyIjtzOjg6Im9yZGVyaW5nIjtzOjY6InJhbmRvbSI7czoxOiIwIjtzOjE5OiJwcm9kdWN0X3N5bmNocm9uaXplIjtzOjE6IjEiO3M6MTA6InNob3dfcHJpY2UiO3M6MToiMSI7czoxNDoicHJpY2Vfd2l0aF90YXgiO3M6MToiMSI7czoxOToic2hvd19vcmlnaW5hbF9wcmljZSI7czoxOiIxIjtzOjEzOiJzaG93X2Rpc2NvdW50IjtzOjE6IjEiO3M6MTg6InByaWNlX2Rpc3BsYXlfdHlwZSI7czo4OiJjaGVhcGVzdCI7czoxNDoiY2F0ZWdvcnlfb3JkZXIiO3M6MTc6ImNhdGVnb3J5X29yZGVyaW5nIjtzOjE4OiJjaGlsZF9kaXNwbGF5X3R5cGUiO3M6Nzoibm9jaGlsZCI7czoxMToiY2hpbGRfbGltaXQiO3M6MDoiIjtzOjIwOiJkaXZfaXRlbV9sYXlvdXRfdHlwZSI7czo5OiJpbWdfdGl0bGUiO3M6MTc6ImRpdl9jdXN0b21fZmllbGRzIjtzOjA6IiI7czo2OiJoZWlnaHQiO3M6MzoiMTUwIjtzOjE2OiJiYWNrZ3JvdW5kX2NvbG9yIjtzOjc6IiNGRkZGRkYiO3M6NjoibWFyZ2luIjtzOjI6IjEwIjtzOjE1OiJyb3VuZGVkX2Nvcm5lcnMiO3M6MToiMSI7czoxMToidGV4dF9jZW50ZXIiO3M6MToiMSI7czoyNDoibGlua3Nfb25fbWFpbl9jYXRlZ29yaWVzIjtzOjE6IjAiO3M6MjA6ImxpbmtfdG9fcHJvZHVjdF9wYWdlIjtzOjE6IjEiO3M6MTQ6ImRpc3BsYXlfYmFkZ2VzIjtzOjE6IjEiO30=</field>
+    <field name="config_default">YTozNDp7czoxNDoiYm9yZGVyX3Zpc2libGUiO3M6MToiMiI7czoxMToiYWRkX3RvX2NhcnQiO3M6MToiMSI7czoxMjoiY29udGVudF90eXBlIjtzOjc6InByb2R1Y3QiO3M6MTE6ImxheW91dF90eXBlIjtzOjM6ImRpdiI7czo3OiJjb2x1bW5zIjtzOjE6IjEiO3M6NToibGltaXQiO3M6MjoiMjEiO3M6OToib3JkZXJfZGlyIjtzOjM6IkFTQyI7czoxMToiZmlsdGVyX3R5cGUiO3M6MToiMCI7czoxOToic2VsZWN0cGFyZW50bGlzdGluZyI7czoxOiIyIjtzOjE1OiJtb2R1bGVjbGFzc19zZngiO3M6MDoiIjtzOjc6Im1vZHVsZXMiO3M6MDoiIjtzOjE5OiJjb250ZW50X3N5bmNocm9uaXplIjtzOjE6IjEiO3M6MTU6InVzZV9tb2R1bGVfbmFtZSI7czoxOiIwIjtzOjEzOiJwcm9kdWN0X29yZGVyIjtzOjg6Im9yZGVyaW5nIjtzOjY6InJhbmRvbSI7czoxOiIwIjtzOjE5OiJwcm9kdWN0X3N5bmNocm9uaXplIjtzOjE6IjEiO3M6MTA6InNob3dfcHJpY2UiO3M6MToiMSI7czoxNDoicHJpY2Vfd2l0aF90YXgiO3M6MToiMSI7czoxOToic2hvd19vcmlnaW5hbF9wcmljZSI7czoxOiIxIjtzOjEzOiJzaG93X2Rpc2NvdW50IjtzOjE6IjEiO3M6MTg6InByaWNlX2Rpc3BsYXlfdHlwZSI7czo4OiJjaGVhcGVzdCI7czoxNDoiY2F0ZWdvcnlfb3JkZXIiO3M6MTc6ImNhdGVnb3J5X29yZGVyaW5nIjtzOjE4OiJjaGlsZF9kaXNwbGF5X3R5cGUiO3M6Nzoibm9jaGlsZCI7czoxMToiY2hpbGRfbGltaXQiO3M6MDoiIjtzOjIwOiJkaXZfaXRlbV9sYXlvdXRfdHlwZSI7czo5OiJpbWdfdGl0bGUiO3M6MTc6ImRpdl9jdXN0b21fZmllbGRzIjtzOjA6IiI7czo2OiJoZWlnaHQiO3M6MzoiMTUwIjtzOjE2OiJiYWNrZ3JvdW5kX2NvbG9yIjtzOjc6IiNGRkZGRkYiO3M6NjoibWFyZ2luIjtzOjI6IjEwIjtzOjE1OiJyb3VuZGVkX2Nvcm5lcnMiO3M6MToiMSI7czoxMToidGV4dF9jZW50ZXIiO3M6MToiMSI7czoyNDoibGlua3Nfb25fbWFpbl9jYXRlZ29yaWVzIjtzOjE6IjAiO3M6MjA6ImxpbmtfdG9fcHJvZHVjdF9wYWdlIjtzOjE6IjEiO3M6MTQ6ImRpc3BsYXlfYmFkZ2VzIjtzOjE6IjEiO30=</field>
+   </row>
+   <row>
+    <field name="config_namekey">default_image</field>
+    <field name="config_value">barcode.png</field>
+    <field name="config_default">barcode.png</field>
+   </row>
+   <row>
+    <field name="config_namekey">characteristic_display</field>
+    <field name="config_value">dropdown</field>
+    <field name="config_default">dropdown</field>
+   </row>
+   <row>
+    <field name="config_namekey">characteristic_display_text</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">show_quantity_field</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">show_cart_price</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">show_cart_quantity</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">show_cart_delete</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">catalogue</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">redirect_url_after_add_cart</field>
+    <field name="config_value">checkout</field>
+    <field name="config_default">checkout</field>
+   </row>
+   <row>
+    <field name="config_namekey">redirect_url_when_cart_is_empty</field>
+    <field name="config_value"></field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">cart_retaining_period_checked</field>
+    <field name="config_value">1687176086</field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">auto_submit_methods</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">clean_cart_when_order_created</field>
+    <field name="config_value">order_confirmed</field>
+    <field name="config_default">order_confirmed</field>
+   </row>
+   <row>
+    <field name="config_namekey">display_add_to_cart_for_free_products</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">category_image</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">category_explorer</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">detailed_tax_display</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_status_notification.subject</field>
+    <field name="config_value">ORDER_STATUS_NOTIFICATION_SUBJECT</field>
+    <field name="config_default">ORDER_STATUS_NOTIFICATION_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_creation_notification.subject</field>
+    <field name="config_value">ORDER_CREATION_NOTIFICATION_SUBJECT</field>
+    <field name="config_default">ORDER_CREATION_NOTIFICATION_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_notification.subject</field>
+    <field name="config_value">ORDER_NOTIFICATION_SUBJECT</field>
+    <field name="config_default">ORDER_NOTIFICATION_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">user_account.subject</field>
+    <field name="config_value">USER_ACCOUNT_SUBJECT</field>
+    <field name="config_default">USER_ACCOUNT_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">user_account_admin_notification.subject</field>
+    <field name="config_value">HIKA_USER_ACCOUNT_ADMIN_NOTIFICATION_SUBJECT</field>
+    <field name="config_default">HIKA_USER_ACCOUNT_ADMIN_NOTIFICATION_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_report.subject</field>
+    <field name="config_value">CRON_REPORT_SUBJECT</field>
+    <field name="config_default">CRON_REPORT_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_status_notification.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_status_notification.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_status_notification.template</field>
+    <field name="config_value">default</field>
+    <field name="config_default">default</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_creation_notification.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_creation_notification.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_creation_notification.template</field>
+    <field name="config_value">default</field>
+    <field name="config_default">default</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_notification.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_notification.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_notification.template</field>
+    <field name="config_value">default</field>
+    <field name="config_default">default</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_admin_notification.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_admin_notification.subject</field>
+    <field name="config_value">ORDER_ADMIN_NOTIFICATION_SUBJECT</field>
+    <field name="config_default">ORDER_ADMIN_NOTIFICATION_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_admin_notification.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_admin_notification.template</field>
+    <field name="config_value">admin</field>
+    <field name="config_default">admin</field>
+   </row>
+   <row>
+    <field name="config_namekey">payment_notification.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">payment_notification.subject</field>
+    <field name="config_value">PAYMENT_NOTIFICATION_SUBJECT</field>
+    <field name="config_default">PAYMENT_NOTIFICATION_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">payment_notification.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">payment_notification.template</field>
+    <field name="config_value">admin</field>
+    <field name="config_default">admin</field>
+   </row>
+   <row>
+    <field name="config_namekey">new_comment.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">new_comment.template</field>
+    <field name="config_value">admin_notification</field>
+    <field name="config_default">admin_notification</field>
+   </row>
+   <row>
+    <field name="config_namekey">new_comment.subject</field>
+    <field name="config_value">NEW_COMMENT_NOTIFICATION_SUBJECT</field>
+    <field name="config_default">NEW_COMMENT_NOTIFICATION_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">new_comment.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">contact_request.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">contact_request.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">contact_request.template</field>
+    <field name="config_value">default</field>
+    <field name="config_default">default</field>
+   </row>
+   <row>
+    <field name="config_namekey">massaction_notification.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">massaction_notification.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">unfinished_order.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">user_account.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">user_account.template</field>
+    <field name="config_value">user_notification</field>
+    <field name="config_default">user_notification</field>
+   </row>
+   <row>
+    <field name="config_namekey">subscription_eot.template</field>
+    <field name="config_value">user_notification</field>
+    <field name="config_default">user_notification</field>
+   </row>
+   <row>
+    <field name="config_namekey">user_account_admin_notification.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">user_account_admin_notification.template</field>
+    <field name="config_value">admin_notification</field>
+    <field name="config_default">admin_notification</field>
+   </row>
+   <row>
+    <field name="config_namekey">out_of_stock.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">out_of_stock.template</field>
+    <field name="config_value">admin_notification</field>
+    <field name="config_default">admin_notification</field>
+   </row>
+   <row>
+    <field name="config_namekey">out_of_stock.subject</field>
+    <field name="config_value">OUT_OF_STOCK_NOTIFICATION_SUBJECT</field>
+    <field name="config_default">OUT_OF_STOCK_NOTIFICATION_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">user_account.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">user_account_admin_notification.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_report.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_report.template</field>
+    <field name="config_value">admin_notification</field>
+    <field name="config_default">admin_notification</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_report.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">out_of_stock.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">waitlist_notification.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">waitlist_notification.subject</field>
+    <field name="config_value">WAITLIST_NOTIFICATION_SUBJECT</field>
+    <field name="config_default">WAITLIST_NOTIFICATION_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">waitlist_notification.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">waitlist_notification.template</field>
+    <field name="config_value">default</field>
+    <field name="config_default">default</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_cancel.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_cancel.template</field>
+    <field name="config_value">admin_notification</field>
+    <field name="config_default">admin_notification</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_cancel.subject</field>
+    <field name="config_value">ORDER_CANCEL_SUBJECT</field>
+    <field name="config_default">ORDER_CANCEL_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_cancel.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">wishlist_share.html</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">wishlist_share.subject</field>
+    <field name="config_value">WISHLIST_SHARE_EMAIL_SUBJECT</field>
+    <field name="config_default">WISHLIST_SHARE_EMAIL_SUBJECT</field>
+   </row>
+   <row>
+    <field name="config_namekey">wishlist_share.published</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">wishlist_share.template</field>
+    <field name="config_value">default</field>
+    <field name="config_default">default</field>
+   </row>
+   <row>
+    <field name="config_namekey">variant_increase_perf</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">checkout_legacy</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">add_to_cart_legacy</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">legacy_widgets</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">carousel_legacy</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">show_footer</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">no_css_header</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">pathway_sef_name</field>
+    <field name="config_value">category_pathway</field>
+    <field name="config_default">category_pathway</field>
+   </row>
+   <row>
+    <field name="config_namekey">related_sef_name</field>
+    <field name="config_value">related_product</field>
+    <field name="config_default">related_product</field>
+   </row>
+   <row>
+    <field name="config_namekey">css_module</field>
+    <field name="config_value">default</field>
+    <field name="config_default">default</field>
+   </row>
+   <row>
+    <field name="config_namekey">css_frontend</field>
+    <field name="config_value">default</field>
+    <field name="config_default">default</field>
+   </row>
+   <row>
+    <field name="config_namekey">css_backend</field>
+    <field name="config_value">default</field>
+    <field name="config_default">default</field>
+   </row>
+   <row>
+    <field name="config_namekey">installcomplete</field>
+    <field name="config_value">1</field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">Starter</field>
+    <field name="config_value">0</field>
+    <field name="config_default">0</field>
+   </row>
+   <row>
+    <field name="config_namekey">Essential</field>
+    <field name="config_value">1</field>
+    <field name="config_default">1</field>
+   </row>
+   <row>
+    <field name="config_namekey">Business</field>
+    <field name="config_value">2</field>
+    <field name="config_default">2</field>
+   </row>
+   <row>
+    <field name="config_namekey">Enterprise</field>
+    <field name="config_value">3</field>
+    <field name="config_default">3</field>
+   </row>
+   <row>
+    <field name="config_namekey">Unlimited</field>
+    <field name="config_value">9</field>
+    <field name="config_default">9</field>
+   </row>
+   <row>
+    <field name="config_namekey">from_name</field>
+    <field name="config_value">Tchooz</field>
+    <field name="config_default">Tchooz</field>
+   </row>
+   <row>
+    <field name="config_namekey">from_email</field>
+    <field name="config_value">sysadmin@emundus.io</field>
+    <field name="config_default">sysadmin@emundus.io</field>
+   </row>
+   <row>
+    <field name="config_namekey">reply_name</field>
+    <field name="config_value">Tchooz</field>
+    <field name="config_default">Tchooz</field>
+   </row>
+   <row>
+    <field name="config_namekey">reply_email</field>
+    <field name="config_value">sysadmin@emundus.io</field>
+    <field name="config_default">sysadmin@emundus.io</field>
+   </row>
+   <row>
+    <field name="config_namekey">cron_sendto</field>
+    <field name="config_value">sysadmin@emundus.io</field>
+    <field name="config_default">sysadmin@emundus.io</field>
+   </row>
+   <row>
+    <field name="config_namekey">order_creation_notification_email</field>
+    <field name="config_value">sysadmin@emundus.io</field>
+    <field name="config_default">sysadmin@emundus.io</field>
+   </row>
+   <row>
+    <field name="config_namekey">payment_notification_email</field>
+    <field name="config_value">sysadmin@emundus.io</field>
+    <field name="config_default">sysadmin@emundus.io</field>
+   </row>
+   <row>
+    <field name="config_namekey">description_starter</field>
+    <field name="config_value">Joomla!® Online Store Component</field>
+    <field name="config_default">Joomla!® Online Store Component</field>
+   </row>
+   <row>
+    <field name="config_namekey">description_essential</field>
+    <field name="config_value">Joomla!® Online Store Component</field>
+    <field name="config_default">Joomla!® Online Store Component</field>
+   </row>
+   <row>
+    <field name="config_namekey">description_business</field>
+    <field name="config_value">Joomla!® Shopping Cart Extension</field>
+    <field name="config_default">Joomla!® Shopping Cart Extension</field>
+   </row>
+   <row>
+    <field name="config_namekey">product_show_modules</field>
+    <field name="config_value">126</field>
+    <field name="config_default"></field>
+   </row>
+   <row>
+    <field name="config_namekey">website</field>
+    <field name="config_value">http://localhost:8383/</field>
+    <field name="config_default"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

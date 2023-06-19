@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_product_related">
+   <field Field="product_id" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
+   <field Field="product_related_id" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
+   <field Field="product_related_type" Type="varchar(255)" Null="NO" Key="PRI" Default="related" Extra="" />
+   <field Field="product_related_ordering" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="product_related_quantity" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <key Table="#__hikashop_product_related" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="product_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_product_related" Non_unique="0" Key_name="PRIMARY" Seq_in_index="2" Column_name="product_related_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_product_related" Non_unique="0" Key_name="PRIMARY" Seq_in_index="3" Column_name="product_related_type" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

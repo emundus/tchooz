@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_address">
+   <field Field="address_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="address_user_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="address_type" Type="varchar(50)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="address_title" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_firstname" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_middle_name" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_lastname" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_company" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_street" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_street2" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="address_post_code" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_city" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_telephone" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_telephone2" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_fax" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_state" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_country" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_published" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="address_vat" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address_default" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__hikashop_address" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="address_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_address" Non_unique="1" Key_name="address_user_id" Seq_in_index="1" Column_name="address_user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

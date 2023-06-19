@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__contentitem_tag_map">
+   <field Field="type_alias" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="core_content_id" Type="int unsigned" Null="NO" Key="MUL" Extra="" />
+   <field Field="content_item_id" Type="int" Null="NO" Key="PRI" Extra="" />
+   <field Field="tag_id" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
+   <field Field="tag_date" Type="timestamp" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP"  />
+   <field Field="type_id" Type="mediumint" Null="NO" Key="PRI" Extra="" />
+   <key Table="#__contentitem_tag_map" Non_unique="0" Key_name="uc_ItemnameTagid" Seq_in_index="1" Column_name="type_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__contentitem_tag_map" Non_unique="0" Key_name="uc_ItemnameTagid" Seq_in_index="2" Column_name="content_item_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__contentitem_tag_map" Non_unique="0" Key_name="uc_ItemnameTagid" Seq_in_index="3" Column_name="tag_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__contentitem_tag_map" Non_unique="1" Key_name="idx_tag_type" Seq_in_index="1" Column_name="tag_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__contentitem_tag_map" Non_unique="1" Key_name="idx_tag_type" Seq_in_index="2" Column_name="type_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__contentitem_tag_map" Non_unique="1" Key_name="idx_date_id" Seq_in_index="1" Column_name="tag_date" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__contentitem_tag_map" Non_unique="1" Key_name="idx_date_id" Seq_in_index="2" Column_name="tag_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__contentitem_tag_map" Non_unique="1" Key_name="idx_core_content_id" Seq_in_index="1" Column_name="core_content_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

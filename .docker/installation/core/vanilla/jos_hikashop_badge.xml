@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_badge">
+   <field Field="badge_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="badge_name" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="badge_image" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="badge_start" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="badge_end" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="badge_product_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="badge_category_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="badge_category_childs" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="badge_discount_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="badge_ordering" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="badge_size" Type="float(12,2) unsigned" Null="NO" Key="" Extra="" />
+   <field Field="badge_position" Type="varchar(255)" Null="NO" Key="" Default="bottomleft" Extra="" />
+   <field Field="badge_vertical_distance" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="badge_horizontal_distance" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="badge_margin" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="badge_published" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="badge_keep_size" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="badge_quantity" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="badge_url" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="badge_access" Type="varchar(255)" Null="NO" Key="" Default="all" Extra="" />
+   <field Field="badge_new_period" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__hikashop_badge" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="badge_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

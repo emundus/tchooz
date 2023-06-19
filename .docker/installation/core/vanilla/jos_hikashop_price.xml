@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_price">
+   <field Field="price_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="price_currency_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="price_product_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="price_value" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="price_min_quantity" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="price_access" Type="varchar(255)" Null="NO" Key="" Default="all" Extra="" />
+   <field Field="price_users" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="price_site_id" Type="varchar(255)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="price_start_date" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="price_end_date" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__hikashop_price" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="price_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_price" Non_unique="1" Key_name="price_product_id" Seq_in_index="1" Column_name="price_product_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_geolocation">
+   <field Field="geolocation_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="geolocation_ip" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="geolocation_type" Type="varchar(255)" Null="NO" Key="MUL" Default="order" Extra="" />
+   <field Field="geolocation_ref_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="geolocation_created" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="geolocation_latitude" Type="decimal(9,6)" Null="NO" Key="" Default="0.000000" Extra="" />
+   <field Field="geolocation_longitude" Type="decimal(9,6)" Null="NO" Key="" Default="0.000000" Extra="" />
+   <field Field="geolocation_postal_code" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="geolocation_country" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="geolocation_country_code" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="geolocation_state" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="geolocation_state_code" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="geolocation_city" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <key Table="#__hikashop_geolocation" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="geolocation_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_geolocation" Non_unique="1" Key_name="geolocation_type" Seq_in_index="1" Column_name="geolocation_type" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_geolocation" Non_unique="1" Key_name="geolocation_type" Seq_in_index="2" Column_name="geolocation_ref_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

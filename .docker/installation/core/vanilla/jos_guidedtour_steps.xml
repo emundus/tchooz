@@ -1,0 +1,2363 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__guidedtour_steps">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="tour_id" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="title" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="published" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="position" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="target" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="type" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="interactive_type" Type="int" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="url" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="created" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="created_by" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="modified" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="modified_by" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="checked_out" Type="int unsigned" Null="YES" Key="" Extra="" />
+   <field Field="language" Type="varchar(7)" Null="NO" Key="MUL" Extra="" />
+   <field Field="note" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <key Table="#__guidedtour_steps" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__guidedtour_steps" Non_unique="1" Key_name="idx_tour" Seq_in_index="1" Column_name="tour_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__guidedtour_steps" Non_unique="1" Key_name="idx_state" Seq_in_index="1" Column_name="published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__guidedtour_steps" Non_unique="1" Key_name="idx_language" Seq_in_index="1" Column_name="language" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__guidedtour_steps">
+   <row>
+    <field name="id">1</field>
+    <field name="tour_id">1</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_NEW_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_NEW_DESCRIPTION</field>
+    <field name="ordering">1</field>
+    <field name="position">bottom</field>
+    <field name="target">.button-new</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_guidedtours&amp;view=tours</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="tour_id">1</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_TITLE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_TITLE_DESCRIPTION</field>
+    <field name="ordering">2</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_title</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_guidedtours&amp;view=tour&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="tour_id">1</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_URL_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_URL_DESCRIPTION</field>
+    <field name="ordering">3</field>
+    <field name="position">top</field>
+    <field name="target">#jform_url</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_guidedtours&amp;view=tour&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="tour_id">1</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_CONTENT_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_CONTENT_DESCRIPTION</field>
+    <field name="ordering">4</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_description,#jform_description_ifr</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_guidedtours&amp;view=tour&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="tour_id">1</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_COMPONENT_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_COMPONENT_DESCRIPTION</field>
+    <field name="ordering">5</field>
+    <field name="position">top</field>
+    <field name="target">joomla-field-fancy-select .choices</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_guidedtours&amp;view=tour&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="tour_id">1</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_SAVECLOSE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_SAVECLOSE_DESCRIPTION</field>
+    <field name="ordering">6</field>
+    <field name="position">top</field>
+    <field name="target">#save-group-children-save .button-save</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_guidedtours&amp;view=tour&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="tour_id">1</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_CONGRATULATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_CONGRATULATIONS_DESCRIPTION</field>
+    <field name="ordering">7</field>
+    <field name="position">bottom</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_guidedtours&amp;view=tour&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="tour_id">2</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_COUNTER_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_COUNTER_DESCRIPTION</field>
+    <field name="ordering">8</field>
+    <field name="position">top</field>
+    <field name="target">#toursList tbody tr:nth-last-of-type(1) td:nth-of-type(5) .btn</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url"></field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="tour_id">2</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_NEW_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_NEW_DESCRIPTION</field>
+    <field name="ordering">9</field>
+    <field name="position">bottom</field>
+    <field name="target">.button-new</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url"></field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="tour_id">2</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_TITLE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_TITLE_DESCRIPTION</field>
+    <field name="ordering">10</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_title</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url"></field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="tour_id">2</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_DESCRIPTION_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_DESCRIPTION_DESCRIPTION</field>
+    <field name="ordering">11</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_description,#jform_description_ifr</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url"></field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="tour_id">2</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_STATUS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_STATUS_DESCRIPTION</field>
+    <field name="ordering">12</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_published</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url"></field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="tour_id">2</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_POSITION_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_POSITION_DESCRIPTION</field>
+    <field name="ordering">13</field>
+    <field name="position">top</field>
+    <field name="target">#jform_position</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url"></field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="tour_id">2</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_TARGET_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_TARGET_DESCRIPTION</field>
+    <field name="ordering">14</field>
+    <field name="position">top</field>
+    <field name="target">#jform_target</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url"></field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="tour_id">2</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_TYPE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_TYPE_DESCRIPTION</field>
+    <field name="ordering">15</field>
+    <field name="position">top</field>
+    <field name="target">#jform_type</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url"></field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="tour_id">2</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_SAVECLOSE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_SAVECLOSE_DESCRIPTION</field>
+    <field name="ordering">16</field>
+    <field name="position">bottom</field>
+    <field name="target">#save-group-children-save .button-save</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url"></field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">17</field>
+    <field name="tour_id">2</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_CONGRATULATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_STEP_CONGRATULATIONS_DESCRIPTION</field>
+    <field name="ordering">17</field>
+    <field name="position">bottom</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url"></field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">18</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_NEW_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_NEW_DESCRIPTION</field>
+    <field name="ordering">18</field>
+    <field name="position">bottom</field>
+    <field name="target">.button-new</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=articles</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">19</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_TITLE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_TITLE_DESCRIPTION</field>
+    <field name="ordering">19</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_title</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">20</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_ALIAS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_ALIAS_DESCRIPTION</field>
+    <field name="ordering">20</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_alias</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">21</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_CONTENT_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_CONTENT_DESCRIPTION</field>
+    <field name="ordering">21</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_articletext,#jform_articletext_ifr</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">22</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_STATUS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_STATUS_DESCRIPTION</field>
+    <field name="ordering">22</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_state</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">23</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_CATEGORY_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_CATEGORY_DESCRIPTION</field>
+    <field name="ordering">23</field>
+    <field name="position">top</field>
+    <field name="target">joomla-field-fancy-select .choices[data-type=select-one]</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">24</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_FEATURED_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_FEATURED_DESCRIPTION</field>
+    <field name="ordering">24</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_featured0</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">25</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_ACCESS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_ACCESS_DESCRIPTION</field>
+    <field name="ordering">25</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_access</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">26</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_TAGS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_TAGS_DESCRIPTION</field>
+    <field name="ordering">26</field>
+    <field name="position">top</field>
+    <field name="target">joomla-field-fancy-select .choices[data-type=select-multiple]</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_NOTE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_NOTE_DESCRIPTION</field>
+    <field name="ordering">27</field>
+    <field name="position">top</field>
+    <field name="target">#jform_note</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">28</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_VERSIONNOTE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_VERSIONNOTE_DESCRIPTION</field>
+    <field name="ordering">28</field>
+    <field name="position">top</field>
+    <field name="target">#jform_version_note</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">29</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_SAVECLOSE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_SAVECLOSE_DESCRIPTION</field>
+    <field name="ordering">29</field>
+    <field name="position">bottom</field>
+    <field name="target">#save-group-children-save .button-save</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">30</field>
+    <field name="tour_id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_CONGRATULATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_STEP_CONGRATULATIONS_DESCRIPTION</field>
+    <field name="ordering">30</field>
+    <field name="position">bottom</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=article&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">31</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_NEW_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_NEW_DESCRIPTION</field>
+    <field name="ordering">31</field>
+    <field name="position">bottom</field>
+    <field name="target">.button-new</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=categories&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">32</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_TITLE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_TITLE_DESCRIPTION</field>
+    <field name="ordering">32</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_title</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=category&amp;layout=edit&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">33</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_ALIAS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_ALIAS_DESCRIPTION</field>
+    <field name="ordering">33</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_alias</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=category&amp;layout=edit&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">34</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_CONTENT_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_CONTENT_DESCRIPTION</field>
+    <field name="ordering">34</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_description,#jform_description_ifr</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=category&amp;layout=edit&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">35</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_PARENT_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_PARENT_DESCRIPTION</field>
+    <field name="ordering">35</field>
+    <field name="position">top</field>
+    <field name="target">joomla-field-fancy-select .choices[data-type=select-one]</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=category&amp;layout=edit&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">36</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_STATUS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_STATUS_DESCRIPTION</field>
+    <field name="ordering">36</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_published</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=category&amp;layout=edit&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">37</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_ACCESS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_ACCESS_DESCRIPTION</field>
+    <field name="ordering">37</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_access</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=category&amp;layout=edit&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">38</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_TAGS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_TAGS_DESCRIPTION</field>
+    <field name="ordering">38</field>
+    <field name="position">top</field>
+    <field name="target">joomla-field-fancy-select .choices[data-type=select-multiple]</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=category&amp;layout=edit&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">39</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_NOTE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_NOTE_DESCRIPTION</field>
+    <field name="ordering">39</field>
+    <field name="position">top</field>
+    <field name="target">#jform_note</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=category&amp;layout=edit&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">40</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_VERSIONNOTE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_VERSIONNOTE_DESCRIPTION</field>
+    <field name="ordering">40</field>
+    <field name="position">top</field>
+    <field name="target">#jform_version_note</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=category&amp;layout=edit&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">41</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_SAVECLOSE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_SAVECLOSE_DESCRIPTION</field>
+    <field name="ordering">41</field>
+    <field name="position">bottom</field>
+    <field name="target">#save-group-children-save .button-save</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=category&amp;layout=edit&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">42</field>
+    <field name="tour_id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_CONGRATULATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_STEP_CONGRATULATIONS_DESCRIPTION</field>
+    <field name="ordering">42</field>
+    <field name="position">bottom</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=category&amp;layout=edit&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">43</field>
+    <field name="tour_id">5</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_MENUS_STEP_NEW_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_MENUS_STEP_NEW_DESCRIPTION</field>
+    <field name="ordering">43</field>
+    <field name="position">bottom</field>
+    <field name="target">.button-new</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_menus&amp;view=menus</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">44</field>
+    <field name="tour_id">5</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_MENUS_STEP_TITLE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_MENUS_STEP_TITLE_DESCRIPTION</field>
+    <field name="ordering">44</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_title</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_menus&amp;view=menu&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">45</field>
+    <field name="tour_id">5</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_MENUS_STEP_UNIQUENAME_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_MENUS_STEP_UNIQUENAME_DESCRIPTION</field>
+    <field name="ordering">45</field>
+    <field name="position">top</field>
+    <field name="target">#jform_menutype</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_menus&amp;view=menu&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">46</field>
+    <field name="tour_id">5</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_MENUS_STEP_DESCRIPTION_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_MENUS_STEP_DESCRIPTION_DESCRIPTION</field>
+    <field name="ordering">46</field>
+    <field name="position">top</field>
+    <field name="target">#jform_menudescription</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_menus&amp;view=menu&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">47</field>
+    <field name="tour_id">5</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_MENUS_STEP_SAVECLOSE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_MENUS_STEP_SAVECLOSE_DESCRIPTION</field>
+    <field name="ordering">47</field>
+    <field name="position">bottom</field>
+    <field name="target">#save-group-children-save .button-save</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_menus&amp;view=menu&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">48</field>
+    <field name="tour_id">5</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_MENUS_STEP_CONGRATULATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_MENUS_STEP_CONGRATULATIONS_DESCRIPTION</field>
+    <field name="ordering">48</field>
+    <field name="position">bottom</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_menus&amp;view=menu&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">49</field>
+    <field name="tour_id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_STEP_NEW_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_STEP_NEW_DESCRIPTION</field>
+    <field name="ordering">49</field>
+    <field name="position">bottom</field>
+    <field name="target">.button-new</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tags</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">50</field>
+    <field name="tour_id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_STEP_TITLE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_STEP_TITLE_DESCRIPTION</field>
+    <field name="ordering">50</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_title</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tag&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">51</field>
+    <field name="tour_id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_STEP_ALIAS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_STEP_ALIAS_DESCRIPTION</field>
+    <field name="ordering">51</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_alias</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tag&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">52</field>
+    <field name="tour_id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_STEP_CONTENT_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_STEP_CONTENT_DESCRIPTION</field>
+    <field name="ordering">52</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_description,#jform_description_ifr</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tag&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">53</field>
+    <field name="tour_id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_STEP_PARENT_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_STEP_PARENT_DESCRIPTION</field>
+    <field name="ordering">53</field>
+    <field name="position">top</field>
+    <field name="target">joomla-field-fancy-select .choices[data-type=select-one]</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tag&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">54</field>
+    <field name="tour_id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_STEP_STATUS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_STEP_STATUS_DESCRIPTION</field>
+    <field name="ordering">54</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_published</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tag&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">55</field>
+    <field name="tour_id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_STEP_ACCESS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_STEP_ACCESS_DESCRIPTION</field>
+    <field name="ordering">55</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_access</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tag&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">56</field>
+    <field name="tour_id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_STEP_NOTE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_STEP_NOTE_DESCRIPTION</field>
+    <field name="ordering">56</field>
+    <field name="position">top</field>
+    <field name="target">#jform_note</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tag&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">57</field>
+    <field name="tour_id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_STEP_VERSIONNOTE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_STEP_VERSIONNOTE_DESCRIPTION</field>
+    <field name="ordering">57</field>
+    <field name="position">top</field>
+    <field name="target">#jform_version_note</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tag&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">58</field>
+    <field name="tour_id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_STEP_SAVECLOSE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_STEP_SAVECLOSE_DESCRIPTION</field>
+    <field name="ordering">58</field>
+    <field name="position">bottom</field>
+    <field name="target">#save-group-children-save .button-save</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tag&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">59</field>
+    <field name="tour_id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_STEP_CONGRATULATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_STEP_CONGRATULATIONS_DESCRIPTION</field>
+    <field name="ordering">59</field>
+    <field name="position">bottom</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tag&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">60</field>
+    <field name="tour_id">7</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_NEW_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_NEW_DESCRIPTION</field>
+    <field name="ordering">60</field>
+    <field name="position">bottom</field>
+    <field name="target">.button-new</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_banners&amp;view=banners</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">61</field>
+    <field name="tour_id">7</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_TITLE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_TITLE_DESCRIPTION</field>
+    <field name="ordering">61</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_name</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_banners&amp;view=banner&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">62</field>
+    <field name="tour_id">7</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_ALIAS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_ALIAS_DESCRIPTION</field>
+    <field name="ordering">62</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_alias</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_banners&amp;view=banner&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">63</field>
+    <field name="tour_id">7</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_DETAILS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_DETAILS_DESCRIPTION</field>
+    <field name="ordering">63</field>
+    <field name="position">bottom</field>
+    <field name="target">.col-lg-9</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_banners&amp;view=banner&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">64</field>
+    <field name="tour_id">7</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_STATUS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_STATUS_DESCRIPTION</field>
+    <field name="ordering">64</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_state</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_banners&amp;view=banner&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">65</field>
+    <field name="tour_id">7</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_CATEGORY_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_CATEGORY_DESCRIPTION</field>
+    <field name="ordering">65</field>
+    <field name="position">top</field>
+    <field name="target">joomla-field-fancy-select .choices[data-type=select-one]</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_banners&amp;view=banner&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">66</field>
+    <field name="tour_id">7</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_PINNED_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_PINNED_DESCRIPTION</field>
+    <field name="ordering">66</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_sticky1</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_banners&amp;view=banner&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">67</field>
+    <field name="tour_id">7</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_VERSIONNOTE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_VERSIONNOTE_DESCRIPTION</field>
+    <field name="ordering">67</field>
+    <field name="position">top</field>
+    <field name="target">#jform_version_note</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_banners&amp;view=banner&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">68</field>
+    <field name="tour_id">7</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_SAVECLOSE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_SAVECLOSE_DESCRIPTION</field>
+    <field name="ordering">68</field>
+    <field name="position">bottom</field>
+    <field name="target">#save-group-children-save .button-save</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_banners&amp;view=banner&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">69</field>
+    <field name="tour_id">7</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_CONGRATULATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_BANNERS_STEP_CONGRATULATIONS_DESCRIPTION</field>
+    <field name="ordering">69</field>
+    <field name="position">bottom</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_banners&amp;view=banner&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">70</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_NEW_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_NEW_DESCRIPTION</field>
+    <field name="ordering">70</field>
+    <field name="position">bottom</field>
+    <field name="target">.button-new</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contacts</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">71</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_TITLE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_TITLE_DESCRIPTION</field>
+    <field name="ordering">71</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_name</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contact&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">72</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_ALIAS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_ALIAS_DESCRIPTION</field>
+    <field name="ordering">72</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_alias</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contact&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">73</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_DETAILS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_DETAILS_DESCRIPTION</field>
+    <field name="ordering">73</field>
+    <field name="position">bottom</field>
+    <field name="target">.col-lg-9</field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contact&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">74</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_STATUS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_STATUS_DESCRIPTION</field>
+    <field name="ordering">74</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_published</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contact&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">75</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_CATEGORY_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_CATEGORY_DESCRIPTION</field>
+    <field name="ordering">75</field>
+    <field name="position">top</field>
+    <field name="target">joomla-field-fancy-select .choices[data-type=select-one]</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contact&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">76</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_FEATURED_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_FEATURED_DESCRIPTION</field>
+    <field name="ordering">76</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_featured0</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contact&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">77</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_ACCESS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_ACCESS_DESCRIPTION</field>
+    <field name="ordering">77</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_access</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contact&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">78</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_TAGS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_TAGS_DESCRIPTION</field>
+    <field name="ordering">78</field>
+    <field name="position">top</field>
+    <field name="target">joomla-field-fancy-select .choices[data-type=select-multiple]</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contact&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">79</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_VERSIONNOTE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_VERSIONNOTE_DESCRIPTION</field>
+    <field name="ordering">79</field>
+    <field name="position">top</field>
+    <field name="target">#jform_version_note</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contact&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">80</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_SAVECLOSE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_SAVECLOSE_DESCRIPTION</field>
+    <field name="ordering">80</field>
+    <field name="position">bottom</field>
+    <field name="target">#save-group-children-save .button-save</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contact&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">81</field>
+    <field name="tour_id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_CONGRATULATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_STEP_CONGRATULATIONS_DESCRIPTION</field>
+    <field name="ordering">81</field>
+    <field name="position">bottom</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contact&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">82</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_NEW_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_NEW_DESCRIPTION</field>
+    <field name="ordering">82</field>
+    <field name="position">bottom</field>
+    <field name="target">.button-new</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeeds</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">83</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_TITLE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_TITLE_DESCRIPTION</field>
+    <field name="ordering">83</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_name</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeed&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">84</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_ALIAS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_ALIAS_DESCRIPTION</field>
+    <field name="ordering">84</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_alias</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeed&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">85</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_LINK_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_LINK_DESCRIPTION</field>
+    <field name="ordering">85</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_link</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeed&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">86</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_DESCRIPTION_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_DESCRIPTION_DESCRIPTION</field>
+    <field name="ordering">86</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_description,#jform_description_ifr</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeed&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">87</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_STATUS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_STATUS_DESCRIPTION</field>
+    <field name="ordering">87</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_published</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeed&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">88</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_CATEGORY_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_CATEGORY_DESCRIPTION</field>
+    <field name="ordering">88</field>
+    <field name="position">top</field>
+    <field name="target">joomla-field-fancy-select .choices[data-type=select-one]</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeed&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">89</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_ACCESS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_ACCESS_DESCRIPTION</field>
+    <field name="ordering">89</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_access</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeed&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">90</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_TAGS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_TAGS_DESCRIPTION</field>
+    <field name="ordering">90</field>
+    <field name="position">top</field>
+    <field name="target">joomla-field-fancy-select .choices[data-type=select-multiple]</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeed&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">91</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_VERSIONNOTE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_VERSIONNOTE_DESCRIPTION</field>
+    <field name="ordering">91</field>
+    <field name="position">top</field>
+    <field name="target">#jform_version_note</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeed&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">92</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_SAVECLOSE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_SAVECLOSE_DESCRIPTION</field>
+    <field name="ordering">92</field>
+    <field name="position">bottom</field>
+    <field name="target">#save-group-children-save .button-save</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeed&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">93</field>
+    <field name="tour_id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_CONGRATULATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_STEP_CONGRATULATIONS_DESCRIPTION</field>
+    <field name="ordering">93</field>
+    <field name="position">bottom</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeed&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">94</field>
+    <field name="tour_id">10</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_NEW_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_NEW_DESCRIPTION</field>
+    <field name="ordering">94</field>
+    <field name="position">bottom</field>
+    <field name="target">.button-new</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_finder&amp;view=filters</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">95</field>
+    <field name="tour_id">10</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_TITLE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_TITLE_DESCRIPTION</field>
+    <field name="ordering">95</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_title</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_finder&amp;view=filter&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">96</field>
+    <field name="tour_id">10</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_ALIAS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_ALIAS_DESCRIPTION</field>
+    <field name="ordering">96</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_alias</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_finder&amp;view=filter&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">97</field>
+    <field name="tour_id">10</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_CONTENT_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_CONTENT_DESCRIPTION</field>
+    <field name="ordering">97</field>
+    <field name="position">bottom</field>
+    <field name="target">.col-lg-9</field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_finder&amp;view=filter&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">98</field>
+    <field name="tour_id">10</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_STATUS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_STATUS_DESCRIPTION</field>
+    <field name="ordering">98</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_state</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_finder&amp;view=filter&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">99</field>
+    <field name="tour_id">10</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_SAVECLOSE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_SAVECLOSE_DESCRIPTION</field>
+    <field name="ordering">99</field>
+    <field name="position">bottom</field>
+    <field name="target">#save-group-children-save .button-save</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_finder&amp;view=filter&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">100</field>
+    <field name="tour_id">10</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_CONGRATULATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_STEP_CONGRATULATIONS_DESCRIPTION</field>
+    <field name="ordering">100</field>
+    <field name="position">bottom</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_finder&amp;view=filter&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">101</field>
+    <field name="tour_id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_STEP_NEW_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_STEP_NEW_DESCRIPTION</field>
+    <field name="ordering">101</field>
+    <field name="position">bottom</field>
+    <field name="target">.button-new</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=user&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">102</field>
+    <field name="tour_id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_STEP_NAME_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_STEP_NAME_DESCRIPTION</field>
+    <field name="ordering">102</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_name</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=user&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">103</field>
+    <field name="tour_id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_STEP_LOGINNAME_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_STEP_LOGINNAME_DESCRIPTION</field>
+    <field name="ordering">103</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_username</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=user&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">104</field>
+    <field name="tour_id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_STEP_PASSWORD_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_STEP_PASSWORD_DESCRIPTION</field>
+    <field name="ordering">104</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_password</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=user&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">105</field>
+    <field name="tour_id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_STEP_PASSWORD2_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_STEP_PASSWORD2_DESCRIPTION</field>
+    <field name="ordering">105</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_password2</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=user&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">106</field>
+    <field name="tour_id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_STEP_EMAIL_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_STEP_EMAIL_DESCRIPTION</field>
+    <field name="ordering">106</field>
+    <field name="position">bottom</field>
+    <field name="target">#jform_email</field>
+    <field name="type">2</field>
+    <field name="interactive_type">2</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=user&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">107</field>
+    <field name="tour_id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_STEP_SYSTEMEMAIL_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_STEP_SYSTEMEMAIL_DESCRIPTION</field>
+    <field name="ordering">107</field>
+    <field name="position">top</field>
+    <field name="target">#jform_sendEmail0</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=user&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">108</field>
+    <field name="tour_id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_STEP_STATUS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_STEP_STATUS_DESCRIPTION</field>
+    <field name="ordering">108</field>
+    <field name="position">top</field>
+    <field name="target">#jform_block0</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=user&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">109</field>
+    <field name="tour_id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_STEP_PASSWORDRESET_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_STEP_PASSWORDRESET_DESCRIPTION</field>
+    <field name="ordering">109</field>
+    <field name="position">top</field>
+    <field name="target">#jform_requireReset0</field>
+    <field name="type">2</field>
+    <field name="interactive_type">3</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=user&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">110</field>
+    <field name="tour_id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_STEP_SAVECLOSE_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_STEP_SAVECLOSE_DESCRIPTION</field>
+    <field name="ordering">110</field>
+    <field name="position">bottom</field>
+    <field name="target">#save-group-children-save .button-save</field>
+    <field name="type">2</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=user&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="id">111</field>
+    <field name="tour_id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_STEP_CONGRATULATIONS_TITLE</field>
+    <field name="published">1</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_STEP_CONGRATULATIONS_DESCRIPTION</field>
+    <field name="ordering">111</field>
+    <field name="position">bottom</field>
+    <field name="target"></field>
+    <field name="type">0</field>
+    <field name="interactive_type">1</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=user&amp;layout=edit</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="language">*</field>
+    <field name="note"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

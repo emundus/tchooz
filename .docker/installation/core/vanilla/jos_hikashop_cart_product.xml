@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_cart_product">
+   <field Field="cart_product_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="cart_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="product_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cart_product_quantity" Type="int unsigned" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="cart_product_parent_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cart_product_modified" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cart_product_option_parent_id" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="cart_product_wishlist_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cart_product_wishlist_product_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cart_product_ref_price" Type="decimal(17,5)" Null="YES" Key="" Extra="" />
+   <key Table="#__hikashop_cart_product" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="cart_product_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_cart_product" Non_unique="1" Key_name="cart_id" Seq_in_index="1" Column_name="cart_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

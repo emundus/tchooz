@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_taxation">
+   <field Field="taxation_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="zone_namekey" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="category_namekey" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="tax_namekey" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="taxation_published" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="taxation_type" Type="varchar(255)" Null="NO" Key="" Default="individual" Extra="" />
+   <field Field="taxation_access" Type="varchar(255)" Null="NO" Key="" Default="all" Extra="" />
+   <field Field="taxation_cumulative" Type="tinyint" Null="YES" Key="" Extra="" />
+   <field Field="taxation_post_code" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="taxation_date_start" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="taxation_date_end" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="taxation_internal_code" Type="varchar(15)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="taxation_note" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="taxation_site_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="taxation_ordering" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__hikashop_taxation" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="taxation_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

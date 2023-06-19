@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_entry">
+   <field Field="entry_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="order_id" Type="int unsigned" Null="NO" Key="MUL" Extra="" />
+   <key Table="#__hikashop_entry" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="entry_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_entry" Non_unique="1" Key_name="order_id" Seq_in_index="1" Column_name="order_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

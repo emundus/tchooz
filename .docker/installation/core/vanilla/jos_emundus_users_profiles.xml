@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_users_profiles">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
    <field Field="user_id" Type="int" Null="NO" Key="MUL" Extra="" />
    <field Field="profile_id" Type="int" Null="NO" Key="MUL" Extra="" />
    <field Field="start_date" Type="datetime" Null="YES" Key="" Default="0000-00-00 00:00:00" Extra="" />

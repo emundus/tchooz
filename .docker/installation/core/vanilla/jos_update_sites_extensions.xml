@@ -10,15 +10,11 @@
   <table_data name="#__update_sites_extensions">
    <row>
     <field name="update_site_id">1</field>
-    <field name="extension_id">224</field>
+    <field name="extension_id">227</field>
    </row>
    <row>
     <field name="update_site_id">2</field>
-    <field name="extension_id">225</field>
-   </row>
-   <row>
-    <field name="update_site_id">2</field>
-    <field name="extension_id">232</field>
+    <field name="extension_id">228</field>
    </row>
    <row>
     <field name="update_site_id">3</field>
@@ -26,7 +22,27 @@
    </row>
    <row>
     <field name="update_site_id">4</field>
-    <field name="extension_id">493</field>
+    <field name="extension_id">333</field>
+   </row>
+   <row>
+    <field name="update_site_id">5</field>
+    <field name="extension_id">341</field>
+   </row>
+   <row>
+    <field name="update_site_id">6</field>
+    <field name="extension_id">341</field>
+   </row>
+   <row>
+    <field name="update_site_id">7</field>
+    <field name="extension_id">342</field>
+   </row>
+   <row>
+    <field name="update_site_id">8</field>
+    <field name="extension_id">347</field>
+   </row>
+   <row>
+    <field name="update_site_id">9</field>
+    <field name="extension_id">348</field>
    </row>
   </table_data>
  </database>

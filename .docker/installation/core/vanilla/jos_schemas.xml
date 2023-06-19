@@ -9,20 +9,16 @@
   </table_structure>
   <table_data name="#__schemas">
    <row>
-    <field name="extension_id">224</field>
-    <field name="version_id">4.2.9-2023-03-07</field>
+    <field name="extension_id">227</field>
+    <field name="version_id">4.3.2-2023-05-20</field>
    </row>
    <row>
-    <field name="extension_id">486</field>
-    <field name="version_id">4.0-2022-12-18</field>
+    <field name="extension_id">332</field>
+    <field name="version_id">4.0-2023-05-27</field>
    </row>
    <row>
-    <field name="extension_id">490</field>
-    <field name="version_id"></field>
-   </row>
-   <row>
-    <field name="extension_id">492</field>
-    <field name="version_id">3.5.0</field>
+    <field name="extension_id">346</field>
+    <field name="version_id">4.12.0</field>
    </row>
   </table_data>
  </database>

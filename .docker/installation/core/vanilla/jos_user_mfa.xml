@@ -10,6 +10,8 @@
    <field Field="options" Type="mediumtext" Null="NO" Key="" Extra="" />
    <field Field="created_on" Type="datetime" Null="NO" Key="" Extra="" />
    <field Field="last_used" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="tries" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="last_try" Type="datetime" Null="YES" Key="" Extra="" />
    <key Table="#__user_mfa" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__user_mfa" Non_unique="1" Key_name="idx_user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>

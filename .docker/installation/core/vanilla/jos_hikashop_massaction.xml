@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_massaction">
+   <field Field="massaction_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="massaction_name" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="massaction_description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="massaction_table" Type="varchar(255)" Null="NO" Key="MUL" Default="product" Extra="" />
+   <field Field="massaction_published" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="massaction_lasttime" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="massaction_triggers" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="massaction_filters" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="massaction_actions" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="massaction_report" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="massaction_button" Type="tinyint" Null="YES" Key="" Default="0" Extra="" />
+   <key Table="#__hikashop_massaction" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="massaction_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_massaction" Non_unique="1" Key_name="massaction_table" Seq_in_index="1" Column_name="massaction_table" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

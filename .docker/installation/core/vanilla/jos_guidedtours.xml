@@ -1,0 +1,227 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__guidedtours">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="title" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="extensions" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="url" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="created" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="created_by" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="modified" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="modified_by" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="checked_out" Type="int unsigned" Null="YES" Key="" Extra="" />
+   <field Field="published" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="language" Type="varchar(7)" Null="NO" Key="MUL" Extra="" />
+   <field Field="note" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="access" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <key Table="#__guidedtours" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__guidedtours" Non_unique="1" Key_name="idx_access" Seq_in_index="1" Column_name="access" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__guidedtours" Non_unique="1" Key_name="idx_state" Seq_in_index="1" Column_name="published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__guidedtours" Non_unique="1" Key_name="idx_language" Seq_in_index="1" Column_name="language" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__guidedtours">
+   <row>
+    <field name="id">1</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_TITLE</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_DESCRIPTION</field>
+    <field name="ordering">1</field>
+    <field name="extensions">[&quot;com_guidedtours&quot;]</field>
+    <field name="url">administrator/index.php?option=com_guidedtours&amp;view=tours</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_TITLE</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_DESCRIPTION</field>
+    <field name="ordering">2</field>
+    <field name="extensions">[&quot;com_guidedtours&quot;]</field>
+    <field name="url">administrator/index.php?option=com_guidedtours&amp;view=tours</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_ARTICLES_TITLE</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_ARTICLES_DESCRIPTION</field>
+    <field name="ordering">3</field>
+    <field name="extensions">[&quot;*&quot;]</field>
+    <field name="url">administrator/index.php?option=com_content&amp;view=articles</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CATEGORIES_TITLE</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CATEGORIES_DESCRIPTION</field>
+    <field name="ordering">4</field>
+    <field name="extensions">[&quot;*&quot;]</field>
+    <field name="url">administrator/index.php?option=com_categories&amp;view=categories&amp;extension=com_content</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_MENUS_TITLE</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_MENUS_DESCRIPTION</field>
+    <field name="ordering">5</field>
+    <field name="extensions">[&quot;*&quot;]</field>
+    <field name="url">administrator/index.php?option=com_menus&amp;view=menus</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_TAGS_TITLE</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_TAGS_DESCRIPTION</field>
+    <field name="ordering">6</field>
+    <field name="extensions">[&quot;*&quot;]</field>
+    <field name="url">administrator/index.php?option=com_tags&amp;view=tags</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_BANNERS_TITLE</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_BANNERS_DESCRIPTION</field>
+    <field name="ordering">7</field>
+    <field name="extensions">[&quot;*&quot;]</field>
+    <field name="url">administrator/index.php?option=com_banners&amp;view=banners</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_CONTACTS_TITLE</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_CONTACTS_DESCRIPTION</field>
+    <field name="ordering">8</field>
+    <field name="extensions">[&quot;*&quot;]</field>
+    <field name="url">administrator/index.php?option=com_contact&amp;view=contacts</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_TITLE</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_NEWSFEEDS_DESCRIPTION</field>
+    <field name="ordering">9</field>
+    <field name="extensions">[&quot;*&quot;]</field>
+    <field name="url">administrator/index.php?option=com_newsfeeds&amp;view=newsfeeds</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_TITLE</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_SMARTSEARCH_DESCRIPTION</field>
+    <field name="ordering">10</field>
+    <field name="extensions">[&quot;*&quot;]</field>
+    <field name="url">administrator/index.php?option=com_finder&amp;view=filters</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="title">COM_GUIDEDTOURS_TOUR_USERS_TITLE</field>
+    <field name="description">COM_GUIDEDTOURS_TOUR_USERS_DESCRIPTION</field>
+    <field name="ordering">11</field>
+    <field name="extensions">[&quot;*&quot;]</field>
+    <field name="url">administrator/index.php?option=com_users&amp;view=users</field>
+    <field name="created">2023-06-19 11:41:38</field>
+    <field name="created_by">0</field>
+    <field name="modified">2023-06-19 11:41:38</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+    <field name="published">1</field>
+    <field name="language">*</field>
+    <field name="note"></field>
+    <field name="access">1</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

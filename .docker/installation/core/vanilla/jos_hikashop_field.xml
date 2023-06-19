@@ -1,0 +1,413 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_field">
+   <field Field="field_id" Type="smallint unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="field_table" Type="varchar(50)" Null="YES" Key="" Extra="" />
+   <field Field="field_realname" Type="varchar(250)" Null="NO" Key="" Extra="" />
+   <field Field="field_namekey" Type="varchar(50)" Null="NO" Key="UNI" Extra="" />
+   <field Field="field_type" Type="varchar(50)" Null="YES" Key="" Extra="" />
+   <field Field="field_value" Type="longtext" Null="NO" Key="" Extra="" />
+   <field Field="field_published" Type="tinyint unsigned" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="field_ordering" Type="smallint unsigned" Null="YES" Key="" Default="99" Extra="" />
+   <field Field="field_options" Type="longtext" Null="YES" Key="" Extra="" />
+   <field Field="field_core" Type="tinyint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="field_required" Type="tinyint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="field_default" Type="longtext" Null="NO" Key="" Extra="" />
+   <field Field="field_access" Type="varchar(255)" Null="NO" Key="" Default="all" Extra="" />
+   <field Field="field_categories" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="field_with_sub_categories" Type="tinyint(1)" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="field_products" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="field_address_type" Type="varchar(50)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="field_frontcomp" Type="tinyint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="field_backend" Type="tinyint unsigned" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="field_backend_listing" Type="tinyint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="field_display" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="field_shipping_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="field_payment_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <key Table="#__hikashop_field" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="field_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_field" Non_unique="0" Key_name="field_namekey" Seq_in_index="1" Column_name="field_namekey" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__hikashop_field">
+   <row>
+    <field name="field_id">1</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Title</field>
+    <field name="field_namekey">address_title</field>
+    <field name="field_type">singledropdown</field>
+    <field name="field_value">Mr::HIKA_TITLE_MR
+Mrs::HIKA_TITLE_MRS
+Miss::HIKA_TITLE_MISS
+Ms::HIKA_TITLE_MS
+Dr::HIKA_TITLE_DR</field>
+    <field name="field_published">1</field>
+    <field name="field_ordering">1</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">1</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">2</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Firstname</field>
+    <field name="field_namekey">address_firstname</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">1</field>
+    <field name="field_ordering">2</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">1</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">3</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Middle name</field>
+    <field name="field_namekey">address_middle_name</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">0</field>
+    <field name="field_ordering">3</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">0</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">4</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Lastname</field>
+    <field name="field_namekey">address_lastname</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">1</field>
+    <field name="field_ordering">4</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">1</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">5</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Company</field>
+    <field name="field_namekey">address_company</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">0</field>
+    <field name="field_ordering">5</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">0</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">6</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Street</field>
+    <field name="field_namekey">address_street</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">1</field>
+    <field name="field_ordering">6</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">1</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">7</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Complement</field>
+    <field name="field_namekey">address_street2</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">0</field>
+    <field name="field_ordering">7</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">0</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">8</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Post code</field>
+    <field name="field_namekey">address_post_code</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">1</field>
+    <field name="field_ordering">8</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">0</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">9</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">City</field>
+    <field name="field_namekey">address_city</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">1</field>
+    <field name="field_ordering">9</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">1</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">10</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Telephone</field>
+    <field name="field_namekey">address_telephone</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">1</field>
+    <field name="field_ordering">10</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">1</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">11</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Telephone</field>
+    <field name="field_namekey">address_telephone2</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">0</field>
+    <field name="field_ordering">11</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">0</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">12</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Fax</field>
+    <field name="field_namekey">address_fax</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">0</field>
+    <field name="field_ordering">12</field>
+    <field name="field_options">a:5:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">0</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">13</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">Country</field>
+    <field name="field_namekey">address_country</field>
+    <field name="field_type">zone</field>
+    <field name="field_value"></field>
+    <field name="field_published">1</field>
+    <field name="field_ordering">13</field>
+    <field name="field_options">a:6:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:9:&quot;zone_type&quot;;s:7:&quot;country&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">1</field>
+    <field name="field_default">country_France_73</field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">14</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">State</field>
+    <field name="field_namekey">address_state</field>
+    <field name="field_type">zone</field>
+    <field name="field_value"></field>
+    <field name="field_published">1</field>
+    <field name="field_ordering">14</field>
+    <field name="field_options">a:6:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:9:&quot;zone_type&quot;;s:5:&quot;state&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">1</field>
+    <field name="field_default">state_Rh__ne_1375</field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+   <row>
+    <field name="field_id">15</field>
+    <field name="field_table">address</field>
+    <field name="field_realname">VAT number</field>
+    <field name="field_namekey">address_vat</field>
+    <field name="field_type">text</field>
+    <field name="field_value"></field>
+    <field name="field_published">0</field>
+    <field name="field_ordering">15</field>
+    <field name="field_options">a:6:{s:12:&quot;errormessage&quot;;s:0:&quot;&quot;;s:4:&quot;cols&quot;;s:0:&quot;&quot;;s:4:&quot;rows&quot;;s:0:&quot;&quot;;s:9:&quot;zone_type&quot;;s:7:&quot;country&quot;;s:4:&quot;size&quot;;s:0:&quot;&quot;;s:6:&quot;format&quot;;s:0:&quot;&quot;;}</field>
+    <field name="field_core">1</field>
+    <field name="field_required">0</field>
+    <field name="field_default"></field>
+    <field name="field_access">all</field>
+    <field name="field_categories"></field>
+    <field name="field_with_sub_categories">0</field>
+    <field name="field_products"></field>
+    <field name="field_address_type"></field>
+    <field name="field_frontcomp">1</field>
+    <field name="field_backend">1</field>
+    <field name="field_backend_listing">0</field>
+    <field name="field_display"></field>
+    <field name="field_shipping_id"></field>
+    <field name="field_payment_id"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

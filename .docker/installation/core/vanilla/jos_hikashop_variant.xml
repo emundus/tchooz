@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_variant">
+   <field Field="variant_characteristic_id" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
+   <field Field="variant_product_id" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
+   <field Field="ordering" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__hikashop_variant" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="variant_characteristic_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_variant" Non_unique="0" Key_name="PRIMARY" Seq_in_index="2" Column_name="variant_product_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_variant" Non_unique="1" Key_name="variant_product_id" Seq_in_index="1" Column_name="variant_product_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

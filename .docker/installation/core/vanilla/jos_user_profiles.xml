@@ -9,19 +9,5 @@
    <key Table="#__user_profiles" Non_unique="0" Key_name="idx_user_id_profile_key" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__user_profiles" Non_unique="0" Key_name="idx_user_id_profile_key" Seq_in_index="2" Column_name="profile_key" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__user_profiles">
-   <row>
-    <field name="user_id">650</field>
-    <field name="profile_key">joomlatoken.enabled</field>
-    <field name="profile_value">1</field>
-    <field name="ordering">2</field>
-   </row>
-   <row>
-    <field name="user_id">650</field>
-    <field name="profile_key">joomlatoken.token</field>
-    <field name="profile_value">mHbeijZjov0S5zk4/bIs9Gh+NFJ76NLZ65pz6JpXMHw=</field>
-    <field name="ordering">1</field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

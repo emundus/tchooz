@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_order">
+   <field Field="order_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="order_billing_address_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="order_shipping_address_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="order_user_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="order_parent_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="order_status" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="order_type" Type="varchar(255)" Null="NO" Key="" Default="sale" Extra="" />
+   <field Field="order_number" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="order_created" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="order_modified" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="order_invoice_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="order_invoice_number" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="order_invoice_created" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="order_currency_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="order_currency_info" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="order_full_price" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="order_tax_info" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="order_discount_code" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="order_discount_price" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="order_discount_tax" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="order_payment_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="order_payment_method" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="order_payment_price" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="order_payment_tax" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="order_payment_params" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="order_shipping_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="order_shipping_method" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="order_shipping_price" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="order_shipping_tax" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="order_shipping_params" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="order_partner_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="order_partner_price" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="order_partner_paid" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="order_partner_currency_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="order_ip" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="order_site_id" Type="varchar(255)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="order_lang" Type="varchar(255)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="order_token" Type="varchar(255)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="order_weight" Type="decimal(12,3) unsigned" Null="YES" Key="" Extra="" />
+   <field Field="order_weight_unit" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="order_volume" Type="decimal(12,3) unsigned" Null="YES" Key="" Extra="" />
+   <field Field="order_dimension_unit" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <key Table="#__hikashop_order" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="order_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_order" Non_unique="1" Key_name="order_user_id" Seq_in_index="1" Column_name="order_user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

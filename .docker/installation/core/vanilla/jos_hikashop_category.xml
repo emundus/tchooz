@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_category">
+   <field Field="category_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="category_parent_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="category_type" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="category_name" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="category_description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="category_published" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="category_ordering" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="category_left" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="category_right" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="category_depth" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="category_namekey" Type="varchar(255)" Null="NO" Key="UNI" Extra="" />
+   <field Field="category_created" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="category_modified" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="category_access" Type="varchar(255)" Null="NO" Key="" Default="all" Extra="" />
+   <field Field="category_menu" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="category_keywords" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="category_meta_description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="category_layout" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="category_page_title" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="category_alias" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="category_site_id" Type="varchar(255)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="category_canonical" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="category_quantity_layout" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <key Table="#__hikashop_category" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="category_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_category" Non_unique="0" Key_name="category_namekey" Seq_in_index="1" Column_name="category_namekey" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__hikashop_category">
+   <row>
+    <field name="category_id">1</field>
+    <field name="category_parent_id">0</field>
+    <field name="category_type">root</field>
+    <field name="category_name">ROOT</field>
+    <field name="category_description"></field>
+    <field name="category_published">0</field>
+    <field name="category_ordering">0</field>
+    <field name="category_left">1</field>
+    <field name="category_right">6</field>
+    <field name="category_depth">0</field>
+    <field name="category_namekey">root</field>
+    <field name="category_created">0</field>
+    <field name="category_modified">0</field>
+    <field name="category_access">all</field>
+    <field name="category_menu">0</field>
+    <field name="category_keywords"></field>
+    <field name="category_meta_description"></field>
+    <field name="category_layout"></field>
+    <field name="category_page_title"></field>
+    <field name="category_alias"></field>
+    <field name="category_site_id"></field>
+    <field name="category_canonical"></field>
+    <field name="category_quantity_layout"></field>
+   </row>
+   <row>
+    <field name="category_id">2</field>
+    <field name="category_parent_id">1</field>
+    <field name="category_type">product</field>
+    <field name="category_name">product category</field>
+    <field name="category_description"></field>
+    <field name="category_published">1</field>
+    <field name="category_ordering">1</field>
+    <field name="category_left">2</field>
+    <field name="category_right">3</field>
+    <field name="category_depth">1</field>
+    <field name="category_namekey">product</field>
+    <field name="category_created">0</field>
+    <field name="category_modified">0</field>
+    <field name="category_access">all</field>
+    <field name="category_menu">0</field>
+    <field name="category_keywords"></field>
+    <field name="category_meta_description"></field>
+    <field name="category_layout"></field>
+    <field name="category_page_title"></field>
+    <field name="category_alias"></field>
+    <field name="category_site_id"></field>
+    <field name="category_canonical"></field>
+    <field name="category_quantity_layout"></field>
+   </row>
+   <row>
+    <field name="category_id">3</field>
+    <field name="category_parent_id">1</field>
+    <field name="category_type">tax</field>
+    <field name="category_name">taxation category</field>
+    <field name="category_description"></field>
+    <field name="category_published">1</field>
+    <field name="category_ordering">2</field>
+    <field name="category_left">4</field>
+    <field name="category_right">5</field>
+    <field name="category_depth">1</field>
+    <field name="category_namekey">tax</field>
+    <field name="category_created">0</field>
+    <field name="category_modified">0</field>
+    <field name="category_access">all</field>
+    <field name="category_menu">0</field>
+    <field name="category_keywords"></field>
+    <field name="category_meta_description"></field>
+    <field name="category_layout"></field>
+    <field name="category_page_title"></field>
+    <field name="category_alias"></field>
+    <field name="category_site_id"></field>
+    <field name="category_canonical"></field>
+    <field name="category_quantity_layout"></field>
+   </row>
+   <row>
+    <field name="category_id">4</field>
+    <field name="category_parent_id">1</field>
+    <field name="category_type">status</field>
+    <field name="category_name">order status</field>
+    <field name="category_description"></field>
+    <field name="category_published">1</field>
+    <field name="category_ordering">3</field>
+    <field name="category_left">8</field>
+    <field name="category_right">19</field>
+    <field name="category_depth">1</field>
+    <field name="category_namekey">status</field>
+    <field name="category_created">0</field>
+    <field name="category_modified">0</field>
+    <field name="category_access">all</field>
+    <field name="category_menu">0</field>
+    <field name="category_keywords"></field>
+    <field name="category_meta_description"></field>
+    <field name="category_layout"></field>
+    <field name="category_page_title"></field>
+    <field name="category_alias"></field>
+    <field name="category_site_id"></field>
+    <field name="category_canonical"></field>
+    <field name="category_quantity_layout"></field>
+   </row>
+   <row>
+    <field name="category_id">5</field>
+    <field name="category_parent_id">4</field>
+    <field name="category_type">status</field>
+    <field name="category_name">created</field>
+    <field name="category_description">When a customer finishes a checkout, an order is created with the status created</field>
+    <field name="category_published">1</field>
+    <field name="category_ordering">1</field>
+    <field name="category_left">9</field>
+    <field name="category_right">10</field>
+    <field name="category_depth">2</field>
+    <field name="category_namekey">created</field>
+    <field name="category_created">0</field>
+    <field name="category_modified">0</field>
+    <field name="category_access">all</field>
+    <field name="category_menu">0</field>
+    <field name="category_keywords"></field>
+    <field name="category_meta_description"></field>
+    <field name="category_layout"></field>
+    <field name="category_page_title"></field>
+    <field name="category_alias"></field>
+    <field name="category_site_id"></field>
+    <field name="category_canonical"></field>
+    <field name="category_quantity_layout"></field>
+   </row>
+   <row>
+    <field name="category_id">6</field>
+    <field name="category_parent_id">4</field>
+    <field name="category_type">status</field>
+    <field name="category_name">confirmed</field>
+    <field name="category_description">When the payment is confirmed or that the payment is done at delivery the order becomes confirmed</field>
+    <field name="category_published">1</field>
+    <field name="category_ordering">2</field>
+    <field name="category_left">11</field>
+    <field name="category_right">12</field>
+    <field name="category_depth">2</field>
+    <field name="category_namekey">confirmed</field>
+    <field name="category_created">0</field>
+    <field name="category_modified">0</field>
+    <field name="category_access">all</field>
+    <field name="category_menu">0</field>
+    <field name="category_keywords"></field>
+    <field name="category_meta_description"></field>
+    <field name="category_layout"></field>
+    <field name="category_page_title"></field>
+    <field name="category_alias"></field>
+    <field name="category_site_id"></field>
+    <field name="category_canonical"></field>
+    <field name="category_quantity_layout"></field>
+   </row>
+   <row>
+    <field name="category_id">7</field>
+    <field name="category_parent_id">4</field>
+    <field name="category_type">status</field>
+    <field name="category_name">cancelled</field>
+    <field name="category_description">When an order is cancelled before receiving a payment</field>
+    <field name="category_published">1</field>
+    <field name="category_ordering">3</field>
+    <field name="category_left">13</field>
+    <field name="category_right">14</field>
+    <field name="category_depth">2</field>
+    <field name="category_namekey">cancelled</field>
+    <field name="category_created">0</field>
+    <field name="category_modified">0</field>
+    <field name="category_access">all</field>
+    <field name="category_menu">0</field>
+    <field name="category_keywords"></field>
+    <field name="category_meta_description"></field>
+    <field name="category_layout"></field>
+    <field name="category_page_title"></field>
+    <field name="category_alias"></field>
+    <field name="category_site_id"></field>
+    <field name="category_canonical"></field>
+    <field name="category_quantity_layout"></field>
+   </row>
+   <row>
+    <field name="category_id">8</field>
+    <field name="category_parent_id">4</field>
+    <field name="category_type">status</field>
+    <field name="category_name">refunded</field>
+    <field name="category_description">When an order is cancelled after receiving a payment</field>
+    <field name="category_published">1</field>
+    <field name="category_ordering">4</field>
+    <field name="category_left">15</field>
+    <field name="category_right">16</field>
+    <field name="category_depth">2</field>
+    <field name="category_namekey">refunded</field>
+    <field name="category_created">0</field>
+    <field name="category_modified">0</field>
+    <field name="category_access">all</field>
+    <field name="category_menu">0</field>
+    <field name="category_keywords"></field>
+    <field name="category_meta_description"></field>
+    <field name="category_layout"></field>
+    <field name="category_page_title"></field>
+    <field name="category_alias"></field>
+    <field name="category_site_id"></field>
+    <field name="category_canonical"></field>
+    <field name="category_quantity_layout"></field>
+   </row>
+   <row>
+    <field name="category_id">9</field>
+    <field name="category_parent_id">4</field>
+    <field name="category_type">status</field>
+    <field name="category_name">shipped</field>
+    <field name="category_description">When an order has been shipped</field>
+    <field name="category_published">1</field>
+    <field name="category_ordering">5</field>
+    <field name="category_left">17</field>
+    <field name="category_right">18</field>
+    <field name="category_depth">2</field>
+    <field name="category_namekey">shipped</field>
+    <field name="category_created">0</field>
+    <field name="category_modified">0</field>
+    <field name="category_access">all</field>
+    <field name="category_menu">0</field>
+    <field name="category_keywords"></field>
+    <field name="category_meta_description"></field>
+    <field name="category_layout"></field>
+    <field name="category_page_title"></field>
+    <field name="category_alias"></field>
+    <field name="category_site_id"></field>
+    <field name="category_canonical"></field>
+    <field name="category_quantity_layout"></field>
+   </row>
+   <row>
+    <field name="category_id">10</field>
+    <field name="category_parent_id">1</field>
+    <field name="category_type">manufacturer</field>
+    <field name="category_name">manufacturer</field>
+    <field name="category_description"></field>
+    <field name="category_published">1</field>
+    <field name="category_ordering">5</field>
+    <field name="category_left">20</field>
+    <field name="category_right">21</field>
+    <field name="category_depth">1</field>
+    <field name="category_namekey">manufacturer</field>
+    <field name="category_created">0</field>
+    <field name="category_modified">0</field>
+    <field name="category_access">all</field>
+    <field name="category_menu">0</field>
+    <field name="category_keywords"></field>
+    <field name="category_meta_description"></field>
+    <field name="category_layout"></field>
+    <field name="category_page_title"></field>
+    <field name="category_alias"></field>
+    <field name="category_site_id"></field>
+    <field name="category_canonical"></field>
+    <field name="category_quantity_layout"></field>
+   </row>
+   <row>
+    <field name="category_id">11</field>
+    <field name="category_parent_id">3</field>
+    <field name="category_type">tax</field>
+    <field name="category_name">Default tax category</field>
+    <field name="category_description"></field>
+    <field name="category_published">1</field>
+    <field name="category_ordering">1</field>
+    <field name="category_left">5</field>
+    <field name="category_right">6</field>
+    <field name="category_depth">2</field>
+    <field name="category_namekey">default_tax</field>
+    <field name="category_created">0</field>
+    <field name="category_modified">0</field>
+    <field name="category_access">all</field>
+    <field name="category_menu">0</field>
+    <field name="category_keywords"></field>
+    <field name="category_meta_description"></field>
+    <field name="category_layout"></field>
+    <field name="category_page_title"></field>
+    <field name="category_alias"></field>
+    <field name="category_site_id"></field>
+    <field name="category_canonical"></field>
+    <field name="category_quantity_layout"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_limit">
+   <field Field="limit_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="limit_product_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="limit_category_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="limit_per_product" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="limit_periodicity" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="limit_type" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="limit_value" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="limit_unit" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="limit_currency_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="limit_access" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="limit_status" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="limit_published" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="limit_created" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="limit_modified" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="limit_start" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="limit_end" Type="int" Null="YES" Key="" Extra="" />
+   <key Table="#__hikashop_limit" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="limit_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

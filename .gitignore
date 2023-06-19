@@ -909,6 +909,7 @@
 /templates/cassiopeia/*
 /templates/system/*
 /templates/index.html
+/templates/g5_helium/templateDetails.xml
 
 /tmp/*
 

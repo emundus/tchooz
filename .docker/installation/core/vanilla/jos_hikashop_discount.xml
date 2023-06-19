@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_discount">
+   <field Field="discount_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="discount_type" Type="varchar(255)" Null="NO" Key="" Default="discount" Extra="" />
+   <field Field="discount_start" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="discount_end" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="discount_flat_amount" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="discount_percent_amount" Type="decimal(12,3)" Null="NO" Key="" Default="0.000" Extra="" />
+   <field Field="discount_minimum_order" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="discount_maximum_order" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="discount_quota" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="discount_used_times" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="discount_code" Type="varchar(255)" Null="NO" Key="UNI" Default="" Extra="" />
+   <field Field="discount_published" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="discount_product_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="discount_category_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="discount_zone_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="discount_currency_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="discount_category_childs" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="discount_auto_load" Type="tinyint unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="discount_access" Type="varchar(255)" Null="NO" Key="" Default="all" Extra="" />
+   <field Field="discount_tax_id" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="discount_minimum_products" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="discount_maximum_products" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="discount_quota_per_user" Type="int unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="discount_coupon_nodoubling" Type="tinyint" Null="YES" Key="" Extra="" />
+   <field Field="discount_coupon_product_only" Type="tinyint" Null="YES" Key="" Extra="" />
+   <field Field="discount_affiliate" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="discount_site_id" Type="varchar(255)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="discount_user_id" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="discount_tax" Type="tinyint unsigned" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="discount_shipping_percent" Type="decimal(12,3)" Null="NO" Key="" Default="0.000" Extra="" />
+   <key Table="#__hikashop_discount" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="discount_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__hikashop_discount" Non_unique="0" Key_name="discount_code" Seq_in_index="1" Column_name="discount_code" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>
