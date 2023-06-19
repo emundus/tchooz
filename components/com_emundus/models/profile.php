@@ -1074,7 +1074,6 @@ class EmundusModelProfile extends JModelList {
         foreach ($session->get('user') as $key => $value) {
             $emundusSession->{$key} = $value;
         }
-        echo '<pre>'; var_dump($current_user); echo '</pre>'; die;
 
         $emundusSession->firstname = $profile["firstname"];
         $emundusSession->lastname = strtoupper($profile["lastname"]);
