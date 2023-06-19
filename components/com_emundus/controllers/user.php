@@ -24,7 +24,6 @@ jimport('joomla.application.component.controller');
 class EmundusControllerUser extends JControllerLegacy
 {
     private $_user = null;
-    private $_db = null;
     private $m_user = null;
 
     public function __construct($config = array())
@@ -32,7 +31,6 @@ class EmundusControllerUser extends JControllerLegacy
         require_once(JPATH_COMPONENT . DS . 'models' . DS . 'user.php');
 
         $this->_user = JFactory::getSession()->get('emundusUser');
-        $this->_db = JFactory::getDBO();
         $this->m_user = new EmundusModelUser();
 
         parent::__construct($config);
@@ -42,9 +40,9 @@ class EmundusControllerUser extends JControllerLegacy
     public function display($cachable = false, $urlparams = false)
     {
         // Set a default view if none exists
-        if (!JRequest::getCmd('view')) {
+        if (!JFactory::getApplication()->input->get('view')) {
             $default = 'user';
-            JRequest::setVar('view', $default);
+            JFactory::getApplication()->input->set('view', $default);
         }
 
         if ($this->_user->guest == 0)
@@ -52,4 +50,12 @@ class EmundusControllerUser extends JControllerLegacy
         else
             echo JText::_('ACCESS_DENIED');
     }
+
+	public function redirectMeWithMessage()
+	{
+		$input = JFactory::getApplication()->input;
+		$message = $input->getString('message', null);
+
+		$this->setRedirect('/', $message);
+	}
 }

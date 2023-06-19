@@ -14,7 +14,7 @@ include_once(JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/settings.php');
 include_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
 
-class EmundusModelSamples extends JModelList {
+class EmundusAdminModelSamples extends JModelList {
 
     public function createSampleUser($profile = 9)
     {

@@ -15,6 +15,7 @@ services:
       JOOMLA_DB_USER: user
       JOOMLA_DB_PASSWORD: password
       JOOMLA_DB_NAME: joomla4
+
       TCHOOZ_OFFLINE: 0
       TCHOOZ_OFFLINE_MESSAGE: Offline
       TCHOOZ_DISPLAY_OFFLINE_MESSAGE: 1

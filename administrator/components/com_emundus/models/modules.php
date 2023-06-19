@@ -9,7 +9,7 @@ require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php'
  *
  * @since version 1.34.0
  */
-class EmundusModelModules extends JModelList {
+class EmundusAdminModelModules extends JModelList {
 
 	public function installQCM() {
 		try {

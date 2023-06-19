@@ -46,9 +46,9 @@ class EmundusControllerInterview extends JControllerLegacy
     public function display($cachable = false, $urlparams = false)
     {
         // Set a default view if none exists
-        if (!JRequest::getCmd('view')) {
+        if (!JFactory::getApplication()->input->get('view')) {
             $default = 'files';
-            JRequest::setVar('view', $default);
+            JFactory::getApplication()->input->set('view', $default);
         }
         parent::display();
     }
@@ -60,8 +60,8 @@ class EmundusControllerInterview extends JControllerLegacy
         if (!EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
-        $m_profile = $this->getModel('profile');
-        $m_campaign = $this->getModel('campaign');
+        $m_profile = new EmundusModelProfile();
+        $m_campaign = new EmundusModelCampaign();
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);

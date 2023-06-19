@@ -1,29 +1,26 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: bhubinet
- * Date: 08/02/23
+ * Webhook controller class
+ *
+ * @package     Joomla.Administrator
+ * @subpackage  eMundus
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
-defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
-require_once (JPATH_COMPONENT_SITE.DS.'helpers'.DS.'access.php');
+
+defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Factory;
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/access.php');
 require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
 
-class EmundusControllerWebhook extends JControllerLegacy
+class EmundusAdminControllerWebhook extends JControllerLegacy
 {
-	function display($cachable = false, $urlparams = false) {
-		// Set a default view if none exists
-		if (!JRequest::getCmd( 'view' )) {
-			$default = 'webhook';
-			JRequest::setVar('view', $default );
-		}
-
-		parent::display();
-	}
-
     function generate() {
         $results = ['status' => true];
 
-		if(EmundusHelperAccess::asAdministratorAccessLevel(JFactory::getUser()->id)) {
+		if(EmundusHelperAccess::asAdministratorAccessLevel(Factory::getUser()->id)) {
 			$results['token'] = JUserHelper::genRandomPassword(32);
 			$hash_token       = JApplicationHelper::getHash($results['token']);
 

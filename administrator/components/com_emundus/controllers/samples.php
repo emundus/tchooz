@@ -1,29 +1,44 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: bhubinet
- * Date: 04/09/22
+ * Samples controller class
+ *
+ * @package     Joomla.Administrator
+ * @subpackage  eMundus
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
-defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
-require_once (JPATH_COMPONENT_SITE.DS.'helpers'.DS.'access.php');
+
+defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Factory;
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/access.php');
+
 class EmundusControllerSamples extends JControllerLegacy
 {
+    private JUser|null $user = null;
+
 	function display($cachable = false, $urlparams = false) {
-		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ) {
-			$default = 'migration';
-			JRequest::setVar('view', $default );
-		}
-		parent::display();
+        $input = Factory::getApplication()->input;
+
+        // Set a default view if none exists
+        if (!$input->getCmd( 'view')) {
+            $default = 'samples';
+            $input->set('view', $default);
+        }
+
+        $this->user = Factory::getUser();
+
+        parent::display();
 	}
 
     function generate(){
-        if(EmundusHelperAccess::asAdministratorAccessLevel(JFactory::getUser()->id)) {
-            $app = JFactory::getApplication();
+        if(EmundusHelperAccess::asAdministratorAccessLevel($this->user->id)) {
+            $app = Factory::getApplication();
             $datas = $app->input->getArray();
 
             include_once(JPATH_SITE.'/administrator/components/com_emundus/models/samples.php');
-            $mSamples = new EmundusModelSamples();
+            $mSamples = new EmundusAdminModelSamples();
 
             if($datas['samples_programs']){
                 $i = 0;

@@ -10,17 +10,17 @@ jimport( 'joomla.application.component.view');
 
 class EmundusControllerEmailalert extends JControllerLegacy {
 
-	function display() {
+	function display($cachable = false, $urlparams = false) {
 		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ) {
+		if ( ! JFactory::getApplication()->input->get( 'view' ) ) {
 			$default = 'emailalert';
-			JRequest::setVar('view', $default );
+			JFactory::getApplication()->input->set('view', $default );
 		}
 		parent::display();
     }
 	
 	function generate(){		
-		$model = $this->getModel('emailalert');
+		$model = new EmundusModelEmailalert();
 		$key = $model->getKey();
 		if($key){
 			$model->getInsert();
@@ -32,7 +32,7 @@ class EmundusControllerEmailalert extends JControllerLegacy {
 		$app = JFactory::getApplication();
 		$db	= JFactory::getDBO();
 
-		$model = $this->getModel('emailalert');
+		$model = new EmundusModelEmailalert();
 		$key = $model->getKey();
 
 		if($key){

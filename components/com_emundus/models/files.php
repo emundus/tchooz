@@ -421,7 +421,7 @@ class EmundusModelFiles extends JModelLegacy
      * @param int $sort
      * @return array|int
      */
-    public function multi_array_sort($multi_array = array(), $sort_key, $sort = SORT_ASC) {
+    public function multi_array_sort($multi_array, $sort_key, $sort = SORT_ASC) {
         if (is_array($multi_array)) {
 
             foreach ($multi_array as $key => $row_array) {
@@ -569,7 +569,7 @@ class EmundusModelFiles extends JModelLegacy
         $app = JFactory::getApplication();
         $current_menu = $app->getMenu()->getActive();
         if (!empty($current_menu)) {
-            $menu_params = $current_menu->params;
+            $menu_params = $current_menu->getParams();
             $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
         } else {
             $em_other_columns = array();
@@ -587,12 +587,14 @@ class EmundusModelFiles extends JModelLegacy
             '#__users', 'jos_users',
             '#__emundus_users', 'jos_emundus_users',
             '#__emundus_tag_assoc', 'jos_emundus_tag_assoc',
-            '#__messages', 'jos_messages',
-            '#__emundus_chatroom', 'jos_emundus_chatroom'
         ];
 
         if (in_array('overall', $em_other_columns)) {
             $lastTab[] = ['#__emundus_evaluations', 'jos_emundus_evaluations'];
+        }
+
+        if (in_array('unread_messages', $em_other_columns)) {
+            $lastTab[] = ['#__messages', 'jos_messages','#__emundus_chatroom', 'jos_emundus_chatroom'];
         }
 
         if (!empty($this->_elements)) {
@@ -615,14 +617,17 @@ class EmundusModelFiles extends JModelLegacy
                     LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                     LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
                     LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
-                    LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
-                    LEFT JOIN #__messages as m on m.page = ec.id AND m.state = 0
                     LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
 
         if (in_array('overall', $em_other_columns)) {
             $query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum ';
+        }
+
+        if (in_array('unread_messages', $em_other_columns)) {
+            $query.= ' LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
+            LEFT JOIN #__messages as m on m.page = ec.id AND m.state = 0 AND m.page IS NOT NULL ';
         }
 
         $q = $this->_buildWhere($lastTab);
@@ -1420,9 +1425,9 @@ class EmundusModelFiles extends JModelLegacy
                 $db->setQuery($query);
                 $profile = $db->loadResult();
 
-                $dispatcher = JEventDispatcher::getInstance();
-                $dispatcher->trigger('onBeforeMultipleStatusChange', [$fnums, $state]);
-                $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
+                
+                JFactory::getApplication()->triggerEvent('onBeforeMultipleStatusChange', [$fnums, $state]);
+                $trigger = JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
                 foreach($trigger as $responses) {
                     foreach($responses as $response) {
                         if (!empty($response) && isset($response['status']) && $response['status'] === false) {
@@ -1444,8 +1449,8 @@ class EmundusModelFiles extends JModelLegacy
                     $db->setQuery($query);
                     $old_status_step = $db->loadResult();
 
-                    $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
-                    $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+                    JFactory::getApplication()->triggerEvent('onBeforeStatusChange', [$fnum, $state]);
+                    $trigger = JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
                     foreach($trigger as $responses) {
                         foreach($responses as $response) {
                             if (!empty($response) && isset($response['status']) && $response['status'] === false) {
@@ -1471,8 +1476,8 @@ class EmundusModelFiles extends JModelLegacy
                         EmundusModelLogs::log($user_id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
                     }
 
-                    $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
-                    $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+                    JFactory::getApplication()->triggerEvent('onAfterStatusChange', [$fnum, $state]);
+                    JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
 
                     if (!empty($profile)) {
                         $query->clear()
@@ -1507,7 +1512,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function updatePublish($fnums, $publish) {
 
-        $dispatcher = JEventDispatcher::getInstance();
+        
 
         $db = $this->getDbo();
         foreach ($fnums as $fnum) {
@@ -1551,8 +1556,8 @@ class EmundusModelFiles extends JModelLegacy
             EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
             // Update publish
-            $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
-            $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
+            JFactory::getApplication()->triggerEvent('onBeforePublishChange', [$fnum, $publish]);
+            JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
             $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
             $db->setQuery($query);
             try {
@@ -1562,8 +1567,8 @@ class EmundusModelFiles extends JModelLegacy
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
                 return false;
             }
-            $dispatcher->trigger('onAfterPublishChange', [$fnum, $publish]);
-            $dispatcher->trigger('callEventHandler', ['onAfterPublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
+            JFactory::getApplication()->triggerEvent('onAfterPublishChange', [$fnum, $publish]);
+            JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterPublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
         }
         return $res;
     }
@@ -1784,6 +1789,30 @@ class EmundusModelFiles extends JModelLegacy
         catch (Exception $e)
         {
             return false;
+        }
+    }
+
+
+    /** Gets applicant_id from fnum
+     * @param String $fnum
+     * @return int
+     */
+    public function getApplicantIdByFnum($fnum)
+    {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try
+        {
+            $query->select($db->quoteName('applicant_id'))
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+            $db->setQuery($query);
+            return $db->loadResult();
+        }
+        catch (Exception $e)
+        {
+            return 0;
         }
     }
 
@@ -2101,9 +2130,7 @@ class EmundusModelFiles extends JModelLegacy
                             $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
                         } elseif ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
                             $select = 'REPLACE(`'.$elt->table_join . '`.`' . $elt->element_name.'`, "\t", "" )';
-                            if($raw == 1){
-                                $select = $select;
-                            } else{
+                            if($raw != 1){
                                 $element_attribs = json_decode($elt->element_attribs);
                                 foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                                     $if[] = 'IF(' . $select . '="' . $value . '","' . JText::_($element_attribs->sub_options->sub_labels[$key]) . '"';
@@ -2118,9 +2145,7 @@ class EmundusModelFiles extends JModelLegacy
                             $query .= ', ' . $select . ' AS ' . $elt->tab_name . '___' . $elt->element_name;
                         } elseif ($elt->element_plugin == 'yesno') {
                             $select = 'REPLACE(`'.$elt->table_join . '`.`' . $elt->element_name.'`, "\t", "" )';
-                            if($raw == 1){
-                                $select = $select;
-                            } else{
+                            if($raw != 1){
                                 $if[] = 'IF(' . $select . '="0","' . JText::_('JNO') . '"';
                                 $endif .= ')';
                                 $if[] = 'IF(' . $select . '="1","' . JText::_('JYES') . '"';
@@ -2181,10 +2206,7 @@ class EmundusModelFiles extends JModelLegacy
                             }
                         }
                     } elseif ($elt->element_plugin == 'yesno') {
-                        if ($raw == 1){
-                            $select = $select;
-                        }
-                        else {
+                        if ($raw != 1) {
                             $if[] = 'IF(' . $select . '="0","' . JText::_('JNO') . '"';
                             $endif .= ')';
                             $if[] = 'IF(' . $select . '="1","' . JText::_('JYES') . '"';
@@ -2349,8 +2371,8 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     /** Gets the evaluation of a user based on fnum and
-     * @param fnum
-     * @param evaluator_id
+     * @param $fnum
+     * @param $evaluator_id
      * @return bool|mixed
      */
     public function getEvalByFnumAndEvaluator($fnum, $evaluator_id) {
@@ -2464,7 +2486,7 @@ class EmundusModelFiles extends JModelLegacy
 
     /**
      * @param $user
-     * @return array
+     * @return array|false
      * get list of programmes for associated files
      */
     public function getAssociatedProgrammes($user)
@@ -2495,15 +2517,6 @@ class EmundusModelFiles extends JModelLegacy
     {
         $h_files = new EmundusHelperFiles;
         return $h_files->getMenuList($params);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getActionsACL()
-    {
-        $h_files = new EmundusHelperFiles;
-        return $h_files->getMenuActions();
     }
 
     /*
@@ -3039,7 +3052,7 @@ class EmundusModelFiles extends JModelLegacy
      * @return mixed
      * @throws Exception
      */
-    public function getFabrikValueRepeat($elt, $fnums, $params = null, $groupRepeat) {
+    public function getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat) {
 
         if (!is_array($fnums)) {
             $fnums = [$fnums];
@@ -3128,7 +3141,7 @@ class EmundusModelFiles extends JModelLegacy
         if (!is_array($fnums))
             $fnums = [$fnums];
 
-        $dbo = $this->getDbo();
+        $dbo = JFactory::getDbo();
         if ($dateFormat !== null) {
             $dateFormat = $this->dateFormatToMysql($dateFormat);
             $query = "select fnum, DATE_FORMAT({$name}, ".$dbo->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
@@ -3169,9 +3182,9 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function deleteFile($fnum) {
 
-        $dispatcher = JEventDispatcher::getInstance();
-        $dispatcher->trigger('onBeforeDeleteFile', $fnum);
-        $dispatcher->trigger('callEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
+        
+        JFactory::getApplication()->triggerEvent('onBeforeDeleteFile', $fnum);
+        JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
 
         $db = JFactory::getDbo();
 
@@ -3212,8 +3225,8 @@ class EmundusModelFiles extends JModelLegacy
 
             $db->setQuery($query);
             $res = $db->execute();
-            $dispatcher->trigger('onAfterDeleteFile', $fnum);
-            $dispatcher->trigger('callEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
+            JFactory::getApplication()->triggerEvent('onAfterDeleteFile', $fnum);
+            JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
             return $res;
         } catch(Exception $e) {
             echo $e->getMessage();
@@ -3788,7 +3801,7 @@ class EmundusModelFiles extends JModelLegacy
             $h_emails = new EmundusHelperEmails();
 
 
-            foreach ($trigger_emails as $trigger_email) {
+            foreach ($trigger_emails as $trigger_email_id => $trigger_email) {
                 // Manage with default recipient by programme
                 foreach ($trigger_email as $code => $trigger) {
 
@@ -3810,7 +3823,20 @@ class EmundusModelFiles extends JModelLegacy
                                 $attachments = $m_application->getAttachmentsByFnum($file['fnum'],null, explode(',', $trigger['tmpl']['attachments']));
 
                                 foreach ($attachments as $attachment) {
-                                    $toAttach[] = EMUNDUS_PATH_ABS.$file['applicant_id'].'/'.$attachment->filename;
+									if(!empty($attachment->filename)) {
+										$toAttach[] = EMUNDUS_PATH_ABS . $file['applicant_id'] . '/' . $attachment->filename;
+									}
+                                }
+                            }
+                            if(!empty($trigger['tmpl']['letter_attachment'])){
+                                include_once(JPATH_SITE . '/components/com_emundus/models/evaluation.php');
+                                $m_eval = new EmundusModelEvaluation();
+
+                                $letters = $m_eval->generateLetters($file['fnum'], explode(',',$trigger['tmpl']['letter_attachment']), 1, 0, 0);
+                                foreach($letters->files as $filename){
+									if(!empty($filename['filename'])){
+										$toAttach[] = EMUNDUS_PATH_ABS . $file['applicant_id'] . '/' . $filename['filename'];
+									}
                                 }
                             }
 
@@ -3829,7 +3855,8 @@ class EmundusModelFiles extends JModelLegacy
                             $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                             $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
-                            $from_id    = 62;
+                            $from_id    = JFactory::getUser()->id;
+							$from_id    = empty($from_id) ? 62 : $from_id;
                             $fromname   = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
                             $to         = $file['email'];
                             $subject    = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
@@ -3900,9 +3927,10 @@ class EmundusModelFiles extends JModelLegacy
                                     'user_id_from' => $from_id,
                                     'user_id_to' => $file['applicant_id'],
                                     'subject' => $subject,
-                                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body
+                                    'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
+	                                'email_id' => $trigger_email_id,
                                 );
-                                $m_email->logEmail($message);
+	                            $logged = $m_email->logEmail($message, $file['fnum']);
                                 $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
                                 JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
                             }
@@ -3981,9 +4009,10 @@ class EmundusModelFiles extends JModelLegacy
                                 'user_id_from' => $from_id,
                                 'user_id_to' => $recipient['id'],
                                 'subject' => $subject,
-                                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body
+                                'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body,
+	                            'email_id' => $trigger_email_id,
                             );
-                            $m_email->logEmail($message);
+                            $m_email->logEmail($message, $file['fnum']);
                             $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$to.'<br>';
                             JLog::add($to.' '.$body, JLog::INFO, 'com_emundus.email');
                         }

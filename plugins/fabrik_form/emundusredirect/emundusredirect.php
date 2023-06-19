@@ -595,7 +595,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 	{
 		$app = JFactory::getApplication();
 
-		if ($app->isAdmin())
+		if ($app->isClient('administrator'))
 		{
 			$app->enqueueMessage($msg, 'notice');
 		}

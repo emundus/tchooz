@@ -1,29 +1,40 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: yoan
- * Date: 28/01/15
- * Time: 16:28
+ * Modules controller class
+ *
+ * @package     Joomla.Administrator
+ * @subpackage  eMundus
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
+ * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
-defined( '_JEXEC' ) or die( JText::_('RESTRICTED_ACCESS') );
-require_once (JPATH_COMPONENT_SITE.DS.'helpers'.DS.'access.php');
+
+defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Factory;
+
+jimport('joomla.application.component.controllerform');
+
+require_once (JPATH_SITE.'/components/com_emundus/helpers/access.php');
 require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
 
-class EmundusControllerModules extends JControllerLegacy
+class EmundusAdminControllerModules extends JControllerLegacy
 {
 	function display($cachable = false, $urlparams = false) {
+        $input = Factory::getApplication()->input;
+
 		// Set a default view if none exists
-		if ( ! JRequest::getCmd( 'view' ) ) {
+		if (!$input->getCmd( 'view')) {
 			$default = 'modules';
-			JRequest::setVar('view', $default );
+            $input->set('view', $default);
 		}
+
 		parent::display();
 	}
 
     function install() {
         $result = ['status' => false,'message' => ''];
 
-        $jinput = JFactory::getApplication()->input;
+        $jinput = Factory::getApplication()->input;
         $module = $jinput->getString('module');
 
         switch($module){
@@ -50,7 +61,7 @@ class EmundusControllerModules extends JControllerLegacy
 
     function installQcm() {
         require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
-        $mModules = new EmundusModelModules();
+        $mModules = new EmundusAdminModelModules();
         $mModules->installQCM();
 
         $params = [
@@ -80,24 +91,24 @@ class EmundusControllerModules extends JControllerLegacy
 
     function installHomepage() {
         require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
-        $mModules = new EmundusModelModules();
+        $mModules = new EmundusAdminModelModules();
         return $mModules->installHomepage();
     }
 
     function installChecklist() {
         require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
-        $mModules = new EmundusModelModules();
+        $mModules = new EmundusAdminModelModules();
         return $mModules->installChecklist();
     }
 
     function installAnonymUserForms()
     {
         require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
-        $mModules = new EmundusModelModules();
+        $mModules = new EmundusAdminModelModules();
         $installed = $mModules->installAnonymUserForms();
 
         if ($installed['status']) {
-            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'fabrik.php');
+            require_once (JPATH_SITE.'/components/com_emundus/helpers/fabrik.php');
             $params = EmundusHelperFabrik::prepareFabrikMenuParams();
 
             if (!empty($installed['send_anonym_form_id'])) {

@@ -11,7 +11,7 @@ RUN curl -o /tmp/sed_4.9-1_$(dpkg --print-architecture).deb http://ftp.fr.debian
 
 # Copy and set custom entrypoint script
 COPY ["./scripts/entrypoint.sh","/entrypoint.sh"]
-# COPY ["./installation/config","/config"]
+COPY ["./installation/templates","/templates"]
 ENTRYPOINT [ "/entrypoint.sh"]
 
 CMD ["apache2-foreground"]

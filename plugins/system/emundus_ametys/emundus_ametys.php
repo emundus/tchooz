@@ -259,7 +259,7 @@ class  plgSystemEmundus_ametys extends JPlugin
             return;
         }
 
-        if ( !$app->isAdmin() ) {
+        if ( !$app->isClient('administrator') ) {
             $eMConfig = JComponentHelper::getParams('com_emundus');
             $ametys_integration = $eMConfig->get('ametys_integration', 0);
             $ametys_url = $eMConfig->get('ametys_url', '');

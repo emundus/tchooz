@@ -109,7 +109,7 @@ class plgSystemEmundus_period extends JPlugin
         define('EMUNDUS_PATH_REL', $applicant_files_path);
         define('EMUNDUS_PHOTO_AID', 10);
 
-        if (!$app->isAdmin() && isset($user->id) && !empty($user->id) && EmundusHelperAccess::isApplicant($user->id)) {
+        if (!$app->isClient('administrator') && isset($user->id) && !empty($user->id) && EmundusHelperAccess::isApplicant($user->id)) {
 
             $id_applicants  = $eMConfig->get('id_applicants', '0');
             $applicants     = explode(',', $id_applicants);

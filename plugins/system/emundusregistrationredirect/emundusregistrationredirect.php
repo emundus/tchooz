@@ -27,7 +27,7 @@ class plgSystemEmundusregistrationredirect extends JPlugin {
 		$app = JFactory::getApplication();
 		$jinput = $app->input;
 
-		if ($app->isAdmin()) {
+		if ($app->isClient('administrator')) {
 			return true;
 		}
 

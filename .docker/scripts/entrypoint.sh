@@ -122,11 +122,6 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 
                 php installation/joomla.php install --site-name="$TCHOOZ_SITENAME" --admin-user="$TCHOOZ_SYSADMIN_LAST_NAME-$TCHOOZ_SYSADMIN_FIRST_NAME" --admin-username="$TCHOOZ_SYSADMIN_USERNAME" --admin-password="$TCHOOZ_SYSADMIN_PASSWORD" --admin-email="$TCHOOZ_SYSADMIN_MAIL" --db-type=mysql --db-host="$JOOMLA_DB_HOST" --db-user="$JOOMLA_DB_USER" --db-pass="$JOOMLA_DB_PASSWORD" --db-name="$JOOMLA_DB_NAME" --db-prefix="jos_" -n
 
-                echo >&2 "Copy of Gantry 5 Helium template in progress..."
-
-                cp /installation/templates/g5_helium/templateDetails.xml templates/g5_helium/templateDetails.xml
-                cp -r /installation/templates/g5_helium/custom/config templates/g5_helium/custom/config
-
                 echo >&2 "We prepare the installation of the Tchooz component..."
 
                 php cli/joomla.php database:import --folder=".docker/installation/core/vanilla"
@@ -137,6 +132,15 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 
                 echo >&2 "Awesome ! Your Tchooz website is ready !"
         fi
+
+        if [ ! -e templates/g5_helium/templateDetails.xml ]; then
+            echo >&2 "Copy of Gantry 5 Helium template in progress..."
+
+            cp /templates/g5_helium/templateDetails.xml templates/g5_helium/templateDetails.xml
+            cp -r /templates/g5_helium/custom/config templates/g5_helium/custom/config
+        fi
+
+
 
         # Ensure the MySQL Database is created
         php /makedb.php "$JOOMLA_DB_HOST" "$JOOMLA_DB_USER" "$JOOMLA_DB_PASSWORD" "$JOOMLA_DB_NAME" "${JOOMLA_DB_TYPE:-mysqli}"

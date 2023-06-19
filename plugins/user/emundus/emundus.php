@@ -83,16 +83,16 @@ class plgUserEmundus extends JPlugin
         closedir($dh);
         @rmdir($dir);
 
-	    // Send email to inform applicant
-	    if($this->params->get('send_email_delete', 0) == 1) {
-		    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
-		    $c_messages = new EmundusControllerMessages();
-		    $post       = [
-			    'NAME' => $user['name']
-		    ];
-		    $c_messages->sendEmailNoFnum($user['email'], 'delete_user', $post);
-	    }
-	    //
+        // Send email to inform applicant
+        if($this->params->get('send_email_delete', 0) == 1) {
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+            $c_messages = new EmundusControllerMessages();
+            $post       = [
+                'NAME' => $user['name']
+            ];
+            $c_messages->sendEmailNoFnum($user['email'], 'delete_user', $post);
+        }
+        //
 
         return true;
     }
@@ -397,7 +397,8 @@ class plgUserEmundus extends JPlugin
             $previous_url = base64_decode($redirect);
         }
 
-        if (!$app->isAdmin()) {
+        $isAdmin = JFactory::getApplication()->isClient('administrator');
+        if (!$isAdmin) {
 
             // Users coming from an OAuth system are immediately signed in and thus need to have their data entered in the eMundus table.
             if ($user['type'] == 'OAuth2') {
@@ -445,8 +446,7 @@ class plgUserEmundus extends JPlugin
                     }
 
                     JPluginHelper::importPlugin('authentication');
-                    $dispatcher = JEventDispatcher::getInstance();
-                    $dispatcher->trigger('onOAuthAfterRegister', ['user' => $user]);
+                    JFactory::getApplication()->triggerEvent('onOAuthAfterRegister', ['user' => $user]);
                 }
 
                 // Add the Oauth provider type to the Joomla user params.
@@ -515,16 +515,16 @@ class plgUserEmundus extends JPlugin
                                         $query->clear();
                                         if ($other_property->method == 'update') {
                                             $query->update($db->quoteName($table));
-                                            }
-                                            if ($other_property->method == 'insert') {
-                                                $query->insert($db->quoteName($table));
-                                            }
-                                            $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
+                                        }
+                                        if ($other_property->method == 'insert') {
+                                            $query->insert($db->quoteName($table));
+                                        }
+                                        $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
 
-                                            if ($other_property->method == 'update') {
+                                        if ($other_property->method == 'update') {
                                             $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
-                                            }
-                                            if ($other_property->method == 'insert') {
+                                        }
+                                        if ($other_property->method == 'insert') {
                                             $query->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
                                         }
                                         $db->setQuery($query);
@@ -572,22 +572,21 @@ class plgUserEmundus extends JPlugin
             if ($options['redirect'] === 0) {
                 $previous_url = '';
             } else {
-				if ($user->activation != -1) {
-					$cid_session = JFactory::getSession()->get('login_campaign_id');
-					if (!empty($cid_session)){
-						$previous_url = 'index.php?option=com_fabrik&view=form&formid=102&cid='.$cid_session;
-						JFactory::getSession()->clear('login_campaign_id');
-					}
-				}
+                if ($user->activation != -1) {
+                    $cid_session = JFactory::getSession()->get('login_campaign_id');
+                    if (!empty($cid_session)){
+                        $previous_url = 'index.php?option=com_fabrik&view=form&formid=102&cid='.$cid_session;
+                        JFactory::getSession()->clear('login_campaign_id');
+                    }
+                }
             }
 
             JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-            $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('callEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
+            JFactory::getApplication()->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
 
-	        if (!empty($previous_url)) {
+            if (!empty($previous_url)) {
                 $app->redirect($previous_url);
-	        }
+            }
         }
         return true;
     }
@@ -630,8 +629,7 @@ class plgUserEmundus extends JPlugin
         if (JFactory::getUser($user["id"])->getParam('OAuth2')) {
 
             JPluginHelper::importPlugin('authentication');
-            $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('onUserAfterLogout', $user['id']);
+            JFactory::getApplication()->triggerEvent('onUserAfterLogout', $user['id']);
             return true;
         }
 

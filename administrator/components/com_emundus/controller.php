@@ -37,7 +37,6 @@ class EmundusAdminController extends BaseController
     public function display($cachable = false, $urlparams = false)
     {
         $this->default_view = 'panel';
-        require_once JPATH_COMPONENT . '/helpers/emundus.php';
         parent::display();
     }
 

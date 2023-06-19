@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
 jimport( 'joomla.application.component.helper' );
 
 /**
- * Fabrik Admin Home Page View
+ * eMundus Admin Home Page View
  *
  * @package     Joomla.Administrator
  * @subpackage  Emundus

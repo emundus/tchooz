@@ -7,7 +7,6 @@
  */
 
 // No direct access
-
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.model' );
@@ -39,7 +38,7 @@ class EmundusModelProfile extends JModelList {
                 $profile = $this->_db->loadObject();
             } catch(Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-                JError::raiseError(500, $e->getMessage());
+                
             }
         }
 
@@ -50,13 +49,21 @@ class EmundusModelProfile extends JModelList {
      * @return mixed
      */
     public function getApplicantsProfiles() {
-        $db = JFactory::getDBO();
-        $query = 'SELECT *
+        $result = [];
+
+        try {
+            $db = JFactory::getDBO();
+            $query = 'SELECT *
         			FROM #__emundus_setup_profiles esp
                  	WHERE esp.published=1
                   	ORDER BY esp.label';
-        $db->setQuery($query);
-        return $db->loadObjectList();
+            $db->setQuery($query);
+            $result = $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $result;
     }
     /**
      * @return array of profile_id for all applicant profiles
@@ -81,7 +88,7 @@ class EmundusModelProfile extends JModelList {
             return $db->loadObjectList();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -97,7 +104,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadAssoc();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -132,7 +139,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->execute();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -182,7 +189,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadAssoc();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -246,7 +253,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadAssoc();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -271,7 +278,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadObjectList();
         } catch(Exception $e) {
             JLog::add(' Error getting list  of attachments by profile at model/profile in query  -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -286,7 +293,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadObjectList();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -300,7 +307,7 @@ class EmundusModelProfile extends JModelList {
             return $res[0];
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -312,7 +319,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->execute();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -324,7 +331,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadResult();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -336,7 +343,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadResult();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -348,7 +355,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadResult();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -364,7 +371,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadAssoc();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -380,7 +387,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadAssoc();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -392,7 +399,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadAssoc();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -407,7 +414,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadAssoc();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -497,7 +504,7 @@ class EmundusModelProfile extends JModelList {
             return $res;
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -984,7 +991,7 @@ class EmundusModelProfile extends JModelList {
                 $res = $this->_db->loadAssoc();
             } catch(Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-                JError::raiseError(500, $e->getMessage());
+                
             }
         }
 
@@ -1004,7 +1011,7 @@ class EmundusModelProfile extends JModelList {
             return $res>0;
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            JError::raiseError(500, $e->getMessage());
+            
         }
     }
 
@@ -1067,6 +1074,7 @@ class EmundusModelProfile extends JModelList {
         foreach ($session->get('user') as $key => $value) {
             $emundusSession->{$key} = $value;
         }
+        echo '<pre>'; var_dump($current_user); echo '</pre>'; die;
 
         $emundusSession->firstname = $profile["firstname"];
         $emundusSession->lastname = strtoupper($profile["lastname"]);

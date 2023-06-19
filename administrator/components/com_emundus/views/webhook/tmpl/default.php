@@ -28,29 +28,27 @@ defined('_JEXEC') or die('RESTRICTED');
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
     function generate(){
-        jQuery.ajax({
-            type: 'POST',
-            url: 'index.php?option=com_emundus&controller=webhook&task=generate',
-            success: function (result) {
-                result = JSON.parse(result);
-                if(result.status === true){
-                    Swal.fire({
-                        title: 'Clé générée',
-                        html: '<p>Copier la clé ci-dessous en lieu sûr : </p><p><strong>' + result.token + '</strong></p>',
-                        type: "success",
-                        showCancelButton: false,
-                        reverseButtons: true,
-                        showConfirmButton: true,
-                        customClass: {
-                            title: 'em-swal-title',
-                            cancelButton: 'em-swal-cancel-button',
-                            confirmButton: 'em-swal-confirm-button',
-                        },
-                    });
-                }
-            },
-            error : function (jqXHR, status, err) {
-                alert(err);
+        fetch(window.location.origin + '/administrator/index.php?option=com_emundus&controller=webhook&task=webhook.generate', {
+            method: 'get'
+        }).then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+        }).then((res) => {
+            if(res.status === true){
+                Swal.fire({
+                    title: 'Clé générée',
+                    html: '<p>Copier la clé ci-dessous en lieu sûr : </p><p><strong>' + res.token + '</strong></p>',
+                    type: "success",
+                    showCancelButton: false,
+                    reverseButtons: true,
+                    showConfirmButton: true,
+                    customClass: {
+                        title: 'em-swal-title',
+                        cancelButton: 'em-swal-cancel-button',
+                        confirmButton: 'em-swal-confirm-button',
+                    },
+                });
             }
         });
     }

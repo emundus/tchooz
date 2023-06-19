@@ -159,8 +159,8 @@ class PlgFabrik_FormEmundusconfirmpostgkqcm extends plgFabrik_Form
 		}
 
 		JPluginHelper::importPlugin('emundus');
-		$dispatcher = JEventDispatcher::getInstance();
-		$dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
+
+		JFactory::getApplication()->triggerEvent('onBeforeSubmitFile', [$student->id, $student->fnum]);
         $dispatcher->trigger('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
         // Get status by element
@@ -453,7 +453,7 @@ class PlgFabrik_FormEmundusconfirmpostgkqcm extends plgFabrik_Form
 	{
 		$app = JFactory::getApplication();
 
-		if ($app->isAdmin())
+		if ($app->isClient('administrator'))
 		{
 			$app->enqueueMessage($msg, 'notice');
 		}

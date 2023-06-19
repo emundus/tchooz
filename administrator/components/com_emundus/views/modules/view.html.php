@@ -1,22 +1,37 @@
 ﻿<?php
 /**
-* @package Joomla
-* @subpackage eMundus
-* @copyright Copyright (C) 2015 emundus.fr. All rights reserved.
-* @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
-*/
+ * Emundus Admin Modules Page View
+ * @package Joomla.Administrator
+ * @subpackage eMundus
+ * @copyright Copyright (C) 2015-2023 emundus.fr. All rights reserved.
+ * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+ */
 
-defined('_JEXEC') or die('RESTRICTED');
+defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\View\HtmlView;
 
 jimport('joomla.application.component.view');
 jimport( 'joomla.application.component.helper' );
 
-class EmundusViewModules extends JViewLegacy
+/**
+ * eMundus Admin Modules Page View
+ *
+ * @package     Joomla.Administrator
+ * @subpackage  Emundus
+ * @since       3.0
+ */
+class EmundusAdminViewModules extends HtmlView
 {
-    function __construct($config = array()) {
-        require_once (JPATH_COMPONENT_SITE.DS.'helpers'.DS.'access.php');
+    public $_user = '';
+    public $modules = [];
 
-        $this->_user = JFactory::getUser();
+    function __construct($config = array())
+    {
+        require_once (JPATH_SITE.'/components/com_emundus/helpers/access.php');
+
+        $this->_user = Factory::getUser();
 
         parent::__construct($config);
     }
@@ -29,7 +44,7 @@ class EmundusViewModules extends JViewLegacy
 
         JHTML::stylesheet('administrator/components/com_emundus/assets/css/emundus.css');
 
-        $document = JFactory::getDocument();
+        $document = Factory::getApplication()->getDocument();
         $document->setTitle(JText::_('COM_EMUNDUS_TITLE') . ' :: ' .JText::_('COM_EMUNDUS_CONTROL_PANEL'));
 
         // Set toolbar items for the page
@@ -57,7 +72,7 @@ class EmundusViewModules extends JViewLegacy
                 'install_button' => 'Installer'
             ]
         ];
-        $this->assignRef('modules', $modules);
+        $this->modules = $modules;
 
         parent::display($tpl);
     }

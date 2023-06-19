@@ -416,7 +416,7 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateConfigurationFile($param, $value) {
-		if(!empty($param) && !empty($value) && !in_array($param,['host','user','password','db','secret','mailfrom','smtpuser','smpthost','smtppass','smtpsecure','smtpport','webhook_token'])) {
+		if(!empty($param) && !empty($value) && !in_array($param,['host','user','password','db','secret','mailfrom','smtpuser','smpthost','smtppass','smtpsecure','smtpport'])) {
 			$formatter = new JRegistryFormatPHP();
 			$config    = new JConfig();
 
