@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_datas_library">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="database_name" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="join_column_id" Type="varchar(255)" Null="NO" Key="" Default="id" Extra="" />
+   <field Field="join_column_val" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="label" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="description" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="created" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="translation" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
+   <key Table="#__emundus_datas_library" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_datas_library">
+   <row>
+    <field name="id">1</field>
+    <field name="database_name">data_departements</field>
+    <field name="join_column_id">departement_id</field>
+    <field name="join_column_val">departement_nom</field>
+    <field name="label">Départements français</field>
+    <field name="description">Liste des départements français</field>
+    <field name="created">2020-07-17 10:00:00</field>
+    <field name="translation">0</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="database_name">data_nationality</field>
+    <field name="join_column_id">id</field>
+    <field name="join_column_val">label</field>
+    <field name="label">Nationalités</field>
+    <field name="description">Liste des nationalités</field>
+    <field name="created">2020-07-17 10:00:00</field>
+    <field name="translation">1</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="database_name">data_country</field>
+    <field name="join_column_id">id</field>
+    <field name="join_column_val">label</field>
+    <field name="label">Pays</field>
+    <field name="description">Liste des pays</field>
+    <field name="created">2021-02-25 10:00:00</field>
+    <field name="translation">1</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

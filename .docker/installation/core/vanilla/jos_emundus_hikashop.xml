@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_hikashop">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="datetime" Null="YES" Key="MUL" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="user" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="fnum" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="campaign_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="order_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="status" Type="int" Null="YES" Key="MUL" Extra="" />
+   <key Table="#__emundus_hikashop" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop" Non_unique="0" Key_name="fnum" Seq_in_index="2" Column_name="status" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop" Non_unique="0" Key_name="fnum_2" Seq_in_index="1" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop" Non_unique="0" Key_name="fnum_2" Seq_in_index="2" Column_name="status" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop" Non_unique="0" Key_name="fnum_3" Seq_in_index="1" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop" Non_unique="0" Key_name="fnum_3" Seq_in_index="2" Column_name="status" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop" Non_unique="1" Key_name="status" Seq_in_index="1" Column_name="status" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop" Non_unique="1" Key_name="fb_prefilter_order_id_INDEX" Seq_in_index="1" Column_name="order_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop" Non_unique="1" Key_name="fb_order_date_time_INDEX" Seq_in_index="1" Column_name="date_time" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop" Non_unique="1" Key_name="fb_filter_campaign_id_INDEX" Seq_in_index="1" Column_name="campaign_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

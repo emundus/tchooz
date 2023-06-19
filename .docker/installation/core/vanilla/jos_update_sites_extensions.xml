@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__update_sites_extensions">
+   <field Field="update_site_id" Type="int" Null="NO" Key="PRI" Default="0" Extra="" />
+   <field Field="extension_id" Type="int" Null="NO" Key="PRI" Default="0" Extra="" />
+   <key Table="#__update_sites_extensions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="update_site_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__update_sites_extensions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="2" Column_name="extension_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__update_sites_extensions">
+   <row>
+    <field name="update_site_id">1</field>
+    <field name="extension_id">224</field>
+   </row>
+   <row>
+    <field name="update_site_id">2</field>
+    <field name="extension_id">225</field>
+   </row>
+   <row>
+    <field name="update_site_id">2</field>
+    <field name="extension_id">232</field>
+   </row>
+   <row>
+    <field name="update_site_id">3</field>
+    <field name="extension_id">24</field>
+   </row>
+   <row>
+    <field name="update_site_id">4</field>
+    <field name="extension_id">493</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

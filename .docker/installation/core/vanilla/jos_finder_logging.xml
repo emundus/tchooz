@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__finder_logging">
+   <field Field="searchterm" Type="varchar(255)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="md5sum" Type="varchar(32)" Null="NO" Key="PRI" Default="" Extra="" />
+   <field Field="query" Type="blob" Null="NO" Key="" Extra="" />
+   <field Field="hits" Type="int" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="results" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__finder_logging" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="md5sum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__finder_logging" Non_unique="1" Key_name="searchterm" Seq_in_index="1" Column_name="searchterm" Collation="A" Null="" Index_type="BTREE" Sub_part="191" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

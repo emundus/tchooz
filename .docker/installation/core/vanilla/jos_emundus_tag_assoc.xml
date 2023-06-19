@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_tag_assoc">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="fnum" Type="varchar(28)" Null="NO" Key="MUL" Extra="" />
+   <field Field="id_tag" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="user_id" Type="int" Null="NO" Key="MUL" Default="62" Extra="" />
+   <key Table="#__emundus_tag_assoc" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_tag_assoc" Non_unique="0" Key_name="fnum_2" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_tag_assoc" Non_unique="0" Key_name="fnum_2" Seq_in_index="2" Column_name="id_tag" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_tag_assoc" Non_unique="0" Key_name="fnum_2" Seq_in_index="3" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_tag_assoc" Non_unique="1" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_tag_assoc" Non_unique="1" Key_name="id_tag" Seq_in_index="1" Column_name="id_tag" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_tag_assoc" Non_unique="1" Key_name="user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

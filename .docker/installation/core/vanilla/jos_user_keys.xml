@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__user_keys">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="user_id" Type="varchar(150)" Null="NO" Key="MUL" Extra="" />
+   <field Field="token" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="series" Type="varchar(191)" Null="NO" Key="UNI" Extra="" />
+   <field Field="time" Type="varchar(200)" Null="NO" Key="" Extra="" />
+   <field Field="uastring" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <key Table="#__user_keys" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__user_keys" Non_unique="0" Key_name="series" Seq_in_index="1" Column_name="series" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__user_keys" Non_unique="1" Key_name="user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

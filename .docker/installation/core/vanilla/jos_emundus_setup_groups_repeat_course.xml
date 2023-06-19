@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_groups_repeat_course">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="parent_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="course" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="params" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_setup_groups_repeat_course" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_groups_repeat_course" Non_unique="1" Key_name="parent_id" Seq_in_index="1" Column_name="parent_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_groups_repeat_course" Non_unique="1" Key_name="fb_repeat_el_course_INDEX" Seq_in_index="1" Column_name="course" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_groups_repeat_course" Non_unique="1" Key_name="course" Seq_in_index="1" Column_name="course" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_groups_repeat_course">
+   <row>
+    <field name="id">80</field>
+    <field name="parent_id">25</field>
+    <field name="course">programme1-648c546bc1234</field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">81</field>
+    <field name="parent_id">1</field>
+    <field name="course">programme1-648c546bc1234</field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">82</field>
+    <field name="parent_id">26</field>
+    <field name="course">programme1-648c546bc1234</field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">83</field>
+    <field name="parent_id">27</field>
+    <field name="course">programme1-648c546bc1234</field>
+    <field name="params"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

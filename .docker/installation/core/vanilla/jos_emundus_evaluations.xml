@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_evaluations">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="time_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="user" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="fnum" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="student_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="campaign_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="criteria" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria01" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria01_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria02" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria02_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria03" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria03_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria04" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria04_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria05" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria05_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria06" Type="decimal(5,1)" Null="YES" Key="" Extra="" />
+   <field Field="criteria06_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria07" Type="decimal(5,1)" Null="YES" Key="" Extra="" />
+   <field Field="criteria07_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria08" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria08_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria09" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria09_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria10" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria10_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria11" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria11_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria12" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria12_comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="comment" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria09_comments" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="oral_english" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="oral_french" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="oral" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="dossier_5" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="overall" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="application_mark" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="reason" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="reason_other" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="result" Type="tinyint(1)" Null="YES" Key="" Extra="" />
+   <field Field="note_finale" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="spacer" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria13" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria14" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria15" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria16" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria17" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="criteria18" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="criteria19" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="criteria20" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria21" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="criteria22" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="sum_1" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="sum_2" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="sum_3" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="sum_4" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria21_1" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria21_2" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria21_3" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria21_4" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria22_1" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria22_2" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="total_letters" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria21_5" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="criteria21_6" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="interview" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="commentaire" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="engaged" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="result_for" Type="int" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_evaluations" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_evaluations" Non_unique="0" Key_name="user_2" Seq_in_index="1" Column_name="user" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_evaluations" Non_unique="0" Key_name="user_2" Seq_in_index="2" Column_name="student_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_evaluations" Non_unique="0" Key_name="user_2" Seq_in_index="3" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_evaluations" Non_unique="1" Key_name="fb_join_student_id_INDEX" Seq_in_index="1" Column_name="student_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_evaluations" Non_unique="1" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_evaluations" Non_unique="1" Key_name="campaign_id" Seq_in_index="1" Column_name="campaign_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

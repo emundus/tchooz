@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__template_styles">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="template" Type="varchar(50)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="client_id" Type="tinyint unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="home" Type="char(7)" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="title" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="inheritable" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="parent" Type="varchar(50)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="params" Type="text" Null="NO" Key="" Extra="" />
+   <key Table="#__template_styles" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__template_styles" Non_unique="1" Key_name="idx_template" Seq_in_index="1" Column_name="template" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__template_styles" Non_unique="1" Key_name="idx_client_id" Seq_in_index="1" Column_name="client_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__template_styles" Non_unique="1" Key_name="idx_client_id_home" Seq_in_index="1" Column_name="client_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__template_styles" Non_unique="1" Key_name="idx_client_id_home" Seq_in_index="2" Column_name="home" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__template_styles">
+   <row>
+    <field name="id">10</field>
+    <field name="template">atum</field>
+    <field name="client_id">1</field>
+    <field name="home">1</field>
+    <field name="title">Atum - Default</field>
+    <field name="inheritable">1</field>
+    <field name="parent"></field>
+    <field name="params">{&quot;hue&quot;:&quot;hsl(137, 63%, 20%)&quot;,&quot;bg-light&quot;:&quot;#106949&quot;,&quot;text-dark&quot;:&quot;#0d5946&quot;,&quot;text-light&quot;:&quot;#ffffff&quot;,&quot;link-color&quot;:&quot;#20835f&quot;,&quot;special-color&quot;:&quot;#001b4c&quot;,&quot;monochrome&quot;:&quot;0&quot;,&quot;loginLogo&quot;:&quot;images\/emundus\/tchooz_black.png#joomlaImage:\/\/local-images\/emundus\/tchooz_black.png?width=1200&amp;height=322&quot;,&quot;loginLogoAlt&quot;:&quot;&quot;,&quot;logoBrandLarge&quot;:&quot;images\/emundus\/tchooz.png#joomlaImage:\/\/local-images\/emundus\/tchooz.png?width=1200&amp;height=322&quot;,&quot;logoBrandLargeAlt&quot;:&quot;&quot;,&quot;logoBrandSmall&quot;:&quot;images\/emundus\/tchooz_favicon.png#joomlaImage:\/\/local-images\/emundus\/tchooz_favicon.png?width=512&amp;height=512&quot;,&quot;logoBrandSmallAlt&quot;:&quot;&quot;}</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="template">cassiopeia</field>
+    <field name="client_id">0</field>
+    <field name="home">0</field>
+    <field name="title">Cassiopeia - Default</field>
+    <field name="inheritable">1</field>
+    <field name="parent"></field>
+    <field name="params">{&quot;brand&quot;:&quot;1&quot;,&quot;logoFile&quot;:&quot;&quot;,&quot;siteTitle&quot;:&quot;&quot;,&quot;siteDescription&quot;:&quot;&quot;,&quot;useFontScheme&quot;:&quot;0&quot;,&quot;colorName&quot;:&quot;colors_standard&quot;,&quot;fluidContainer&quot;:&quot;0&quot;,&quot;stickyHeader&quot;:0,&quot;backTop&quot;:0}</field>
+   </row>
+   <row>
+    <field name="id">22</field>
+    <field name="template">g5_helium</field>
+    <field name="client_id">0</field>
+    <field name="home">1</field>
+    <field name="title">Helium - Par défaut</field>
+    <field name="inheritable">0</field>
+    <field name="parent"></field>
+    <field name="params">{&quot;configuration&quot;:&quot;22&quot;,&quot;preset&quot;:&quot;_joomla_-_gantry4&quot;}</field>
+   </row>
+   <row>
+    <field name="id">24</field>
+    <field name="template">g5_helium</field>
+    <field name="client_id">0</field>
+    <field name="home">0</field>
+    <field name="title">Helium - Appli eMundus</field>
+    <field name="inheritable">0</field>
+    <field name="parent"></field>
+    <field name="params">{&quot;configuration&quot;:&quot;24&quot;,&quot;preset&quot;:&quot;_joomla_-_gantry4&quot;}</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

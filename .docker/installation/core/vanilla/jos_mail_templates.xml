@@ -1,0 +1,319 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__mail_templates">
+   <field Field="template_id" Type="varchar(127)" Null="NO" Key="PRI" Default="" Extra="" />
+   <field Field="extension" Type="varchar(127)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="language" Type="char(7)" Null="NO" Key="PRI" Default="" Extra="" />
+   <field Field="subject" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="body" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="htmlbody" Type="mediumtext" Null="NO" Key="" Extra="" />
+   <field Field="attachments" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="params" Type="text" Null="NO" Key="" Extra="" />
+   <key Table="#__mail_templates" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="template_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__mail_templates" Non_unique="0" Key_name="PRIMARY" Seq_in_index="2" Column_name="language" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__mail_templates">
+   <row>
+    <field name="template_id">com_actionlogs.notification</field>
+    <field name="extension">com_actionlogs</field>
+    <field name="language"></field>
+    <field name="subject">COM_ACTIONLOGS_EMAIL_SUBJECT</field>
+    <field name="body">COM_ACTIONLOGS_EMAIL_BODY</field>
+    <field name="htmlbody">COM_ACTIONLOGS_EMAIL_HTMLBODY</field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;message&quot;,&quot;date&quot;,&quot;extension&quot;,&quot;username&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_config.test_mail</field>
+    <field name="extension">com_config</field>
+    <field name="language"></field>
+    <field name="subject">COM_CONFIG_SENDMAIL_SUBJECT</field>
+    <field name="body">COM_CONFIG_SENDMAIL_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;sitename&quot;,&quot;method&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_contact.mail</field>
+    <field name="extension">com_contact</field>
+    <field name="language"></field>
+    <field name="subject">COM_CONTACT_ENQUIRY_SUBJECT</field>
+    <field name="body">COM_CONTACT_ENQUIRY_TEXT</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;sitename&quot;,&quot;name&quot;,&quot;email&quot;,&quot;subject&quot;,&quot;body&quot;,&quot;url&quot;,&quot;customfields&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_contact.mail.copy</field>
+    <field name="extension">com_contact</field>
+    <field name="language"></field>
+    <field name="subject">COM_CONTACT_COPYSUBJECT_OF</field>
+    <field name="body">COM_CONTACT_COPYTEXT_OF</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;sitename&quot;,&quot;name&quot;,&quot;email&quot;,&quot;subject&quot;,&quot;body&quot;,&quot;url&quot;,&quot;customfields&quot;,&quot;contactname&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_messages.new_message</field>
+    <field name="extension">com_messages</field>
+    <field name="language"></field>
+    <field name="subject">COM_MESSAGES_NEW_MESSAGE</field>
+    <field name="body">COM_MESSAGES_NEW_MESSAGE_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;subject&quot;,&quot;message&quot;,&quot;fromname&quot;,&quot;sitename&quot;,&quot;siteurl&quot;,&quot;fromemail&quot;,&quot;toname&quot;,&quot;toemail&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_privacy.notification.admin.export</field>
+    <field name="extension">com_privacy</field>
+    <field name="language"></field>
+    <field name="subject">COM_PRIVACY_EMAIL_ADMIN_REQUEST_SUBJECT_EXPORT_REQUEST</field>
+    <field name="body">COM_PRIVACY_EMAIL_ADMIN_REQUEST_BODY_EXPORT_REQUEST</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;sitename&quot;,&quot;url&quot;,&quot;tokenurl&quot;,&quot;formurl&quot;,&quot;token&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_privacy.notification.admin.remove</field>
+    <field name="extension">com_privacy</field>
+    <field name="language"></field>
+    <field name="subject">COM_PRIVACY_EMAIL_ADMIN_REQUEST_SUBJECT_REMOVE_REQUEST</field>
+    <field name="body">COM_PRIVACY_EMAIL_ADMIN_REQUEST_BODY_REMOVE_REQUEST</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;sitename&quot;,&quot;url&quot;,&quot;tokenurl&quot;,&quot;formurl&quot;,&quot;token&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_privacy.notification.export</field>
+    <field name="extension">com_privacy</field>
+    <field name="language"></field>
+    <field name="subject">COM_PRIVACY_EMAIL_REQUEST_SUBJECT_EXPORT_REQUEST</field>
+    <field name="body">COM_PRIVACY_EMAIL_REQUEST_BODY_EXPORT_REQUEST</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;sitename&quot;,&quot;url&quot;,&quot;tokenurl&quot;,&quot;formurl&quot;,&quot;token&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_privacy.notification.remove</field>
+    <field name="extension">com_privacy</field>
+    <field name="language"></field>
+    <field name="subject">COM_PRIVACY_EMAIL_REQUEST_SUBJECT_REMOVE_REQUEST</field>
+    <field name="body">COM_PRIVACY_EMAIL_REQUEST_BODY_REMOVE_REQUEST</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;sitename&quot;,&quot;url&quot;,&quot;tokenurl&quot;,&quot;formurl&quot;,&quot;token&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_privacy.userdataexport</field>
+    <field name="extension">com_privacy</field>
+    <field name="language"></field>
+    <field name="subject">COM_PRIVACY_EMAIL_DATA_EXPORT_COMPLETED_SUBJECT</field>
+    <field name="body">COM_PRIVACY_EMAIL_DATA_EXPORT_COMPLETED_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;sitename&quot;,&quot;url&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.massmail.mail</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_MASSMAIL_MAIL_SUBJECT</field>
+    <field name="body">COM_USERS_MASSMAIL_MAIL_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;subject&quot;,&quot;body&quot;,&quot;subjectprefix&quot;,&quot;bodysuffix&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.password_reset</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT</field>
+    <field name="body">COM_USERS_EMAIL_PASSWORD_RESET_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;email&quot;,&quot;sitename&quot;,&quot;link_text&quot;,&quot;link_html&quot;,&quot;token&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.registration.admin.new_notification</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_EMAIL_ACCOUNT_DETAILS</field>
+    <field name="body">COM_USERS_EMAIL_REGISTERED_NOTIFICATION_TO_ADMIN_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;sitename&quot;,&quot;siteurl&quot;,&quot;username&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.registration.admin.verification_request</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_EMAIL_ACTIVATE_WITH_ADMIN_ACTIVATION_SUBJECT</field>
+    <field name="body">COM_USERS_EMAIL_ACTIVATE_WITH_ADMIN_ACTIVATION_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;sitename&quot;,&quot;email&quot;,&quot;username&quot;,&quot;activate&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.registration.user.admin_activated</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_SUBJECT</field>
+    <field name="body">COM_USERS_EMAIL_ACTIVATED_BY_ADMIN_ACTIVATION_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;sitename&quot;,&quot;siteurl&quot;,&quot;username&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.registration.user.admin_activation</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_EMAIL_ACCOUNT_DETAILS</field>
+    <field name="body">COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY_NOPW</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;sitename&quot;,&quot;activate&quot;,&quot;siteurl&quot;,&quot;username&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.registration.user.admin_activation_w_pw</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_EMAIL_ACCOUNT_DETAILS</field>
+    <field name="body">COM_USERS_EMAIL_REGISTERED_WITH_ADMIN_ACTIVATION_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;sitename&quot;,&quot;activate&quot;,&quot;siteurl&quot;,&quot;username&quot;,&quot;password_clear&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.registration.user.registration_mail</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_EMAIL_ACCOUNT_DETAILS</field>
+    <field name="body">COM_USERS_EMAIL_REGISTERED_BODY_NOPW</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;sitename&quot;,&quot;siteurl&quot;,&quot;username&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.registration.user.registration_mail_w_pw</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_EMAIL_ACCOUNT_DETAILS</field>
+    <field name="body">COM_USERS_EMAIL_REGISTERED_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;sitename&quot;,&quot;siteurl&quot;,&quot;username&quot;,&quot;password_clear&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.registration.user.self_activation</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_EMAIL_ACCOUNT_DETAILS</field>
+    <field name="body">COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY_NOPW</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;sitename&quot;,&quot;activate&quot;,&quot;siteurl&quot;,&quot;username&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.registration.user.self_activation_w_pw</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_EMAIL_ACCOUNT_DETAILS</field>
+    <field name="body">COM_USERS_EMAIL_REGISTERED_WITH_ACTIVATION_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;sitename&quot;,&quot;activate&quot;,&quot;siteurl&quot;,&quot;username&quot;,&quot;password_clear&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">com_users.reminder</field>
+    <field name="extension">com_users</field>
+    <field name="language"></field>
+    <field name="subject">COM_USERS_EMAIL_USERNAME_REMINDER_SUBJECT</field>
+    <field name="body">COM_USERS_EMAIL_USERNAME_REMINDER_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;username&quot;,&quot;sitename&quot;,&quot;email&quot;,&quot;link_text&quot;,&quot;link_html&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">plg_multifactorauth_email.mail</field>
+    <field name="extension">plg_multifactorauth_email</field>
+    <field name="language"></field>
+    <field name="subject">PLG_MULTIFACTORAUTH_EMAIL_EMAIL_SUBJECT</field>
+    <field name="body">PLG_MULTIFACTORAUTH_EMAIL_EMAIL_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;code&quot;,&quot;sitename&quot;,&quot;siteurl&quot;,&quot;username&quot;,&quot;email&quot;,&quot;fullname&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">plg_system_privacyconsent.request.reminder</field>
+    <field name="extension">plg_system_privacyconsent</field>
+    <field name="language"></field>
+    <field name="subject">PLG_SYSTEM_PRIVACYCONSENT_EMAIL_REMIND_SUBJECT</field>
+    <field name="body">PLG_SYSTEM_PRIVACYCONSENT_EMAIL_REMIND_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;sitename&quot;,&quot;url&quot;,&quot;tokenurl&quot;,&quot;formurl&quot;,&quot;token&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">plg_system_tasknotification.failure_mail</field>
+    <field name="extension">plg_system_tasknotification</field>
+    <field name="language"></field>
+    <field name="subject">PLG_SYSTEM_TASK_NOTIFICATION_FAILURE_MAIL_SUBJECT</field>
+    <field name="body">PLG_SYSTEM_TASK_NOTIFICATION_FAILURE_MAIL_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;: [&quot;task_id&quot;, &quot;task_title&quot;, &quot;exit_code&quot;, &quot;exec_data_time&quot;, &quot;task_output&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">plg_system_tasknotification.fatal_recovery_mail</field>
+    <field name="extension">plg_system_tasknotification</field>
+    <field name="language"></field>
+    <field name="subject">PLG_SYSTEM_TASK_NOTIFICATION_FATAL_MAIL_SUBJECT</field>
+    <field name="body">PLG_SYSTEM_TASK_NOTIFICATION_FATAL_MAIL_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;: [&quot;task_id&quot;, &quot;task_title&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">plg_system_tasknotification.orphan_mail</field>
+    <field name="extension">plg_system_tasknotification</field>
+    <field name="language"></field>
+    <field name="subject">PLG_SYSTEM_TASK_NOTIFICATION_ORPHAN_MAIL_SUBJECT</field>
+    <field name="body">PLG_SYSTEM_TASK_NOTIFICATION_ORPHAN_MAIL_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;: [&quot;task_id&quot;, &quot;task_title&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">plg_system_tasknotification.success_mail</field>
+    <field name="extension">plg_system_tasknotification</field>
+    <field name="language"></field>
+    <field name="subject">PLG_SYSTEM_TASK_NOTIFICATION_SUCCESS_MAIL_SUBJECT</field>
+    <field name="body">PLG_SYSTEM_TASK_NOTIFICATION_SUCCESS_MAIL_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;task_id&quot;, &quot;task_title&quot;, &quot;exec_data_time&quot;, &quot;task_output&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">plg_system_updatenotification.mail</field>
+    <field name="extension">plg_system_updatenotification</field>
+    <field name="language"></field>
+    <field name="subject">PLG_SYSTEM_UPDATENOTIFICATION_EMAIL_SUBJECT</field>
+    <field name="body">PLG_SYSTEM_UPDATENOTIFICATION_EMAIL_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;newversion&quot;,&quot;curversion&quot;,&quot;sitename&quot;,&quot;url&quot;,&quot;link&quot;,&quot;releasenews&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">plg_user_joomla.mail</field>
+    <field name="extension">plg_user_joomla</field>
+    <field name="language"></field>
+    <field name="subject">PLG_USER_JOOMLA_NEW_USER_EMAIL_SUBJECT</field>
+    <field name="body">PLG_USER_JOOMLA_NEW_USER_EMAIL_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;name&quot;,&quot;sitename&quot;,&quot;url&quot;,&quot;username&quot;,&quot;password&quot;,&quot;email&quot;]}</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

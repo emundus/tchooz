@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__fields_categories">
+   <field Field="field_id" Type="int" Null="NO" Key="PRI" Default="0" Extra="" />
+   <field Field="category_id" Type="int" Null="NO" Key="PRI" Default="0" Extra="" />
+   <key Table="#__fields_categories" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="field_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fields_categories" Non_unique="0" Key_name="PRIMARY" Seq_in_index="2" Column_name="category_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

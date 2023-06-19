@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_programmes">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="code" Type="varchar(255)" Null="NO" Key="UNI" Extra="" />
+   <field Field="label" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="notes" Type="text" Null="YES" Key="MUL" Extra="" />
+   <field Field="published" Type="tinyint" Null="YES" Key="MUL" Extra="" />
+   <field Field="programmes" Type="text" Null="YES" Key="MUL" Extra="" />
+   <field Field="synthesis" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="fabrik_group_id" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="fabrik_decision_group_id" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="apply_online" Type="text" Null="YES" Key="MUL" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="url" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="tmpl_trombinoscope" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="tmpl_badge" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="fabrik_admission_group_id" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="fabrik_applicant_admission_group_id" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="link" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="logo" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="color" Type="varchar(10)" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_setup_programmes" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_programmes" Non_unique="0" Key_name="jos_emundus_setup_programmes_code_uindex" Seq_in_index="1" Column_name="code" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_programmes" Non_unique="1" Key_name="label" Seq_in_index="1" Column_name="label" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_programmes" Non_unique="1" Key_name="fb_filter_code_INDEX" Seq_in_index="1" Column_name="code" Collation="A" Null="" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_programmes" Non_unique="1" Key_name="fb_filter_programmes_INDEX" Seq_in_index="1" Column_name="programmes" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_programmes" Non_unique="1" Key_name="fb_filter_published_INDEX" Seq_in_index="1" Column_name="published" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_programmes" Non_unique="1" Key_name="fb_filter_notes_INDEX" Seq_in_index="1" Column_name="notes" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_programmes" Non_unique="1" Key_name="fb_order_apply_online_INDEX" Seq_in_index="1" Column_name="apply_online" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_programmes" Non_unique="1" Key_name="fb_filter_apply_online_INDEX" Seq_in_index="1" Column_name="apply_online" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_programmes">
+   <row>
+    <field name="id">3</field>
+    <field name="code">programme1-648c546bc1234</field>
+    <field name="label">Programme 1</field>
+    <field name="notes"></field>
+    <field name="published">1</field>
+    <field name="programmes"></field>
+    <field name="synthesis"></field>
+    <field name="fabrik_group_id"></field>
+    <field name="fabrik_decision_group_id"></field>
+    <field name="apply_online">1</field>
+    <field name="ordering">0</field>
+    <field name="url"></field>
+    <field name="tmpl_trombinoscope"></field>
+    <field name="tmpl_badge"></field>
+    <field name="fabrik_admission_group_id"></field>
+    <field name="fabrik_applicant_admission_group_id"></field>
+    <field name="link"></field>
+    <field name="logo"></field>
+    <field name="color"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

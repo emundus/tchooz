@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_vote">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="time_date" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED on update CURRENT_TIMESTAMP" />
+   <field Field="fnum" Type="varchar(28)" Null="NO" Key="" Extra="" />
+   <field Field="user" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="thematique" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="engagement" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="engagement_financier" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="engagement_materiel" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_vote" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

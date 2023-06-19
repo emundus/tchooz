@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_languages">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="time_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="user" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="fnum" Type="varchar(28)" Null="YES" Key="MUL" Extra="" />
+   <field Field="language_test_score" Type="varchar(28)" Null="YES" Key="" Extra="" />
+   <field Field="Language_writing" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="language_speaking" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="first_language" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="test_type" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="Bachelor_language" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="Language_test_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="language" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="Organisation_1" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="Organisation_2" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="e_254_7756" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="e_254_7757" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_languages" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_languages" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_languages" Non_unique="1" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

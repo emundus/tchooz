@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_teaching_unity">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="code" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="label" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="university_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="schoolyear" Type="varchar(20)" Null="YES" Key="MUL" Extra="" />
+   <field Field="semester" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="ects" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="notes" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="published" Type="text" Null="YES" Key="MUL" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="online" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="price" Type="decimal(8,2)" Null="YES" Key="" Extra="" />
+   <field Field="professor" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="nfp" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="date_start" Type="datetime" Null="NO" Key="MUL" Extra="" />
+   <field Field="date_end" Type="datetime" Null="NO" Key="MUL" Extra="" />
+   <field Field="period" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="profile_id" Type="int" Null="NO" Key="MUL" Default="9" Extra="" />
+   <field Field="programmes" Type="text" Null="YES" Key="MUL" Extra="" />
+   <field Field="registration_periode" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="1" Key_name="label" Seq_in_index="1" Column_name="label" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="1" Key_name="university_id" Seq_in_index="1" Column_name="university_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="1" Key_name="profil_id" Seq_in_index="1" Column_name="profile_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="1" Key_name="fb_filter_code_INDEX" Seq_in_index="1" Column_name="code" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="1" Key_name="fb_filter_schoolyear_INDEX" Seq_in_index="1" Column_name="schoolyear" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="1" Key_name="fb_filter_programmes_INDEX" Seq_in_index="1" Column_name="programmes" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="1" Key_name="fb_filter_ects_INDEX" Seq_in_index="1" Column_name="ects" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="1" Key_name="fb_filter_date_start_INDEX" Seq_in_index="1" Column_name="date_start" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="1" Key_name="fb_filter_date_end_INDEX" Seq_in_index="1" Column_name="date_end" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="1" Key_name="fb_filter_published_INDEX" Seq_in_index="1" Column_name="published" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_teaching_unity" Non_unique="1" Key_name="code" Seq_in_index="1" Column_name="code" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

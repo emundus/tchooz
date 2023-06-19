@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_campaign_candidature">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="applicant_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="user_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="campaign_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="submitted" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="date_submitted" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="cancelled" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="fnum" Type="varchar(255)" Null="NO" Key="UNI" Extra="" />
+   <field Field="status" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="published" Type="tinyint(1)" Null="NO" Key="MUL" Default="1" Extra="" />
+   <field Field="copied" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="can_be_deleted" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="form_progress" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="attachment_progress" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="id_banner" Type="varchar(20)" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_campaign_candidature" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_campaign_candidature" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_campaign_candidature" Non_unique="0" Key_name="fnum_2" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_campaign_candidature" Non_unique="1" Key_name="campaign_id" Seq_in_index="1" Column_name="campaign_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_campaign_candidature" Non_unique="1" Key_name="user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_campaign_candidature" Non_unique="1" Key_name="applicant_id" Seq_in_index="1" Column_name="applicant_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_campaign_candidature" Non_unique="1" Key_name="status" Seq_in_index="1" Column_name="status" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_campaign_candidature" Non_unique="1" Key_name="published" Seq_in_index="1" Column_name="published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_campaign_candidature" Non_unique="1" Key_name="submitted" Seq_in_index="1" Column_name="submitted" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

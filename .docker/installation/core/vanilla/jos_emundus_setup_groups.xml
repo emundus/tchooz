@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_groups">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="label" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="description" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="published" Type="text" Null="YES" Key="MUL" Extra="" />
+   <field Field="profile_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="course" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="fac_rattachement" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="commission" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="class" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="fabrik_group_link" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="attachment_id_link" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="anonymize" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="parent_id" Type="int" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_setup_groups" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_groups" Non_unique="1" Key_name="label" Seq_in_index="1" Column_name="label" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_groups" Non_unique="1" Key_name="profile_id" Seq_in_index="1" Column_name="profile_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_groups" Non_unique="1" Key_name="fb_filter_published_INDEX" Seq_in_index="1" Column_name="published" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_groups" Non_unique="1" Key_name="fb_filter_course_INDEX" Seq_in_index="1" Column_name="course" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_groups" Non_unique="1" Key_name="commission" Seq_in_index="1" Column_name="commission" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_groups" Non_unique="1" Key_name="fabrik_group_link" Seq_in_index="1" Column_name="fabrik_group_link" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_groups" Non_unique="1" Key_name="attachment_id_link" Seq_in_index="1" Column_name="attachment_id_link" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_groups">
+   <row>
+    <field name="id">1</field>
+    <field name="label">Tous les droits</field>
+    <field name="description">Toutes les actions sur tous les programmes</field>
+    <field name="published">1</field>
+    <field name="profile_id"></field>
+    <field name="course"></field>
+    <field name="fac_rattachement"></field>
+    <field name="commission"></field>
+    <field name="class">label-orange</field>
+    <field name="fabrik_group_link"></field>
+    <field name="attachment_id_link"></field>
+    <field name="anonymize"></field>
+    <field name="parent_id"></field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="label">Evaluateur</field>
+    <field name="description">Groupe des évaluateurs</field>
+    <field name="published">1</field>
+    <field name="profile_id"></field>
+    <field name="course"></field>
+    <field name="fac_rattachement"></field>
+    <field name="commission"></field>
+    <field name="class">label-lightblue</field>
+    <field name="fabrik_group_link"></field>
+    <field name="attachment_id_link"></field>
+    <field name="anonymize">0</field>
+    <field name="parent_id"></field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="label">Gestionnaire de programme</field>
+    <field name="description">Actions sur un seul programme</field>
+    <field name="published">1</field>
+    <field name="profile_id"></field>
+    <field name="course"></field>
+    <field name="fac_rattachement"></field>
+    <field name="commission"></field>
+    <field name="class">label-lightgreen</field>
+    <field name="fabrik_group_link"></field>
+    <field name="attachment_id_link"></field>
+    <field name="anonymize">0</field>
+    <field name="parent_id"></field>
+   </row>
+   <row>
+    <field name="id">25</field>
+    <field name="label">Programme 1</field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="profile_id"></field>
+    <field name="course"></field>
+    <field name="fac_rattachement"></field>
+    <field name="commission"></field>
+    <field name="class">label-default</field>
+    <field name="fabrik_group_link"></field>
+    <field name="attachment_id_link"></field>
+    <field name="anonymize"></field>
+    <field name="parent_id"></field>
+   </row>
+   <row>
+    <field name="id">26</field>
+    <field name="label">Evaluateurs_Programme 1</field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="profile_id"></field>
+    <field name="course"></field>
+    <field name="fac_rattachement"></field>
+    <field name="commission"></field>
+    <field name="class">label-default</field>
+    <field name="fabrik_group_link"></field>
+    <field name="attachment_id_link"></field>
+    <field name="anonymize">0</field>
+    <field name="parent_id">2</field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="label">Gestionnaire de programme_Programme 1</field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="profile_id"></field>
+    <field name="course"></field>
+    <field name="fac_rattachement"></field>
+    <field name="commission"></field>
+    <field name="class">label-lightgreen</field>
+    <field name="fabrik_group_link"></field>
+    <field name="attachment_id_link"></field>
+    <field name="anonymize">0</field>
+    <field name="parent_id">3</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

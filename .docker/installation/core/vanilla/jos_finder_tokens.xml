@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__finder_tokens">
+   <field Field="term" Type="varchar(75)" Null="NO" Key="MUL" Extra="" />
+   <field Field="stem" Type="varchar(75)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="common" Type="tinyint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="phrase" Type="tinyint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="weight" Type="float unsigned" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="context" Type="tinyint unsigned" Null="NO" Key="MUL" Default="2" Extra="" />
+   <field Field="language" Type="char(7)" Null="NO" Key="MUL" Default="" Extra="" />
+   <key Table="#__finder_tokens" Non_unique="1" Key_name="idx_word" Seq_in_index="1" Column_name="term" Collation="" Null="" Index_type="HASH" Sub_part="" Comment="" />
+   <key Table="#__finder_tokens" Non_unique="1" Key_name="idx_stem" Seq_in_index="1" Column_name="stem" Collation="" Null="" Index_type="HASH" Sub_part="" Comment="" />
+   <key Table="#__finder_tokens" Non_unique="1" Key_name="idx_context" Seq_in_index="1" Column_name="context" Collation="" Null="" Index_type="HASH" Sub_part="" Comment="" />
+   <key Table="#__finder_tokens" Non_unique="1" Key_name="idx_language" Seq_in_index="1" Column_name="language" Collation="" Null="" Index_type="HASH" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_updated">
+   <field Field="id" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="fnum" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="user_id" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="date_time" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="fabrik_element_id" Type="longtext" Null="NO" Key="" Extra="" />
+  </table_structure>
+ </database>
+</mysqldump>

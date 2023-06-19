@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_languages_692_repeat">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="parent_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="language" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="Language_writing" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="Language_speaking" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_254_7757" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_languages_692_repeat" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_languages_692_repeat" Non_unique="1" Key_name="fb_parent_fk_parent_id_INDEX" Seq_in_index="1" Column_name="parent_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

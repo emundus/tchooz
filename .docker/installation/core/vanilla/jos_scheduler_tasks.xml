@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__scheduler_tasks">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="asset_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="title" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="type" Type="varchar(128)" Null="NO" Key="MUL" Extra="" />
+   <field Field="execution_rules" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="cron_rules" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="state" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="last_exit_code" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="last_execution" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="next_execution" Type="datetime" Null="YES" Key="MUL" Extra="" />
+   <field Field="times_executed" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="times_failed" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="locked" Type="datetime" Null="YES" Key="MUL" Extra="" />
+   <field Field="priority" Type="smallint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cli_exclusive" Type="smallint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="params" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="note" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="created" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="created_by" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="checked_out" Type="int unsigned" Null="YES" Key="MUL" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <key Table="#__scheduler_tasks" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_type" Seq_in_index="1" Column_name="type" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_state" Seq_in_index="1" Column_name="state" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_last_exit" Seq_in_index="1" Column_name="last_exit_code" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_next_exec" Seq_in_index="1" Column_name="next_execution" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_locked" Seq_in_index="1" Column_name="locked" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_priority" Seq_in_index="1" Column_name="priority" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_cli_exclusive" Seq_in_index="1" Column_name="cli_exclusive" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_checked_out" Seq_in_index="1" Column_name="checked_out" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

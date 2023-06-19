@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__action_logs_users">
+   <field Field="user_id" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
+   <field Field="notify" Type="tinyint unsigned" Null="NO" Key="MUL" Extra="" />
+   <field Field="extensions" Type="text" Null="NO" Key="" Extra="" />
+   <key Table="#__action_logs_users" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__action_logs_users" Non_unique="1" Key_name="idx_notify" Seq_in_index="1" Column_name="notify" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__action_logs_users">
+   <row>
+    <field name="user_id">650</field>
+    <field name="notify">0</field>
+    <field name="extensions">[&quot;com_content&quot;]</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

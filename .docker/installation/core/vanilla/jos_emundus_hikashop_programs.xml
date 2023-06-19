@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_hikashop_programs">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="code_prog" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="payment_type" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="product_id" Type="int unsigned" Null="YES" Key="MUL" Extra="" />
+   <key Table="#__emundus_hikashop_programs" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop_programs" Non_unique="1" Key_name="jos_emundus_hikashop_programs_jos_hikashop_product_product_id_fk" Seq_in_index="1" Column_name="product_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_hikashop_programs" Non_unique="1" Key_name="jos_emundus_hikashop_programs_jos_emundus_payment_types_id_fk" Seq_in_index="1" Column_name="payment_type" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_survey">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="fnum" Type="varchar(28)" Null="NO" Key="UNI" Extra="" />
+   <field Field="user" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="university" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="until" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="via_friend" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="via_professor" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="via_social_network_details" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="Via_website" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="via_social_network" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="from" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="time_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="e_266_7744" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_survey" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_survey" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_survey" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_survey">
+   <row>
+    <field name="id">3</field>
+    <field name="date_time"></field>
+    <field name="fnum">2020031110550100000010000111</field>
+    <field name="user">111</field>
+    <field name="university"></field>
+    <field name="until"></field>
+    <field name="via_friend">no</field>
+    <field name="via_professor">no</field>
+    <field name="via_social_network_details"></field>
+    <field name="Via_website">yes</field>
+    <field name="via_social_network">no</field>
+    <field name="from"></field>
+    <field name="time_date">2020-03-11 11:09:06</field>
+    <field name="e_266_7744"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

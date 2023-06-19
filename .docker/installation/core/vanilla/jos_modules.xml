@@ -1,0 +1,973 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__modules">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="asset_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="title" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="note" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="content" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="position" Type="varchar(50)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="checked_out" Type="int unsigned" Null="YES" Key="" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="publish_up" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="publish_down" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="published" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="module" Type="varchar(50)" Null="YES" Key="MUL" Extra="" />
+   <field Field="access" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="showtitle" Type="tinyint unsigned" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="params" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="client_id" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="language" Type="char(7)" Null="NO" Key="MUL" Extra="" />
+   <key Table="#__modules" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__modules" Non_unique="1" Key_name="published" Seq_in_index="1" Column_name="published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__modules" Non_unique="1" Key_name="published" Seq_in_index="2" Column_name="access" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__modules" Non_unique="1" Key_name="newsfeeds" Seq_in_index="1" Column_name="module" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__modules" Non_unique="1" Key_name="newsfeeds" Seq_in_index="2" Column_name="published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__modules" Non_unique="1" Key_name="idx_language" Seq_in_index="1" Column_name="language" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__modules">
+   <row>
+    <field name="id">1</field>
+    <field name="asset_id">39</field>
+    <field name="title">Main Menu</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_menu</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;menutype&quot;:&quot;mainmenu&quot;,&quot;startLevel&quot;:&quot;0&quot;,&quot;endLevel&quot;:&quot;0&quot;,&quot;showAllChildren&quot;:&quot;1&quot;,&quot;tag_id&quot;:&quot;&quot;,&quot;class_sfx&quot;:&quot;&quot;,&quot;window_open&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;1&quot;,&quot;cache_time&quot;:&quot;900&quot;,&quot;cachemode&quot;:&quot;itemid&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="asset_id">40</field>
+    <field name="title">Login</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">login</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_login</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params"></field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="asset_id">41</field>
+    <field name="title">Popular Articles</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">6</field>
+    <field name="position">cpanel</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_popular</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;count&quot;:&quot;5&quot;,&quot;catid&quot;:&quot;&quot;,&quot;user_id&quot;:&quot;0&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;0&quot;, &quot;bootstrap_size&quot;: &quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="asset_id">42</field>
+    <field name="title">Recently Added Articles</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">4</field>
+    <field name="position">cpanel</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_latest</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;count&quot;:&quot;5&quot;,&quot;ordering&quot;:&quot;c_dsc&quot;,&quot;catid&quot;:&quot;&quot;,&quot;user_id&quot;:&quot;0&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;0&quot;, &quot;bootstrap_size&quot;: &quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="asset_id">43</field>
+    <field name="title">Toolbar</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">toolbar</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_toolbar</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params"></field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="asset_id">44</field>
+    <field name="title">Notifications</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">3</field>
+    <field name="position">icon</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_quickicon</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;context&quot;:&quot;update_quickicon&quot;,&quot;header_icon&quot;:&quot;icon-sync&quot;,&quot;show_jupdate&quot;:&quot;1&quot;,&quot;show_eupdate&quot;:&quot;1&quot;,&quot;show_oupdate&quot;:&quot;1&quot;,&quot;show_privacy&quot;:&quot;1&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;style&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="asset_id">45</field>
+    <field name="title">Logged-in Users</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">2</field>
+    <field name="position">cpanel</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_logged</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;count&quot;:&quot;5&quot;,&quot;name&quot;:&quot;1&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;0&quot;, &quot;bootstrap_size&quot;: &quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="asset_id">46</field>
+    <field name="title">Admin Menu</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">menu</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_menu</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;layout&quot;:&quot;&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;shownew&quot;:&quot;1&quot;,&quot;showhelp&quot;:&quot;1&quot;,&quot;cache&quot;:&quot;0&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="asset_id">49</field>
+    <field name="title">Title</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">title</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_title</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params"></field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="asset_id">50</field>
+    <field name="title">Login Form</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">7</field>
+    <field name="position">sidebar-right</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_login</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;greeting&quot;:&quot;1&quot;,&quot;name&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">17</field>
+    <field name="asset_id">51</field>
+    <field name="title">Breadcrumbs</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">breadcrumbs</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_breadcrumbs</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;showHere&quot;:0,&quot;showHome&quot;:0,&quot;homeText&quot;:&quot;&quot;,&quot;showLast&quot;:1,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:0,&quot;cache_time&quot;:0,&quot;cachemode&quot;:&quot;itemid&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">79</field>
+    <field name="asset_id">52</field>
+    <field name="title">Multilanguage status</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">2</field>
+    <field name="position">status</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_multilangstatus</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;0&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">86</field>
+    <field name="asset_id">53</field>
+    <field name="title">Joomla Version</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">status</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_version</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;0&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">87</field>
+    <field name="asset_id">55</field>
+    <field name="title">Sample Data</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">cpanel</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_sampledata</field>
+    <field name="access">6</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;bootstrap_size&quot;: &quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">88</field>
+    <field name="asset_id">67</field>
+    <field name="title">Latest Actions</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">3</field>
+    <field name="position">cpanel</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_latestactions</field>
+    <field name="access">6</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;bootstrap_size&quot;: &quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">89</field>
+    <field name="asset_id">68</field>
+    <field name="title">Privacy Dashboard</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">5</field>
+    <field name="position">cpanel</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_privacy_dashboard</field>
+    <field name="access">6</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;bootstrap_size&quot;: &quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">90</field>
+    <field name="asset_id">89</field>
+    <field name="title">Login Support</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">sidebar</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_loginsupport</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;forum_url&quot;:&quot;https://forum.joomla.org/&quot;,&quot;documentation_url&quot;:&quot;https://docs.joomla.org/&quot;,&quot;news_url&quot;:&quot;https://www.joomla.org/announcements.html&quot;,&quot;automatic_title&quot;:1,&quot;prepare_content&quot;:1,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">91</field>
+    <field name="asset_id">72</field>
+    <field name="title">System Dashboard</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">cpanel-system</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_submenu</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;menutype&quot;:&quot;*&quot;,&quot;preset&quot;:&quot;system&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;System-none&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">92</field>
+    <field name="asset_id">73</field>
+    <field name="title">Content Dashboard</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">cpanel-content</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_submenu</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;menutype&quot;:&quot;*&quot;,&quot;preset&quot;:&quot;content&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;System-none&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">93</field>
+    <field name="asset_id">74</field>
+    <field name="title">Menus Dashboard</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">cpanel-menus</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_submenu</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;menutype&quot;:&quot;*&quot;,&quot;preset&quot;:&quot;menus&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;System-none&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">94</field>
+    <field name="asset_id">75</field>
+    <field name="title">Components Dashboard</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">cpanel-components</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_submenu</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;menutype&quot;:&quot;*&quot;,&quot;preset&quot;:&quot;components&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;System-none&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">95</field>
+    <field name="asset_id">76</field>
+    <field name="title">Users Dashboard</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">cpanel-users</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_submenu</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;menutype&quot;:&quot;*&quot;,&quot;preset&quot;:&quot;users&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;System-none&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">96</field>
+    <field name="asset_id">86</field>
+    <field name="title">Popular Articles</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">3</field>
+    <field name="position">cpanel-content</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_popular</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;count&quot;:&quot;5&quot;,&quot;catid&quot;:&quot;&quot;,&quot;user_id&quot;:&quot;0&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;0&quot;, &quot;bootstrap_size&quot;: &quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">97</field>
+    <field name="asset_id">87</field>
+    <field name="title">Recently Added Articles</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">4</field>
+    <field name="position">cpanel-content</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_latest</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;count&quot;:&quot;5&quot;,&quot;ordering&quot;:&quot;c_dsc&quot;,&quot;catid&quot;:&quot;&quot;,&quot;user_id&quot;:&quot;0&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;0&quot;, &quot;bootstrap_size&quot;: &quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">98</field>
+    <field name="asset_id">88</field>
+    <field name="title">Logged-in Users</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">2</field>
+    <field name="position">cpanel-users</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_logged</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;count&quot;:&quot;5&quot;,&quot;name&quot;:&quot;1&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;0&quot;, &quot;bootstrap_size&quot;: &quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">99</field>
+    <field name="asset_id">77</field>
+    <field name="title">Frontend Link</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">5</field>
+    <field name="position">status</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_frontend</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params"></field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">100</field>
+    <field name="asset_id">78</field>
+    <field name="title">Messages</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">4</field>
+    <field name="position">status</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_messages</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params"></field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">101</field>
+    <field name="asset_id">79</field>
+    <field name="title">Post Install Messages</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">3</field>
+    <field name="position">status</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_post_installation_messages</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params"></field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">102</field>
+    <field name="asset_id">80</field>
+    <field name="title">User Status</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">6</field>
+    <field name="position">status</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_user</field>
+    <field name="access">3</field>
+    <field name="showtitle">1</field>
+    <field name="params"></field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">103</field>
+    <field name="asset_id">70</field>
+    <field name="title">Site</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">icon</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_quickicon</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;context&quot;:&quot;site_quickicon&quot;,&quot;header_icon&quot;:&quot;icon-desktop&quot;,&quot;show_users&quot;:&quot;1&quot;,&quot;show_articles&quot;:&quot;1&quot;,&quot;show_categories&quot;:&quot;1&quot;,&quot;show_media&quot;:&quot;1&quot;,&quot;show_menuItems&quot;:&quot;1&quot;,&quot;show_modules&quot;:&quot;1&quot;,&quot;show_plugins&quot;:&quot;1&quot;,&quot;show_templates&quot;:&quot;1&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;style&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">104</field>
+    <field name="asset_id">71</field>
+    <field name="title">System</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">2</field>
+    <field name="position">icon</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_quickicon</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;context&quot;:&quot;system_quickicon&quot;,&quot;header_icon&quot;:&quot;icon-wrench&quot;,&quot;show_global&quot;:&quot;1&quot;,&quot;show_checkin&quot;:&quot;1&quot;,&quot;show_cache&quot;:&quot;1&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;style&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">105</field>
+    <field name="asset_id">82</field>
+    <field name="title">3rd Party</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">4</field>
+    <field name="position">icon</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_quickicon</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;context&quot;:&quot;mod_quickicon&quot;,&quot;header_icon&quot;:&quot;icon-boxes&quot;,&quot;load_plugins&quot;:&quot;1&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;style&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">106</field>
+    <field name="asset_id">83</field>
+    <field name="title">Help Dashboard</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">cpanel-help</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_submenu</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;menutype&quot;:&quot;*&quot;,&quot;preset&quot;:&quot;help&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;style&quot;:&quot;System-none&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">107</field>
+    <field name="asset_id">84</field>
+    <field name="title">Privacy Requests</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">cpanel-privacy</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_privacy_dashboard</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;cachemode&quot;:&quot;static&quot;,&quot;style&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">108</field>
+    <field name="asset_id">85</field>
+    <field name="title">Privacy Status</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">cpanel-privacy</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_privacy_status</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;cachemode&quot;:&quot;static&quot;,&quot;style&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;}</field>
+    <field name="client_id">1</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">109</field>
+    <field name="asset_id">96</field>
+    <field name="title">FaLang Language Switcher</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">header-c</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up">2023-04-24 09:52:32</field>
+    <field name="publish_down"></field>
+    <field name="published">0</field>
+    <field name="module">mod_falang</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;dropdown&quot;:&quot;1&quot;,&quot;advanced_dropdown&quot;:&quot;0&quot;,&quot;inline&quot;:&quot;1&quot;,&quot;show_active&quot;:&quot;0&quot;,&quot;image&quot;:&quot;0&quot;,&quot;show_name&quot;:&quot;1&quot;,&quot;full_name&quot;:&quot;0&quot;,&quot;header_text&quot;:&quot;&quot;,&quot;footer_text&quot;:&quot;&quot;,&quot;imagespath&quot;:&quot;&quot;,&quot;imagestype&quot;:&quot;gif&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;1&quot;,&quot;cache_time&quot;:&quot;900&quot;,&quot;cachemode&quot;:&quot;itemid&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">110</field>
+    <field name="asset_id">98</field>
+    <field name="title">Help</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">bottom-c</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up">2023-04-24 09:53:04</field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_help</field>
+    <field name="access">7</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">111</field>
+    <field name="asset_id">109</field>
+    <field name="title">Dashboard (Gestionnaires)</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">content-bottom-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up">2023-04-24 09:53:01</field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_dashboard_vue</field>
+    <field name="access">7</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;profile&quot;:[&quot;1&quot;,&quot;2&quot;],&quot;filter_programmes&quot;:&quot;0&quot;,&quot;colors&quot;:&quot;#16AFE1, #78dc6e&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">112</field>
+    <field name="asset_id">98</field>
+    <field name="title">Campagnes de candidature</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">content-bottom-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up">2023-04-24 09:38:59</field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_campaign</field>
+    <field name="access">9</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;default_tchooz&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;133&quot;,&quot;mod_em_campaign_link&quot;:&quot;connexion&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;month&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;start_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;desc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;1&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;1&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">113</field>
+    <field name="asset_id">111</field>
+    <field name="title">Détails d'une campagne</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">content-bottom-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up">2023-04-24 09:53:00</field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_campaign</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;tchooz_single_campaign&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;&quot;,&quot;mod_em_campaign_link&quot;:&quot;connexion&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;,&quot;past&quot;,&quot;all&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;start_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;asc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_param_showcampaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;0&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;0&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">114</field>
+    <field name="asset_id">110</field>
+    <field name="title">Mes dossiers</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">content-bottom-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_applications</field>
+    <field name="access">11</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;description&quot;:&quot;&quot;,&quot;show_add_application&quot;:&quot;0&quot;,&quot;position_add_application&quot;:&quot;3&quot;,&quot;show_show_campaigns&quot;:&quot;0&quot;,&quot;show_campaigns_url&quot;:&quot;liste-des-campagnes&quot;,&quot;cc_list_url&quot;:&quot;index.php?option=com_fabrik&amp;view=form&amp;formid=102&quot;,&quot;show_remove_files&quot;:&quot;1&quot;,&quot;show_archived_files&quot;:&quot;1&quot;,&quot;absolute_urls&quot;:&quot;1&quot;,&quot;order_applications&quot;:&quot;ecc.date_time&quot;,&quot;order_applications_asc_des&quot;:&quot;DESC&quot;,&quot;for_specific_profiles&quot;:&quot;&quot;,&quot;visible_status&quot;:&quot;&quot;,&quot;show_status&quot;:&quot;&quot;,&quot;mod_em_application_group&quot;:[],&quot;mod_em_application_group_title_other&quot;:&quot;&quot;,&quot;mod_em_applications_show_search&quot;:&quot;1&quot;,&quot;mod_em_applications_show_hello_text&quot;:&quot;1&quot;,&quot;mod_em_application_date_format&quot;:&quot;d\/m\/Y H:i&quot;,&quot;show_fnum&quot;:&quot;1&quot;,&quot;mod_emundus_applications_show_programme&quot;:&quot;1&quot;,&quot;mod_emundus_applications_show_end_date&quot;:&quot;1&quot;,&quot;show_progress&quot;:&quot;1&quot;,&quot;show_progress_color&quot;:&quot;#EA5012&quot;,&quot;show_progress_forms&quot;:&quot;0&quot;,&quot;show_progress_color_forms&quot;:&quot;#EA5012&quot;,&quot;show_progress_documents&quot;:&quot;0&quot;,&quot;show_progress_color_documents&quot;:&quot;#EA5012&quot;,&quot;admission_status&quot;:&quot;&quot;,&quot;add_admission_prefix&quot;:&quot;1&quot;,&quot;show_state_files&quot;:&quot;0&quot;,&quot;show_payment_status&quot;:&quot;0&quot;,&quot;tags&quot;:&quot;&quot;,&quot;mod_em_application_custom_actions&quot;:[],&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;moduleclass_sfx&quot;:&quot;list-group&quot;,&quot;cache&quot;:&quot;1&quot;,&quot;cache_time&quot;:&quot;900&quot;,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">115</field>
+    <field name="asset_id">103</field>
+    <field name="title">Menu utilisateur</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">header-c</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up">2023-04-24 09:57:26</field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_user_dropdown</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;menu_name&quot;:&quot;usermenu&quot;,&quot;primary_color&quot;:&quot;ECF0F1&quot;,&quot;secondary_color&quot;:&quot;3A84C1&quot;,&quot;show_logout&quot;:&quot;1&quot;,&quot;show_update&quot;:&quot;1&quot;,&quot;url_logout&quot;:&quot;index.php&quot;,&quot;icon&quot;:&quot;big circular user outline icon&quot;,&quot;intro&quot;:&quot;&quot;,&quot;link_login&quot;:&quot;connexion&quot;,&quot;link_register&quot;:&quot;inscription&quot;,&quot;link_forgotten_password&quot;:&quot;mot-de-passe-oublie&quot;,&quot;show_registration&quot;:&quot;0&quot;,&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;switch_profile_redirect&quot;:&quot;index.php&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">116</field>
+    <field name="asset_id">105</field>
+    <field name="title">Logo</field>
+    <field name="note"></field>
+    <field name="content">&lt;p&gt;&lt;a href=&quot;index.php&quot;&gt;&lt;img class=&quot;logo&quot; src=&quot;images/custom/logo.png&quot; alt=&quot;Logo de la plateforme&quot; width=&quot;250&quot; height=&quot;43&quot; /&gt;&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="ordering">1</field>
+    <field name="position">header-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_custom</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;prepare_content&quot;:0,&quot;backgroundimage&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">117</field>
+    <field name="asset_id">107</field>
+    <field name="title">eMundus - Back button</field>
+    <field name="note">Back button available on login and register views</field>
+    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button em-pointer&quot; href=&quot;http://localhost:8383/&quot;&gt;&lt;span class=&quot;material-icons em-mr-4&quot;&gt;navigate_before&lt;/span&gt;Retour à la page d'accueil&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="ordering">1</field>
+    <field name="position">header-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_custom</field>
+    <field name="access">9</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;prepare_content&quot;:0,&quot;backgroundimage&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;cachemode&quot;:&quot;static&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">118</field>
+    <field name="asset_id">108</field>
+    <field name="title">Menu</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">header-b</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up">2023-04-24 13:32:00</field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundusmenu</field>
+    <field name="access">11</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;display_applicant_menu&quot;:&quot;1&quot;,&quot;applicant_menu&quot;:&quot;applicantmenu&quot;,&quot;menu_style&quot;:&quot;tchooz_vertical&quot;,&quot;startLevel&quot;:&quot;0&quot;,&quot;endLevel&quot;:&quot;0&quot;,&quot;showAllChildren&quot;:&quot;1&quot;,&quot;displayTchooz&quot;:&quot;1&quot;,&quot;window_open&quot;:&quot;&quot;,&quot;show_whitespace&quot;:&quot;0&quot;,&quot;cache&quot;:&quot;0&quot;,&quot;tag_id&quot;:&quot;em_user_menu&quot;,&quot;class_sfx&quot;:&quot;gf-menu l1 emundus&quot;,&quot;moduleclass_sfx&quot;:&quot;menu-block&quot;,&quot;maxdepth&quot;:&quot;10&quot;,&quot;menu_images&quot;:&quot;0&quot;,&quot;menu_images_align&quot;:&quot;0&quot;,&quot;menu_images_link&quot;:&quot;0&quot;,&quot;expand_menu&quot;:&quot;0&quot;,&quot;activate_parent&quot;:&quot;0&quot;,&quot;full_active_id&quot;:&quot;0&quot;,&quot;indent_image&quot;:&quot;0&quot;,&quot;spacer&quot;:&quot;&quot;,&quot;end_spacer&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">119</field>
+    <field name="asset_id">108</field>
+    <field name="title">Campagnes de candidatures [CONNECTES]</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">content-bottom-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_campaign</field>
+    <field name="access">11</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;default_tchooz&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;133&quot;,&quot;mod_em_campaign_link&quot;:&quot;apply&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H:i&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;,&quot;past&quot;,&quot;all&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;month&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;end_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;desc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;1&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;1&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">120</field>
+    <field name="asset_id">107</field>
+    <field name="title">Footer</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">footer-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_footer</field>
+    <field name="access">1</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;mod_emundus_footer_client_link&quot;:&quot;&quot;,&quot;mod_emundus_footer_merge_two_columns&quot;:0,&quot;mod_emundus_footer_texte_col_1&quot;:&quot;&quot;,&quot;mod_emundus_footer_texte_col_2&quot;:&quot;&quot;,&quot;mod_emundus_footer_display_tchooz_logo&quot;:0,&quot;mod_emundus_footer_display_powered_by&quot;:1,&quot;mod_emundus_footer_legal_info&quot;:1,&quot;mod_emundus_footer_data_privacy&quot;:1,&quot;mod_emundus_footer_rights&quot;:1,&quot;mod_emundus_footer_cookies&quot;:1,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

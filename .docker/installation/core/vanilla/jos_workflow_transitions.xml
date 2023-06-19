@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__workflow_transitions">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="asset_id" Type="int" Null="YES" Key="MUL" Default="0" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="workflow_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="published" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="title" Type="varchar(255)" Null="NO" Key="MUL" Extra="" />
+   <field Field="description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="from_stage_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="to_stage_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="options" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="checked_out" Type="int unsigned" Null="YES" Key="MUL" Extra="" />
+   <key Table="#__workflow_transitions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflow_transitions" Non_unique="1" Key_name="idx_title" Seq_in_index="1" Column_name="title" Collation="A" Null="" Index_type="BTREE" Sub_part="191" Comment="" />
+   <key Table="#__workflow_transitions" Non_unique="1" Key_name="idx_asset_id" Seq_in_index="1" Column_name="asset_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflow_transitions" Non_unique="1" Key_name="idx_checked_out" Seq_in_index="1" Column_name="checked_out" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflow_transitions" Non_unique="1" Key_name="idx_from_stage_id" Seq_in_index="1" Column_name="from_stage_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflow_transitions" Non_unique="1" Key_name="idx_to_stage_id" Seq_in_index="1" Column_name="to_stage_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflow_transitions" Non_unique="1" Key_name="idx_workflow_id" Seq_in_index="1" Column_name="workflow_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__workflow_transitions">
+   <row>
+    <field name="id">1</field>
+    <field name="asset_id">58</field>
+    <field name="ordering">1</field>
+    <field name="workflow_id">1</field>
+    <field name="published">1</field>
+    <field name="title">UNPUBLISH</field>
+    <field name="description"></field>
+    <field name="from_stage_id">-1</field>
+    <field name="to_stage_id">1</field>
+    <field name="options">{&quot;publishing&quot;:&quot;0&quot;}</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="asset_id">59</field>
+    <field name="ordering">2</field>
+    <field name="workflow_id">1</field>
+    <field name="published">1</field>
+    <field name="title">PUBLISH</field>
+    <field name="description"></field>
+    <field name="from_stage_id">-1</field>
+    <field name="to_stage_id">1</field>
+    <field name="options">{&quot;publishing&quot;:&quot;1&quot;}</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="asset_id">60</field>
+    <field name="ordering">3</field>
+    <field name="workflow_id">1</field>
+    <field name="published">1</field>
+    <field name="title">TRASH</field>
+    <field name="description"></field>
+    <field name="from_stage_id">-1</field>
+    <field name="to_stage_id">1</field>
+    <field name="options">{&quot;publishing&quot;:&quot;-2&quot;}</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="asset_id">61</field>
+    <field name="ordering">4</field>
+    <field name="workflow_id">1</field>
+    <field name="published">1</field>
+    <field name="title">ARCHIVE</field>
+    <field name="description"></field>
+    <field name="from_stage_id">-1</field>
+    <field name="to_stage_id">1</field>
+    <field name="options">{&quot;publishing&quot;:&quot;2&quot;}</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="asset_id">62</field>
+    <field name="ordering">5</field>
+    <field name="workflow_id">1</field>
+    <field name="published">1</field>
+    <field name="title">FEATURE</field>
+    <field name="description"></field>
+    <field name="from_stage_id">-1</field>
+    <field name="to_stage_id">1</field>
+    <field name="options">{&quot;featuring&quot;:&quot;1&quot;}</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="asset_id">63</field>
+    <field name="ordering">6</field>
+    <field name="workflow_id">1</field>
+    <field name="published">1</field>
+    <field name="title">UNFEATURE</field>
+    <field name="description"></field>
+    <field name="from_stage_id">-1</field>
+    <field name="to_stage_id">1</field>
+    <field name="options">{&quot;featuring&quot;:&quot;0&quot;}</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="asset_id">64</field>
+    <field name="ordering">7</field>
+    <field name="workflow_id">1</field>
+    <field name="published">1</field>
+    <field name="title">PUBLISH_AND_FEATURE</field>
+    <field name="description"></field>
+    <field name="from_stage_id">-1</field>
+    <field name="to_stage_id">1</field>
+    <field name="options">{&quot;publishing&quot;:&quot;1&quot;,&quot;featuring&quot;:&quot;1&quot;}</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

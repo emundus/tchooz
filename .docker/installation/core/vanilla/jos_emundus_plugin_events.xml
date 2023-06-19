@@ -1,0 +1,889 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_plugin_events">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="label" Type="varchar(100)" Null="NO" Key="UNI" Extra="" />
+   <field Field="published" Type="tinyint(1)" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="category" Type="varchar(50)" Null="YES" Key="" Extra="" />
+   <field Field="description" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="label_translate" Type="varchar(100)" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_plugin_events" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_plugin_events" Non_unique="0" Key_name="jos_emundus_plugin_events_label_uindex" Seq_in_index="1" Column_name="label" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_plugin_events">
+   <row>
+    <field name="id">1</field>
+    <field name="label">onBeforeStatusChange</field>
+    <field name="published">1</field>
+    <field name="category">Status</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="label">onAfterStatusChange</field>
+    <field name="published">1</field>
+    <field name="category">Status</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="label">onBeforePublishChange</field>
+    <field name="published">1</field>
+    <field name="category">File</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="label">onAfterPublishChange</field>
+    <field name="published">1</field>
+    <field name="category">File</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="label">onBeforeDeleteFile</field>
+    <field name="published">1</field>
+    <field name="category">File</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="label">onAfterDeleteFile</field>
+    <field name="published">1</field>
+    <field name="category">File</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="label">onBeforeSaveEmundusUser</field>
+    <field name="published">1</field>
+    <field name="category">User</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="label">onAfterSaveEmundusUser</field>
+    <field name="published">1</field>
+    <field name="category">User</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="label">onBeforeAddUserToGroup</field>
+    <field name="published">1</field>
+    <field name="category">User</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="label">onAfterAddUserToGroup</field>
+    <field name="published">1</field>
+    <field name="category">User</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="label">onBeforeAddUserProfile</field>
+    <field name="published">1</field>
+    <field name="category">User</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="label">onAfterAddUserProfile</field>
+    <field name="published">1</field>
+    <field name="category">User</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="label">onBeforeCampaignCandidature</field>
+    <field name="published">1</field>
+    <field name="category">File</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="label">onAfterCampaignCandidature</field>
+    <field name="published">1</field>
+    <field name="category">File</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="label">onBeforeCampaignCreate</field>
+    <field name="published">1</field>
+    <field name="category">Camapign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="label">onAfterCampaignCreate</field>
+    <field name="published">1</field>
+    <field name="category">Camapign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">17</field>
+    <field name="label">onBeforeCampaignUnpublish</field>
+    <field name="published">1</field>
+    <field name="category">Camapign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">18</field>
+    <field name="label">onAfterCampaignUnpublish</field>
+    <field name="published">1</field>
+    <field name="category">Camapign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">19</field>
+    <field name="label">onBeforeCampaignDelete</field>
+    <field name="published">1</field>
+    <field name="category">Camapign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">20</field>
+    <field name="label">onAfterCampaignDelete</field>
+    <field name="published">1</field>
+    <field name="category">Camapign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">21</field>
+    <field name="label">onBeforeProgramCreate</field>
+    <field name="published">1</field>
+    <field name="category">Program</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">22</field>
+    <field name="label">onAfterProgramCreate</field>
+    <field name="published">1</field>
+    <field name="category">Program</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">23</field>
+    <field name="label">onBeforeProgramUpdate</field>
+    <field name="published">1</field>
+    <field name="category">Program</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">24</field>
+    <field name="label">onAfterProgramUpdate</field>
+    <field name="published">1</field>
+    <field name="category">Program</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">25</field>
+    <field name="label">onBeforeProgramDelete</field>
+    <field name="published">1</field>
+    <field name="category">Program</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">26</field>
+    <field name="label">onAfterProgramDelete</field>
+    <field name="published">1</field>
+    <field name="category">Program</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="label">onBeforeLoad</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">28</field>
+    <field name="label">onLoad</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">29</field>
+    <field name="label">onJSReady</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">30</field>
+    <field name="label">onJSOpts</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">31</field>
+    <field name="label">onCanEditGroup</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">32</field>
+    <field name="label">onBeforeProcess</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">33</field>
+    <field name="label">onBeforeStore</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">34</field>
+    <field name="label">onBeforeCalculations</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">35</field>
+    <field name="label">onAfterProcess</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">36</field>
+    <field name="label">onError</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">37</field>
+    <field name="label">getTopContent</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">38</field>
+    <field name="label">getBottomContent</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">39</field>
+    <field name="label">getEndContent</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">40</field>
+    <field name="label">onDeleteRowsForm</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">41</field>
+    <field name="label">onAfterDeleteRowsForm</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">42</field>
+    <field name="label">onSavePage</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">43</field>
+    <field name="label">onElementCanUse</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">44</field>
+    <field name="label">onElementCanView</field>
+    <field name="published">1</field>
+    <field name="category">Form</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">45</field>
+    <field name="label">onBeforeEmailUpdate</field>
+    <field name="published">1</field>
+    <field name="category">Email</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">46</field>
+    <field name="label">onAfterEmailUpdate</field>
+    <field name="published">1</field>
+    <field name="category">Email</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">47</field>
+    <field name="label">onBeforeEmailCreate</field>
+    <field name="published">1</field>
+    <field name="category">Email</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">48</field>
+    <field name="label">onAfterEmailCreate</field>
+    <field name="published">1</field>
+    <field name="category">Email</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">49</field>
+    <field name="label">onBeforeEmailDelete</field>
+    <field name="published">1</field>
+    <field name="category">Email</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">50</field>
+    <field name="label">onAfterEmailDelete</field>
+    <field name="published">1</field>
+    <field name="category">Email</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">51</field>
+    <field name="label">onBeforeTagAdd</field>
+    <field name="published">1</field>
+    <field name="category">Tag</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">52</field>
+    <field name="label">onAfterTagAdd</field>
+    <field name="published">1</field>
+    <field name="category">Tag</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">53</field>
+    <field name="label">onBeforePdfExport</field>
+    <field name="published">1</field>
+    <field name="category">Export</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">54</field>
+    <field name="label">onAfterPdfExport</field>
+    <field name="published">1</field>
+    <field name="category">Export</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">55</field>
+    <field name="label">onBeforeExcelExport</field>
+    <field name="published">1</field>
+    <field name="category">Export</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">56</field>
+    <field name="label">onAfterExcelExport</field>
+    <field name="published">1</field>
+    <field name="category">Export</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">57</field>
+    <field name="label">onBeforeZipExport</field>
+    <field name="published">1</field>
+    <field name="category">Export</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">58</field>
+    <field name="label">onAfterZipExport</field>
+    <field name="published">1</field>
+    <field name="category">Export</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">59</field>
+    <field name="label">onBeforeLetterExport</field>
+    <field name="published">1</field>
+    <field name="category">Export</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">60</field>
+    <field name="label">onAfterLetterExport</field>
+    <field name="published">1</field>
+    <field name="category">Export</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">61</field>
+    <field name="label">onBeforeEmailSend</field>
+    <field name="published">1</field>
+    <field name="category">Email</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">62</field>
+    <field name="label">onAfterEmailSend</field>
+    <field name="published">1</field>
+    <field name="category">Email</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">63</field>
+    <field name="label">onBeforeCommentUpdate</field>
+    <field name="published">1</field>
+    <field name="category">Comment</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">64</field>
+    <field name="label">onAfterCommentUpdate</field>
+    <field name="published">1</field>
+    <field name="category">Comment</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">65</field>
+    <field name="label">onBeforeDocumentCreate</field>
+    <field name="published">1</field>
+    <field name="category">Document</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">66</field>
+    <field name="label">onAfterDocumentCreate</field>
+    <field name="published">1</field>
+    <field name="category">Document</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">67</field>
+    <field name="label">onBeforeDocumentDelete</field>
+    <field name="published">1</field>
+    <field name="category">Document</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">68</field>
+    <field name="label">onAfterDocumentDelete</field>
+    <field name="published">1</field>
+    <field name="category">Document</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">69</field>
+    <field name="label">onCreateNewFile</field>
+    <field name="published">1</field>
+    <field name="category">File</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">70</field>
+    <field name="label">onExportFiles</field>
+    <field name="published">1</field>
+    <field name="category">Export</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">71</field>
+    <field name="label">onBeforeGroupCreate</field>
+    <field name="published">1</field>
+    <field name="category">Group</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">72</field>
+    <field name="label">onAfterGroupCreate</field>
+    <field name="published">1</field>
+    <field name="category">Group</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">73</field>
+    <field name="label">onBeforeGroupUpdate</field>
+    <field name="published">1</field>
+    <field name="category">Group</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">74</field>
+    <field name="label">onAfterGroupUpdate</field>
+    <field name="published">1</field>
+    <field name="category">Group</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">75</field>
+    <field name="label">onBeforeGroupDelete</field>
+    <field name="published">1</field>
+    <field name="category">Group</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">76</field>
+    <field name="label">onAfterGroupDelete</field>
+    <field name="published">1</field>
+    <field name="category">Group</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">77</field>
+    <field name="label">onBeforeCampaignPublish</field>
+    <field name="published">1</field>
+    <field name="category">Camapign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">78</field>
+    <field name="label">onAfterCampaignPublish</field>
+    <field name="published">1</field>
+    <field name="category">Camapign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">79</field>
+    <field name="label">onBeforeCampaignUpdate</field>
+    <field name="published">1</field>
+    <field name="category">Camapign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">80</field>
+    <field name="label">onAfterCampaignUpdate</field>
+    <field name="published">1</field>
+    <field name="category">Camapign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">81</field>
+    <field name="label">onBeforeTagRemove</field>
+    <field name="published">1</field>
+    <field name="category">Tag</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">82</field>
+    <field name="label">onAfterTagRemove</field>
+    <field name="published">1</field>
+    <field name="category">Tag</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">83</field>
+    <field name="label">onBeforeImportCSV</field>
+    <field name="published">1</field>
+    <field name="category">Import</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">84</field>
+    <field name="label">onAfterImportCSV</field>
+    <field name="published">1</field>
+    <field name="category">Import</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">85</field>
+    <field name="label">onAfterCopyApplication</field>
+    <field name="published">1</field>
+    <field name="category">Campaign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">86</field>
+    <field name="label">onBeforeCommentAdd</field>
+    <field name="published">1</field>
+    <field name="category">Comment</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">87</field>
+    <field name="label">onAfterCommentAdd</field>
+    <field name="published">1</field>
+    <field name="category">Comment</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">88</field>
+    <field name="label">onUserLogin</field>
+    <field name="published">1</field>
+    <field name="category">User</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">89</field>
+    <field name="label">onAfterAttachmentUpload</field>
+    <field name="published">1</field>
+    <field name="category">Attachment</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">90</field>
+    <field name="label">onAfterProfileAttachmentUpload</field>
+    <field name="published">1</field>
+    <field name="category">Attachment</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">91</field>
+    <field name="label">onAfterProfileAttachmentDelete</field>
+    <field name="published">1</field>
+    <field name="category">Attachment</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">92</field>
+    <field name="label">onBeforeMultipleStatusChange</field>
+    <field name="published">1</field>
+    <field name="category">Status</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">93</field>
+    <field name="label">onHikashopBeforeOrderCreate</field>
+    <field name="published">0</field>
+    <field name="category">Hikashop</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">94</field>
+    <field name="label">onHikashopAfterOrderCreate</field>
+    <field name="published">0</field>
+    <field name="category">Hikashop</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">95</field>
+    <field name="label">onHikashopBeforeOrderUpdate</field>
+    <field name="published">0</field>
+    <field name="category">Hikashop</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">96</field>
+    <field name="label">onHikashopAfterOrderUpdate</field>
+    <field name="published">0</field>
+    <field name="category">Hikashop</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">97</field>
+    <field name="label">onHikashopAfterOrderConfirm</field>
+    <field name="published">0</field>
+    <field name="category">Hikashop</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">98</field>
+    <field name="label">onHikashopAfterOrderDelete</field>
+    <field name="published">0</field>
+    <field name="category">Hikashop</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">99</field>
+    <field name="label">onHikashopCheckoutWorkflowLoad</field>
+    <field name="published">0</field>
+    <field name="category">Hikashop</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">100</field>
+    <field name="label">onHikashopBeforeProductListingLoad</field>
+    <field name="published">0</field>
+    <field name="category">Hikashop</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">101</field>
+    <field name="label">onAfterGenerateLetters</field>
+    <field name="published">0</field>
+    <field name="category">Files</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">105</field>
+    <field name="label">onRenderEvaluation</field>
+    <field name="published">0</field>
+    <field name="category">Evaluation</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">106</field>
+    <field name="label">onBeforeSubmitEvaluation</field>
+    <field name="published">0</field>
+    <field name="category">Evaluation</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">107</field>
+    <field name="label">onAfterSubmitEvaluation</field>
+    <field name="published">0</field>
+    <field name="category">Evaluation</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">108</field>
+    <field name="label">onHikashopAfterCheckoutStep</field>
+    <field name="published">1</field>
+    <field name="category">Hikashop</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">109</field>
+    <field name="label">onHikashopAfterCartProductsLoad</field>
+    <field name="published">1</field>
+    <field name="category">Hikashop</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">110</field>
+    <field name="label">onBeforeRenderApplications</field>
+    <field name="published">1</field>
+    <field name="category">Applicant</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">111</field>
+    <field name="label">onWebhookCallbackProcess</field>
+    <field name="published">1</field>
+    <field name="category">Webhook</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+   <row>
+    <field name="id">112</field>
+    <field name="label">onAfterMoveApplication</field>
+    <field name="published">0</field>
+    <field name="category">Campaign</field>
+    <field name="description"></field>
+    <field name="label_translate"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

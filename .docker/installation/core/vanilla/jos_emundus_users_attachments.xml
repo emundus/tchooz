@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_users_attachments">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="date" Null="NO" Key="" Extra="" />
+   <field Field="user_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="attachment_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="filename" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="expires_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="published" Type="tinyint(1)" Null="YES" Key="" Default="1" Extra="" />
+   <field Field="validation" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <key Table="#__emundus_users_attachments" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_attachments" Non_unique="1" Key_name="jos_emundus_users_attachments_fk_attachment_id" Seq_in_index="1" Column_name="attachment_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_attachments" Non_unique="1" Key_name="jos_emundus_users_attachments_jos_emundus_users_user_id_fk" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

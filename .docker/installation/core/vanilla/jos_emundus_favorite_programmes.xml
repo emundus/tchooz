@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_favorite_programmes">
+   <field Field="id" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="user_id" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="programme_id" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED on update CURRENT_TIMESTAMP" />
+  </table_structure>
+ </database>
+</mysqldump>

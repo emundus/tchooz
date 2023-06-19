@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__associations">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="" />
+   <field Field="context" Type="varchar(50)" Null="NO" Key="PRI" Extra="" />
+   <field Field="key" Type="char(32)" Null="NO" Key="MUL" Extra="" />
+   <key Table="#__associations" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="context" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__associations" Non_unique="0" Key_name="PRIMARY" Seq_in_index="2" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__associations" Non_unique="1" Key_name="idx_key" Seq_in_index="1" Column_name="key" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

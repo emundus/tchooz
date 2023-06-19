@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_cv">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="user" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="fnum" Type="varchar(255)" Null="YES" Key="UNI" Extra="" />
+   <field Field="email" Type="varchar(50)" Null="YES" Key="" Extra="" />
+   <field Field="first_name" Type="varchar(50)" Null="YES" Key="" Extra="" />
+   <field Field="last_name" Type="varchar(50)" Null="YES" Key="" Extra="" />
+   <field Field="birth_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="grade" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="time_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="start_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="end_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="Organisation" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="Present_employment" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="industry" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="country" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="nature" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="description" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_325_7742" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_325_7743" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_cv" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_cv" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_cv" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_users">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="user_id" Type="int" Null="NO" Key="UNI" Extra="" />
+   <field Field="registerDate" Type="timestamp" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="firstname" Type="varchar(100)" Null="NO" Key="MUL" Extra="" />
+   <field Field="lastname" Type="varchar(100)" Null="NO" Key="MUL" Extra="" />
+   <field Field="profile" Type="int" Null="NO" Key="MUL" Default="1000" Extra="" />
+   <field Field="schoolyear" Type="varchar(20)" Null="YES" Key="" Extra="" />
+   <field Field="disabled" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="disabled_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="cancellation_date" Type="date" Null="YES" Key="" Extra="" />
+   <field Field="cancellation_received" Type="date" Null="YES" Key="" Extra="" />
+   <field Field="university_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="email" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="password" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="name" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="confirm_email" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="terms_and_conditions" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="campaign_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="category" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="civility" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="tel" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="grade" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="cnu" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="employeur" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="rapporteur_externe" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="captcha" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="profile_picture" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="nationality" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="default_language" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="birth_date" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="email_cc" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="data_privacy_link" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_users" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users" Non_unique="0" Key_name="fb_join_user_id_INDEX" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users" Non_unique="1" Key_name="university_id" Seq_in_index="1" Column_name="university_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users" Non_unique="1" Key_name="profile" Seq_in_index="1" Column_name="profile" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users" Non_unique="1" Key_name="firstname" Seq_in_index="1" Column_name="firstname" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users" Non_unique="1" Key_name="lastname" Seq_in_index="1" Column_name="lastname" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users" Non_unique="1" Key_name="disabled" Seq_in_index="1" Column_name="disabled" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users" Non_unique="1" Key_name="registerDate" Seq_in_index="1" Column_name="registerDate" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users" Non_unique="1" Key_name="campaign_id" Seq_in_index="1" Column_name="campaign_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_users">
+   <row>
+    <field name="id">1</field>
+    <field name="user_id">62</field>
+    <field name="registerDate">2023-03-20 16:27:34</field>
+    <field name="firstname">Administrator</field>
+    <field name="lastname">System</field>
+    <field name="profile">1</field>
+    <field name="schoolyear"></field>
+    <field name="disabled">0</field>
+    <field name="disabled_date"></field>
+    <field name="cancellation_date"></field>
+    <field name="cancellation_received"></field>
+    <field name="university_id">0</field>
+    <field name="email"></field>
+    <field name="password"></field>
+    <field name="name"></field>
+    <field name="confirm_email"></field>
+    <field name="terms_and_conditions"></field>
+    <field name="campaign_id"></field>
+    <field name="category"></field>
+    <field name="civility"></field>
+    <field name="tel"></field>
+    <field name="grade"></field>
+    <field name="cnu"></field>
+    <field name="employeur"></field>
+    <field name="rapporteur_externe"></field>
+    <field name="captcha"></field>
+    <field name="profile_picture"></field>
+    <field name="nationality"></field>
+    <field name="default_language"></field>
+    <field name="birth_date"></field>
+    <field name="email_cc"></field>
+    <field name="data_privacy_link"></field>
+   </row>
+   <row>
+    <field name="id">95</field>
+    <field name="user_id">95</field>
+    <field name="registerDate">2023-03-20 16:27:34</field>
+    <field name="firstname">Dev</field>
+    <field name="lastname">eMundus Dev</field>
+    <field name="profile">2</field>
+    <field name="schoolyear"></field>
+    <field name="disabled">0</field>
+    <field name="disabled_date">0000-00-00 00:00:00</field>
+    <field name="cancellation_date"></field>
+    <field name="cancellation_received"></field>
+    <field name="university_id">0</field>
+    <field name="email">dev@emundus.io</field>
+    <field name="password"></field>
+    <field name="name"></field>
+    <field name="confirm_email"></field>
+    <field name="terms_and_conditions"></field>
+    <field name="campaign_id"></field>
+    <field name="category"></field>
+    <field name="civility"></field>
+    <field name="tel"></field>
+    <field name="grade"></field>
+    <field name="cnu"></field>
+    <field name="employeur"></field>
+    <field name="rapporteur_externe"></field>
+    <field name="captcha"></field>
+    <field name="profile_picture"></field>
+    <field name="nationality"></field>
+    <field name="default_language"></field>
+    <field name="birth_date"></field>
+    <field name="email_cc"></field>
+    <field name="data_privacy_link"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_campaigns">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="user" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="label" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="description" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="short_description" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="start_date" Type="datetime" Null="YES" Key="MUL" Extra="" />
+   <field Field="end_date" Type="datetime" Null="YES" Key="MUL" Extra="" />
+   <field Field="profile_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="training" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="year" Type="varchar(20)" Null="YES" Key="MUL" Extra="" />
+   <field Field="published" Type="text" Null="YES" Key="MUL" Extra="" />
+   <field Field="eval_end_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="admission_start_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="admission_end_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="is_limited" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="limit" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="limit_status" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="pinned" Type="tinyint(1)" Null="YES" Key="" Extra="" />
+   <field Field="eval_start_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_setup_campaigns" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="profile_id" Seq_in_index="1" Column_name="profile_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="year" Seq_in_index="1" Column_name="year" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="fb_filter_training_INDEX" Seq_in_index="1" Column_name="training" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="fb_filter_published_INDEX" Seq_in_index="1" Column_name="published" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="fb_order_label_INDEX" Seq_in_index="1" Column_name="label" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="fb_order_start_date_INDEX" Seq_in_index="1" Column_name="start_date" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="fb_order_end_date_INDEX" Seq_in_index="1" Column_name="end_date" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_campaigns">
+   <row>
+    <field name="id">3</field>
+    <field name="date_time">2023-06-16 14:29:26</field>
+    <field name="user">95</field>
+    <field name="label">Campagne 1</field>
+    <field name="description"></field>
+    <field name="short_description"></field>
+    <field name="start_date">2023-06-15 14:29:38</field>
+    <field name="end_date">2024-06-16 14:29:45</field>
+    <field name="profile_id">9</field>
+    <field name="training">programme1-648c546bc1234</field>
+    <field name="year">2023</field>
+    <field name="published">1</field>
+    <field name="eval_end_date"></field>
+    <field name="admission_start_date"></field>
+    <field name="admission_end_date"></field>
+    <field name="is_limited"></field>
+    <field name="limit"></field>
+    <field name="limit_status"></field>
+    <field name="pinned"></field>
+    <field name="eval_start_date"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_csv_import">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="csv_file" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="campaign" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="profile" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="import_file_model" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="create_new_fnum" Type="int" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_setup_csv_import" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

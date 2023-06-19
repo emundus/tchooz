@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_users_profiles">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="user_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="profile_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="start_date" Type="datetime" Null="YES" Key="" Default="0000-00-00 00:00:00" Extra="" />
+   <field Field="end_date" Type="datetime" Null="YES" Key="" Default="0000-00-00 00:00:00" Extra="" />
+   <key Table="#__emundus_users_profiles" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_profiles" Non_unique="1" Key_name="profile_id" Seq_in_index="1" Column_name="profile_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_profiles" Non_unique="1" Key_name="user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_profiles" Non_unique="1" Key_name="user_id" Seq_in_index="2" Column_name="profile_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_users_profiles">
+   <row>
+    <field name="id">3</field>
+    <field name="date_time">2023-03-23 10:14:18</field>
+    <field name="user_id">95</field>
+    <field name="profile_id">2</field>
+    <field name="start_date">0000-00-00 00:00:00</field>
+    <field name="end_date">0000-00-00 00:00:00</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="date_time">2023-03-23 10:14:18</field>
+    <field name="user_id">95</field>
+    <field name="profile_id">9</field>
+    <field name="start_date"></field>
+    <field name="end_date"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -1,0 +1,403 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_emails">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="lbl" Type="varchar(255)" Null="YES" Key="UNI" Extra="" />
+   <field Field="subject" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="emailfrom" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="message" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="name" Type="varchar(250)" Null="YES" Key="MUL" Extra="" />
+   <field Field="type" Type="tinyint" Null="NO" Key="" Default="2" Extra="" />
+   <field Field="published" Type="int" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="email_tmpl" Type="int" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="letter_attachment" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="candidate_attachment" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="category" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="cci" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="tags" Type="int" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_setup_emails" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_emails" Non_unique="0" Key_name="lbl" Seq_in_index="1" Column_name="lbl" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_emails" Non_unique="1" Key_name="fb_tableorder_name_INDEX" Seq_in_index="1" Column_name="name" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_emails" Non_unique="1" Key_name="fb_filter_subject_INDEX" Seq_in_index="1" Column_name="subject" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_setup_emails" Non_unique="1" Key_name="fb_filter_category_INDEX" Seq_in_index="1" Column_name="category" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_emails">
+   <row>
+    <field name="id">1</field>
+    <field name="lbl">confirm_post</field>
+    <field name="subject">Application form sent / Dossier de candidature envoyé</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Congratulations, you have posted your application form.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;F&amp;eacute;licitations, vous venez d'envoyer votre dossier de candidature.&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment">0</field>
+    <field name="candidate_attachment">0</field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags">0</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="lbl">attachment</field>
+    <field name="subject">An attachment has been uploaded to your application file / Un document a été téléchargé sur votre dossier</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Dear [NAME],&lt;/p&gt;
+&lt;p&gt;A new document has been uploaded on your application file.&lt;/p&gt;
+&lt;p&gt;Best regards,&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Cher [NAME],&lt;/p&gt;
+&lt;p&gt;Un nouveau document a &amp;eacute;t&amp;eacute; ajout&amp;eacute; &amp;agrave; votre dossier de candidature.&lt;/p&gt;
+&lt;p&gt;Cordialement,&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment">0</field>
+    <field name="candidate_attachment">0</field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags">0</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="lbl">new_account</field>
+    <field name="subject">New account information / Nouveau compte</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Your name : [NAME] &lt;br /&gt;Your email : [EMAIL] &lt;br /&gt;Your username : [USERNAME] &lt;br /&gt;Your password : [PASSWORD]&lt;/p&gt;
+&lt;p&gt;Dear [NAME], &lt;br /&gt;A new account has been created for you for the application plateform : &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;&lt;br /&gt;Kind Regards,&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Votre nom : [NAME] &lt;br /&gt;Votre email : [EMAIL] &lt;br /&gt;Votre nom d'utilisateur : [USERNAME] &lt;br /&gt;Votre mot de passe : [PASSWORD]&lt;/p&gt;
+&lt;p&gt;Cher [NAME], &lt;br /&gt;Un nouveau compte a &amp;eacute;t&amp;eacute; cr&amp;eacute;&amp;eacute; pour vous sur la plateforme de candidature : &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;&lt;br /&gt;Cordialement,&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment"></field>
+    <field name="candidate_attachment"></field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="lbl">referent_letter</field>
+    <field name="subject">Request for a letter of recommendation / Sollicitation de lettre de recommandation</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Dear Colleague,&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;You have been chosen by [NAME] ([EMAIL]) to be his referee to complete her/his application to our program. &lt;br /&gt;Please &lt;a href=&quot;[UPLOAD_URL]&quot;&gt;upload the recommendation letter&lt;/a&gt; by using the following link.&lt;/p&gt;
+&lt;p&gt;Notice that the application of the student will have an &quot;incomplete status&quot; unless you &lt;a href=&quot;[UPLOAD_URL]&quot;&gt;add the letter&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In case you would not like to add a recommendation letter for this student, please let her/him know.&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Thank you for your collaboration.&lt;/p&gt;
+&lt;p&gt;Sincerely,&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p&gt;P.S.: please note that you may only &lt;a href=&quot;[UPLOAD_URL]&quot;&gt;upload one document&lt;/a&gt; for each student.&lt;/p&gt;
+&lt;p&gt;Click &lt;a href=&quot;[UPLOAD_URL]&quot;&gt;HERE &lt;/a&gt;to upload reference letter.&lt;/p&gt;
+&lt;p&gt;If link does not work, please copy and paste that hyperlink in your browser: [UPLOAD_URL]&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Cher Coll&amp;egrave;gue,&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;Vous avez &amp;eacute;t&amp;eacute; s&amp;eacute;lectionn&amp;eacute; par [NAME] ([EMAIL]) pour &amp;ecirc;tre son r&amp;eacute;f&amp;eacute;rent afin qu'il/elle puisse finaliser leur candidature. &lt;br /&gt;Veuillez &lt;a href=&quot;[UPLOAD_URL]&quot;&gt;t&amp;eacute;l&amp;eacute;charger votre lettre de recommandation&lt;/a&gt; en suivant le lien.&lt;/p&gt;
+&lt;p&gt;Le dossier de candidature restera en statut &quot;incomplet&quot; tant que vous &lt;a href=&quot;[UPLOAD_URL]&quot;&gt;n'envoyez pas la lettre&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Merci de votre collaboration.&lt;/p&gt;
+&lt;p&gt;Cordialement,&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p&gt;P.S.: Vous ne pouvez envoyer qu'un seul document.&lt;/p&gt;
+&lt;p&gt;Si le lien ne fonctionne pas, veuillez copier et coller le lien suivant dans votre navigateur : [UPLOAD_URL]&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">0</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment"></field>
+    <field name="candidate_attachment"></field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="lbl">attachment_notification</field>
+    <field name="subject">Attachment have been uploaded for applicant / Nouveau document téléchargé sur un dossier</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;A new document has been uploaded on personal page of [NAME].&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Un nouveau document a &amp;eacute;t&amp;eacute; ajout&amp;eacute; au dossier de candidature de [NAME].&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment">0</field>
+    <field name="candidate_attachment">0</field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags">0</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="lbl">reminder</field>
+    <field name="subject">Application not finished / Dossier non-terminé</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Dear [NAME],&lt;br /&gt;&lt;br /&gt;Your application for [CAMPAIGN_LABEL] is not yet complete. Please complete it in order to finish your application.&lt;/p&gt;
+&lt;p&gt;You can access to our website by this address: &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;. Remember the deadline is the [CAMPAIGN_END].&lt;/p&gt;
+&lt;p&gt;Sincerely,&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Cher [NAME],&lt;/p&gt;
+&lt;p&gt;Votre candidature pour [CAMPAIGN_LABEL] n'est pas encore termin&amp;eacute;e. Veuillez la renseigner afin de pouvoir envoyer votre dossier.&lt;/p&gt;
+&lt;p&gt;Vous pouvez acc&amp;eacute;der au site via cette adresse : &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;.&lt;br /&gt;N'oubliez pas que la date limite est le : [CAMPAIGN_END].&lt;/p&gt;
+&lt;p&gt;Cordialement,&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment"></field>
+    <field name="candidate_attachment"></field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">72</field>
+    <field name="lbl">registration_email</field>
+    <field name="subject">Activate your account / Activez votre compte</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;[USER_NAME],&lt;/p&gt;
+&lt;p&gt;Thank you for signing up to the application platform.&lt;/p&gt;
+&lt;p&gt;In order to activate your account please click on the link below:&amp;nbsp;&lt;/p&gt;
+&lt;table style=&quot;margin-left: auto; margin-right: auto;&quot; border=&quot;0&quot;&gt;
+    &lt;tbody&gt;
+    &lt;tr&gt;
+        &lt;td&gt;
+            &lt;table border=&quot;0&quot;&gt;
+                &lt;tbody&gt;
+                &lt;tr&gt;
+                    &lt;td style=&quot;border-radius: 3px; text-align: center;&quot;&gt;&lt;a style=&quot;font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; background-color: #26a65b; text-decoration: none; border-radius: 3px; padding: 12px 18px; border: 1px solid #26a65b; display: inline-block;&quot; href=&quot;[ACTIVATION_URL]&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;ACTIVATE MY ACCOUNT&lt;/a&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;Your username: [USER_LOGIN]&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;[USER_NAME],&lt;/p&gt;
+&lt;p&gt;Merci de vous &amp;ecirc;tre inscrit sur la plateforme de candidature.&lt;/p&gt;
+&lt;p&gt;Afin de pouvoir activer votre compte, veuillez cliquer sur le lien ci-dessous :&amp;nbsp;&lt;/p&gt;
+&lt;table style=&quot;margin-left: auto; margin-right: auto;&quot; border=&quot;0&quot;&gt;
+    &lt;tbody&gt;
+    &lt;tr&gt;
+        &lt;td&gt;
+            &lt;table border=&quot;0&quot;&gt;
+                &lt;tbody&gt;
+                &lt;tr&gt;
+                    &lt;td style=&quot;border-radius: 3px; text-align: center;&quot;&gt;&lt;a style=&quot;font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; background-color: #26a65b; text-decoration: none; border-radius: 3px; padding: 12px 18px; border: 1px solid #26a65b; display: inline-block;&quot; href=&quot;[ACTIVATION_URL]&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;ACTIVER MON COMPTE&lt;/a&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&amp;nbsp;Votre login : [USER_LOGIN]&amp;nbsp;&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment">0</field>
+    <field name="candidate_attachment">0</field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags">0</field>
+   </row>
+   <row>
+    <field name="id">73</field>
+    <field name="lbl">delete_file</field>
+    <field name="subject">Application file deleted / Dossier supprimé</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Dear [NAME],&lt;/p&gt;
+&lt;p&gt;Your application file &lt;strong&gt;&lt;em&gt;[FNUM]&lt;/em&gt;&lt;/strong&gt; has been deleted.&lt;/p&gt;
+&lt;p&gt;A zip file containing the data deleted is attached to this email.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Bonjour [NAME],&lt;/p&gt;
+&lt;p&gt;Votre dossier de candidature &lt;strong&gt;&lt;em&gt;[FNUM]&lt;/em&gt;&lt;/strong&gt; vient d'&amp;ecirc;tre supprim&amp;eacute;.&lt;/p&gt;
+&lt;p&gt;Ci-joint, une archive des informations qui ont &amp;eacute;t&amp;eacute; supprim&amp;eacute;es.&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment"></field>
+    <field name="candidate_attachment"></field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">74</field>
+    <field name="lbl">delete_user</field>
+    <field name="subject">User account deleted / Compte utilisateur supprimé</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Hello [NAME],&lt;/p&gt;
+&lt;p&gt;Your account has been deleted.&lt;br /&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Bonjour [NAME],&lt;/p&gt;
+&lt;p&gt;Votre compte utilisateur a &amp;eacute;t&amp;eacute; supprim&amp;eacute;.&lt;br /&gt;&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment">0</field>
+    <field name="candidate_attachment">0</field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags">0</field>
+   </row>
+   <row>
+    <field name="id">75</field>
+    <field name="lbl">regenerate_password</field>
+    <field name="subject">Password reset / Regénération de votre mot de passe</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Hello,&lt;/p&gt;
+&lt;p&gt;Here is your new password: &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;We strongly recommend that you change it new time you log in.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Bonjour,&lt;/p&gt;
+&lt;p&gt;Voici votre nouveau mot de passe : &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;N'oubliez pas de le modifier lors de votre prochaine connexion.&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment">0</field>
+    <field name="candidate_attachment">0</field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags">0</field>
+   </row>
+   <row>
+    <field name="id">76</field>
+    <field name="lbl">share_with_evaluator</field>
+    <field name="subject">Access to application files / Accès aux dossiers de candidature</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Bonjour [NAME],&lt;/p&gt;
+&lt;p&gt;De nouveaux dossiers de candidature sont disponibles sur la plateforme :&lt;/p&gt;
+&lt;p&gt;[FNUMS]&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Dear [NAME],&lt;/p&gt;
+&lt;p&gt;New application files are now visible for you on the platform:&lt;/p&gt;
+&lt;p&gt;[FNUMS]&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment">0</field>
+    <field name="candidate_attachment">0</field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags">0</field>
+   </row>
+   <row>
+    <field name="id">77</field>
+    <field name="lbl">limit_obtained_alert</field>
+    <field name="subject">Campaign limit reached / Limite atteinte sur une campagne</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Hello [NAME],&lt;/p&gt;
+&lt;p&gt;The [CAMPAIGN_LABEL] campaign has reached its application limit.&lt;br /&gt;From this moment on, candidates can no longer send or edit their application.&lt;br /&gt;However, the campaign remains visible on the homepage, without the possibility to apply. If you wish to remove it from the homepage, you must unpublish this campaign.&lt;/p&gt;
+&lt;p&gt;Sincerely&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Bonjour [NAME],&lt;/p&gt;
+&lt;p&gt;La campagne &lt;strong&gt;[CAMPAIGN_LABEL]&lt;/strong&gt; vient d'atteindre sa limite de candidature.&lt;br /&gt;&amp;Agrave; partir de ce moment, les candidats ne peuvent plus envoyer, ni &amp;eacute;diter leur dossier. &lt;br /&gt;La campagne reste cependant visible sur la page d'accueil, sans avoir la possibilit&amp;eacute; de candidater. Si vous d&amp;eacute;sirer la retirer sur la page d'accueil, vous devez d&amp;eacute;publier cette campagne.&lt;/p&gt;
+&lt;p&gt;Cordialement&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment">0</field>
+    <field name="candidate_attachment">0</field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags">0</field>
+   </row>
+   <row>
+    <field name="id">78</field>
+    <field name="lbl">expert</field>
+    <field name="subject">Expertise request / Demande d'expertises</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;&lt;strong&gt;Expertise de dossiers scientifiques dans le cadre de [CAMPAIGN_LABEL]&lt;/strong&gt; &lt;br /&gt;&lt;br /&gt;Cher(&amp;egrave;re) Coll&amp;egrave;gue,&lt;br /&gt;&lt;br /&gt;Nous serions heureux que vous puissiez nous aider &amp;agrave; expertiser un dossier dans le cadre de l&amp;rsquo;appel [CAMPAIGN_LABEL] et nous vous en remercions par avance. &lt;br /&gt;&lt;br /&gt;Afin de pouvoir acc&amp;eacute;der &amp;agrave; l&amp;rsquo;ensemble du dossier, je vous remercie de bien vouloir accepter la signature de la charte de confidentialit&amp;eacute; &amp;agrave; l&amp;rsquo;aide du lien ci-apr&amp;egrave;s :&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;[EXPERT_ACCEPT_LINK]&quot;&gt;I accept&lt;/a&gt; (please check the non-conflict charter).&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;[EXPERT_REFUSE_LINK]&quot;&gt;I do NOT accept&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">0</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment"></field>
+    <field name="candidate_attachment"></field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">79</field>
+    <field name="lbl">messenger_reminder</field>
+    <field name="subject">Unread Messages / Messages non-lus</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Vous avez des messages non lus sur &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;. Veuillez vous reconnecter afin d'en prendre connaissances.&lt;/p&gt;
+&lt;p&gt;Cordialement,&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;You have unread messages on &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;. Please log in again to read them.&lt;/p&gt;
+&lt;p&gt;Sincerely,&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">0</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment"></field>
+    <field name="candidate_attachment"></field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">81</field>
+    <field name="lbl">messenger_reminder_group</field>
+    <field name="subject">Pending Messages / Messages en attente de réponse</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;New messages from applicants have arrived on &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;. Please log in to view them: [FNUMS]&lt;/p&gt;
+&lt;p&gt;Thank you in advance,&lt;/p&gt;
+&lt;p&gt;Sincerely,&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;Des nouveaux messages de déposants sont arrivés sur &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;. Veuillez vous connecter afin d'en prendre connaissance : [FNUMS]&lt;/p&gt;
+&lt;p&gt;Merci d'avance,&lt;/p&gt;
+&lt;p&gt;Cordialement,&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">0</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment">0</field>
+    <field name="candidate_attachment">0</field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags">0</field>
+   </row>
+   <row>
+    <field name="id">82</field>
+    <field name="lbl">installation_new_language</field>
+    <field name="subject">Suggestion/Installation d'une langue</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;La plateforme &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt; souhaiterait installer la langue suivante : [LANGUAGE_FIELD].&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">1</field>
+    <field name="published">0</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment"></field>
+    <field name="candidate_attachment"></field>
+    <field name="category">Système</field>
+    <field name="cci"></field>
+    <field name="tags"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

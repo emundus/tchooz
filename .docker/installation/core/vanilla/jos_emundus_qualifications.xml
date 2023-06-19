@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_qualifications">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="user" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="fnum" Type="varchar(255)" Null="YES" Key="UNI" Extra="" />
+   <field Field="university" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="city" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="state" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="from" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="until" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="grade" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="diploma" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="thesistopic" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="gpa" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="description" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="country" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="e_324_7736" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_324_7737" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_324_7738" Type="date" Null="YES" Key="" Extra="" />
+   <field Field="e_324_7739" Type="date" Null="YES" Key="" Extra="" />
+   <field Field="e_324_7740" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="e_324_7741" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_qualifications" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_qualifications" Non_unique="0" Key_name="jos_emundus_qualifications_fnum_uindex" Seq_in_index="1" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_qualifications" Non_unique="1" Key_name="jos_emundus_qualifications_user_index" Seq_in_index="1" Column_name="user" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

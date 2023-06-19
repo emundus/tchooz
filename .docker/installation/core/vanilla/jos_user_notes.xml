@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__user_notes">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="user_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="catid" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="subject" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="body" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="state" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="checked_out" Type="int unsigned" Null="YES" Key="" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="created_user_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="created_time" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="modified_user_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="modified_time" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="review_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="publish_up" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="publish_down" Type="datetime" Null="YES" Key="" Extra="" />
+   <key Table="#__user_notes" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__user_notes" Non_unique="1" Key_name="idx_user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__user_notes" Non_unique="1" Key_name="idx_category_id" Seq_in_index="1" Column_name="catid" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_status">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="step" Type="int" Null="NO" Key="UNI" Default="0" Extra="" />
+   <field Field="value" Type="varchar(255)" Null="NO" Key="UNI" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="class" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="profile" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="tags" Type="int" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_setup_status" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_status" Non_unique="0" Key_name="value" Seq_in_index="1" Column_name="value" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_status" Non_unique="0" Key_name="step" Seq_in_index="1" Column_name="step" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_status" Non_unique="1" Key_name="fb_order_ordering_INDEX" Seq_in_index="1" Column_name="ordering" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_status" Non_unique="1" Key_name="fb_order_profile_INDEX" Seq_in_index="1" Column_name="profile" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_status">
+   <row>
+    <field name="id">1</field>
+    <field name="step">0</field>
+    <field name="value">En cours</field>
+    <field name="ordering">1</field>
+    <field name="class">default</field>
+    <field name="profile"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="step">1</field>
+    <field name="value">Envoyé</field>
+    <field name="ordering">2</field>
+    <field name="class">green</field>
+    <field name="profile"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="step">2</field>
+    <field name="value">Refusé</field>
+    <field name="ordering">3</field>
+    <field name="class">red</field>
+    <field name="profile"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="step">3</field>
+    <field name="value">Accepté</field>
+    <field name="ordering">3</field>
+    <field name="class">lightgreen</field>
+    <field name="profile"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="step">4</field>
+    <field name="value">Admis</field>
+    <field name="ordering">5</field>
+    <field name="class">darkgreen</field>
+    <field name="profile"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="step">5</field>
+    <field name="value">Liste d'attente</field>
+    <field name="ordering">6</field>
+    <field name="class">lightorange</field>
+    <field name="profile"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="step">6</field>
+    <field name="value">En évaluation</field>
+    <field name="ordering">7</field>
+    <field name="class">lightpink</field>
+    <field name="profile"></field>
+    <field name="tags"></field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="step">7</field>
+    <field name="value">A évaluer</field>
+    <field name="ordering">8</field>
+    <field name="class">orange</field>
+    <field name="profile"></field>
+    <field name="tags"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

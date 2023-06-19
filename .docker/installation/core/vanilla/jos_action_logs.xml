@@ -1,0 +1,1195 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__action_logs">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="message_language_key" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="message" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="log_date" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="extension" Type="varchar(50)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="user_id" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="item_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="ip_address" Type="varchar(40)" Null="NO" Key="" Default="0.0.0.0" Extra="" />
+   <key Table="#__action_logs" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__action_logs" Non_unique="1" Key_name="idx_user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__action_logs" Non_unique="1" Key_name="idx_user_id_logdate" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__action_logs" Non_unique="1" Key_name="idx_user_id_logdate" Seq_in_index="2" Column_name="log_date" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__action_logs" Non_unique="1" Key_name="idx_user_id_extension" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__action_logs" Non_unique="1" Key_name="idx_user_id_extension" Seq_in_index="2" Column_name="extension" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__action_logs" Non_unique="1" Key_name="idx_extension_item_id" Seq_in_index="1" Column_name="extension" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__action_logs" Non_unique="1" Key_name="idx_extension_item_id" Seq_in_index="2" Column_name="item_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__action_logs">
+   <row>
+    <field name="id">1</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-04-06 13:48:30</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">650</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-04-25 15:44:36</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">650</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 08:55:30</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">650</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 08:59:33</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UNPUBLISHED</field>
+    <field name="message">{&quot;action&quot;:&quot;unpublish&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:112,&quot;title&quot;:&quot;Campagnes de candidature&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=112&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 08:59:33</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">112</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 08:59:38</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_PUBLISHED</field>
+    <field name="message">{&quot;action&quot;:&quot;publish&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:112,&quot;title&quot;:&quot;Campagnes de candidature&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=112&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 08:59:38</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">112</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MENU&quot;,&quot;id&quot;:13,&quot;title&quot;:&quot;Top Menu&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_menus&amp;task=menu.edit&amp;id=13&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:02:33</field>
+    <field name="extension">com_menus.menu</field>
+    <field name="user_id">650</field>
+    <field name="item_id">13</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MENU_ITEM&quot;,&quot;id&quot;:243,&quot;title&quot;:&quot;Home&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_menus&amp;task=item.edit&amp;id=243&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:03:22</field>
+    <field name="extension">com_menus.item</field>
+    <field name="user_id">650</field>
+    <field name="item_id">243</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:112,&quot;title&quot;:&quot;Campagnes de candidature&quot;,&quot;extension_name&quot;:&quot;Campagnes de candidature&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=112&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:04:43</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">112</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 09:04:43</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_CATEGORY&quot;,&quot;id&quot;:8,&quot;title&quot;:&quot;RGPD&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_categories&amp;task=category.edit&amp;id=8&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:06:49</field>
+    <field name="extension">com_categories.category</field>
+    <field name="user_id">650</field>
+    <field name="item_id">8</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_CATEGORY&quot;,&quot;id&quot;:9,&quot;title&quot;:&quot;F.A.Q&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_categories&amp;task=category.edit&amp;id=9&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:07:01</field>
+    <field name="extension">com_categories.category</field>
+    <field name="user_id">650</field>
+    <field name="item_id">9</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_CATEGORY&quot;,&quot;id&quot;:10,&quot;title&quot;:&quot;Contact&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_categories&amp;task=category.edit&amp;id=10&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:07:14</field>
+    <field name="extension">com_categories.category</field>
+    <field name="user_id">650</field>
+    <field name="item_id">10</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_ARTICLE&quot;,&quot;id&quot;:55,&quot;title&quot;:&quot;Accessibilit\u00e9&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_content&amp;task=article.edit&amp;id=55&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:07:50</field>
+    <field name="extension">com_content.article</field>
+    <field name="user_id">650</field>
+    <field name="item_id">55</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_ARTICLE&quot;,&quot;id&quot;:56,&quot;title&quot;:&quot;Politique de confidentialit\u00e9 des donn\u00e9es&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_content&amp;task=article.edit&amp;id=56&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:08:24</field>
+    <field name="extension">com_content.article</field>
+    <field name="user_id">650</field>
+    <field name="item_id">56</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">17</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_ARTICLE&quot;,&quot;id&quot;:57,&quot;title&quot;:&quot;Gestion des droits&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_content&amp;task=article.edit&amp;id=57&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:08:46</field>
+    <field name="extension">com_content.article</field>
+    <field name="user_id">650</field>
+    <field name="item_id">57</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">18</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_ARTICLE&quot;,&quot;id&quot;:58,&quot;title&quot;:&quot;Politique de cookies&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_content&amp;task=article.edit&amp;id=58&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:09:10</field>
+    <field name="extension">com_content.article</field>
+    <field name="user_id">650</field>
+    <field name="item_id">58</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">19</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_ARTICLE&quot;,&quot;id&quot;:59,&quot;title&quot;:&quot;Mentions l\u00e9gales&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_content&amp;task=article.edit&amp;id=59&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:09:33</field>
+    <field name="extension">com_content.article</field>
+    <field name="user_id">650</field>
+    <field name="item_id">59</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">20</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:120,&quot;title&quot;:&quot;Footer&quot;,&quot;extension_name&quot;:&quot;Footer&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=120&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:13:32</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">120</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">21</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 09:25:13</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">22</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:120,&quot;title&quot;:&quot;Footer&quot;,&quot;extension_name&quot;:&quot;Footer&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=120&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:30:20</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">120</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">23</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 09:30:20</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">24</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:120,&quot;title&quot;:&quot;Footer&quot;,&quot;extension_name&quot;:&quot;Footer&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=120&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:30:31</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">120</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">25</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 09:30:31</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">26</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:119,&quot;title&quot;:&quot;Campagnes de candidatures [CONNECTES]&quot;,&quot;extension_name&quot;:&quot;Campagnes de candidatures [CONNECTES]&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=119&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:30:51</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">119</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 09:30:51</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">28</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:112,&quot;title&quot;:&quot;Campagnes de candidature&quot;,&quot;extension_name&quot;:&quot;Campagnes de candidature&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=112&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:30:59</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">112</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">29</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 09:30:59</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">30</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 09:31:13</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">31</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UNPUBLISHED</field>
+    <field name="message">{&quot;action&quot;:&quot;unpublish&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:112,&quot;title&quot;:&quot;Campagnes de candidature&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=112&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:31:13</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">112</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">32</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 09:31:16</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">33</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_PUBLISHED</field>
+    <field name="message">{&quot;action&quot;:&quot;publish&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:112,&quot;title&quot;:&quot;Campagnes de candidature&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=112&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:31:16</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">112</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">34</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:120,&quot;title&quot;:&quot;Footer&quot;,&quot;extension_name&quot;:&quot;Footer&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=120&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:31:26</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">120</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">35</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 09:31:26</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">36</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:120,&quot;title&quot;:&quot;Footer&quot;,&quot;extension_name&quot;:&quot;Footer&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=120&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:31:39</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">650</field>
+    <field name="item_id">120</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">37</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 09:31:39</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">38</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:0,&quot;userid&quot;:0,&quot;username&quot;:null,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=0&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 09:31:44</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">0</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">39</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;Administrator&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:32:56</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">40</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_APPLICATION_CONFIG_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_APPLICATION_CONFIG&quot;,&quot;extension_name&quot;:&quot;com_config.application&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_config&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:33:37</field>
+    <field name="extension">com_config.application</field>
+    <field name="user_id">650</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">41</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 09:33:40</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">650</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">42</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_APPLICATION_CONFIG_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_APPLICATION_CONFIG&quot;,&quot;extension_name&quot;:&quot;com_config.application&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_config&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:34:25</field>
+    <field name="extension">com_config.application</field>
+    <field name="user_id">650</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">43</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-10 09:35:49</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">44</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:650,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 09:36:56</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">45</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 09:37:29</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">650</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">46</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:650,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 09:37:44</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">47</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 09:37:50</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">650</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">48</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_APPLICATION_CONFIG_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_APPLICATION_CONFIG&quot;,&quot;extension_name&quot;:&quot;com_config.application&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_config&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:38:25</field>
+    <field name="extension">com_config.application</field>
+    <field name="user_id">650</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">49</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_ADDED</field>
+    <field name="message">{&quot;action&quot;:&quot;add&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:651,&quot;title&quot;:&quot;Coordinator&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=651&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;}</field>
+    <field name="log_date">2023-05-10 09:39:36</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">650</field>
+    <field name="item_id">651</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">50</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:0,&quot;userid&quot;:0,&quot;username&quot;:null,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=0&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 09:40:17</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">0</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">51</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 09:40:49</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">650</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">52</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:650,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;userid&quot;:650,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=650&quot;,&quot;table&quot;:&quot;#__extensions&quot;}</field>
+    <field name="log_date">2023-05-10 09:41:58</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">650</field>
+    <field name="item_id">650</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">53</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:0,&quot;userid&quot;:0,&quot;username&quot;:null,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=0&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 09:42:24</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">0</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">54</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:0,&quot;userid&quot;:0,&quot;username&quot;:null,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=0&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 09:44:35</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">0</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">55</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGIN_FAILED</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;id&quot;:95,&quot;userid&quot;:95,&quot;username&quot;:&quot;coordinator&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=95&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 09:53:55</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">95</field>
+    <field name="item_id">95</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">56</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGIN_FAILED</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;id&quot;:95,&quot;userid&quot;:95,&quot;username&quot;:&quot;coordinator&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=95&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 09:54:02</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">95</field>
+    <field name="item_id">95</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">57</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:0,&quot;userid&quot;:0,&quot;username&quot;:null,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=0&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 11:49:32</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">0</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">58</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:0,&quot;userid&quot;:0,&quot;username&quot;:null,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=0&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 11:52:39</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">0</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">59</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGIN_FAILED</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;id&quot;:62,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 11:55:10</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">60</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGIN_FAILED</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;id&quot;:62,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 11:55:17</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">61</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 11:56:02</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">62</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">62</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:0,&quot;userid&quot;:0,&quot;username&quot;:null,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=0&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 11:56:12</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">0</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">63</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 11:56:21</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">62</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">64</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:0,&quot;userid&quot;:0,&quot;username&quot;:null,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=0&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 11:57:16</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">0</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">65</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 11:57:31</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">62</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">66</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 12:46:42</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">62</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">67</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_APPLICATION_CONFIG_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_APPLICATION_CONFIG&quot;,&quot;extension_name&quot;:&quot;com_config.application&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_config&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-05-10 12:47:08</field>
+    <field name="extension">com_config.application</field>
+    <field name="user_id">62</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">68</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 14:40:35</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">62</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">69</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:95,&quot;userid&quot;:95,&quot;username&quot;:&quot;coordinator&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=95&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-05-10 15:22:54</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">95</field>
+    <field name="item_id">95</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">70</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-10 15:23:28</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">62</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">71</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__menu&quot;}</field>
+    <field name="log_date">2023-05-10 15:30:17</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">72</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_APPLICATION_CONFIG_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_APPLICATION_CONFIG&quot;,&quot;extension_name&quot;:&quot;com_config.application&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_config&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-05-10 15:30:24</field>
+    <field name="extension">com_config.application</field>
+    <field name="user_id">62</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">73</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_APPLICATION_CONFIG_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_APPLICATION_CONFIG&quot;,&quot;extension_name&quot;:&quot;com_config.application&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_config&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-05-10 15:31:03</field>
+    <field name="extension">com_config.application</field>
+    <field name="user_id">62</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">74</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-05-11 14:58:14</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">62</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">75</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-11 15:00:43</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">76</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:111,&quot;title&quot;:&quot;Dashboard (Gestionnaires)&quot;,&quot;extension_name&quot;:&quot;Dashboard (Gestionnaires)&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=111&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-05-11 15:01:11</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">62</field>
+    <field name="item_id">111</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">77</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-05-11 15:01:11</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">78</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MENU_ITEM&quot;,&quot;id&quot;:244,&quot;title&quot;:&quot;Accueil&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_menus&amp;task=item.edit&amp;id=244&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:22</field>
+    <field name="extension">com_menus.item</field>
+    <field name="user_id">62</field>
+    <field name="item_id">244</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">79</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__menu&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:22</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">80</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MENU_ITEM&quot;,&quot;id&quot;:245,&quot;title&quot;:&quot;Dossiers&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_menus&amp;task=item.edit&amp;id=245&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:26</field>
+    <field name="extension">com_menus.item</field>
+    <field name="user_id">62</field>
+    <field name="item_id">245</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">81</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__menu&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:26</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">82</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MENU_ITEM&quot;,&quot;id&quot;:246,&quot;title&quot;:&quot;\u00c9valuations&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_menus&amp;task=item.edit&amp;id=246&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:31</field>
+    <field name="extension">com_menus.item</field>
+    <field name="user_id">62</field>
+    <field name="item_id">246</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">83</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__menu&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:31</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">84</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MENU_ITEM&quot;,&quot;id&quot;:247,&quot;title&quot;:&quot;D\u00e9cisions&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_menus&amp;task=item.edit&amp;id=247&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:35</field>
+    <field name="extension">com_menus.item</field>
+    <field name="user_id">62</field>
+    <field name="item_id">247</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">85</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__menu&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:35</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">86</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MENU_ITEM&quot;,&quot;id&quot;:248,&quot;title&quot;:&quot;Rapport d'activit\u00e9&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_menus&amp;task=item.edit&amp;id=248&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:39</field>
+    <field name="extension">com_menus.item</field>
+    <field name="user_id">62</field>
+    <field name="item_id">248</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">87</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__menu&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:39</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">88</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MENU_ITEM&quot;,&quot;id&quot;:251,&quot;title&quot;:&quot;Utilisateurs&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_menus&amp;task=item.edit&amp;id=251&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:43</field>
+    <field name="extension">com_menus.item</field>
+    <field name="user_id">62</field>
+    <field name="item_id">251</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">89</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__menu&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:43</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">90</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MENU_ITEM&quot;,&quot;id&quot;:254,&quot;title&quot;:&quot;Param\u00e8tres&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_menus&amp;task=item.edit&amp;id=254&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:47</field>
+    <field name="extension">com_menus.item</field>
+    <field name="user_id">62</field>
+    <field name="item_id">254</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">91</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__menu&quot;}</field>
+    <field name="log_date">2023-05-11 15:02:47</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">92</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_IN</field>
+    <field name="message">{&quot;action&quot;:&quot;login&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_ADMINISTRATOR&quot;}</field>
+    <field name="log_date">2023-06-16 11:51:31</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">62</field>
+    <field name="item_id">0</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">93</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_COMPONENT_CONFIG_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_COMPONENT_CONFIG&quot;,&quot;id&quot;:485,&quot;title&quot;:&quot;com_emundus&quot;,&quot;extension_name&quot;:&quot;com_emundus&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_config&amp;task=component.edit&amp;extension_id=485&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-06-16 12:02:51</field>
+    <field name="extension">com_config.component</field>
+    <field name="user_id">62</field>
+    <field name="item_id">485</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">94</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__extensions&quot;}</field>
+    <field name="log_date">2023-06-16 12:05:07</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">95</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UNPUBLISHED</field>
+    <field name="message">{&quot;action&quot;:&quot;unpublish&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_PLUGIN&quot;,&quot;id&quot;:178,&quot;title&quot;:&quot;plg_system_remember&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_plugins&amp;task=plugin.edit&amp;extension_id=178&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-06-16 12:05:07</field>
+    <field name="extension">com_plugins.plugin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">178</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">96</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_COMPONENT_CONFIG_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_COMPONENT_CONFIG&quot;,&quot;id&quot;:22,&quot;title&quot;:&quot;com_users&quot;,&quot;extension_name&quot;:&quot;com_users&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_config&amp;task=component.edit&amp;extension_id=22&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-06-16 12:06:26</field>
+    <field name="extension">com_config.component</field>
+    <field name="user_id">62</field>
+    <field name="item_id">22</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">97</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:07:43</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">98</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:10:02</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">99</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:114,&quot;title&quot;:&quot;Mes dossiers&quot;,&quot;extension_name&quot;:&quot;Mes dossiers&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=114&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-06-16 12:10:49</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">62</field>
+    <field name="item_id">114</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">100</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:10:49</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">101</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:111,&quot;title&quot;:&quot;Dashboard (Gestionnaires)&quot;,&quot;extension_name&quot;:&quot;Dashboard (Gestionnaires)&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=111&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-06-16 12:28:33</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">62</field>
+    <field name="item_id">111</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">102</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:28:33</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">103</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:32:30</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">104</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:35:02</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">105</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UNPUBLISHED</field>
+    <field name="message">{&quot;action&quot;:&quot;unpublish&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:113,&quot;title&quot;:&quot;D\u00e9tails d'une campagne&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=113&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-06-16 12:35:02</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">62</field>
+    <field name="item_id">113</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">106</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__menu&quot;}</field>
+    <field name="log_date">2023-06-16 12:37:23</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">107</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_LOGGED_OUT</field>
+    <field name="message">{&quot;action&quot;:&quot;logout&quot;,&quot;id&quot;:95,&quot;userid&quot;:95,&quot;username&quot;:&quot;coordinator&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=95&quot;,&quot;app&quot;:&quot;PLG_ACTIONLOG_JOOMLA_APPLICATION_SITE&quot;}</field>
+    <field name="log_date">2023-06-16 12:37:33</field>
+    <field name="extension">com_users</field>
+    <field name="user_id">95</field>
+    <field name="item_id">95</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">108</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:41:30</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">109</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_PUBLISHED</field>
+    <field name="message">{&quot;action&quot;:&quot;publish&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:113,&quot;title&quot;:&quot;D\u00e9tails d'une campagne&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=113&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-06-16 12:41:30</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">62</field>
+    <field name="item_id">113</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">110</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:42:45</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">111</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:44:12</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">112</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UNPUBLISHED</field>
+    <field name="message">{&quot;action&quot;:&quot;unpublish&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:113,&quot;title&quot;:&quot;D\u00e9tails d'une campagne&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=113&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-06-16 12:44:12</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">62</field>
+    <field name="item_id">113</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">113</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:44:16</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">114</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_PUBLISHED</field>
+    <field name="message">{&quot;action&quot;:&quot;publish&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:113,&quot;title&quot;:&quot;D\u00e9tails d'une campagne&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=113&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-06-16 12:44:16</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">62</field>
+    <field name="item_id">113</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">115</field>
+    <field name="message_language_key">PLG_SYSTEM_ACTIONLOGS_CONTENT_UPDATED</field>
+    <field name="message">{&quot;action&quot;:&quot;update&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_MODULE&quot;,&quot;id&quot;:113,&quot;title&quot;:&quot;D\u00e9tails d'une campagne&quot;,&quot;extension_name&quot;:&quot;D\u00e9tails d'une campagne&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_modules&amp;task=module.edit&amp;id=113&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;}</field>
+    <field name="log_date">2023-06-16 12:44:24</field>
+    <field name="extension">com_modules.module</field>
+    <field name="user_id">62</field>
+    <field name="item_id">113</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">116</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:44:24</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+   <row>
+    <field name="id">117</field>
+    <field name="message_language_key">PLG_ACTIONLOG_JOOMLA_USER_CHECKIN</field>
+    <field name="message">{&quot;action&quot;:&quot;checkin&quot;,&quot;type&quot;:&quot;PLG_ACTIONLOG_JOOMLA_TYPE_USER&quot;,&quot;id&quot;:62,&quot;title&quot;:&quot;sysadmin&quot;,&quot;itemlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;userid&quot;:62,&quot;username&quot;:&quot;sysadmin&quot;,&quot;accountlink&quot;:&quot;index.php?option=com_users&amp;task=user.edit&amp;id=62&quot;,&quot;table&quot;:&quot;#__modules&quot;}</field>
+    <field name="log_date">2023-06-16 12:53:57</field>
+    <field name="extension">com_checkin</field>
+    <field name="user_id">62</field>
+    <field name="item_id">62</field>
+    <field name="ip_address">COM_ACTIONLOGS_DISABLED</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

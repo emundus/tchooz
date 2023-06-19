@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__fabrik_log">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="timedate_created" Type="timestamp" Null="NO" Key="" Extra="" />
+   <field Field="flag" Type="smallint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="referring_url" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="message_source" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="message_type" Type="char(60)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="message" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__fabrik_log" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

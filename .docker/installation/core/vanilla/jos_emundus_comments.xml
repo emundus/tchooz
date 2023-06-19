@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_comments">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="applicant_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="user_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="fnum" Type="varchar(28)" Null="NO" Key="MUL" Extra="" />
+   <field Field="reason" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="date" Type="datetime" Null="YES" Key="MUL" Extra="" />
+   <field Field="comment_body" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="status_from" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="status_to" Type="int" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_comments" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_comments" Non_unique="1" Key_name="fb_tableorder_date_INDEX" Seq_in_index="1" Column_name="date" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_comments" Non_unique="1" Key_name="applicant_id" Seq_in_index="1" Column_name="applicant_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_comments" Non_unique="1" Key_name="user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_comments" Non_unique="1" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

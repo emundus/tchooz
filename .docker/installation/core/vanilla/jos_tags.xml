@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__tags">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="parent_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="lft" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="rgt" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="level" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="path" Type="varchar(400)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="title" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="alias" Type="varchar(400)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="note" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="description" Type="mediumtext" Null="NO" Key="" Extra="" />
+   <field Field="published" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="checked_out" Type="int unsigned" Null="YES" Key="MUL" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="access" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="params" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="metadesc" Type="varchar(1024)" Null="NO" Key="" Extra="" />
+   <field Field="metakey" Type="varchar(1024)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="metadata" Type="varchar(2048)" Null="NO" Key="" Extra="" />
+   <field Field="created_user_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="created_time" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="created_by_alias" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="modified_user_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="modified_time" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="images" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="urls" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="hits" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="language" Type="char(7)" Null="NO" Key="MUL" Extra="" />
+   <field Field="version" Type="int unsigned" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="publish_up" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="publish_down" Type="datetime" Null="YES" Key="" Extra="" />
+   <key Table="#__tags" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__tags" Non_unique="1" Key_name="tag_idx" Seq_in_index="1" Column_name="published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__tags" Non_unique="1" Key_name="tag_idx" Seq_in_index="2" Column_name="access" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__tags" Non_unique="1" Key_name="idx_access" Seq_in_index="1" Column_name="access" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__tags" Non_unique="1" Key_name="idx_checkout" Seq_in_index="1" Column_name="checked_out" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__tags" Non_unique="1" Key_name="idx_path" Seq_in_index="1" Column_name="path" Collation="A" Null="" Index_type="BTREE" Sub_part="100" Comment="" />
+   <key Table="#__tags" Non_unique="1" Key_name="idx_left_right" Seq_in_index="1" Column_name="lft" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__tags" Non_unique="1" Key_name="idx_left_right" Seq_in_index="2" Column_name="rgt" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__tags" Non_unique="1" Key_name="idx_alias" Seq_in_index="1" Column_name="alias" Collation="A" Null="" Index_type="BTREE" Sub_part="100" Comment="" />
+   <key Table="#__tags" Non_unique="1" Key_name="idx_language" Seq_in_index="1" Column_name="language" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__tags">
+   <row>
+    <field name="id">1</field>
+    <field name="parent_id">0</field>
+    <field name="lft">0</field>
+    <field name="rgt">1</field>
+    <field name="level">0</field>
+    <field name="path"></field>
+    <field name="title">ROOT</field>
+    <field name="alias">root</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="access">1</field>
+    <field name="params"></field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata"></field>
+    <field name="created_user_id">650</field>
+    <field name="created_time">2023-04-06 13:47:52</field>
+    <field name="created_by_alias"></field>
+    <field name="modified_user_id">650</field>
+    <field name="modified_time">2023-04-06 13:47:52</field>
+    <field name="images"></field>
+    <field name="urls"></field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

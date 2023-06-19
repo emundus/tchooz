@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_jury">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="meeting_session" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="visio_link" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <field Field="start_time_" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="end_time_" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="president" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="topic" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="type" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="host_video" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="participant_video" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="join_before_host" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="mute_participant" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="watermark" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="approval_type" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="registration_type" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="audio_option" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="auto_recording" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="close_registration" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="waiting_room" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="contact_name" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="contact_email_registration" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="registrants_email_notification" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="registrants_confirmation_email" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="meeting_authentication" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="show_share_button" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="allow_multiple_devices" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="contact_email" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="duration" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="join_url" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <field Field="registration_url" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <field Field="password" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="encrypted_password" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="encrytion_type" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="zoom_link" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <field Field="date_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="send_invitation" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="user_type" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="user" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="zoom_target_pt" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="is_president" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="status" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="start_time_calc" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="end_time_calc" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_jury" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_jury" Non_unique="1" Key_name="jos_emundus_jury___fk1" Seq_in_index="1" Column_name="president" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

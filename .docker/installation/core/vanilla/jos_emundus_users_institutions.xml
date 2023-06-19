@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_users_institutions">
+   <field Field="id" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="user" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="institution" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="profile" Type="int" Null="NO" Key="" Extra="" />
+  </table_structure>
+ </database>
+</mysqldump>

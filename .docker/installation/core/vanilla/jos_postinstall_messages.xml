@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__postinstall_messages">
+   <field Field="postinstall_message_id" Type="bigint unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="extension_id" Type="bigint" Null="NO" Key="" Default="700" Extra="" />
+   <field Field="title_key" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="description_key" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="action_key" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="language_extension" Type="varchar(255)" Null="NO" Key="" Default="com_postinstall" Extra="" />
+   <field Field="language_client_id" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="type" Type="varchar(10)" Null="NO" Key="" Default="link" Extra="" />
+   <field Field="action_file" Type="varchar(255)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="action" Type="varchar(255)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="condition_file" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="condition_method" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="version_introduced" Type="varchar(50)" Null="NO" Key="" Default="3.2.0" Extra="" />
+   <field Field="enabled" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
+   <key Table="#__postinstall_messages" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="postinstall_message_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__postinstall_messages">
+   <row>
+    <field name="postinstall_message_id">1</field>
+    <field name="extension_id">224</field>
+    <field name="title_key">COM_CPANEL_WELCOME_BEGINNERS_TITLE</field>
+    <field name="description_key">COM_CPANEL_WELCOME_BEGINNERS_MESSAGE</field>
+    <field name="action_key"></field>
+    <field name="language_extension">com_cpanel</field>
+    <field name="language_client_id">1</field>
+    <field name="type">message</field>
+    <field name="action_file"></field>
+    <field name="action"></field>
+    <field name="condition_file"></field>
+    <field name="condition_method"></field>
+    <field name="version_introduced">3.2.0</field>
+    <field name="enabled">1</field>
+   </row>
+   <row>
+    <field name="postinstall_message_id">2</field>
+    <field name="extension_id">224</field>
+    <field name="title_key">COM_CPANEL_MSG_STATS_COLLECTION_TITLE</field>
+    <field name="description_key">COM_CPANEL_MSG_STATS_COLLECTION_BODY</field>
+    <field name="action_key"></field>
+    <field name="language_extension">com_cpanel</field>
+    <field name="language_client_id">1</field>
+    <field name="type">message</field>
+    <field name="action_file"></field>
+    <field name="action"></field>
+    <field name="condition_file">admin://components/com_admin/postinstall/statscollection.php</field>
+    <field name="condition_method">admin_postinstall_statscollection_condition</field>
+    <field name="version_introduced">3.5.0</field>
+    <field name="enabled">1</field>
+   </row>
+   <row>
+    <field name="postinstall_message_id">3</field>
+    <field name="extension_id">224</field>
+    <field name="title_key">PLG_SYSTEM_UPDATENOTIFICATION_POSTINSTALL_UPDATECACHETIME</field>
+    <field name="description_key">PLG_SYSTEM_UPDATENOTIFICATION_POSTINSTALL_UPDATECACHETIME_BODY</field>
+    <field name="action_key">PLG_SYSTEM_UPDATENOTIFICATION_POSTINSTALL_UPDATECACHETIME_ACTION</field>
+    <field name="language_extension">plg_system_updatenotification</field>
+    <field name="language_client_id">1</field>
+    <field name="type">action</field>
+    <field name="action_file">site://plugins/system/updatenotification/postinstall/updatecachetime.php</field>
+    <field name="action">updatecachetime_postinstall_action</field>
+    <field name="condition_file">site://plugins/system/updatenotification/postinstall/updatecachetime.php</field>
+    <field name="condition_method">updatecachetime_postinstall_condition</field>
+    <field name="version_introduced">3.6.3</field>
+    <field name="enabled">1</field>
+   </row>
+   <row>
+    <field name="postinstall_message_id">4</field>
+    <field name="extension_id">224</field>
+    <field name="title_key">PLG_SYSTEM_HTTPHEADERS_POSTINSTALL_INTRODUCTION_TITLE</field>
+    <field name="description_key">PLG_SYSTEM_HTTPHEADERS_POSTINSTALL_INTRODUCTION_BODY</field>
+    <field name="action_key">PLG_SYSTEM_HTTPHEADERS_POSTINSTALL_INTRODUCTION_ACTION</field>
+    <field name="language_extension">plg_system_httpheaders</field>
+    <field name="language_client_id">1</field>
+    <field name="type">action</field>
+    <field name="action_file">site://plugins/system/httpheaders/postinstall/introduction.php</field>
+    <field name="action">httpheaders_postinstall_action</field>
+    <field name="condition_file">site://plugins/system/httpheaders/postinstall/introduction.php</field>
+    <field name="condition_method">httpheaders_postinstall_condition</field>
+    <field name="version_introduced">4.0.0</field>
+    <field name="enabled">1</field>
+   </row>
+   <row>
+    <field name="postinstall_message_id">5</field>
+    <field name="extension_id">224</field>
+    <field name="title_key">COM_USERS_POSTINSTALL_MULTIFACTORAUTH_TITLE</field>
+    <field name="description_key">COM_USERS_POSTINSTALL_MULTIFACTORAUTH_BODY</field>
+    <field name="action_key">COM_USERS_POSTINSTALL_MULTIFACTORAUTH_ACTION</field>
+    <field name="language_extension">com_users</field>
+    <field name="language_client_id">1</field>
+    <field name="type">action</field>
+    <field name="action_file">admin://components/com_users/postinstall/multifactorauth.php</field>
+    <field name="action">com_users_postinstall_mfa_action</field>
+    <field name="condition_file">admin://components/com_users/postinstall/multifactorauth.php</field>
+    <field name="condition_method">com_users_postinstall_mfa_condition</field>
+    <field name="version_introduced">4.2.0</field>
+    <field name="enabled">1</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__falang_tableinfo">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="joomlatablename" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="tablepkID" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <key Table="#__falang_tableinfo" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

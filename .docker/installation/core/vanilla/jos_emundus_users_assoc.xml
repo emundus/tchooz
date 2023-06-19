@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_users_assoc">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="user_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="action_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="fnum" Type="varchar(255)" Null="NO" Key="MUL" Extra="" />
+   <field Field="c" Type="tinyint(1)" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="r" Type="tinyint(1)" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="u" Type="tinyint(1)" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="d" Type="tinyint(1)" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="time_date" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <key Table="#__emundus_users_assoc" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_assoc" Non_unique="0" Key_name="user_id_2" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_assoc" Non_unique="0" Key_name="user_id_2" Seq_in_index="2" Column_name="action_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_assoc" Non_unique="0" Key_name="user_id_2" Seq_in_index="3" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_assoc" Non_unique="1" Key_name="action_id" Seq_in_index="1" Column_name="action_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_assoc" Non_unique="1" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_assoc" Non_unique="1" Key_name="user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_assoc" Non_unique="1" Key_name="c" Seq_in_index="1" Column_name="c" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_assoc" Non_unique="1" Key_name="r" Seq_in_index="1" Column_name="r" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_assoc" Non_unique="1" Key_name="d" Seq_in_index="1" Column_name="d" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_users_assoc" Non_unique="1" Key_name="u" Seq_in_index="1" Column_name="u" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

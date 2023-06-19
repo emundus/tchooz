@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_personal_detail">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="time_date" Type="datetime" Null="YES" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="fnum" Type="varchar(28)" Null="NO" Key="UNI" Extra="" />
+   <field Field="user" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="profile" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="gender" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="first_name" Type="varchar(50)" Null="YES" Key="" Extra="" />
+   <field Field="last_name" Type="varchar(50)" Null="YES" Key="MUL" Extra="" />
+   <field Field="birth_date" Type="date" Null="YES" Key="" Extra="" />
+   <field Field="nationality" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="city" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="email" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="address" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="country" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="birth_place" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="marital_status" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="zipcode_2" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="city_2" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="country_2" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="country_1" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="state_1" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="state_2" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="telephone_2" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="mobile_2" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="maiden_name" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="city_1" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="zipcode_1" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="telephone_1" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="mobile_1" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="nb_children" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="disabled" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="street_1" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="street_2" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="copy_of_whitespace" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_287_7621" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="birth_country" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="e_287_7772" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="e_287_7773" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="e_287_7905" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_287_7906" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_287_7907" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_personal_detail" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_personal_detail" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_personal_detail" Non_unique="1" Key_name="fb_tableorder_last_name_INDEX" Seq_in_index="1" Column_name="last_name" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_personal_detail" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

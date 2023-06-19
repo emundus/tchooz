@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_learning_agreement_status">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="time_date" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="user_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="fnum" Type="varchar(28)" Null="NO" Key="UNI" Extra="" />
+   <field Field="teacher_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="status" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__emundus_learning_agreement_status" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_learning_agreement_status" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_learning_agreement_status" Non_unique="1" Key_name="teacher_id" Seq_in_index="1" Column_name="teacher_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_learning_agreement_status" Non_unique="1" Key_name="user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

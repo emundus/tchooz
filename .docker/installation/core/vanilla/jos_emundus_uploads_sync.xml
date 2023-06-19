@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_uploads_sync">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="upload_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="sync_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="state" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="relative_path" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="node_id" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="params" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_uploads_sync" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_uploads_sync" Non_unique="1" Key_name="jos_emundus_uploads_sync_jos_emundus_setup_sync_id_fk" Seq_in_index="1" Column_name="sync_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_uploads_sync" Non_unique="1" Key_name="jos_emundus_uploads_sync_jos_emundus_uploads_id_fk" Seq_in_index="1" Column_name="upload_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

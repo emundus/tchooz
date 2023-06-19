@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__messages">
+   <field Field="message_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="user_id_from" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="user_id_to" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="folder_id" Type="tinyint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="date_time" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="state" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="priority" Type="tinyint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="subject" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="message" Type="text" Null="NO" Key="" Extra="" />
+   <key Table="#__messages" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="message_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__messages" Non_unique="1" Key_name="useridto_state" Seq_in_index="1" Column_name="user_id_to" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__messages" Non_unique="1" Key_name="useridto_state" Seq_in_index="2" Column_name="state" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

@@ -1,0 +1,429 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_actions">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="name" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="label" Type="varchar(255)" Null="NO" Key="UNI" Extra="" />
+   <field Field="multi" Type="tinyint(1)" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="c" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="r" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="u" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="d" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="status" Type="tinyint(1)" Null="NO" Key="" Default="1" Extra="" />
+   <key Table="#__emundus_setup_actions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_actions" Non_unique="0" Key_name="label" Seq_in_index="1" Column_name="label" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_actions">
+   <row>
+    <field name="id">1</field>
+    <field name="name">file</field>
+    <field name="label">COM_EMUNDUS_ACCESS_FILE</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">0</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="name">attachment</field>
+    <field name="label">COM_EMUNDUS_ACCESS_ATTACHMENT</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">6</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="name">evaluation</field>
+    <field name="label">COM_EMUNDUS_ACCESS_EVALUATION</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">8</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="name">export_excel</field>
+    <field name="label">COM_EMUNDUS_ACCESS_EXPORT_EXCEL</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">10</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="name">export_zip</field>
+    <field name="label">COM_EMUNDUS_ACCESS_EXPORT_ZIP</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">11</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="name">export_pdf</field>
+    <field name="label">COM_EMUNDUS_ACCESS_EXPORT_PDF</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">9</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="name">mail_applicant</field>
+    <field name="label">COM_EMUNDUS_ACCESS_MAIL_APPLICANT</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">2</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="name">comment_file</field>
+    <field name="label">COM_EMUNDUS_ACCESS_COMMENT_FILE</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">7</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="name">access_file</field>
+    <field name="label">COM_EMUNDUS_ACCESS_ACCESS_FILE</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">13</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="name">user</field>
+    <field name="label">COM_EMUNDUS_ACCESS_USER</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">14</field>
+    <field name="status">2</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="name">status</field>
+    <field name="label">COM_EMUNDUS_ACCESS_STATUS</field>
+    <field name="multi">0</field>
+    <field name="c">0</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">0</field>
+    <field name="ordering">1</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="name">tag</field>
+    <field name="label">COM_EMUNDUS_ACCESS_TAGS</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">12</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="name">mail_evaluator</field>
+    <field name="label">COM_EMUNDUS_ACCESS_MAIL_EVALUATOR</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">3</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="name">mail_group</field>
+    <field name="label">COM_EMUNDUS_ACCESS_MAIL_GROUP</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">4</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">18</field>
+    <field name="name">mail_expert</field>
+    <field name="label">COM_EMUNDUS_ACCESS_MAIL_EXPERT</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">5</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">19</field>
+    <field name="name">add_group</field>
+    <field name="label">COM_EMUNDUS_ACCESS_GROUPS</field>
+    <field name="multi">-1</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">15</field>
+    <field name="status">2</field>
+   </row>
+   <row>
+    <field name="id">20</field>
+    <field name="name">add_user</field>
+    <field name="label">COM_EMUNDUS_ADD_USER</field>
+    <field name="multi">-1</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">16</field>
+    <field name="status">0</field>
+   </row>
+   <row>
+    <field name="id">21</field>
+    <field name="name">activate_user</field>
+    <field name="label">COM_EMUNDUS_ACTIVATE</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">17</field>
+    <field name="status">0</field>
+   </row>
+   <row>
+    <field name="id">22</field>
+    <field name="name">deactivate_user</field>
+    <field name="label">COM_EMUNDUS_DEACTIVATE</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">18</field>
+    <field name="status">0</field>
+   </row>
+   <row>
+    <field name="id">23</field>
+    <field name="name">affect_group</field>
+    <field name="label">COM_EMUNDUS_AFFECT</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">19</field>
+    <field name="status">0</field>
+   </row>
+   <row>
+    <field name="id">24</field>
+    <field name="name">edit_user</field>
+    <field name="label">COM_EMUNDUS_EDIT_USER</field>
+    <field name="multi">0</field>
+    <field name="c">0</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">20</field>
+    <field name="status">0</field>
+   </row>
+   <row>
+    <field name="id">25</field>
+    <field name="name">show_right_user</field>
+    <field name="label">COM_EMUNDUS_SHOW_RIGHT</field>
+    <field name="multi">0</field>
+    <field name="c">0</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">0</field>
+    <field name="ordering">21</field>
+    <field name="status">0</field>
+   </row>
+   <row>
+    <field name="id">26</field>
+    <field name="name">delete_user</field>
+    <field name="label">COM_EMUNDUS_DELETE_USER</field>
+    <field name="multi">1</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">1</field>
+    <field name="ordering">22</field>
+    <field name="status">0</field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="name">export_doc</field>
+    <field name="label">COM_EMUNDUS_ACCESS_LETTERS</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">23</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">28</field>
+    <field name="name">publish</field>
+    <field name="label">COM_EMUNDUS_PUBLISH</field>
+    <field name="multi">1</field>
+    <field name="c">0</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">0</field>
+    <field name="ordering">24</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">29</field>
+    <field name="name">decision</field>
+    <field name="label">COM_EMUNDUS_DECISION</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">25</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">30</field>
+    <field name="name">copy_file</field>
+    <field name="label">COM_EMUNDUS_COPY_FILE</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">26</field>
+    <field name="status">0</field>
+   </row>
+   <row>
+    <field name="id">31</field>
+    <field name="name">export_trombinoscope</field>
+    <field name="label">COM_EMUNDUS_ACCESS_MULTI_LETTERS</field>
+    <field name="multi">1</field>
+    <field name="c">1</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">26</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">32</field>
+    <field name="name">admission</field>
+    <field name="label">COM_EMUNDUS_ADMISSION</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">28</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">33</field>
+    <field name="name">external_export</field>
+    <field name="label">COM_EMUNDUS_EXTENAL_EXPORT</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">0</field>
+    <field name="status">0</field>
+   </row>
+   <row>
+    <field name="id">34</field>
+    <field name="name">interview</field>
+    <field name="label">COM_EMUNDUS_INTERVIEW</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">1</field>
+    <field name="u">1</field>
+    <field name="d">1</field>
+    <field name="ordering">0</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">35</field>
+    <field name="name">export fiche de synthese</field>
+    <field name="label">COM_EMUNDUS_FICHE_DE_SYNTHESE</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">12</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">36</field>
+    <field name="name">messenger</field>
+    <field name="label">COM_EMUNDUS_MESSENGER</field>
+    <field name="multi">0</field>
+    <field name="c">1</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">29</field>
+    <field name="status">1</field>
+   </row>
+   <row>
+    <field name="id">37</field>
+    <field name="name">logs</field>
+    <field name="label">COM_EMUNDUS_ACCESS_LOGS</field>
+    <field name="multi">0</field>
+    <field name="c">0</field>
+    <field name="r">1</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="ordering">30</field>
+    <field name="status">1</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_template_form">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="form_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="created" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="label" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="intro" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_template_form" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_template_form" Non_unique="1" Key_name="form_id" Seq_in_index="1" Column_name="form_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

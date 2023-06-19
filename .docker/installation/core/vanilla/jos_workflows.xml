@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__workflows">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="asset_id" Type="int" Null="YES" Key="MUL" Default="0" Extra="" />
+   <field Field="published" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="title" Type="varchar(255)" Null="NO" Key="MUL" Extra="" />
+   <field Field="description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="extension" Type="varchar(50)" Null="NO" Key="MUL" Extra="" />
+   <field Field="default" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="created" Type="datetime" Null="NO" Key="MUL" Extra="" />
+   <field Field="created_by" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="modified" Type="datetime" Null="NO" Key="MUL" Extra="" />
+   <field Field="modified_by" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="checked_out" Type="int unsigned" Null="YES" Key="MUL" Extra="" />
+   <key Table="#__workflows" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflows" Non_unique="1" Key_name="idx_asset_id" Seq_in_index="1" Column_name="asset_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflows" Non_unique="1" Key_name="idx_title" Seq_in_index="1" Column_name="title" Collation="A" Null="" Index_type="BTREE" Sub_part="191" Comment="" />
+   <key Table="#__workflows" Non_unique="1" Key_name="idx_extension" Seq_in_index="1" Column_name="extension" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflows" Non_unique="1" Key_name="idx_default" Seq_in_index="1" Column_name="default" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflows" Non_unique="1" Key_name="idx_created" Seq_in_index="1" Column_name="created" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflows" Non_unique="1" Key_name="idx_created_by" Seq_in_index="1" Column_name="created_by" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflows" Non_unique="1" Key_name="idx_modified" Seq_in_index="1" Column_name="modified" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflows" Non_unique="1" Key_name="idx_modified_by" Seq_in_index="1" Column_name="modified_by" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__workflows" Non_unique="1" Key_name="idx_checked_out" Seq_in_index="1" Column_name="checked_out" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__workflows">
+   <row>
+    <field name="id">1</field>
+    <field name="asset_id">56</field>
+    <field name="published">1</field>
+    <field name="title">COM_WORKFLOW_BASIC_WORKFLOW</field>
+    <field name="description"></field>
+    <field name="extension">com_content.article</field>
+    <field name="default">1</field>
+    <field name="ordering">1</field>
+    <field name="created">2023-04-06 13:47:53</field>
+    <field name="created_by">650</field>
+    <field name="modified">2023-04-06 13:47:53</field>
+    <field name="modified_by">650</field>
+    <field name="checked_out_time"></field>
+    <field name="checked_out"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__ucm_content">
+   <field Field="core_content_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="core_type_alias" Type="varchar(400)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="core_title" Type="varchar(400)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="core_alias" Type="varchar(400)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="core_body" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <field Field="core_state" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="core_checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="core_checked_out_user_id" Type="int unsigned" Null="YES" Key="MUL" Extra="" />
+   <field Field="core_access" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="core_params" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="core_featured" Type="tinyint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="core_metadata" Type="varchar(2048)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="core_created_user_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="core_created_by_alias" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="core_created_time" Type="datetime" Null="NO" Key="MUL" Extra="" />
+   <field Field="core_modified_user_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="core_modified_time" Type="datetime" Null="NO" Key="MUL" Extra="" />
+   <field Field="core_language" Type="char(7)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="core_publish_up" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="core_publish_down" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="core_content_item_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="asset_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="core_images" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="core_urls" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="core_hits" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="core_version" Type="int unsigned" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="core_ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="core_metakey" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="core_metadesc" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="core_catid" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="core_type_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <key Table="#__ucm_content" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="core_content_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="tag_idx" Seq_in_index="1" Column_name="core_state" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="tag_idx" Seq_in_index="2" Column_name="core_access" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="idx_access" Seq_in_index="1" Column_name="core_access" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="idx_alias" Seq_in_index="1" Column_name="core_alias" Collation="A" Null="" Index_type="BTREE" Sub_part="100" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="idx_language" Seq_in_index="1" Column_name="core_language" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="idx_title" Seq_in_index="1" Column_name="core_title" Collation="A" Null="" Index_type="BTREE" Sub_part="100" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="idx_modified_time" Seq_in_index="1" Column_name="core_modified_time" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="idx_created_time" Seq_in_index="1" Column_name="core_created_time" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="idx_content_type" Seq_in_index="1" Column_name="core_type_alias" Collation="A" Null="" Index_type="BTREE" Sub_part="100" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="idx_core_modified_user_id" Seq_in_index="1" Column_name="core_modified_user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="idx_core_checked_out_user_id" Seq_in_index="1" Column_name="core_checked_out_user_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="idx_core_created_user_id" Seq_in_index="1" Column_name="core_created_user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__ucm_content" Non_unique="1" Key_name="idx_core_type_id" Seq_in_index="1" Column_name="core_type_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__fields">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="asset_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="context" Type="varchar(255)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="group_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="title" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="name" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="label" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="default_value" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="type" Type="varchar(255)" Null="NO" Key="" Default="text" Extra="" />
+   <field Field="note" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="state" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="required" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="only_use_in_subform" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="checked_out" Type="int unsigned" Null="YES" Key="MUL" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="params" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="fieldparams" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="language" Type="char(7)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="created_time" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="created_user_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="modified_time" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="modified_by" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="access" Type="int" Null="NO" Key="MUL" Default="1" Extra="" />
+   <key Table="#__fields" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fields" Non_unique="1" Key_name="idx_checkout" Seq_in_index="1" Column_name="checked_out" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fields" Non_unique="1" Key_name="idx_state" Seq_in_index="1" Column_name="state" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fields" Non_unique="1" Key_name="idx_created_user_id" Seq_in_index="1" Column_name="created_user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fields" Non_unique="1" Key_name="idx_access" Seq_in_index="1" Column_name="access" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fields" Non_unique="1" Key_name="idx_context" Seq_in_index="1" Column_name="context" Collation="A" Null="" Index_type="BTREE" Sub_part="191" Comment="" />
+   <key Table="#__fields" Non_unique="1" Key_name="idx_language" Seq_in_index="1" Column_name="language" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

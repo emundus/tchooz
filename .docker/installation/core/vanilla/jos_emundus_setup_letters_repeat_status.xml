@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_letters_repeat_status">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="parent_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="status" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="params" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_setup_letters_repeat_status" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_letters_repeat_status" Non_unique="1" Key_name="fb_parent_fk_parent_id_INDEX" Seq_in_index="1" Column_name="parent_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_letters_repeat_status" Non_unique="1" Key_name="fb_repeat_el_status_INDEX" Seq_in_index="1" Column_name="status" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_letters_repeat_status">
+   <row>
+    <field name="id">2</field>
+    <field name="parent_id">1</field>
+    <field name="status">1</field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="parent_id">2</field>
+    <field name="status">0</field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="parent_id">2</field>
+    <field name="status">1</field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="parent_id">2</field>
+    <field name="status">2</field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="parent_id">2</field>
+    <field name="status">3</field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="parent_id">2</field>
+    <field name="status">4</field>
+    <field name="params"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

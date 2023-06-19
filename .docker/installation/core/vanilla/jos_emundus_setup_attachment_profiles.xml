@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_attachment_profiles">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="profile_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="campaign_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="attachment_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="displayed" Type="tinyint(1)" Null="NO" Key="MUL" Default="1" Extra="" />
+   <field Field="mandatory" Type="tinyint(1)" Null="NO" Key="MUL" Extra="" />
+   <field Field="ordering" Type="tinyint(1)" Null="NO" Key="" Extra="" />
+   <field Field="published" Type="tinyint(1)" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="bank_needed" Type="tinyint(1)" Null="YES" Key="" Extra="" />
+   <field Field="duplicate" Type="int" Null="NO" Key="" Default="1" Extra="" />
+   <key Table="#__emundus_setup_attachment_profiles" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_attachment_profiles" Non_unique="0" Key_name="attachment_campaign" Seq_in_index="1" Column_name="campaign_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_attachment_profiles" Non_unique="0" Key_name="attachment_campaign" Seq_in_index="2" Column_name="attachment_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_attachment_profiles" Non_unique="1" Key_name="profile_id" Seq_in_index="1" Column_name="profile_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_attachment_profiles" Non_unique="1" Key_name="attachment_id" Seq_in_index="1" Column_name="attachment_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_attachment_profiles" Non_unique="1" Key_name="displayed" Seq_in_index="1" Column_name="displayed" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_attachment_profiles" Non_unique="1" Key_name="mandatory" Seq_in_index="1" Column_name="mandatory" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_attachment_profiles">
+   <row>
+    <field name="id">1</field>
+    <field name="profile_id">9</field>
+    <field name="campaign_id"></field>
+    <field name="attachment_id">10</field>
+    <field name="displayed">1</field>
+    <field name="mandatory">1</field>
+    <field name="ordering">1</field>
+    <field name="published">1</field>
+    <field name="bank_needed"></field>
+    <field name="duplicate">0</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="profile_id">9</field>
+    <field name="campaign_id"></field>
+    <field name="attachment_id">12</field>
+    <field name="displayed">1</field>
+    <field name="mandatory">1</field>
+    <field name="ordering">0</field>
+    <field name="published">1</field>
+    <field name="bank_needed"></field>
+    <field name="duplicate">0</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="profile_id">9</field>
+    <field name="campaign_id"></field>
+    <field name="attachment_id">8</field>
+    <field name="displayed">1</field>
+    <field name="mandatory">0</field>
+    <field name="ordering">2</field>
+    <field name="published">1</field>
+    <field name="bank_needed"></field>
+    <field name="duplicate">0</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

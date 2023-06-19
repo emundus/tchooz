@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__fabrik_elements">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="name" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="group_id" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="plugin" Type="varchar(100)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="label" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="checked_out" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="created" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="created_by" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="created_by_alias" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="modified" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="modified_by" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="width" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="height" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="default" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="hidden" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="eval" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="show_in_list_summary" Type="int" Null="YES" Key="MUL" Default="0" Extra="" />
+   <field Field="filter_type" Type="varchar(20)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="filter_exact_match" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="published" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="link_to_detail" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="primary_key" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="auto_increment" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="access" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="use_in_page_title" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="parent_id" Type="mediumint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="params" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <key Table="#__fabrik_elements" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fabrik_elements" Non_unique="1" Key_name="show_in_list_summary_INDEX" Seq_in_index="1" Column_name="show_in_list_summary" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fabrik_elements" Non_unique="1" Key_name="plugin_INDEX" Seq_in_index="1" Column_name="plugin" Collation="A" Null="" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__fabrik_elements" Non_unique="1" Key_name="checked_out_INDEX" Seq_in_index="1" Column_name="checked_out" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fabrik_elements" Non_unique="1" Key_name="group_id_INDEX" Seq_in_index="1" Column_name="group_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fabrik_elements" Non_unique="1" Key_name="parent_id_INDEX" Seq_in_index="1" Column_name="parent_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

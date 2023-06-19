@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_cifre_links">
+   <field Field="id" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="user_to" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="user_from" Type="int" Null="NO" Key="" Extra="" />
+   <field Field="fnum_to" Type="varchar(28)" Null="NO" Key="" Extra="" />
+   <field Field="fnum_from" Type="varchar(28)" Null="YES" Key="" Extra="" />
+   <field Field="time_date_created" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="time_date_modified" Type="timestamp" Null="NO" Key="" Default="0000-00-00 00:00:00" Extra="on update CURRENT_TIMESTAMP" />
+   <field Field="state" Type="tinyint" Null="NO" Key="" Extra="" />
+   <field Field="user_to_favorite" Type="tinyint" Null="YES" Key="" Extra="" />
+   <field Field="user_from_favorite" Type="tinyint" Null="YES" Key="" Extra="" />
+   <field Field="user_to_notify" Type="tinyint" Null="YES" Key="" Extra="" />
+   <field Field="user_from_notify" Type="tinyint" Null="YES" Key="" Extra="" />
+  </table_structure>
+ </database>
+</mysqldump>

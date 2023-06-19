@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_formlist">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="form_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="profile_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="created" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="type" Type="varchar(50)" Null="YES" Key="" Extra="" />
+   <field Field="published" Type="tinyint" Null="YES" Key="" Default="1" Extra="" />
+   <key Table="#__emundus_setup_formlist" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_formlist" Non_unique="1" Key_name="form_id" Seq_in_index="1" Column_name="form_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_formlist" Non_unique="1" Key_name="profile_id" Seq_in_index="1" Column_name="profile_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_formlist">
+   <row>
+    <field name="id">6</field>
+    <field name="form_id">360</field>
+    <field name="profile_id">1001</field>
+    <field name="created">2021-02-09 14:27:19</field>
+    <field name="type"></field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="form_id">362</field>
+    <field name="profile_id">1001</field>
+    <field name="created">2021-02-10 10:13:30</field>
+    <field name="type"></field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="form_id">363</field>
+    <field name="profile_id">1001</field>
+    <field name="created">2021-02-10 10:31:07</field>
+    <field name="type"></field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="form_id">364</field>
+    <field name="profile_id">1001</field>
+    <field name="created">2021-02-11 09:53:49</field>
+    <field name="type"></field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="form_id">365</field>
+    <field name="profile_id">1001</field>
+    <field name="created">2021-02-11 10:08:08</field>
+    <field name="type"></field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="form_id">366</field>
+    <field name="profile_id">1001</field>
+    <field name="created">2021-02-11 11:53:07</field>
+    <field name="type"></field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="form_id">367</field>
+    <field name="profile_id">1003</field>
+    <field name="created">2021-02-16 11:41:57</field>
+    <field name="type"></field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="form_id">370</field>
+    <field name="profile_id">9</field>
+    <field name="created">2021-05-31 11:11:53</field>
+    <field name="type"></field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="form_id">376</field>
+    <field name="profile_id">1001</field>
+    <field name="created">2022-02-18 16:02:17</field>
+    <field name="type"></field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="form_id">374</field>
+    <field name="profile_id"></field>
+    <field name="created">2022-02-18 16:02:17</field>
+    <field name="type">profile</field>
+    <field name="published">1</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

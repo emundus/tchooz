@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__fabrik_forms">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="label" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="record_in_database" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="error" Type="varchar(150)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="intro" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="created" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="created_by" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="created_by_alias" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="modified" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="modified_by" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="checked_out" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="publish_up" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="publish_down" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="reset_button_label" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="submit_button_label" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="form_template" Type="varchar(255)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="view_only_template" Type="varchar(255)" Null="YES" Key="" Default="" Extra="" />
+   <field Field="published" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="private" Type="tinyint(1)" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="params" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <key Table="#__fabrik_forms" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fabrik_forms" Non_unique="1" Key_name="published_INDEX" Seq_in_index="1" Column_name="published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

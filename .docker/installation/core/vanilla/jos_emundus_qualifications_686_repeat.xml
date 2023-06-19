@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_qualifications_686_repeat">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="parent_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="from" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="grade" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="diploma" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="university" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="city" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="country" Type="int" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_qualifications_686_repeat" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_qualifications_686_repeat" Non_unique="1" Key_name="fb_parent_fk_parent_id_INDEX" Seq_in_index="1" Column_name="parent_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

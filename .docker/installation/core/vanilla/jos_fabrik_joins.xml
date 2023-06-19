@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__fabrik_joins">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="list_id" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="element_id" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="join_from_table" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="table_join" Type="varchar(255)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="table_key" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="table_join_key" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="join_type" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="group_id" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="params" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <key Table="#__fabrik_joins" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fabrik_joins" Non_unique="1" Key_name="list_id_INDEX" Seq_in_index="1" Column_name="list_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fabrik_joins" Non_unique="1" Key_name="element_id_INDEX" Seq_in_index="1" Column_name="element_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fabrik_joins" Non_unique="1" Key_name="group_id_INDEX" Seq_in_index="1" Column_name="group_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fabrik_joins" Non_unique="1" Key_name="table_join_INDEX" Seq_in_index="1" Column_name="table_join" Collation="A" Null="" Index_type="BTREE" Sub_part="10" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

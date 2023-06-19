@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_qcm">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="time_date" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="user" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="fnum" Type="varchar(255)" Null="NO" Key="UNI" Extra="" />
+   <field Field="qcm_date_submitted" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="qcm_time_elapsed" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="result" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="question_a1" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_a1" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_a2" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_a2" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_a3" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_a3" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_a4" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="answer_a4" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_a5" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="answer_a5" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_a6" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="answer_a6" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_b1" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_b1" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_b2" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_b2" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_b3" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_b3" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_b4" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_b4" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_b5" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_b5" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_b6" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_b6" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_c1" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_c1" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_c2" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_c3" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_c2" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_c3" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_c4" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_c4" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_c5" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_c6" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_c5" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_c6" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_d1" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_d1" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_d2" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_d3" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_d4" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_d5" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_d6" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_d2" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_d3" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_d4" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_d5" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_d6" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_e1" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_e2" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_e3" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_e4" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_e5" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_e6" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_e1" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_e2" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_e3" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_e4" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_e5" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_e6" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="question_f1" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_f2" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_f3" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_f4" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_f5" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="question_f6" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="answer_f1" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_f2" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_f3" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_f4" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_f5" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <field Field="answer_f6" Type="varchar(4)" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_qcm" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_qcm" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_qcm" Non_unique="1" Key_name="fb_filter_user_INDEX" Seq_in_index="1" Column_name="user" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

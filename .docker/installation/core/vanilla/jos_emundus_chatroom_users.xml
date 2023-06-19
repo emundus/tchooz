@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_chatroom_users">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="chatroom_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <field Field="user_id" Type="int" Null="NO" Key="MUL" Extra="" />
+   <key Table="#__emundus_chatroom_users" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_chatroom_users" Non_unique="0" Key_name="jos_emundus_chatroom_users_chatroom_id_user_id_uindex" Seq_in_index="1" Column_name="chatroom_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_chatroom_users" Non_unique="0" Key_name="jos_emundus_chatroom_users_chatroom_id_user_id_uindex" Seq_in_index="2" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_chatroom_users" Non_unique="0" Key_name="jos_emundus_chatroom_users_id_uindex" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_chatroom_users" Non_unique="1" Key_name="jos_emundus_chatroom_users_jos_emundus_users_user_id_fk" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

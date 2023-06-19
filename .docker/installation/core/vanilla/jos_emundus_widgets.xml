@@ -1,0 +1,577 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_widgets">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="name" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="label" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="size" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="size_small" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="eval" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="class" Type="varchar(100)" Null="YES" Key="" Extra="" />
+   <field Field="published" Type="tinyint(1)" Null="YES" Key="" Extra="" />
+   <field Field="type" Type="varchar(50)" Null="YES" Key="" Extra="" />
+   <field Field="chart_type" Type="varchar(100)" Null="YES" Key="" Extra="" />
+   <field Field="article_id" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="profile" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="params" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_widgets" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_widgets">
+   <row>
+    <field name="id">1</field>
+    <field name="name">faq</field>
+    <field name="label">F.A.Q</field>
+    <field name="size"></field>
+    <field name="size_small"></field>
+    <field name="eval"></field>
+    <field name="class"></field>
+    <field name="published"></field>
+    <field name="type"></field>
+    <field name="chart_type"></field>
+    <field name="article_id"></field>
+    <field name="profile"></field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="name">files_number_by_status</field>
+    <field name="label">Files number</field>
+    <field name="size"></field>
+    <field name="size_small"></field>
+    <field name="eval"></field>
+    <field name="class"></field>
+    <field name="published"></field>
+    <field name="type"></field>
+    <field name="chart_type"></field>
+    <field name="article_id"></field>
+    <field name="profile"></field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="name">users_by_month</field>
+    <field name="label">Users by month</field>
+    <field name="size"></field>
+    <field name="size_small"></field>
+    <field name="eval"></field>
+    <field name="class"></field>
+    <field name="published"></field>
+    <field name="type"></field>
+    <field name="chart_type"></field>
+    <field name="article_id"></field>
+    <field name="profile"></field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="name">tips</field>
+    <field name="label">Tips</field>
+    <field name="size"></field>
+    <field name="size_small"></field>
+    <field name="eval"></field>
+    <field name="class"></field>
+    <field name="published"></field>
+    <field name="type"></field>
+    <field name="chart_type"></field>
+    <field name="article_id"></field>
+    <field name="profile"></field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="name">custom</field>
+    <field name="label">COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS</field>
+    <field name="size">10</field>
+    <field name="size_small">12</field>
+    <field name="eval">php|$db = JFactory::getDbo();
+$query = $db-&gt;getQuery(true);
+
+try {
+    $query-&gt;select('*')
+        -&gt;from($db-&gt;quoteName('jos_emundus_setup_status'))
+        -&gt;order('ordering');
+    $db-&gt;setQuery($query);
+    $status = $db-&gt;loadObjectList();
+
+    $datas = [];
+
+    foreach ($status as $statu) {
+        $file = new stdClass;
+        $file-&gt;label = $statu-&gt;value;
+
+        $colors = array(
+            'lightpurple' =&gt; '#D444F1',
+            'purple' =&gt; '#7959F8',
+            'darkpurple' =&gt; '#663399',
+            'lightblue' =&gt; '#0BA4EB',
+            'blue' =&gt; '#2E90FA',
+            'darkblue' =&gt; '#2970FE',
+            'lightgreen' =&gt; '#15B79E',
+            'green' =&gt; '#238C69',
+            'darkgreen' =&gt; '#20835F',
+            'lightyellow' =&gt; '#5D5B00',
+            'yellow' =&gt; '#EAA907',
+            'darkyellow' =&gt; '#F79009',
+            'lightorange' =&gt; '#C87E00',
+            'orange' =&gt; '#EF681F',
+            'darkorange' =&gt; '#FF4305',
+            'lightred' =&gt; '#EC644B',
+            'red' =&gt; '#DB333E',
+            'darkred' =&gt; '#DB333E',
+            'lightpink' =&gt; '#B04748',
+            'pink' =&gt; '#EE46BC',
+            'darkpink' =&gt; '#F53D68',
+            'default' =&gt; '#5E6580'
+        );
+
+        $file-&gt;color = $colors[$statu-&gt;class];
+
+        $query-&gt;clear()
+            -&gt;select('COUNT(ecc.id) as files')
+            -&gt;from($db-&gt;quoteName('#__emundus_campaign_candidature','ecc'))
+            -&gt;leftJoin($db-&gt;quoteName('#__emundus_setup_campaigns','esc').' ON '.$db-&gt;quoteName('esc.id').' = '.$db-&gt;quoteName('ecc.campaign_id'))
+            -&gt;where($db-&gt;quoteName('ecc.status') . ' = ' . $db-&gt;quote($statu-&gt;step))
+            -&gt;andWhere($db-&gt;quoteName('ecc.published') . ' = ' . $db-&gt;quote(1));
+
+        $db-&gt;setQuery($query);
+        $file-&gt;value = $db-&gt;loadResult();
+        $datas[] = $file;
+    }
+
+	$dataSource = new stdClass;
+	$dataSource-&gt;chart = new stdClass;
+	$dataSource-&gt;chart = array(
+		'caption'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_CAPTION&quot;),
+		'xaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_STATUS&quot;),
+		'yaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER&quot;),
+		'animation' =&gt; 1,
+		'numberScaleValue' =&gt; &quot;1&quot;,
+		'numDivLines' =&gt; 1,
+		'numbersuffix'=&gt; &quot;&quot;,
+		'theme'=&gt; &quot;fusion&quot;
+	);
+	$dataSource-&gt;data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array('dataset' =&gt; '');
+}</field>
+    <field name="class"></field>
+    <field name="published">1</field>
+    <field name="type">chart</field>
+    <field name="chart_type">column2d</field>
+    <field name="article_id"></field>
+    <field name="profile"></field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="name">custom</field>
+    <field name="label">COM_EMUNDUS_DASHBOARD_USERS_BY_MONTH</field>
+    <field name="size">10</field>
+    <field name="size_small">1</field>
+    <field name="eval">php|$db = JFactory::getDbo();
+$query = $db-&gt;getQuery(true);
+$offset = JFactory::getApplication()-&gt;get('offset', 'UTC');
+$now = new DateTime(gmdate(&quot;Y-m-d H:i:s&quot;), new DateTimeZone('UTC'));
+$now = $now-&gt;setTimezone(new DateTimeZone($offset));
+
+try {
+    $users = array();
+    $days = array();
+    $users_by_day = array();
+
+    $query-&gt;select('COUNT(id) as users')
+        -&gt;from($db-&gt;quoteName('#__users'));
+    $db-&gt;setQuery($query);
+    $totalUsers = $db-&gt;loadResult();
+
+    $dateTime = $now;
+
+    for ($d = 1;$d &lt; 31;$d++){
+        $user = new stdClass;
+        $day = new stdClass;
+        $query-&gt;clear()
+            -&gt;select('COUNT(id) as users')
+            -&gt;from($db-&gt;quoteName('#__users'))
+            -&gt;where($db-&gt;quoteName('id') . ' != ' . $db-&gt;quote(62))
+            -&gt;andWhere('YEAR(registerDate) = ' . $db-&gt;quote($dateTime-&gt;format('Y')))
+            -&gt;andWhere('MONTH(registerDate) = ' . $db-&gt;quote($dateTime-&gt;format('m')))
+            -&gt;andWhere('DAY(registerDate) = ' . $db-&gt;quote($dateTime-&gt;format('j')));
+
+        $db-&gt;setQuery($query);
+        $user = (int) $db-&gt;loadResult();
+        $day = $dateTime-&gt;format('d') . '/' . $dateTime-&gt;format('m');
+        $users[] = $user;
+        $days[] = $day;
+        $users_by_day[] = array('label' =&gt; $day, 'value' =&gt; $user);
+
+        $dateTime-&gt;modify('-1 day');
+    }
+
+    $dataSource = new stdClass;
+    $dataSource-&gt;chart = new stdClass;
+    $dataSource-&gt;chart = array(
+        'caption'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_USERS_BY_MONTH_CAPTION&quot;),
+        'subcaption'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_USERS_TOTAL&quot;) . $totalUsers . JText::_(&quot;COM_EMUNDUS_DASHBOARD_USERS&quot;),
+        'xaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_USERS_DAYS&quot;),
+        'yaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_USERS_NUMBER&quot;),
+        'animation' =&gt; 1,
+        'yAxisMinValue'=&gt; 0,
+        'setAdaptiveYMin'=&gt; 0,
+        'adjustDiv'=&gt; 0,
+        'yAxisValuesStep'=&gt; 10,
+        'numbersuffix'=&gt; &quot;&quot;,
+        'theme'=&gt; &quot;fusion&quot;
+    );
+    $dataSource-&gt;categories = [];
+    $dataSource-&gt;categories[] = array(
+        'category' =&gt; $days
+    );
+    $dataSource-&gt;data = array_reverse($users_by_day);
+    return $dataSource;
+} catch (Exception $e) {
+	return array('users' =&gt; '', 'days' =&gt; '', 'total' =&gt; 0);
+}</field>
+    <field name="class"></field>
+    <field name="published">1</field>
+    <field name="type">chart</field>
+    <field name="chart_type">line</field>
+    <field name="article_id"></field>
+    <field name="profile"></field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="name">custom</field>
+    <field name="label">COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS</field>
+    <field name="size">10</field>
+    <field name="size_small">12</field>
+    <field name="eval">php|$db = JFactory::getDbo();
+$query = $db-&gt;getQuery(true);
+
+$user_id = JFactory::getUser()-&gt;id;
+
+try {
+    $query-&gt;select('*')
+        -&gt;from($db-&gt;quoteName('jos_emundus_setup_status'))
+        -&gt;order('ordering');
+    $db-&gt;setQuery($query);
+    $status = $db-&gt;loadObjectList();
+
+    $datas = [];
+
+    foreach ($status as $statu) {
+        $file = new stdClass;
+        $file-&gt;label = $statu-&gt;value;
+
+        $colors = array(
+            'lightpurple' =&gt; '#D444F1',
+            'purple' =&gt; '#7959F8',
+            'darkpurple' =&gt; '#663399',
+            'lightblue' =&gt; '#0BA4EB',
+            'blue' =&gt; '#2E90FA',
+            'darkblue' =&gt; '#2970FE',
+            'lightgreen' =&gt; '#15B79E',
+            'green' =&gt; '#238C69',
+            'darkgreen' =&gt; '#20835F',
+            'lightyellow' =&gt; '#5D5B00',
+            'yellow' =&gt; '#EAA907',
+            'darkyellow' =&gt; '#F79009',
+            'lightorange' =&gt; '#C87E00',
+            'orange' =&gt; '#EF681F',
+            'darkorange' =&gt; '#FF4305',
+            'lightred' =&gt; '#EC644B',
+            'red' =&gt; '#DB333E',
+            'darkred' =&gt; '#DB333E',
+            'lightpink' =&gt; '#B04748',
+            'pink' =&gt; '#EE46BC',
+            'darkpink' =&gt; '#F53D68',
+            'default' =&gt; '#5E6580'
+        );
+
+        $file-&gt;color = $colors[$statu-&gt;class];
+
+        $query-&gt;clear()
+            -&gt;select('distinct eua.fnum as files')
+            -&gt;from($db-&gt;quoteName('#__emundus_users_assoc','eua'))
+            -&gt;leftJoin($db-&gt;quoteName('#__emundus_campaign_candidature','cc').' ON '.$db-&gt;quoteName('cc.fnum').' = '.$db-&gt;quoteName('eua.fnum'))
+            -&gt;where($db-&gt;quoteName('cc.status').' = '.$db-&gt;quote($statu-&gt;step))
+			-&gt;andWhere($db-&gt;quoteName('cc.published').' = '.$db-&gt;quote(1))
+            -&gt;andWhere($db-&gt;quoteName('eua.user_id').' = '.$db-&gt;quote($user_id));
+
+        $db-&gt;setQuery($query);
+        $files_user_assoc = $db-&gt;loadColumn();
+
+        $query-&gt;clear()
+            -&gt;select('distinct ega.fnum as files')
+            -&gt;from($db-&gt;quoteName('#__emundus_group_assoc','ega'))
+            -&gt;leftJoin($db-&gt;quoteName('#__emundus_campaign_candidature','cc').' ON '.$db-&gt;quoteName('cc.fnum').' = '.$db-&gt;quoteName('ega.fnum'))
+            -&gt;leftJoin($db-&gt;quoteName('#__emundus_groups','eg').' ON '.$db-&gt;quoteName('eg.group_id').' = '.$db-&gt;quoteName('ega.group_id'))
+            -&gt;where($db-&gt;quoteName('cc.status').' = '.$db-&gt;quote($statu-&gt;step))
+			-&gt;andWhere($db-&gt;quoteName('cc.published').' = '.$db-&gt;quote(1))
+            -&gt;andWhere($db-&gt;quoteName('eg.user_id').' = '.$db-&gt;quote($user_id));
+
+        $db-&gt;setQuery($query);
+        $files_group_assoc = $db-&gt;loadColumn();
+
+        $query-&gt;clear()
+            -&gt;select('distinct cc.fnum as files')
+            -&gt;from($db-&gt;quoteName('#__emundus_groups','eg'))
+            -&gt;leftJoin($db-&gt;quoteName('#__emundus_setup_groups_repeat_course','esgrc').' ON '.$db-&gt;quoteName('esgrc.parent_id').' = '.$db-&gt;quoteName('eg.group_id'))
+            -&gt;leftJoin($db-&gt;quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$db-&gt;quoteName('esc.training').' = '.$db-&gt;quoteName('esgrc.course'))
+            -&gt;leftJoin($db-&gt;quoteName('#__emundus_campaign_candidature','cc').' ON '.$db-&gt;quoteName('cc.campaign_id').' = '.$db-&gt;quoteName('esc.id'))
+            -&gt;where($db-&gt;quoteName('cc.status').' = '.$db-&gt;quote($statu-&gt;step))
+			-&gt;andWhere($db-&gt;quoteName('cc.published').' = '.$db-&gt;quote(1))
+            -&gt;andWhere($db-&gt;quoteName('eg.user_id').' = '.$db-&gt;quote($user_id));
+
+        $db-&gt;setQuery($query);
+        $files_group_programs = $db-&gt;loadColumn();
+
+        $file-&gt;value = sizeof(array_unique(array_merge($files_user_assoc,$files_group_assoc,$files_group_programs)));
+        $datas[] = $file;
+    }
+
+	$dataSource = new stdClass;
+	$dataSource-&gt;chart = new stdClass;
+	$dataSource-&gt;chart = array(
+		'caption'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS_CAPTION&quot;),
+		'xaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_STATUS&quot;),
+		'yaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER&quot;),
+		'animation' =&gt; 1,
+		'numberScaleValue' =&gt; &quot;1&quot;,
+		'numDivLines' =&gt; 1,
+		'numbersuffix'=&gt; &quot;&quot;,
+		'theme'=&gt; &quot;fusion&quot;
+	);
+	$dataSource-&gt;data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array('dataset' =&gt; '');
+}</field>
+    <field name="class"></field>
+    <field name="published">1</field>
+    <field name="type">chart</field>
+    <field name="chart_type">column2d</field>
+    <field name="article_id"></field>
+    <field name="profile"></field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="name">custom</field>
+    <field name="label">Files by status - Number</field>
+    <field name="size">6</field>
+    <field name="size_small">12</field>
+    <field name="eval">php|$db = JFactory::getDbo();
+$query = $db-&gt;getQuery(true);
+
+$user_id = JFactory::getUser()-&gt;id;
+
+try {
+    $query-&gt;select('*')
+        -&gt;from($db-&gt;quoteName('jos_emundus_setup_status'));
+    $db-&gt;setQuery($query);
+    $status = $db-&gt;loadObjectList();
+
+    $datas = [];
+
+    foreach ($status as $statu) {
+        $file = new stdClass;
+        $file-&gt;label = $statu-&gt;value;
+
+        $query-&gt;clear()
+            -&gt;select('distinct eua.fnum as files')
+            -&gt;from($db-&gt;quoteName('jos_emundus_users_assoc','eua'))
+            -&gt;leftJoin($db-&gt;quoteName('jos_emundus_campaign_candidature','cc').' ON '.$db-&gt;quoteName('cc.fnum').' = '.$db-&gt;quoteName('eua.fnum'))
+            -&gt;where($db-&gt;quoteName('cc.status') . '=' . $db-&gt;quote($statu-&gt;step))
+            -&gt;andWhere($db-&gt;quoteName('eua.user_id') . '=' . $db-&gt;quote($user_id));
+
+        $db-&gt;setQuery($query);
+        $files_user_assoc = $db-&gt;loadColumn();
+
+        $query-&gt;clear()
+            -&gt;select('distinct ega.fnum as files')
+            -&gt;from($db-&gt;quoteName('jos_emundus_group_assoc','ega'))
+            -&gt;leftJoin($db-&gt;quoteName('jos_emundus_campaign_candidature','cc').' ON '.$db-&gt;quoteName('cc.fnum').' = '.$db-&gt;quoteName('ega.fnum'))
+            -&gt;leftJoin($db-&gt;quoteName('jos_emundus_groups','eg').' ON '.$db-&gt;quoteName('eg.group_id').' = '.$db-&gt;quoteName('ega.group_id'))
+            -&gt;where($db-&gt;quoteName('cc.status') . '=' . $db-&gt;quote($statu-&gt;step))
+            -&gt;andWhere($db-&gt;quoteName('eg.user_id') . '=' . $db-&gt;quote($user_id));
+
+        $db-&gt;setQuery($query);
+        $files_group_assoc = $db-&gt;loadColumn();
+
+        $file-&gt;value = sizeof(array_unique(array_merge($files_user_assoc,$files_group_assoc)));
+        $datas[] = $file;
+    }
+
+    $text = '&lt;h1&gt;'.JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS&quot;).'&lt;/h1&gt;';
+    $text .= '&lt;div class=&quot;widget-files-status-number-block&quot;&gt;';
+    foreach ($datas as $data){
+        $text .= '&lt;div style=&quot;text-align: center&quot;&gt;&lt;h1&gt;'.$data-&gt;value.'&lt;/h1&gt;&lt;p&gt;'.$data-&gt;label.'&lt;/p&gt;&lt;/div&gt;';
+    }
+    $text .= '&lt;/div&gt;';
+    return $text;
+} catch (Exception $e) {
+    return array('dataset' =&gt; '');
+}
+</field>
+    <field name="class">widget-files-status-number</field>
+    <field name="published">1</field>
+    <field name="type">other</field>
+    <field name="chart_type"></field>
+    <field name="article_id"></field>
+    <field name="profile"></field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="name">custom</field>
+    <field name="label">COM_EMUNDUS_DASHBOARD_FILES_BY_TAG</field>
+    <field name="size">10</field>
+    <field name="size_small">12</field>
+    <field name="eval">php|$db = JFactory::getDbo();
+$query = $db-&gt;getQuery(true);
+
+try {
+	$query-&gt;select('*')
+		-&gt;from($db-&gt;quoteName('jos_emundus_setup_action_tag'));
+	$db-&gt;setQuery($query);
+	$tags = $db-&gt;loadObjectList();
+
+	$datas = array();
+
+	foreach ($tags as $tag) {
+		$file = new stdClass;
+		$file-&gt;label = $tag-&gt;label;
+
+		$query-&gt;clear()
+			-&gt;select('COUNT(distinct eta.fnum) as files')
+			-&gt;from($db-&gt;quoteName('jos_emundus_tag_assoc','eta'))
+			-&gt;where($db-&gt;quoteName('eta.id_tag').' = '.$db-&gt;quote($tag-&gt;id));
+
+		$db-&gt;setQuery($query);
+		$file-&gt;value = $db-&gt;loadResult();
+		$datas[] = $file;
+	}
+
+	$dataSource = new stdClass;
+	$dataSource-&gt;chart = new stdClass;
+	$dataSource-&gt;chart = array(
+		'caption'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_BY_TAG_CAPTION&quot;),
+		'xaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_TAGS&quot;),
+		'yaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_BY_TAG_NUMBER&quot;),
+		'animation' =&gt; 1,
+		'numbersuffix'=&gt; &quot;&quot;,
+		'theme'=&gt; &quot;fusion&quot;
+	);
+	$dataSource-&gt;data = $datas;
+	return $dataSource;
+} catch (Exception $e) {
+	return array('dataset' =&gt; '');
+}</field>
+    <field name="class"></field>
+    <field name="published">1</field>
+    <field name="type">chart</field>
+    <field name="chart_type">pie2d</field>
+    <field name="article_id"></field>
+    <field name="profile"></field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="name">custom</field>
+    <field name="label">FAQ</field>
+    <field name="size">2</field>
+    <field name="size_small">2</field>
+    <field name="eval"></field>
+    <field name="class">faq-widget</field>
+    <field name="published">1</field>
+    <field name="type">article</field>
+    <field name="chart_type"></field>
+    <field name="article_id">1040</field>
+    <field name="profile"></field>
+    <field name="params"></field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="name">custom</field>
+    <field name="label">Messagerie</field>
+    <field name="size">10</field>
+    <field name="size_small">12</field>
+    <field name="eval">php|try {
+    $db = JFactory::getDbo();
+    $query = $db-&gt;getQuery(true);
+
+    $user = JFactory::getUser();
+    $e_user = JFactory::getSession()-&gt;get('emundusUser');
+
+    $query-&gt;select('group_id')
+        -&gt;from($db-&gt;quoteName('#__emundus_groups'))
+        -&gt;where($db-&gt;quoteName('user_id') . ' = ' . $user-&gt;id);
+    $db-&gt;setQuery($query);
+    $user_groups = $db-&gt;loadColumn();
+
+    $query-&gt;clear()
+        -&gt;select('user_id')
+        -&gt;from($db-&gt;quoteName('#__emundus_users'))
+        -&gt;where($db-&gt;quoteName('profile') . ' IN (1,2,5,6,1007,1008,1014)');
+    $db-&gt;setQuery($query);
+    $users_not_applicant = $db-&gt;loadColumn();
+
+    $query = &quot;SELECT distinct m.message_id,m.date_time,m.message,ec.fnum,u.name
+    FROM jos_messages m 
+    LEFT JOIN `jos_emundus_chatroom` AS `ec` ON `ec`.`id` = `m`.`page` 
+    LEFT JOIN `jos_emundus_campaign_candidature` AS `ecc` ON `ecc`.`fnum` = `ec`.`fnum`&quot;;
+    if(!in_array($e_user-&gt;profile,[1,2])) {
+        if($e_user-&gt;profile != 6) {
+            $query .= &quot; LEFT JOIN `jos_emundus_group_assoc` AS `ega` ON `ega`.`fnum` = `ecc`.`fnum`&quot;;
+        } else {
+            $query .= &quot; LEFT JOIN `jos_emundus_users_assoc` AS `eua` ON `eua`.`fnum` = `ecc`.`fnum` AND eua.action_id = 1 AND eua.r = 1&quot;;
+        }
+    }
+    $query .= &quot; LEFT JOIN `jos_users` AS `u` ON `u`.`id` = `ecc`.`applicant_id` 
+    JOIN (SELECT `ec`.`fnum`, MAX(`m`.`message_id`) `message_id` FROM `jos_messages` AS `m` LEFT JOIN `jos_emundus_chatroom` AS `ec` ON `ec`.`id` = `m`.`page` GROUP BY `ec`.`fnum`) m2 
+    ON m.message_id = m2.message_id AND ec.fnum = m2.fnum 
+    WHERE `m`.`user_id_from` NOT IN (&quot; . implode(',',$users_not_applicant) . &quot;)
+    AND `ec`.`fnum` IS NOT NULL AND `u`.`id` IS NOT NULL&quot;;
+    if(!in_array($e_user-&gt;profile,[1,2])) {
+        if($e_user-&gt;profile != 6) {
+            $query .= &quot; AND `ega`.`group_id` IN (&quot; . implode(',', $user_groups) . &quot;)&quot;;
+        } else {
+            $query .= &quot; AND `eua`.`user_id` = &quot; . $db-&gt;quote($user-&gt;id);
+        }
+    }
+    $query .= ' ORDER BY m.date_time DESC';
+    $db-&gt;setQuery($query);
+    $messages = $db-&gt;loadObjectList();
+
+    $text = '&lt;h2 class=&quot;widget__message_header&quot;&gt;Messages non-répondus&lt;/h2&gt;';
+
+    if(empty($messages)){
+        $text .= '&lt;p&gt;Aucun message en attente de réponse.&lt;/p&gt;';
+    } else {
+        foreach ($messages as $message){
+            $date = date_create($message-&gt;date_time);
+            $text .= '&lt;div&gt;&lt;span style=&quot;font-size: 12px&quot;&gt;' . $message-&gt;name . '&lt;/span&gt;&lt;br /&gt;';
+            $text .= '&lt;span style=&quot;font-size: 12px&quot;&gt;' . date_format($date,&quot;d/m/Y H:i&quot;) . '&lt;/span&gt;&lt;br /&gt;';
+            $text .= '&lt;a href=&quot;/dossiers#' . $message-&gt;fnum . '&quot; class=&quot;widget__message_message em-flex-row&quot;&gt;&lt;p class=&quot;widget__message_text em-mr-8&quot;&gt;' . $message-&gt;message . '&lt;/p&gt;&lt;i class=&quot;fas fa-reply&quot;&gt;&lt;/i&gt;&lt;/a&gt;';
+            $text .= '&lt;hr /&gt;&lt;/div&gt;';
+        }
+    }
+
+    return $text;
+} catch (Exception $e) {
+    return 'Erreur : ' . $e-&gt;getMessage();
+}</field>
+    <field name="class">widget__messages__gestionnaire</field>
+    <field name="published">1</field>
+    <field name="type">other</field>
+    <field name="chart_type"></field>
+    <field name="article_id"></field>
+    <field name="profile"></field>
+    <field name="params"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

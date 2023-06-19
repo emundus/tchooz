@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_univpref">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="user" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="fnum" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="first_year_1" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="first_year_2" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="second_year_1" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="second_year_2" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_univpref" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_univpref" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_univpref" Non_unique="1" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_univpref">
+   <row>
+    <field name="id">6</field>
+    <field name="date_time">2020-03-11 10:08:47</field>
+    <field name="user">111</field>
+    <field name="fnum">2020031110550100000010000111</field>
+    <field name="first_year_1"></field>
+    <field name="first_year_2"></field>
+    <field name="second_year_1"></field>
+    <field name="second_year_2"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

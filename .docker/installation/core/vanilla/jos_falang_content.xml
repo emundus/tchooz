@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__falang_content">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="language_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="reference_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="reference_table" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="reference_field" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="value" Type="mediumtext" Null="NO" Key="" Extra="" />
+   <field Field="original_value" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="original_text" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <field Field="modified" Type="datetime" Null="NO" Key="" Default="0000-00-00 00:00:00" Extra="" />
+   <field Field="modified_by" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="published" Type="tinyint unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__falang_content" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__banner_tracks">
+   <field Field="track_date" Type="datetime" Null="NO" Key="PRI" Extra="" />
+   <field Field="track_type" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
+   <field Field="banner_id" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
+   <field Field="count" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__banner_tracks" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="track_date" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__banner_tracks" Non_unique="0" Key_name="PRIMARY" Seq_in_index="2" Column_name="track_type" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__banner_tracks" Non_unique="0" Key_name="PRIMARY" Seq_in_index="3" Column_name="banner_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__banner_tracks" Non_unique="1" Key_name="idx_track_date" Seq_in_index="1" Column_name="track_date" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__banner_tracks" Non_unique="1" Key_name="idx_track_type" Seq_in_index="1" Column_name="track_type" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__banner_tracks" Non_unique="1" Key_name="idx_banner_id" Seq_in_index="1" Column_name="banner_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

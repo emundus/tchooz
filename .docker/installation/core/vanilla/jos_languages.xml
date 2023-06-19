@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__languages">
+   <field Field="lang_id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="asset_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="lang_code" Type="char(7)" Null="NO" Key="UNI" Extra="" />
+   <field Field="title" Type="varchar(50)" Null="NO" Key="" Extra="" />
+   <field Field="title_native" Type="varchar(50)" Null="NO" Key="" Extra="" />
+   <field Field="sef" Type="varchar(50)" Null="NO" Key="UNI" Extra="" />
+   <field Field="image" Type="varchar(50)" Null="NO" Key="" Extra="" />
+   <field Field="description" Type="varchar(512)" Null="NO" Key="" Extra="" />
+   <field Field="metakey" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="metadesc" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="sitename" Type="varchar(1024)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="published" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="access" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <key Table="#__languages" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="lang_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__languages" Non_unique="0" Key_name="idx_sef" Seq_in_index="1" Column_name="sef" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__languages" Non_unique="0" Key_name="idx_langcode" Seq_in_index="1" Column_name="lang_code" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__languages" Non_unique="1" Key_name="idx_access" Seq_in_index="1" Column_name="access" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__languages" Non_unique="1" Key_name="idx_ordering" Seq_in_index="1" Column_name="ordering" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__languages">
+   <row>
+    <field name="lang_id">1</field>
+    <field name="asset_id">0</field>
+    <field name="lang_code">en-GB</field>
+    <field name="title">English (en-GB)</field>
+    <field name="title_native">English (United Kingdom)</field>
+    <field name="sef">en</field>
+    <field name="image">en_gb</field>
+    <field name="description"></field>
+    <field name="metakey"></field>
+    <field name="metadesc"></field>
+    <field name="sitename"></field>
+    <field name="published">1</field>
+    <field name="access">1</field>
+    <field name="ordering">2</field>
+   </row>
+   <row>
+    <field name="lang_id">2</field>
+    <field name="asset_id">91</field>
+    <field name="lang_code">fr-FR</field>
+    <field name="title">French (fr-FR)</field>
+    <field name="title_native">Français (France)</field>
+    <field name="sef">fr</field>
+    <field name="image">fr_fr</field>
+    <field name="description"></field>
+    <field name="metakey"></field>
+    <field name="metadesc"></field>
+    <field name="sitename"></field>
+    <field name="published">0</field>
+    <field name="access">1</field>
+    <field name="ordering">1</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

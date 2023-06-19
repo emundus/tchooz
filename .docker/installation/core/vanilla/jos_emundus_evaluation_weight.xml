@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_evaluation_weight">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="" />
+   <field Field="name" Type="varchar(128)" Null="NO" Key="" Extra="" />
+   <field Field="weight" Type="float" Null="NO" Key="" Extra="" />
+   <field Field="type" Type="varchar(64)" Null="NO" Key="MUL" Extra="" />
+   <field Field="alias" Type="varchar(64)" Null="NO" Key="MUL" Extra="" />
+   <field Field="parent_id" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="calc" Type="text" Null="NO" Key="" Extra="" />
+   <key Table="#__emundus_evaluation_weight" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_evaluation_weight" Non_unique="1" Key_name="fb_tableorder_alias_INDEX" Seq_in_index="1" Column_name="alias" Collation="A" Null="" Index_type="BTREE" Sub_part="10" Comment="" />
+   <key Table="#__emundus_evaluation_weight" Non_unique="1" Key_name="fb_groupby_type_INDEX" Seq_in_index="1" Column_name="type" Collation="A" Null="" Index_type="BTREE" Sub_part="10" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_evaluation_weight">
+   <row>
+    <field name="id">29</field>
+    <field name="name">Research project</field>
+    <field name="weight">1</field>
+    <field name="type">criteria02</field>
+    <field name="alias">1.2</field>
+    <field name="parent_id">0</field>
+    <field name="calc">return {jos_emundus_evaluations___criteria02!student_id::[user]};</field>
+   </row>
+   <row>
+    <field name="id">30</field>
+    <field name="name">Academic excellence</field>
+    <field name="weight">1</field>
+    <field name="type">criteria01</field>
+    <field name="alias">1.1</field>
+    <field name="parent_id">0</field>
+    <field name="calc">return {jos_emundus_evaluations___criteria01!student_id::[user]};</field>
+   </row>
+   <row>
+    <field name="id">31</field>
+    <field name="name">Cover letter</field>
+    <field name="weight">1</field>
+    <field name="type">criteria03</field>
+    <field name="alias">1.3</field>
+    <field name="parent_id">0</field>
+    <field name="calc">return {jos_emundus_evaluations___criteria03!student_id::[user]};</field>
+   </row>
+   <row>
+    <field name="id">32</field>
+    <field name="name">Curriculum vitae</field>
+    <field name="weight">1</field>
+    <field name="type">criteria04</field>
+    <field name="alias">1.4</field>
+    <field name="parent_id">0</field>
+    <field name="calc">return {jos_emundus_evaluations___criteria04!student_id::[user]};</field>
+   </row>
+   <row>
+    <field name="id">33</field>
+    <field name="name">Level languages</field>
+    <field name="weight">1</field>
+    <field name="type">criteria05</field>
+    <field name="alias">1.5</field>
+    <field name="parent_id">0</field>
+    <field name="calc">return {jos_emundus_evaluations___criteria05!student_id::[user]};</field>
+   </row>
+   <row>
+    <field name="id">38</field>
+    <field name="name">Reference Letters</field>
+    <field name="weight">1</field>
+    <field name="type">criteria06</field>
+    <field name="alias">1.6</field>
+    <field name="parent_id">0</field>
+    <field name="calc">return {jos_emundus_evaluations___criteria06!student_id::[user]};</field>
+   </row>
+   <row>
+    <field name="id">39</field>
+    <field name="name">University origin</field>
+    <field name="weight">1</field>
+    <field name="type">criteria07</field>
+    <field name="alias">1.7</field>
+    <field name="parent_id">0</field>
+    <field name="calc">return {jos_emundus_evaluations___criteria07!student_id::[user]};</field>
+   </row>
+   <row>
+    <field name="id">42</field>
+    <field name="name">Final mark</field>
+    <field name="weight">1</field>
+    <field name="type">overall</field>
+    <field name="alias">2</field>
+    <field name="parent_id">0</field>
+    <field name="calc">return {jos_emundus_evaluations___criteria01!student_id::[user]}+{jos_emundus_evaluations___criteria02!student_id::[user]}+{jos_emundus_evaluations___criteria03!student_id::[user]}+{jos_emundus_evaluations___criteria04!student_id::[user]}+{jos_emundus_evaluations___criteria05!student_id::[user]}+{jos_emundus_evaluations___criteria06!student_id::[user]};</field>
+   </row>
+   <row>
+    <field name="id">43</field>
+    <field name="name">Application</field>
+    <field name="weight">1</field>
+    <field name="type">application</field>
+    <field name="alias">1</field>
+    <field name="parent_id">0</field>
+    <field name="calc">return {jos_emundus_evaluations___criteria01!student_id::[user]}+{jos_emundus_evaluations___criteria02!student_id::[user]}+{jos_emundus_evaluations___criteria03!student_id::[user]}+{jos_emundus_evaluations___criteria04!student_id::[user]}+{jos_emundus_evaluations___criteria05!student_id::[user]}+{jos_emundus_evaluations___criteria06!student_id::[user]};</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__users">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="name" Type="varchar(400)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="username" Type="varchar(150)" Null="NO" Key="UNI" Default="" Extra="" />
+   <field Field="email" Type="varchar(100)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="password" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="block" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="sendEmail" Type="tinyint" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="registerDate" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="lastvisitDate" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="activation" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="params" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="lastResetTime" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="resetCount" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="otpKey" Type="varchar(1000)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="otep" Type="varchar(1000)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="requireReset" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="authProvider" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <key Table="#__users" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__users" Non_unique="0" Key_name="idx_username" Seq_in_index="1" Column_name="username" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__users" Non_unique="1" Key_name="idx_name" Seq_in_index="1" Column_name="name" Collation="A" Null="" Index_type="BTREE" Sub_part="100" Comment="" />
+   <key Table="#__users" Non_unique="1" Key_name="idx_block" Seq_in_index="1" Column_name="block" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__users" Non_unique="1" Key_name="email" Seq_in_index="1" Column_name="email" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__users">
+   <row>
+    <field name="id">62</field>
+    <field name="name">Administrator</field>
+    <field name="username">sysadmin</field>
+    <field name="email">sysadmin@emundus.io</field>
+    <field name="password">$2y$10$J.xsN5O4Ta9IUfAUVpkwzO7AWhvfzMjf5RZm4wewBdZhnLlPkXvbm</field>
+    <field name="block">0</field>
+    <field name="sendEmail">1</field>
+    <field name="registerDate">2023-04-06 13:47:54</field>
+    <field name="lastvisitDate">2023-06-16 11:51:31</field>
+    <field name="activation">0</field>
+    <field name="params">{&quot;admin_style&quot;:&quot;&quot;,&quot;admin_language&quot;:&quot;fr-FR&quot;,&quot;language&quot;:&quot;&quot;,&quot;editor&quot;:&quot;&quot;,&quot;timezone&quot;:&quot;&quot;,&quot;a11y_mono&quot;:&quot;0&quot;,&quot;a11y_contrast&quot;:&quot;0&quot;,&quot;a11y_highlight&quot;:&quot;0&quot;,&quot;a11y_font&quot;:&quot;0&quot;}</field>
+    <field name="lastResetTime"></field>
+    <field name="resetCount">0</field>
+    <field name="otpKey"></field>
+    <field name="otep"></field>
+    <field name="requireReset">0</field>
+    <field name="authProvider"></field>
+   </row>
+   <row>
+    <field name="id">95</field>
+    <field name="name">Coordinator</field>
+    <field name="username">coordinator</field>
+    <field name="email">b.hubinet@gmail.com</field>
+    <field name="password">$2y$10$LeCbTCcYLMHD/2UZeQROF.SKXj0I8nVFLMof8dCtXwdP3L1X.J.5u</field>
+    <field name="block">0</field>
+    <field name="sendEmail">0</field>
+    <field name="registerDate">2023-05-10 09:39:36</field>
+    <field name="lastvisitDate">2023-06-16 12:42:01</field>
+    <field name="activation"></field>
+    <field name="params">{&quot;admin_style&quot;:&quot;&quot;,&quot;admin_language&quot;:&quot;fr-FR&quot;,&quot;language&quot;:&quot;fr-FR&quot;,&quot;editor&quot;:&quot;&quot;,&quot;timezone&quot;:&quot;&quot;,&quot;a11y_mono&quot;:&quot;0&quot;,&quot;a11y_contrast&quot;:&quot;0&quot;,&quot;a11y_highlight&quot;:&quot;0&quot;,&quot;a11y_font&quot;:&quot;0&quot;}</field>
+    <field name="lastResetTime"></field>
+    <field name="resetCount">0</field>
+    <field name="otpKey"></field>
+    <field name="otep"></field>
+    <field name="requireReset">0</field>
+    <field name="authProvider"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

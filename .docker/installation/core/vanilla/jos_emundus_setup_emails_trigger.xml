@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_emails_trigger">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="user" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="step" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="programme_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="email_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="to_current_user" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="profile_id" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="user_id" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="to_applicant" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="group_id" Type="int" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_setup_emails_trigger" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_emails_trigger" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_emails_trigger" Non_unique="1" Key_name="step" Seq_in_index="1" Column_name="step" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_emails_trigger" Non_unique="1" Key_name="programme_id" Seq_in_index="1" Column_name="programme_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_setup_emails_trigger" Non_unique="1" Key_name="email_id" Seq_in_index="1" Column_name="email_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_emails_trigger">
+   <row>
+    <field name="id">5</field>
+    <field name="date_time"></field>
+    <field name="user">95</field>
+    <field name="step">1</field>
+    <field name="programme_id"></field>
+    <field name="email_id">1</field>
+    <field name="to_current_user">1</field>
+    <field name="profile_id"></field>
+    <field name="user_id"></field>
+    <field name="to_applicant">0</field>
+    <field name="group_id"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>
