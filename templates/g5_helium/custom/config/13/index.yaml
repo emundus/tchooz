@@ -1,0 +1,64 @@
+name: '13'
+timestamp: 1687175459
+version: 7
+preset:
+  image: 'gantry-admin://images/layouts/default.png'
+  name: home_-_particles
+  timestamp: 1687175459
+positions: {  }
+sections:
+  navigation: Navigation
+  intro: Intro
+  features: Features
+  utility: Utility
+  above: Above
+  testimonials: Testimonials
+  expanded: Expanded
+  header: Header
+  mainbar: Mainbar
+  sidebar: Sidebar
+  footer: Footer
+  offcanvas: Offcanvas
+particles:
+  owlcarousel:
+    owlcarousel-2455: 'Owl Carousel'
+  custom:
+    custom-5807: Intro
+    custom-3119: Features
+    custom-7658: 'Customer Testimonials'
+    custom-6355: 'Develop CMS themes quickly'
+  contenttabs:
+    contenttabs-3854: 'Content Tabs'
+  contentcubes:
+    contentcubes-7850: 'Content Cubes'
+  messages:
+    system-messages-8838: 'System Messages'
+  logo:
+    logo-8100: 'Logo / Image'
+    logo-1220: 'Logo / Image'
+  menu:
+    menu-9186: Menu
+  social:
+    social-9937: Social
+  copyright:
+    copyright-6019: Copyright
+  horizontalmenu:
+    horizontalmenu-8120: 'Horizontal Menu'
+  totop:
+    totop-4526: 'To Top'
+  mobile-menu:
+    mobile-menu-3161: Mobile-menu
+inherit:
+  default:
+    navigation: navigation
+    footer: footer
+    offcanvas: offcanvas
+    system-messages-8838: system-messages-7536
+    logo-8100: logo-6084
+    menu-9186: menu-4133
+    social-9937: social-9937
+    logo-1220: logo-8583
+    copyright-6019: copyright-9476
+    horizontalmenu-8120: horizontalmenu-6178
+    totop-4526: totop-9124
+    mobile-menu-3161: mobile-menu-3067
