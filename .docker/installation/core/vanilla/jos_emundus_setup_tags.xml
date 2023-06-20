@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_setup_tags">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="date_time" Type="datetime" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
+   <field Field="date_time" Type="datetime" Null="NO" Key="" Default="CURRENT_TIMESTAMP" />
    <field Field="tag" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="request" Type="text" Null="YES" Key="" Extra="" />
    <field Field="description" Type="text" Null="NO" Key="" Extra="" />
@@ -149,7 +149,7 @@
    </row>
    <row>
     <field name="id">19</field>
-    <field name="date_time"></field>
+    <field name="date_time">2023-06-20 15:42:33</field>
     <field name="tag">PROGRAMME_NAME</field>
     <field name="request">[TRAINING_PROGRAMME]</field>
     <field name="description"></field>
@@ -293,7 +293,7 @@
    </row>
    <row>
     <field name="id">42</field>
-    <field name="date_time"></field>
+    <field name="date_time">2023-06-20 15:42:33</field>
     <field name="tag">LASTFIRST_NAME</field>
     <field name="request">php|$user = JFactory::getSession()-&gt;get('emundusUser'); $last=mb_substr($user-&gt;lastname, 0, 3); $first=mb_substr($user-&gt;firstname, 0, 3); return $last.&quot;_&quot;.$first;</field>
     <field name="description">Gets first three letters of last name and first name then concatenates them.</field>

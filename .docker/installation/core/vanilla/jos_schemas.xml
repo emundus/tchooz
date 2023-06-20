@@ -20,6 +20,10 @@
     <field name="extension_id">346</field>
     <field name="version_id">4.12.0</field>
    </row>
+   <row>
+    <field name="extension_id">601</field>
+    <field name="version_id">3.1.4</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

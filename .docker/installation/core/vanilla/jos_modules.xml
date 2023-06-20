@@ -730,7 +730,7 @@
    </row>
    <row>
     <field name="id">109</field>
-    <field name="asset_id">96</field>
+    <field name="asset_id">112</field>
     <field name="title">FaLang Language Switcher</field>
     <field name="note"></field>
     <field name="content"></field>
@@ -740,11 +740,11 @@
     <field name="checked_out_time"></field>
     <field name="publish_up">2023-04-24 09:52:32</field>
     <field name="publish_down"></field>
-    <field name="published">0</field>
+    <field name="published">1</field>
     <field name="module">mod_falang</field>
     <field name="access">1</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;dropdown&quot;:&quot;1&quot;,&quot;advanced_dropdown&quot;:&quot;0&quot;,&quot;inline&quot;:&quot;1&quot;,&quot;show_active&quot;:&quot;0&quot;,&quot;image&quot;:&quot;0&quot;,&quot;show_name&quot;:&quot;1&quot;,&quot;full_name&quot;:&quot;0&quot;,&quot;header_text&quot;:&quot;&quot;,&quot;footer_text&quot;:&quot;&quot;,&quot;imagespath&quot;:&quot;&quot;,&quot;imagestype&quot;:&quot;gif&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;1&quot;,&quot;cache_time&quot;:&quot;900&quot;,&quot;cachemode&quot;:&quot;itemid&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;dropdown&quot;:&quot;1&quot;,&quot;advanced_dropdown&quot;:&quot;0&quot;,&quot;inline&quot;:&quot;1&quot;,&quot;show_active&quot;:&quot;0&quot;,&quot;image&quot;:&quot;0&quot;,&quot;show_name&quot;:&quot;1&quot;,&quot;full_name&quot;:&quot;0&quot;,&quot;header_text&quot;:&quot;&quot;,&quot;footer_text&quot;:&quot;&quot;,&quot;layout&quot;:&quot;_:emundus&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:&quot;1&quot;,&quot;cache_time&quot;:&quot;900&quot;,&quot;cachemode&quot;:&quot;itemid&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>

@@ -246,7 +246,7 @@
     <field name="protected">1</field>
     <field name="locked">1</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;com_languages&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;2006-04&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2006 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;4.0.0&quot;,&quot;description&quot;:&quot;COM_LANGUAGES_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Joomla\\Component\\Languages&quot;}</field>
-    <field name="params">{&quot;administrator&quot;:&quot;en-GB&quot;,&quot;site&quot;:&quot;en-GB&quot;}</field>
+    <field name="params">{&quot;administrator&quot;:&quot;fr-FR&quot;,&quot;site&quot;:&quot;fr-FR&quot;}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
@@ -4162,7 +4162,7 @@
     <field name="protected">0</field>
     <field name="locked">1</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;plg_system_updatenotification&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;2015-05&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2015 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;3.5.0&quot;,&quot;description&quot;:&quot;PLG_SYSTEM_UPDATENOTIFICATION_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;updatenotification&quot;}</field>
-    <field name="params">{&quot;lastrun&quot;:1687174920}</field>
+    <field name="params">{&quot;lastrun&quot;:1687275857}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
@@ -11021,7 +11021,7 @@
     <field name="changelogurl"></field>
     <field name="folder">authentication</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -11175,7 +11175,7 @@
     <field name="changelogurl"></field>
     <field name="folder">emundus</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -11307,7 +11307,7 @@
     <field name="changelogurl"></field>
     <field name="folder">emundus</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -11351,7 +11351,7 @@
     <field name="changelogurl"></field>
     <field name="folder">emundus</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -11373,7 +11373,7 @@
     <field name="changelogurl"></field>
     <field name="folder">emundus</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12627,7 +12627,7 @@
     <field name="changelogurl"></field>
     <field name="folder">hikashop</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12671,7 +12671,7 @@
     <field name="changelogurl"></field>
     <field name="folder">search</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12715,7 +12715,7 @@
     <field name="changelogurl"></field>
     <field name="folder">system</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12803,7 +12803,7 @@
     <field name="changelogurl"></field>
     <field name="folder">system</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12825,7 +12825,7 @@
     <field name="changelogurl"></field>
     <field name="folder">system</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12847,7 +12847,7 @@
     <field name="changelogurl"></field>
     <field name="folder">user</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12913,7 +12913,7 @@
     <field name="changelogurl"></field>
     <field name="folder">user</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -13001,7 +13001,7 @@
     <field name="changelogurl"></field>
     <field name="folder">user</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -13226,6 +13226,116 @@
     <field name="protected">0</field>
     <field name="locked">0</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;Tchooz Package&quot;,&quot;type&quot;:&quot;package&quot;,&quot;creationDate&quot;:&quot;April 2023&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2015-2023 eMundus - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;&quot;,&quot;authorUrl&quot;:&quot;&quot;,&quot;version&quot;:&quot;2.0.0&quot;,&quot;description&quot;:&quot;Tchooz Package&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pkg_tchooz&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="extension_id">601</field>
+    <field name="package_id">0</field>
+    <field name="name">Securitycheck Pro</field>
+    <field name="type">component</field>
+    <field name="element">com_securitycheckpro</field>
+    <field name="changelogurl"></field>
+    <field name="folder"></field>
+    <field name="client_id">1</field>
+    <field name="enabled">1</field>
+    <field name="access">0</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Securitycheck Pro&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;12-06-2023&quot;,&quot;author&quot;:&quot;Jose A. Luque&quot;,&quot;copyright&quot;:&quot;Copyright www.protegetuordenador.com&quot;,&quot;authorEmail&quot;:&quot;contacto@protegetuordenador.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.protegetuordenador.com&quot;,&quot;version&quot;:&quot;3.6.2&quot;,&quot;description&quot;:&quot;COM_SECURITYCHECKPRO_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;securitycheckpro&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="extension_id">602</field>
+    <field name="package_id">605</field>
+    <field name="name">French (fr-FR)</field>
+    <field name="type">language</field>
+    <field name="element">fr-FR</field>
+    <field name="changelogurl"></field>
+    <field name="folder"></field>
+    <field name="client_id">0</field>
+    <field name="enabled">1</field>
+    <field name="access">0</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;Mai 2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2013 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.2&quot;,&quot;description&quot;:&quot;fr-FR site language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="extension_id">603</field>
+    <field name="package_id">605</field>
+    <field name="name">French (fr-FR)</field>
+    <field name="type">language</field>
+    <field name="element">fr-FR</field>
+    <field name="changelogurl"></field>
+    <field name="folder"></field>
+    <field name="client_id">1</field>
+    <field name="enabled">1</field>
+    <field name="access">0</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;Mai 2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2013 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.2&quot;,&quot;description&quot;:&quot;fr-FR Administrator language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="extension_id">604</field>
+    <field name="package_id">605</field>
+    <field name="name">French (fr-FR)</field>
+    <field name="type">language</field>
+    <field name="element">fr-FR</field>
+    <field name="changelogurl"></field>
+    <field name="folder"></field>
+    <field name="client_id">3</field>
+    <field name="enabled">1</field>
+    <field name="access">0</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;Mai 2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2020 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.2&quot;,&quot;description&quot;:&quot;fr-FR api language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="extension_id">605</field>
+    <field name="package_id">0</field>
+    <field name="name">French (fr-FR) Language pack</field>
+    <field name="type">package</field>
+    <field name="element">pkg_fr-FR</field>
+    <field name="changelogurl"></field>
+    <field name="folder"></field>
+    <field name="client_id">0</field>
+    <field name="enabled">1</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR) Language pack&quot;,&quot;type&quot;:&quot;package&quot;,&quot;creationDate&quot;:&quot;Mai 2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2019 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.2.1&quot;,&quot;description&quot;:&quot;&lt;div style=\&quot;text-align: left;\&quot;&gt;\n&lt;h3&gt;Joomla! 4 Full French (fr-FR) Language Package - Version 4.3.2 v1&lt;\/h3&gt;\n&lt;h3&gt;Pack de langue Joomla! 4 fran\u00e7ais (fr-FR) complet - Version 4.3.2 v1&lt;\/h3&gt;\n&lt;p&gt;&lt;a href=\&quot;https:\/www.joomla.fr\&quot; target=\&quot;_blank\&quot;&gt;www.joomla.fr&lt;\/a&gt; - &lt;a href=\&quot;mailto:traduction@joomla.fr\&quot;&gt;traduction@joomla.fr&lt;\/a&gt;&lt;\/p&gt;\n&lt;\/div&gt;&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pkg_fr-FR&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>

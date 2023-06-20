@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__securitycheckpro_file_manager">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="last_check" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="last_check_integrity" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="files_scanned" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="files_scanned_integrity" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="files_with_incorrect_permissions" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="files_with_bad_integrity" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="estado" Type="varchar(40)" Null="YES" Key="" Default="IN_PROGRESS" Extra="" />
+   <field Field="estado_integrity" Type="varchar(40)" Null="YES" Key="" Default="IN_PROGRESS" Extra="" />
+   <field Field="hash_alg" Type="varchar(30)" Null="YES" Key="" Extra="" />
+   <field Field="estado_cambio_permisos" Type="varchar(40)" Null="YES" Key="" Default="IN_PROGRESS" Extra="" />
+   <field Field="estado_clear_data" Type="varchar(40)" Null="YES" Key="" Default="DELETING_ENTRIES" Extra="" />
+   <field Field="last_task" Type="varchar(40)" Null="YES" Key="" Default="INTEGRITY" Extra="" />
+   <field Field="cron_tasks_launched" Type="tinyint(1)" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="last_check_malwarescan" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="files_scanned_malwarescan" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="suspicious_files" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="estado_malwarescan" Type="varchar(40)" Null="YES" Key="" Default="IN_PROGRESS" Extra="" />
+   <field Field="last_online_check_malwarescan" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="online_checked_files" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="online_checked_hashes" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="last_check_database" Type="datetime" Null="YES" Key="" Extra="" />
+   <key Table="#__securitycheckpro_file_manager" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__securitycheckpro_file_manager">
+   <row>
+    <field name="id">1</field>
+    <field name="last_check"></field>
+    <field name="last_check_integrity"></field>
+    <field name="files_scanned">0</field>
+    <field name="files_scanned_integrity">0</field>
+    <field name="files_with_incorrect_permissions">0</field>
+    <field name="files_with_bad_integrity">0</field>
+    <field name="estado">ENDED</field>
+    <field name="estado_integrity">ENDED</field>
+    <field name="hash_alg"></field>
+    <field name="estado_cambio_permisos">ENDED</field>
+    <field name="estado_clear_data">DELETING_ENTRIES</field>
+    <field name="last_task">INTEGRITY</field>
+    <field name="cron_tasks_launched">0</field>
+    <field name="last_check_malwarescan"></field>
+    <field name="files_scanned_malwarescan">0</field>
+    <field name="suspicious_files">0</field>
+    <field name="estado_malwarescan">ENDED</field>
+    <field name="last_online_check_malwarescan"></field>
+    <field name="online_checked_files">0</field>
+    <field name="online_checked_hashes">0</field>
+    <field name="last_check_database"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_uploads">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="timedate" Type="timestamp" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP"  />
+   <field Field="timedate" Type="timestamp" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP" />
    <field Field="user_id" Type="int" Null="NO" Key="MUL" Extra="" />
    <field Field="fnum" Type="varchar(255)" Null="NO" Key="MUL" Extra="" />
    <field Field="campaign_id" Type="int" Null="YES" Key="" Extra="" />
@@ -14,7 +14,7 @@
    <field Field="can_be_viewed" Type="tinyint(1)" Null="NO" Key="MUL" Default="1" Extra="" />
    <field Field="inform_applicant_by_email" Type="tinyint(1)" Null="YES" Key="MUL" Extra="" />
    <field Field="is_validated" Type="double" Null="YES" Key="MUL" Extra="" />
-   <field Field="modified" Type="timestamp" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP"  />
+   <field Field="modified" Type="timestamp" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP" />
    <field Field="modified_by" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="pdf_pages_count" Type="int" Null="YES" Key="" Extra="" />
    <field Field="local_filename" Type="varchar(255)" Null="YES" Key="" Extra="" />
@@ -25,7 +25,7 @@
    <key Table="#__emundus_uploads" Non_unique="1" Key_name="can_be_viewed" Seq_in_index="1" Column_name="can_be_viewed" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_uploads" Non_unique="1" Key_name="can_be_deleted" Seq_in_index="1" Column_name="can_be_deleted" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_uploads" Non_unique="1" Key_name="jos_emundus_uploads_ibfk_4" Seq_in_index="1" Column_name="modified_by" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
-   <key Table="#__emundus_uploads" Non_unique="1" Key_name="modified" Seq_in_index="1" Column_name="modified" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_uploads" Non_unique="1" Key_name="modified" Seq_in_index="1" Column_name="modified" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_uploads" Non_unique="1" Key_name="is_validated" Seq_in_index="1" Column_name="is_validated" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_uploads" Non_unique="1" Key_name="inform_applicant_by_email" Seq_in_index="1" Column_name="inform_applicant_by_email" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_uploads" Non_unique="1" Key_name="timedate" Seq_in_index="1" Column_name="timedate" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__securitycheckpro_storage">
+   <field Field="storage_key" Type="varchar(255)" Null="NO" Key="PRI" Extra="" />
+   <field Field="storage_value" Type="longtext" Null="NO" Key="" Extra="" />
+   <key Table="#__securitycheckpro_storage" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="storage_key" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__securitycheckpro_storage">
+   <row>
+    <field name="storage_key">easy_config</field>
+    <field name="storage_value">{&quot;applied&quot;:true,&quot;previous_config&quot;:{&quot;blacklist&quot;:&quot;&quot;,&quot;whitelist&quot;:&quot;&quot;,&quot;dynamic_blacklist&quot;:1,&quot;dynamic_blacklist_time&quot;:60000,&quot;dynamic_blacklist_counter&quot;:2,&quot;blacklist_email&quot;:0,&quot;priority1&quot;:&quot;Whitelist&quot;,&quot;priority2&quot;:&quot;DynamicBlacklist&quot;,&quot;priority3&quot;:&quot;Blacklist&quot;,&quot;methods&quot;:&quot;GET,POST,REQUEST&quot;,&quot;mode&quot;:1,&quot;logs_attacks&quot;:1,&quot;log_limits_per_ip_and_day&quot;:0,&quot;redirect_after_attack&quot;:1,&quot;redirect_options&quot;:1,&quot;second_level&quot;:1,&quot;second_level_redirect&quot;:1,&quot;second_level_limit_words&quot;:3,&quot;second_level_words&quot;:&quot;drop,update,set,admin,select,user,password,concat,login,load_file,ascii,char,union,from,group by,order by,insert,values,pass,where,substring,benchmark,md5,sha1,schema,version,row_count,compress,encode,information_schema,script,javascript,img,src,input,body,iframe,frame,$_POST,eval,$_REQUEST,base64_decode,gzinflate,gzuncompress,gzinflate,strtrexec,passthru,shell_exec,createElement&quot;,&quot;email_active&quot;:0,&quot;email_subject&quot;:&quot;Securitycheck Pro alert!&quot;,&quot;email_body&quot;:&quot;Securitycheck Pro has generated a new alert. Please, check your logs.&quot;,&quot;email_add_applied_rule&quot;:1,&quot;email_to&quot;:&quot;youremail@yourdomain.com&quot;,&quot;email_from_domain&quot;:&quot;me@mydomain.com&quot;,&quot;email_from_name&quot;:&quot;Your name&quot;,&quot;email_max_number&quot;:20,&quot;check_header_referer&quot;:1,&quot;check_base_64&quot;:1,&quot;base64_exceptions&quot;:&quot;com_hikashop&quot;,&quot;strip_tags_exceptions&quot;:&quot;com_jdownloads,com_hikashop,com_phocaguestbook&quot;,&quot;duplicate_backslashes_exceptions&quot;:&quot;com_kunena,com_securitycheckprocontrolcenter&quot;,&quot;line_comments_exceptions&quot;:&quot;com_comprofiler&quot;,&quot;sql_pattern_exceptions&quot;:&quot;&quot;,&quot;if_statement_exceptions&quot;:&quot;&quot;,&quot;using_integers_exceptions&quot;:&quot;com_dms,com_comprofiler,com_jce,com_contactenhanced,com_securitycheckprocontrolcenter&quot;,&quot;escape_strings_exceptions&quot;:&quot;com_kunena,com_jce&quot;,&quot;lfi_exceptions&quot;:&quot;&quot;,&quot;second_level_exceptions&quot;:&quot;&quot;,&quot;session_protection_active&quot;:1,&quot;session_hijack_protection&quot;:1}}</field>
+   </row>
+   <row>
+    <field name="storage_key">installs</field>
+    <field name="storage_value">[{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;},{&quot;name&quot;:&quot;French (fr-FR) Language pack&quot;,&quot;type&quot;:&quot;package&quot;}]</field>
+   </row>
+   <row>
+    <field name="storage_key">locked</field>
+    <field name="storage_value">0</field>
+   </row>
+   <row>
+    <field name="storage_key">pro_plugin</field>
+    <field name="storage_value">{&quot;check_header_referer&quot;:&quot;0&quot;,&quot;duplicate_backslashes_exceptions&quot;:&quot;*&quot;,&quot;line_comments_exceptions&quot;:&quot;*&quot;,&quot;using_integers_exceptions&quot;:&quot;*&quot;,&quot;escape_strings_exceptions&quot;:&quot;*&quot;,&quot;session_protection_active&quot;:0,&quot;session_hijack_protection&quot;:0,&quot;session_hijack_protection_what_to_check&quot;:0,&quot;strip_all_tags&quot;:0}</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

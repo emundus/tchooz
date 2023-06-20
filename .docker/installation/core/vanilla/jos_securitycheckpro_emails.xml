@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__securitycheckpro_emails">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="envoys" Type="tinyint" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="send_date" Type="date" Null="YES" Key="" Default="2012-01-01" Extra="" />
+   <key Table="#__securitycheckpro_emails" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__securitycheckpro_emails">
+   <row>
+    <field name="id">1</field>
+    <field name="envoys">0</field>
+    <field name="send_date">2012-01-01</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

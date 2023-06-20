@@ -645,7 +645,7 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
+    <field name="component_id">458</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
@@ -696,19 +696,19 @@
     <field name="alias">inscription</field>
     <field name="note"></field>
     <field name="path">inscription</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=307</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">486</field>
+    <field name="component_id">332</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">1</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;_emundus&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot; view-registration login em-formRegistrationCenter&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot; view-registration login em-formRegistrationCenter&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">57</field>
     <field name="rgt">58</field>
     <field name="home">0</field>
@@ -785,7 +785,7 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
+    <field name="component_id">458</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
@@ -869,7 +869,7 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
+    <field name="component_id">458</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
@@ -897,7 +897,7 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
+    <field name="component_id">458</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
@@ -925,7 +925,7 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
+    <field name="component_id">458</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
@@ -1004,19 +1004,19 @@
     <field name="alias">email-history</field>
     <field name="note"></field>
     <field name="path">rapport-d-activite/email-history</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=list&amp;listid=66</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=list</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">144</field>
     <field name="level">2</field>
-    <field name="component_id">486</field>
+    <field name="component_id">332</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">90</field>
     <field name="rgt">91</field>
     <field name="home">0</field>
@@ -1065,7 +1065,7 @@
     <field name="published">1</field>
     <field name="parent_id">147</field>
     <field name="level">2</field>
-    <field name="component_id">485</field>
+    <field name="component_id">458</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
@@ -1088,19 +1088,19 @@
     <field name="alias">exceptions</field>
     <field name="note"></field>
     <field name="path">users-menu/exceptions</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=list&amp;listid=383</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=list</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">147</field>
     <field name="level">2</field>
-    <field name="component_id">486</field>
+    <field name="component_id">332</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">112</field>
     <field name="rgt">113</field>
     <field name="home">0</field>
@@ -1144,19 +1144,19 @@
     <field name="alias">groups</field>
     <field name="note"></field>
     <field name="path">parametres/groups</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=list&amp;listid=82</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=list</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">150</field>
     <field name="level">2</field>
-    <field name="component_id">486</field>
+    <field name="component_id">332</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">116</field>
     <field name="rgt">117</field>
     <field name="home">0</field>
@@ -1172,19 +1172,19 @@
     <field name="alias">profils-utilisateurs</field>
     <field name="note"></field>
     <field name="path">parametres/profils-utilisateurs</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=list&amp;listid=67</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=list</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">150</field>
     <field name="level">2</field>
-    <field name="component_id">486</field>
+    <field name="component_id">332</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">118</field>
     <field name="rgt">119</field>
     <field name="home">0</field>
@@ -2381,14 +2381,14 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
-    <field name="checked_out">0</field>
+    <field name="component_id">458</field>
+    <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">22</field>
-    <field name="params">{&quot;robots&quot;: &quot;&quot;, &quot;secure&quot;: 0, &quot;menu_show&quot;: 1, &quot;menu_text&quot;: 1, &quot;menu_image&quot;: &quot;/images/emundus/menus/campagnes.svg&quot;, &quot;page_title&quot;: &quot;&quot;, &quot;page_heading&quot;: &quot;&quot;, &quot;pageclass_sfx&quot;: &quot;&quot;, &quot;menu_image_css&quot;: &quot;&quot;, &quot;menu-anchor_css&quot;: &quot;&quot;, &quot;menu-anchor_title&quot;: &quot;&quot;, &quot;show_page_heading&quot;: &quot;&quot;, &quot;menu-meta_keywords&quot;: &quot;&quot;, &quot;menu-meta_description&quot;: &quot;&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;\/images\/emundus\/menus\/campagnes.svg&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
     <field name="lft">189</field>
     <field name="rgt">190</field>
     <field name="home">0</field>
@@ -2409,14 +2409,14 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
-    <field name="checked_out">0</field>
+    <field name="component_id">458</field>
+    <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">22</field>
-    <field name="params">{&quot;robots&quot;: &quot;&quot;, &quot;secure&quot;: 0, &quot;menu_show&quot;: 1, &quot;menu_text&quot;: 1, &quot;menu_image&quot;: &quot;/images/emundus/menus/formulaires.svg&quot;, &quot;page_title&quot;: &quot;&quot;, &quot;page_heading&quot;: &quot;&quot;, &quot;pageclass_sfx&quot;: &quot;&quot;, &quot;menu_image_css&quot;: &quot;&quot;, &quot;menu-anchor_css&quot;: &quot;&quot;, &quot;menu-anchor_title&quot;: &quot;&quot;, &quot;show_page_heading&quot;: &quot;&quot;, &quot;menu-meta_keywords&quot;: &quot;&quot;, &quot;menu-meta_description&quot;: &quot;&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;\/images\/emundus\/menus\/formulaires.svg&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
     <field name="lft">191</field>
     <field name="rgt">192</field>
     <field name="home">0</field>
@@ -2437,14 +2437,14 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
-    <field name="checked_out">0</field>
+    <field name="component_id">458</field>
+    <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">22</field>
-    <field name="params">{&quot;robots&quot;: &quot;&quot;, &quot;secure&quot;: 0, &quot;menu_show&quot;: 1, &quot;menu_text&quot;: 1, &quot;menu_image&quot;: &quot;/images/emundus/menus/emails.svg&quot;, &quot;page_title&quot;: &quot;&quot;, &quot;page_heading&quot;: &quot;&quot;, &quot;pageclass_sfx&quot;: &quot;&quot;, &quot;menu_image_css&quot;: &quot;&quot;, &quot;menu-anchor_css&quot;: &quot;&quot;, &quot;menu-anchor_title&quot;: &quot;&quot;, &quot;show_page_heading&quot;: &quot;&quot;, &quot;menu-meta_keywords&quot;: &quot;&quot;, &quot;menu-meta_description&quot;: &quot;&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;\/images\/emundus\/menus\/emails.svg&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
     <field name="lft">193</field>
     <field name="rgt">194</field>
     <field name="home">0</field>
@@ -2465,14 +2465,14 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
-    <field name="checked_out">0</field>
+    <field name="component_id">458</field>
+    <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">22</field>
-    <field name="params">{&quot;robots&quot;: &quot;&quot;, &quot;secure&quot;: 0, &quot;menu_show&quot;: 1, &quot;menu_text&quot;: 1, &quot;menu_image&quot;: &quot;/images/emundus/menus/parametres.svg&quot;, &quot;page_title&quot;: &quot;&quot;, &quot;page_heading&quot;: &quot;&quot;, &quot;pageclass_sfx&quot;: &quot;&quot;, &quot;menu_image_css&quot;: &quot;&quot;, &quot;menu-anchor_css&quot;: &quot;&quot;, &quot;menu-anchor_title&quot;: &quot;&quot;, &quot;show_page_heading&quot;: &quot;&quot;, &quot;menu-meta_keywords&quot;: &quot;&quot;, &quot;menu-meta_description&quot;: &quot;&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;\/images\/emundus\/menus\/parametres.svg&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
     <field name="lft">195</field>
     <field name="rgt">196</field>
     <field name="home">0</field>
@@ -3781,7 +3781,7 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
+    <field name="component_id">458</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
@@ -3809,7 +3809,7 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
+    <field name="component_id">458</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
@@ -3837,7 +3837,7 @@
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">485</field>
+    <field name="component_id">458</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
@@ -3916,19 +3916,19 @@
     <field name="alias">email-history</field>
     <field name="note"></field>
     <field name="path">rapport-d-activite-2/email-history</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=list&amp;listid=66</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=list</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">248</field>
     <field name="level">2</field>
-    <field name="component_id">486</field>
+    <field name="component_id">332</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">274</field>
     <field name="rgt">275</field>
     <field name="home">0</field>
@@ -3977,7 +3977,7 @@
     <field name="published">1</field>
     <field name="parent_id">251</field>
     <field name="level">2</field>
-    <field name="component_id">485</field>
+    <field name="component_id">458</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
@@ -4000,19 +4000,19 @@
     <field name="alias">exceptions</field>
     <field name="note"></field>
     <field name="path">users-menu-2/exceptions</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=list&amp;listid=383</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=list</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">251</field>
     <field name="level">2</field>
-    <field name="component_id">486</field>
+    <field name="component_id">332</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">280</field>
     <field name="rgt">281</field>
     <field name="home">0</field>
@@ -4056,19 +4056,19 @@
     <field name="alias">groups</field>
     <field name="note"></field>
     <field name="path">parametres-2/groups</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=list&amp;listid=82</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=list</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">254</field>
     <field name="level">2</field>
-    <field name="component_id">486</field>
+    <field name="component_id">332</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">284</field>
     <field name="rgt">285</field>
     <field name="home">0</field>
@@ -4084,19 +4084,19 @@
     <field name="alias">profils-utilisateurs</field>
     <field name="note"></field>
     <field name="path">parametres-2/profils-utilisateurs</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=list&amp;listid=67</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=list</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">254</field>
     <field name="level">2</field>
-    <field name="component_id">486</field>
+    <field name="component_id">332</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">286</field>
     <field name="rgt">287</field>
     <field name="home">0</field>

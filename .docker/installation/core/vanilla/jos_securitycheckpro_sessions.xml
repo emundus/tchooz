@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__securitycheckpro_sessions">
+   <field Field="userid" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
+   <field Field="session_id" Type="varchar(200)" Null="NO" Key="" Extra="" />
+   <field Field="username" Type="varchar(150)" Null="NO" Key="" Extra="" />
+   <field Field="ip" Type="varchar(26)" Null="NO" Key="" Extra="" />
+   <field Field="user_agent" Type="varchar(300)" Null="NO" Key="" Extra="" />
+   <key Table="#__securitycheckpro_sessions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="userid" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

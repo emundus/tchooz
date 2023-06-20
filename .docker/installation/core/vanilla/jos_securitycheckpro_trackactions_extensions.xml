@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__securitycheckpro_trackactions_extensions">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="extension" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <key Table="#__securitycheckpro_trackactions_extensions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__securitycheckpro_trackactions_extensions">
+   <row>
+    <field name="id">1</field>
+    <field name="extension">com_banners</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="extension">com_cache</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="extension">com_categories</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="extension">com_config</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="extension">com_contact</field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="extension">com_content</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="extension">com_installer</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="extension">com_media</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="extension">com_menus</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="extension">com_messages</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="extension">com_modules</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="extension">com_newsfeeds</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="extension">com_plugins</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="extension">com_redirect</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="extension">com_tags</field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="extension">com_templates</field>
+   </row>
+   <row>
+    <field name="id">17</field>
+    <field name="extension">com_users</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

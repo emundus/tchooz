@@ -17,6 +17,10 @@
     <field name="extension_id">228</field>
    </row>
    <row>
+    <field name="update_site_id">2</field>
+    <field name="extension_id">605</field>
+   </row>
+   <row>
     <field name="update_site_id">3</field>
     <field name="extension_id">24</field>
    </row>

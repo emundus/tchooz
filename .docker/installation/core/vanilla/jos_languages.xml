@@ -51,7 +51,7 @@
     <field name="metakey"></field>
     <field name="metadesc"></field>
     <field name="sitename"></field>
-    <field name="published">0</field>
+    <field name="published">1</field>
     <field name="access">1</field>
     <field name="ordering">1</field>
    </row>

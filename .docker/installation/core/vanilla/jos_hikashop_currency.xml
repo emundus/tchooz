@@ -1903,11 +1903,11 @@
     <field name="currency_modified">0</field>
    </row>
    <row>
-    <field name="currency_id">147</field>
-    <field name="currency_symbol">SS£ </field>
-    <field name="currency_code">SSP</field>
+    <field name="currency_id">146</field>
+    <field name="currency_symbol">₨</field>
+    <field name="currency_code">LKR</field>
     <field name="currency_format">%i</field>
-    <field name="currency_name">South Sudanese pound</field>
+    <field name="currency_name">Sri Lankan rupee</field>
     <field name="currency_published">0</field>
     <field name="currency_rate">1.000000</field>
     <field name="currency_locale"></field>
@@ -1916,11 +1916,11 @@
     <field name="currency_modified">0</field>
    </row>
    <row>
-    <field name="currency_id">146</field>
-    <field name="currency_symbol">₨</field>
-    <field name="currency_code">LKR</field>
+    <field name="currency_id">147</field>
+    <field name="currency_symbol">SS£ </field>
+    <field name="currency_code">SSP</field>
     <field name="currency_format">%i</field>
-    <field name="currency_name">Sri Lankan rupee</field>
+    <field name="currency_name">South Sudanese pound</field>
     <field name="currency_published">0</field>
     <field name="currency_rate">1.000000</field>
     <field name="currency_locale"></field>
