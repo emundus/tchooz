@@ -142,6 +142,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2 "Init configuration variables..."
 
     php cli/joomla.php config:set sef_rewrite=true
+    php cli/joomla.php config:set frontediting=0
 
     echo >&2 "Awesome ! Your Tchooz website is ready !"
   fi
