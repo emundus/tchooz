@@ -83,16 +83,16 @@ class plgUserEmundus extends JPlugin
         closedir($dh);
         @rmdir($dir);
 
-        // Send email to inform applicant
-        if($this->params->get('send_email_delete', 0) == 1) {
-            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
-            $c_messages = new EmundusControllerMessages();
-            $post       = [
-                'NAME' => $user['name']
-            ];
-            $c_messages->sendEmailNoFnum($user['email'], 'delete_user', $post);
-        }
-        //
+	    // Send email to inform applicant
+	    if($this->params->get('send_email_delete', 0) == 1) {
+		    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+		    $c_messages = new EmundusControllerMessages();
+		    $post       = [
+			    'NAME' => $user['name']
+		    ];
+		    $c_messages->sendEmailNoFnum($user['email'], 'delete_user', $post);
+	    }
+	    //
 
         return true;
     }
@@ -515,16 +515,16 @@ class plgUserEmundus extends JPlugin
                                         $query->clear();
                                         if ($other_property->method == 'update') {
                                             $query->update($db->quoteName($table));
-                                        }
-                                        if ($other_property->method == 'insert') {
-                                            $query->insert($db->quoteName($table));
-                                        }
-                                        $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
+                                            }
+                                            if ($other_property->method == 'insert') {
+                                                $query->insert($db->quoteName($table));
+                                            }
+                                            $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
 
-                                        if ($other_property->method == 'update') {
+                                            if ($other_property->method == 'update') {
                                             $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
-                                        }
-                                        if ($other_property->method == 'insert') {
+                                            }
+                                            if ($other_property->method == 'insert') {
                                             $query->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
                                         }
                                         $db->setQuery($query);
@@ -572,21 +572,21 @@ class plgUserEmundus extends JPlugin
             if ($options['redirect'] === 0) {
                 $previous_url = '';
             } else {
-                if ($user->activation != -1) {
-                    $cid_session = JFactory::getSession()->get('login_campaign_id');
-                    if (!empty($cid_session)){
-                        $previous_url = 'index.php?option=com_fabrik&view=form&formid=102&cid='.$cid_session;
-                        JFactory::getSession()->clear('login_campaign_id');
-                    }
-                }
+				if ($user->activation != -1) {
+					$cid_session = JFactory::getSession()->get('login_campaign_id');
+					if (!empty($cid_session)){
+						$previous_url = 'index.php?option=com_fabrik&view=form&formid=102&cid='.$cid_session;
+						JFactory::getSession()->clear('login_campaign_id');
+					}
+				}
             }
 
             JPluginHelper::importPlugin('emundus', 'custom_event_handler');
             JFactory::getApplication()->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
 
-            if (!empty($previous_url)) {
+	        if (!empty($previous_url)) {
                 $app->redirect($previous_url);
-            }
+	        }
         }
         return true;
     }

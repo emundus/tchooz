@@ -74,6 +74,8 @@ services:
       TCHOOZ_SYSADMIN_PASSWORD: passwordpassword
       TCHOOZ_INSTANCE_ID: 999999
       TCHOOZ_CUSTOMER_ID: 999999
+
+      INIT_DATABASE: true
     volumes:
       - ./.docker/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
       - .:/var/www/html

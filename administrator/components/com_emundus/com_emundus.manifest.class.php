@@ -51,7 +51,29 @@ class Com_EmundusInstallerScript
      */
     public function update($parent)
     {
-        return true;
+        $succeed = [];
+
+        require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+        $cache_version = $this->manifest_cache->version;
+
+        # Check first run
+        $firstrun = false;
+        $regex    = '/^6\.[0-9]*/m';
+        preg_match_all($regex, $cache_version, $matches, PREG_SET_ORDER, 0);
+        if (!empty($matches)) {
+            $cache_version = (string) $parent->manifest->version;
+            $firstrun      = true;
+        }
+
+        if ($this->manifest_cache) {
+            # First run condition
+            if (version_compare($cache_version, '2.0.0', '<=') || $firstrun) {
+                EmundusHelperUpdate::insertTranslationsTag('JLOGIN_DESC', 'Pour accéder à votre espace personnel');
+                EmundusHelperUpdate::insertTranslationsTag('JLOGIN_DESC', 'To access your personal space', 'override', null, null, null, 'en-GB');
+            }
+        }
+
+        return $succeed;
     }
 
     /**
