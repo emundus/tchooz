@@ -74,8 +74,6 @@ services:
       TCHOOZ_SYSADMIN_PASSWORD: passwordpassword
       TCHOOZ_INSTANCE_ID: 999999
       TCHOOZ_CUSTOMER_ID: 999999
-
-      INIT_DATABASE: true
     volumes:
       - ./.docker/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
       - .:/var/www/html
@@ -109,4 +107,4 @@ services:
       # Uncomment this line to use a custom my.cnf file
       - ./.docker/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf
       # Uncomment this line to use a custom sql file to init database
-      # - ./.docker/installation/core.sql:/docker-entrypoint-initdb.d/mysql.sql
+      - ./.docker/installation/core.sql:/docker-entrypoint-initdb.d/mysql.sql
