@@ -130,7 +130,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     cp -r /templates/g5_helium/custom/config templates/g5_helium/custom/config
   fi
 
-  if [ ! -e configuration.php && -d ".docker/installation/" ]; then
+  if [ ! -e configuration.php ] && [ -d ".docker/installation/" ]; then
 
     echo >&2 "We prepare the installation of the Tchooz component..."
 
