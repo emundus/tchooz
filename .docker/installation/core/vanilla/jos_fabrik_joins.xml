@@ -18,5 +18,1267 @@
    <key Table="#__fabrik_joins" Non_unique="1" Key_name="group_id_INDEX" Seq_in_index="1" Column_name="group_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__fabrik_joins" Non_unique="1" Key_name="table_join_INDEX" Seq_in_index="1" Column_name="table_join" Collation="A" Null="" Index_type="BTREE" Sub_part="10" Comment="" />
   </table_structure>
+  <table_data name="#__fabrik_joins">
+   <row>
+    <field name="id">171</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1271</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_menu_types</field>
+    <field name="table_key">menutype</field>
+    <field name="table_join_key">menutype</field>
+    <field name="join_type">left</field>
+    <field name="group_id">112</field>
+    <field name="params">{&quot;join-label&quot;:&quot;menutype&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_menu_types`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">183</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1354</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_checklist</field>
+    <field name="table_key">page</field>
+    <field name="table_join_key">page</field>
+    <field name="join_type">left</field>
+    <field name="group_id">133</field>
+    <field name="params">{&quot;join-label&quot;:&quot;page&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_checklist`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">205</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1171</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_users</field>
+    <field name="table_key">user_id_to</field>
+    <field name="table_join_key">user_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">111</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">206</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1170</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_users</field>
+    <field name="table_key">user_id_from</field>
+    <field name="table_join_key">user_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">111</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">221</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1546</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user_id_from</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">151</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">222</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1547</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user_id_to</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">151</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">344</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1884</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">176</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">351</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1891</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_teaching_unity</field>
+    <field name="table_key">year</field>
+    <field name="table_join_key">schoolyear</field>
+    <field name="join_type">left</field>
+    <field name="group_id">176</field>
+    <field name="params">{&quot;join-label&quot;:&quot;schoolyear&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_teaching_unity`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">353</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1905</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">applicant_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">175</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">387</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1438</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_programmes</field>
+    <field name="table_key">label</field>
+    <field name="table_join_key">label</field>
+    <field name="join_type">left</field>
+    <field name="group_id">142</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_programmes`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">392</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1437</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_programmes</field>
+    <field name="table_key">code</field>
+    <field name="table_join_key">code</field>
+    <field name="join_type">left</field>
+    <field name="group_id">142</field>
+    <field name="params">{&quot;join-label&quot;:&quot;code&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_programmes`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">394</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1563</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">153</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">432</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1889</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_teaching_unity</field>
+    <field name="table_key">profile_id</field>
+    <field name="table_join_key">profile_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">176</field>
+    <field name="params">{&quot;join-label&quot;:&quot;profile_id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_teaching_unity`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">507</field>
+    <field name="list_id">0</field>
+    <field name="element_id">2541</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">254</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">508</field>
+    <field name="list_id">0</field>
+    <field name="element_id">2542</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">175</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">509</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1204</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_attachments</field>
+    <field name="table_key">attachment_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">117</field>
+    <field name="params">{&quot;join-label&quot;:&quot;value&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_attachments`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">510</field>
+    <field name="list_id">0</field>
+    <field name="element_id">2535</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_campaigns</field>
+    <field name="table_key">campaign_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">254</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_campaigns`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">574</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1875</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_programmes</field>
+    <field name="table_key">programmes</field>
+    <field name="table_join_key">programmes</field>
+    <field name="join_type">left</field>
+    <field name="group_id">142</field>
+    <field name="params">{&quot;join-label&quot;:&quot;programmes&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_programmes`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">613</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1521</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_profiles</field>
+    <field name="table_key">profile_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">139</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_profiles`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">620</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1890</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_programmes</field>
+    <field name="table_key">training</field>
+    <field name="table_join_key">code</field>
+    <field name="join_type">left</field>
+    <field name="group_id">176</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_programmes`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">636</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1870</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_profiles</field>
+    <field name="table_key">profile_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">142</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_profiles`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">664</field>
+    <field name="list_id">0</field>
+    <field name="element_id">3744</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_categories</field>
+    <field name="table_key">catid</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">63</field>
+    <field name="params">{&quot;join-label&quot;:&quot;title&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_categories`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">681</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1906</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_campaigns</field>
+    <field name="table_key">campaign_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">175</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_campaigns`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">712</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1918</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_attachments</field>
+    <field name="table_key">attachment_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">184</field>
+    <field name="params">{&quot;join-label&quot;:&quot;value&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_attachments`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">733</field>
+    <field name="list_id">0</field>
+    <field name="element_id">1384</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_usergroups</field>
+    <field name="table_key">acl_aro_groups</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">112</field>
+    <field name="params">{&quot;join-label&quot;:&quot;title&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_usergroups`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">766</field>
+    <field name="list_id">0</field>
+    <field name="element_id">3898</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">403</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">767</field>
+    <field name="list_id">0</field>
+    <field name="element_id">3899</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_status</field>
+    <field name="table_key">step</field>
+    <field name="table_join_key">step</field>
+    <field name="join_type">left</field>
+    <field name="group_id">403</field>
+    <field name="params">{&quot;join-label&quot;:&quot;value&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_status`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">775</field>
+    <field name="list_id">0</field>
+    <field name="element_id">3901</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_emails</field>
+    <field name="table_key">email_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">403</field>
+    <field name="params">{&quot;join-label&quot;:&quot;subject&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_emails`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1002</field>
+    <field name="list_id">0</field>
+    <field name="element_id">5234</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">718</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1004</field>
+    <field name="list_id">0</field>
+    <field name="element_id">5265</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">720</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1006</field>
+    <field name="list_id">0</field>
+    <field name="element_id">5276</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">509</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1084</field>
+    <field name="list_id">0</field>
+    <field name="element_id">5855</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">student_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">537</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1087</field>
+    <field name="list_id">0</field>
+    <field name="element_id">5864</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_attachments</field>
+    <field name="table_key">attachment_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">537</field>
+    <field name="params">{&quot;join-label&quot;:&quot;value&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_attachments`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1103</field>
+    <field name="list_id">0</field>
+    <field name="element_id">6005</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">723</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1105</field>
+    <field name="list_id">0</field>
+    <field name="element_id">6045</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">user_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">551</field>
+    <field name="params">{&quot;join-label&quot;:&quot;&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1109</field>
+    <field name="list_id">215</field>
+    <field name="element_id">3909</field>
+    <field name="join_from_table">jos_emundus_setup_emails_trigger</field>
+    <field name="table_join">jos_emundus_setup_emails_trigger_repeat_profile_id</field>
+    <field name="table_key">profile_id</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_emails_trigger_repeat_profile_id`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1110</field>
+    <field name="list_id">215</field>
+    <field name="element_id">4291</field>
+    <field name="join_from_table">jos_emundus_setup_emails_trigger</field>
+    <field name="table_join">jos_emundus_setup_emails_trigger_repeat_group_id</field>
+    <field name="table_key">group_id</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_emails_trigger_repeat_group_id`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1111</field>
+    <field name="list_id">215</field>
+    <field name="element_id">3910</field>
+    <field name="join_from_table">jos_emundus_setup_emails_trigger</field>
+    <field name="table_join">jos_emundus_setup_emails_trigger_repeat_user_id</field>
+    <field name="table_key">user_id</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_emails_trigger_repeat_user_id`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1114</field>
+    <field name="list_id">215</field>
+    <field name="element_id">3900</field>
+    <field name="join_from_table">jos_emundus_setup_emails_trigger</field>
+    <field name="table_join">jos_emundus_setup_emails_trigger_repeat_programme_id</field>
+    <field name="table_key">programme_id</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_emails_trigger_repeat_programme_id`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1116</field>
+    <field name="list_id">0</field>
+    <field name="element_id">6107</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">552</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1117</field>
+    <field name="list_id">0</field>
+    <field name="element_id">6108</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_status</field>
+    <field name="table_key">final_grade</field>
+    <field name="table_join_key">step</field>
+    <field name="join_type">left</field>
+    <field name="group_id">552</field>
+    <field name="params">{&quot;join-label&quot;:&quot;value&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_status`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1133</field>
+    <field name="list_id">0</field>
+    <field name="element_id">6301</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_hikashop_user</field>
+    <field name="table_key">order_user_id</field>
+    <field name="table_join_key">user_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">569</field>
+    <field name="params">{&quot;join-label&quot;:&quot;user_cms_id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_hikashop_user`.`user_id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1140</field>
+    <field name="list_id">0</field>
+    <field name="element_id">6402</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">user_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">595</field>
+    <field name="params">{&quot;join-label&quot;:&quot;&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1148</field>
+    <field name="list_id">0</field>
+    <field name="element_id">6478</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">data_nationality</field>
+    <field name="table_key">nationality</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">683</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label_fr&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`data_nationality`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1153</field>
+    <field name="list_id">0</field>
+    <field name="element_id">6490</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">715</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1182</field>
+    <field name="list_id">0</field>
+    <field name="element_id">6872</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user_id_from</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">625</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1183</field>
+    <field name="list_id">0</field>
+    <field name="element_id">6873</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user_id_to</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">625</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1209</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7046</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_status</field>
+    <field name="table_key">final_grade</field>
+    <field name="table_join_key">step</field>
+    <field name="join_type">left</field>
+    <field name="group_id">639</field>
+    <field name="params">{&quot;join-label&quot;:&quot;value&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_status`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1214</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7110</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_campaigns</field>
+    <field name="table_key">campaign</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">647</field>
+    <field name="params">{&quot;join-label&quot;:&quot;&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_campaigns`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1216</field>
+    <field name="list_id">0</field>
+    <field name="element_id">2755</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_status</field>
+    <field name="table_key">status</field>
+    <field name="table_join_key">step</field>
+    <field name="join_type">left</field>
+    <field name="group_id">254</field>
+    <field name="params">{&quot;join-label&quot;:&quot;value&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_status`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1242</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7112</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_campaigns</field>
+    <field name="table_key">campaign_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">640</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_campaigns`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1249</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7334</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">data_country</field>
+    <field name="table_key">country_1</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">684</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label_fr&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`data_country`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1257</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7458</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">data_country</field>
+    <field name="table_key">Country_1</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">507</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label_fr&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`data_country`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1258</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7459</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">data_country</field>
+    <field name="table_key">Country_2</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">606</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label_fr&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`data_country`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1259</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7466</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">721</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1260</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7468</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_mobility</field>
+    <field name="table_key">first_year_1</field>
+    <field name="table_join_key">value</field>
+    <field name="join_type">left</field>
+    <field name="group_id">694</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_mobility`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1261</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7469</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_mobility</field>
+    <field name="table_key">first_year_2</field>
+    <field name="table_join_key">value</field>
+    <field name="join_type">left</field>
+    <field name="group_id">694</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_mobility`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1262</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7470</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_mobility</field>
+    <field name="table_key">second_year_1</field>
+    <field name="table_join_key">value</field>
+    <field name="join_type">left</field>
+    <field name="group_id">694</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_mobility`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1263</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7471</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_mobility</field>
+    <field name="table_key">second_year_2</field>
+    <field name="table_join_key">value</field>
+    <field name="join_type">left</field>
+    <field name="group_id">694</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_mobility`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1264</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7474</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">722</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1268</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7411</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">716</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1269</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7415</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">717</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1270</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7452</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">719</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1271</field>
+    <field name="list_id">263</field>
+    <field name="element_id">0</field>
+    <field name="join_from_table">jos_emundus_languages</field>
+    <field name="table_join">jos_emundus_languages_692_repeat</field>
+    <field name="table_key">id</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">692</field>
+    <field name="params">{&quot;type&quot;:&quot;group&quot;,&quot;pk&quot;:&quot;`jos_emundus_languages_692_repeat`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1272</field>
+    <field name="list_id">335</field>
+    <field name="element_id">0</field>
+    <field name="join_from_table">jos_emundus_cv</field>
+    <field name="table_join">jos_emundus_cv_690_repeat</field>
+    <field name="table_key">id</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">690</field>
+    <field name="params">{&quot;type&quot;:&quot;group&quot;,&quot;pk&quot;:&quot;`jos_emundus_cv_690_repeat`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1278</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7592</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_profiles</field>
+    <field name="table_key">profile</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">570</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_profiles`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1289</field>
+    <field name="list_id">106</field>
+    <field name="element_id">7608</field>
+    <field name="join_from_table">jos_emundus_setup_campaigns</field>
+    <field name="table_join">jos_emundus_setup_campaigns_repeat_limit_status</field>
+    <field name="table_key">limit_status</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_campaigns_repeat_limit_status`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1297</field>
+    <field name="list_id">37</field>
+    <field name="element_id">7595</field>
+    <field name="join_from_table">jos_emundus_setup_emails</field>
+    <field name="table_join">jos_emundus_setup_emails_repeat_letter_attachment</field>
+    <field name="table_key">letter_attachment</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_emails_repeat_letter_attachment`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1298</field>
+    <field name="list_id">37</field>
+    <field name="element_id">7594</field>
+    <field name="join_from_table">jos_emundus_setup_emails</field>
+    <field name="table_join">jos_emundus_setup_emails_repeat_candidate_attachment</field>
+    <field name="table_key">candidate_attachment</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_emails_repeat_candidate_attachment`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1312</field>
+    <field name="list_id">37</field>
+    <field name="element_id">7695</field>
+    <field name="join_from_table">jos_emundus_setup_emails</field>
+    <field name="table_join">jos_emundus_setup_emails_repeat_tags</field>
+    <field name="table_key">tags</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_emails_repeat_tags`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1313</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7725</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">data_country</field>
+    <field name="table_key">birth_country</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">683</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label_fr&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`data_country`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1314</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7438</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">data_country</field>
+    <field name="table_key">country</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">690</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label_fr&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`data_country`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1315</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7726</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">data_country</field>
+    <field name="table_key">country</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">686</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label_fr&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`data_country`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1316</field>
+    <field name="list_id">369</field>
+    <field name="element_id">7730</field>
+    <field name="join_from_table">jos_emundus_campaign_workflow</field>
+    <field name="table_join">jos_emundus_campaign_workflow_repeat_campaign</field>
+    <field name="table_key">campaign</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_campaign_workflow_repeat_campaign`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1317</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7731</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_profiles</field>
+    <field name="table_key">profile</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">760</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_profiles`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1318</field>
+    <field name="list_id">369</field>
+    <field name="element_id">7732</field>
+    <field name="join_from_table">jos_emundus_campaign_workflow</field>
+    <field name="table_join">jos_emundus_campaign_workflow_repeat_entry_status</field>
+    <field name="table_key">entry_status</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_campaign_workflow_repeat_entry_status`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1319</field>
+    <field name="list_id">334</field>
+    <field name="element_id">0</field>
+    <field name="join_from_table">jos_emundus_qualifications</field>
+    <field name="table_join">jos_emundus_qualifications_686_repeat</field>
+    <field name="table_key">id</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">686</field>
+    <field name="params">{&quot;type&quot;:&quot;group&quot;,&quot;pk&quot;:&quot;`jos_emundus_qualifications_686_repeat`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1320</field>
+    <field name="list_id">334</field>
+    <field name="element_id">0</field>
+    <field name="join_from_table">jos_emundus_qualifications</field>
+    <field name="table_join">jos_emundus_qualifications_689_repeat</field>
+    <field name="table_key">id</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">689</field>
+    <field name="params">{&quot;type&quot;:&quot;group&quot;,&quot;pk&quot;:&quot;`jos_emundus_qualifications_689_repeat`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1321</field>
+    <field name="list_id">82</field>
+    <field name="element_id">1925</field>
+    <field name="join_from_table">jos_emundus_setup_groups</field>
+    <field name="table_join">jos_emundus_setup_groups_repeat_course</field>
+    <field name="table_key">course</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_groups_repeat_course`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1322</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7752</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">#__users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">763</field>
+    <field name="params">{&quot;join-label&quot;:&quot;id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`#__users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1323</field>
+    <field name="list_id">286</field>
+    <field name="element_id">7758</field>
+    <field name="join_from_table">jos_emundus_setup_status</field>
+    <field name="table_join">jos_emundus_setup_status_repeat_tags</field>
+    <field name="table_key">tags</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_status_repeat_tags`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1324</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7761</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_payment_types</field>
+    <field name="table_key">payment_type</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">765</field>
+    <field name="params">{&quot;join-label&quot;:&quot;type&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_payment_types`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1325</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7760</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_hikashop_product</field>
+    <field name="table_key">product_id</field>
+    <field name="table_join_key">product_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">765</field>
+    <field name="params">{&quot;join-label&quot;:&quot;product_name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_hikashop_product`.`product_id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1326</field>
+    <field name="list_id">373</field>
+    <field name="element_id">7768</field>
+    <field name="join_from_table">jos_emundus_limit_by_program</field>
+    <field name="table_join">jos_emundus_limit_by_program_repeat_programs</field>
+    <field name="table_key">programs</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_limit_by_program_repeat_programs`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1327</field>
+    <field name="list_id">371</field>
+    <field name="element_id">7762</field>
+    <field name="join_from_table">jos_emundus_hikashop_programs</field>
+    <field name="table_join">jos_emundus_hikashop_programs_repeat_code_prog</field>
+    <field name="table_key">code_prog</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_hikashop_programs_repeat_code_prog`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1335</field>
+    <field name="list_id">108</field>
+    <field name="element_id">7778</field>
+    <field name="join_from_table">jos_emundus_setup_letters</field>
+    <field name="table_join">jos_emundus_setup_letters_repeat_campaign</field>
+    <field name="table_key">campaign</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_letters_repeat_campaign`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1336</field>
+    <field name="list_id">108</field>
+    <field name="element_id">1912</field>
+    <field name="join_from_table">jos_emundus_setup_letters</field>
+    <field name="table_join">jos_emundus_setup_letters_repeat_training</field>
+    <field name="table_key">training</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_letters_repeat_training`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1337</field>
+    <field name="list_id">108</field>
+    <field name="element_id">1916</field>
+    <field name="join_from_table">jos_emundus_setup_letters</field>
+    <field name="table_join">jos_emundus_setup_letters_repeat_status</field>
+    <field name="table_key">status</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_letters_repeat_status`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1338</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7787</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_content</field>
+    <field name="table_key">article_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">774</field>
+    <field name="params">{&quot;join-label&quot;:&quot;title&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_content`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1339</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7786</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_profiles</field>
+    <field name="table_key">profile</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">775</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_profiles`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1340</field>
+    <field name="list_id">374</field>
+    <field name="element_id">0</field>
+    <field name="join_from_table">jos_emundus_widgets</field>
+    <field name="table_join">jos_emundus_widgets_repeat_access</field>
+    <field name="table_key">id</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">775</field>
+    <field name="params">{&quot;type&quot;:&quot;group&quot;,&quot;pk&quot;:&quot;`jos_emundus_widgets_repeat_access`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1341</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7804</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_users</field>
+    <field name="table_key">user_id_to</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">776</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1342</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7803</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_users</field>
+    <field name="table_key">user_id_from</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">776</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1360</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7902</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">user_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">788</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1361</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7912</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_languages</field>
+    <field name="table_key">default_language</field>
+    <field name="table_join_key">lang_code</field>
+    <field name="join_type">left</field>
+    <field name="group_id">789</field>
+    <field name="params">{&quot;join-label&quot;:&quot;title_native&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_languages`.`lang_id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1362</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7911</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">data_nationality</field>
+    <field name="table_key">nationality</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">789</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label_fr&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`data_nationality`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1363</field>
+    <field name="list_id">386</field>
+    <field name="element_id">0</field>
+    <field name="join_from_table">jos_emundus_hikashop</field>
+    <field name="table_join">jos_hikashop_order</field>
+    <field name="table_key">order_id</field>
+    <field name="table_join_key">order_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">793</field>
+    <field name="params">{&quot;pk&quot;:&quot;`jos_hikashop_order`.`order_id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1364</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7937</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_hikashop_user</field>
+    <field name="table_key">order_user_id</field>
+    <field name="table_join_key">user_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">793</field>
+    <field name="params">{&quot;join-label&quot;:&quot;user_cms_id&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_hikashop_user`.`user_id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1365</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7931</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_users</field>
+    <field name="table_key">user</field>
+    <field name="table_join_key">user_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">792</field>
+    <field name="params">{&quot;join-label&quot;:&quot;name&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_users`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1366</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7933</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_campaigns</field>
+    <field name="table_key">campaign_id</field>
+    <field name="table_join_key">id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">792</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_campaigns`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1367</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7928</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_emundus_setup_status</field>
+    <field name="table_key">output_status</field>
+    <field name="table_join_key">step</field>
+    <field name="join_type">left</field>
+    <field name="group_id">760</field>
+    <field name="params">{&quot;join-label&quot;:&quot;value&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_status`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1368</field>
+    <field name="list_id">369</field>
+    <field name="element_id">7954</field>
+    <field name="join_from_table">jos_emundus_campaign_workflow</field>
+    <field name="table_join">jos_emundus_campaign_workflow_repeat_programs</field>
+    <field name="table_key">programs</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_campaign_workflow_repeat_programs`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1369</field>
+    <field name="list_id">82</field>
+    <field name="element_id">7585</field>
+    <field name="join_from_table">jos_emundus_setup_groups</field>
+    <field name="table_join">jos_emundus_setup_groups_repeat_fabrik_group_link</field>
+    <field name="table_key">fabrik_group_link</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_groups_repeat_fabrik_group_link`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1370</field>
+    <field name="list_id">82</field>
+    <field name="element_id">7584</field>
+    <field name="join_from_table">jos_emundus_setup_groups</field>
+    <field name="table_join">jos_emundus_setup_groups_repeat_attachment_id_link</field>
+    <field name="table_key">attachment_id_link</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">0</field>
+    <field name="params">{&quot;type&quot;:&quot;repeatElement&quot;,&quot;pk&quot;:&quot;`jos_emundus_setup_groups_repeat_attachment_id_link`.`id`&quot;}</field>
+   </row>
+   <row>
+    <field name="id">1371</field>
+    <field name="list_id">369</field>
+    <field name="element_id">0</field>
+    <field name="join_from_table">jos_emundus_campaign_workflow</field>
+    <field name="table_join">jos_emundus_campaign_workflow_repeat_documents</field>
+    <field name="table_key">id</field>
+    <field name="table_join_key">parent_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">795</field>
+    <field name="params">{&quot;type&quot;:&quot;group&quot;,&quot;pk&quot;:&quot;`jos_emundus_campaign_workflow_repeat_documents`.`id`&quot;}</field>
+   </row>
+  </table_data>
  </database>
 </mysqldump>

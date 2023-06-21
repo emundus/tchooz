@@ -444,7 +444,7 @@
     <field name="protected">1</field>
     <field name="locked">1</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;com_content&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;2006-04&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2006 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;4.0.0&quot;,&quot;description&quot;:&quot;COM_CONTENT_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Joomla\\Component\\Content&quot;,&quot;filename&quot;:&quot;content&quot;}</field>
-    <field name="params">{&quot;article_layout&quot;:&quot;_:default&quot;,&quot;show_title&quot;:&quot;1&quot;,&quot;link_titles&quot;:&quot;1&quot;,&quot;show_intro&quot;:&quot;1&quot;,&quot;info_block_position&quot;:&quot;0&quot;,&quot;info_block_show_title&quot;:&quot;1&quot;,&quot;show_category&quot;:&quot;1&quot;,&quot;link_category&quot;:&quot;1&quot;,&quot;show_parent_category&quot;:&quot;0&quot;,&quot;link_parent_category&quot;:&quot;0&quot;,&quot;show_associations&quot;:&quot;0&quot;,&quot;flags&quot;:&quot;1&quot;,&quot;show_author&quot;:&quot;1&quot;,&quot;link_author&quot;:&quot;0&quot;,&quot;show_create_date&quot;:&quot;0&quot;,&quot;show_modify_date&quot;:&quot;0&quot;,&quot;show_publish_date&quot;:&quot;1&quot;,&quot;show_item_navigation&quot;:&quot;1&quot;,&quot;show_readmore&quot;:&quot;1&quot;,&quot;show_readmore_title&quot;:&quot;1&quot;,&quot;readmore_limit&quot;:100,&quot;show_tags&quot;:&quot;1&quot;,&quot;record_hits&quot;:&quot;1&quot;,&quot;show_hits&quot;:&quot;1&quot;,&quot;show_noauth&quot;:&quot;0&quot;,&quot;urls_position&quot;:0,&quot;captcha&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;1&quot;,&quot;show_article_options&quot;:&quot;1&quot;,&quot;show_configure_edit_options&quot;:&quot;1&quot;,&quot;show_permissions&quot;:&quot;1&quot;,&quot;show_associations_edit&quot;:&quot;1&quot;,&quot;save_history&quot;:&quot;1&quot;,&quot;history_limit&quot;:10,&quot;show_urls_images_frontend&quot;:&quot;0&quot;,&quot;show_urls_images_backend&quot;:&quot;1&quot;,&quot;targeta&quot;:0,&quot;targetb&quot;:0,&quot;targetc&quot;:0,&quot;float_intro&quot;:&quot;left&quot;,&quot;float_fulltext&quot;:&quot;left&quot;,&quot;category_layout&quot;:&quot;_:blog&quot;,&quot;show_category_title&quot;:&quot;0&quot;,&quot;show_description&quot;:&quot;0&quot;,&quot;show_description_image&quot;:&quot;0&quot;,&quot;maxLevel&quot;:&quot;1&quot;,&quot;show_empty_categories&quot;:&quot;0&quot;,&quot;show_no_articles&quot;:&quot;1&quot;,&quot;show_category_heading_title_text&quot;:&quot;1&quot;,&quot;show_subcat_desc&quot;:&quot;1&quot;,&quot;show_cat_num_articles&quot;:&quot;0&quot;,&quot;show_cat_tags&quot;:&quot;1&quot;,&quot;show_base_description&quot;:&quot;1&quot;,&quot;maxLevelcat&quot;:&quot;-1&quot;,&quot;show_empty_categories_cat&quot;:&quot;0&quot;,&quot;show_subcat_desc_cat&quot;:&quot;1&quot;,&quot;show_cat_num_articles_cat&quot;:&quot;1&quot;,&quot;num_leading_articles&quot;:1,&quot;blog_class_leading&quot;:&quot;&quot;,&quot;num_intro_articles&quot;:4,&quot;blog_class&quot;:&quot;&quot;,&quot;num_columns&quot;:1,&quot;multi_column_order&quot;:&quot;0&quot;,&quot;num_links&quot;:4,&quot;show_subcategory_content&quot;:&quot;0&quot;,&quot;link_intro_image&quot;:&quot;0&quot;,&quot;show_pagination_limit&quot;:&quot;1&quot;,&quot;filter_field&quot;:&quot;hide&quot;,&quot;show_headings&quot;:&quot;1&quot;,&quot;list_show_date&quot;:&quot;0&quot;,&quot;date_format&quot;:&quot;&quot;,&quot;list_show_hits&quot;:&quot;1&quot;,&quot;list_show_author&quot;:&quot;1&quot;,&quot;display_num&quot;:&quot;10&quot;,&quot;orderby_pri&quot;:&quot;order&quot;,&quot;orderby_sec&quot;:&quot;rdate&quot;,&quot;order_date&quot;:&quot;published&quot;,&quot;show_pagination&quot;:&quot;2&quot;,&quot;show_pagination_results&quot;:&quot;1&quot;,&quot;show_featured&quot;:&quot;show&quot;,&quot;show_feed_link&quot;:&quot;1&quot;,&quot;feed_summary&quot;:&quot;0&quot;,&quot;feed_show_readmore&quot;:&quot;0&quot;,&quot;sef_ids&quot;:1,&quot;custom_fields_enable&quot;:&quot;1&quot;,&quot;workflow_enabled&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;article_layout&quot;:&quot;_:default&quot;,&quot;show_title&quot;:&quot;1&quot;,&quot;link_titles&quot;:&quot;1&quot;,&quot;show_intro&quot;:&quot;1&quot;,&quot;info_block_position&quot;:&quot;0&quot;,&quot;info_block_show_title&quot;:&quot;0&quot;,&quot;show_category&quot;:&quot;0&quot;,&quot;link_category&quot;:&quot;1&quot;,&quot;show_parent_category&quot;:&quot;0&quot;,&quot;link_parent_category&quot;:&quot;0&quot;,&quot;show_associations&quot;:&quot;0&quot;,&quot;flags&quot;:&quot;1&quot;,&quot;show_author&quot;:&quot;0&quot;,&quot;link_author&quot;:&quot;0&quot;,&quot;show_create_date&quot;:&quot;0&quot;,&quot;show_modify_date&quot;:&quot;0&quot;,&quot;show_publish_date&quot;:&quot;0&quot;,&quot;show_item_navigation&quot;:&quot;0&quot;,&quot;show_readmore&quot;:&quot;0&quot;,&quot;show_readmore_title&quot;:&quot;1&quot;,&quot;readmore_limit&quot;:100,&quot;show_tags&quot;:&quot;0&quot;,&quot;record_hits&quot;:&quot;1&quot;,&quot;show_hits&quot;:&quot;0&quot;,&quot;show_noauth&quot;:&quot;0&quot;,&quot;urls_position&quot;:0,&quot;captcha&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;1&quot;,&quot;show_article_options&quot;:&quot;1&quot;,&quot;show_configure_edit_options&quot;:&quot;1&quot;,&quot;show_permissions&quot;:&quot;1&quot;,&quot;show_associations_edit&quot;:&quot;1&quot;,&quot;save_history&quot;:&quot;1&quot;,&quot;history_limit&quot;:10,&quot;show_urls_images_frontend&quot;:&quot;0&quot;,&quot;show_urls_images_backend&quot;:&quot;1&quot;,&quot;targeta&quot;:0,&quot;targetb&quot;:0,&quot;targetc&quot;:0,&quot;float_intro&quot;:&quot;left&quot;,&quot;float_fulltext&quot;:&quot;left&quot;,&quot;category_layout&quot;:&quot;_:blog&quot;,&quot;show_category_title&quot;:&quot;0&quot;,&quot;show_description&quot;:&quot;0&quot;,&quot;show_description_image&quot;:&quot;0&quot;,&quot;maxLevel&quot;:&quot;1&quot;,&quot;show_empty_categories&quot;:&quot;0&quot;,&quot;show_no_articles&quot;:&quot;1&quot;,&quot;show_category_heading_title_text&quot;:&quot;1&quot;,&quot;show_subcat_desc&quot;:&quot;1&quot;,&quot;show_cat_num_articles&quot;:&quot;0&quot;,&quot;show_cat_tags&quot;:&quot;1&quot;,&quot;show_base_description&quot;:&quot;1&quot;,&quot;maxLevelcat&quot;:&quot;-1&quot;,&quot;show_empty_categories_cat&quot;:&quot;0&quot;,&quot;show_subcat_desc_cat&quot;:&quot;1&quot;,&quot;show_cat_num_articles_cat&quot;:&quot;1&quot;,&quot;num_leading_articles&quot;:1,&quot;blog_class_leading&quot;:&quot;&quot;,&quot;num_intro_articles&quot;:4,&quot;blog_class&quot;:&quot;&quot;,&quot;num_columns&quot;:1,&quot;multi_column_order&quot;:&quot;0&quot;,&quot;num_links&quot;:4,&quot;show_subcategory_content&quot;:&quot;0&quot;,&quot;link_intro_image&quot;:&quot;0&quot;,&quot;show_pagination_limit&quot;:&quot;1&quot;,&quot;filter_field&quot;:&quot;hide&quot;,&quot;show_headings&quot;:&quot;1&quot;,&quot;list_show_date&quot;:&quot;0&quot;,&quot;date_format&quot;:&quot;&quot;,&quot;list_show_hits&quot;:&quot;1&quot;,&quot;list_show_author&quot;:&quot;1&quot;,&quot;display_num&quot;:&quot;10&quot;,&quot;orderby_pri&quot;:&quot;order&quot;,&quot;orderby_sec&quot;:&quot;rdate&quot;,&quot;order_date&quot;:&quot;published&quot;,&quot;show_pagination&quot;:&quot;2&quot;,&quot;show_pagination_results&quot;:&quot;1&quot;,&quot;show_featured&quot;:&quot;show&quot;,&quot;show_feed_link&quot;:&quot;1&quot;,&quot;feed_summary&quot;:&quot;0&quot;,&quot;feed_show_readmore&quot;:&quot;0&quot;,&quot;sef_ids&quot;:1,&quot;custom_fields_enable&quot;:&quot;1&quot;,&quot;workflow_enabled&quot;:&quot;0&quot;}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
@@ -4162,7 +4162,7 @@
     <field name="protected">0</field>
     <field name="locked">1</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;plg_system_updatenotification&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;2015-05&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2015 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;3.5.0&quot;,&quot;description&quot;:&quot;PLG_SYSTEM_UPDATENOTIFICATION_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;updatenotification&quot;}</field>
-    <field name="params">{&quot;lastrun&quot;:1687275857}</field>
+    <field name="params">{&quot;lastrun&quot;:1687331295}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
@@ -4408,7 +4408,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">1</field>
+    <field name="ordering">20</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -4430,7 +4430,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">2</field>
+    <field name="ordering">1</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -4452,7 +4452,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">3</field>
+    <field name="ordering">21</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -4474,7 +4474,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">4</field>
+    <field name="ordering">22</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -4496,7 +4496,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">5</field>
+    <field name="ordering">2</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -11791,7 +11791,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -11813,7 +11813,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -11857,7 +11857,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -11879,7 +11879,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -11901,7 +11901,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -11945,7 +11945,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12143,7 +12143,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12187,7 +12187,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12209,7 +12209,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12231,7 +12231,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12253,7 +12253,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12319,7 +12319,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12517,7 +12517,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_form</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -12856,7 +12856,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">19</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -12878,7 +12878,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">18</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -12900,7 +12900,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">17</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -12922,7 +12922,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">16</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -12944,7 +12944,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">15</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -12966,7 +12966,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">14</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -12988,7 +12988,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">13</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -13010,7 +13010,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">12</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -13032,7 +13032,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">11</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -13054,7 +13054,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">10</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -13076,7 +13076,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">3</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -13098,7 +13098,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">9</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -13120,7 +13120,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">8</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -13142,7 +13142,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">7</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -13164,7 +13164,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">6</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -13186,7 +13186,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">5</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>
@@ -13208,7 +13208,7 @@
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">4</field>
     <field name="state">0</field>
     <field name="note"></field>
    </row>

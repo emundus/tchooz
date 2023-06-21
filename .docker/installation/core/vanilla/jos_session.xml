@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__session">
+   <field Field="session_id" Type="varbinary(192)" Null="NO" Key="PRI" Extra="" />
+   <field Field="client_id" Type="tinyint unsigned" Null="YES" Key="MUL" Extra="" />
+   <field Field="guest" Type="tinyint unsigned" Null="YES" Key="" Default="1" Extra="" />
+   <field Field="time" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="data" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <field Field="userid" Type="int" Null="YES" Key="MUL" Default="0" Extra="" />
+   <field Field="username" Type="varchar(150)" Null="YES" Key="" Default="" Extra="" />
+   <key Table="#__session" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="session_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__session" Non_unique="1" Key_name="userid" Seq_in_index="1" Column_name="userid" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__session" Non_unique="1" Key_name="time" Seq_in_index="1" Column_name="time" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__session" Non_unique="1" Key_name="client_id_guest" Seq_in_index="1" Column_name="client_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__session" Non_unique="1" Key_name="client_id_guest" Seq_in_index="2" Column_name="guest" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

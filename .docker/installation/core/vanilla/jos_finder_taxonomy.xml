@@ -31,7 +31,7 @@
     <field name="id">1</field>
     <field name="parent_id">0</field>
     <field name="lft">0</field>
-    <field name="rgt">1</field>
+    <field name="rgt">9</field>
     <field name="level">0</field>
     <field name="path"></field>
     <field name="title">ROOT</field>
@@ -39,6 +39,58 @@
     <field name="state">1</field>
     <field name="access">1</field>
     <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="parent_id">1</field>
+    <field name="lft">1</field>
+    <field name="rgt">2</field>
+    <field name="level">1</field>
+    <field name="path">type</field>
+    <field name="title">Type</field>
+    <field name="alias">type</field>
+    <field name="state">1</field>
+    <field name="access">1</field>
+    <field name="language"></field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="parent_id">1</field>
+    <field name="lft">3</field>
+    <field name="rgt">4</field>
+    <field name="level">1</field>
+    <field name="path">author</field>
+    <field name="title">Author</field>
+    <field name="alias">author</field>
+    <field name="state">1</field>
+    <field name="access">1</field>
+    <field name="language"></field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="parent_id">1</field>
+    <field name="lft">5</field>
+    <field name="rgt">6</field>
+    <field name="level">1</field>
+    <field name="path">category</field>
+    <field name="title">Category</field>
+    <field name="alias">category</field>
+    <field name="state">1</field>
+    <field name="access">1</field>
+    <field name="language"></field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="parent_id">1</field>
+    <field name="lft">7</field>
+    <field name="rgt">8</field>
+    <field name="level">1</field>
+    <field name="path">language</field>
+    <field name="title">Language</field>
+    <field name="alias">language</field>
+    <field name="state">1</field>
+    <field name="access">1</field>
+    <field name="language"></field>
    </row>
   </table_data>
  </database>

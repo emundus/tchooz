@@ -1048,6 +1048,3 @@
 /libraries/src/Service/Provider/Toolbar.php
 /libraries/src/Service/Provider/User.php
 /libraries/src/Service/Provider/WebAssetRegistry.php
-/.docker/installation/core/vanilla/jos_user_usergroup_map.xml
-/.docker/installation/core/vanilla/jos_users.xml
-/.docker/installation/core/vanilla/jos_session.xml

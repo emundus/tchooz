@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__users">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="name" Type="varchar(400)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="username" Type="varchar(150)" Null="NO" Key="UNI" Default="" Extra="" />
+   <field Field="email" Type="varchar(100)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="password" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="block" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="sendEmail" Type="tinyint" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="registerDate" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="lastvisitDate" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="activation" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="params" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="lastResetTime" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="resetCount" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="otpKey" Type="varchar(1000)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="otep" Type="varchar(1000)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="requireReset" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="authProvider" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
+   <key Table="#__users" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__users" Non_unique="0" Key_name="idx_username" Seq_in_index="1" Column_name="username" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__users" Non_unique="1" Key_name="idx_name" Seq_in_index="1" Column_name="name" Collation="A" Null="" Index_type="BTREE" Sub_part="100" Comment="" />
+   <key Table="#__users" Non_unique="1" Key_name="idx_block" Seq_in_index="1" Column_name="block" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__users" Non_unique="1" Key_name="email" Seq_in_index="1" Column_name="email" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

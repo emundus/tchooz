@@ -21,24 +21,7 @@
   </table_structure>
   <table_data name="#__updates">
    <row>
-    <field name="update_id">54</field>
-    <field name="update_site_id">1</field>
-    <field name="extension_id">227</field>
-    <field name="name">Joomla</field>
-    <field name="description"></field>
-    <field name="element">joomla</field>
-    <field name="type">file</field>
-    <field name="folder"></field>
-    <field name="client_id">0</field>
-    <field name="version">4.3.2</field>
-    <field name="data"></field>
-    <field name="detailsurl">https://update.joomla.org/core/sts/extension_sts.xml</field>
-    <field name="infourl"></field>
-    <field name="changelogurl"></field>
-    <field name="extra_query"></field>
-   </row>
-   <row>
-    <field name="update_id">55</field>
+    <field name="update_id">108</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Afrikaans</field>
@@ -55,7 +38,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">56</field>
+    <field name="update_id">109</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Arabic Unitag</field>
@@ -72,7 +55,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">57</field>
+    <field name="update_id">110</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Bulgarian</field>
@@ -89,7 +72,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">58</field>
+    <field name="update_id">111</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Catalan</field>
@@ -106,7 +89,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">59</field>
+    <field name="update_id">112</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Chinese, Simplified</field>
@@ -123,7 +106,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">60</field>
+    <field name="update_id">113</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Chinese, Traditional</field>
@@ -140,7 +123,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">61</field>
+    <field name="update_id">114</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Croatian</field>
@@ -157,7 +140,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">62</field>
+    <field name="update_id">115</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Czech</field>
@@ -174,7 +157,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">63</field>
+    <field name="update_id">116</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Danish</field>
@@ -191,7 +174,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">64</field>
+    <field name="update_id">117</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Dutch</field>
@@ -208,7 +191,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">65</field>
+    <field name="update_id">118</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">English, Australia</field>
@@ -225,7 +208,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">66</field>
+    <field name="update_id">119</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">English, Canada</field>
@@ -242,7 +225,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">67</field>
+    <field name="update_id">120</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">English, New Zealand</field>
@@ -259,7 +242,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">68</field>
+    <field name="update_id">121</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">English, USA</field>
@@ -276,7 +259,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">69</field>
+    <field name="update_id">122</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Estonian</field>
@@ -293,7 +276,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">70</field>
+    <field name="update_id">123</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Finnish</field>
@@ -310,7 +293,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">71</field>
+    <field name="update_id">124</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Flemish</field>
@@ -327,7 +310,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">72</field>
+    <field name="update_id">125</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Georgian</field>
@@ -344,7 +327,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">73</field>
+    <field name="update_id">126</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">German</field>
@@ -361,7 +344,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">74</field>
+    <field name="update_id">127</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">German, Austria</field>
@@ -378,7 +361,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">75</field>
+    <field name="update_id">128</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">German, Liechtenstein</field>
@@ -395,7 +378,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">76</field>
+    <field name="update_id">129</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">German, Luxembourg</field>
@@ -412,7 +395,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">77</field>
+    <field name="update_id">130</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">German, Switzerland</field>
@@ -429,7 +412,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">78</field>
+    <field name="update_id">131</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Greek</field>
@@ -446,7 +429,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">79</field>
+    <field name="update_id">132</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Hungarian</field>
@@ -463,7 +446,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">80</field>
+    <field name="update_id">133</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Irish</field>
@@ -480,7 +463,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">81</field>
+    <field name="update_id">134</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Italian</field>
@@ -497,7 +480,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">82</field>
+    <field name="update_id">135</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Japanese</field>
@@ -514,7 +497,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">83</field>
+    <field name="update_id">136</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Kazakh</field>
@@ -531,7 +514,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">84</field>
+    <field name="update_id">137</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Latvian</field>
@@ -548,7 +531,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">85</field>
+    <field name="update_id">138</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Lithuanian</field>
@@ -565,7 +548,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">86</field>
+    <field name="update_id">139</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Macedonian</field>
@@ -582,7 +565,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">87</field>
+    <field name="update_id">140</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Norwegian Bokmål</field>
@@ -599,7 +582,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">88</field>
+    <field name="update_id">141</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Persian Farsi</field>
@@ -616,7 +599,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">89</field>
+    <field name="update_id">142</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Polish</field>
@@ -633,7 +616,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">90</field>
+    <field name="update_id">143</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Portuguese, Brazil</field>
@@ -650,7 +633,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">91</field>
+    <field name="update_id">144</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Portuguese, Portugal</field>
@@ -667,7 +650,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">92</field>
+    <field name="update_id">145</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Romanian</field>
@@ -684,7 +667,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">93</field>
+    <field name="update_id">146</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Russian</field>
@@ -701,7 +684,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">94</field>
+    <field name="update_id">147</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Serbian, Cyrillic</field>
@@ -718,7 +701,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">95</field>
+    <field name="update_id">148</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Serbian, Latin</field>
@@ -735,7 +718,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">96</field>
+    <field name="update_id">149</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Slovak</field>
@@ -752,7 +735,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">97</field>
+    <field name="update_id">150</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Slovenian</field>
@@ -769,7 +752,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">98</field>
+    <field name="update_id">151</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Spanish</field>
@@ -786,7 +769,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">99</field>
+    <field name="update_id">152</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Swedish</field>
@@ -803,7 +786,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">100</field>
+    <field name="update_id">153</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Tamil, India</field>
@@ -820,7 +803,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">101</field>
+    <field name="update_id">154</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Thai</field>
@@ -837,7 +820,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">102</field>
+    <field name="update_id">155</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Turkish</field>
@@ -854,7 +837,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">103</field>
+    <field name="update_id">156</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Ukrainian</field>
@@ -871,7 +854,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">104</field>
+    <field name="update_id">157</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Vietnamese</field>
@@ -888,7 +871,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">105</field>
+    <field name="update_id">158</field>
     <field name="update_site_id">2</field>
     <field name="extension_id">0</field>
     <field name="name">Welsh</field>
@@ -905,7 +888,7 @@
     <field name="extra_query"></field>
    </row>
    <row>
-    <field name="update_id">106</field>
+    <field name="update_id">159</field>
     <field name="update_site_id">6</field>
     <field name="extension_id">0</field>
     <field name="name">Hydrogen</field>

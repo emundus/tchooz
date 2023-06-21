@@ -19,5 +19,58 @@
    <field Field="params" Type="mediumtext" Null="YES" Key="" Extra="" />
    <key Table="#__fabrik_cron" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
+  <table_data name="#__fabrik_cron">
+   <row>
+    <field name="id">1</field>
+    <field name="label">Application not sent</field>
+    <field name="frequency">1</field>
+    <field name="unit">day</field>
+    <field name="created">0000-00-00 00:00:00</field>
+    <field name="created_by">0</field>
+    <field name="created_by_alias"></field>
+    <field name="modified">0000-00-00 00:00:00</field>
+    <field name="modified_by"></field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
+    <field name="published">0</field>
+    <field name="plugin">emundusrecall</field>
+    <field name="lastrun">2021-10-14 10:03:59</field>
+    <field name="params">{&quot;connection&quot;:&quot;1&quot;,&quot;table&quot;:&quot;&quot;,&quot;cron_row_limit&quot;:&quot;100&quot;,&quot;log&quot;:&quot;0&quot;,&quot;log_email&quot;:&quot;&quot;,&quot;require_qs&quot;:&quot;0&quot;,&quot;require_qs_secret&quot;:&quot;&quot;,&quot;cron_rungate&quot;:&quot;1&quot;,&quot;cron_reschedule_manual&quot;:&quot;0&quot;,&quot;reminder_mail_id&quot;:&quot;15&quot;,&quot;reminder_programme_code&quot;:&quot;&quot;,&quot;reminder_days&quot;:&quot;30&quot;,&quot;reminder_option&quot;:&quot;1&quot;,&quot;reminder_deadline&quot;:&quot;14,7,1&quot;,&quot;reminder_status&quot;:&quot;&quot;}</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="label">Referent remind</field>
+    <field name="frequency">1</field>
+    <field name="unit">day</field>
+    <field name="created">0000-00-00 00:00:00</field>
+    <field name="created_by">0</field>
+    <field name="created_by_alias"></field>
+    <field name="modified">0000-00-00 00:00:00</field>
+    <field name="modified_by"></field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
+    <field name="published">0</field>
+    <field name="plugin">emundusreferentrecall</field>
+    <field name="lastrun">2020-03-26 13:11:24</field>
+    <field name="params">{&quot;connection&quot;:&quot;1&quot;,&quot;table&quot;:&quot;&quot;,&quot;cron_row_limit&quot;:&quot;100&quot;,&quot;log&quot;:&quot;0&quot;,&quot;log_email&quot;:&quot;&quot;,&quot;require_qs&quot;:&quot;0&quot;,&quot;require_qs_secret&quot;:&quot;&quot;,&quot;cron_rungate&quot;:&quot;1&quot;,&quot;cron_reschedule_manual&quot;:&quot;0&quot;,&quot;reminder_mail_id&quot;:&quot;8&quot;,&quot;reminder_programme_code&quot;:&quot;&quot;,&quot;attachment_id&quot;:&quot;4,6,21&quot;,&quot;reminder_days&quot;:&quot;30&quot;,&quot;reminder_deadline&quot;:&quot;30,7,1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="label">Messenger Notification</field>
+    <field name="frequency">1</field>
+    <field name="unit">day</field>
+    <field name="created">0000-00-00 00:00:00</field>
+    <field name="created_by">0</field>
+    <field name="created_by_alias"></field>
+    <field name="modified">0000-00-00 00:00:00</field>
+    <field name="modified_by"></field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
+    <field name="published">0</field>
+    <field name="plugin">emundusmessengernotify</field>
+    <field name="lastrun">2021-11-24 23:00:00</field>
+    <field name="params">{&quot;connection&quot;:&quot;1&quot;,&quot;table&quot;:&quot;&quot;,&quot;cron_row_limit&quot;:&quot;100&quot;,&quot;log&quot;:&quot;0&quot;,&quot;log_email&quot;:&quot;&quot;,&quot;require_qs&quot;:&quot;0&quot;,&quot;require_qs_secret&quot;:&quot;&quot;,&quot;cron_rungate&quot;:&quot;0&quot;,&quot;cron_reschedule_manual&quot;:&quot;0&quot;,&quot;reminder_mail_id&quot;:&quot;79&quot;,&quot;reminder_mail_id_coordinator&quot;:&quot;81&quot;}</field>
+   </row>
+  </table_data>
  </database>
 </mysqldump>

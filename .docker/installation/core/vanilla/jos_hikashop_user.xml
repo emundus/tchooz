@@ -20,23 +20,5 @@
    <key Table="#__hikashop_user" Non_unique="0" Key_name="user_email" Seq_in_index="1" Column_name="user_email" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__hikashop_user" Non_unique="1" Key_name="user_cms_id" Seq_in_index="1" Column_name="user_cms_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__hikashop_user">
-   <row>
-    <field name="user_id">1</field>
-    <field name="user_cms_id">247</field>
-    <field name="user_email">sysadmin@emundus.io</field>
-    <field name="user_partner_email"></field>
-    <field name="user_params"></field>
-    <field name="user_partner_id">0</field>
-    <field name="user_partner_price">0.00000</field>
-    <field name="user_partner_paid">0</field>
-    <field name="user_created_ip"></field>
-    <field name="user_unpaid_amount">0.00000</field>
-    <field name="user_partner_currency_id">0</field>
-    <field name="user_created">1687176079</field>
-    <field name="user_currency_id">0</field>
-    <field name="user_partner_activated">0</field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

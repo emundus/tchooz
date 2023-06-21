@@ -95,7 +95,7 @@
     <field name="level">1</field>
     <field name="name">com_content</field>
     <field name="title">com_content</field>
-    <field name="rules">{&quot;core.admin&quot;:{&quot;7&quot;:1},&quot;core.manage&quot;:{&quot;6&quot;:1},&quot;core.create&quot;:{&quot;3&quot;:1},&quot;core.edit&quot;:{&quot;4&quot;:1},&quot;core.edit.state&quot;:{&quot;5&quot;:1},&quot;core.execute.transition&quot;:{&quot;6&quot;:1,&quot;5&quot;:1}}</field>
+    <field name="rules">{&quot;core.admin&quot;:{&quot;7&quot;:1},&quot;core.manage&quot;:{&quot;6&quot;:1},&quot;core.create&quot;:{&quot;6&quot;:0,&quot;3&quot;:1},&quot;core.delete&quot;:{&quot;6&quot;:0},&quot;core.edit&quot;:{&quot;6&quot;:0,&quot;4&quot;:1},&quot;core.edit.state&quot;:{&quot;6&quot;:0,&quot;5&quot;:1},&quot;core.edit.own&quot;:{&quot;6&quot;:0},&quot;core.execute.transition&quot;:{&quot;6&quot;:1,&quot;5&quot;:1}}</field>
    </row>
    <row>
     <field name="id">9</field>
