@@ -37,6 +37,7 @@
 /templates/g5_helium/custom/config/_offline/
 /templates/g5_helium/custom/config/default/
 /templates/g5_helium/custom/config/menu/
+/templates/g5_helium/custom/css-compiled/
 
 /tmp/*
 
