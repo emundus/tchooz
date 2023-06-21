@@ -8,6 +8,8 @@
  */
 
 // Protect from unauthorized access
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
 
@@ -97,7 +99,10 @@ class plgUserEmundus_registration_email extends JPlugin {
      * @throws Exception
      */
     public function onUserAfterSave($user, $isnew, $result, $error) {
-        $this->onAfterStoreUser($user, $isnew, $result, $error);
+        if(!Factory::getApplication()->isCli())
+        {
+            $this->onAfterStoreUser($user, $isnew, $result, $error);
+        }
     }
 
 

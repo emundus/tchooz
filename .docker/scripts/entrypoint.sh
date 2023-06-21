@@ -132,7 +132,13 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 
   if [ ! -e configuration.php ] && [ -d ".docker/installation/" ]; then
 
+    echo >&2 "========================================================================"
+    echo >&2
     echo >&2 "We prepare the installation of the Tchooz component..."
+    echo >&2
+    echo >&2 "========================================================================"
+
+    mv /core/logo.png images/custom/logo.png
 
     echo >&2 "Init configuration variables..."
     cp configuration.php.dist configuration.php
@@ -154,17 +160,22 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 
     echo >&2 "Create super administrator user..."
 
-    php cli/joomla.php user:add --username="$TCHOOZ_SYSADMIN_USERNAME" --name="$TCHOOZ_SYSADMIN_LAST_NAME $TCHOOZ_SYSADMIN_FIRST_NAME" --password="$TCHOOZ_SYSADMIN_PASSWORD" --email="$TCHOOZ_SYSADMIN_MAIL" --usergroup="Registered,Super Users" -n
+    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_SYSADMIN_USERNAME" --name="$TCHOOZ_SYSADMIN_LAST_NAME $TCHOOZ_SYSADMIN_FIRST_NAME" --password="$TCHOOZ_SYSADMIN_PASSWORD" --email="$TCHOOZ_SYSADMIN_MAIL" --usergroup="Registered,Super Users" --userprofiles="System administrator" -n
 
 
     echo >&2 "Create coordinator user..."
 
-    php cli/joomla.php user:add --username="$TCHOOZ_COORD_USERNAME" --name="$TCHOOZ_COORD_LAST_NAME $TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" -n
+    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_COORD_USERNAME" --name="$TCHOOZ_COORD_LAST_NAME $TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" --userprofiles="Gestionnaire de plateforme,Formulaire de base candidat" -n
 
 
-    chown -R www-data: .
+    chown www-data: configuration.php
+    chown www-data: .htaccess
 
+    echo >&2 "========================================================================"
+    echo >&2
     echo >&2 "Awesome ! Your Tchooz website is ready !"
+    echo >&2
+    echo >&2 "========================================================================"
   fi
 
   # Ensure the MySQL Database is created

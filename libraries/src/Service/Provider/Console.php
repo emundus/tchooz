@@ -26,7 +26,7 @@ use Joomla\CMS\Console\SiteUpCommand;
 use Joomla\CMS\Console\TasksListCommand;
 use Joomla\CMS\Console\TasksRunCommand;
 use Joomla\CMS\Console\TasksStateCommand;
-use Joomla\CMS\Console\TchoozDeploymentRunCommand;
+use Joomla\CMS\Console\TchoozUserAddCommand;
 use Joomla\CMS\Console\UpdateCoreCommand;
 use Joomla\CMS\Session\MetadataManager;
 use Joomla\Database\Command\ExportCommand;
@@ -223,9 +223,9 @@ class Console implements ServiceProviderInterface
         );
 
         $container->share(
-            TchoozDeploymentRunCommand::class,
+            TchoozUserAddCommand::class,
             function (Container $container) {
-                return new TchoozDeploymentRunCommand($container->get('db'));
+                return new TchoozUserAddCommand($container->get('db'));
             },
             true
         );

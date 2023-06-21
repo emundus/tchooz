@@ -9635,7 +9635,7 @@
     <field name="changelogurl"></field>
     <field name="folder">system</field>
     <field name="client_id">0</field>
-    <field name="enabled">1</field>
+    <field name="enabled">0</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -9855,7 +9855,7 @@
     <field name="changelogurl"></field>
     <field name="folder">system</field>
     <field name="client_id">0</field>
-    <field name="enabled">1</field>
+    <field name="enabled">0</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>

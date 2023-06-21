@@ -8,9 +8,6 @@
 ## LOGS
 /administrator/logs/*
 
-# CACHE
-/cache/*
-
 # IMAGES
 /images/banners/*
 /images/headers/*

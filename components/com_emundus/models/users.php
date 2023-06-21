@@ -41,7 +41,7 @@ class EmundusModelUsers extends JModelList {
         $mainframe = JFactory::getApplication();
 
         if (!$session->has('limit')) {
-            $limit = $mainframe->getCfg('list_limit');
+            $limit = $mainframe->get('list_limit');
             $limitstart = 0;
             $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
