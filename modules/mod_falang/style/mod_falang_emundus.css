@@ -111,6 +111,10 @@ div.advanced-dropdown span.caret{
     color: black !important;
 }
 
+div a[title^="Faboba"] {
+    display: none !important;
+}
+
 @media screen and (max-width: 767px) {
     div.mod-languages form[name="lang"]{
         margin: 10px 0 !important;
