@@ -2,7 +2,7 @@
 <br />
 <div align="center">
   <a href="https://git.emundus.io/emundus/saas/app_tchooz" style="display: flex;justify-content: center;align-items: center;gap: 16px">
-    <img src="images/custom/logo.png" alt="Core logo" width="400">
+    <img src="images/tchooz.png" alt="Core logo" width="400">
   </a>
 
 <h3 align="center">eMundus</h3>
@@ -112,6 +112,12 @@ This interface allows you to generate users and application files.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Installation
+### Via docker
+You can edit some variables by copying `docker-compose.yml` file
+```shell
+docker-compose up --build -d
+```
 
 <!-- ROADMAP -->
 ## Roadmap
