@@ -237,10 +237,12 @@ else {
         var messageIcon = document.getElementById('messageDropdownIcon');
 
         if (dropdown.classList.contains('open')) {
-            jQuery("#userDropdownMenu").css("transform","translate(300px)")
+            const dropdownMenu = document.getElementById('userDropdownMenu');
+            dropdownMenu.style.transform = 'translate(300px)';
+
             setTimeout(() => {
                 dropdown.classList.remove('open');
-                jQuery("#userDropdownMenu").css("transform","unset")
+                dropdownMenu.style.transform = 'unset';
                 if(icon !== null) {
                     icon.classList.remove('active');
                 }
@@ -289,14 +291,15 @@ else {
     }
 
     function closeTip() {
-        jQuery.ajax({
-            type: 'POST',
-            url: 'index.php?option=com_emundus&controller=users&task=updateemundussession',
-            data: ({
-                param: 'first_logged',
-                value: 0,
-            }),
-            success: function (result) {
+        let formData = new FormData();
+        formData.append('param', 'first_logged');
+        formData.append('value', 0);
+
+        fetch('index.php?option=com_emundus&controller=users&task=updateemundussession', {
+            method: 'POST',
+            body: formData,
+        }).then(response => {
+            if (response.ok) {
                 document.getElementById('userDropdown').classList.remove('userDropdown-tip');
                 document.getElementById('userDropdownLabel').classList.remove('userDropdownLabel-tip');
                 document.getElementById('userDropdownIcon').classList.remove('userDropdownIcon-tip');
@@ -304,11 +307,13 @@ else {
                 setTimeout(() => {
                     document.getElementById('userDropdownTip').style.display = 'none';
                 },300)
-            },
-            error : function (jqXHR, status, err) {
-                alert("Error switching porfiles.");
+            } else {
+                throw new Error('Error switching profiles.');
             }
+        }).catch(error => {
+            alert(error.message);
         });
+
     }
 
     document.addEventListener('click', function (e) {
@@ -323,11 +328,12 @@ else {
         if (!clickInsideModule) {
             const dropdown = document.getElementById('userDropdown');
             const icon = document.getElementById('userDropdownIcon');
+            const dropdownMenu = document.getElementById('userDropdownMenu');
+            dropdownMenu.style.transform = 'translate(250px)';
 
-            jQuery("#userDropdownMenu").css("transform","translate(250px)")
             setTimeout(() => {
                 dropdown.classList.remove('open');
-                jQuery("#userDropdownMenu").css("transform","unset")
+                dropdownMenu.style.transform = 'unset';
                 if(icon !== null) {
                     icon.classList.remove('active');
                 }
