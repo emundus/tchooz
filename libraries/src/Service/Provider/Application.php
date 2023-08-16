@@ -33,7 +33,6 @@ use Joomla\CMS\Console\SiteUpCommand;
 use Joomla\CMS\Console\TasksListCommand;
 use Joomla\CMS\Console\TasksRunCommand;
 use Joomla\CMS\Console\TasksStateCommand;
-use Joomla\CMS\Console\TchoozUserAddCommand;
 use Joomla\CMS\Console\UpdateCoreCommand;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageFactoryInterface;
@@ -160,7 +159,6 @@ class Application implements ServiceProviderInterface
                         ImportCommand::getDefaultName()                   => ImportCommand::class,
                         SiteDownCommand::getDefaultName()                 => SiteDownCommand::class,
                         SiteUpCommand::getDefaultName()                   => SiteUpCommand::class,
-                        TchoozUserAddCommand::getDefaultName()            => TchoozUserAddCommand::class,
                         SetConfigurationCommand::getDefaultName()         => SetConfigurationCommand::class,
                         GetConfigurationCommand::getDefaultName()         => GetConfigurationCommand::class,
                         ExtensionsListCommand::getDefaultName()           => ExtensionsListCommand::class,

@@ -26,7 +26,6 @@ use Joomla\CMS\Console\SiteUpCommand;
 use Joomla\CMS\Console\TasksListCommand;
 use Joomla\CMS\Console\TasksRunCommand;
 use Joomla\CMS\Console\TasksStateCommand;
-use Joomla\CMS\Console\TchoozUserAddCommand;
 use Joomla\CMS\Console\UpdateCoreCommand;
 use Joomla\CMS\Session\MetadataManager;
 use Joomla\Database\Command\ExportCommand;
@@ -220,14 +219,6 @@ class Console implements ServiceProviderInterface
             function (Container $container) {
                 return new TasksStateCommand();
             }
-        );
-
-        $container->share(
-            TchoozUserAddCommand::class,
-            function (Container $container) {
-                return new TchoozUserAddCommand($container->get('db'));
-            },
-            true
         );
     }
 }

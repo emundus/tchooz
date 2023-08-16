@@ -142,13 +142,6 @@ foreach ($messages as $message) {
 }
 //email sending
 
-/*if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id)) {
-	echo json_encode((object)array('status' => false));
-	exit;
-}*/
-
-
-
 $course = JFactory::getApplication()->input->get('course', null, 'GET', null, 0);
 $cid 	= JFactory::getApplication()->input->get('cid', null, 'GET', null, 0);
 
@@ -162,7 +155,7 @@ if (!empty($course) && empty($cid)) {
 	$campaigns = $m_campaign->getAllowedCampaign();
 }
 
-if ((count(@$campaign_id) == 0 && (!empty($course) && !empty($cid))) || count($campaigns) == 0) {
+if ((empty($campaign_id) && (!empty($course) && !empty($cid))) || empty($campaigns)) {
 	$app->enqueueMessage(JText::_('EMUNDUS_NO_CAMPAIGN'), 'error');
 	JLog::add('No available campaign', JLog::ERROR, 'com_emundus');
 } else {
