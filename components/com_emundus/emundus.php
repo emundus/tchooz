@@ -614,6 +614,8 @@ JText::script('COM_EMUNDUS_MAIL_GB_BUTTON');
 // ONBOARD
 
 $app = JFactory::getApplication();
+$wa = $app->getDocument()->getWebAssetManager();
+$wa->useScript('jquery');
 
 // Require specific controller if requested
 if ($controller = $app->input->get('controller', '', 'WORD')) {

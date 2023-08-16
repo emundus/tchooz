@@ -31,16 +31,17 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
-    $document = JFactory::getDocument();
-    $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
-    $document->addStyleSheet("media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
-    $document->addStyleSheet("modules/mod_emundus_applications/style/mod_emundus_applications.css" );
+    $document = JFactory::getApplication()->getDocument();
+    $wa = $document->getWebAssetManager();
+    $wa->useScript('jquery');
+
+    $wa->registerAndUseStyle('bootstrap336', "media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
+    $wa->registerAndUseStyle('circliful', "media/com_emundus/lib/jquery-plugin-circliful-master/css/material-design-iconic-font.min.css" );
+    $wa->registerAndUseStyle('mod_emundus_applications', "modules/mod_emundus_applications/style/mod_emundus_applications.css" );
 
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
 
-    $document->addScript("media/jui/js/jquery.min.js" );
-    $document->addScript("media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js");
     $document->addScript("media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js" );
 
     $app = JFactory::getApplication();
