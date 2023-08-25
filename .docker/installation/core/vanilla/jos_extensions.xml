@@ -13344,6 +13344,28 @@
     <field name="state">0</field>
     <field name="note"></field>
    </row>
+   <row>
+    <field name="extension_id">625</field>
+    <field name="package_id">0</field>
+    <field name="name">Tchooz Console Plugin</field>
+    <field name="type">plugin</field>
+    <field name="element">tchooz_cli</field>
+    <field name="changelogurl"></field>
+    <field name="folder">console</field>
+    <field name="client_id">0</field>
+    <field name="enabled">1</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{"name":"Tchooz Console Plugin","type":"plugin","creationDate":"August 2023","author":"eMundus","copyright":"","authorEmail":"","authorUrl":"","version":"1.0.0","description":"Plugin to demonstrate a basic console application","group":"","namespace":"Emundus\\Plugin\\Console\\Tchooz","filename":"tchooz_cli"}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note"></field>
+   </row>
   </table_data>
  </database>
 </mysqldump>
