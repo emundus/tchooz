@@ -28,10 +28,10 @@ class SmartAgenda
      */
     private $baseUrl = '';
 
-    /**
-     * @var string $baseUrl
-     */
-     private $webServiceBaseUrl = '';
+	/**
+	 * @var string $baseUrl
+	 */
+	private $webServiceBaseUrl = '';
 
 	/**
      * @var string $token
@@ -96,7 +96,7 @@ class SmartAgenda
     {
         $config = JComponentHelper::getParams('com_emundus');
         $this->baseUrl = $config->get('smart_agenda_base_url', '');
-	$this->webServiceBaseUrl = $config->get('smart_agenda_ws_base_url', '');
+		$this->webServiceBaseUrl = $config->get('smart_agenda_ws_base_url', '');
     }
 
     private function getBaseUrl(): string
@@ -105,10 +105,10 @@ class SmartAgenda
     }
 
 
-    private function getWSBaseUrl(): string
-    {
-	return $this->webServiceBaseUrl;
-    }
+	private function getWSBaseUrl(): string
+	{
+		return $this->webServiceBaseUrl;
+	}
 
     private function getToken()
     {
