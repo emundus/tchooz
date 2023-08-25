@@ -1,5 +1,5 @@
 <template>
-	<div class="com_emundus_vue em-flex-column em-flex-col-center">
+	<div class="com_emundus_vue em-flex-col-center">
 		<Attachments
 			v-if="component === 'attachments'"
 			:fnum="data.fnum"
@@ -35,7 +35,6 @@ import formbuilder from "./views/formBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
-import editprofile from "./views/Users/Edit";
 
 import settingsService from "./services/settings.js";
 
@@ -69,7 +68,6 @@ export default {
     settings,
     messagescoordinator,
     messages,
-    editprofile,
     Files,
 		list_v2
 	},
@@ -136,7 +134,7 @@ export default {
   input {
     display: block;
     margin-bottom: 10px;
-    padding: 8px 12px;
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     border: 1px solid #cccccc;
     border-radius: 4px;
     -webkit-transition: border-color 200ms linear;
@@ -167,21 +165,17 @@ export default {
 }
 
 .view-campaigns.no-layout #g-container-main .g-container,
+.view-campaigns.layout-addnextcampaign #g-container-main .g-container,
+.view-campaigns.layout-add #g-container-main .g-container,
+.view-emails.layout-add #g-container-main .g-container,
 .view-emails.no-layout #g-container-main .g-container,
 .view-form #g-container-main .g-container,
-.view-settings #g-container-main .g-container,
-.view-file #g-container-main .g-container,
-.view-users #g-container-main .g-container{
-  width: 85%;
+.view-settings #g-container-main .g-container {
+  width: auto;
+  left: 38px;
+  position: relative;
+  padding-left: 5%;
+  padding-right: 5%;
 }
-
-@media all and (max-width: 1366px) {
-  .view-campaigns.layout-addnextcampaign #g-container-main .g-container,
-  .view-emails.layout-add #g-container-main .g-container,
-  .view-settings.no-layout #g-container-main .g-container {
-    width: calc(95% - 150px);
-  }
-}
-
 
 </style>

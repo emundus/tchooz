@@ -256,20 +256,31 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnums = explode(',',$jinput->post->get('recipients', null, null));
         $nb_recipients = count($fnums);
 
-        if ($nb_recipients > 1) {
-            $html = '<h2>'.JText::sprintf('COM_EMUNDUS_EMAIL_ABOUT_TO_SEND', $nb_recipients).'</h2>';
-        } else {
-            $html = '';
-        }
-
         // If no mail sender info is provided, we use the system global config.
         $mail_from_name = $jinput->post->getString('mail_from_name', $mail_from_sys_name);
         $mail_from = $jinput->post->getString('mail_from', $mail_from_sys);
+        $reply_to_from = $jinput->post->getString('reply_to_from', '');
 
         $mail_subject = $jinput->post->getString('mail_subject', 'No Subject');
         $template_id = $jinput->post->getInt('template', null);
         $mail_message = $jinput->post->get('message', null, 'RAW');
         $attachments = $jinput->post->get('attachments', null, null);
+
+	    // Check tags unpublished
+	    $unpublished_tags = $m_emails->checkUnpublishedTags($mail_from.$mail_from_name.$mail_subject.$mail_message);
+
+	    $html = '';
+		if(!empty($unpublished_tags)) {
+			$html = '<div style="color: #c91212"><p style="color: #c91212">' .JText::_('COM_EMUNDUS_EMAIL_WARNING_UNPUBLISHED_TAGS').'</p><ul>';
+			foreach ($unpublished_tags as $unpublished_tag) {
+				$html .= '<li>'.$unpublished_tag.'</li>';
+			}
+			$html .= '</ul></div>';
+		}
+
+	    if ($nb_recipients > 1) {
+		    $html .= '<h2>'.JText::sprintf('COM_EMUNDUS_EMAIL_ABOUT_TO_SEND', $nb_recipients).'</h2>';
+	    }
 
 
         // Here we filter out any CC or BCC emails that have been entered that do not match the regex.
@@ -377,9 +388,6 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mail_from_address = $mail_from;
         } else {*/
         $mail_from_address = $mail_from_sys;
-        if (!empty($mail_from_name) && !empty($mail_from)) {
-            $reply_to = $mail_from_name . ' &lt;' . $mail_from . '&gt;';
-        }
         //}
 
         $sender = $mail_from_name.' &lt;'.$mail_from_address.'&gt;';
@@ -388,8 +396,8 @@ class EmundusControllerMessages extends JControllerLegacy {
         $html .= '</hr><div class="email-info">
                     <strong>'.JText::_('COM_EMUNDUS_EMAILS_FROM').'</strong> '.$sender.' </br>';
 
-        if (isset($reply_to)) {
-            $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_REPLY_TO').'</strong> '.$reply_to.' </br>';
+        if (!empty($reply_to_from)) {
+            $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_REPLY_TO').'</strong> '.$reply_to_from.' </br>';
         }
 
         $html .= '<strong>'.JText::_('COM_EMUNDUS_EMAILS_TO').'</strong> '.$fnum->email.' </br>'.
@@ -533,6 +541,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         // If no mail sender info is provided, we use the system global config.
         $mail_from_name = $jinput->post->getString('mail_from_name', $mail_from_sys_name);
         $mail_from = $jinput->post->getString('mail_from', $mail_from_sys);
+        $reply_to_from = $jinput->post->getString('reply_to_from', '');
 
         $mail_subject = $jinput->post->getString('mail_subject', 'No Subject');
         $template_id = $jinput->post->getInt('template', null);
@@ -642,7 +651,10 @@ class EmundusControllerMessages extends JControllerLegacy {
             // Configure email sender
             $mailer = JFactory::getMailer();
             $mailer->setSender($sender);
-            $mailer->addReplyTo($mail_from, $mail_from_name);
+			if(!empty($reply_to_from))
+			{
+				$mailer->addReplyTo($reply_to_from);
+			}
             $mailer->addRecipient($fnum->email);
             $mailer->setSubject($subject);
             $mailer->isHTML(true);
@@ -801,9 +813,6 @@ class EmundusControllerMessages extends JControllerLegacy {
                     $log['email_cc'] = implode(', ',$cc_final);
                 }
                 $m_emails->logEmail($log, $fnum->fnum);
-                // Log the email in the eMundus logging system.
-                $logsParams = array('created' => [$subject]);
-                EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
@@ -865,14 +874,28 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$sent = [];
 		$failed = [];
 
+		if(!empty($template_id))
+		{
 		// Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
 		$template = $m_messages->getEmail($template_id);
+		} else {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->select($db->quoteName('Template'))
+				->from($db->quoteName('#__emundus_email_templates'))
+				->where($db->quoteName('id').' = 1');
+			$db->setQuery($query);
+			$template = $db->loadObject();
+		}
 
         require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
         $h_emails = new EmundusHelperEmails();
 		foreach ($users as $user) {
             $can_send_mail = $h_emails->assertCanSendMailToUser($user->id);
             if (!$can_send_mail) {
+				$failed[] = $user->email;
                 continue;
             }
 
@@ -888,7 +911,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			// Tags are replaced with their corresponding values using the PHP preg_replace function.
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
 			$body = $mail_message;
-			if ($template->id) {
+			if (!empty($template->Template)) {
 				$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 			}
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
@@ -954,7 +977,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 					'user_id_to' => $user->id,
 					'subject' => $subject,
 					'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
-					'type' => !empty($template)?$template->type:''
+					'type' => !empty($template->type)?$template->type:''
 				];
 				$m_emails->logEmail($log);
 				// Log the email in the eMundus logging system.
@@ -1220,7 +1243,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 *
 	 * @return bool
 	 */
-	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null) {
+	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true) {
 
         include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
         include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
@@ -1361,7 +1384,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                 }
             }
 
-            if (!empty($user_id_to)) {
+            if (!empty($user_id_to) && $log_email) {
                 // Logs send email
                 $log = [
                     'user_id_from'  => !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62,
@@ -1760,8 +1783,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 	            'email_id' => $template_email_id,
             ];
             $m_emails->logEmail($log, $fnum);
-            // Log the email in the eMundus logging system.
-            EmundusModelLogs::log($user->id, $fnum_info['applicant_id'], $fnum_info['fnum'], 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
         }
         // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
         if ($config->get('smtphost') === 'smtp.mailtrap.io') {

@@ -49,30 +49,22 @@ class EmundusModelProfile extends JModelList {
      * @return mixed
      */
     public function getApplicantsProfiles() {
-        $result = [];
-
-        try {
             $db = JFactory::getDBO();
             $query = 'SELECT *
         			FROM #__emundus_setup_profiles esp
                  	WHERE esp.published=1
                   	ORDER BY esp.label';
             $db->setQuery($query);
-            $result = $db->loadObjectList();
-        } catch (Exception $e) {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-        }
-
-        return $result;
+        return $db->loadObjectList();
     }
     /**
      * @return array of profile_id for all applicant profiles
      */
     public function getApplicantsProfilesArray() {
         $obj_profiles = $this->getApplicantsProfiles();
-        $array_p = array();
+        $array_p = [];
         foreach ($obj_profiles as $profile){
-            array_push($array_p, $profile->id);
+            $array_p[] = $profile->id;
         }
         return $array_p;
     }
@@ -197,6 +189,8 @@ class EmundusModelProfile extends JModelList {
     function getProfileByFnum($fnum): int
     {
         $profile = 0;
+
+		if (!empty($fnum)) {
         $query = $this->_db->getQuery(true);
 
         // check if a default workflow exists
@@ -238,6 +232,11 @@ class EmundusModelProfile extends JModelList {
                 }
             }
         }
+		}
+
+		if (empty($profile)) {
+			$profile = 0;
+		}
 
         return $profile;
     }
@@ -1020,28 +1019,15 @@ class EmundusModelProfile extends JModelList {
      * Get fnums for applicants
      * @param int $aid               Applicant ID
      * @param int $submitted         Submitted application
-     * @param date $start_date       campaigns as started after
-     * @param date $end_date         campaigns as ended before
+     * @param datetime $start_date       campaigns as started after
+     * @param datetime $end_date         campaigns as ended before
      * @return array
      * @throws Exception
      */
     public function getApplicantFnums(int $aid, $submitted = null, $start_date = null, $end_date = null) {
-        $db = JFactory::getDBO();
-
-        $query = 'SELECT ecc.*, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id
-                    FROM #__emundus_campaign_candidature as ecc
-                    LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
-                    WHERE ecc.published=1 AND ecc.applicant_id='.$aid;
-        $query .= (!empty($submitted))?' AND ecc.submitted='.$submitted:'';
-        $query .= (!empty($start_date))?' AND esc.start_date<='.$db->Quote($start_date):'';
-        $query .= (!empty($end_date))?' AND esc.end_date>='.$db->Quote($end_date):'';
-
-        try {
-            $db->setQuery($query);
-            return $db->loadObjectList('fnum');
-        } catch(Exception $e) {
-            JLog::add(JUri::getInstance().' :: fct : getAttachmentsById :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-        }
+        require_once JPATH_ROOT.'/components/com_emundus/helpers/files.php';
+		$h_files = new EmundusHelperFiles;
+		return $h_files->getApplicantFnums($aid, $submitted, $start_date, $end_date);
     }
 
 	/**
@@ -1126,6 +1112,12 @@ class EmundusModelProfile extends JModelList {
             $emundusSession->code = $campaign["training"];
             $emundusSession->campaign_name = $campaign["campaign_label"];
 
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+            if ($allow_anonym_files) {
+                $emundusSession->anonym = $this->checkIsAnonymUser($current_user->id);
+                $emundusSession->anonym_token = $this->getAnonymSessionToken($current_user->id);
+            }
         } else {
             $emundusSession->profile                = $profile["profile"];
             $emundusSession->profile_label          = $profile["profile_label"];
@@ -1206,6 +1198,13 @@ class EmundusModelProfile extends JModelList {
             $emundus_user->fnum = $campaign["fnum"];
             $emundus_user->fnums = $this->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
             $emundus_user->status = @$campaign["status"];
+
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+            if ($allow_anonym_files) {
+                $emundus_user->anonym = $this->checkIsAnonymUser($current_user->id);
+                $emundus_user->anonym_token = $this->getAnonymSessionToken($current_user->id);
+            }
         } else {
             $emundus_user->profile = $profile["profile"];
             $emundus_user->profile_label = $profile["label"];
@@ -1263,5 +1262,49 @@ class EmundusModelProfile extends JModelList {
         }
 
         return $path;
+    }
+
+    private function checkIsAnonymUser($user_id) {
+        $anonym = false;
+
+        if (!empty($user_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('anonym_user')
+                ->from('#__emundus_users')
+                ->where('user_id = ' . $user_id);
+
+            try {
+                $db->setQuery($query);
+                $anonym = $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('Failed to get path of files view from profile', JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $anonym;
+    }
+
+    private function getAnonymSessionToken($user_id) {
+        $token = false;
+
+        if (!empty($user_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('token')
+                ->from('#__emundus_users')
+                ->where('user_id = ' . $user_id);
+
+            try {
+                $db->setQuery($query);
+                $token = $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('Failed to get path of files view from profile', JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $token;
     }
 }

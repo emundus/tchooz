@@ -834,7 +834,8 @@ class EmundusModelUsers extends JModelList {
 
         $db = JFactory::getDBO();
         $config = JFactory::getConfig();
-        $offset = !empty($config->get('offset')) ? $config->get('offset') : 'Europe/Paris';
+		$config_offset = $config->get('offset');
+        $offset = $config_offset ?: 'Europe/Paris';
         $timezone = new DateTimeZone($offset);
         $now = JFactory::getDate()->setTimezone($timezone);
 
@@ -1407,44 +1408,64 @@ class EmundusModelUsers extends JModelList {
 		return true;
 	}
 
-    public function getNonApplicantId($users) {
-        try {
-            $db = $this->getDbo();
-            $db->setQuery("select eu.user_id from #__emundus_users as eu left join #__emundus_setup_profiles as esp on esp.id = eu.profile WHERE esp.published != 1 and eu.user_id in (".implode(',',$users).")");
-            $res = $db->loadAssocList();
-            return $res;
+	/**
+	 * @param $users
+	 * @return array
+	 */
+    public function getNonApplicantId($users): array {
+		$ids = [];
 
+		if (!empty($users)) {
+			$users = !is_array($users) ? [$users] : $users;
+
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);
+			$query->select('DISTINCT user_id')
+				->from('#__emundus_users_profiles')
+				->where('user_id IN ('.implode(',', $users).')')
+				->where('profile_id IN (SELECT id FROM #__emundus_setup_profiles WHERE published != 1)');
+
+        try {
+				$db->setQuery($query);
+				$ids = $db->loadAssocList();
         } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return false;
+				JLog::add('Error on getting non-applicant users: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
     }
 
-    public function affectToGroups($users, $groups) {
-        try {
-            if (count($users) > 0) {
-                $db = $this->getDbo();
-                $str = "";
+		return $ids;
+    }
 
+    public function affectToGroups($users, $groups) {
+		$affected = 0;
+
+	    if (!empty($users) && !empty($groups)) {
+                $db = $this->getDbo();
+		    $query = $db->getQuery(true);
+
+		    $values = [];
                 foreach ($users as $user) {
                     foreach ($groups as $gid) {
-                        $str .= "(".$user['user_id'].", $gid),";
+				    $values[] = $user['user_id'] . ", $gid";
                     }
                 }
-                $str = rtrim($str, ",");
 
-                $query = "insert into #__emundus_groups (`user_id`, `group_id`) values $str";
+			if (!empty($values)) {
+				$query->insert('#__emundus_groups')
+					->columns([$db->quoteName('user_id'), $db->quoteName('group_id')])
+					->values($values);
 
+				try {
                 $db->setQuery($query);
-                $res = $db->execute();
-                return $res;
-            } else
-                return 0;
-
+					$affected = $db->execute();
         } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return false;
+					JLog::add('Error on affecting users to groups: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					$affected = false;
+				}
         }
+    }
+
+		return $affected;
     }
 
     public function affectToJoomlaGroups($users, $groups) {
@@ -1629,20 +1650,58 @@ class EmundusModelUsers extends JModelList {
     }
 
     // get programme associated to user groups
-    public function getUserGroupsProgrammeAssoc($uid) {
+    public static function getUserGroupsProgrammeAssoc($uid, $select = 'jesgrc.course') {
+	    $program_ids = [];
+
+	    $user_id = empty($user_id) ? JFactory::getUser()->id : $user_id;
+
+	    if (!empty($user_id)) {
+		    $db = JFactory::getDbo();
+		    $query = $db->getQuery(true);
+
+		    $query->select('DISTINCT ' . $db->quoteName($select))
+			    ->from($db->quoteName('#__emundus_setup_programmes', 'jesp'))
+			    ->innerJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc').' ON '.$db->quoteName('jesp.code').' = '.$db->quoteName('jesgrc.course'))
+			    ->innerJoin($db->quoteName('#__emundus_groups', 'jeg').' ON '.$db->quoteName('jeg.group_id').' = '.$db->quoteName('jesgrc.parent_id'))
+			    ->where($db->quoteName('jeg.user_id').' = '.$user_id.' AND '.$db->quoteName('jesp.published').' = 1');
+
+		    $db->setQuery($query);
+
         try {
-            $query = "SELECT DISTINCT (esgc.course)
-                      FROM #__emundus_groups as g
-                      LEFT JOIN #__emundus_setup_groups AS esg ON g.group_id = esg.id
-                      LEFT JOIN #__emundus_setup_groups_repeat_course AS esgc ON esgc.parent_id=esg.id
-                      WHERE g.user_id = " .$uid;
-            $db = $this->getDbo();
+			    $program_ids = $db->loadColumn();
+		    } catch (Exception $e) {
+			    JLog::add('Error getting all profiles associated to user in model/access at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
+		    }
+	    }
+
+	    return $program_ids;
+    }
+
+	public static function getAllCampaignsAssociatedToUser($user_id) {
+		$campaign_ids = [];
+
+		$user_id = empty($user_id) ? JFactory::getUser()->id : $user_id;
+
+		if (!empty($user_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('DISTINCT jesc.id')
+				->from($db->quoteName('#__emundus_setup_campaigns', 'jesc'))
+				->innerJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc').' ON '.$db->quoteName('jesc.training').' = '.$db->quoteName('jesgrc.course'))
+				->innerJoin($db->quoteName('#__emundus_groups', 'jeg').' ON '.$db->quoteName('jeg.group_id').' = '.$db->quoteName('jesgrc.parent_id'))
+				->where($db->quoteName('jeg.user_id').' = '.$user_id.' AND '.$db->quoteName('jesc.published').' = 1');
+
             $db->setQuery($query);
-            return $db->loadColumn();
+			try {
+				$campaign_ids = $db->loadColumn();
         } catch(Exception $e) {
-            return false;
+				JLog::add('Error getting all profiles associated to user in model/access at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
         }
     }
+
+		return $campaign_ids;
+	}
 
     /*
      *   Get application fnums associated to a groups
@@ -1995,12 +2054,12 @@ class EmundusModelUsers extends JModelList {
 	                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
 	                      from #__emundus_acl as ea
 	                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
-	                      where ea.group_id in (" .implode(',', $gid).")";
+	                      where ea.group_id in (" .implode(',', $gid).") and esa.status != 0 order by esa.ordering asc,esa.name asc";
                 } else {
 	                $query = "select esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d
 	                      from #__emundus_acl as ea
 	                      left join #__emundus_setup_actions as esa on esa.id = ea.action_id
-	                      where ea.group_id = " .$gid ." order by esa.ordering asc";
+	                      where ea.group_id = " .$gid ." and esa.status != 0 order by esa.ordering asc,esa.name asc";
                 }
 	            $db = $this->getDbo();
 	            $db->setQuery($query);
@@ -2219,11 +2278,26 @@ class EmundusModelUsers extends JModelList {
         return $db->loadObjectList();
     }
 
-	public function getUsersByIds($ids) { //users of application
+	public function getUsersByIds($ids) {
+		$users = [];
+
+		if (!empty($ids)) {
 		$db = JFactory::getDBO();
-		$query = 'SELECT * FROM #__users WHERE id IN ('.implode(',', $ids).')';
+
+			$query = $db->getQuery(true);
+			$query->select('*')
+				->from('#__users')
+				->where('id IN ('.implode(',', $ids).')');
+
+			try {
 		$db->setQuery($query);
-		return $db->loadObjectList();
+				$users = $db->loadObjectList();
+			} catch (Exception $e) {
+				JLog::add('Failed to get users by ids ' . implode(',', $ids) . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $users;
 	}
 
 
@@ -2237,7 +2311,7 @@ class EmundusModelUsers extends JModelList {
 	 * @throws Exception
 	 * @since  3.9.11
 	 */
-	public function passwordReset($data) {
+	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY') {
 
 		$config = JFactory::getConfig();
 
@@ -2331,7 +2405,7 @@ class EmundusModelUsers extends JModelList {
 
 		// Assemble the password reset confirmation link.
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
-		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token;
+		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
 
         $mailer = JFactory::getMailer();
 
@@ -2343,8 +2417,8 @@ class EmundusModelUsers extends JModelList {
 		$data['token'] = $token;
 
 		// Build the translated email.
-		$subject = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $data['sitename']);
-		$body = JText::sprintf('COM_USERS_EMAIL_PASSWORD_RESET_BODY', $data['sitename'], $data['token'], $data['link_html']);
+		$subject = JText::sprintf($subject, $data['sitename']);
+		$body = JText::sprintf($body, $data['sitename'], $data['token'], $data['link_html']);
 
         $post = [
             'USER_NAME' => $user->name,
@@ -2474,6 +2548,7 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function saveUser($user,$uid){
+	    $saved = false;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -2500,11 +2575,17 @@ class EmundusModelUsers extends JModelList {
             }
             $query->where($db->quoteName('user_id') . ' = ' . $db->quote($uid));
             $db->setQuery($query);
-            return $db->execute();
+	        $saved = $db->execute();
+	        if ($saved) {
+		        JPluginHelper::importPlugin('emundus');
+				\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSaveUserProfile', ['user' => $uid, 'data' => $user, 'columns' => $columns]]);
+		    }
+
         } catch (Exception $e) {
             JLog::add(' com_emundus/models/users.php | Cannot update user '.$uid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-            return false;
         }
+
+		return $saved;
     }
 
     public function getProfileAttachments($user_id,$fnum = null){

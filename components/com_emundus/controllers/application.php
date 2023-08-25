@@ -10,6 +10,7 @@ use \setasign\Fpdi\Fpdi;
 defined( '_JEXEC' ) or die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
+require_once (JPATH_COMPONENT . '/models/application.php');
 
 /**
  * Custom report controller
@@ -384,16 +385,34 @@ class EmundusControllerApplication extends JControllerLegacy
                 $i=0;
 
                 foreach($menus as $k => $menu) {
-                    $action = explode('|', $menu['note']);
+					$access = false;
+					$actions_for_access = explode(',', $menu['note']);
+
+					foreach ($actions_for_access as $action_for_access) {
+						$action = explode('|', $action_for_access);
+						$action_id = $action[0];
+
                     if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
-                        if($action[0] == 36){
-                            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messenger.php');
+							$access = true;
+							break;
+						}
+					}
+
+                    if ($access) {
+                        if($action_id == 36){
+                            require_once (JPATH_SITE.'/components/com_emundus/models/messenger.php');
 
                             $messenger = new EmundusModelMessenger;
                             $notifications = $messenger->getNotificationsByFnum($fnum);
                             if($notifications > 0) {
                                 $menu['notifications'] = $messenger->getNotificationsByFnum($fnum);
                             }
+                        }
+                        if($action_id == 10){
+                            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                            $m_files = new EmundusModelFiles;
+                            $notifications_comments = sizeof($m_files->getCommentsByFnum([$fnum]));
+                            $menu['notifications'] = $notifications_comments;
                         }
 
                         $menu_application[] = $menu;
@@ -438,10 +457,10 @@ class EmundusControllerApplication extends JControllerLegacy
             # get the applicant id      $applicant_id
             # $applicant_id = $jinput->getString('student_id', null);
 
-            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            require_once(JPATH_SITE.'/components/com_emundus/models/logs.php');
             $user = JFactory::getSession()->get('emundusUser');     # logged user #
 
-            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
             $mFile = new EmundusModelFiles();
             $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
@@ -467,9 +486,9 @@ class EmundusControllerApplication extends JControllerLegacy
 	        $form_post = $jinput->post->getVar('forms', null);
 	        $attachments_only = $jinput->post->getBool('attachments_only', false);
 
-	        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-	        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-	        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
+	        require_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
+	        require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
+	        require_once(JPATH_SITE.'/components/com_emundus/models/form.php');
 	        $m_form = new EmundusModelForm;
 	        $m_profile = new EmundusModelProfile;
 	        $m_files = new EmundusModelFiles;
@@ -492,7 +511,6 @@ class EmundusControllerApplication extends JControllerLegacy
 
 	        if(empty($ids)){
 	            $ids = array();
-	            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	            $m_application = new EmundusModelApplication;
 
 	            $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
@@ -667,7 +685,6 @@ class EmundusControllerApplication extends JControllerLegacy
 
     public function getattachmentsbyfnum()
     {
-        $m_application = new EmundusModelApplication();
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', '');
 
@@ -675,9 +692,9 @@ class EmundusControllerApplication extends JControllerLegacy
 			$response['msg'] = JText::_('ACCESS_DENIED');
 
 			if (EmundusHelperAccess::asAccessAction(4, 'r', JFactory::getUser()->id, $fnum)) {
+				$m_application = new EmundusModelApplication();
 				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
-				if ($response['attachments']) {
 					$response['msg'] = JText::_('SUCCESS');
 					$response['status'] = true;
 					$response['code'] = 200;
@@ -686,7 +703,6 @@ class EmundusControllerApplication extends JControllerLegacy
 					$response['code'] = 500;
 				}
 			}
-		}
 
         echo json_encode($response);
         exit;
@@ -716,7 +732,7 @@ class EmundusControllerApplication extends JControllerLegacy
                 # get fnum
 
                 # GET FNUM INFO
-                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
                 $mFile = new EmundusModelFiles();
                 $applicant_id = ($mFile->getFnumInfos($data['fnum']))['applicant_id'];
 
@@ -740,7 +756,6 @@ class EmundusControllerApplication extends JControllerLegacy
         $fnum = $jinput->getString('fnum', null);
 
         if(EmundusHelperAccess::asAccessAction(1, 'r', $current_user->id, $fnum)) {
-            require_once(JPATH_COMPONENT . DS . 'models' . DS . 'application.php');
             $m_application = new EmundusModelApplication;
 
             $form = $m_application->getForms($user, $fnum, $profile);
@@ -760,43 +775,22 @@ class EmundusControllerApplication extends JControllerLegacy
 
     public function getattachmentpreview()
     {
+	    $response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$current_user = JFactory::getUser();
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
         $m_application = new EmundusModelApplication();
 
         $jinput = JFactory::getApplication()->input;
-        $user = $jinput->getVar('user', null);
-        $filename = $jinput->getVar('filename', null);
+			$user = $jinput->getInt('user', null);
+			$filename = $jinput->getString('filename', null);
 
-        $preview = $m_application->getAttachmentPreview($user, $filename);
-
-        echo json_encode($preview);
-        exit;
+			if (!empty($filename) && !empty($user)) {
+				$response = $m_application->getAttachmentPreview($user, $filename);
+			}
     }
 
-    public function getfilters()
-    {
-        $filters = [];
-        $jinput = JFactory::getApplication()->input;
-        $type = $jinput->getS('type', null);
-        $id = $jinput->getVar('id', null);
-
-        $m_application = new EmundusModelApplication();
-        $filters = $m_application->getFilters($type, $id);
-
-        echo json_encode(array('status' => true, 'filters' => $filters));
-        exit;
-    }
-
-    public function mountquery()
-    {
-        $jinput = JFactory::getApplication()->input;
-        $filters = $jinput->getVar('filters', null);
-        $listId = $jinput->getVar('id', null);
-        $filters = json_decode($filters, true);
-
-        $m_application = new EmundusModelApplication();
-        $res = $m_application->mountQuery($listId, $filters);
-
-        echo json_encode($res);
+        echo json_encode($response);
         exit;
     }
 
@@ -1049,7 +1043,6 @@ class EmundusControllerApplication extends JControllerLegacy
 					$current_user_fnums = array_keys($fnums);
 
 					if (in_array($fnum, $current_user_fnums)) {
-						require_once (JPATH_COMPONENT . '/models/application.php');
 						$m_application = new EmundusModelApplication;
 						$response['status'] = $m_application->applicantCustomAction($action, $fnum, $module_id);
 						$response['code'] = 200;

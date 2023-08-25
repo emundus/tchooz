@@ -38,7 +38,7 @@ export default {
       complete: [
         ['bold', 'italic', 'underline', 'strike'],
         ['blockquote'],
-        ['image', 'link'],
+        ['link'],
 
         [{'header': 1}, {'header': 2}],
         [{'list': 'ordered'}, {'list': 'bullet'}],
@@ -52,7 +52,30 @@ export default {
       light: [
         ['bold', 'italic', 'underline', 'strike'],
       ]
-    }
+    },
+    formats: [
+      'background',
+      'bold',
+      'color',
+      'font',
+      'code',
+      'italic',
+      'link',
+      'size',
+      'strike',
+      'script',
+      'underline',
+      'blockquote',
+      'header',
+      'indent',
+      'list',
+      'align',
+      'direction',
+      'code-block',
+      'formula'
+      // 'image'
+      // 'video'
+    ]
   }),
   mounted() {
     axios({
@@ -65,11 +88,11 @@ export default {
     var options = {
       modules: {
         toolbar: this.toolbarOptions[this.$props.toolbar],
-        imageResize: {},
         mention: null
       },
       placeholder: this.$props.placeholder,
-      theme: 'snow'
+      theme: 'snow',
+      formats: this.formats
     };
 
     if(this.$props.enable_variables){
@@ -140,9 +163,6 @@ export default {
         }
       }
     });
-
-    var toolbar = this.editor.getModule('toolbar');
-    toolbar.addHandler('image', this.imageHandler);
   },
   methods: {
     async imageHandler() {
@@ -193,14 +213,14 @@ export default {
 
 <style>
 .ql-toolbar {
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  border-top-left-radius: var(--em-form-br);
+  border-top-right-radius: var(--em-form-br);
   background-color: white;
 }
 
 .ql-container {
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: var(--em-form-br);
+  border-bottom-right-radius: var(--em-form-br);
   background-color: white;
   height: 90%;
 }

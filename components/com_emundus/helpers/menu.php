@@ -20,6 +20,7 @@ class EmundusHelperMenu {
 	    if (empty($profile)) {
 	        return false;
         }
+		$list = [];
 
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);
@@ -30,7 +31,7 @@ class EmundusHelperMenu {
 			$levels = JAccess::getAuthorisedViewLevels($user->id);
 		}
 
-		$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params')
+		$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
 			->from($db->quoteName('#__menu','menu'))
 			->innerJoin($db->quoteName('#__emundus_setup_profiles','profile').' ON '.$db->quoteName('profile.menutype').' = '.$db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
 			->innerJoin($db->quoteName('#__fabrik_forms','fbforms').' ON '.$db->quoteName('fbforms.id').' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
@@ -50,9 +51,8 @@ class EmundusHelperMenu {
 			$db->setQuery( $query );
 			$list = $db->loadObjectList();
 
-			if(empty($list) || count($list) !== count($formids)){
 				$query->clear()
-					->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params')
+				->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
 					->from($db->quoteName('#__menu','menu'))
 					->innerJoin($db->quoteName('#__emundus_setup_profiles','profile').' ON '.$db->quoteName('profile.menutype').' = '.$db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
 					->innerJoin($db->quoteName('#__fabrik_forms','fbforms').' ON '.$db->quoteName('fbforms.id').' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
@@ -69,13 +69,25 @@ class EmundusHelperMenu {
 				$query->order('menu.lft');
 
 				$db->setQuery( $query );
-				$list = $db->loadObjectList();
-			}
+			$forms = $db->loadObjectList();
 
-			return $list;
+			// merge forms and lists
+			$list = array_merge($list, $forms);
+
+			// remove duplicates
+			$ids = [];
+			foreach ($list as $key => $item) {
+				if (in_array($item->form_id, $ids)) {
+					unset($list[$key]);
+				} else {
+					$ids[] = $item->form_id;
+				}
+			}
 		} catch(Exception $e) {
 			throw new $e->getMessage();
 	    }
+
+		return $list;
 	}
 
 	static function getUserApplicationMenu($profile, $formids = null) {

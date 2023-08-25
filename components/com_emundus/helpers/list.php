@@ -63,9 +63,10 @@ class EmundusHelperList{
         return $multi_array;
     }
 
-    function affectEvaluators(){
-        $current_eval = JFactory::getApplication()->input->get('user', null, 'POST', 'none',0);
-        $current_group = JFactory::getApplication()->input->get('groups', null, 'POST', 'none',0);
+    // DEPRECATED
+    /*function affectEvaluators(){
+        $current_eval = JRequest::getVar('user', null, 'POST', 'none',0);
+        $current_group = JRequest::getVar('groups', null, 'POST', 'none',0);
         $affect = '
 		 	<fieldset>
 				<legend><img src="'.JURI::base().'media/com_emundus/images/icones/kbackgammon_engine_22x22.png" alt="'.JText::_('COM_EMUNDUS_GROUPS_BATCH').'"/> '.JText::_('COM_EMUNDUS_GROUPS_AFFECT_TO_ASSESSORS').'</legend>
@@ -101,7 +102,7 @@ class EmundusHelperList{
 
             </fieldset>';
         return $affect;
-    }
+    }*/
 
     //check if an applicant is evaluated
     function getEvaluation($user_id, $campaign_id, $eval_id)
@@ -225,16 +226,15 @@ class EmundusHelperList{
     // @description get forms list to create action block for each users
     // @param	int applicant user id
     // @return 	array Menu links of all forms needed to apply
-    function getFormsList($user_id, $fnum="0", $formids=null, $profile_id = null){
+    function getFormsList($user_id, $fnum='0', $formids=null, $profile_id = null){
         $formsList = [];
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+        require_once (JPATH_SITE . '/components/com_emundus/models/profile.php');
         $m_profile 	= new EmundusModelProfile();
         $h_menu 	= new EmundusHelperMenu();
         $infos 		= $m_profile->getFnumDetails($fnum);
         $profile 	= $m_profile->getProfileByCampaign($infos['campaign_id']);
-        $workflow_profiles = $m_profile->getWorkflowProfilesByCampaign($infos['campaign_id']);
 
         if(!empty($profile_id)) {
             $profile['profile_id'] = $profile_id;
@@ -242,13 +242,27 @@ class EmundusHelperList{
 
         $formsList = $h_menu->buildMenuQuery($profile['profile_id'], $formids);
 
-        //TODO : Break pdf export, not the good solution for zip
-        /*foreach($workflow_profiles as $workflow_profile) {
+        if (empty($profile_id)) {
+            $workflow_profiles = $m_profile->getWorkflowProfilesByCampaign($infos['campaign_id']);
+            foreach($workflow_profiles as $workflow_profile) {
             if ($workflow_profile != $profile['profile_id']) {
                 $workflow_form_list = $h_menu->buildMenuQuery($workflow_profile, $formids);
+
+                    if (!empty($workflow_form_list)) {
                 $formsList = array_merge($formsList, $workflow_form_list);
+
+                        $ids = array();
+                        foreach ($formsList as $form) {
+                            if (!in_array($form->id, $ids)) {
+                                $ids[] = $form->id;
+                            } else {
+                                unset($formsList[$form->id]);
+                            }
             }
-        }*/
+                    }
+                }
+            }
+        }
 
         return $formsList;
     }

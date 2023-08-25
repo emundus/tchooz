@@ -19,6 +19,7 @@ include_once(JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE . '/components/com_emundus/unittest/helpers/samples.php');
 include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
+include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -27,22 +28,21 @@ jimport('joomla.plugin.helper');
 // set global config --> initialize Joomla Application with default param 'site'
 JFactory::getApplication('site');
 
-// set false ini_get('session.use_cookies') and set false headers_sent
-!ini_get('session.use_cookies') && !headers_sent($file, $line);
-
-// activate session
 session_start();
 
 class EmundusModelApplicationTest extends TestCase
 {
+	private $app;
     private $m_application;
 	private $h_sample;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
+
+		$this->app = JFactory::getApplication();
         $this->m_application = new EmundusModelApplication;
-		$this->h_sample = new EmundusUnittestHelperSamples;
+	    $this->h_sample = new EmundusUnittestHelperSamples;
     }
 
     public function testGetApplicantInfos(){
@@ -69,8 +69,10 @@ class EmundusModelApplicationTest extends TestCase
 		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum);
 		$this->assertEmpty($attachments);
 
-		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id);
-		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id,2);
+		$first_attachment_id = $this->h_sample->createSampleAttachment();
+		$second_attachment_id = $this->h_sample->createSampleAttachment();
+		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id, $first_attachment_id);
+		$this->h_sample->createSampleUpload($fnum, $campaign_id, $user_id, $second_attachment_id);
 		$attachments = $this->m_application->getUserAttachmentsByFnum($fnum);
 		$this->assertNotEmpty($attachments);
 		$this->assertSame(count($attachments), 2);
@@ -99,10 +101,11 @@ class EmundusModelApplicationTest extends TestCase
 		$program = $this->h_sample->createSampleProgram();
 		$campaign_id = $this->h_sample->createSampleCampaign($program);
 		$fnum = $this->h_sample->createSampleFile($campaign_id, $user_id);
+		$attachment_id = $this->h_sample->createSampleAttachment();
 
 		$data = [];
 		$data['key'] = ['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'];
-		$data['value'] = [$fnum, $user_id, $campaign_id, 1, 'test.pdf', 'test.pdf', date('Y-m-d H:i:s'), 1, 1];
+		$data['value'] = [$fnum, $user_id, $campaign_id, $attachment_id, 'test.pdf', 'test.pdf', date('Y-m-d H:i:s'), 1, 1];
 
 		$upload = $this->m_application->uploadAttachment($data);
 		$this->assertGreaterThan(0, $upload);
@@ -232,4 +235,18 @@ class EmundusModelApplicationTest extends TestCase
 		$done = $this->m_application->applicantCustomAction('mod_em_application_custom_action1', $fnum);
 		$this->assertSame($done, false, 'Action should no longer work because file status has changed');
 	}
+
+	public function testgetApplicationMenu() {
+		$username = 'test-application-coordinator-' . rand(0, 1000) . '@emundus.fr';
+		$coordinator = $this->h_sample->createSampleUser(9, $username, 'test1234',  [2,7]);
+		$username = 'test-application-applicant-' . rand(0, 1000) . '@emundus.fr';
+		$applicant = $this->h_sample->createSampleUser(9, $username);
+
+		$menus = $this->m_application->getApplicationMenu($coordinator);
+		$this->assertNotEmpty($menus, 'A coordinator should have access to the application menu');
+
+		$menus = $this->m_application->getApplicationMenu($applicant);
+		$this->assertEmpty($menus, 'An applicant should not have access to the application menu');
+	}
 }
+

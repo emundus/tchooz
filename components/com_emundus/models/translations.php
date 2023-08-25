@@ -364,6 +364,7 @@ class EmundusModelTranslations extends JModelList
      * @param $reference_id
      * @param $label
      * @param $filters
+	 *
      * @return array|false|mixed
      *
      * @since version 1.28.0
@@ -419,6 +420,7 @@ class EmundusModelTranslations extends JModelList
 
             if(isset($forms)){
                 $query->where($this->_db->quoteName('id') . ' IN (' . implode(',',$forms) . ')');
+				$query->order('field(id,'.implode(',', $forms).') ASC');
             }
             $this->_db->setQuery($query);
             $values = $this->_db->loadObjectList();
@@ -516,7 +518,8 @@ class EmundusModelTranslations extends JModelList
         $inserted = false;
 		$isCorrect = $this->checkTagIsCorrect($tag, $override, 'insert', $lang_code);
 
-        if ($isCorrect) {
+		if ($isCorrect && empty($this->getTranslations($type, $lang_code, '', $location, '', 0, '', $tag)))
+		{
 	        $query = $this->_db->getQuery(true);
 	        $user = JFactory::getUser();
 
@@ -561,11 +564,9 @@ class EmundusModelTranslations extends JModelList
 			        JLog::add('Failed to insert translation into database with tag ' . $tag . ' and value ' . $override,JLog::ERROR, 'com_emundus.translations');
 		        }
 	        }
-			// @codeCoverageIgnoreStart
 	        catch(Exception $e){
 		        JLog::add('Problem when try to insert translation into file ' . $location . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
 	        }
-	        // @codeCoverageIgnoreEnd
 		}
 
 	    return $inserted;
@@ -584,7 +585,8 @@ class EmundusModelTranslations extends JModelList
      *
      * @since version
      */
-    public function updateTranslation($tag, $override, $lang_code, $type = 'override', $reference_table = '', $reference_id = 0) {
+	public function updateTranslation($tag, $override, $lang_code, $type = 'override', $reference_table = '', $reference_id = 0, $reference_field = '')
+	{
         $saved = false;
 
         if (!$this->checkTagIsCorrect($tag, $override, 'update', $lang_code)) {
@@ -602,8 +604,34 @@ class EmundusModelTranslations extends JModelList
 
         try {
             if($type === 'override') {
-                $query->update('#__emundus_setup_languages')
-                    ->set($this->_db->quoteName('override') . ' = ' . $this->_db->quote($override))
+				$query->select('id')
+					->from($this->_db->qn('#__emundus_setup_languages'))
+					->where($this->_db->quoteName('tag') . ' = ' . $this->_db->quote($tag))
+					->andWhere($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code))
+					->andWhere($this->_db->quoteName('type') . ' = ' . $this->_db->quote($type));
+				$this->_db->setQuery($query);
+				$id = $this->_db->loadResult();
+
+				if (!empty($id))
+				{
+					$query->clear()
+						->update($this->_db->qn('#__emundus_setup_languages'))
+						->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
+				}
+				else
+				{
+					$query->clear()
+						->insert($this->_db->qn('#__emundus_setup_languages'))
+						->set($this->_db->qn('tag') . ' = ' . $this->_db->q($tag))
+						->set($this->_db->qn('lang_code') . ' = ' . $this->_db->q($lang_code))
+						->set($this->_db->qn('type') . ' = ' . $this->_db->q($type))
+						->set($this->_db->qn('original_text') . ' = ' . $this->_db->q($override))
+						->set($this->_db->qn('original_md5') . ' = ' . $this->_db->q(md5($override)))
+						->set($this->_db->qn('created_by') . ' = ' . $this->_db->q($user->id))
+						->set($this->_db->qn('created_date') . ' = ' . $this->_db->q(time()));
+				}
+
+				$query->set($this->_db->quoteName('override') . ' = ' . $this->_db->quote($override))
                     ->set($this->_db->quoteName('override_md5') . ' = ' . $this->_db->quote(md5($override)))
                     ->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user->id))
                     ->set($this->_db->quoteName('modified_date') . ' = ' . time())
@@ -614,9 +642,11 @@ class EmundusModelTranslations extends JModelList
                 if(!empty($reference_id)){
                     $query->set($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id));
                 }
-                $query->where($this->_db->quoteName('tag') . ' = ' . $this->_db->quote($tag))
-                    ->andWhere($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code))
-                    ->andWhere($this->_db->quoteName('type') . ' = ' . $this->_db->quote($type));
+				if (!empty($reference_field))
+				{
+					$query->set($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($reference_field));
+				}
+
                 $this->_db->setQuery($query);
 
                 if($this->_db->execute()) {
@@ -1027,6 +1057,18 @@ class EmundusModelTranslations extends JModelList
             } else {
                 $query->where($this->_db->quoteName('jt.' . $join_column) . ' = ' . $this->_db->quote($reference_id));
             }
+
+			if($reference_table == 'fabrik_groups')
+			{
+				$query->where('JSON_EXTRACT(rt.params,"$.repeat_group_show_first")' . ' = ' . $this->_db->quote(1))
+					->where($this->_db->quoteName('rt.published') . ' = 1');
+			}
+
+			if($reference_table == 'fabrik_elements')
+			{
+				$query->where($this->_db->quoteName('rt.hidden') . ' <> 1')
+					->where($this->_db->quoteName('rt.published') . ' = 1');
+			}
 
             $this->_db->setQuery($query);
             return $this->_db->loadColumn();

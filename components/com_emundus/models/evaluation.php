@@ -91,7 +91,7 @@ class EmundusModelEvaluation extends JModelList {
         $hidden = 0;
         $elements_eval = $this->getEvaluationElements($show_in_list_summary, $hidden);
         if (is_array($elements_eval) && count($elements_eval)) {
-            $this->elements_id .= implode(',', $elements_eval);
+            $this->elements_id .= ',' . implode(',', $elements_eval);
         }
 
         if ($session->has('adv_cols')) {
@@ -112,6 +112,26 @@ class EmundusModelEvaluation extends JModelList {
             foreach ($this->_elements as $def_elmt) {
                 $group_params = json_decode($def_elmt->group_attribs);
 
+			    $already_joined_tables = [
+				    'jecc' => 'jos_emundus_campaign_candidature',
+				    'ss' => 'jos_emundus_setup_status',
+				    'esc' => 'jos_emundus_setup_campaigns',
+				    'sp' => 'jos_emundus_setup_programmes',
+				    'u' => 'jos_users',
+				    'eu' => 'jos_emundus_users',
+				    'eta' => 'jos_emundus_tag_assoc',
+				    'ee' => 'jos_emundus_evaluation'
+			    ];
+			    foreach ($already_joined_tables as $alias => $table) {
+				    if ($def_elmt->tab_name === $table) {
+					    $def_elmt->tab_name = $alias;
+				    }
+
+				    if ($def_elmt->join_from_table === $table) {
+					    $def_elmt->join_from_table = $alias;
+				    }
+			    }
+
                 if ($def_elmt->element_plugin == 'date') {
                     if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
@@ -126,7 +146,7 @@ class EmundusModelEvaluation extends JModelList {
                     $attribs = json_decode($def_elmt->element_attribs);
                     $join_val_column_concat = str_replace('{thistable}', $attribs->join_db_name, $attribs->join_val_column_concat);
                     $join_val_column_concat = str_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $join_val_column_concat);
-                    $join_val_column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
+				    $column = (!empty($join_val_column_concat) && $join_val_column_concat!='')?'CONCAT('.$join_val_column_concat.')':$attribs->join_val_column;
 
                     // Check if the db table has a published column. So we don't get the unpublished value
                     $db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
@@ -134,12 +154,12 @@ class EmundusModelEvaluation extends JModelList {
 
                     if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
                         $query = '(
-									select GROUP_CONCAT('.$join_val_column.' SEPARATOR ", ")
+                                    select GROUP_CONCAT('.$column.' SEPARATOR ", ")
 									from '.$attribs->join_db_name.'
 									where '.$attribs->join_db_name.'.'.$attribs->join_key_column.' IN
 										( select '.$def_elmt->table_join.'.' . $def_elmt->element_name.'
 										  from '.$def_elmt->table_join.'
-										  where '.$def_elmt->table_join.'.parent_id='.$def_elmt->tab_name.'.id
+                                          where '.$def_elmt->table_join .'.' . $def_elmt->table_join_key .  '='.$def_elmt->join_from_table.'.id' . '
 										)
                                     '.$publish_query.'
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
@@ -152,10 +172,18 @@ class EmundusModelEvaluation extends JModelList {
                                 FROM '.$t.'
                                 WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
                                 '.$publish_query.'
-                              ) AS `'.$t.'___'.$def_elmt->element_name.'`';
+                              ) AS `'.$t.'`';
+					    } else if( $attribs->database_join_display_type == 'multilist' ) {
+						    $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
+						    $query = '(
+                                select DISTINCT '.$column.'
+                                from '.$attribs->join_db_name.'
+                                where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`' . $t . '`.`' . $def_elmt->element_name . '`
+                                '.$publish_query.'
+                            ) AS `'.$t.'`';
                         } else {
                             $query = '(
-                                select DISTINCT '.$join_val_column.'
+                                select DISTINCT '.$column.'
                                 from '.$attribs->join_db_name.'
                                 where `'.$attribs->join_db_name.'`.`'.$attribs->join_key_column.'`=`'.$def_elmt->tab_name . '`.`' . $def_elmt->element_name.'`
                                 '.$publish_query.'
@@ -192,11 +220,19 @@ class EmundusModelEvaluation extends JModelList {
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
-                } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton' || $def_elmt->element_plugin == 'checkbox') {
+			    }
+			    elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox') {
+				    if (@$group_params->repeat_group_button == 1) {
+					    $element_attribs = json_decode($def_elmt->element_attribs);
+					    $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+					    foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+						    $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+					    }
+					    $select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
 
                     if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
-                                    SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")
+                                    SELECT ' . $select . '
                                     FROM '.$def_elmt->table_join.'
                                     WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
                                   ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
@@ -204,11 +240,37 @@ class EmundusModelEvaluation extends JModelList {
                         $element_attribs = json_decode($def_elmt->element_attribs);
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                            $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' .
+						    $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
                                 JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
+			    } elseif ($def_elmt->element_plugin == 'radiobutton') {
+				    if (!empty($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
+					    $element_attribs = json_decode($def_elmt->element_attribs);
+					    $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+					    foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+						    $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+					    }
+					    $select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
+					    $this->_elements_default[] = '(
+                                    SELECT ' . $select . '
+                                    FROM '.$def_elmt->table_join.'
+                                    WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+				    } else {
+					    $element_attribs = json_decode($def_elmt->element_attribs);
+
+					    $element_replacement = $def_elmt->tab_name . '___' . $def_elmt->element_name;
+					    $select = $def_elmt->tab_name . '.' . $def_elmt->element_name . ' AS ' . $db->quote($element_replacement) . ', CASE ';
+					    foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+						    $select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $db->quote($value) . ' THEN ' .  $db->quote(JText::_(addslashes($element_attribs->sub_options->sub_labels[$key]))) ;
+					    }
+					    $select .= ' ELSE ' . $def_elmt->tab_name . '.' . $def_elmt->element_name;
+					    $select .= ' END AS ' . $db->quote($element_replacement);
+
+					    $this->_elements_default[] = $select;
+				    }
                 } elseif ($def_elmt->element_plugin == 'yesno') {
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
@@ -801,31 +863,66 @@ class EmundusModelEvaluation extends JModelList {
 
         $group_by = 'GROUP BY jecc.fnum ';
 
-        // prevent double left join on query
-        $lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status',
-            '#__emundus_setup_programmes', 'jos_emundus_setup_programmes',
-            '#__emundus_setup_campaigns', 'jos_emundus_setup_campaigns',
-            '#__emundus_evaluations', 'jos_emundus_evaluations',
-            '#__emundus_users', 'jos_emundus_users',
-            '#__users', 'jos_users',
-            '#__emundus_tag_assoc', 'jos_emundus_tag_assoc'
-        );
+	    $already_joined_tables = [
+		    'jecc' => 'jos_emundus_campaign_candidature',
+		    'ss' => 'jos_emundus_setup_status',
+		    'esc' => 'jos_emundus_setup_campaigns',
+		    'sp' => 'jos_emundus_setup_programmes',
+		    'u' => 'jos_users',
+		    'eu' => 'jos_emundus_users',
+		    'eta' => 'jos_emundus_tag_assoc',
+		    'ee' => 'jos_emundus_evaluations'
+	    ];
+
         $leftJoin = '';
 	    if (!empty($this->_elements)) {
-		    $leftJoin = '';
-		    $lastTab = !isset($lastTab) ? array() : $lastTab;
+		    $h_files = new EmundusHelperFiles();
 
 		    foreach ($this->_elements as $elt) {
-			    if (!in_array($elt->tab_name, $lastTab)) {
-				    $leftJoin .= 'LEFT JOIN ' . $elt->tab_name .  ' ON '. $elt->tab_name .'.fnum = jecc.fnum ';
-				    $lastTab[] = $elt->tab_name;
+			    $table_to_join = !empty($elt->table_join) ? $elt->table_join : $elt->tab_name;
+			    $already_join_alias = array_keys($already_joined_tables);
+
+			    if (!(in_array($table_to_join, $already_joined_tables)) && !(in_array($table_to_join, $already_join_alias, true))) {
+				    if ($h_files->isTableLinkedToCampaignCandidature($table_to_join)) {
+					    $leftJoin .= 'LEFT JOIN ' . $table_to_join .  ' ON '. $table_to_join .'.fnum = jecc.fnum ';
+					    $already_joined_tables[] = $table_to_join;
+				    } else {
+					    $joined = false;
+					    $query_find_join = $dbo->getQuery(true);
+					    foreach ($already_joined_tables as $already_join_alias => $already_joined_table_name) {
+						    $query_find_join->clear()
+							    ->select('*')
+							    ->from('#__fabrik_joins')
+							    ->where('table_join = ' . $dbo->quote($already_joined_table_name))
+							    ->andWhere('join_from_table = ' . $dbo->quote($table_to_join))
+							    ->andWhere('table_key = ' . $dbo->quote('id'))
+							    ->andWhere('list_id = ' . $dbo->quote($elt->table_list_id));
+
+						    $dbo->setQuery($query_find_join);
+						    $join_informations = $dbo->loadAssoc();
+
+						    if (!empty($join_informations)) {
+							    $already_joined_tables[] = $table_to_join;
+
+							    $leftJoin .= ' LEFT JOIN ' . $dbo->quoteName($join_informations['join_from_table']) . ' ON ' . $dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+							    $joined = true;
+							    break;
+			    }
+		    }
+
+					    if (!$joined) {
+						    $element_joins = $h_files->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', $table_to_join);
+
+						    if (!empty($element_joins)) {
+							    $leftJoin .= $h_files->writeJoins($element_joins, $already_joined_tables);
+						    }
+	    }
+				    }
 			    }
 		    }
 	    }
-        $query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
-        $group_by .= ', evaluation_id';
 
-        if (count($this->_elements_default) > 0) {
+	    if (!empty($this->_elements_default)) {
             $query .= ', '.implode(',', $this->_elements_default);
         }
 
@@ -835,12 +932,8 @@ class EmundusModelEvaluation extends JModelList {
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
-                    LEFT JOIN (
-					  SELECT GROUP_CONCAT(id_tag SEPARATOR ", ") id_tag, fnum
-					  FROM jos_emundus_tag_assoc
-					  GROUP BY fnum
-					) eta ON jecc.fnum = eta.fnum ' ;
-        $q = $this->_buildWhere($lastTab);
+					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum LIKE jecc.fnum ';
+        $q = $this->_buildWhere($already_joined_tables);
 
         if (EmundusHelperAccess::isCoordinator($current_user->id)
             || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)
@@ -869,10 +962,6 @@ class EmundusModelEvaluation extends JModelList {
 
         $query .=  $this->_buildContentOrderBy();
 
-        /*
-        if (JFactory::getUser()->id == 63)
-            echo '<hr>FILES:'.str_replace('#_', 'jos', $query).'<hr>';
-        */
         $dbo->setQuery($query);
         try {
             $res = $dbo->loadAssocList();
@@ -1693,6 +1782,8 @@ class EmundusModelEvaluation extends JModelList {
 
     /// get letters by traininng and status
     public function getLettersByProgrammesStatusCampaigns($programs=array(), $status=array(), $campaigns=array()) : array{
+		$letters = [];
+
         $query = $this->_db->getQuery(true);
 
         try {
@@ -1707,45 +1798,48 @@ class EmundusModelEvaluation extends JModelList {
 
             $this->_db->setQuery($query);
 
-            return $this->_db->loadObjectList();
-
+			$letters = $this->_db->loadObjectList();
         } catch(Exception $e) {
-            return [];
+			JLog::add('Error in getLettersByProgrammesStatusCampaigns: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			$letters = [];
         }
+
+		return $letters;
     }
 
     /// get exactly letter id by fnum and template (32,33,34)
     public function getLetterTemplateForFnum($fnum,$templates=array()) : array {
-        if (empty($fnum) || empty($templates)) { return []; }
+		$letters = [];
 
+        if (!empty($fnum) && !empty($templates)) {
         $query = $this->_db->getQuery(true);
 
-        try {
-            /// first :: get fnum info
             $_mFile = new EmundusModelFiles;
             $fnum_infos = $_mFile->getFnumInfos($fnum);
 
-            $_fnumStatus = $fnum_infos['status'];
-            $_fnumProgram = $fnum_infos['training'];
-            $_fnumCampaign = $fnum_infos['id'];
-
-            /// second :: status, program, templates --> detect the letter id to generate
+			if (!empty($fnum_infos)) {
             $query
                 ->select('jesl.*')
                 ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrc.parent_id'))
-                ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
-                ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram) . ' OR ' . $this->_db->quoteName('jeslrc.campaign') . ' = ' . $this->_db->quote($_fnumCampaign))
+					->where($this->_db->quoteName('jeslrs.status') . ' = ' . $fnum_infos['status'])
+					->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($fnum_infos['training']) . ' OR ' . $this->_db->quoteName('jeslrc.campaign') . ' = ' . $this->_db->quote($fnum_infos['id']))
                 ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')')
                 ->order('id ASC');
 
+				try {
             $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
+					$letters = $this->_db->loadObjectList();
         } catch(Exception $e) {
-            return [];
+					$letters = [];
+					JLog::add('Error in getLetterTemplateForFnum: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
         }
+    }
+
+		return $letters;
     }
 
     /// get affected letters by [fnums] and [templates]
@@ -1794,6 +1888,7 @@ class EmundusModelEvaluation extends JModelList {
         $replace_document = $eMConfig->get('export_replace_doc', 0);
 	    $generated_doc_name = $eMConfig->get('generated_doc_name', "");
 	    $gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
+	    $escape_ampersand = $eMConfig->get('generate_letter_escape_ampersand', 0);
 	    $whitespace_textarea = $eMConfig->get('generate_letter_whitespace_textarea', 0);
 
         $tmp_path = JPATH_SITE.DS.'tmp'.DS;
@@ -1828,7 +1923,7 @@ class EmundusModelEvaluation extends JModelList {
 
 	        $post = [
 		        'TRAINING_CODE' => $fnumInfo[$fnum]['campaign_code'],
-		        'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['campaign_label'],
+		        'TRAINING_PROGRAMME' => $fnumInfo[$fnum]['training_programme'],
 		        'CAMPAIGN_LABEL' => $fnumInfo[$fnum]['campaign_label'],
 		        'CAMPAIGN_YEAR' => $fnumInfo[$fnum]['campaign_year'],
 		        'USER_NAME' => $fnumInfo[$fnum]['applicant_name'],
@@ -1847,8 +1942,7 @@ class EmundusModelEvaluation extends JModelList {
 					$refreshQuery->delete($this->_db->quoteName('#__emundus_uploads'))
 						// TODO: We have to check an other param if this attachment_id is used for an applicant upload
 						->where($this->_db->quoteName('attachment_id') . ' = ' . $attachInfo['id'])
-						// TODO: Why we delete files only generated current day
-						->andWhere('DATE(timedate) = CURRENT_DATE()')
+						->andWhere('DATE('.$this->_db->quoteName('timedate').') = CURRENT_DATE() OR '.$this->_db->quoteName('user_id').' <> '.$this->_db->quote($fnumInfo[$fnum]['applicant_id']))
 						->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
                     $this->_db->setQuery($refreshQuery);
                     $this->_db->execute();
@@ -1928,21 +2022,46 @@ class EmundusModelEvaluation extends JModelList {
                         if (isset($fnumInfo)) {
                             $tags = $_mEmail->setTags($fnumInfo[$fnum]['applicant_id'], $post, $fnum, '', $letter->title.$letter->body.$letter->footer);
 
+	                        $pdf_margins = $eMConfig->get('generate_letter_pdf_margins', '5,20,5');
+	                        $display_header = $eMConfig->get('generate_letter_display_header', 1);
+	                        $display_footer = $eMConfig->get('generate_letter_display_footer', 1);
+	                        $use_default_font = $eMConfig->get('generate_letter_use_default_font', 0);
+	                        $font = $eMConfig->get('generate_letter_font', 'helvetica');
+	                        $font_size = $eMConfig->get('generate_letter_font_size', 10);
+
                             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
                             $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
                             $pdf->SetCreator(PDF_CREATOR);
                             $pdf->SetAuthor($user->name);
                             $pdf->SetTitle($letter->title);
-                            $pdf->SetMargins(5, 20, 5);
-                            $pdf->footer = $letter->footer;
+
+							$pdf_margins = explode(',', $pdf_margins);
+                            $pdf->SetMargins($pdf_margins[0], $pdf_margins[1], $pdf_margins[2]);
+
+							if($display_header == 1)
+							{
                             preg_match('#src="(.*?)"#i', $letter->header, $tab);
                             $pdf->logo = JPATH_SITE . DS . @$tab[1];
+							}
+
+	                        $pdf->footer = $letter->footer;
+							if($display_footer == 1)
+							{
                             preg_match('#src="(.*?)"#i', $letter->footer, $tab);
                             $pdf->logo_footer = JPATH_SITE . DS . @$tab[1];
                             $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+							} else {
+								$pdf->SetAutoPageBreak(false, 0);
+							}
+
+							if($use_default_font == 1)
+							{
                             $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
                             $pdf->setFontSubsetting(true);
-                            $pdf->SetFont('freeserif', '', 10);
+								$pdf->SetFont('freeserif', '', $font_size);
+							} else {
+								$pdf->SetFont($font, '', $font_size);
+							}
 
                             $htmldata = $_mEmail->setTagsFabrik($letter->body, array($fnum));
                             $htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
@@ -1976,7 +2095,10 @@ class EmundusModelEvaluation extends JModelList {
 
 		                    try {
 			                    $phpWord = new \PhpOffice\PhpWord\PhpWord();
+								if ($escape_ampersand)
+								{
 			                    \PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
+								}
 			                    $preprocess = $phpWord->loadTemplate($letter_file);
 			                    $tags       = $preprocess->getVariables();
 
@@ -2072,6 +2194,9 @@ class EmundusModelEvaluation extends JModelList {
 					                    }
 					                    $fabrikValues[$elt['id']][$fnum]['val'] = $inline;
 					                    $fabrikValues[$elt['id']][$fnum]['complex_data'] = true;
+				                    }
+				                    elseif($elt['plugin'] == 'emundus_phonenumber'){
+					                    $fabrikValues[$elt['id']][$fnum]['val'] = substr($fabrikValues[$elt['id']][$fnum]['val'], 2, strlen($fabrikValues[$elt['id']][$fnum]['val']));
 				                    }
 				                    else {
 					                    if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
@@ -3194,7 +3319,7 @@ class EmundusModelEvaluation extends JModelList {
                     $url = $details_url;
                 }
                 // If evaluation period started and not passed and we have update rights
-                elseif ($update_access || $create_access) {
+                elseif ($update_access || ($create_access && $evaluation->user == $user->id)) {
                     $url = $view == 'form' ? $form_url : $details_url;
                 }
                 // If evaluation period started and not passed and we have read rights
@@ -3238,5 +3363,44 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         return ['url' => $url, 'message' => $message];
+    }
+
+    public function getRowByFnum($fnum,$table_name){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id')
+                ->from($db->quoteName($table_name))
+                ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+            $db->setQuery($query);
+            return $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Problem to get row by fnum '.$fnum.' in table '.$table_name.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return 0;
+        }
+    }
+    public function getEvaluationReasons($eid){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $tables = $db->setQuery('SHOW TABLES')->loadColumn();
+
+            if(in_array('jos_emundus_evaluations_repeat_reason',$tables)) {
+                $query->select('esr.reason')
+                    ->from($db->quoteName('#__emundus_evaluations', 'ee'))
+                    ->leftJoin($db->quoteName('#__emundus_evaluations_repeat_reason', 'eerr') . ' ON ' . $db->quoteName('ee.id') . ' = ' . $db->quoteName('eerr.parent_id'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_reasons', 'est') . ' ON ' . $db->quoteName('esr.id') . ' = ' . $db->quoteName('eerr.reason'))
+                    ->where($db->quoteName('ee.id') . ' = ' . $db->quote($eid));
+                $db->setQuery($query);
+                return $db->loadColumn();
+            } else {
+                return [];
+            }
+        } catch (Exception $e) {
+            JLog::add('Cannot get reasons for evaluation | '.$eid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return [];
+        }
     }
 }
