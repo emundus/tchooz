@@ -1,13 +1,7 @@
 <?php
-/**
- * @package     Joomla\CMS\Console
- * @subpackage
- *
- * @copyright   A copyright
- * @license     A "Slug" license name e.g. GPL2
- */
+namespace Emundus\Plugin\Console\Tchooz\CliCommand;
 
-namespace Joomla\CMS\Console;
+defined('_JEXEC') or die;
 
 use Joomla\CMS\User\User;
 use Joomla\Console\Command\AbstractCommand;
@@ -22,21 +16,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-// phpcs:disable PSR1.Files.SideEffects
-\defined('JPATH_PLATFORM') or die;
-// phpcs:enable PSR1.Files.SideEffects
-
 class TchoozUserAddCommand extends AbstractCommand
 {
-	use DatabaseAwareTrait;
+    use DatabaseAwareTrait;
 
-	/**
-	 * The default command name
-	 *
-	 * @var    string
-	 * @since  4.0.0
-	 */
-	protected static $defaultName = 'tchooz:user:add';
+    /**
+     * The default command name
+     *
+     * @var    string
+     * @since  4.0.0
+     */
+    protected static $defaultName = 'tchooz:user:add';
 
     /**
      * SymfonyStyle Object
@@ -115,32 +105,32 @@ class TchoozUserAddCommand extends AbstractCommand
      */
     private $userProfiles = [];
 
-	/**
-	 * Command constructor.
-	 *
-	 * @param   DatabaseInterface  $db  The database
-	 *
-	 * @since   4.2.0
-	 */
-	public function __construct(DatabaseInterface $db)
-	{
+    /**
+     * Command constructor.
+     *
+     * @param   DatabaseInterface  $db  The database
+     *
+     * @since   4.2.0
+     */
+    public function __construct(DatabaseInterface $db)
+    {
         parent::__construct();
 
         $this->setDatabase($db);
-	}
+    }
 
-	/**
-	 * Internal function to execute the command.
-	 *
-	 * @param   InputInterface   $input   The input to inject into the command.
-	 * @param   OutputInterface  $output  The output to inject into the command.
-	 *
-	 * @return  integer  The command exit code
-	 *
-	 * @since   4.0.0
-	 */
-	protected function doExecute(InputInterface $input, OutputInterface $output): int
-	{
+    /**
+     * Internal function to execute the command.
+     *
+     * @param   InputInterface   $input   The input to inject into the command.
+     * @param   OutputInterface  $output  The output to inject into the command.
+     *
+     * @return  integer  The command exit code
+     *
+     * @since   4.0.0
+     */
+    protected function doExecute(InputInterface $input, OutputInterface $output): int
+    {
         $this->configureIO($input, $output);
         $this->ioStyle->title('Add User');
         $this->user       = $this->getStringFromOption('username', 'Please enter a username');
@@ -198,7 +188,7 @@ class TchoozUserAddCommand extends AbstractCommand
         $this->ioStyle->success("User created!");
 
         return Command::SUCCESS;
-	}
+    }
 
     /**
      * Method to get groupId by groupName
@@ -432,15 +422,15 @@ class TchoozUserAddCommand extends AbstractCommand
         $this->ioStyle  = new SymfonyStyle($input, $output);
     }
 
-	/**
-	 * Configure the command.
-	 *
-	 * @return  void
-	 *
-	 * @since   4.0.0
-	 */
-	protected function configure(): void
-	{
+    /**
+     * Configure the command.
+     *
+     * @return  void
+     *
+     * @since   4.0.0
+     */
+    protected function configure(): void
+    {
         $help = "<info>%command.name%</info> will add a user in Joomla and in eMundus component
 		\nUsage: <info>php %command.full_name%</info>";
 
@@ -452,5 +442,5 @@ class TchoozUserAddCommand extends AbstractCommand
         $this->addOption('userprofiles', null, InputOption::VALUE_OPTIONAL, 'profiles (separate multiple groups with comma ",")');
         $this->setDescription('Add a Tchooz user');
         $this->setHelp($help);
-	}
+    }
 }
