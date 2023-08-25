@@ -585,7 +585,7 @@ class FabrikViewListBase extends FabrikView
 		}
 		else
 		{
-			$pdfLink = 'index.php?option=com_' . $this->package . '&view=list&format=pdf&listid=' . $item->id;
+			$pdfLink = 'index.php?option=com_' . $this->package . '&Itemid=' . $itemId . '&view=list&format=pdf&listid=' . $item->id;
 
 			if (!$this->nodata)
 			{

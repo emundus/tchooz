@@ -60,6 +60,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 	public function install()
 	{
 		/* Create the tables if they don't exist */
+		$db = FabrikWorker::getDbo();
 		$tables = [
 			"CREATE TABLE IF NOT EXISTS `#__fabrik_change_log_fields` (
 			    `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,

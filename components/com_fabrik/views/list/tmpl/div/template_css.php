@@ -20,10 +20,7 @@ ul.fabrikRepeatData {
 	margin: 0;
 	padding-left: 0;
 }
-.fabrikDataContainer .pagination a{
-	color: inherit;
-	text-decoration: inherit;
-}
+
 /** Hide the checkbox in each record*/
 
 #listform_$c .fabrikList .fabrik_select {

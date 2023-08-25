@@ -138,6 +138,7 @@ define(['jquery', 'fab/fabrik'], function (jQuery, Fabrik) {
             var update = jQuery(row.find('td')[3]);
             if (v === '') {
                 update.html('');
+				Fabrik.loader.stop(row[0]);
                 return;
             }
             elData = this.options.elementMap[v];

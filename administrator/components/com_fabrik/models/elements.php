@@ -112,7 +112,7 @@ class FabrikAdminModelElements extends FabModelList
 
 		$showInList = $this->getState('filter.showinlist');
 
-		if (!empty($showinlist) && !empty(trim($showInList)))
+		if (trim($showInList) != '')
 		{
 			$query->where('e.show_in_list_summary = ' . (int) $showInList);
 		}

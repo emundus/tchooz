@@ -210,6 +210,7 @@ class Com_FabrikInstallerScript
 		}
 
 		if ($type == 'uninstall') {
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			
 			// Remove empty folders if exist
 			$path = JPATH_ROOT.'/media/com_fabrik';		

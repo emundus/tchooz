@@ -142,7 +142,7 @@ class PlgFabrik_ElementImage extends PlgFabrik_Element
 		if ($data === '' || empty($data) || !$pathset)
 		{
 			// No data so default to image (or simple image name stored).
-			$iPath = $params->get('imagepath');
+			$iPath = $params->get('imagepath','');
 
 			if (!strstr($iPath, '/'))
 			{

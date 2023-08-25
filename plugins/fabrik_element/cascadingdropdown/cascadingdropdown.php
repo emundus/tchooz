@@ -577,7 +577,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 		{
 			foreach ($this->optionVals[$sqlKey] as $key => &$opt)
 			{
-				$opt->text = strip_tags($opt->text);
+				$opt->text = strip_tags($opt->text??'');
 			}
 		}
 

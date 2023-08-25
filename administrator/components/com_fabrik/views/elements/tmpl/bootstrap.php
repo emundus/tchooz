@@ -184,7 +184,7 @@ $states	= array(
 				</td>
 				<td>
 					<?php if ($item->checked_out) : ?>
-						<?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'elements.', $canCheckin); ?>
+						<?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time??'', 'elements.', $canCheckin); ?>
 					<?php endif; ?>
 					<?php
 					if ($item->checked_out && ($item->checked_out != $user->get('id'))) :

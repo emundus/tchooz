@@ -115,7 +115,7 @@ class FabrikAdminModelCron extends FabModelAdmin
 		PluginHelper::importPlugin('fabrik_cron');
 
 		// Trim old f2 cron prefix.
-		$plugin = FabrikString::ltrimiword($plugin, 'cron');
+		//$plugin = FabrikString::ltrimiword($plugin, 'cron');
 
 		if ($plugin == '')
 		{

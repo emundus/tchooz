@@ -1267,7 +1267,7 @@ class FabrikFEModelListfilter extends FabModel
 		if (!empty($request) && array_key_exists('key', $request))
 		{
 			$keyInts = array_keys($request['key']);
-			$ajaxPost = StringHelper::strtolower($input->server->get('HTTP_X_REQUESTED_WITH'));
+			$ajaxPost = StringHelper::strtolower($input->server->get('HTTP_X_REQUESTED_WITH',''));
 			$this->listModel->ajaxPost = $ajaxPost;
 			$this->listModel->postValues = $values;
 

@@ -11426,7 +11426,7 @@ class FabrikFEModelList extends FormModel
 
 		if ($params->get('bootstrap_condensed_class'))
 		{
-			$class[] = 'table-condensed';
+			$class[] = 'table-condensed table-sm ';
 		}
 
 		if ($params->get('bootstrap_hover_class', true))

@@ -362,5 +362,5 @@ class PlgFabrik_FormNotification extends PlgFabrik_Form
 		foreach ($sqls as $sql) {
 			$db->setQuery($sql)->execute();
 		}
-
+	}
 }

@@ -1357,7 +1357,7 @@ class FabrikFEModelImportcsv extends FormModel
 			return true;
 		}
 
-		if (trim($this->getlistModel()->getPrimaryKey()) !== '')
+		if (trim($this->getlistModel()->getPrimaryKey() ?? '') !== '')
 		{
 			return false;
 		}

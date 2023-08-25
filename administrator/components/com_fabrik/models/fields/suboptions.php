@@ -52,8 +52,8 @@ class JFormFieldSuboptions extends FormField
 		$opts = $this->value == '' ? $default : ArrayHelper::toObject($this->value);
 
 		$delButton  = '<div class="btn-group">';
-		$delButton .= '<a class="btn-sm btn-success" href="#" data-button="addSuboption"><i class="icon-plus"></i> </a>';
-		$delButton .= '<a class="btn-sm btn-danger" href="#" data-button="deleteSuboption"><i class="icon-minus"></i> </a>';
+		$delButton .= '<a class="btn btn-sm btn-success" href="#" data-button="addSuboption"><i class="icon-plus"></i> </a>';
+		$delButton .= '<a class="btn btn-sm btn-danger" href="#" data-button="deleteSuboption"><i class="icon-minus"></i> </a>';
 		$delButton .= '</div>';
 
 		if (is_array($opts))

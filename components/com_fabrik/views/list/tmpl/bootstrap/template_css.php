@@ -25,13 +25,6 @@ echo "
 .fabrikDataContainer .table thead th {
 white-space: initial;}
 
-
-.fabrikDataContainer .pagination a{
-	/*float: left;*/
-	color: inherit;
-	text-decoration: inherit;
-}
-
 ul.fabrikRepeatData {
 	list-style: none;
 	list-style-position:inside;

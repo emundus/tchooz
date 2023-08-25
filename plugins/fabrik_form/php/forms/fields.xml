@@ -50,7 +50,7 @@
 			<field name="curl_code"
       	type="fabrikeditor"
 				mode="php"
-				cols="60"
+				cols="120"
 				rows="6"
 				description="PLG_FORM_PHP_CODE_DESC"
 				label="PLG_FORM_PHP_CODE_LABEL"

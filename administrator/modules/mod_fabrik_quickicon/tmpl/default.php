@@ -13,10 +13,11 @@ defined('_JEXEC') or die('Restricted access');
 
 ?>
 <?php if (!empty($buttons) && $menuLinks): ?>
-	<div class="cpanel">
+<div class="cpanel px-3 pb-3">
+	<div>
 		<?php foreach ($buttons as $button) : ?>
 			<div class="row-striped">
-				<div class="row-fluid" <?php echo empty($button['id']) ? '' : ' id="' . $button['id'] . '"' ?>>
+				<div class="row" <?php echo empty($button['id']) ? '' : ' id="' . $button['id'] . '"' ?>>
 					<div class="col-md-12">
 						<a href="<?php echo $button['link']; ?>"
 							<?php
@@ -33,18 +34,22 @@ defined('_JEXEC') or die('Restricted access');
 			</div>
 		<?php endforeach; ?>
 	</div>
-	<br>
+
+
+	<div>
+		<?php
+		$items = array();
+		foreach ($lists as $list) :
+			$items[] = '
+				<a href="index.php?option=com_fabrik&task=list.view&listid=' . $list->id . '" >
+					<span class="' . $list->icon . '"></span> <span style="margin-left:6px">' . $list->label . '</span>
+				</a>
+			';
+		endforeach;
+		if (!empty($items)) {
+		echo '<hr>' . FabrikHelperHTML::bootstrapGrid($items, 1, '', true);
+		}
+		?>
+	</div>
 <?php endif;
 ?>
-
-<?php
-$items = array();
-foreach ($lists as $list) :
-	$items[] = '<p>
-		<a href="index.php?option=com_fabrik&task=list.view&listid=' . $list->id . '" style="font-size: 36px;">
-			<span class="' . $list->icon . '"></span> <span style="margin-left:6px">' . $list->label . '</span>
-		</a>
-	</p>';
-endforeach;
-
-echo FabrikHelperHTML::bootstrapGrid($items, 2, '', true);

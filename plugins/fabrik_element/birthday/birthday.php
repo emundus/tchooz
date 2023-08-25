@@ -427,9 +427,9 @@ class PlgFabrik_ElementBirthday extends PlgFabrik_Element
 		}
 		else
 		{
-			if ($params->get('empty_is_null', '1') == '0' || !in_array('', explode('-',$val??'')))
-			{
-				return $val;
+			if ($params->get('empty_is_null', '1') == '0') {
+				if (!in_array('', explode('-',$val??''))) return $val;
+				else  return '0000-00-00';
 			}
 		}
 

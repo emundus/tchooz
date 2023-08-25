@@ -62,7 +62,7 @@ class FabrikControllerVisualizationfullcalendar extends FabrikControllerVisualiz
 	public function chooseAddEvent()
 	{
 		// Set the default view name
-		$view      = $this->getView('fullcalendar', $this->doc->getType());
+		$view      = $this->getView('fullcalendar', 'partial');
 		//$view      = $this->getView('fullcalendar');
 		$formModel = $this->getModel('Form', 'FabrikFEModel');
 		$view->setModel($formModel);

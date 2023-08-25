@@ -1104,7 +1104,7 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 		}
 
 		// in some corner cases, date will be db name quoted, like in CSV export after an advanced search!
-		$value = !empty($value) ? trim($value, "'") : $value;
+		$value = $valueStored = !empty($value) ? trim($value, "'") : $value;
 
 		if (FabrikWorker::inFormProcess() || FabrikWorker::inAJAXValidation())
 		{
@@ -1122,6 +1122,13 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 		if ($formModel->isEditable() && ($alwaysToday || (($formModel->isNewRecord() || $this->newGroup) && $defaultToday))){
 			$value = 'now';
 		}
+		
+		//If alwaysToday and element is readonly show last stored value (like in list view)
+		if ($alwaysToday && !$this->isEditable() && !$formModel->isNewRecord())
+			{
+				$value = $valueStored;
+			}
+
 
 		// Don't offset if null date.
 		if ($value === null)

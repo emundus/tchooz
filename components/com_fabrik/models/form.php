@@ -640,20 +640,22 @@ class FabrikFEModelForm extends FabModelForm
 
 			/* $$$ need &amp; for pdf output which is parsed through xml parser otherwise fails
 			 * If FabrikHelperHTML::styleSheetajax loaded then don't do &amp;
+			 * J!4/F4: Never do &amp; this will now break the parameters for css-files and it's not longer needed for pdfs
 			 */
 			$view = $this->isEditable() ? 'form' : 'details';
 
-			if (FabrikHelperHTML::cssAsAsset())
-			{
+			//if (FabrikHelperHTML::cssAsAsset())
+			//{
 				$qs .= '&view=' . $v;
 				$qs .= '&rowid=' . $this->getRowId();
-			}
+			/*}
 			else
 			{
 				$qs .= '&amp;view=' . $v;
 				$qs .= '&amp;rowid=' . $this->getRowId();
 			}
-
+			*/
+			
 			$tmplPath = 'templates/' . $this->app->getTemplate() . '/html/com_fabrik/' . $view . '/' . $tmpl . '/template_css.php' . $qs;
 
 			if (!FabrikHelperHTML::stylesheetFromPath($tmplPath))
@@ -720,11 +722,6 @@ class FabrikFEModelForm extends FabModelForm
 		{
 			$scripts[$scriptsKey] = 'components/com_fabrik/js/' . $view . '_' . $this->getId() . '.js';
 		}
-
-        if (File::exists(COM_FABRIK_FRONTEND . '/js/custom_' . $view . '.js'))
-        {
-            $scripts[$scriptsKey] = 'components/com_fabrik/js/custom_' . $view . '.js';
-        }
 	}
 
 	/**

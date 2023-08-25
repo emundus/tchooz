@@ -121,6 +121,34 @@ class PlgFabrik_ElementUsergroup extends PlgFabrik_ElementList
 	}
 
 	/**
+	 * Shows the data formatted for the list view
+	 * F4: Usergroup names vanished in list view, get them again
+	 *
+	 * @param   string    $data      Elements data
+	 * @param   stdClass  &$thisRow  All the data in the lists current row
+	 * @param   array     $opts      Rendering options
+	 *
+	 * @return  string	formatted value
+	 */	
+	public function renderListData($data, stdClass &$thisRow, $opts = array()) {
+		
+		if (!empty($data))
+			{
+				$ugroups= (array)json_decode($data);
+				$opts = $this->allOpts();
+				$groupdata = [];
+
+				foreach ($ugroups as $group) {
+					if (array_key_exists($group,$opts)) $groupdata[] = $opts[$group]->title;
+					else $groupdata[] = $group;
+				}
+				
+				$data = json_encode($groupdata);
+			}
+		return parent::renderListData($data, $thisRow, $opts);
+	}
+
+	/**
 	 * Get sub option values
 	 *
 	 * @param   array  $data  Form data. If submitting a form, we want to use that form's data and not

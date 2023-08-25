@@ -13,11 +13,11 @@ $class = str_replace($d->sizeClass, '', $class);
 
 for ($i = 1; $i <= 12; $i++) {
     if ($d->sizeClass === 'span' . $i) {
-        $divClass = ' col-xs-' . $i;
+        $divClass = ' col-sm-' . $i;
     }
 }
 
-$start = $divClass === '' ? '' : '<div class="row ' . $divClass . '">';
+$start = $divClass === '' ? '' : '<div class="' . $divClass . '">';
 $end = $divClass === '' ? '' : '</div>';
 echo $start;
 ?>

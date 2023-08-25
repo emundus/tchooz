@@ -28,7 +28,7 @@ use Fabrik\Helpers\Php;
  * @subpackage  Fabrik.element.date
  * @since       3.0
  */
-class PlgFabrik_ElementJdate extends PlgFabrik_Element //PlgFabrik_ElementList
+class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 {
 	/**
 	 * States the element should be ignored from advanced search all queries.
@@ -809,7 +809,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_Element //PlgFabrik_ElementList
 		$params            = $this->getParams();
 		$opts              = new stdClass;
 		$opts->inputField  = $id;
-		$opts->button      = $id . "_cal_img";
+		$opts->button      = $id . "_btn";
 		$opts->align       = "Tl";
 		$opts->singleClick = true;
 		$opts->firstDay    = intval($params->get('jdate_firstday'));
@@ -2586,7 +2586,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_Element //PlgFabrik_ElementList
 		$opts->calendarSetup->ifFormat = FabDate::dateFormatToStrftimeFormat($opts->calendarSetup->ifFormat);
 		$opts->type    = $type;
 		$opts->ids     = $type == 'field' ? array($id) : array($id, $id2);
-		$opts->buttons = $type == 'field' ? array($id . '_cal_img') : array($id . '_cal_img', $id2 . '_cal_img');
+		$opts->buttons = $type == 'field' ? array($id . '_btn') : array($id . '_btn', $id2 . '_btn');
 		$opts          = json_encode($opts);
 		$script        = 'Fabrik.filter_' . $container . '.addFilter(\'' . $element->plugin . '\', new JDateFilter(' . $opts . '));' . "\n";
 

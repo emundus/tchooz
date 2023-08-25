@@ -600,6 +600,7 @@ class FabrikModelFullcalendar extends FabrikFEModelVisualization
 
 							$row->startShowTime = (bool) $data['startShowTime'];
 							$row->endShowTime   = (bool) $data['endShowTime'];
+							if (!empty($data['label'])) $row->label = $row->{$data['label']};
 
 							$row->popupTemplate = $w->parseMessageForPlaceHolder($data['popupTemplate'], $row);
 

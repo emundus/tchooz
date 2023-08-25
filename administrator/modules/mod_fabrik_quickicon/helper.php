@@ -109,12 +109,6 @@ abstract class ModFabrik_QuickIconHelper
 							'access' => array('core.manage', 'com_fabrik')
 					),
 					array(
-							'link' => Route::_('index.php?option=com_fabrik&view=packages'),
-							'image' => '/components/com_fabrik/images/header/fabrik-package.png',
-							'text' => Text::_('MOD_FABRIK_QUICKICON_PACKAGES'),
-							'access' => array('core.manage', 'com_fabrik')
-					),
-					array(
 							'link' => Route::_('index.php?option=com_fabrik&view=connections'),
 							'image' => '/components/com_fabrik/images/header/fabrik-connection.png',
 							'text' => Text::_('MOD_FABRIK_QUICKICON_CONNECTIONS'),

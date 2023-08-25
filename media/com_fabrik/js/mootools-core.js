@@ -2932,6 +2932,7 @@ new Type("Elements", Elements).implement({
             return a;
         },
         computePosition: function (a) {
+            if (typeof a == 'undefined') return;
             return { left: a.x - (h(this, "margin-left").toInt() || 0), top: a.y - (h(this, "margin-top").toInt() || 0) };
         },
         setPosition: function (a) {

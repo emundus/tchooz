@@ -454,7 +454,8 @@ class PlgSystemFabrik extends CMSPlugin
 
 		$db = FabrikWorker::getDbo(true);
 
-		require_once JPATH_SITE . '/components/com_content/helpers/route.php';
+		//Not existing in J!4, not necessary for "old" com_search-j4-adapted, see https://fabrikar.com/forums/index.php?threads/fabrik-search-plugin.53966/
+		//require_once JPATH_SITE . '/components/com_content/helpers/route.php';
 
 		// Load plugin params info
 		//$limit = $params->def('search_limit', 50);

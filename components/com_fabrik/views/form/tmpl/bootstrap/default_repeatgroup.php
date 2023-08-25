@@ -29,7 +29,7 @@ foreach ($group->subgroups as $subgroup) :
 	<?php
 		// Add the add/remove repeat group buttons
 		if ($group->editable && ($group->canAddRepeat || $group->canDeleteRepeat)) : ?>
-			<div class="fabrikGroupRepeater float-end btn-group-sm">
+			<div class="fabrikGroupRepeater text-end btn-group-sm">
 				<?php if ($group->canAddRepeat) :
 					echo $this->addRepeatGroupButton;
 				endif;

@@ -801,12 +801,15 @@ class FabrikAdminModelList extends FabModelAdmin
 			$row->set('db_primary_key', $row->get('db_primary_key', '') == '' ? $row->get('db_table_name') . '.' . $key
 				: $row->get('db_primary_key'));
 			$row->set('auto_inc', StringHelper::stristr($extra, 'auto_increment') ? 1 : 0);
+			
+			//trob: make strict happy 
+			$row->set('created_by',(int)$row->get('created_by') );
+			$row->set('checked_out', 0);
+			$row->set('hits', 0);
+			$row->set('private', 0);
+			$row->set('filter_action', 'onchange');
+			$row->set('group_by', '');
 		}
-		//trob: make strict happy 
-		$row->set('created_by',(int)$row->get('created_by') );
-		$row->set('checked_out', 0);
-        $row->set('hits', 0);
-        $row->set('private', 0);
 
 		$row->store();
 		$this->updateJoins($data);

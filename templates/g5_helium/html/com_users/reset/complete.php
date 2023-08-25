@@ -20,19 +20,19 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 	<?php if ($this->params->get('show_page_heading')) : ?>
 		<div class="page-header">
             <?php if (file_exists('images/custom/favicon.png')) : ?>
-                <a href="/" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+                <a href="index.php" alt="Logo" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
                 </a>
             <?php endif; ?>
-            <p class="em-mb-8 em-h3">
+            <h3 class="em-mb-8">
                 <?php echo $this->escape($this->params->get('page_heading')); ?>
-            </p>
+            </h3>
 		</div>
 	<?php endif; ?>
 	<form action="<?php echo JRoute::_('index.php?option=com_users&task=reset.complete'); ?>" method="post" class="form-validate form-horizontal well">
 		<?php foreach ($this->form->getFieldsets() as $fieldset) : ?>
 			<fieldset>
 				<?php if (isset($fieldset->label)) : ?>
-					<p><?php echo JText::_($fieldset->label); ?></p>
+					<p class="mb-4"><?php echo JText::_($fieldset->label); ?></p>
 				<?php endif; ?>
 				<?php echo $this->form->renderFieldset($fieldset->name); ?>
 			</fieldset>

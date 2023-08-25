@@ -47,6 +47,7 @@ class UsersViewLogin extends JViewLegacy
         $this->course   = $jinput->get->get('course');
 
 
+
 		// Check for errors.
 		if (count($errors = $this->get('Errors')))
 		{

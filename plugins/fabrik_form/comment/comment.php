@@ -99,7 +99,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		if (is_null($this->commentsLocked))
 		{
 			$this->commentsLocked = false;
-			$lock = trim($params->get('comment_lock_element'));
+			$lock = trim($params->get('comment_lock_element',''));
 
 			if ($lock !== '')
 			{
@@ -1135,7 +1135,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 			`reply_to` INT( 11 ) NOT NULL DEFAULT 0 ,
 			`comment` MEDIUMTEXT ,
 			`approved` TINYINT( 1 ) NOT NULL DEFAULT 0 ,
-			`time_date` TIMESTAMP NOT NULL,
+			`time_date` TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
 			`url` varchar( 255 ) NOT NULL DEFAULT '' ,
 			`name` VARCHAR( 150 ) NOT NULL DEFAULT '' ,
 			`email` VARCHAR( 100 ) NOT NULL DEFAULT '' ,
@@ -1161,8 +1161,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 			"ALTER TABLE `#__fabrik_comments` ALTER `rating` SET DEFAULT '';",
 			"ALTER TABLE `#__fabrik_comments` ALTER `annonymous` SET DEFAULT 0;",
 			"ALTER TABLE `#__fabrik_comments` ALTER `diggs` SET DEFAULT 0;",
-			"ALTER TABLE `#__fabrik_comments` MODIFY `time_date` TIMESTAMP NOT NULL;",
-			"ALTER TABLE `#__fabrik_comments` ALTER `time_date` DROP DEFAULT;",
+			"ALTER TABLE `#__fabrik_comments` MODIFY `time_date` TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp();",
 			"UPDATE `#__fabrik_comments` SET `time_date` = '1980-01-01 00:00:00' WHERE `time_date` < '1000-01-01' OR `time_date` IS NULL;",
 		];
 		foreach ($sqls as $sql) {

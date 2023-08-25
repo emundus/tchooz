@@ -3,10 +3,10 @@
     <name>Fabrik Vendor Library</name>
     <libraryname>fabrik/vendor</libraryname>
     <author>Henk van Klinken</author>
-    <creationDate>May 2023</creationDate>
+    <creationDate>August 2023</creationDate>
     <copyright>Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.</copyright>
     <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
-    <version>4.0delta</version>
+    <version>4.0Epsilon</version>
     <description>Fabrik - Vendor Library files</description>
     <files>
         <folder>vendor</folder>

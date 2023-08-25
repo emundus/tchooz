@@ -21,7 +21,7 @@ $app = Factory::getApplication();
 $input = $app->getInput();
 ?>
 <form method="post" action="<?php echo $this->action?>" class="advancedSearch_<?php echo $this->listref?>">
-	<a class="addbutton advanced-search-add btn-success btn" href="#">
+	<a class="addbutton advanced-search-add btn-success btn btn-sm" href="#">
 		<?php echo FabrikHelperHTML::image('plus', 'list', $this->tmpl);?>
 		<?php echo Text::_('COM_FABRIK_ADD')?>
 	</a>
@@ -34,10 +34,10 @@ $input = $app->getInput();
 				<td><?php echo $row['element'] . $row['type'] . $row['grouped'];?>
 				</td>
 				<td><?php echo $row['condition'];?></td>
-				<td class='filtervalue'><?php echo $row['filter'];?></td>
+				<td class='filtervalue' style='min-width:10em'></td>
 				<td>
 				<div class="button-group">
-					<a class="advanced-search-remove-row btn btn-danger" href="#">
+					<a class="advanced-search-remove-row btn btn-danger btn-sm" href="#">
 						<?php echo FabrikHelperHTML::image('minus', 'list', $this->tmpl);?>
 					</a>
 				</div>
