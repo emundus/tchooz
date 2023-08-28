@@ -156,20 +156,14 @@ if ($user != null) {
 	<?= $intro; ?>
 
     <!-- Button which opens up the dropdown menu. -->
-    <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' tabindex="0" id="userDropdown" style="float: right;">
+    <div class='dropdown' tabindex="0" id="userDropdown" style="float: right;">
 		<?php if(!empty($profile_picture)): ?>
             <div class="em-profile-picture em-pointer em-user-dropdown-button" id="userDropdownLabel"
                  style="background-image:url('<?php echo $profile_picture ?>');">
             </div>
 		<?php else : ?>
-            <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-				<?php if($first_logged) : ?>
-                    <div class="em-user-dropdown-tip" id="userDropdownTip">
-                        <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
-                        <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
-                    </div>
-				<?php endif ;?>
-                <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" class="<?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
+            <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
+                <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
             </div>
 		<?php endif; ?>
         <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
@@ -240,9 +234,6 @@ if ($user != null) {
     </div>
 
     <script>
-		<?php if($first_logged) : ?>
-        displayUserOptions();
-		<?php endif ?>
         document.addEventListener('DOMContentLoaded', function () {
             if(document.getElementById('profile_chzn') != null){
                 document.getElementById('profile_chzn').style.display = 'none';
