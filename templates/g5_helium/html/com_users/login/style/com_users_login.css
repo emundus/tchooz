@@ -428,3 +428,27 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     margin-bottom: 32px;
 }
 
+
+.com-users-login__input .form-control-feedback{
+    display: none !important;
+}
+
+.password-group {
+    width: 100%;
+}
+.com-users-login__input .password-group .input-password-toggle {
+    position: absolute;
+    right: 10px;
+    opacity: 0.3;
+    user-select: none;
+    background: transparent;
+    color: black;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    top: 20px;
+    z-index: 20;
+}
+.com-users-login__input .password-group .input-password-toggle:hover {
+    background: transparent;
+}
