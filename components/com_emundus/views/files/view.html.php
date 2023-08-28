@@ -22,11 +22,17 @@ class EmundusViewFiles extends JViewLegacy
 {
 	protected $itemId;
 	protected $actions;
+	protected $use_module_for_filters;
 	protected array $lists;
 	protected JPagination $pagination;
 
 	public function __construct($config = array())
 	{
+		$menu = JFactory::getApplication()->getMenu();
+		$current_menu = $menu->getActive();
+		$menu_params = $menu->getParams(@$current_menu->id);
+		$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+
 		parent::__construct($config);
 	}
 

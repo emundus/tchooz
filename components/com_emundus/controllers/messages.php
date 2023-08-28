@@ -855,7 +855,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mail_from_sys = $config->get('mailfrom');
 		$mail_from_sys_name = $config->get('fromname');
 
-		$uids  = explode(',',$jinput->post->get('recipients', null, null));
+		$uids  = explode(',', $jinput->post->get('recipients', null, null));
 		$bcc = $jinput->post->getString('Bcc', false);
 
 		// If no mail sender info is provided, we use the system global config.
@@ -876,8 +876,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 		if(!empty($template_id))
 		{
-		// Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
-		$template = $m_messages->getEmail($template_id);
+			// Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
+			$template = $m_messages->getEmail($template_id);
 		} else {
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
@@ -890,14 +890,14 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$template = $db->loadObject();
 		}
 
-        require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
-        $h_emails = new EmundusHelperEmails();
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+		$h_emails = new EmundusHelperEmails();
 		foreach ($users as $user) {
-            $can_send_mail = $h_emails->assertCanSendMailToUser($user->id);
-            if (!$can_send_mail) {
+			$can_send_mail = $h_emails->assertCanSendMailToUser($user->id);
+			if (!$can_send_mail) {
 				$failed[] = $user->email;
-                continue;
-            }
+				continue;
+			}
 
 			$toAttach = [];
 			$post = [
@@ -923,7 +923,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 				$mail_from_address = $mail_from;
 			} else {*/
-            $mail_from_address = $mail_from_sys;
+			$mail_from_address = $mail_from_sys;
 			//}
 
 			// Set sender
@@ -981,7 +981,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 				];
 				$m_emails->logEmail($log);
 				// Log the email in the eMundus logging system.
-                $logsParams = array('created' => [$subject]);
+				$logsParams = array('created' => [$subject]);
 				EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 			}
 
@@ -1764,7 +1764,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $mailer->addAttachment($file_path);
         $send = $mailer->Send();
-        
+
         JFactory::getApplication()->triggerEvent('onAfterEmailSend', ['fnum', 'template_id']);
         JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterEmailSend', ['fnum' => $fnum, 'template_id' => $template_email_id]]);
         /* track the log of email */

@@ -236,7 +236,7 @@ class EmundusHelperList{
         $infos 		= $m_profile->getFnumDetails($fnum);
         $profile 	= $m_profile->getProfileByCampaign($infos['campaign_id']);
 
-        if(!empty($profile_id)) {
+        if (!empty($profile_id)) {
             $profile['profile_id'] = $profile_id;
         }
 
@@ -245,11 +245,11 @@ class EmundusHelperList{
         if (empty($profile_id)) {
             $workflow_profiles = $m_profile->getWorkflowProfilesByCampaign($infos['campaign_id']);
             foreach($workflow_profiles as $workflow_profile) {
-            if ($workflow_profile != $profile['profile_id']) {
-                $workflow_form_list = $h_menu->buildMenuQuery($workflow_profile, $formids);
+                if ($workflow_profile != $profile['profile_id']) {
+                    $workflow_form_list = $h_menu->buildMenuQuery($workflow_profile, $formids);
 
                     if (!empty($workflow_form_list)) {
-                $formsList = array_merge($formsList, $workflow_form_list);
+                        $formsList = array_merge($formsList, $workflow_form_list);
 
                         $ids = array();
                         foreach ($formsList as $form) {
@@ -258,7 +258,7 @@ class EmundusHelperList{
                             } else {
                                 unset($formsList[$form->id]);
                             }
-            }
+                        }
                     }
                 }
             }
@@ -575,7 +575,7 @@ class EmundusHelperList{
 
     // Create icone for evaluation
     function createEvaluationBlock($users, $params){
-	$baseurl = rtrim(JURI::root(), '/');
+	    $baseurl = rtrim(JURI::root(), '/');
         $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
         $eval = array();
         $current_user = JFactory::getUser();
@@ -716,8 +716,7 @@ class EmundusHelperList{
     ** @description Create the block to display files request
     */
     function createFilesRequestBlock($users) {
-	$baseurl = rtrim(JURI::root(), '/');
-        //$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
+        $baseurl = rtrim(JURI::root(), '/');
         $actions = array();
         //$ids = array();
         foreach ($users as $user) {
@@ -751,7 +750,7 @@ class EmundusHelperList{
 
     /**/
     function createCommentBlock($users) {
-	$baseurl = rtrim(JURI::root(), '/');
+	    $baseurl = rtrim(JURI::root(), '/');
         $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
         $comment = array();
         $ids = array();

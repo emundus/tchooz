@@ -706,9 +706,11 @@ class EmundusControllerDecision extends JControllerLegacy
     public function getformelem()
     {
         $model = new EmundusModelDecision();
-        $defaultElements = $model->getDecisionElementsName(0, 1);
+
+		$defaultElements = $model->getDecisionElementsName(0, 1);
         $elements = EmundusHelperFilters::getElements();
         $res = array('status' => true, 'elts' => $elements, 'defaults' => $defaultElements);
+
         echo json_encode((object)$res);
         exit;
     }

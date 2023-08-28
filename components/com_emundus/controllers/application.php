@@ -373,7 +373,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->get('fnum', null, 'STRING');
 
-	require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
         $m_application = new EmundusModelApplication();
         $menus = $m_application->getApplicationMenu();
         $res = false;
@@ -392,7 +392,7 @@ class EmundusControllerApplication extends JControllerLegacy
 						$action = explode('|', $action_for_access);
 						$action_id = $action[0];
 
-                    if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
+						if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
 							$access = true;
 							break;
 						}
@@ -672,7 +672,6 @@ class EmundusControllerApplication extends JControllerLegacy
     public function getuserattachments()
     {
         $m_application = new EmundusModelApplication();
-
         $jinput = JFactory::getApplication()->input;
 
         $user_id = $jinput->getInt('user_id', null);
@@ -695,14 +694,14 @@ class EmundusControllerApplication extends JControllerLegacy
 				$m_application = new EmundusModelApplication();
 				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
-					$response['msg'] = JText::_('SUCCESS');
-					$response['status'] = true;
-					$response['code'] = 200;
-				} else {
-					$response['msg'] = JText::_('FAIL');
-					$response['code'] = 500;
-				}
+				$response['msg'] = JText::_('SUCCESS');
+				$response['status'] = true;
+				$response['code'] = 200;
+			} else {
+				$response['msg'] = JText::_('FAIL');
+				$response['code'] = 500;
 			}
+		}
 
         echo json_encode($response);
         exit;
@@ -779,16 +778,16 @@ class EmundusControllerApplication extends JControllerLegacy
 		$current_user = JFactory::getUser();
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-        $m_application = new EmundusModelApplication();
+			$m_application = new EmundusModelApplication();
 
-        $jinput = JFactory::getApplication()->input;
+			$jinput = JFactory::getApplication()->input;
 			$user = $jinput->getInt('user', null);
 			$filename = $jinput->getString('filename', null);
 
 			if (!empty($filename) && !empty($user)) {
 				$response = $m_application->getAttachmentPreview($user, $filename);
 			}
-    }
+		}
 
         echo json_encode($response);
         exit;
@@ -818,7 +817,7 @@ class EmundusControllerApplication extends JControllerLegacy
         echo json_encode($response);
         exit;
     }
-	
+
 	public function createtab(){
 		$response = array('tab' => 0, 'msg' => JText::_('FAILED'));
 		$user = JFactory::getUser();

@@ -941,7 +941,7 @@ class EmundusModelCampaign extends JModelList {
 
 	        $query = $this->_db->getQuery(true);
 
-            try {
+	        try {
 
                 foreach (array_values($data) as $id) {
                     $falang->deleteFalang($id, 'emundus_setup_campaigns','label');
@@ -1015,7 +1015,7 @@ class EmundusModelCampaign extends JModelList {
                 $data[$key] = htmlspecialchars($val);
             }
 
-            
+
             JFactory::getApplication()->triggerEvent('onBeforeCampaignUnpublish', $data);
             JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeCampaignUnpublish', ['campaign' => $data]]);
 
@@ -1067,7 +1067,7 @@ class EmundusModelCampaign extends JModelList {
                 $data[$key] = htmlspecialchars($val);
             }
 
-            
+
             JFactory::getApplication()->triggerEvent('onBeforeCampaignPublish', $data);
             JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeCampaignPublish', ['campaign' => $data]]);
             try {
@@ -1104,7 +1104,7 @@ class EmundusModelCampaign extends JModelList {
 		$duplicated = false;
 
         if (!empty($id)) {
-        $query = $this->_db->getQuery(true);
+	        $query = $this->_db->getQuery(true);
 
             try {
                 $columns = array_keys(
@@ -1115,13 +1115,13 @@ class EmundusModelCampaign extends JModelList {
                     return $k != 'id' && $k != 'date_time' && $k != 'pinned';
                 });
 
-                    $query->clear()
-                        ->select(implode(',', $this->_db->qn($columns)))
-                        ->from($this->_db->quoteName('#__emundus_setup_campaigns'))
-                        ->where($this->_db->quoteName('id') . ' = ' . $id);
+				$query->clear()
+					->select(implode(',', $this->_db->qn($columns)))
+					->from($this->_db->quoteName('#__emundus_setup_campaigns'))
+					->where($this->_db->quoteName('id') . ' = ' . $id);
 
-                    $this->_db->setQuery($query);
-                    $values[] = implode(', ', $this->_db->quote($this->_db->loadRow()));
+	            $this->_db->setQuery($query);
+	            $values[] = implode(', ', $this->_db->quote($this->_db->loadRow()));
 
                 $query->clear()
                     ->insert($this->_db->quoteName('#__emundus_setup_campaigns'))
@@ -1232,7 +1232,7 @@ class EmundusModelCampaign extends JModelList {
 
             $data['label'] = json_decode($data['label'], true);
 
-            
+
             JFactory::getApplication()->triggerEvent('onBeforeCampaignCreate', $data);
             JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeCampaignCreate', ['campaign' => $data]]);
 
@@ -2007,27 +2007,27 @@ class EmundusModelCampaign extends JModelList {
 	    $campaign_dropfile_cat = false;
 
 		if (!empty($cid)) {
-        $query = $this->_db->getQuery(true);
+			$query = $this->_db->getQuery(true);
 
-        try {
+			try {
 				$query->select('id')
-                ->from($this->_db->quoteName('#__categories'))
-                ->where('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
-                ->andWhere($this->_db->quoteName('extension') . ' = ' . $this->_db->quote('com_dropfiles'));
-            $this->_db->setQuery($query);
-            $campaign_dropfile_cat = $this->_db->loadResult();
+					->from($this->_db->quoteName('#__categories'))
+					->where('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
+					->andWhere($this->_db->quoteName('extension') . ' = ' . $this->_db->quote('com_dropfiles'));
+				$this->_db->setQuery($query);
+				$campaign_dropfile_cat = $this->_db->loadResult();
 
-            if(!$campaign_dropfile_cat){
-                JPluginHelper::importPlugin('emundus', 'setup_category');
-                $result = \Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterCampaignCreate', [$cid]);
-                if($result) {
+				if (!$campaign_dropfile_cat) {
+					JPluginHelper::importPlugin('emundus', 'setup_category');
+					$result = \Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterCampaignCreate', [$cid]);
+					if ($result) {
 						$campaign_dropfile_cat = $this->getCampaignCategory($cid);
-                }
-            }
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/campaign | Cannot get dropfiles category of the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
-        }
-    }
+					}
+				}
+			} catch (Exception $e) {
+				JLog::add('component/com_emundus/models/campaign | Cannot get dropfiles category of the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			}
+		}
 
 	    return $campaign_dropfile_cat;
     }
@@ -2114,7 +2114,7 @@ class EmundusModelCampaign extends JModelList {
      *
      * @since version 1.0
      */
-    public function editDocumentDropfile($did,$name){
+    public function editDocumentDropfile($did, $name){
 		$updated = false;
 
 		if (!empty($did) && !empty($name)) {
@@ -2122,18 +2122,18 @@ class EmundusModelCampaign extends JModelList {
 				$name = substr($name, 0, 200);
 			}
 
-        $query = $this->_db->getQuery(true);
+			$query = $this->_db->getQuery(true);
 
-        try{
-            $query->update($this->_db->quoteName('#__dropfiles_files'))
-                ->set($this->_db->quoteName('title') . ' = ' . $this->_db->quote($name))
-                ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote(($did)));
-            $this->_db->setQuery($query);
+			try {
+				$query->update($this->_db->quoteName('#__dropfiles_files'))
+					->set($this->_db->quoteName('title') . ' = ' . $this->_db->quote($name))
+					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote(($did)));
+				$this->_db->setQuery($query);
 				$updated = $this->_db->execute();
-        }  catch (Exception $e) {
-            JLog::add('component/com_emundus/models/campaign | Cannot update the dropfile document ' . $did . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
-        }
-    }
+			}  catch (Exception $e) {
+				JLog::add('component/com_emundus/models/campaign | Cannot update the dropfile document ' . $did . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			}
+		}
 
 		return $updated;
     }

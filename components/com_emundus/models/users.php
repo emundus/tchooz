@@ -788,7 +788,6 @@ class EmundusModelUsers extends JModelList {
 
             // Check for errors encountered while preparing the data.
             if (count($results) && in_array(false, $results, true)) {
-                $this->setError($dispatcher->getError());
                 $this->data = false;
             }
         }
@@ -1425,13 +1424,13 @@ class EmundusModelUsers extends JModelList {
 				->where('user_id IN ('.implode(',', $users).')')
 				->where('profile_id IN (SELECT id FROM #__emundus_setup_profiles WHERE published != 1)');
 
-        try {
+			try {
 				$db->setQuery($query);
 				$ids = $db->loadAssocList();
-        } catch(Exception $e) {
+			} catch(Exception $e) {
 				JLog::add('Error on getting non-applicant users: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
-        }
-    }
+			}
+		}
 
 		return $ids;
     }
@@ -1440,15 +1439,15 @@ class EmundusModelUsers extends JModelList {
 		$affected = 0;
 
 	    if (!empty($users) && !empty($groups)) {
-                $db = $this->getDbo();
+		    $db = $this->getDbo();
 		    $query = $db->getQuery(true);
 
 		    $values = [];
-                foreach ($users as $user) {
-                    foreach ($groups as $gid) {
+		    foreach ($users as $user) {
+			    foreach ($groups as $gid) {
 				    $values[] = $user['user_id'] . ", $gid";
-                    }
-                }
+			    }
+		    }
 
 			if (!empty($values)) {
 				$query->insert('#__emundus_groups')
@@ -1456,14 +1455,14 @@ class EmundusModelUsers extends JModelList {
 					->values($values);
 
 				try {
-                $db->setQuery($query);
+					$db->setQuery($query);
 					$affected = $db->execute();
-        } catch(Exception $e) {
+				} catch(Exception $e) {
 					JLog::add('Error on affecting users to groups: '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
 					$affected = false;
 				}
-        }
-    }
+			}
+	    }
 
 		return $affected;
     }
@@ -1667,7 +1666,7 @@ class EmundusModelUsers extends JModelList {
 
 		    $db->setQuery($query);
 
-        try {
+		    try {
 			    $program_ids = $db->loadColumn();
 		    } catch (Exception $e) {
 			    JLog::add('Error getting all profiles associated to user in model/access at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
@@ -1692,13 +1691,13 @@ class EmundusModelUsers extends JModelList {
 				->innerJoin($db->quoteName('#__emundus_groups', 'jeg').' ON '.$db->quoteName('jeg.group_id').' = '.$db->quoteName('jesgrc.parent_id'))
 				->where($db->quoteName('jeg.user_id').' = '.$user_id.' AND '.$db->quoteName('jesc.published').' = 1');
 
-            $db->setQuery($query);
+			$db->setQuery($query);
 			try {
 				$campaign_ids = $db->loadColumn();
-        } catch(Exception $e) {
+			} catch (Exception $e) {
 				JLog::add('Error getting all profiles associated to user in model/access at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
-        }
-    }
+			}
+		}
 
 		return $campaign_ids;
 	}
@@ -2282,7 +2281,7 @@ class EmundusModelUsers extends JModelList {
 		$users = [];
 
 		if (!empty($ids)) {
-		$db = JFactory::getDBO();
+			$db = JFactory::getDBO();
 
 			$query = $db->getQuery(true);
 			$query->select('*')
@@ -2290,7 +2289,7 @@ class EmundusModelUsers extends JModelList {
 				->where('id IN ('.implode(',', $ids).')');
 
 			try {
-		$db->setQuery($query);
+				$db->setQuery($query);
 				$users = $db->loadObjectList();
 			} catch (Exception $e) {
 				JLog::add('Failed to get users by ids ' . implode(',', $ids) . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');

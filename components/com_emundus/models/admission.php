@@ -203,9 +203,9 @@ class EmundusModelAdmission extends JModelList
                     $this->_elements_default[] = $query;
                 } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox') {
                     if (@$group_params->repeat_group_button == 1) {
-                    $element_attribs = json_decode($def_elmt->element_attribs);
-                    $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
-                    foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                        $element_attribs = json_decode($def_elmt->element_attribs);
+                        $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
+                        foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                             $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                         }
                         $select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name,'GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.' SEPARATOR ", ")',$select);
@@ -221,8 +221,8 @@ class EmundusModelAdmission extends JModelList
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                             $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
                                 JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
-                    }
-                    $this->_elements_default[] = $select.' AS '.$def_elmt->tab_name . '___' . $def_elmt->element_name;
+                        }
+                        $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
                 } elseif ($def_elmt->element_plugin == 'radiobutton') {
                     if (!empty($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
@@ -260,13 +260,13 @@ class EmundusModelAdmission extends JModelList
                     } else {
                         $this->_elements_default[] = 'REPLACE(REPLACE('.$def_elmt->tab_name.'.'.$def_elmt->element_name.', "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")  AS '.$def_elmt->tab_name.'___'.$def_elmt->element_name;
                     }
-                } else {
+                }else {
                     if (@$group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
-														SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
-														FROM '.$def_elmt->table_join.'
-														WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
-													  ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+                                                        SELECT  GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", ")
+                                                        FROM '.$def_elmt->table_join.'
+                                                        WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                                      ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
                     } else {
                         $this->_elements_default[] = $def_elmt->tab_name.'.'.$def_elmt->element_name.' AS '.$def_elmt->tab_name.'___'.$def_elmt->element_name;
                     }
@@ -375,7 +375,7 @@ class EmundusModelAdmission extends JModelList
      * @param int hidden from Fabrik List ; yes=1
      * @param array code get elements from Decision form defined for programme list
      *
-     * @return    array list of Fabrik element ID used in admission form
+     * @return array list of Fabrik element ID used in admission form
      **@throws Exception
      */
     public function getApplicantAdmissionElementsName($show_in_list_summary=1, $hidden=0, $code = null, $all = null) {

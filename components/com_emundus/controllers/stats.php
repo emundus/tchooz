@@ -138,8 +138,8 @@ class EmundusControllerStats extends JControllerLegacy {
 
 	    $m_stats = new EmundusModelStats();
         $getConnections = $m_stats->getConnections($periode);
-        
-        
+
+
         foreach ($getConnections as $co) {
             $dateArray[] = $co['_day'];
             $countArray[] = $co['nombre_connexions'];
@@ -165,7 +165,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
 	    $m_stats = new EmundusModelStats();
         $getNbRelations = $m_stats->getNbRelations($periode);
-        
+
         foreach ($getNbRelations as $rel) {
             $dateArray[] = $rel['_day'];
             $countArray[] = $rel['nombre_rel_etablies'];
@@ -185,9 +185,9 @@ class EmundusControllerStats extends JControllerLegacy {
         $m_stats = new EmundusModelStats();
         $male = $m_stats->getMale();
         $female = $m_stats->getFemale();
-        if($male == null) 
+        if($male == null)
             $male = 0;
-        if($female == null) 
+        if($female == null)
             $female = 0;
         echo json_encode((object) [
             'status' => true,
@@ -203,7 +203,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
         $m_stats = new EmundusModelStats();
         $nationality = $m_stats->getNationality();
-        
+
         foreach ($nationality as $nat) {
             $nbArray[] = $nat['nb'];
             $natArray[] = $nat['nationality'];
@@ -212,7 +212,7 @@ class EmundusControllerStats extends JControllerLegacy {
             'status' => true,
             'nationality' => $natArray,
             'nb' => $nbArray
-            
+
 	    ]);
 	    exit;
     }
@@ -223,7 +223,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
         $m_stats = new EmundusModelStats();
         $ages = $m_stats->getAge();
-        
+
         foreach ($ages as $age) {
             $nbArray[] = $age['age'];
             $natArray[] = $age['campaign'];
@@ -232,7 +232,7 @@ class EmundusControllerStats extends JControllerLegacy {
             'status' => true,
             'campaign' => $natArray,
             'age' => $nbArray
-            
+
         ]);
         exit;
     }
@@ -247,7 +247,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
         echo json_encode((object) [
             'status' => true,
-            'val' => $array            
+            'val' => $array
 	    ]);
 	    exit;
     }
@@ -269,7 +269,7 @@ class EmundusControllerStats extends JControllerLegacy {
                 'status' => false
             ]);
         }
-	    
+
     }
 
     public function linkfabrik() {
@@ -284,5 +284,5 @@ class EmundusControllerStats extends JControllerLegacy {
         ]);
 
         exit;
-    } 
+    }
 }

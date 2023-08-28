@@ -105,7 +105,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $doSignaturesMatch = true;
 
         if ($doSignaturesMatch) {
-            $body = json_decode($payload);
+	        $body = json_decode($payload);
 	        JLog::add('YouSign Webhook body: ' . json_encode($body), JLog::INFO, 'com_emundus.webhook');
 
             if ($body->event_name == 'signature_request.done' && !empty($body->data)) {
@@ -165,19 +165,19 @@ class EmundusControllerWebhook extends JControllerLegacy {
 												copy($file_path, $current_file_path);
 											}
 
-                                        $query->clear()
-                                            ->update('#__emundus_files_request')
+		                                    $query->clear()
+			                                    ->update('#__emundus_files_request')
 			                                    ->set('signed_file = ' . $db->quote($current_file_path))
-                                            ->where('keyid = ' . $db->quote($signatureRequest->id))
-                                            ->andWhere('yousign_document_id = ' . $db->quote($document->id));
-                                        $db->setQuery($query);
-                                        $updated = $db->execute();
+			                                    ->where('keyid = ' . $db->quote($signatureRequest->id))
+			                                    ->andWhere('yousign_document_id = ' . $db->quote($document->id));
+		                                    $db->setQuery($query);
+		                                    $updated = $db->execute();
 
-                                        $query->clear()
-                                            ->insert('#__emundus_uploads')
-                                            ->columns(['fnum', 'timedate', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed'])
+		                                    $query->clear()
+			                                    ->insert('#__emundus_uploads')
+			                                    ->columns(['fnum', 'timedate', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'can_be_deleted', 'can_be_viewed'])
 			                                    ->values($db->quote($file_request->fnum) . ', NOW(), 62, ' . $file_request->campaign_id . ', ' . $file_request->attachment_id . ',' . $db->quote(basename($current_file_path)) . ', 0, 0');
-                                        $db->setQuery($query);
+		                                    $db->setQuery($query);
 		                                    $inserted = $db->execute();
 
 		                                    if ($inserted) {
@@ -187,43 +187,43 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		                                    }
 	                                    }
 
-                                            // Mettre a jour les données utilisateurs (retirer les données yousign dans les params)
-                                            $query->clear()
-                                                ->select('ju.params, ju.id')
-                                                ->from($db->quoteName('#__users', 'ju'))
-                                                ->leftJoin($db->quoteName('#__emundus_files_request', 'jefr') . ' ON jefr.email = ju.username')
-                                                ->where('jefr.keyid = ' . $db->quote($signatureRequest->id))
-                                                ->andWhere('jefr.yousign_document_id = ' . $db->quote($document->id));
-                                            $db->setQuery($query);
+	                                    // Mettre a jour les données utilisateurs (retirer les données yousign dans les params)
+	                                    $query->clear()
+		                                    ->select('ju.params, ju.id')
+		                                    ->from($db->quoteName('#__users', 'ju'))
+		                                    ->leftJoin($db->quoteName('#__emundus_files_request', 'jefr') . ' ON jefr.email = ju.username')
+		                                    ->where('jefr.keyid = ' . $db->quote($signatureRequest->id))
+		                                    ->andWhere('jefr.yousign_document_id = ' . $db->quote($document->id));
+	                                    $db->setQuery($query);
 
-                                            $user_data = $db->loadObject();
-                                            if (!empty($user_data->id)) {
-                                                $params = json_decode($user_data->params, true);
+	                                    $user_data = $db->loadObject();
+	                                    if (!empty($user_data->id)) {
+		                                    $params = json_decode($user_data->params, true);
 
-                                                unset($params['yousign_signer_id']);
-                                                unset($params['yousign_signature_request']);
-                                                unset($params['yousign_url']);
+		                                    unset($params['yousign_signer_id']);
+		                                    unset($params['yousign_signature_request']);
+		                                    unset($params['yousign_url']);
 
-                                                $query->clear()
-                                                    ->update('#__users')
-                                                    ->set('params = ' . $db->quote(json_encode($params)))
-                                                    ->where('id = ' . $user_data->id);
+		                                    $query->clear()
+			                                    ->update('#__users')
+			                                    ->set('params = ' . $db->quote(json_encode($params)))
+			                                    ->where('id = ' . $user_data->id);
 
-                                                $db->setQuery($query);
-                                                $db->execute();
-                                            }
+		                                    $db->setQuery($query);
+		                                    $db->execute();
+	                                    }
 
-                                            if (file_exists($file_path)) {
+	                                    if (file_exists($file_path)) {
 		                                    JLog::add('File downloaded from yousign : signature request id  '. $signatureRequest->id, JLog::INFO, 'com_emundus.webhook');
-                                                header('HTTP/1.1 200');
-                                                echo 'Document donwloaded by eMundus successfully.';
-                                                exit;
+		                                    header('HTTP/1.1 200');
+		                                    echo 'Document donwloaded by eMundus successfully.';
+		                                    exit;
 	                                    } else {
 		                                    JLog::add('Failed to download file from yousign : signature request id  '. $signatureRequest->id, JLog::ERROR, 'com_emundus.webhook');
 		                                    header('HTTP/1.1 500 Error');
 		                                    echo 'Error 500 - Failed to download signed document';
 		                                    exit;
-                                        }
+	                                    }
                                     } else {
                                         JLog::add('Failed to download file from yousign : signature request id  '. $signatureRequest->id, JLog::ERROR, 'com_emundus.webhook');
                                         header('HTTP/1.1 500 Error');
@@ -243,7 +243,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
                         echo 'Error 500 - API configuration missing';
                         exit;
                     }
-            } else {
+                } else {
 					JLog::add('YouSign bad JSON, missing signature request id : '. file_get_contents('php://input'), JLog::ERROR, 'com_emundus.webhook');
 
 					header('HTTP/1.1 400 Error');

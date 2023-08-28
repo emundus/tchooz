@@ -95,7 +95,7 @@ class EmundusControllerEmail extends JControllerLegacy {
         $fnums = $jinput->post->getString('fnums');
 
 			if (!empty($fnums)) {
-        $email = $this->m_emails->sendExpertMail((array) $fnums);
+				$email = $this->m_emails->sendExpertMail((array) $fnums);
 				$response = ['status' => true, 'sent' => $email['sent'], 'failed' => $email['failed'], 'message' => $email['message']];
 			} else {
 				$response = ['status' => false, 'sent' => null, 'failed' => true, 'message' => JText::_( 'MISSING_PARAMS')];

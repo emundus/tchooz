@@ -690,7 +690,7 @@ class EmundusModelPayment extends JModelList
     public function getFlywireExtendedConfig($config)
     {
         JPluginHelper::importPlugin('emundus');
-        
+
         $extended_config = JFactory::getApplication()->triggerEvent('callEventHandler', ['extendFlywireConfig', ['config' => $config]]);
 
         if (!empty($extended_config)) {

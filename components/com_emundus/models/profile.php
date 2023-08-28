@@ -7,6 +7,7 @@
  */
 
 // No direct access
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.model' );
@@ -38,7 +39,7 @@ class EmundusModelProfile extends JModelList {
                 $profile = $this->_db->loadObject();
             } catch(Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-                
+
             }
         }
 
@@ -49,12 +50,12 @@ class EmundusModelProfile extends JModelList {
      * @return mixed
      */
     public function getApplicantsProfiles() {
-            $db = JFactory::getDBO();
-            $query = 'SELECT *
+        $db = JFactory::getDBO();
+        $query = 'SELECT *
         			FROM #__emundus_setup_profiles esp
                  	WHERE esp.published=1
                   	ORDER BY esp.label';
-            $db->setQuery($query);
+        $db->setQuery($query);
         return $db->loadObjectList();
     }
     /**
@@ -80,7 +81,7 @@ class EmundusModelProfile extends JModelList {
             return $db->loadObjectList();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            
+
         }
     }
 
@@ -96,7 +97,7 @@ class EmundusModelProfile extends JModelList {
             return $this->_db->loadAssoc();
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            
+
         }
     }
 
@@ -191,47 +192,47 @@ class EmundusModelProfile extends JModelList {
         $profile = 0;
 
 		if (!empty($fnum)) {
-        $query = $this->_db->getQuery(true);
+			$query = $this->_db->getQuery(true);
 
-        // check if a default workflow exists
-        require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
-        $m_campaign = new EmundusModelCampaign();
-        $campaign_workflow = $m_campaign->getCurrentCampaignWorkflow($fnum);
+			// check if a default workflow exists
+			require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
+			$m_campaign = new EmundusModelCampaign();
+			$campaign_workflow = $m_campaign->getCurrentCampaignWorkflow($fnum);
 
-        if (!empty($campaign_workflow)) {
-            $profile = $campaign_workflow->profile;
-        }
+			if (!empty($campaign_workflow)) {
+				$profile = $campaign_workflow->profile;
+			}
 
-        if (empty($profile)) {
+			if (empty($profile)) {
 
-            if (!empty($default_workflow)) {
-                $profile = $default_workflow->profile;
-            } else {
-                $query = 'SELECT ss.profile from jos_emundus_setup_status ss
+				if (!empty($default_workflow)) {
+					$profile = $default_workflow->profile;
+				} else {
+					$query = 'SELECT ss.profile from jos_emundus_setup_status ss
                   LEFT JOIN jos_emundus_campaign_candidature cc ON cc.status = ss.step
 						WHERE cc.fnum LIKE "'.$fnum.'"';
-                $this->_db->setQuery($query);
+					$this->_db->setQuery($query);
 
-                try {
-                    $profile = $this->_db->loadResult();
-                } catch(Exception $e) {
-                    JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
-                }
+					try {
+						$profile = $this->_db->loadResult();
+					} catch(Exception $e) {
+						JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
+					}
 
-                if (empty($profile)) {
-                    $query = 'SELECT esc.profile_id from jos_emundus_setup_campaigns esc
+					if (empty($profile)) {
+						$query = 'SELECT esc.profile_id from jos_emundus_setup_campaigns esc
                   LEFT JOIN jos_emundus_campaign_candidature cc ON cc.campaign_id = esc.id
 						WHERE cc.fnum LIKE "'.$fnum.'"';
-                    $this->_db->setQuery($query);
+						$this->_db->setQuery($query);
 
-                    try {
-                        $profile = $this->_db->loadResult();
-                    } catch(Exception $e) {
-                        JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
-                    }
-                }
-            }
-        }
+						try {
+							$profile = $this->_db->loadResult();
+						} catch(Exception $e) {
+							JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
+						}
+					}
+				}
+			}
 		}
 
 		if (empty($profile)) {
@@ -283,7 +284,7 @@ class EmundusModelProfile extends JModelList {
 
     function getForms($p) {
         $query = 'SELECT fbtable.id, fbtable.label, menu.id>0 AS selected, menu.lft AS `order` FROM #__fabrik_lists AS fbtable
-					LEFT JOIN #__menu AS menu ON fbtable.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 3), "&", 1)
+					LEFT JOIN #__menu AS menu ON fbtable.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("listid=",menu.link)+7, 4), "&", 1)
 					AND menu.menutype=(SELECT profile.menutype FROM #__emundus_setup_profiles AS profile WHERE profile.id = '.(int)$p.')
 					WHERE fbtable.created_by_alias = "form" ORDER BY selected DESC, menu.lft ASC, fbtable.label ASC';
 

@@ -22,6 +22,7 @@ class EmundusViewProgramme extends JViewLegacy
      */
     public function display($tpl = null)
     {
+
         // Get data from the model
         //$items = $this->get('Items');
         $model = $this->getModel();
@@ -51,7 +52,6 @@ class EmundusViewProgramme extends JViewLegacy
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
-            JError::raiseError(500, implode('<br />', $errors));
             return false;
         }
         // Assign data to the view

@@ -17,7 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 class EmundusHelperMenu {
 
 	public static function buildMenuQuery($profile, $formids = null, $checklevel=true) {
-	    if (empty($profile)) {
+		if (empty($profile)) {
 	        return false;
         }
 		$list = [];
@@ -38,7 +38,7 @@ class EmundusHelperMenu {
 			->innerJoin($db->quoteName('#__fabrik_lists','fbtables').' ON '.$db->quoteName('fbtables.form_id').' = '.$db->quoteName('fbforms.id'))
 			->where($db->quoteName('menu.published') . ' = 1')
 			->andWhere($db->quoteName('menu.parent_id') . ' != 1');
-		if($checklevel && !empty($levels)){
+		if ($checklevel && !empty($levels)){
 			$query->andWhere($db->quoteName('menu.access') . ' IN ('.implode(',', $levels).')');
 		}
 
@@ -51,24 +51,24 @@ class EmundusHelperMenu {
 			$db->setQuery( $query );
 			$list = $db->loadObjectList();
 
-				$query->clear()
+			$query->clear()
 				->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
-					->from($db->quoteName('#__menu','menu'))
-					->innerJoin($db->quoteName('#__emundus_setup_profiles','profile').' ON '.$db->quoteName('profile.menutype').' = '.$db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
-					->innerJoin($db->quoteName('#__fabrik_forms','fbforms').' ON '.$db->quoteName('fbforms.id').' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
-					->innerJoin($db->quoteName('#__fabrik_lists','fbtables').' ON '.$db->quoteName('fbtables.form_id').' = '.$db->quoteName('fbforms.id'))
-					->where($db->quoteName('menu.published') . ' = 1')
-					->andWhere($db->quoteName('menu.parent_id') . ' != 1');
-				if($checklevel && !empty($levels)){
-					$query->andWhere($db->quoteName('menu.access') . ' IN ('.implode(',', $levels).')');
-				}
+				->from($db->quoteName('#__menu','menu'))
+				->innerJoin($db->quoteName('#__emundus_setup_profiles','profile').' ON '.$db->quoteName('profile.menutype').' = '.$db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
+				->innerJoin($db->quoteName('#__fabrik_forms','fbforms').' ON '.$db->quoteName('fbforms.id').' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
+				->innerJoin($db->quoteName('#__fabrik_lists','fbtables').' ON '.$db->quoteName('fbtables.form_id').' = '.$db->quoteName('fbforms.id'))
+				->where($db->quoteName('menu.published') . ' = 1')
+				->andWhere($db->quoteName('menu.parent_id') . ' != 1');
+			if($checklevel && !empty($levels)){
+				$query->andWhere($db->quoteName('menu.access') . ' IN ('.implode(',', $levels).')');
+			}
 
-				if (!empty($formids) && $formids[0] != "") {
-					$query->andWhere($db->quoteName('fbtables.form_id') . ' IN (' . implode(',', $formids) . ')');
-				}
-				$query->order('menu.lft');
+			if (!empty($formids) && $formids[0] != "") {
+				$query->andWhere($db->quoteName('fbtables.form_id') . ' IN (' . implode(',', $formids) . ')');
+			}
+			$query->order('menu.lft');
 
-				$db->setQuery( $query );
+			$db->setQuery( $query );
 			$forms = $db->loadObjectList();
 
 			// merge forms and lists

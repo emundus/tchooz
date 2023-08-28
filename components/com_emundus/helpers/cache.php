@@ -37,24 +37,24 @@ class EmundusHelperCache
 
         $cache_path = JPATH_SITE . '/cache';
         if (is_dir($cache_path)) {
-		$config = JFactory::getConfig();
-		$cache_enabled = $config->get('caching'); // 1 = conservative, 2 = progressive
-		$cache_handler = $config->get('cache_handler', 'file');
+            $config = JFactory::getConfig();
+            $cache_enabled = $config->get('caching'); // 1 = conservative, 2 = progressive
+            $cache_handler = $config->get('cache_handler', 'file');
 
-		if ($cache_enabled > 0 && $cache_handler == 'file') {
-			if ($context === 'component' || $cache_enabled === 2) {
-				if (empty($lifetime)) {
-					$cache_time = $config->get('cachetime', 15);
-					$lifetime = $cache_time * 60;
-				}
+            if ($cache_enabled > 0 && $cache_handler == 'file') {
+                if ($context === 'component' || $cache_enabled === 2) {
+                    if (empty($lifetime)) {
+                        $cache_time = $config->get('cachetime', 15);
+                        $lifetime = $cache_time * 60;
+                    }
 
-				$this->group = $group;
-				$this->cache = JFactory::getCache($group, $handler);
-				$this->cache->setLifeTime($lifetime);
-				$this->cache->setCaching(true);
-				$this->cache_enabled = true;
-			}
-		}
+                    $this->group = $group;
+                    $this->cache = JFactory::getCache($group, $handler);
+                    $this->cache->setLifeTime($lifetime);
+                    $this->cache->setCaching(true);
+                    $this->cache_enabled = true;
+                }
+            }
         } else {
             error_log('Cache directory does not exists!');
             JLog::add('Cache directory does not exists!', JLog::WARNING, 'com_emundus.cache.error');

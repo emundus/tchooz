@@ -17,6 +17,7 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+
 // LOGGER
 jimport('joomla.log.log');
 JLog::addLogger(
@@ -392,7 +393,6 @@ JText::script('COM_EMUNDUS_EMAILS_CANCEL_EMAIL');
 //view application layout share
 JText::script('COM_EMUNDUS_ACCESS_ARE_YOU_SURE_YOU_WANT_TO_REMOVE_THIS_ACCESS');
 
-
 //view ametys
 JText::script('COM_EMUNDUS_CANNOT_RETRIEVE_EMUNDUS_PROGRAMME_LIST');
 JText::script('COM_EMUNDUS_RETRIEVE_AMETYS_STORED_PROGRAMMES');
@@ -622,9 +622,6 @@ JText::script('COM_EMUNDUS_DELETE_ADVANCED_FILTERS');
 
 JText::script('COM_EMUNDUS_MAIL_GB_BUTTON');
 
-
-// ONBOARD
-
 $app = JFactory::getApplication();
 $wa = $app->getDocument()->getWebAssetManager();
 $wa->useScript('jquery');
@@ -664,7 +661,7 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
 if(!in_array($name,['settings','campaigns','emails','form'])) {
     if($cdn == 1)
     {
-    JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
+        JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
     } else {
         JHTML::script('media/com_emundus/js/lib/tinymce.min.js');
     }
@@ -698,7 +695,7 @@ JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 // QUILL
 if($cdn == 1)
 {
-JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
+    JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
 } else {
     JHTML::script('media/com_emundus/js/lib/quill.min.js');
 }

@@ -10,7 +10,7 @@ jimport('joomla.application.component.controller');
  */
 class EmundusControllerExport_select_columns extends JControllerLegacy {
 
-	function display(){
+	function display($cachable = false, $urlparams = false){
 		// Set a default view if none exists
 		if ( ! JFactory::getApplication()->input->get( 'view' ) ){
 			$default = 'export_select_columns';

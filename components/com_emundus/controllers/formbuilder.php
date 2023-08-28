@@ -486,7 +486,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             if (!empty($group['group_id'])) {
                 $response = $group;
                 $response['status'] = true;
-        }
+            }
         }
         echo json_encode((object)$response);
         exit;
@@ -546,7 +546,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
         if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 	        $response['msg'] = JText::_('MISSING_PLUGIN_OR_GROUP');
-            $jinput = JFactory::getApplication()->input;
+			$jinput = JFactory::getApplication()->input;
 
             $gid = $jinput->getInt('gid');
             $plugin = $jinput->getString('plugin');
@@ -569,7 +569,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 					$response['msg'] = JText::_('COM_EMUNDUS_FORMBUILDER_ELEMENT_CREATED');
 				} else {
 					$response['msg'] = JText::_('COM_EMUNDUS_FORMBUILDER_ELEMENT_NOT_CREATED');
-                }
+				}
             }
         }
 

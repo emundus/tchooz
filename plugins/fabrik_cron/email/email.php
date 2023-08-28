@@ -84,8 +84,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 					{
 						$this_condition = $w->parseMessageForPlaceHolder($condition, $row);
 
-						FabrikWorker::clearEval();
-						if (Php::Eval(['code' => $this_condition, 'vars'=>['data'=>$data]]) === false)
+						if (eval($this_condition) === false)
 						{
 							if ($testMode)
 							{
@@ -123,9 +122,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 
 							if ($eval)
 							{
-								FabrikWorker::clearEval();
-								$thisMsg = Php::Eval(['code' => $thisMsg, 'vars'=>['data'=>$data]]);
-								FabrikWorker::logEval($thisMsg, 'Caught exception on eval of fabrik_cron/email message: %s');
+								$thisMsg = eval($thisMsg);
 							}
 
 							$thisSubject = $w->parseMessageForPlaceHolder($subject, $row);
@@ -193,7 +190,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 		{
 			// Do any update found
 			/** @var FabrikFEModelList $listModel */
-			$listModel = BaseDatabaseModel::getInstance('list', 'FabrikFEModel');
+			$listModel = JModelLegacy::getInstance('list', 'FabrikFEModel');
 			$listModel->setId($params->get('table'));
 			$table = $listModel->getTable();
 			$field = $params->get('cronemail-updatefield');
@@ -201,9 +198,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 
 			if ($params->get('cronemail-updatefield-eval', '0') == '1')
 			{
-				FabrikWorker::clearEval();
-				$value = Php::Eval(['code' => $value, 'vars'=>['listModel'=>$listModel]]);
-				FabrikWorker::logEval($value, 'Caught exception on eval of cron email updatefield : %s');
+				$value = @eval($value);
 			}
 
 			$field    = str_replace('___', '.', $field);
@@ -234,9 +229,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 		{
 			if (!$testMode)
 			{
-				FabrikWorker::clearEval();
-				Php::Eval(['code' => $field, 'vars'=>['listModel'=>$listModel]]);
-				FabrikWorker::logEval($field, 'Caught exception on eval of cron email update code : %s');
+				@eval($field);
 			}
 			else
 			{

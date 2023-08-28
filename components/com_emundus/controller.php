@@ -129,7 +129,6 @@ class EmundusController extends JControllerLegacy {
 
         require_once($file);
 
-
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile,null,null);
             exit;
@@ -675,7 +674,7 @@ class EmundusController extends JControllerLegacy {
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
 
-        
+
 	    JFactory::getApplication()->triggerEvent('onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]);
 	    JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]]);
 
@@ -869,7 +868,6 @@ class EmundusController extends JControllerLegacy {
             $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid);
             return false;
         }
-
 
         $query = '';
         $nb = 0;
@@ -1304,11 +1302,11 @@ class EmundusController extends JControllerLegacy {
 				}
 
                 // TODO: onAfterAttachmentUpload event appeared after onAfterUploadFile creation on this branch. move treatment to use onAfterAttachmentUpload
-                
+
                 JPluginHelper::importPlugin('emundus', 'sync_file');
                 JFactory::getApplication()->triggerEvent('onAfterUploadFile', [['upload_id' => $id]]);
 
-                
+
                 JFactory::getApplication()->triggerEvent('onAfterAttachmentUpload', [$fnum, (int)$attachments, $paths]);
                 JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterAttachmentUpload', ['fnum' => $fnum, 'attachment_id' => (int)$attachments, 'file' => $paths]]);
 
@@ -1421,7 +1419,7 @@ class EmundusController extends JControllerLegacy {
         $view = JFactory::getApplication()->input->get('v', null, 'GET');
 
         // Starting a session.
-        $session        =& JFactory::getSession();
+        $session        = JFactory::getSession();
         $cid            = $session->get('uid');
         $quick_search   = $session->get('quick_search');
         $user           = $session->get('emundusUser');
@@ -1753,51 +1751,7 @@ class EmundusController extends JControllerLegacy {
         }
     }
 
-/*
-    function sendmail($nb_email_per_batch = null) {
-        $app = JFactory::getApplication();
-        $user = JFactory::getSession()->get('emundusUser');
-        $db = JFactory::getDBO();
-        $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
-        $keyid = JFactory::getApplication()->input->get('keyid', null, 'GET', 'none',0);
-        $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        if (EmundusHelperAccess::isAdministrator($user->id) && EmundusHelperAccess::isCoordinator($user->id) && EmundusHelperAccess::isPartner($user->id) && EmundusHelperAccess::isEvaluator($user->id)) {
-            if ($nb_email_per_batch == null)
-                $nb_email_per_batch = $eMConfig->get('nb_email_per_batch', '30');
-
-            //Selection des mails à envoyer : table jos_emundus_emailtosend
-            $query = '  SELECT m.user_id_from, m.user_id_to, m.subject, m.message, u.email
-                        FROM #__messages m, #__users u
-                        WHERE m.user_id_to = u.id
-                        AND m.state = 1
-                        LIMIT 0,'.$nb_email_per_batch;
-            $db->setQuery( $query );
-            $db->execute();
-
-            if ($db->getNumRows() == 0) {
-                $this->setRedirect('index.php?option=com_fabrik&view=table&tableid=90&Itemid='.$itemid);
-            } else {
-                $mail=$db->loadObjectList();
-
-                foreach ($mail as $m) {
-                    $mail_subject = $m->subject;
-                    $emailfrom = $app->getCfg('mailfrom');
-                    $fromname = $app->getCfg('fromname');
-                    $recipient = $m->email;
-                    $body = $m->message;
-                    if (JUtility::sendMail( $emailfrom, $fromname, $recipient, $mail_subject, $body, true)) {
-                        usleep(100);
-                        $query = 'UPDATE #__messages SET state = 0 WHERE user_id_to ='.$m->user_id_to;
-                        $db->setQuery($query);
-                        $db->execute();
-                    }
-                }
-                $this->setRedirect('index.php?option=com_emundus&task=sendmail&keyid='.$keyid.'&Itemid='.$itemid);
-            }
-        }
-    }
-*/
     function sendmail_applicant() {
         $itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
         $sid = JFactory::getApplication()->input->get('mail_to', null, 'POST', 'INT',0);

@@ -27,16 +27,6 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
     }
 </style>
 <form action="index.php?option=com_emundus&controller=users&task=<?= ($this->edit == 1)? 'edituser' : 'adduser'; ?>" id="em-add-user" class="em-addUser" role="form" method="post">
-	<h3>
-		<?php
-			if ($this->edit == 1) {
-				echo JText::_('COM_EMUNDUS_ACTIONS_EDIT_USER');
-			} else {
-				echo JText::_('COM_EMUNDUS_ACTIONS_ADD_USER');
-			}
-		?>
-	</h3>
-
 	<fieldset class="em-addUser-detail">
 		<?php if (JPluginHelper::getPlugin('authentication','ldap') && $this->edit == 0) :?>
 			<div class="form-group em-addUser-detail-ldap">
@@ -45,13 +35,13 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 			</div>
 		<?php endif; ?>
 		<div id="user-information" class="em-addUser-detail-info">
-			<div class="form-group em-addUser-detail-info-firstname">
-				<label class="control-label" for="fname"><?= JText::_('COM_EMUNDUS_FORM_FIRST_NAME'); ?></label>
-				<input type="text" class="em-w-100" id="fname" name="firstname" <?= ($this->edit == 1)?'value="'.$this->user['firstname'].'"':''; ?>/>
-			</div>
 			<div class="form-group em-addUser-detail-info-lastname">
 				<label class="control-label" for="lname"><?= JText::_('COM_EMUNDUS_FORM_LAST_NAME'); ?></label>
 				<input type="text" class="em-w-100" id="lname" name = "lastname" <?= ($this->edit == 1)?'value="'.$this->user['lastname'].'"':''; ?>/>
+			</div>
+			<div class="form-group em-addUser-detail-info-firstname">
+				<label class="control-label" for="fname"><?= JText::_('COM_EMUNDUS_FORM_FIRST_NAME'); ?></label>
+				<input type="text" class="em-w-100" id="fname" name="firstname" <?= ($this->edit == 1)?'value="'.$this->user['firstname'].'"':''; ?>/>
 			</div>
 			<div class="form-group em-addUser-detail-info-mail">
 				<label class="control-label" for="mail"><?= JText::_('COM_EMUNDUS_EMAIL'); ?></label>
@@ -165,7 +155,7 @@ require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 	};
 	$(document).ready(function() {
 		var edit = '<?php echo $this->edit?>';
-		$('form').css({padding:"26px"});
+		$('form').css({padding:"16px"});
 		$('alertes-details').css({padding:"30px"});
 		$('.em-chosen').chosen({width:'100%'});
 

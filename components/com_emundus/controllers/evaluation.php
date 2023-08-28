@@ -412,32 +412,32 @@ class EmundusControllerEvaluation extends JControllerLegacy
          $fnums  = $jinput->getString('fnums', null);
          $tags    = $jinput->getVar('tag', null);
 
-         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+         $fnums = ($fnums=='all') ? 'all' : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
 		 if (!empty($fnums)) {
-             $m_files = $this->getModel('Files');
+			 $m_files = $this->getModel('Files');
 
-             if ($fnums == "all") {
-                 $fnums = $m_files->getAllFnums();
-             }
+			 if ($fnums == "all") {
+				 $fnums = $m_files->getAllFnums();
+			 }
 
-             require_once(JPATH_COMPONENT . '/models/application.php');
-             $m_application = new EmundusModelApplication();
+			 require_once(JPATH_COMPONENT . '/models/application.php');
+			 $m_application = new EmundusModelApplication();
 
-             foreach ($fnums as $fnum)
-             {
-                 foreach ($tags as $tag){
-                     $hastags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
-                     if($hastags){
-                         $result = $m_application->deleteTag($tag, $fnum);
-                     }else{
-                         if(EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
-                         {
-                            $result = $m_application->deleteTag($tag, $fnum);
-                         }
-                     }
-                 }
-             }
+			 foreach ($fnums as $fnum) {
+				 foreach ($tags as $tag){
+					 $hastags = $m_files->getTagsByIdFnumUser($tag, $fnum, $this->_user->id);
+
+					 if($hastags){
+						 $result = $m_application->deleteTag($tag, $fnum);
+					 }else{
+						 if(EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $fnum))
+						 {
+							 $result = $m_application->deleteTag($tag, $fnum);
+						 }
+					 }
+				 }
+			 }
 		 }
          unset($fnums);
          unset($tags);
@@ -835,7 +835,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function copyeval() {
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 
-        $user = JFactory::getUser();
+	    $user = JFactory::getUser();
 
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id))
             die (JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
@@ -900,7 +900,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 
-        $jinput = JFactory::getApplication()->input;
+	    $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
         $student_id = $jinput->getInt('student_id', $jinput->getInt('user', $this->_user->id));
 
@@ -937,7 +937,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     function delevaluation(){
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 
-        $jinput = JFactory::getApplication()->input;
+	    $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', null);
         $ids = $jinput->getString('ids', null);
         $ids = json_decode(stripslashes($ids));
@@ -1132,7 +1132,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         $m_files = $this->getModel('Files');
 	    require_once (JPATH_COMPONENT . '/models/application.php');
-        $m_application = new EmundusModelApplication();
+	    $m_application = new EmundusModelApplication();
 
         $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
@@ -1265,7 +1265,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
                         $line .= JText::_('photo') . "\t";
                         break;
                     case "forms":
-                    case "attachment":
+	                case "attachment":
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $val = $vOpt[$fnum['fnum']];
                             $line .= $val . "\t";
@@ -1465,7 +1465,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function getattachmentletters() {
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 
-        /// first, get list of fnums
+	    /// first, get list of fnums
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getRaw('fnums', null);
 
@@ -1484,7 +1484,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function getmyevaluations() {
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 
-        $current_user = JFactory::getUser();
+	    $current_user = JFactory::getUser();
         $jinput = JFactory::getApplication()->input;
         $campaign = $jinput->getInt('campaign');
         $module = $jinput->getInt('module');
@@ -1504,7 +1504,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     public function getcampaignstoevaluate() {
 	    require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 
-        $current_user = JFactory::getUser();
+	    $current_user = JFactory::getUser();
         $jinput = JFactory::getApplication()->input;
         $module = $jinput->getInt('module');
 

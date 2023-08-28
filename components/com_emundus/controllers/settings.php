@@ -1065,8 +1065,8 @@ class EmundusControllersettings extends JControllerLegacy {
 		$results['msg'] = 'RGPD Articles';
 		$results['data'] = $this->m_settings->getRgpdArticles();
 
-        echo json_encode((object)$results);
-        exit;
-    }
+		echo json_encode((object)$results);
+		exit;
+	}
 }
 

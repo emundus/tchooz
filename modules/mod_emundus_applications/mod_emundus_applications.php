@@ -13,6 +13,10 @@ include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile
 $m_profile = new EmundusModelProfile();
 
 $user = JFactory::getSession()->get('emundusUser');
+if(empty($user->firstname) && empty($user->lastname)) {
+	$m_profile->initEmundusSession();
+	$user = JFactory::getSession()->get('emundusUser');
+}
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
 $specific_profiles = $params->get('for_specific_profiles', '');
@@ -27,9 +31,11 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+	$m_application = new EmundusModelApplication();
 
     $document = JFactory::getApplication()->getDocument();
     $wa = $document->getWebAssetManager();
@@ -42,6 +48,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
     $document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->');
 
+    $document->addScript("media/jui/js/jquery.min.js" );
+    $document->addScript("media/com_emundus/lib/bootstrap-336/js/bootstrap.min.js");
     $document->addScript("media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js" );
 
     $app = JFactory::getApplication();
@@ -49,6 +57,14 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $layout = $params->get('layout', 'default');
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
+
+    // Vérifier si il s'agit d'une session  anonyme et ci celles ci sont autorisés
+    $is_anonym_user = $user->anonym;
+    $allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+    if ($is_anonym_user && !$allow_anonym_files) {
+        return;
+    }
+
     $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
     $status_for_delete = $eMConfig->get('status_for_delete', 0);
     if (!empty($status_for_delete) || $status_for_delete == '0') {
@@ -97,7 +113,11 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     } else {
 		$visible_status = [];
     }
+	$selected_campaigns = $params->get('selected_campaigns', []);
+
     $mod_em_applications_show_search = $params->get('mod_em_applications_show_search', 1);
+    $mod_em_applications_show_sort = $params->get('mod_em_applications_show_sort', 0);
+    $mod_em_applications_show_filters = $params->get('mod_em_applications_show_filters', 0);
 
     $order_applications = $params->get('order_applications', 'esc.end_date');
     $applications_as_desc = $params->get('order_applications_asc_des', 'DESC');
@@ -112,6 +132,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $date_format = $params->get('mod_em_application_date_format', 'd/m/Y H:i');
     $mod_em_applications_show_hello_text = $params->get('mod_em_applications_show_hello_text',1);
     $custom_actions  = $params->get('mod_em_application_custom_actions');
+	$show_tabs = $params->get('mod_em_applications_show_tabs',1);
+	$actions = $params->get('mod_emundus_applications_actions',[]);
 
     // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
     if ($layout == '_:ccirs-drh') {
@@ -122,7 +144,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
     } else {
         // We send the layout as a param because Hesam needs different information.
-        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
+        $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params);
+		$tabs = $m_application->getTabs(JFactory::getUser()->id);
     }
 
     $linknames = $params->get('linknames', 0);
@@ -145,7 +168,6 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $m_files = new EmundusModelFiles();
     $m_campaign = new EmundusModelCampaign();
 
-
 	$fnums = array_keys($applications);
 
     $progress = $m_application->getFilesProgress($fnums);
@@ -164,30 +186,32 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
             }
         }
 
-
+		$available_campaigns = [];
         // Check to see if the applicant meets the criteria to renew a file.
         switch ($applicant_can_renew) {
-
             // Applicants can apply as many times as they like
             case 1:
                 // We need to check if there are any available campaigns.
-                $applicant_can_renew = modemundusApplicationsHelper::getAvailableCampaigns();
+	            $available_campaigns = modemundusApplicationsHelper::getAvailableCampaigns();
                 break;
 
             // If the applicant can only have one file per campaign.
             case 2:
                 // True if does not have a file open in one or more of the available campaigns.
-                $applicant_can_renew = modemundusApplicationsHelper::getOtherCampaigns($user->id);
+	            $available_campaigns = modemundusApplicationsHelper::getOtherCampaigns($user->id);
                 break;
 
             // If the applicant can only have one file per year.
             case 3:
                 // True if periods are found for next year.
-                $applicant_can_renew = modemundusApplicationsHelper::getFutureYearCampaigns($user->id);
+	            $available_campaigns = modemundusApplicationsHelper::getFutureYearCampaigns($user->id);
                 break;
-
         }
-    }
+
+	    $applicant_can_renew = !empty($available_campaigns);
+        }
+
+
 
 	if ($display_poll == 1 && $display_poll_id > 0 && isset($user->fnum) && !empty($user->fnum)) {
 		$filled_poll_id = modemundusApplicationsHelper::getPoll();
@@ -214,13 +238,22 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	}
 
     if (!empty($show_payment_status)) {
-
         foreach ($applications as $application => $val) {
             $order_status = modemundusApplicationsHelper::getHikashopOrder($applications[$application]);
             $applications[$application]->order_status = $order_status->orderstatus_namekey;
             $applications[$application]->order_color = $order_status->orderstatus_color;
         }
+    }
 
+    $override_default_content = JText::_($params->get('override_default_content', ''));
+    if (!empty($override_default_content)) {
+        try {
+            $post = array('APPLICANT_ID'   => $user->id, 'FNUM' => '');
+            $tags              = $m_email->setTags($user->id, $post, null, '', $override_default_content);
+            $override_default_content = preg_replace($tags['patterns'], $tags['replacements'], $override_default_content);
+        } catch (Exception $e) {
+            $override_default_content = JText::_($params->get('override_default_content', ''));
+        }
     }
 
     $status = $m_files->getStatus();

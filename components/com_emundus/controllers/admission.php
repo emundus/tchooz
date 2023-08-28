@@ -627,7 +627,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
         $code = $jinput->getVar('code', null);
         $code = explode(',', $code);
 
-	require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
+	    require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
         $m_admission = new EmundusModelAdmission();
         $h_files = new EmundusHelperFiles;
 

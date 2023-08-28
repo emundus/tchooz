@@ -103,8 +103,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 			$user->password = md5($password);
 		}
         $now = EmundusHelperDate::getNow();
-        	$user->registerDate = $now;
-        	$user->lastvisitDate = null;
+        $user->registerDate = $now;
+        $user->lastvisitDate = null;
 		$user->groups = array($jgr);
 		$user->block = 0;
 
@@ -779,8 +779,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 		echo json_encode((object) array('status' => $res, 'msg' => $msg));
 
-        exit;
-    }
+		exit;
+	}
 
 	// Edit actions rights for group
 	public function setgrouprights() {
@@ -886,25 +886,23 @@ class EmundusControllerUsers extends JControllerLegacy {
 		// Check the request token.
 		if(JFactory::getUser()->guest)
 		{
-		$this->checkToken('post');
+			$this->checkToken('post');
 
-		$data = JFactory::getApplication()->input->post->get('jform', array(), 'array');
+			$data = JFactory::getApplication()->input->post->get('jform', array(), 'array');
 
-		$return	= $m_users->passwordReset($data);
+			$return = $m_users->passwordReset($data);
 
-		// Check for a hard error.
-		if ($return->status === false) {
+			// Check for a hard error.
+			if ($return->status === false) {
+				// The request failed.
+				// Go back to the request form.
+				$message = JText::sprintf('COM_USERS_RESET_REQUEST_FAILED', $return->message);
+				$this->setRedirect('index.php?option=com_users&view=reset', $message, 'notice');
 
-			// The request failed.
-			// Go back to the request form.
-			$message = JText::sprintf('COM_USERS_RESET_REQUEST_FAILED', $return->message);
-			$this->setRedirect('index.php?option=com_users&view=reset', $message, 'notice');
-
-		} else {
-
-			// The request succeeded.
-			// Proceed to step two.
-			$this->setRedirect(JRoute::_('index.php?option=com_users&view=reset&layout=confirm'));
+			} else {
+				// The request succeeded.
+				// Proceed to step two.
+				$this->setRedirect(JRoute::_('index.php?option=com_users&view=reset&layout=confirm'));
 			}
 		} elseif(EmundusHelperAccess::asAccessAction(12,'u') || EmundusHelperAccess::asAccessAction(20, 'u')) {
 			$response['msg'] = JText::_('COM_EMUNDUS_USERS_RESET_REQUEST_LINK_SENDED');

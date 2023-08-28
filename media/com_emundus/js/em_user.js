@@ -608,18 +608,20 @@ $(document).ready(function () {
 		e.preventDefault();
 		var id = parseInt($(this).attr('id').split('|')[3]);
 
-		$('#em-modal-actions').modal({
-			backdrop: false
-		}, 'toggle');
-		$('.modal-title').empty();
-		$('.modal-title').append($(this).children('a').text());
-		$('.modal-body').empty();
-		if ($('.modal-dialog').hasClass('modal-lg')) {
-			$('.modal-dialog').removeClass('modal-lg');
-		}
-		$('.modal-footer').show();
+		if(id != 26 && id != 33) {
+			$('#em-modal-actions').modal({
+				backdrop: false
+			}, 'toggle');
+			$('.modal-title').empty();
+			$('.modal-title').append($(this).children('a').text());
+			$('.modal-body').empty();
+			if ($('.modal-dialog').hasClass('modal-lg')) {
+				$('.modal-dialog').removeClass('modal-lg');
+			}
+			$('.modal-footer').show();
 
-		$('.modal-body').attr('act-id', id);
+			$('.modal-body').attr('act-id', id);
+		}
 
 
 		var view = $('#view').val();
@@ -705,12 +707,15 @@ $(document).ready(function () {
 								type: 'success',
 								title: result.msg,
 								showConfirmButton: false,
-								timer: 1500
-							});
-							reloadData();
+								timer: 1500,
+								customClass: {
+									title: 'w-full justify-center',
+								}
+							}).then((result) => {
+								reloadData();
 
-							reloadActions($('#view').val(), undefined, false);
-							$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+								reloadActions($('#view').val(), undefined, false);
+							});
 						}
 
 					},
@@ -752,9 +757,13 @@ $(document).ready(function () {
 								type: 'success',
 								title: result.msg,
 								showConfirmButton: false,
-								timer: 1500
+								timer: 1500,
+								customClass: {
+									title: 'w-full justify-center',
+								}
+							}).then(() => {
+								reloadData();
 							});
-							reloadData();
 						}
 
 					},
@@ -794,14 +803,147 @@ $(document).ready(function () {
 
 			case 26:
 				/* delete user*/
-				$('.modal-body').empty();
-				$('.modal-body').append('<div style="padding:26px"><strong>'+ Joomla.JText._('ARE_YOU_SURE_TO_DELETE_USERS') + '</strong></div>');
+
+				Swal.fire({
+					title: $(this).children('a').text(),
+					text: Joomla.JText._('COM_EMUNDUS_USERS_ARE_YOU_SURE_TO_DELETE_USERS'),
+					showCancelButton: true,
+					showCloseButton: true,
+					confirmButtonText: Joomla.JText._('JACTION_DELETE'),
+					cancelButtonText: Joomla.JText._('JCANCEL'),
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						cancelButton: 'em-swal-cancel-button',
+						confirmButton: 'em-swal-confirm-button',
+					},
+				}).then(function(result) {
+					if (result.value) {
+						addLoader();
+
+						var checkInput = getUserCheck();
+						$.ajax({
+							type: 'POST',
+							url: 'index.php?option=com_emundus&controller=users&task=deleteusers&Itemid=' + itemId,
+							data: {
+								users: checkInput
+							},
+							dataType: 'json',
+							success: function (result) {
+								removeLoader();
+
+								if (result.status) {
+									Swal.fire({
+										position: 'center',
+										type: 'success',
+										title: result.msg,
+										showConfirmButton: false,
+										timer: 1500,
+										customClass: {
+											title: 'w-full justify-center',
+										}
+									});
+									reloadData();
+									reloadActions($('#view').val());
+
+								} else {
+									Swal.fire({
+										position: 'center',
+										type: 'warning',
+										title: result.msg,
+										customClass: {
+											title: 'em-swal-title',
+											confirmButton: 'em-swal-confirm-button',
+											actions: "em-swal-single-action",
+										},
+									});
+								}
+
+							},
+							error: function (jqXHR) {
+								removeLoader();
+								console.log(jqXHR.responseText);
+							}
+						});
+					}
+				});
+
 				break;
 
 			case 33:
 				/*regenerate password*/
-				$('.modal-body').empty();
-				$('.modal-body').append('<div style="display: flex; flex-direction: row; justify-content: center;"><strong>' + Joomla.JText._('ARE_YOU_SURE_TO_REGENERATE_PASSWORD') + '</strong></div>');
+				Swal.fire({
+					title: $(this).children('a').text(),
+					text: Joomla.JText._('COM_EMUNDUS_WANT_RESET_PASSWORD'),
+					showCancelButton: true,
+					showCloseButton: true,
+					confirmButtonText: Joomla.JText._('COM_EMUNDUS_OK'),
+					cancelButtonText: Joomla.JText._('JCANCEL'),
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						cancelButton: 'em-swal-cancel-button',
+						confirmButton: 'em-swal-confirm-button',
+					},
+				}).then(function(result) {
+					if (result.value) {
+						addLoader();
+
+						const formData = new FormData();
+						var checkInput = getUserCheck();
+						formData.append('users', checkInput);
+						fetch('index.php?option=com_emundus&controller=users&task=passrequest&Itemid=' + itemId, {
+							method: 'POST',
+							body: formData
+						}).then(function(response) {
+							if (response.ok) {
+								return response.json();
+							}
+							throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+						}).then(function(result) {
+							removeLoader();
+
+							if (result.status) {
+								Swal.fire({
+									position: 'center',
+									type: 'success',
+									title: result.msg,
+									showConfirmButton: false,
+									timer: 1500,
+									customClass: {
+										title: 'w-full justify-center',
+									}
+								});
+								reloadData();
+								reloadActions($('#view').val());
+
+							} else {
+								Swal.fire({
+									position: 'center',
+									type: 'warning',
+									title: result.msg,
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
+								});
+							}
+						}).catch(function(error) {
+							removeLoader();
+							Swal.fire({
+								position: 'center',
+								type: 'warning',
+								title: error.message,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
+							});
+						});
+					}
+				});
 				break;
 
 			case 34:
@@ -829,6 +971,7 @@ $(document).ready(function () {
 
 	/* Button on Actions*/
 	$(document).off('click', '#em-modal-actions .btn.btn-success');
+
 	$(document).on('click', '#em-modal-actions .btn.btn-success', function (e) {
 		var id = parseInt($('.modal-body').attr('act-id'));
 		if ($('#em-check-all-all').is(':checked')) {
@@ -1173,105 +1316,6 @@ $(document).ready(function () {
 					}
 				});
 				break;
-
-			case 26:
-				var checkInput = getUserCheck();
-				addLoader();
-				$.ajax({
-					type: 'POST',
-					url: 'index.php?option=com_emundus&controller=users&task=deleteusers&Itemid=' + itemId,
-					data: {
-						users: checkInput
-					},
-					dataType: 'json',
-					success: function (result) {
-						removeLoader();
-
-						if (result.status) {
-							Swal.fire({
-								position: 'center',
-								type: 'success',
-								title: result.msg,
-								showConfirmButton: false,
-								timer: 1500
-							});
-							reloadData();
-							$('body').removeClass('modal-open');
-							reloadActions($('#view').val());
-							$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-							setTimeout(function () {
-								$('#em-modal-actions').modal('hide');
-							}, 500);
-
-						} else {
-							Swal.fire({
-								position: 'center',
-								type: 'warning',
-								title: result.msg,
-								customClass: {
-									title: 'em-swal-title',
-									confirmButton: 'em-swal-confirm-button',
-									actions: "em-swal-single-action",
-								},
-							});
-						}
-
-					},
-					error: function (jqXHR) {
-						removeLoader();
-						console.log(jqXHR.responseText);
-					}
-				});
-				break;
-
-			case 33 :
-				var usersData = getUserCheck();/*get objectJson with id et uid*/
-				var uid = JSON.parse(usersData);/*parsing in json to get only the uid*/
-
-				addLoader();
-
-				$.ajax({
-					type: 'POST',
-					url: 'index.php?option=com_emundus&controller=users&task=regeneratepassword',
-					data: {
-						user: uid[1]
-					},
-
-					dataType: 'json',
-					success: function (result) {
-						removeLoader();
-
-						if (result.status) {
-							Swal.fire({
-								text: result.msg,
-								type: "success",
-								showConfirmButton: false,
-								timer: 2500,
-								customClass: {
-									title: 'em-swal-title',
-								},
-							});
-							$('.close').click();
-						} else {
-							Swal.fire({
-								text: result.msg,
-								type: "error",
-								showConfirmButton: false,
-								timer: 2500,
-								customClass: {
-									title: 'em-swal-title',
-								},
-							});
-						}
-					},
-					error: function (jqXHR, textStatus, errorThrown) {
-						removeLoader();
-						console.log(jqXHR.responseText, errorThrown);
-					}
-
-				});
-			break;
-
 
 			/* Send an email to a user.*/
 			case 34:

@@ -2105,7 +2105,7 @@ class EmundusModelApplication extends JModelList
 											elseif ($element->plugin == 'emundus_phonenumber') {
                                                 $elt = substr($element->content, 2, strlen($element->content));
                                             }
-                                            elseif ($element->plugin == 'textarea'){
+                                            elseif ($element->plugin == 'textarea') {
 	                                            $elt = nl2br($element->content);
                                             }
 											else
@@ -2151,7 +2151,6 @@ class EmundusModelApplication extends JModelList
 
         require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
         $h_list = new EmundusHelperList();
-
         $tableuser = $h_list->getFormsList($aid, $fnum, $fids, $profile_id);
         $forms = '';
 
@@ -2174,10 +2173,8 @@ class EmundusModelApplication extends JModelList
                 $query .= ' AND ff.form_id = "' . $itemt->form_id . '"
                             ORDER BY ff.ordering';
                 try {
-
                     $this->_db->setQuery($query);
                     $groupes = $this->_db->loadObjectList();
-
                 } catch (Exception $e) {
                     JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
                     throw $e;
@@ -2200,7 +2197,8 @@ class EmundusModelApplication extends JModelList
                 }
 
                 $forms .= '</h2>';
-                /*-- Liste des groupes -- */
+
+				/*-- Liste des groupes -- */
                 foreach ($groupes as $itemg) {
 
                     $g_params = json_decode($itemg->params);
@@ -3712,7 +3710,7 @@ class EmundusModelApplication extends JModelList
                 break;
 
             case 'programmes' :
-                /* By using the parent_id from the emundus_hikashop_programs table, we can get the list of the other programs that use the same settings*/
+                /* By using the parent_id from the emundus_hikashop_programs table, we can get the list of the other programs that use the same settings */
                 /* We check only those with a payment_type of 2, for the others it's one payment by file */
                 $hika_query = $db->getQuery(true);
                 $hika_query->select('hpr.code_prog')
@@ -3725,17 +3723,16 @@ class EmundusModelApplication extends JModelList
 
                 /* If there are programs, we must check if there was a payment on one of the campaigns this year */
                 if (!empty($progs_to_check)) {
-                $fnum_query = $db->getQuery(true);
-                /* Get the list of the candiate's files that are in the list of programs in the year*/
-                $fnum_query
-                    ->select('cc.fnum')
-                    ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
-                    ->where($db->quoteName('sc.training') . ' IN (' .implode(',',$db->quote($progs_to_check)) . ')')
-                    ->andWhere($db->quoteName('sc.year') . ' = ' .$db->quote($fnumInfos['year']))
-                    ->andWhere($db->quoteName('cc.applicant_id') . ' = ' .$db->quote($fnumInfos['applicant_id']));
-                $db->setQuery($fnum_query);
-                $program_year_fnum = $db->loadColumn();
+                    $fnum_query = $db->getQuery(true);
+                    /* Get the list of the candiate's files that are in the list of programs in the year*/
+                    $fnum_query->select('cc.fnum')
+                        ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
+                        ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
+                        ->where($db->quoteName('sc.training') . ' IN (' .implode(',',$db->quote($progs_to_check)) . ')')
+                        ->andWhere($db->quoteName('sc.year') . ' = ' .$db->quote($fnumInfos['year']))
+                        ->andWhere($db->quoteName('cc.applicant_id') . ' = ' .$db->quote($fnumInfos['applicant_id']));
+                    $db->setQuery($fnum_query);
+                    $program_year_fnum = $db->loadColumn();
                 }
 
                 /* If we find another file in the list of programs during the same year, we can determine that he's already paid*/
@@ -5372,20 +5369,20 @@ class EmundusModelApplication extends JModelList
 			$regex = '/^[a-zA-Z0-9\s\p{L}\'"\-]+$/u';
 
 			if (preg_match($regex, $name)) {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+				$db = JFactory::getDbo();
+				$query = $db->getQuery(true);
 
-			$query->insert($db->quoteName('#__emundus_campaign_candidature_tabs'))
-				->set($db->quoteName('name') . ' = ' . $db->quote($name))
-				->set($db->quoteName('ordering') . ' = 1')
-				->set($db->quoteName('applicant_id') . ' = ' . $user_id);
-			try {
-				$db->setQuery($query);
-				$db->execute();
+				$query->insert($db->quoteName('#__emundus_campaign_candidature_tabs'))
+					->set($db->quoteName('name') . ' = ' . $db->quote($name))
+					->set($db->quoteName('ordering') . ' = 1')
+					->set($db->quoteName('applicant_id') . ' = ' . $user_id);
+				try {
+					$db->setQuery($query);
+					$db->execute();
 
-				$tab_id = $db->insertid();
-			} catch (Exception $e) {
-				JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					$tab_id = $db->insertid();
+				} catch (Exception $e) {
+					JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 				}			}
 		}
 
@@ -5544,17 +5541,17 @@ class EmundusModelApplication extends JModelList
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
-			$query->update($db->quoteName('#__emundus_campaign_candidature'))
-				->set($db->quoteName('name') . ' = ' . $db->quote($new_name))
-				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+				$query->update($db->quoteName('#__emundus_campaign_candidature'))
+					->set($db->quoteName('name') . ' = ' . $db->quote($new_name))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
-			try {
-				$db->setQuery($query);
-				$result = $db->execute();
-			} catch (Exception $e) {
-				JLog::add('Failed to rename file ' . $fnum . ' with name ' . $new_name . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				try {
+					$db->setQuery($query);
+					$result = $db->execute();
+				} catch (Exception $e) {
+					JLog::add('Failed to rename file ' . $fnum . ' with name ' . $new_name . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
 			}
-		}
 		}
 
 		return $result;

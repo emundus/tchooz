@@ -581,7 +581,7 @@ class EmundusModelForm extends JModelList {
 		        $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
 
                 if (file_exists($path_to_files[$language->sef])) {
-		        $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+                    $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
                 } else {
                     $Content_Folder[$language->sef] = '';
                 }
@@ -782,52 +782,51 @@ class EmundusModelForm extends JModelList {
 
 			if (!empty($new_profile_exists)) {
 				$query->clear();
-			$query->select('*')
-				->from($db->quoteName('#__emundus_setup_attachment_profiles'))
-				->where($db->quoteName('profile_id') . ' = ' . $oldprofile);
-
-			try {
-				$db->setQuery($query);
-				$attachments = $db->loadAssocList();
-			} catch (Exception $e) {
-				JLog::add('component/com_emundus/models/form | Error when get attachments to copy : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-					return false;
-			}
-
-
-			if (!empty($attachments)) {
-				$columns = array_keys($attachments[0]);
-				$id_key = array_search('id', $columns);
-				unset($columns[$id_key]);
-
-				$values = array();
-				foreach ($attachments as $attachment) {
-					$attachment['profile_id'] = $newprofile;
-					unset($attachment['id']);
-
-					foreach ($attachment as $key => $value) {
-						if (empty($value) && $value != 0) {
-							$attachment[$key] = null;
-						}
-					}
-
-					// do not use db->quote() every time, only if the value is not an integer and not null
-					$values[] = implode(',', array_map(function($value) use ($db) {
-						return is_null($value) ? 'NULL' : $db->quote($value);
-					}, $attachment));
-				}
-
-				$query->clear()
-                    ->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
-					->columns($db->quoteName($columns))
-					->values($values);
+				$query->select('*')
+					->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+					->where($db->quoteName('profile_id') . ' = ' . $oldprofile);
 
 				try {
 					$db->setQuery($query);
-					$copied = $db->execute();
+					$attachments = $db->loadAssocList();
 				} catch (Exception $e) {
-					JLog::add('component/com_emundus/models/form | Error when copy attachments to new profile : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+					JLog::add('component/com_emundus/models/form | Error when get attachments to copy : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+					return false;
 				}
+
+				if (!empty($attachments)) {
+					$columns = array_keys($attachments[0]);
+					$id_key = array_search('id', $columns);
+					unset($columns[$id_key]);
+
+					$values = array();
+					foreach ($attachments as $attachment) {
+						$attachment['profile_id'] = $newprofile;
+						unset($attachment['id']);
+
+						foreach ($attachment as $key => $value) {
+							if (empty($value) && $value != 0) {
+								$attachment[$key] = null;
+							}
+						}
+
+						// do not use db->quote() every time, only if the value is not an integer and not null
+						$values[] = implode(',', array_map(function($value) use ($db) {
+							return is_null($value) ? 'NULL' : $db->quote($value);
+						}, $attachment));
+					}
+
+					$query->clear()
+						->insert($db->quoteName('#__emundus_setup_attachment_profiles'))
+						->columns($db->quoteName($columns))
+						->values($values);
+
+					try {
+						$db->setQuery($query);
+						$copied = $db->execute();
+					} catch (Exception $e) {
+						JLog::add('component/com_emundus/models/form | Error when copy attachments to new profile : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+					}
 				} else {
 					$copied = true;
 				}
@@ -1226,6 +1225,7 @@ class EmundusModelForm extends JModelList {
 		if (!empty($prid)) {
 			require_once (JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
 			$formbuilder = new EmundusModelFormbuilder;
+
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -1907,7 +1907,8 @@ class EmundusModelForm extends JModelList {
             $db->setQuery($query);
             $menus = $db->loadObjectList();
             $sub_page = new stdClass();
-            foreach($menus as $menu){
+
+			foreach($menus as $menu){
                 $formid = explode('=',$menu->link)[3];
                 if($formid != null){
                     $query->clear()
@@ -1926,6 +1927,7 @@ class EmundusModelForm extends JModelList {
                     }
                 }
             }
+
             return $sub_page;
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/form | Error at getting the submittion page of the form ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');

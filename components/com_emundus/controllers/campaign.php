@@ -274,6 +274,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_DELETE_CAMPAIGN'), 'data' => $result);
             }
         }
+
         echo json_encode((object)$tab);
         exit;
     }
@@ -670,8 +671,8 @@ class EmundusControllerCampaign extends JControllerLegacy {
      * @since version 1.0
      */
     public function updateDocumentFalang(){
-
         $jinput = JFactory::getApplication()->input;
+
         $text = new stdClass;
         $text->fr=$jinput->getString('text_fr');
         $text->en=$jinput->getString('text_en');
