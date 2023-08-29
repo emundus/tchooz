@@ -1,13 +1,15 @@
 <?php
 defined('JPATH_BASE') or die;
 
+use Joomla\CMS\Language\Text;
+
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $display_required_icon = $eMConfig->get('display_required_icon', 1);
 $required_position_icon = $eMConfig->get('required_icon_position', 1);
 
 $d = $displayData;
 
-$labelText = FText::_($d->label);
+$labelText = Text::_($d->label);
 $labelText = $labelText == '' ? $d->hasLabel = false : $labelText;
 $l = $d->j3 ? '' : $labelText;
 
