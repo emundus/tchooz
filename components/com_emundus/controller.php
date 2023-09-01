@@ -628,7 +628,13 @@ class EmundusController extends JControllerLegacy {
         require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
         require_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
 
-        $app = JFactory::getApplication();
+        $app = Factory::getApplication();
+		if(version_compare(JVERSION, '4.0', '>'))
+		{
+			$session = $app->getSession();
+		} else {
+			$session = Factory::getSession();
+		}
         $jinput = $app->input;
         $fnum = $jinput->get->get('fnum', null);
         $confirm = $jinput->get->get('confirm', null);
@@ -643,13 +649,12 @@ class EmundusController extends JControllerLegacy {
         if (empty($fnum)) {
             $app->redirect($redirect);
         }
-
-        $session = JFactory::getSession();
+        
         $aid = $session->get('emundusUser');
 
         $m_profile = new EmundusModelProfile;
         $infos = $m_profile->getFnumDetails($fnum);
-
+		
         if ($aid->id != $infos['applicant_id']) {
             return;
         }

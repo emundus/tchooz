@@ -23,6 +23,18 @@
     <field name="widget">6</field>
     <field name="position">3</field>
    </row>
+   <row>
+    <field name="id">3</field>
+    <field name="parent_id">3</field>
+    <field name="widget">5</field>
+    <field name="position">2</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="parent_id">3</field>
+    <field name="widget">6</field>
+    <field name="position">3</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

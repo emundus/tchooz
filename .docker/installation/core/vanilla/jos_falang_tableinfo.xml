@@ -7,5 +7,137 @@
    <field Field="tablepkID" Type="varchar(100)" Null="NO" Key="" Default="" Extra="" />
    <key Table="#__falang_tableinfo" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
+  <table_data name="#__falang_tableinfo">
+   <row>
+    <field name="id">157</field>
+    <field name="joomlatablename">banners</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">158</field>
+    <field name="joomlatablename">categories</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">159</field>
+    <field name="joomlatablename">contact_details</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">160</field>
+    <field name="joomlatablename">content</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">161</field>
+    <field name="joomlatablename">fabrik_elements</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">162</field>
+    <field name="joomlatablename">fabrik_forms</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">163</field>
+    <field name="joomlatablename">fabrik_groups</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">164</field>
+    <field name="joomlatablename">fabrik_lists</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">165</field>
+    <field name="joomlatablename">fields</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">166</field>
+    <field name="joomlatablename">fields_groups</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">167</field>
+    <field name="joomlatablename">hikashop_badge</field>
+    <field name="tablepkID">badge_id</field>
+   </row>
+   <row>
+    <field name="id">168</field>
+    <field name="joomlatablename">hikashop_banner</field>
+    <field name="tablepkID">banner_id</field>
+   </row>
+   <row>
+    <field name="id">169</field>
+    <field name="joomlatablename">hikashop_category</field>
+    <field name="tablepkID">category_id</field>
+   </row>
+   <row>
+    <field name="id">170</field>
+    <field name="joomlatablename">hikashop_characteristic</field>
+    <field name="tablepkID">characteristic_id</field>
+   </row>
+   <row>
+    <field name="id">171</field>
+    <field name="joomlatablename">hikashop_field</field>
+    <field name="tablepkID">field_id</field>
+   </row>
+   <row>
+    <field name="id">172</field>
+    <field name="joomlatablename">hikashop_file</field>
+    <field name="tablepkID">file_id</field>
+   </row>
+   <row>
+    <field name="id">173</field>
+    <field name="joomlatablename">hikashop_filter</field>
+    <field name="tablepkID">filter_id</field>
+   </row>
+   <row>
+    <field name="id">174</field>
+    <field name="joomlatablename">hikashop_payment</field>
+    <field name="tablepkID">payment_id</field>
+   </row>
+   <row>
+    <field name="id">175</field>
+    <field name="joomlatablename">hikashop_product</field>
+    <field name="tablepkID">product_id</field>
+   </row>
+   <row>
+    <field name="id">176</field>
+    <field name="joomlatablename">hikashop_shipping</field>
+    <field name="tablepkID">shipping_id</field>
+   </row>
+   <row>
+    <field name="id">177</field>
+    <field name="joomlatablename">hikashop_widget</field>
+    <field name="tablepkID">widget_id</field>
+   </row>
+   <row>
+    <field name="id">178</field>
+    <field name="joomlatablename">hikashop_zone</field>
+    <field name="tablepkID">zone_id</field>
+   </row>
+   <row>
+    <field name="id">179</field>
+    <field name="joomlatablename">menu</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">180</field>
+    <field name="joomlatablename">modules</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">181</field>
+    <field name="joomlatablename">tags</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">182</field>
+    <field name="joomlatablename">usergroups</field>
+    <field name="tablepkID">id</field>
+   </row>
+  </table_data>
  </database>
 </mysqldump>

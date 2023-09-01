@@ -44,7 +44,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -67,7 +67,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template"></field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template"></field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -90,7 +90,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -113,7 +113,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -136,7 +136,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -159,7 +159,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -182,7 +182,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SEND</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -205,7 +205,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">Upload</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -228,7 +228,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -251,7 +251,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -274,7 +274,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -297,7 +297,7 @@
     <field name="publish_down"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -320,7 +320,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">Sauvegarder</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -343,7 +343,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -366,7 +366,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -389,7 +389,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -412,7 +412,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -435,7 +435,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -454,13 +454,13 @@
     <field name="created_by_alias">admin</field>
     <field name="modified">2012-05-22 13:00:30</field>
     <field name="modified_by">62</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time">0000-00-00 00:00:00</field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2023-08-25 15:07:38</field>
     <field name="publish_up">2010-07-23 14:41:31</field>
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SEND</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -483,7 +483,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -507,7 +507,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SUBMIT</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -530,7 +530,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -553,7 +553,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Reset</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -576,7 +576,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Reset</field>
     <field name="submit_button_label">Send the request for individual assessment</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -599,7 +599,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Reset</field>
     <field name="submit_button_label">SUBMIT</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -622,7 +622,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Reset</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -645,7 +645,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Reset</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -668,7 +668,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -691,7 +691,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -714,7 +714,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -737,7 +737,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -760,7 +760,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -783,7 +783,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">0</field>
     <field name="private">0</field>
@@ -806,7 +806,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -829,7 +829,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SUBMIT</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -852,7 +852,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -875,7 +875,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">0</field>
     <field name="private">0</field>
@@ -898,7 +898,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">Register</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -921,7 +921,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">Importation</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -944,7 +944,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -967,7 +967,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -990,7 +990,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1014,7 +1014,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1037,7 +1037,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1060,7 +1060,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1083,7 +1083,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">1</field>
@@ -1106,7 +1106,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">1</field>
@@ -1129,7 +1129,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">1</field>
@@ -1152,7 +1152,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">1</field>
@@ -1175,7 +1175,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1198,7 +1198,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1221,7 +1221,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1244,7 +1244,7 @@
     <field name="publish_down">2030-02-15 10:52:56</field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">Sauvegarder</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1267,7 +1267,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1290,7 +1290,7 @@
     <field name="publish_down">2099-03-26 16:00:25</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">Sauvegarder</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1313,7 +1313,7 @@
     <field name="publish_down">2099-03-26 16:00:25</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">Sauvegarder</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1336,7 +1336,7 @@
     <field name="publish_down">2099-03-26 16:00:25</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">Sauvegarder</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1359,7 +1359,7 @@
     <field name="publish_down">2099-12-10 13:35:54</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">Sauvegarder</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1382,7 +1382,7 @@
     <field name="publish_down"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1405,7 +1405,7 @@
     <field name="publish_down">2099-12-09 00:00:00</field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">Sauvegarder</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1417,22 +1417,22 @@
     <field name="record_in_database">1</field>
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
-    <field name="created">2022-05-10 14:37:14</field>
+    <field name="created">2022-05-10 00:00:00</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified">2022-05-10 14:37:14</field>
-    <field name="modified_by">0</field>
+    <field name="modified">2023-08-29 08:11:11</field>
+    <field name="modified_by">1</field>
     <field name="checked_out">0</field>
     <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="publish_up">2022-05-10 14:37:14</field>
-    <field name="publish_down">2022-05-10 14:37:14</field>
-    <field name="reset_button_label"></field>
+    <field name="publish_down">2040-05-10 14:37:14</field>
+    <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">Sauvegarder</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
-    <field name="params">{&quot;outro&quot;:&quot;&quot;,&quot;reset_button&quot;:&quot;0&quot;,&quot;reset_button_label&quot;:&quot;R\u00e9initialiser&quot;,&quot;reset_button_class&quot;:&quot;btn-warning&quot;,&quot;reset_icon&quot;:&quot;&quot;,&quot;reset_icon_location&quot;:&quot;before&quot;,&quot;copy_button&quot;:&quot;0&quot;,&quot;copy_button_label&quot;:&quot;Enregistrer comme copie&quot;,&quot;copy_button_class&quot;:&quot;&quot;,&quot;copy_icon&quot;:&quot;&quot;,&quot;copy_icon_location&quot;:&quot;before&quot;,&quot;goback_button&quot;:&quot;0&quot;,&quot;goback_button_label&quot;:&quot;Retour&quot;,&quot;goback_button_class&quot;:&quot;&quot;,&quot;goback_icon&quot;:&quot;&quot;,&quot;goback_icon_location&quot;:&quot;before&quot;,&quot;apply_button&quot;:&quot;0&quot;,&quot;apply_button_label&quot;:&quot;Appliquer&quot;,&quot;apply_button_class&quot;:&quot;&quot;,&quot;apply_icon&quot;:&quot;&quot;,&quot;apply_icon_location&quot;:&quot;before&quot;,&quot;delete_button&quot;:&quot;0&quot;,&quot;delete_button_label&quot;:&quot;Effacer&quot;,&quot;delete_button_class&quot;:&quot;btn-danger&quot;,&quot;delete_icon&quot;:&quot;&quot;,&quot;delete_icon_location&quot;:&quot;before&quot;,&quot;submit_button&quot;:&quot;1&quot;,&quot;submit_button_label&quot;:&quot;Sauvegarder&quot;,&quot;save_button_class&quot;:&quot;btn-primary&quot;,&quot;save_icon&quot;:&quot;&quot;,&quot;save_icon_location&quot;:&quot;before&quot;,&quot;submit_on_enter&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;0&quot;,&quot;labels_above_details&quot;:&quot;0&quot;,&quot;pdf_template&quot;:&quot;admin&quot;,&quot;pdf_orientation&quot;:&quot;portrait&quot;,&quot;pdf_size&quot;:&quot;letter&quot;,&quot;pdf_include_bootstrap&quot;:&quot;1&quot;,&quot;show_title&quot;:&quot;1&quot;,&quot;print&quot;:&quot;&quot;,&quot;email&quot;:&quot;&quot;,&quot;pdf&quot;:&quot;&quot;,&quot;admin_form_template&quot;:&quot;&quot;,&quot;admin_details_template&quot;:&quot;&quot;,&quot;note&quot;:&quot;&quot;,&quot;show_referring_table_releated_data&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;tip&quot;,&quot;process_jplugins&quot;:&quot;2&quot;,&quot;ajax_validations&quot;:&quot;0&quot;,&quot;ajax_validations_toggle_submit&quot;:&quot;0&quot;,&quot;submit_success_msg&quot;:&quot;&quot;,&quot;suppress_msgs&quot;:&quot;0&quot;,&quot;show_loader_on_submit&quot;:&quot;0&quot;,&quot;spoof_check&quot;:&quot;1&quot;,&quot;multipage_save&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;outro&quot;:&quot;&quot;,&quot;copy_button&quot;:&quot;0&quot;,&quot;copy_button_label&quot;:&quot;Enregistrer comme copie&quot;,&quot;copy_button_class&quot;:&quot;&quot;,&quot;copy_icon&quot;:&quot;&quot;,&quot;copy_icon_location&quot;:&quot;before&quot;,&quot;reset_button&quot;:&quot;0&quot;,&quot;reset_button_label&quot;:&quot;R\u00e9initialiser&quot;,&quot;reset_button_class&quot;:&quot;btn-warning&quot;,&quot;reset_icon&quot;:&quot;&quot;,&quot;reset_icon_location&quot;:&quot;before&quot;,&quot;apply_button&quot;:&quot;0&quot;,&quot;apply_button_label&quot;:&quot;Appliquer&quot;,&quot;apply_button_class&quot;:&quot;&quot;,&quot;apply_icon&quot;:&quot;&quot;,&quot;apply_icon_location&quot;:&quot;before&quot;,&quot;goback_button&quot;:&quot;0&quot;,&quot;goback_button_label&quot;:&quot;Retour&quot;,&quot;goback_button_class&quot;:&quot;&quot;,&quot;goback_icon&quot;:&quot;&quot;,&quot;goback_icon_location&quot;:&quot;before&quot;,&quot;submit_button&quot;:&quot;1&quot;,&quot;submit_button_label&quot;:&quot;Sauvegarder&quot;,&quot;save_button_class&quot;:&quot;btn-primary&quot;,&quot;save_icon&quot;:&quot;&quot;,&quot;save_icon_location&quot;:&quot;before&quot;,&quot;submit_on_enter&quot;:&quot;0&quot;,&quot;delete_button&quot;:&quot;0&quot;,&quot;delete_button_label&quot;:&quot;Effacer&quot;,&quot;delete_button_class&quot;:&quot;btn-danger&quot;,&quot;delete_icon&quot;:&quot;&quot;,&quot;delete_icon_location&quot;:&quot;before&quot;,&quot;ajax_validations&quot;:&quot;0&quot;,&quot;ajax_validations_toggle_submit&quot;:&quot;0&quot;,&quot;submit-success-msg&quot;:&quot;&quot;,&quot;suppress_msgs&quot;:&quot;0&quot;,&quot;show_loader_on_submit&quot;:&quot;0&quot;,&quot;spoof_check&quot;:&quot;1&quot;,&quot;multipage_save&quot;:&quot;0&quot;,&quot;note&quot;:&quot;&quot;,&quot;labels_above&quot;:&quot;0&quot;,&quot;labels_above_details&quot;:&quot;0&quot;,&quot;pdf_template&quot;:&quot;&quot;,&quot;pdf_orientation&quot;:&quot;portrait&quot;,&quot;pdf_size&quot;:&quot;letter&quot;,&quot;pdf_include_bootstrap&quot;:&quot;1&quot;,&quot;admin_form_template&quot;:&quot;&quot;,&quot;admin_details_template&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;print&quot;:&quot;&quot;,&quot;email&quot;:&quot;&quot;,&quot;pdf&quot;:&quot;&quot;,&quot;show-referring-table-releated-data&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;tip&quot;,&quot;process-jplugins&quot;:&quot;2&quot;,&quot;plugins&quot;:[],&quot;plugin_locations&quot;:[],&quot;plugin_events&quot;:[],&quot;plugin_description&quot;:[]}</field>
    </row>
    <row>
     <field name="id">375</field>
@@ -1451,7 +1451,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">Sauvegarder</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1474,7 +1474,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">Sauvegarder</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
@@ -1497,7 +1497,7 @@
     <field name="publish_down">0000-00-00 00:00:00</field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">Sauvegarder</field>
-    <field name="form_template">_emundus</field>
+    <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>

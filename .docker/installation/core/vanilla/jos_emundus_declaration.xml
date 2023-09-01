@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_declaration">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="time_date" Type="datetime" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP" />
+   <field Field="time_date" Type="datetime" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP"  />
    <field Field="user" Type="int" Null="NO" Key="MUL" Extra="" />
    <field Field="fnum" Type="varchar(255)" Null="NO" Key="UNI" Extra="" />
    <field Field="city" Type="varchar(255)" Null="YES" Key="" Extra="" />

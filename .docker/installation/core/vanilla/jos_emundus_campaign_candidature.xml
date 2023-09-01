@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_campaign_candidature">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
    <field Field="applicant_id" Type="int" Null="NO" Key="MUL" Extra="" />
    <field Field="user_id" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="campaign_id" Type="int" Null="NO" Key="MUL" Extra="" />
@@ -18,6 +18,10 @@
    <field Field="form_progress" Type="int" Null="YES" Key="" Extra="" />
    <field Field="attachment_progress" Type="int" Null="YES" Key="" Extra="" />
    <field Field="id_banner" Type="varchar(20)" Null="YES" Key="" Extra="" />
+   <field Field="tab" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="name" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="updated" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="updated_by" Type="int" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_campaign_candidature" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_campaign_candidature" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_campaign_candidature" Non_unique="0" Key_name="fnum_2" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />

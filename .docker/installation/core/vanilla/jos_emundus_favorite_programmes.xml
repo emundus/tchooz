@@ -5,7 +5,7 @@
    <field Field="id" Type="int" Null="NO" Key="" Extra="" />
    <field Field="user_id" Type="int" Null="NO" Key="" Extra="" />
    <field Field="programme_id" Type="int" Null="NO" Key="" Extra="" />
-   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
   </table_structure>
  </database>
 </mysqldump>

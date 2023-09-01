@@ -5,7 +5,7 @@
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
    <field Field="user" Type="int" Null="NO" Key="MUL" Extra="" />
    <field Field="widget" Type="int" Null="YES" Key="" Extra="" />
-   <field Field="updated" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" />
+   <field Field="updated" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
    <field Field="updated_by" Type="int" Null="YES" Key="" Extra="" />
    <field Field="profile" Type="int" Null="YES" Key="MUL" Extra="" />
    <key Table="#__emundus_setup_dashboard" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
@@ -27,6 +27,14 @@
     <field name="widget"></field>
     <field name="updated">2023-03-21 08:56:18</field>
     <field name="updated_by">95</field>
+    <field name="profile">2</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="user">2</field>
+    <field name="widget"></field>
+    <field name="updated">2023-08-28 15:30:13</field>
+    <field name="updated_by">2</field>
     <field name="profile">2</field>
    </row>
   </table_data>

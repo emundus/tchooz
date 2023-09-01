@@ -13,6 +13,8 @@
    <field Field="end_date" Type="datetime" Null="YES" Key="" Extra="" />
    <field Field="output_status" Type="int" Null="YES" Key="" Extra="" />
    <field Field="programs" Type="varchar(50)" Null="YES" Key="" Extra="" />
+   <field Field="display_preliminary_documents" Type="tinyint(1)" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="specific_documents" Type="tinyint(1)" Null="YES" Key="" Default="0" Extra="" />
    <key Table="#__emundus_campaign_workflow" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_campaign_workflow" Non_unique="1" Key_name="fb_groupby_campaign_INDEX" Seq_in_index="1" Column_name="campaign" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_campaign_workflow" Non_unique="1" Key_name="jos_emundus_campaign_workflow_ibfk_2" Seq_in_index="1" Column_name="profile" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />

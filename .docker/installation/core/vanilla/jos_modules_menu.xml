@@ -212,6 +212,70 @@
     <field name="moduleid">120</field>
     <field name="menuid">0</field>
    </row>
+   <row>
+    <field name="moduleid">121</field>
+    <field name="menuid">138</field>
+   </row>
+   <row>
+    <field name="moduleid">122</field>
+    <field name="menuid">133</field>
+   </row>
+   <row>
+    <field name="moduleid">123</field>
+    <field name="menuid">273</field>
+   </row>
+   <row>
+    <field name="moduleid">123</field>
+    <field name="menuid">274</field>
+   </row>
+   <row>
+    <field name="moduleid">123</field>
+    <field name="menuid">275</field>
+   </row>
+   <row>
+    <field name="moduleid">123</field>
+    <field name="menuid">276</field>
+   </row>
+   <row>
+    <field name="moduleid">123</field>
+    <field name="menuid">277</field>
+   </row>
+   <row>
+    <field name="moduleid">123</field>
+    <field name="menuid">278</field>
+   </row>
+   <row>
+    <field name="moduleid">123</field>
+    <field name="menuid">285</field>
+   </row>
+   <row>
+    <field name="moduleid">124</field>
+    <field name="menuid">273</field>
+   </row>
+   <row>
+    <field name="moduleid">124</field>
+    <field name="menuid">274</field>
+   </row>
+   <row>
+    <field name="moduleid">124</field>
+    <field name="menuid">275</field>
+   </row>
+   <row>
+    <field name="moduleid">124</field>
+    <field name="menuid">276</field>
+   </row>
+   <row>
+    <field name="moduleid">124</field>
+    <field name="menuid">277</field>
+   </row>
+   <row>
+    <field name="moduleid">124</field>
+    <field name="menuid">278</field>
+   </row>
+   <row>
+    <field name="moduleid">124</field>
+    <field name="menuid">285</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

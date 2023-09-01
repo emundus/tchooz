@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_vote">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="time_date" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" />
+   <field Field="time_date" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
    <field Field="fnum" Type="varchar(28)" Null="NO" Key="" Extra="" />
    <field Field="user" Type="int" Null="NO" Key="" Extra="" />
    <field Field="thematique" Type="int" Null="NO" Key="" Extra="" />

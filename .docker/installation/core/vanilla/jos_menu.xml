@@ -66,7 +66,7 @@
     <field name="template_style_id">0</field>
     <field name="params"></field>
     <field name="lft">0</field>
-    <field name="rgt">289</field>
+    <field name="rgt">301</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -780,19 +780,19 @@
     <field name="alias">mon-profil</field>
     <field name="note"></field>
     <field name="path">mon-profil</field>
-    <field name="link">index.php?option=com_emundus&amp;view=users&amp;layout=edit</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=374</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">1</field>
     <field name="level">1</field>
-    <field name="component_id">458</field>
+    <field name="component_id">332</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
     <field name="browserNav">0</field>
     <field name="access">11</field>
     <field name="img"> </field>
     <field name="template_style_id">22</field>
-    <field name="params">{&quot;em_users_attachments_intro&quot;:&quot;&quot;,&quot;em_users_attachments_display_validation_state&quot;:&quot;0&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:0,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;rowid&quot;:&quot;-1&quot;,&quot;usekey&quot;:&quot;user_id&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:0,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">67</field>
     <field name="rgt">68</field>
     <field name="home">0</field>
@@ -2986,258 +2986,6 @@
     <field name="publish_down"></field>
    </row>
    <row>
-    <field name="id">217</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik</field>
-    <field name="alias">com-fabrik</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=home</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">1</field>
-    <field name="level">1</field>
-    <field name="component_id">486</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/fabrik.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">209</field>
-    <field name="rgt">226</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-   </row>
-   <row>
-    <field name="id">218</field>
-    <field name="menutype">main</field>
-    <field name="title">Home</field>
-    <field name="alias">home</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/home</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=home</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">217</field>
-    <field name="level">2</field>
-    <field name="component_id">486</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/fabrik.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">210</field>
-    <field name="rgt">211</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-   </row>
-   <row>
-    <field name="id">219</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_lists</field>
-    <field name="alias">com-fabrik-lists</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-lists</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=lists</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">217</field>
-    <field name="level">2</field>
-    <field name="component_id">486</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/lists.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">212</field>
-    <field name="rgt">213</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-   </row>
-   <row>
-    <field name="id">220</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_forms</field>
-    <field name="alias">com-fabrik-forms</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-forms</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=forms</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">217</field>
-    <field name="level">2</field>
-    <field name="component_id">486</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/forms.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">214</field>
-    <field name="rgt">215</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-   </row>
-   <row>
-    <field name="id">221</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_groups</field>
-    <field name="alias">com-fabrik-groups</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-groups</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=groups</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">217</field>
-    <field name="level">2</field>
-    <field name="component_id">486</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/groups.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">216</field>
-    <field name="rgt">217</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-   </row>
-   <row>
-    <field name="id">222</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_elements</field>
-    <field name="alias">com-fabrik-elements</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-elements</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=elements</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">217</field>
-    <field name="level">2</field>
-    <field name="component_id">486</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/elements.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">218</field>
-    <field name="rgt">219</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-   </row>
-   <row>
-    <field name="id">223</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_visualizations</field>
-    <field name="alias">com-fabrik-visualizations</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-visualizations</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=visualizations</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">217</field>
-    <field name="level">2</field>
-    <field name="component_id">486</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/visualizations.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">220</field>
-    <field name="rgt">221</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-   </row>
-   <row>
-    <field name="id">224</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_connections</field>
-    <field name="alias">com-fabrik-connections</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-connections</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=connections</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">217</field>
-    <field name="level">2</field>
-    <field name="component_id">486</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/connections.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">222</field>
-    <field name="rgt">223</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-   </row>
-   <row>
-    <field name="id">225</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_schedule</field>
-    <field name="alias">com-fabrik-schedule</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-schedule</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=crons</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">217</field>
-    <field name="level">2</field>
-    <field name="component_id">486</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/schedules.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">224</field>
-    <field name="rgt">225</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-   </row>
-   <row>
     <field name="id">226</field>
     <field name="menutype">main</field>
     <field name="title">COM_FALANG_MENU</field>
@@ -3257,8 +3005,8 @@
     <field name="img">components/com_falang/assets/images/icon-16-falang.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">227</field>
-    <field name="rgt">238</field>
+    <field name="lft">209</field>
+    <field name="rgt">220</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3285,8 +3033,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">228</field>
-    <field name="rgt">229</field>
+    <field name="lft">210</field>
+    <field name="rgt">211</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3313,8 +3061,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">230</field>
-    <field name="rgt">231</field>
+    <field name="lft">212</field>
+    <field name="rgt">213</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3341,8 +3089,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">232</field>
-    <field name="rgt">233</field>
+    <field name="lft">214</field>
+    <field name="rgt">215</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3369,8 +3117,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">234</field>
-    <field name="rgt">235</field>
+    <field name="lft">216</field>
+    <field name="rgt">217</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3397,8 +3145,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">236</field>
-    <field name="rgt">237</field>
+    <field name="lft">218</field>
+    <field name="rgt">219</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3425,8 +3173,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">239</field>
-    <field name="rgt">244</field>
+    <field name="lft">221</field>
+    <field name="rgt">226</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3453,8 +3201,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">240</field>
-    <field name="rgt">241</field>
+    <field name="lft">222</field>
+    <field name="rgt">223</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3481,8 +3229,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">242</field>
-    <field name="rgt">243</field>
+    <field name="lft">224</field>
+    <field name="rgt">225</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3509,8 +3257,8 @@
     <field name="img">../media/com_securitycheckpro/images/tick_16x16.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">245</field>
-    <field name="rgt">260</field>
+    <field name="lft">227</field>
+    <field name="rgt">242</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3537,8 +3285,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">246</field>
-    <field name="rgt">247</field>
+    <field name="lft">228</field>
+    <field name="rgt">229</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3565,8 +3313,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">248</field>
-    <field name="rgt">249</field>
+    <field name="lft">230</field>
+    <field name="rgt">231</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3593,8 +3341,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">250</field>
-    <field name="rgt">251</field>
+    <field name="lft">232</field>
+    <field name="rgt">233</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3621,8 +3369,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">252</field>
-    <field name="rgt">253</field>
+    <field name="lft">234</field>
+    <field name="rgt">235</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3649,8 +3397,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">254</field>
-    <field name="rgt">255</field>
+    <field name="lft">236</field>
+    <field name="rgt">237</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3677,8 +3425,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">256</field>
-    <field name="rgt">257</field>
+    <field name="lft">238</field>
+    <field name="rgt">239</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3705,8 +3453,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">258</field>
-    <field name="rgt">259</field>
+    <field name="lft">240</field>
+    <field name="rgt">241</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -3733,8 +3481,8 @@
     <field name="img"> </field>
     <field name="template_style_id">22</field>
     <field name="params">{&quot;featured_categories&quot;:[&quot;&quot;],&quot;layout_type&quot;:&quot;blog&quot;,&quot;num_leading_articles&quot;:&quot;&quot;,&quot;blog_class_leading&quot;:&quot;&quot;,&quot;num_intro_articles&quot;:&quot;&quot;,&quot;blog_class&quot;:&quot;&quot;,&quot;num_columns&quot;:&quot;&quot;,&quot;multi_column_order&quot;:&quot;&quot;,&quot;num_links&quot;:&quot;&quot;,&quot;link_intro_image&quot;:&quot;&quot;,&quot;orderby_pri&quot;:&quot;&quot;,&quot;orderby_sec&quot;:&quot;&quot;,&quot;order_date&quot;:&quot;&quot;,&quot;show_pagination&quot;:&quot;&quot;,&quot;show_pagination_results&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_readmore&quot;:&quot;&quot;,&quot;show_readmore_title&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;show_feed_link&quot;:&quot;&quot;,&quot;feed_summary&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
-    <field name="lft">261</field>
-    <field name="rgt">262</field>
+    <field name="lft">243</field>
+    <field name="rgt">244</field>
     <field name="home">1</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3761,8 +3509,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;dashboard&quot;,&quot;menu_text&quot;:0,&quot;menu_show&quot;:0,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">263</field>
-    <field name="rgt">264</field>
+    <field name="lft">245</field>
+    <field name="rgt">246</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3789,8 +3537,8 @@
     <field name="img"> </field>
     <field name="template_style_id">24</field>
     <field name="params">{&quot;em_tables_id&quot;:&quot;&quot;,&quot;em_elements_id&quot;:&quot;1904,2535,3913&quot;,&quot;em_elements_values&quot;:&quot;&quot;,&quot;em_filters_names&quot;:&quot;tag,published,schoolyear,programme,status,campaign,other,adv_filter&quot;,&quot;em_filters_values&quot;:&quot;&quot;,&quot;em_filters_options&quot;:&quot;&quot;,&quot;em_other_columns&quot;:&quot;access,tags,form_progress,attachment_progress&quot;,&quot;em_actions&quot;:&quot;actions&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;inventory_2&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;files-page files-board&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">265</field>
-    <field name="rgt">266</field>
+    <field name="lft">247</field>
+    <field name="rgt">248</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3817,8 +3565,8 @@
     <field name="img"> </field>
     <field name="template_style_id">24</field>
     <field name="params">{&quot;em_tables_id&quot;:&quot;&quot;,&quot;em_elements_id&quot;:&quot;2535&quot;,&quot;em_elements_values&quot;:&quot;&quot;,&quot;em_filters_names&quot;:&quot;status,tag,schoolyear,programme,campaign,other,adv_filter&quot;,&quot;em_filters_values&quot;:&quot;&quot;,&quot;em_filters_options&quot;:&quot;&quot;,&quot;em_other_columns&quot;:&quot;tags&quot;,&quot;em_actions&quot;:&quot;actions&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;filter_none&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;evaluations-page files-board&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">267</field>
-    <field name="rgt">268</field>
+    <field name="lft">249</field>
+    <field name="rgt">250</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3845,8 +3593,8 @@
     <field name="img"> </field>
     <field name="template_style_id">24</field>
     <field name="params">{&quot;em_tables_id&quot;:&quot;&quot;,&quot;em_elements_id&quot;:&quot;&quot;,&quot;em_elements_values&quot;:&quot;&quot;,&quot;em_filters_names&quot;:&quot;tag,published,schoolyear,programme,campaign,other,status,adv_filter&quot;,&quot;em_filters_values&quot;:&quot;&quot;,&quot;em_filters_options&quot;:&quot;&quot;,&quot;em_other_columns&quot;:&quot;&quot;,&quot;em_actions&quot;:&quot;actions&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;task&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;files-board decision-page&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">269</field>
-    <field name="rgt">270</field>
+    <field name="lft">251</field>
+    <field name="rgt">252</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3873,8 +3621,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;analytics&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">271</field>
-    <field name="rgt">276</field>
+    <field name="lft">253</field>
+    <field name="rgt">258</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3901,8 +3649,8 @@
     <field name="img"> </field>
     <field name="template_style_id">24</field>
     <field name="params">{&quot;show_title&quot;:&quot;0&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">272</field>
-    <field name="rgt">273</field>
+    <field name="lft">254</field>
+    <field name="rgt">255</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3929,8 +3677,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">274</field>
-    <field name="rgt">275</field>
+    <field name="lft">256</field>
+    <field name="rgt">257</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3957,8 +3705,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;group&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">277</field>
-    <field name="rgt">282</field>
+    <field name="lft">259</field>
+    <field name="rgt">264</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3985,8 +3733,8 @@
     <field name="img"> </field>
     <field name="template_style_id">24</field>
     <field name="params">{&quot;em_tables_id&quot;:&quot;&quot;,&quot;em_elements_id&quot;:&quot;&quot;,&quot;em_elements_values&quot;:&quot;&quot;,&quot;em_filters_names&quot;:&quot;&quot;,&quot;em_filters_values&quot;:&quot;&quot;,&quot;em_filters_options&quot;:&quot;&quot;,&quot;em_other_columns&quot;:&quot;&quot;,&quot;em_actions&quot;:&quot;actions&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">278</field>
-    <field name="rgt">279</field>
+    <field name="lft">260</field>
+    <field name="rgt">261</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4013,8 +3761,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">280</field>
-    <field name="rgt">281</field>
+    <field name="lft">262</field>
+    <field name="rgt">263</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4041,8 +3789,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;settings&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">283</field>
-    <field name="rgt">288</field>
+    <field name="lft">265</field>
+    <field name="rgt">270</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4069,8 +3817,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">284</field>
-    <field name="rgt">285</field>
+    <field name="lft">266</field>
+    <field name="rgt">267</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4097,8 +3845,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">286</field>
-    <field name="rgt">287</field>
+    <field name="lft">268</field>
+    <field name="rgt">269</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4125,8 +3873,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
-    <field name="lft">431</field>
-    <field name="rgt">432</field>
+    <field name="lft">271</field>
+    <field name="rgt">272</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4153,8 +3901,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_vote&quot;:&quot;&quot;,&quot;show_icons&quot;:&quot;&quot;,&quot;show_print_icon&quot;:&quot;&quot;,&quot;show_email_icon&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">433</field>
-    <field name="rgt">434</field>
+    <field name="lft">273</field>
+    <field name="rgt">274</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4181,8 +3929,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_vote&quot;:&quot;&quot;,&quot;show_icons&quot;:&quot;&quot;,&quot;show_print_icon&quot;:&quot;&quot;,&quot;show_email_icon&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">435</field>
-    <field name="rgt">436</field>
+    <field name="lft">275</field>
+    <field name="rgt">276</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4209,8 +3957,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_vote&quot;:&quot;&quot;,&quot;show_icons&quot;:&quot;&quot;,&quot;show_print_icon&quot;:&quot;&quot;,&quot;show_email_icon&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">437</field>
-    <field name="rgt">438</field>
+    <field name="lft">277</field>
+    <field name="rgt">278</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4237,8 +3985,680 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_vote&quot;:&quot;&quot;,&quot;show_icons&quot;:&quot;&quot;,&quot;show_print_icon&quot;:&quot;&quot;,&quot;show_email_icon&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-options&quot;:&quot;[]&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true}</field>
-    <field name="lft">581</field>
-    <field name="rgt">582</field>
+    <field name="lft">279</field>
+    <field name="rgt">280</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">262</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik</field>
+    <field name="alias">com-fabrik</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=home</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">332</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/fabrik.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">281</field>
+    <field name="rgt">298</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">263</field>
+    <field name="menutype">main</field>
+    <field name="title">Home</field>
+    <field name="alias">home</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/home</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=home</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">262</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/fabrik.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">282</field>
+    <field name="rgt">283</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">264</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_lists</field>
+    <field name="alias">com-fabrik-lists</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-lists</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=lists</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">262</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/lists.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">284</field>
+    <field name="rgt">285</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">265</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_forms</field>
+    <field name="alias">com-fabrik-forms</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-forms</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=forms</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">262</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/forms.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">286</field>
+    <field name="rgt">287</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">266</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_groups</field>
+    <field name="alias">com-fabrik-groups</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-groups</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=groups</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">262</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/groups.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">288</field>
+    <field name="rgt">289</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">267</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_elements</field>
+    <field name="alias">com-fabrik-elements</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-elements</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=elements</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">262</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/elements.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">290</field>
+    <field name="rgt">291</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">268</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_visualizations</field>
+    <field name="alias">com-fabrik-visualizations</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-visualizations</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=visualizations</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">262</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/visualizations.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">292</field>
+    <field name="rgt">293</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">269</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_connections</field>
+    <field name="alias">com-fabrik-connections</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-connections</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=connections</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">262</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/connections.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">294</field>
+    <field name="rgt">295</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">270</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_schedule</field>
+    <field name="alias">com-fabrik-schedule</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-schedule</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=crons</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">262</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/schedules.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">296</field>
+    <field name="rgt">297</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">271</field>
+    <field name="menutype">topmenu</field>
+    <field name="title">Sélection d'une campagne</field>
+    <field name="alias">apply</field>
+    <field name="note"></field>
+    <field name="path">apply</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=102</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">332</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">2</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="lft">299</field>
+    <field name="rgt">300</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">272</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Formulaire de base candidat</field>
+    <field name="alias">formulaire-de-base-candidat-9</field>
+    <field name="note"></field>
+    <field name="path">formulaire-de-base-candidat-9</field>
+    <field name="link"></field>
+    <field name="type">heading</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">0</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">22</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1}</field>
+    <field name="lft">259</field>
+    <field name="rgt">280</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">273</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Informations personnelles</field>
+    <field name="alias">personal-details</field>
+    <field name="note"></field>
+    <field name="path">formulaire-de-base-candidat-9/personal-details</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=287</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">272</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">22</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;huge circular inverted blue user outline icon&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;Personal Details&quot;,&quot;show_page_heading&quot;:&quot;0&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">260</field>
+    <field name="rgt">261</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">274</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Documents</field>
+    <field name="alias">checklist</field>
+    <field name="note"></field>
+    <field name="path">checklist</field>
+    <field name="link">index.php?option=com_emundus&amp;view=checklist</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">458</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">22</field>
+    <field name="params">{&quot;custom_title&quot;:&quot;&quot;,&quot;show_info_panel&quot;:&quot;0&quot;,&quot;show_info_legend&quot;:&quot;1&quot;,&quot;show_browse_button&quot;:&quot;0&quot;,&quot;show_shortdesc_input&quot;:&quot;1&quot;,&quot;required_desc&quot;:&quot;0&quot;,&quot;show_nb_column&quot;:&quot;1&quot;,&quot;is_admission&quot;:&quot;0&quot;,&quot;notify_complete_file&quot;:&quot;0&quot;,&quot;menu-anchor_title&quot;:&quot;Documents&quot;,&quot;menu-anchor_css&quot;:&quot;huge circular inverted blue upload outline icon&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;Documents&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">281</field>
+    <field name="rgt">282</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">275</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Submitting application forms</field>
+    <field name="alias">submitting-application-forms</field>
+    <field name="note"></field>
+    <field name="path">submitting-application-forms</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=258</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">332</field>
+    <field name="checked_out">62</field>
+    <field name="checked_out_time">2023-01-18 15:51:20</field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">22</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;0&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">285</field>
+    <field name="rgt">286</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">276</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Previous Higher Education Records</field>
+    <field name="alias">previous-higher-education-records</field>
+    <field name="note"></field>
+    <field name="path">formulaire-de-base-candidat-9/previous-higher-education-records</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=324</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">272</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">262</field>
+    <field name="rgt">263</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">277</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Employment History</field>
+    <field name="alias">employment-history</field>
+    <field name="note"></field>
+    <field name="path">formulaire-de-base-candidat-9/employment-history</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=325</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">272</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">264</field>
+    <field name="rgt">265</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">278</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Language Proficiency</field>
+    <field name="alias">language-proficiency</field>
+    <field name="note"></field>
+    <field name="path">formulaire-de-base-candidat-9/language-proficiency</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=254</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">272</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">266</field>
+    <field name="rgt">267</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">279</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Graduate Record Examinations</field>
+    <field name="alias">graduate-record-examinations</field>
+    <field name="note"></field>
+    <field name="path">formulaire-de-base-candidat-9/graduate-record-examinations</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=326</field>
+    <field name="type">component</field>
+    <field name="published">-2</field>
+    <field name="parent_id">272</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">270</field>
+    <field name="rgt">271</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">280</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">References</field>
+    <field name="alias">references</field>
+    <field name="note"></field>
+    <field name="path">formulaire-de-base-candidat-9/references</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=256</field>
+    <field name="type">component</field>
+    <field name="published">-2</field>
+    <field name="parent_id">272</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">272</field>
+    <field name="rgt">273</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">281</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">University Preferences</field>
+    <field name="alias">university-preferences</field>
+    <field name="note"></field>
+    <field name="path">formulaire-de-base-candidat-9/university-preferences</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=327</field>
+    <field name="type">component</field>
+    <field name="published">-2</field>
+    <field name="parent_id">272</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">276</field>
+    <field name="rgt">277</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">282</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Scholarship</field>
+    <field name="alias">scholarship</field>
+    <field name="note"></field>
+    <field name="path">formulaire-de-base-candidat-9/scholarship</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=328</field>
+    <field name="type">component</field>
+    <field name="published">-2</field>
+    <field name="parent_id">272</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">278</field>
+    <field name="rgt">279</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">283</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Additional questions</field>
+    <field name="alias">additional-questions</field>
+    <field name="note"></field>
+    <field name="path">formulaire-de-base-candidat-9/additional-questions</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=266</field>
+    <field name="type">component</field>
+    <field name="published">-2</field>
+    <field name="parent_id">272</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">274</field>
+    <field name="rgt">275</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">284</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Documents</field>
+    <field name="alias">checklist-9</field>
+    <field name="note"></field>
+    <field name="path">checklist-9</field>
+    <field name="link">index.php?option=com_emundus&amp;view=checklist</field>
+    <field name="type">component</field>
+    <field name="published">-2</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">458</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">22</field>
+    <field name="params">{&quot;custom_title&quot;:&quot;&quot;,&quot;show_info_panel&quot;:&quot;0&quot;,&quot;show_info_legend&quot;:&quot;1&quot;,&quot;show_browse_button&quot;:&quot;0&quot;,&quot;show_shortdesc_input&quot;:&quot;1&quot;,&quot;show_nb_column&quot;:&quot;1&quot;,&quot;is_admission&quot;:&quot;0&quot;,&quot;menu-anchor_title&quot;:&quot;Documents&quot;,&quot;menu-anchor_css&quot;:&quot;huge circular inverted blue upload outline icon&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;Documents&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="lft">283</field>
+    <field name="rgt">284</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">285</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">FORM_9_360</field>
+    <field name="alias">form-360-sondage</field>
+    <field name="note"></field>
+    <field name="path">formulaire-de-base-candidat-9/form-360-sondage</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=360</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">272</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"></field>
+    <field name="template_style_id">22</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:&quot;1&quot;,&quot;menu_show&quot;:&quot;1&quot;,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;0&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:&quot;0&quot;}</field>
+    <field name="lft">268</field>
+    <field name="rgt">269</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>

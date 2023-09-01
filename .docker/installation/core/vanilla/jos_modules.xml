@@ -822,7 +822,7 @@
     <field name="publish_down"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_campaign</field>
-    <field name="access">1</field>
+    <field name="access">9</field>
     <field name="showtitle">0</field>
     <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;tchooz_single_campaign&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;&quot;,&quot;mod_em_campaign_link&quot;:&quot;connexion&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;,&quot;past&quot;,&quot;all&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;start_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;asc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_param_showcampaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;0&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;0&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
@@ -850,7 +850,7 @@
    </row>
    <row>
     <field name="id">115</field>
-    <field name="asset_id">103</field>
+    <field name="asset_id">113</field>
     <field name="title">Menu utilisateur</field>
     <field name="note"></field>
     <field name="content"></field>
@@ -864,7 +864,7 @@
     <field name="module">mod_emundus_user_dropdown</field>
     <field name="access">1</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;menu_name&quot;:&quot;usermenu&quot;,&quot;primary_color&quot;:&quot;ECF0F1&quot;,&quot;secondary_color&quot;:&quot;3A84C1&quot;,&quot;show_logout&quot;:&quot;1&quot;,&quot;show_update&quot;:&quot;1&quot;,&quot;url_logout&quot;:&quot;index.php&quot;,&quot;icon&quot;:&quot;big circular user outline icon&quot;,&quot;intro&quot;:&quot;&quot;,&quot;link_login&quot;:&quot;connexion&quot;,&quot;link_register&quot;:&quot;inscription&quot;,&quot;link_forgotten_password&quot;:&quot;mot-de-passe-oublie&quot;,&quot;show_registration&quot;:&quot;0&quot;,&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;switch_profile_redirect&quot;:&quot;index.php&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;menu_name&quot;:&quot;usermenu&quot;,&quot;primary_color&quot;:&quot;ECF0F1&quot;,&quot;secondary_color&quot;:&quot;3A84C1&quot;,&quot;show_logout&quot;:&quot;1&quot;,&quot;show_update&quot;:&quot;1&quot;,&quot;url_logout&quot;:&quot;index.php&quot;,&quot;icon&quot;:&quot;big circular user outline icon&quot;,&quot;intro&quot;:&quot;&quot;,&quot;link_login&quot;:&quot;connexion&quot;,&quot;link_register&quot;:&quot;inscription&quot;,&quot;link_forgotten_password&quot;:&quot;mot-de-passe-oublie&quot;,&quot;link_edit_profile&quot;:&quot;138&quot;,&quot;show_registration&quot;:&quot;0&quot;,&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;switch_profile_redirect&quot;:&quot;index.php&quot;,&quot;custom_actions&quot;:[],&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
@@ -965,6 +965,86 @@
     <field name="access">1</field>
     <field name="showtitle">0</field>
     <field name="params">{&quot;mod_emundus_footer_client_link&quot;:&quot;&quot;,&quot;mod_emundus_footer_merge_two_columns&quot;:0,&quot;mod_emundus_footer_texte_col_1&quot;:&quot;&quot;,&quot;mod_emundus_footer_texte_col_2&quot;:&quot;&quot;,&quot;mod_emundus_footer_display_tchooz_logo&quot;:0,&quot;mod_emundus_footer_display_powered_by&quot;:1,&quot;mod_emundus_footer_legal_info&quot;:1,&quot;mod_emundus_footer_data_privacy&quot;:1,&quot;mod_emundus_footer_rights&quot;:1,&quot;mod_emundus_footer_cookies&quot;:1,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">121</field>
+    <field name="asset_id">114</field>
+    <field name="title">Modifier mon profil</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">content-top-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_profile</field>
+    <field name="access">2</field>
+    <field name="showtitle">1</field>
+    <field name="params">{&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;update_profile_picture&quot;:&quot;1&quot;,&quot;show_name&quot;:&quot;1&quot;,&quot;show_account_edit_button&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">122</field>
+    <field name="asset_id">115</field>
+    <field name="title">Détails d'une campagne [CONNECTE]</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">content-bottom-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up">2023-04-24 09:53:00</field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_campaign</field>
+    <field name="access">2</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;mod_em_campaign_layout&quot;:&quot;tchooz_single_campaign&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;&quot;,&quot;mod_em_campaign_link&quot;:&quot;apply&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;,&quot;past&quot;,&quot;all&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;start_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;asc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_param_showcampaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;0&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;0&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">123</field>
+    <field name="asset_id">116</field>
+    <field name="title">[FORMULAIRE] Flow</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">content-top-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundusflow</field>
+    <field name="access">2</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;show_programme&quot;:&quot;1&quot;,&quot;show_deadline&quot;:&quot;0&quot;,&quot;show_back_button&quot;:&quot;1&quot;,&quot;show_form_step&quot;:&quot;1&quot;,&quot;show_document_step&quot;:&quot;1&quot;,&quot;show_status&quot;:&quot;1&quot;,&quot;show_hikashop&quot;:&quot;1&quot;,&quot;admission&quot;:&quot;0&quot;,&quot;home_link&quot;:&quot;index.php&quot;,&quot;add_to_cart_icon&quot;:&quot;large add to cart icon&quot;,&quot;scholarship_icon&quot;:&quot;large student icon&quot;,&quot;tags&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">124</field>
+    <field name="asset_id">117</field>
+    <field name="title">[FORMULAIRE] Étapes</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position">sidebar-a</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">0</field>
+    <field name="module">mod_emundus_checklist</field>
+    <field name="access">2</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;show_forms&quot;:&quot;1&quot;,&quot;forms_title&quot;:&quot;\u00c9tapes&quot;,&quot;show_mandatory_documents&quot;:&quot;1&quot;,&quot;mandatory_documents_title&quot;:&quot;Documents obligatoires&quot;,&quot;show_optional_documents&quot;:&quot;0&quot;,&quot;optional_documents_title&quot;:&quot;Documents optionnels&quot;,&quot;show_duplicate_documents&quot;:&quot;1&quot;,&quot;preliminary_documents_title&quot;:&quot;PRELIMINARY_DOCUMENTS&quot;,&quot;show_preliminary_documents&quot;:&quot;0&quot;,&quot;showsend&quot;:&quot;1&quot;,&quot;admission&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>

@@ -2850,7 +2850,7 @@
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">1</field>
@@ -4076,7 +4076,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">1</field>
@@ -4381,11 +4381,11 @@ return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user-
     <field name="created">2014-09-08 11:55:48</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified">0000-00-00 00:00:00</field>
-    <field name="modified_by">62</field>
+    <field name="modified">2023-09-01 09:37:05</field>
+    <field name="modified_by">1</field>
     <field name="width">20</field>
     <field name="height">0</field>
-    <field name="default"></field>
+    <field name="default">0</field>
     <field name="hidden">1</field>
     <field name="eval">0</field>
     <field name="ordering">8</field>
@@ -4399,7 +4399,7 @@ return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user-
     <field name="access">6</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;6&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_fake_key&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tipsoverelement&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;8&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[],&quot;join_val_column_concat&quot;:null,&quot;inc_in_search_all&quot;:0}</field>
+    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;col-sm-6&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;6&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;col-sm-6&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;8&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
    </row>
    <row>
     <field name="id">2755</field>
@@ -4484,7 +4484,7 @@ return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user-
     <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -4825,7 +4825,7 @@ return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user-
     <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">1</field>
@@ -6006,7 +6006,7 @@ return $user-&gt;fnum;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -6099,7 +6099,7 @@ return $user-&gt;fnum;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -7294,7 +7294,7 @@ return $user-&gt;fnum;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -7480,7 +7480,7 @@ return $user-&gt;fnum;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -8682,7 +8682,7 @@ return $user-&gt;email;</field>
     <field name="ordering">0</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -8713,7 +8713,7 @@ return $user-&gt;email;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -8744,7 +8744,7 @@ return $user-&gt;email;</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -8775,7 +8775,7 @@ return $user-&gt;email;</field>
     <field name="ordering">3</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -9582,7 +9582,7 @@ return $current_user-&gt;campaign_id;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -12162,7 +12162,7 @@ return $cid;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">1</field>
@@ -12193,7 +12193,7 @@ return $cid;</field>
     <field name="ordering">5</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">0</field>
@@ -12224,7 +12224,7 @@ return $cid;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">1</field>
@@ -12255,7 +12255,7 @@ return $cid;</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">0</field>
@@ -12379,7 +12379,7 @@ return $cid;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -12410,7 +12410,7 @@ return $cid;</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -12441,7 +12441,7 @@ return $cid;</field>
     <field name="ordering">3</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -12472,7 +12472,7 @@ return $cid;</field>
     <field name="ordering">4</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -13814,7 +13814,7 @@ return $email_from_sys;</field>
     <field name="ordering">0</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">1</field>
@@ -13845,7 +13845,7 @@ return $email_from_sys;</field>
     <field name="ordering">0</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">0</field>
@@ -13876,7 +13876,7 @@ return $email_from_sys;</field>
     <field name="ordering">0</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">0</field>
@@ -14155,7 +14155,7 @@ return $email_from_sys;</field>
     <field name="ordering">0</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -14186,7 +14186,7 @@ return $email_from_sys;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -14248,7 +14248,7 @@ return $email_from_sys;</field>
     <field name="ordering">0</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -14279,7 +14279,7 @@ return $email_from_sys;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -14620,7 +14620,7 @@ return $email_from_sys;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -15023,7 +15023,7 @@ return $email_from_sys;</field>
     <field name="ordering">7</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -15054,7 +15054,7 @@ return $email_from_sys;</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -15085,7 +15085,7 @@ return $email_from_sys;</field>
     <field name="ordering">4</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">1</field>
@@ -15116,7 +15116,7 @@ return $email_from_sys;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">0</field>
@@ -15147,7 +15147,7 @@ return $email_from_sys;</field>
     <field name="ordering">4</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">1</field>
@@ -15178,7 +15178,7 @@ return $email_from_sys;</field>
     <field name="ordering">5</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">0</field>
@@ -15404,7 +15404,7 @@ return $fnum;</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -15435,7 +15435,7 @@ return $fnum;</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -16117,7 +16117,7 @@ return $fnum;</field>
     <field name="ordering">0</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">0</field>
@@ -16148,7 +16148,7 @@ return $fnum;</field>
     <field name="ordering">0</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">1</field>
     <field name="primary_key">1</field>
@@ -16396,7 +16396,7 @@ return $fnum;</field>
     <field name="ordering">12</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">0</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -16551,7 +16551,7 @@ return $fnum;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -16644,7 +16644,7 @@ return $fnum;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -16830,7 +16830,7 @@ return $fnum;</field>
     <field name="ordering">7</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -17296,7 +17296,7 @@ return $fnum;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -17420,7 +17420,7 @@ return $fnum;</field>
     <field name="ordering">0</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -17451,7 +17451,7 @@ return $fnum;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -17482,7 +17482,7 @@ return $fnum;</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -17513,7 +17513,7 @@ return $fnum;</field>
     <field name="ordering">3</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -17544,7 +17544,7 @@ return $fnum;</field>
     <field name="ordering">4</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -17575,7 +17575,7 @@ return $fnum;</field>
     <field name="ordering">5</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -17668,7 +17668,7 @@ return $fnum;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -17854,7 +17854,7 @@ return $fnum;</field>
     <field name="ordering">7</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -17885,7 +17885,7 @@ return $fnum;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -18164,7 +18164,7 @@ return $fnum;</field>
     <field name="ordering">0</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -18195,7 +18195,7 @@ return $fnum;</field>
     <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -18226,7 +18226,7 @@ return $fnum;</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -18257,7 +18257,7 @@ return $fnum;</field>
     <field name="ordering">3</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -18288,7 +18288,7 @@ return $fnum;</field>
     <field name="ordering">4</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -18319,7 +18319,7 @@ return $fnum;</field>
     <field name="ordering">5</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -18350,7 +18350,7 @@ return $fnum;</field>
     <field name="ordering">6</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -18381,7 +18381,7 @@ return $fnum;</field>
     <field name="ordering">7</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -18412,7 +18412,7 @@ return $fnum;</field>
     <field name="ordering">8</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
-    <field name="filter_exact_match"></field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
