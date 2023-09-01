@@ -697,7 +697,7 @@ class EmundusController extends JControllerLegacy {
         $redirect = $jinput->get('redirect', null);
 
         $ids = explode('.', $profile_fnum);
-        $profile = (int)$ids[0];
+        $profile = $ids[0];
 
 		if(version_compare(JVERSION, '4.0', '>'))
 		{
@@ -710,7 +710,7 @@ class EmundusController extends JControllerLegacy {
         $m_profile = new EmundusModelProfile;
         $applicant_profiles = $m_profile->getApplicantsProfilesArray();
         foreach ($aid->emProfiles as $emProfile) {
-            if ($emProfile->id === $profile) {
+            if ($emProfile->id == $profile) {
 				
                 if (in_array($profile, $applicant_profiles)) {
                     $fnum = $ids[1];
