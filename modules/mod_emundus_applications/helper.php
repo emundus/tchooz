@@ -101,7 +101,7 @@ class modemundusApplicationsHelper {
 		}
 
 		try {
-		$db->setQuery($query);
+			$db->setQuery($query);
 			$applications = $db->loadObjectList('fnum');
 		} catch (Exception $e) {
 			JLog::add('Module emundus applications failed to get applications for user ' . $user->id .  ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
