@@ -9,15 +9,29 @@
 // No direct access to this file
 defined('_JEXEC') or die;
 
-JHtml::_('stylesheet', 'mod_falang/template.css', array(), true);
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Registry\Registry;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Helper\ModuleHelper;
 
-//add alternate tag
-$doc = JFactory::getDocument();
-$default_lang = JComponentHelper::getParams('com_languages')->get('site', 'en-GB');
-$current_lang = JFactory::getLanguage()->getTag();
-$languagesCode = JLanguageHelper::getLanguages('lang_code');
+HTMLHelper::_('stylesheet', 'mod_falang/template.css', array('version' => 'auto', 'relative' => true));
 
-$sef = JFactory::getApplication()->getCfg('sef');
+$default_lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+$languagesCode = LanguageHelper::getLanguages('lang_code');
+
+if(version_compare(JVERSION, '4.0', '>')) {
+    $doc = Factory::getApplication()->getDocument();
+	$current_lang = Factory::getApplication()->getLanguage()->getTag();
+	$sef = Factory::getApplication()->get('sef');
+} else {
+    $doc = Factory::getDocument();
+	$current_lang = JFactory::getLanguage()->getTag();
+	$sef = Factory::getApplication()->getCfg('sef');
+}
 
 /* Support of alternate tag bassed on language filter parameters  */
 $remove_default_prefix = 0;
@@ -26,9 +40,9 @@ $alternate_meta    = 1;
 $xdefault          = 1;
 $xdefault_language = $default_lang;
 
-$filter_plugin = JPluginHelper::getPlugin('system', 'languagefilter');
+$filter_plugin = PluginHelper::getPlugin('system', 'languagefilter');
 if (!empty($filter_plugin)) {
-    $filter_plugin_params  = new JRegistry($filter_plugin->params);
+    $filter_plugin_params  = new Registry($filter_plugin->params);
     $remove_default_prefix = $filter_plugin_params->get('remove_default_prefix','0');
     $alternate_meta        = $filter_plugin_params->get('alternate_meta', 1);
     $xdefault              = $filter_plugin_params->get('xdefault', 1);
@@ -40,7 +54,7 @@ if (!empty($filter_plugin)) {
 // hack to fix the fact that $language->link already contains the rootpath of the joomla site
 // ex falang3/en for http//localhost/falang3
 
-$uri_base = substr(JURI::base(false), 0,strlen(JURI::base(false))-strlen(JURI::base(true)));
+$uri_base = substr(URI::base(false), 0,strlen(URI::base(false))-strlen(URI::base(true)));
 foreach($list as $language) {
     if ($alternate_meta && $language->display == '1')
     {
@@ -52,18 +66,18 @@ foreach($list as $language) {
                 $link = preg_replace('|/' . $language->sef . '/|', '/', $link, 1);
                 //remove last slash for default language
                 $link = rtrim($link, "/");
-                $doc->addCustomTag('<link rel="alternate" href="' . $link . '" hreflang="' . $language->sef . '" />');
+	            $doc->addHeadLink($link, 'alternate', 'rel', ['hreflang' => $language->sef]);
             }
             else
             {
-                $doc->addCustomTag('<link rel="alternate" href="' . $link . '" hreflang="' . $language->sef . '" />');
+	            $doc->addHeadLink($link, 'alternate', 'rel', ['hreflang' => $language->sef]);
             }
 
 
         }
         else
         {
-            $doc->addCustomTag('<link rel="alternate" href="' . $language->link . '" hreflang="' . $language->sef . '" />');
+	        $doc->addHeadLink($language->link, 'alternate', 'rel', ['hreflang' => $language->sef]);
         }
 
         if ($xdefault)
@@ -75,11 +89,11 @@ foreach($list as $language) {
                 // Use a custom tag because addHeadLink is limited to one URI per tag
                 if ($sef == '1')
                 {
-                    $doc->addCustomTag('<link rel="alternate" href="' . $link . '"  hreflang="x-default" />');
+	                $doc->addCustomTag('<link href="' . $link . '" rel="alternate" hreflang="x-default" />');
                 }
                 else
                 {
-                    $doc->addCustomTag('<link rel="alternate" href="' . $language->link . '"  hreflang="x-default" />');
+	                $doc->addCustomTag('<link href="' . $language->link . '" rel="alternate" hreflang="x-default" />');
                 }
             }
 
@@ -92,7 +106,7 @@ foreach($list as $language) {
 
 <?php
 // Support of language domain from yireo
-$yireo_plugin = JPluginHelper::getPlugin('system', 'languagedomains');
+$yireo_plugin = PluginHelper::getPlugin('system', 'languagedomains');
 if (!empty($yireo_plugin)) {
     foreach($list as $language):
         if (empty($language->link) || in_array($language->link, array('/', 'index.php'))) $language->link = '/?lang='.$language->sef;
@@ -107,9 +121,9 @@ if (!empty($yireo_plugin)) {
 <?php endif; ?>
 
 <?php if ($params->get('dropdown',1)) : ?>
-    <?php require JModuleHelper::getLayoutPath('mod_falang', $params->get('layout', 'emundus') . '_dropdown'); ?>
+    <?php require ModuleHelper::getLayoutPath('mod_falang', $params->get('layout', 'emundus') . '_dropdown'); ?>
 <?php else : ?>
-    <?php require JModuleHelper::getLayoutPath('mod_falang', $params->get('layout', 'default') . '_list'); ?>
+    <?php require ModuleHelper::getLayoutPath('mod_falang', $params->get('layout', 'default') . '_list'); ?>
 <?php endif; ?>
 
 <?php if ($footerText) : ?>

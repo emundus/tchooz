@@ -8,8 +8,19 @@
 
 // No direct access to this file
 defined('_JEXEC') or die;
-$document = JFactory::getDocument();
-$document->addStyleSheet("modules/mod_falang/style/mod_falang_emundus.css");
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\HTML\HTMLHelper;
+
+if (version_compare(JVERSION, '4.0', '>')) {
+    $doc = Factory::getApplication()->getDocument();
+	$wa = $doc->getWebAssetManager();
+	$wa->registerAndUseStyle('mod_falang_emundus', 'modules/mod_falang/style/mod_falang_emundus.css');
+} else {
+    $doc = Factory::getDocument();
+	$doc->addStyleSheet("modules/mod_falang/style/mod_falang_emundus.css");
+}
 
 // mod_falang helper set display to false because of the parameter layout=edit
 // we need to set it to true to switch language
@@ -17,7 +28,7 @@ foreach ($list as $key=> $language) {
     $list[$key]->display = true;
 }
 ?>
-<form name="lang" method="post" action="<?php echo htmlspecialchars(JUri::current()); ?>" style="margin-bottom: 0">
+<form name="lang" method="post" action="<?php echo htmlspecialchars(Uri::current()); ?>" style="margin-bottom: 0">
     <?php if (!$params->get('advanced_dropdown',0)) : ?>
         <?php foreach($list as $language):?>
             <?php if (!empty($language->active)) : ?>
@@ -63,7 +74,7 @@ foreach ($list as $key=> $language) {
                         <?php if ($language->display) { ?>
                             <a href="<?php echo $language->link;?>">
                                 <?php if ($params->get('image', 1)):?>
-                                    <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
+                                    <?php echo HTMLHelper::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
                                 <?php endif; ?>
                                 <?php if ($params->get('show_name', 1)):?>
                                     <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
@@ -72,7 +83,7 @@ foreach ($list as $key=> $language) {
                             </a>
                         <?php } else { ?>
                             <?php if ($params->get('image', 1)):?>
-                                <?php echo JHtml::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native,'style'=>'opacity:0.5'), $relativePath);?>
+                                <?php echo HTMLHelper::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native,'style'=>'opacity:0.5'), $relativePath);?>
                             <?php else : ?>
                                 <?php if ($params->get('show_name', 1)):?>
                                     <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
