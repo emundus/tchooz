@@ -912,7 +912,8 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 #filters #quick .selectize-control  {
-    width: 85%;
+    width: 100%;
+    display: flex;
 }
 
 #filters #quick .selectize-input {
@@ -1303,6 +1304,7 @@ div#em-synthesis .panel-body {
 
 div#em-synthesis .panel-body ul {
     color: #353544;
+    padding-left: 14px;
 }
 
 div#em-last-open .panel-body {
