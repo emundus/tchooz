@@ -94,7 +94,9 @@ JFactory::getSession()->set('application_layout', 'evaluation');
     });
 
     function resizeIframe(obj) {
+        if(obj.contentWindow.document.body) {
         obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+    }
     }
 
     window.ScrollToTop = function() {
@@ -194,14 +196,23 @@ JFactory::getSession()->set('application_layout', 'evaluation');
     }
 
     $(document).on('click', '#em_delete_evals', function(e) {
-
-        if (e.handle === true) {
-            e.handle = false;
             var checked = getEvalChecked();
 
             if (checked.length > 0) {
-                var res = confirm("<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_CONFIRM_DELETE_SELETED_EVALUATIONS')?>");
-                if (res) {
+            Swal.fire({
+                title: "<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_CONFIRM_DELETE_SELETED_EVALUATIONS')?>",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: "<?php echo JText::_('JYES') ?>",
+                cancelButtonText: "<?php echo JText::_('JNO') ?>",
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    cancelButton: 'em-swal-cancel-button'
+                }
+            }).then((result) => {
+                if (result.value) {
                     var url = $(this).attr('link');
 
                     $('#em-modal-actions .modal-body').empty();
@@ -238,9 +249,20 @@ JFactory::getSession()->set('application_layout', 'evaluation');
                         }
                     });
                 }
+            });
             } else {
-                alert("<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_YOU_MUST_SELECT_EVALUATIONS')?>");
+            Swal.fire({
+                title: "<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_YOU_MUST_SELECT_EVALUATIONS')?>",
+                type: 'warning',
+                showCancelButton: false,
+                confirmButtonText: "<?php echo JText::_('CONFIRM') ?>",
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    actions: 'em-swal-single-action'
             }
+            });
         }
     });
 </script>

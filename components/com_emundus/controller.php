@@ -703,7 +703,7 @@ class EmundusController extends JControllerLegacy {
 		{
 			$session = Factory::getApplication()->getSession();
 		} else {
-			$session = JFactory::getSession();
+        	$session = Factory::getSession();
 		}
         $aid = $session->get('emundusUser');
 
@@ -711,7 +711,7 @@ class EmundusController extends JControllerLegacy {
         $applicant_profiles = $m_profile->getApplicantsProfilesArray();
         foreach ($aid->emProfiles as $emProfile) {
             if ($emProfile->id == $profile) {
-				
+
                 if (in_array($profile, $applicant_profiles)) {
                     $fnum = $ids[1];
                     if ($fnum !== "") {

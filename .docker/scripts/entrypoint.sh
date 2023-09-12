@@ -127,7 +127,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2 "Copy of Gantry 5 Helium template in progress..."
 
     cp /templates/g5_helium/templateDetails.xml templates/g5_helium/templateDetails.xml
-    cp -r /templates/g5_helium/custom/config templates/g5_helium/custom/config
+    cp -r /templates/g5_helium/custom/config templates/g5_helium/custom/
   fi
 
   if [ ! -e configuration.php ] && [ -d ".docker/installation/" ]; then

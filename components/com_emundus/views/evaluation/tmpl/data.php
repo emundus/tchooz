@@ -52,7 +52,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
                                         <?= strip_tags(JText::_($v)); ?>
                                     </strong>
 
-                                <?php elseif ($kl == 'check') :?>
+                                <?php elseif ($kl == 'check' && empty($this->cfnum)) :?>
                                 <div class="selectContainer" id="selectContainer">
                                     <div class="selectPage">
                                         <input type="checkbox" value="-1" id="em-check-all" class="em-hide em-check">
@@ -120,33 +120,34 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
                                                     </div>
                                                 </a>
                                             <?php elseif ($k == "access") :?>
-                                                <?php echo $this->accessObj[$line['fnum']->val]?>
+                                                <?= $this->accessObj[$line['fnum']->val]?>
                                             <?php elseif ($k == "id_tag") :?>
-                                                <?php echo $this->colsSup['id_tag'][$line['fnum']->val]?>
+                                                <?= $this->colsSup['id_tag'][$line['fnum']->val]?>
                                             <?php elseif (isset($this->colsSup) && array_key_exists($k, $this->colsSup)) :?>
                                                 <?= @$this->colsSup[$k][$line['fnum']->val] ?>
                                             <?php else :?>
                                                 <?php if ($value->type == 'text' ) :?>
-                                                    <?php echo strip_tags(JText::_($value->val)); ?>
+                                                    <?= strip_tags(JText::_($value->val)); ?>
                                                 <?php elseif ($value->type == "textarea" && !empty($value->val) && strlen($value->val) > 200) :?>
-                                                    <?php echo substr($value->val,0,200)." ..."; ?>
+                                                    <?= substr(strip_tags($value->val),0,200)." ..."; ?>
                                                 <?php elseif ($value->type == "date")  :?>
                                                     <strong>
                                                         <?php if (!isset($value->val) || $value->val == "0000-00-00 00:00:00") :?>
                                                         <?php else: ?>
                                                             <?php
                                                             $formatted_date = DateTime::createFromFormat('Y-m-d H:i:s', $value->val);
-                                                        //echo $formatted_date->format("M j, Y, H:i");
                                                         echo JFactory::getDate($value->val)->format(JText::_('DATE_FORMAT_LC2'));
                                                             ?>
                                                         <?php endif; ?>
                                                     </strong>
-                                                <?php else:
+                                                <?php else: ?>
+                                                    <?php
                                                     // Do not display the typical COM_EMUNDUS_PLEASE_SELECT text used for empty dropdowns.
                                                     if ($value->val !== 'COM_EMUNDUS_PLEASE_SELECT') {
                                                         echo JText::_($value->val);
                                                     }
-                                                endif; ?>
+                                                    ?>
+                                                <?php endif; ?>
                                             <?php endif; ?>
                                         </div>
 
@@ -187,6 +188,8 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
 <script>
     const selectDropdownContainer = document.querySelector('#selectAll_evaluation');
     const countFiles = document.querySelector('#countCheckedCheckbox');
+
+    if (selectDropdownContainer) {
     selectDropdownContainer.style.display = 'none';
 
     $('.selectDropdown').click(function() {
@@ -204,6 +207,7 @@ $limits = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15,
             selectDropdownContainer.style.display = 'none';
         }
     });
+    }
 
     function checkAllFiles(){
         $('#em-check-all-all').prop('checked',true);

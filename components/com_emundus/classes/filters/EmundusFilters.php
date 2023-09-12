@@ -75,7 +75,7 @@ class EmundusFilters
 					'group_id' => $element['element_form_id'],
 					'available' => true,
                     'plugin' => $element['plugin']
-				];
+                ];
 
 				switch ($element['plugin']) {
 					case 'dropdown':

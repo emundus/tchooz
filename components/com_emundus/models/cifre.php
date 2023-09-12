@@ -348,7 +348,7 @@ class EmundusModelCifre extends JModelList {
 	function createContactRequest($user_to, $user_from, $fnum_to, $fnum_from = null, $message = null, $motivation  = null, $cv  = null, $doc  = null) {
 
 		JPluginHelper::importPlugin('emundus');
-		
+
 
 		$query = $this->db->getQuery(true);
 
@@ -421,7 +421,7 @@ class EmundusModelCifre extends JModelList {
 	function acceptContactRequest($user1, $user2, $fnum) {
 
 		JPluginHelper::importPlugin('emundus');
-		
+
 
 		$query = $this->db->getQuery(true);
 
@@ -457,7 +457,7 @@ class EmundusModelCifre extends JModelList {
 	function deleteContactRequest($user1, $user2, $fnum) {
 
 		JPluginHelper::importPlugin('emundus');
-		
+
 
 		$query = $this->db->getQuery(true);
 

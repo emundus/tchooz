@@ -1383,7 +1383,7 @@ class EmundusModelCampaign extends JModelList {
             $fields = [];
             $labels = new stdClass;
 
-            
+
             JFactory::getApplication()->triggerEvent('onBeforeCampaignUpdate', $data);
             JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeCampaignUpdate', ['campaign' => $cid]]);
 

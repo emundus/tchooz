@@ -18,9 +18,9 @@ class EmundusFiltersFiles extends EmundusFilters
 	public function __construct($config = array())
 	{
 		JLog::addLogger(['text_file' => 'com_emundus.filters.php'], JLog::ALL, 'com_emundus.filters');
-		
+
 		$app = Factory::getApplication();
-		
+
 		if(version_compare(JVERSION, '4.0', '>')) {
 			$this->user = $app->getIdentity();
 		} else {
@@ -455,9 +455,9 @@ class EmundusFiltersFiles extends EmundusFilters
 									}
 									$new_default_filter['andorOperator'] = 'OR';
 									$new_default_filter['operator'] = $new_default_filter['type'] === 'select' ? 'IN' : '=';
-								}
+                                }
                                 $new_default_filter['plugin'] = $element['plugin'];
-							}
+                            }
 						}
 
 						if (!empty($new_default_filter)) {

@@ -3808,7 +3808,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
         JPluginHelper::importPlugin('emundus');
-        
+
 
         $status = JFactory::getApplication()->triggerEvent('onExportFiles', array($fnums, $type));
         JFactory::getApplication()->triggerEvent('callEventHandler', ['onExportFiles', ['fnums' => $fnums, 'type' => $type]]);
@@ -3864,7 +3864,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $letters = $_mEval->generateLetters($fnums,$templates,$canSee,$showMode,$mergeMode);
         ob_clean();
         if ($letters) {
-            
+
             JFactory::getApplication()->triggerEvent('onAfterGenerateLetters', ['letters' => $letters]);
             JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterGenerateLetters', ['letters' => $letters]]);
 
