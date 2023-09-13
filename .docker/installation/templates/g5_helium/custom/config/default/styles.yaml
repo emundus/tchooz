@@ -1,18 +1,197 @@
-preset: preset4
+preset: emundus
 base:
   background: '#f8f8f8'
   text-color: '#000000'
-  primary-color: '#353544'
-  secondary-color: '#20835F'
+  title-color: '#000000'
+  primary-color: '#1b1f3c'
+  secondary-color: '#de6339'
+  tertiary-color: '#5c5c5c'
 accent:
-  color-1: '#353544'
-  color-2: '#20835F'
+  red-1: '#eb0000'
+  red-2: '#c00016'
+  pink-1: '#ff78d1'
+  pink-2: '#e0008a'
+  purple-1: '#d292ef'
+  purple-2: '#9600c7'
+  light-blue-1: '#35d7d2'
+  light-blue-2: '#308281'
+  blue-1: '#64d8ff'
+  blue-2: '#0073e5'
+  blue-3: '#0644ae'
+  green-1: '#98d432'
+  green-2: '#008a35'
+  yellow-1: '#ffe014'
+  yellow-2: '#ffae00'
+  orange-1: '#ff6900'
+  orange-2: '#cc4b00'
+  beige: '#ffc285'
+  brown: '#8b511f'
+  grey-1: '#b4b4b4'
+  grey-2: '#757575'
+  black: '#1e1e1e'
 font:
-  family-default: 'family=Inter:300,400,500,600,700,800,900,400&subset=latin,vietnamese,latin-ext'
-  family-title: 'family=Inter:300,400,500,600,700,800,900,400&subset=latin,vietnamese,latin-ext'
+  family-title: Inter
+  size-h1: 24px
+  size-h2: 22px
+  size-h3: 20px
+  size-h4: 18px
+  size-h5: 16px
+  size-h6: 14px
+  family-text: Inter
+  font-size: 16px
+  xxs-size: 10px
+coordinator:
+  background: '#f8f8f8'
+  interface: '#353544'
+  primary-color: '#238c69'
+  secondary-color: '#353544'
+  tertiary-color: '#5a5a72'
+  text-color: '#4b4b4b'
+  title-color: '#000000'
+  family-text: Inter
+  family-title: Inter
+  size-h1: 24px
+  size-h2: 22px
+  size-h3: 20px
+  size-h4: 18px
+  size-h5: 16px
+  size-h6: 14px
+  font-size: 16px
+  border-radius: 8px
+  border-color: '#cccccc'
+  form-height: 40px
+  form-border-radius: 4px
+  vertical: 8px
+  horizontal: 12px
+  border-radius-cards: 16px
+em-alert:
+  error-background-color: '#fae9e9'
+  error-color: '#520105'
+  error-icon-color: '#a60e15'
+  error-border-width: 0px
+  error-border-color: 'rgba(255, 255, 255, 0)'
+  warning-background-color: '#fff6de'
+  warning-color: '#563a04'
+  warning-icon-color: '#b38405'
+  warning-border-width: 1px
+  warning-border-color: 'rgba(255, 255, 255, 0)'
+  info-background-color: '#ebeefa'
+  info-color: '#232b4f'
+  info-icon-color: '#525b85'
+  info-border-width: 1px
+  info-border-color: 'rgba(255, 255, 255, 0)'
+  success-background-color: '#eaf3e8'
+  success-color: '#02300c'
+  success-icon-color: '#2d871d'
+  success-border-width: 1px
+  success-border-color: 'rgba(255, 255, 255, 0)'
+  modal-padding: 32px
+em-border-radius:
+  default: 8px
+  applicant: 8px
+  cards: 16px
+  status: 8px
+em-box-shadow:
+  x-1: 0px
+  y-1: 1px
+  blur-1: 1px
+  color-1: 'rgba(5, 47, 55, 0.07)'
+  x-2: 0px
+  y-2: 1px
+  blur-2: 1px
+  color-2: 'rgba(5, 47, 55, 0.07)'
+  x-3: 0px
+  y-3: 1px
+  blur-3: 1px
+  color-3: 'rgba(5, 47, 55, 0.07)'
+em-form:
+  success-color: '#20835f'
+  error-color: '#f04437'
+  border-radius-block: 16px
+  label-color: '#000000'
+  label-margin-bottom: 6px
+  label-size: 16px
+  label-weight: '500'
+  height: 40px
+  font-size: 14px
+  tip-color: '#5c5c5c'
+  border-radius: 4px
+  border-color: '#e0e0e5'
+  background-color: '#ffffff'
+  border-radius-focus: 6px
+  border-color-focus: '#a7a7a7'
+  background-color-focus: '#ffffff'
+  outline-width-focus: 1px
+  outline-color-focus: '#007bff'
+  outline-offset-focus: 2px
+  background-color-hover: 'rgba(225, 231, 239, 0)'
+  border-color-hover: '#a7a7a7'
+  border-color-error: '#c62222'
+  label-color-error: '#000000'
+  element-color-error: '#a60e15'
+  after-border-height: 0px
+  radio-padding: 8px
+  radio-border-width: 0px
+  radio-border-color: '#a7a7a7'
+  radio-border-radius: 4px
+  radio-width: 16px
+  radio-height: 16px
+  radio-margin-right: 8px
+  radio-color-checked: '#2d871d'
+  radio-background-color-checked: '#e1e7ef'
+  radio-border-color-checked: '#2e404f'
+  yesno-border-width: 1px
+  yesno-border-radius: 4px
+  yesno-width: 50%
+  yesno-height: 48px
+  yesno-gap: 20px
+  yesno-color-not-active: '#000000'
+  yesno-background-color-not-active: '#ffffff'
+  yesno-border-color-not-active: '#8990a9'
+  yesno-color-not-active-hover: '#ffffff'
+  yesno-background-color-not-active-hover: '#8990a9'
+  yesno-border-color-not-active-hover: '#8990a9'
+  yesno-color-yes: '#ffffff'
+  yesno-background-color-yes: '#238c69'
+  yesno-border-color-yes: '#238c69'
+  yesno-color-yes-hover: '#238c69'
+  yesno-background-color-yes-hover: '#ffffff'
+  yesno-border-color-yes-hover: '#238c69'
+  yesno-color-no: '#ffffff'
+  yesno-background-color-no: '#f04437'
+  yesno-border-color-no: '#f04437'
+  yesno-color-no-hover: '#f04437'
+  yesno-background-color-no-hover: '#ffffff'
+  yesno-border-color-no-hover: '#f04437'
+  checkbox-border-width: 0px
+  checkbox-border-color: '#a7a7a7'
+  checkbox-padding: 12px
+  checkbox-scale: '1.7'
+  checkbox-input-margin: 12px
+  checkbox-color-checked: '#2d871d'
+  checkbox-border-color-error: '#c62222'
+  fileupload-padding: '12px 8px'
+  fileupload-background-color: '#f0f0f0'
+  field-margin-bottom: 24px
+  em-form-field-margin-bottom: 24px
+em-spacing:
+  1: 4px
+  2: 6px
+  3: 10px
+  4: 14px
+  5: 18px
+  6: 20px
+  7: 24px
+  8: 26px
+  9: 36px
+  10: 40px
+  11: 44px
+  12: 48px
+  vertical: 8px
+  horizontal: 12px
 link:
-  regular: '#20835F'
-  hover: '#2abd89'
+  regular: '#de6339'
+  hover: '#c62222'
 navigation:
   background: '#ffffff'
   text-color: '#2a363b'

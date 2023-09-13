@@ -24,3 +24,9 @@ css:
     extra: {  }
     priority: '0'
     name: Footer
+  -
+    location: 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined'
+    inline: ''
+    extra: '{  }'
+    priority: '0'
+    name: 'Material Icons'

@@ -19,6 +19,12 @@ css:
     extra: '{  }'
     priority: '0'
     name: Quill
+  -
+    location: 'gantry-assets://custom/scss/main.compiled.css'
+    inline: ''
+    extra: '{  }'
+    priority: '0'
+    name: Main
 javascript:
   -
     location: 'https://cdn.jsdelivr.net/npm/sweetalert2@8'
