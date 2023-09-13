@@ -6,8 +6,11 @@
  * Time: 10:16
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
-JHTML::_('behavior.tooltip');
-JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.4.1/css/all.css');
+
+$app = JFactory::getApplication();
+$document = $app->getDocument();
+$wa = $document->getWebAssetManager();
+$wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
 ?>
 
 <div class="container-fluid">
@@ -148,8 +151,6 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
-    })
-
-
+    });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>

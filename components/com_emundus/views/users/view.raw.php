@@ -25,6 +25,29 @@ class EmundusViewUsers extends JViewLegacy
 	var $_user = null;
 	var $_db = null;
     var $filts_details = null;
+	var $user = null;
+	var $users = [];
+	var $pagination = [];
+	var $lists = [];
+	var $code = null;
+	var $fnum_assoc = null;
+	var $filters = null;
+	var $uGroups = null;
+	var $juGroups = null;
+	var $uCamps = null;
+	var $uOprofiles = null;
+	var $app_prof = null;
+	var $edit = null;
+    var $profiles = null;
+	var $groups = null;
+	var $jgroups = null;
+	var $campaigns = null;
+	var $universities = null;
+	var $ldapElements = null;
+	var $actions = null;
+	var $progs = null;
+	var $items = null;
+	var $display = null;
 
 	function __construct($config = array()) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
@@ -41,10 +64,8 @@ class EmundusViewUsers extends JViewLegacy
         $menu_params    = $menu->getParams(@$current_menu->id);
 
         //Pre-filters
-        //$tables 		= explode(',', $menu_params->get('em_tables_id'));
         $filts_names 	= explode(',', $menu_params->get('em_filters_names'));
         $filts_values	= explode(',', $menu_params->get('em_filters_values'));
-        //$filts_types  	= explode(',', $menu_params->get('em_filters_options'));
 
         foreach ($filts_names as $key => $filt_name) {
             if (array_key_exists($key, $filts_values) && !empty($filts_values[$key]))
@@ -60,14 +81,14 @@ class EmundusViewUsers extends JViewLegacy
 		$m_users = new EmundusModelUsers();
         $m_users->filts_details = $this->filts_details;
 		$users = $m_users->getUsers();
-		$this->assignRef('users', $users);
+		$this->users = $users;
 
 		$pagination = $m_users->getPagination();
-		$this->assignRef('pagination', $pagination);
+		$this->pagination = $pagination;
 
 		$lists['order_dir'] = JFactory::getSession()->get( 'filter_order_Dir' );
 		$lists['order']     = JFactory::getSession()->get( 'filter_order' );
-		$this->assignRef('lists', $lists);
+		$this->lists = $lists;
 	}
 
 	private function _loadFilter() {
@@ -76,12 +97,10 @@ class EmundusViewUsers extends JViewLegacy
 
         $model->code = $m_users->getUserGroupsProgrammeAssoc($this->_user->id);
         $model->fnum_assoc = $m_users->getApplicantsAssoc($this->_user->id);
-        $this->assignRef('code', $model->code);
-        $this->assignRef('fnum_assoc', $model->fnum_assoc);
+        $this->code = $model->code;
+        $this->fnum_assoc = $model->fnum_assoc;
 
-        // reset filter
-        $filters = @EmundusHelperFiles::resetFilter();
-        $this->assignRef('filters', $filters);
+		$this->filters = @EmundusHelperFiles::resetFilter();
 	}
 
 	private function _loadUserForm() {
@@ -105,84 +124,74 @@ class EmundusViewUsers extends JViewLegacy
 			$uCamps = $m_users->getUserCampaigns($uid);
 			$uOprofiles = $m_users->getUserOprofiles($uid);
 
-			$this->assignRef('user', $user);
-			$this->assignRef('uGroups', $uGroups);
+			$this->user = $user;
+			$this->uGroups = $uGroups;
             if($eMConfig->get('showJoomlagroups',0)) {
-                $this->assignRef('juGroups', $juGroups);
+                $this->juGroups = $juGroups;
             }
-			$this->assignRef('uCamps', $uCamps);
-			$this->assignRef('uOprofiles', $uOprofiles);
-			$this->assignRef('app_prof', $app_prof);
+			$this->uCamps = $uCamps;
+			$this->uOprofiles = $uOprofiles;
+			$this->app_prof = $app_prof;
+
 		}
-		$this->assignRef('edit', $edit);
+		$this->edit = $edit;
 
-        if (!empty($this->filts_details['profile_users']))
-    		$profiles = $m_users->getProfilesByIDs($this->filts_details['profile_users']);
-		else
-            $profiles = $m_users->getProfiles();
-		
-		$this->assignRef('profiles', $profiles);
+        if (!empty($this->filts_details['profile_users'])) {
+	        $this->profiles = $m_users->getProfilesByIDs($this->filts_details['profile_users']);
+        } else {
+			$this->profiles = $m_users->getProfiles();
+		}
 
-		$groups = $m_users->getGroups();
-		$this->assignRef('groups', $groups);
+		$this->groups = $m_users->getGroups();
 
         if($eMConfig->get('showJoomlagroups',0)) {
-            $jgroups = $m_users->getLascalaIntranetGroups();
-            $this->assignRef('jgroups', $jgroups);
+	        $this->jgroups = $m_users->getLascalaIntranetGroups();
         }
 
-		$campaigns = $m_users->getAllCampaigns();
-		$this->assignRef('campaigns', $campaigns);
-
-		$universities = $m_users->getUniversities();
-		$this->assignRef('universities', $universities);
+		$this->campaigns = $m_users->getAllCampaigns();
+		$this->universities = $m_users->getUniversities();
 
 		// Get the LDAP elements.
 		$params = JComponentHelper::getParams('com_emundus');
-		$ldapElements = $params->get('ldapElements');
-		$this->assignRef('ldapElements', $ldapElements);
+		$this->ldapElements = $params->get('ldapElements');
 	}
 
 	private function _loadGroupForm() {
 		$m_users = new EmundusModelUsers();
-		$actions = $m_users->getActions();
-		$prog = $m_users->getProgramme();
-		$this->assignRef('actions', $actions);
-		$this->assignRef('progs', $prog);
+		$this->actions = $m_users->getActions();
+		$this->progs = $m_users->getProgramme();
 	}
 
 	private function _loadAffectForm() {
 		$m_users = new EmundusModelUsers();
-		$groups = $m_users->getGroups();
-		$this->assignRef('groups', $groups);
+		$this->groups = $m_users->getGroups();
 	}
 
 	private function _loadAffectIntranetForm()
 	{
 		$m_users = new EmundusModelUsers();
 		$groups = $m_users->getLascalaIntranetGroups();
-		$this->assignRef('groups', $groups);
 	}
 
 	private function _loadRightsForm() {
 		$m_users = new EmundusModelUsers();
 		$uid = JFactory::getApplication()->input->getInt('user', null);
 		$groups = $m_users->getUserGroups($uid);
+
 		$g = array();
 		foreach ($groups as $key => $label) {
 			$g[$key]['label'] = $label;
 			$g[$key]['progs'] = $m_users->getGroupProgs($key);
 			$g[$key]['acl'] = $m_users->getGroupsAcl($key);
 		}
-		//$acl = $m_users->getUserACL($uid);
 
-		$this->assignRef('groups', $g);
+		$this->groups = $g;
 	}
 
 	function display($tpl = null) {
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-			die("ACCESS_DENIED");
+			die('ACCESS_DENIED');
 
 		$layout = JFactory::getApplication()->input->getString('layout', null);
         $m_files = new EmundusModelFiles();
@@ -215,7 +224,6 @@ class EmundusViewUsers extends JViewLegacy
 				$params = $menu->getParams($current_menu->id);
 
 				$items = EmundusHelperFiles::getMenuList($params);
-                //$actions = @EmundusHelperFiles::getActionsACL();
                 $actions = $m_files->getAllActions();
 
 				$menuActions = array();
@@ -232,17 +240,13 @@ class EmundusViewUsers extends JViewLegacy
 						$menuActions[] = $item;
 				}
 
-				$this->assignRef('items', $menuActions);
-				$this->assignRef('display', $display);
-
+				$this->items = $menuActions;
+				$this->display = $display;
 			break;
 		}
-		// Javascript
-		$onSubmitForm = EmundusHelperJavascript::onSubmitForm();
-		$this->assignRef('onSubmitForm', $onSubmitForm);
 
-		$itemId = JFactory::getApplication()->input->getInt('Itemid', null);
-		$this->assignRef('itemId', $itemId);
+		$this->onSubmitForm = EmundusHelperJavascript::onSubmitForm();
+		$this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 
 		parent::display($tpl);
 	}
