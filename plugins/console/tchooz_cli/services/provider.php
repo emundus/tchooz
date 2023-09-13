@@ -27,7 +27,7 @@ return new class implements ServiceProviderInterface
                 $dispatcher = $container->get(DispatcherInterface::class);
                 $plugin     = new TchoozConsolePlugin(
                     $dispatcher,
-                    (array) PluginHelper::getPlugin('console', 'helloworld_cli')
+                    (array) PluginHelper::getPlugin('console', 'tchooz_cli')
                 );
 
                 return $plugin;

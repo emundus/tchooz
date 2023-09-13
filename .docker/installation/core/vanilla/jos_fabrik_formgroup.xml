@@ -552,6 +552,18 @@
     <field name="group_id">795</field>
     <field name="ordering">2</field>
    </row>
+   <row>
+    <field name="id">4061</field>
+    <field name="form_id">307</field>
+    <field name="group_id">796</field>
+    <field name="ordering">0</field>
+   </row>
+   <row>
+    <field name="id">4062</field>
+    <field name="form_id">307</field>
+    <field name="group_id">797</field>
+    <field name="ordering">0</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

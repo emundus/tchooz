@@ -4162,7 +4162,7 @@
     <field name="protected">0</field>
     <field name="locked">1</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;plg_system_updatenotification&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;2015-05&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2015 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;3.5.0&quot;,&quot;description&quot;:&quot;PLG_SYSTEM_UPDATENOTIFICATION_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;updatenotification&quot;}</field>
-    <field name="params">{&quot;lastrun&quot;:1693553498}</field>
+    <field name="params">{&quot;lastrun&quot;:1694605649}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
@@ -13291,7 +13291,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Tchooz Console Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;August 2023&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;authorEmail&quot;:&quot;&quot;,&quot;authorUrl&quot;:&quot;&quot;,&quot;version&quot;:&quot;1.0.0&quot;,&quot;description&quot;:&quot;Plugin to demonstrate a basic console application&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Emundus\\Plugin\\Console\\Tchooz&quot;,&quot;filename&quot;:&quot;tchooz_cli&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Tchooz Console Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;August 2023&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;authorEmail&quot;:&quot;&quot;,&quot;authorUrl&quot;:&quot;&quot;,&quot;version&quot;:&quot;1.0.0&quot;,&quot;description&quot;:&quot;Plugin to demonstrate a basic console application&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;tchooz_cli&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
@@ -13672,6 +13672,28 @@
     <field name="checked_out_time"></field>
     <field name="ordering">0</field>
     <field name="state">-1</field>
+    <field name="note"></field>
+   </row>
+   <row>
+    <field name="extension_id">653</field>
+    <field name="package_id">333</field>
+    <field name="name">plg_fabrik_validationrule_checkpassword</field>
+    <field name="type">plugin</field>
+    <field name="element">checkpassword</field>
+    <field name="changelogurl"></field>
+    <field name="folder">fabrik_validationrule</field>
+    <field name="client_id">0</field>
+    <field name="enabled">1</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_fabrik_validationrule_checkpassword&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;September 2023&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2015-2023 eMundus - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.io&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;3.10&quot;,&quot;description&quot;:&quot;PLG_VALIDATIONRULE_CHECKPASSWORD_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;checkpassword&quot;}</field>
+    <field name="params">{&quot;icon&quot;:&quot;star&quot;}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
     <field name="note"></field>
    </row>
   </table_data>

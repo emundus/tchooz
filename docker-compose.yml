@@ -71,7 +71,7 @@ services:
       TCHOOZ_SYSADMIN_MAIL: sysadmin@emundus.io
       TCHOOZ_SYSADMIN_FIRST_NAME: Administrator
       TCHOOZ_SYSADMIN_LAST_NAME: Tchooz
-      TCHOOZ_SYSADMIN_PASSWORD: passwordpassword
+      TCHOOZ_SYSADMIN_PASSWORD: password
       TCHOOZ_INSTANCE_ID: 999999
       TCHOOZ_CUSTOMER_ID: 999999
     volumes:

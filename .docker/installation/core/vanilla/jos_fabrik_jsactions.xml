@@ -185,7 +185,7 @@ if (this.get(&amp;#039;value&amp;#039;).charAt(0) != &amp;#039;_&amp;#039;) {
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 var fab = this.form.elements;
 other_input=fab.get(&amp;#039;jos_emundus_languages___e_254_7756&amp;#039;);
-if(value==7){
+if(value==7){ 
     other_input.show();
   }
   else{
@@ -222,7 +222,7 @@ value==&amp;quot;Autre&amp;quot; ? other_input.show() :other_input.hide();</fiel
     <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
 var fab = this.form.elements;
 other_input=fab.get(&amp;#039;jos_emundus_languages_692_repeat___e_254_7757_&amp;#039;+ this.getRepeatNum());
-if(value==&amp;quot;Autre&amp;quot;){
+if(value==&amp;quot;Autre&amp;quot;){ 
     other_input.show();
   }
   else{
@@ -495,34 +495,7 @@ if(value == &amp;#039;chart&amp;#039;){
     <field name="id">4406</field>
     <field name="element_id">7066</field>
     <field name="action">change</field>
-    <field name="code">var wrong_password_title = [&amp;#039;Invalid password&amp;#039;, &amp;#039;Mot de passe invalide&amp;#039;];
-var wrong_password_description = [&amp;#039;The characters #$\{\};&amp;lt;&amp;gt; are forbidden&amp;#039;, &amp;#039;Les caractères #$\{\};&amp;lt;&amp;gt; sont interdits&amp;#039;];
-
-var site_url = window.location.toString();
-var site_url_lang_regexp = /\w+.\/en/d;
-
-var index = 0;
-
-if(site_url.match(site_url_lang_regexp) === null) { index = 1; }
-
-var regex = /[#$\{\};&amp;lt;&amp;gt; ]/;
-var password_value = this.form.formElements.get(&amp;#039;jos_emundus_users___password&amp;#039;).get(&amp;#039;value&amp;#039;);
-
-var password = this.form.formElements.get(&amp;#039;jos_emundus_users___password&amp;#039;);
-if (password_value.match(regex) != null) {
-    Swal.fire({
-    type: &amp;#039;error&amp;#039;,
-    title: wrong_password_title[index],
-    text: wrong_password_description[index],
-    reverseButtons: true,
-    customClass: {
-        title: &amp;#039;em-swal-title&amp;#039;,
-        confirmButton: &amp;#039;em-swal-confirm-button&amp;#039;,
-        actions: &amp;#039;em-swal-single-action&amp;#039;,
-    }
-    });
-    password.set(&amp;#039;&amp;#039;);
-}</field>
+    <field name="code">checkPasswordSymbols(this.form.formElements.get(&amp;#039;jos_emundus_users___password&amp;#039;));</field>
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
@@ -530,26 +503,15 @@ if (password_value.match(regex) != null) {
     <field name="element_id">7066</field>
     <field name="action">load</field>
     <field name="code">var passwordInput = document.querySelector(&amp;#039;#jos_emundus_users___password&amp;#039;);
-var passwordCheck = document.querySelector(&amp;#039;#jos_emundus_users___password_check&amp;#039;);
 
 var spanShowPassword = document.createElement(&amp;#039;span&amp;#039;);
 spanShowPassword.classList.add(&amp;#039;material-icons-outlined&amp;#039;);
 spanShowPassword.classList.add(&amp;#039;em-pointer&amp;#039;);
 spanShowPassword.innerText = &amp;quot;visibility_off&amp;quot;;
 spanShowPassword.style.position = &amp;quot;absolute&amp;quot;;
-spanShowPassword.style.top = &amp;quot;21px&amp;quot;;
+spanShowPassword.style.top = &amp;quot;12px&amp;quot;;
 spanShowPassword.style.right = &amp;quot;10px&amp;quot;;
 spanShowPassword.style.opacity = &amp;quot;0.3&amp;quot;;
-
-
-var spanShowPasswordCheck = document.createElement(&amp;#039;span&amp;#039;);
-spanShowPasswordCheck.classList.add(&amp;#039;material-icons-outlined&amp;#039;);
-spanShowPasswordCheck.classList.add(&amp;#039;em-pointer&amp;#039;);
-spanShowPasswordCheck.innerText = &amp;quot;visibility_off&amp;quot;;
-spanShowPasswordCheck.style.position = &amp;quot;absolute&amp;quot;;
-spanShowPasswordCheck.style.top = &amp;quot;87px&amp;quot;;
-spanShowPasswordCheck.style.right = &amp;quot;10px&amp;quot;;
-spanShowPasswordCheck.style.opacity = &amp;quot;0.3&amp;quot;;
 
 passwordInput.parentNode.style.position = &amp;quot;relative&amp;quot;;
 
@@ -563,21 +525,8 @@ spanShowPassword.addEventListener(&amp;#039;click&amp;#039;, function () {
     spanShowPassword.innerText = &amp;quot;visibility&amp;quot;;
     passwordInput.type = &amp;quot;text&amp;quot;;
   }
-});
-
-passwordCheck.parentNode.insertBefore(spanShowPasswordCheck, passwordCheck.nextSibling);
-
-spanShowPasswordCheck.addEventListener(&amp;#039;click&amp;#039;, function () {
-  if (spanShowPasswordCheck.innerText == &amp;quot;visibility&amp;quot;) {
-    spanShowPasswordCheck.innerText = &amp;quot;visibility_off&amp;quot;;
-    passwordCheck.type = &amp;quot;password&amp;quot;;
-  } else {
-    spanShowPasswordCheck.innerText = &amp;quot;visibility&amp;quot;;
-    passwordCheck.type = &amp;quot;text&amp;quot;;
-  }
-});
-</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group640&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;0&quot;}</field>
+});</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group640&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:1}</field>
    </row>
    <row>
     <field name="id">4408</field>
@@ -590,7 +539,7 @@ for (var i = 0; i &amp;lt; campaign.length; i++){
     campaign.options[i].style.backgroundColor = &amp;quot;#efefef&amp;quot;;
     campaign.options[i].style.fontStyle = &amp;quot;italic&amp;quot;;
   }
-
+  
 }
 
 var cid = document.querySelector(&amp;#039;#jos_emundus_campaign_candidature___campaign_id option:checked&amp;#039;).value;
@@ -626,7 +575,7 @@ value.includes(&amp;#039;Autre&amp;#039;) ? other_input.show() :other_input.hide
 var fab = this.form.elements;
 
 other_input=fab.get(&amp;#039;jos_emundus_9_00___e_360_7755&amp;#039;);
-if(value.includes(&amp;#039;Autre&amp;#039;)){
+if(value.includes(&amp;#039;Autre&amp;#039;)){ 
     other_input.show();
   }
   else{
@@ -708,7 +657,7 @@ let {
 } = fab;
 
 if(value != &amp;#039;Oui&amp;#039;){
-hideFabrikGroupByElt(jos_emundus_qualifications_686_repeat___id_0);
+hideFabrikGroupByElt(jos_emundus_qualifications_686_repeat___id_0);  
 } else {
 showFabrikGroupByElt(jos_emundus_qualifications_686_repeat___id_0);
 }</field>
@@ -725,7 +674,7 @@ let {
 } = fab;
 
 if(value != &amp;#039;Oui&amp;#039;){
-hideFabrikGroupByElt(jos_emundus_qualifications_686_repeat___id_0,true);
+hideFabrikGroupByElt(jos_emundus_qualifications_686_repeat___id_0,true);  
 } else {
 showFabrikGroupByElt(jos_emundus_qualifications_686_repeat___id_0);
 }</field>
@@ -742,7 +691,7 @@ let {
 } = fab;
 
 if(value != &amp;#039;Oui&amp;#039;){
-hideFabrikGroupByElt(jos_emundus_qualifications_689_repeat___id_0);
+hideFabrikGroupByElt(jos_emundus_qualifications_689_repeat___id_0);  
 } else {
 showFabrikGroupByElt(jos_emundus_qualifications_689_repeat___id_0);
 }</field>
@@ -759,7 +708,7 @@ let {
 } = fab;
 
 if(value != &amp;#039;Oui&amp;#039;){
-hideFabrikGroupByElt(jos_emundus_qualifications_689_repeat___id_0, true);
+hideFabrikGroupByElt(jos_emundus_qualifications_689_repeat___id_0, true);  
 } else {
 showFabrikGroupByElt(jos_emundus_qualifications_689_repeat___id_0);
 }</field>

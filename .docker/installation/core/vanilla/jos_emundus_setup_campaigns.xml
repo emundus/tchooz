@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_setup_campaigns">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP"  />
+   <field Field="date_time" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" />
    <field Field="user" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="label" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
    <field Field="description" Type="text" Null="YES" Key="" Extra="" />
