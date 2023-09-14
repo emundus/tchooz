@@ -1258,8 +1258,8 @@ class EmundusModelFiles extends JModelLegacy
     public function getAllTags() {
 		$tags = [];
 
-	    $this->_db = $this->getDbo();
 		$query = $this->_db->getQuery(true);
+
 		$query->select('*')
 			->from($this->_db->quoteName('#__emundus_setup_action_tag'))
 			->order('label');
@@ -3283,22 +3283,26 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getTagsByFnum($fnums)
     {
-        $this->_dbo = $this->getDbo();
-        $query = 'SELECT eta.*, esat.*, u.name FROM #__emundus_tag_assoc as eta
-                    LEFT JOIN #__emundus_setup_action_tag as esat on esat.id=eta.id_tag
-                    LEFT JOIN #__users AS u on u.id=eta.user_id
-                    WHERE fnum IN ("'.implode('","', $fnums).'")
-                    ORDER BY esat.label';
+		$tags = array();
+		$query = $this->_db->getQuery(true);
 
-        try
-        {
-            $this->_dbo->setQuery($query);
-            return $this->_dbo->loadAssocList();
+		$query->select('eta.*, esat.*, u.name')
+			->from($this->_db->quoteName('#__emundus_tag_assoc', 'eta'))
+			->leftJoin($this->_db->quoteName('#__emundus_setup_action_tag', 'esat').' ON '.$this->_db->quoteName('esat.id').' = '.$this->_db->quoteName('eta.id_tag'))
+			->leftJoin($this->_db->quoteName('#__users', 'u').' ON '.$this->_db->quoteName('u.id').' = '.$this->_db->quoteName('eta.user_id'))
+			->where($this->_db->quoteName('eta.fnum').' IN ('.implode(',', $fnums).')')
+			->order($this->_db->quoteName('esat.label'));
+
+        try {
+            $this->_db->setQuery($query);
+            $tags = $this->_db->loadAssocList();
         }
         catch(Exception $e)
         {
             throw $e;
         }
+
+		return $tags;
     }
 
     public function getTagsByIdFnumUser($tid, $fnum, $user_id)

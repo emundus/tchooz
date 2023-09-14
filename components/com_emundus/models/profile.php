@@ -979,28 +979,30 @@ class EmundusModelProfile extends JModelList {
     }
 
     function getFnumDetails($fnum) {
-        $query = 'SELECT ecc.*, esc.*, ess.*, epd.profile as profile_id_form
-					FROM #__emundus_campaign_candidature AS ecc
-					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
-					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
-					LEFT JOIN #__emundus_personal_detail as epd on epd.fnum = ecc.fnum
-					WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+		$res = [];
+		$query = $this->_db->getQuery(true);
+
+		$query->select('ecc.*, esc.*, ess.*, epd.profile as profile_id_form')
+			->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+			->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$this->_db->quoteName('esc.id').'='.$this->_db->quoteName('ecc.campaign_id'))
+			->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess').' ON '.$this->_db->quoteName('ess.step').'='.$this->_db->quoteName('ecc.status'))
+			->leftJoin($this->_db->quoteName('#__emundus_personal_detail', 'epd').' ON '.$this->_db->quoteName('epd.fnum').'='.$this->_db->quoteName('ecc.fnum'))
+			->where($this->_db->quoteName('ecc.fnum').' LIKE '.$this->_db->quote($fnum));
         try {
             $this->_db->setQuery($query);
             $res = $this->_db->loadAssoc();
         } catch(Exception $e) {
-            $query = 'SELECT ecc.*, esc.*, ess.*
-					FROM #__emundus_campaign_candidature AS ecc
-					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
-					LEFT JOIN #__emundus_setup_status as ess ON ess.step = ecc.status
-					LEFT JOIN #__emundus_personal_detail as epd on epd.fnum = ecc.fnum
-					WHERE ecc.fnum like '.$this->_db->Quote($fnum);
+			$query->select('ecc.*, esc.*, ess.*')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$this->_db->quoteName('esc.id').'='.$this->_db->quoteName('ecc.campaign_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess').' ON '.$this->_db->quoteName('ess.step').'='.$this->_db->quoteName('ecc.status'))
+				->leftJoin($this->_db->quoteName('#__emundus_personal_detail', 'epd').' ON '.$this->_db->quoteName('epd.fnum').'='.$this->_db->quoteName('ecc.fnum'))
+				->where($this->_db->quoteName('ecc.fnum').' LIKE '.$this->_db->quote($fnum));
             try {
                 $this->_db->setQuery($query);
                 $res = $this->_db->loadAssoc();
             } catch(Exception $e) {
-                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-                
+                JLog::add(JUri::getInstance().' :: query : -> '.$query, JLog::ERROR, 'com_emundus.error');
             }
         }
 

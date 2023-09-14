@@ -18,11 +18,16 @@ jimport('joomla.application.component.model');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
 
+use Joomla\CMS\Factory;
+
 class EmundusModelUsers extends JModelList {
     var $_total = null;
     var $_pagination = null;
 
     protected $data;
+
+	private $db;
+	private $app;
 
     /**
      * Constructor
@@ -55,6 +60,14 @@ class EmundusModelUsers extends JModelList {
             $session->set('limit', $limit);
             $session->set('limitstart', $limitstart);
         }
+
+		$this->app = Factory::getApplication();
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $this->db = Factory::getContainer()->get('DatabaseDriver');
+		} else {
+			$this->db = Factory::getDBO();
+	    }
     }
 
     public function _buildContentOrderBy() {
@@ -2253,16 +2266,16 @@ class EmundusModelUsers extends JModelList {
 	    $users = [];
 
 		if (!empty($uid)) {
-			$db = JFactory::getDBO();
-			$query = $db->getQuery(true);
-			$query->select('eu.*, case when u.password = ' . $db->quote('') . ' then ' . $db->quote('external') . ' else ' . $db->quote('internal') . ' end as login_type')
+			$query = $this->db->getQuery(true);
+
+			$query->select('eu.*, case when u.password = ' . $this->db->quote('') . ' then ' . $this->db->quote('external') . ' else ' . $this->db->quote('internal') . ' end as login_type')
 				->from('#__emundus_users as eu')
 				->leftJoin('#__users as u on u.id = eu.user_id')
 				->where('eu.user_id = '.$uid);
 
 			try {
-				$db->setQuery($query);
-				$users = $db->loadObjectList();
+				$this->db->setQuery($query);
+				$users = $this->db->loadObjectList();
 			} catch (Exception $e) {
 				JLog::add('Failed to get user by id ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 			}
@@ -3474,15 +3487,14 @@ class EmundusModelUsers extends JModelList {
 
 	public function getIdentityPhoto($fnum,$applicant_id){
 		try {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $this->db->getQuery(true);
 
 			$query->select('filename')
-				->from($db->quoteName('#__emundus_uploads'))
-				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
-				->andWhere($db->quoteName('attachment_id') . ' = 10');
-			$db->setQuery($query);
-			$filename = $db->loadResult();
+				->from($this->db->quoteName('#__emundus_uploads'))
+				->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum))
+				->andWhere($this->db->quoteName('attachment_id') . ' = 10');
+			$this->db->setQuery($query);
+			$filename = $this->db->loadResult();
 
 			if(!empty($filename)){
 				return EMUNDUS_PATH_REL . $applicant_id . '/' . $filename;

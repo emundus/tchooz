@@ -32,9 +32,9 @@ class EmundusViewAmetys extends JViewLegacy
 	private $user;
 	private $jdocument;
 
-	public $ametys_sync_default_eval;
-	public $ametys_sync_default_decision;
-	public $ametys_sync_default_synthesis;
+	protected $ametys_sync_default_eval;
+	protected $ametys_sync_default_decision;
+	protected $ametys_sync_default_synthesis;
 
 	public function __construct($config = array())
 	{

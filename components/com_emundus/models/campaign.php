@@ -412,13 +412,16 @@ class EmundusModelCampaign extends JModelList {
 	 * @since version v6
 	 */
 	function getCampaignByFnum($fnum) {
-		$query = 'SELECT esc.*,ecc.fnum, esp.menutype, esp.label as profile_label
-					FROM #__emundus_campaign_candidature AS ecc
-					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
-					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
-					WHERE ecc.fnum like '.$this->_db->Quote($fnum).'
-					ORDER BY ecc.date_time DESC';
-		$this->_db->setQuery( $query );
+		$query = $this->db->getQuery(true);
+
+		$query->clear()
+			->select('esc.*,ecc.fnum, esp.menutype, esp.label as profile_label')
+			->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+			->join('LEFT', $this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
+			->join('LEFT', $this->db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('esc.profile_id'))
+			->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($fnum))
+			->order('ecc.date_time DESC');
+		$this->_db->setQuery($query);
 		return $this->_db->loadObject();
 	}
 

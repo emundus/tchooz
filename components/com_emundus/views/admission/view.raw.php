@@ -33,20 +33,20 @@ class EmundusViewAdmission extends JViewLegacy
 	protected $itemId;
 	protected $actions;
 
-    public array $items = array();
-    public string $display = 'none';
-    public array $code = array();
-    public array $fnum_assoc = array();
-	public string $filters = '';
-	public string $formid = '';
-	public string $form_url_edit = '';
-	public array $lists = array();
-	public Pagination $pagination;
-	public string $pageNavigation = '';
-	public array $objAccess = array();
-	public array $colsSup = array();
-	public array $users = array();
-	public array $data = array();
+    protected array $items = array();
+    protected string $display = 'none';
+    protected array $code = array();
+    protected array $fnum_assoc = array();
+	protected string $filters = '';
+	protected string $formid = '';
+	protected string $form_url_edit = '';
+	protected array $lists = array();
+	protected Pagination $pagination;
+	protected string $pageNavigation = '';
+	protected array $objAccess = array();
+	protected array $colsSup = array();
+	protected array $users = array();
+	protected array $data = array();
 
 	public function __construct($config = array())
 	{

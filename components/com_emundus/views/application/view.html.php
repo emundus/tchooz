@@ -28,22 +28,22 @@ class EmundusViewApplication extends JViewLegacy{
 	private $user;
 	private $jdocument;
 
-	public $student;
-	public $current_user;
-	public $profile;
-	public $userDetails;
-	public $userInformations;
-	public $userCampaigns;
-	public $userAttachments;
-	public $userComments;
-	public $formsProgress;
-	public $attachmentsProgress;
-	public $logged;
-	public $forms;
-	public $email;
-	public $campaign_id;
-	public $evaluation;
-	public $actions;
+	protected $student;
+	protected $current_user;
+	protected $profile;
+	protected $userDetails;
+	protected $userInformations;
+	protected $userCampaigns;
+	protected $userAttachments;
+	protected $userComments;
+	protected $formsProgress;
+	protected $attachmentsProgress;
+	protected $logged;
+	protected $forms;
+	protected $email;
+	protected $campaign_id;
+	protected $evaluation;
+	protected $actions;
 
 	function __construct($config = array()){
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
