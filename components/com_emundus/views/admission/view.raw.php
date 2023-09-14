@@ -15,6 +15,7 @@ jimport( 'joomla.application.component.view');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Pagination\Pagination;
+use Joomla\CMS\Component\ComponentHelper;
 
 /**
  * HTML View class for the Emundus Component
@@ -49,14 +50,14 @@ class EmundusViewAdmission extends JViewLegacy
 
 	public function __construct($config = array())
 	{
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
-		require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'emails.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 		$this->app = Factory::getApplication();
 		if (version_compare(JVERSION, '4.0', '>'))
@@ -109,7 +110,9 @@ class EmundusViewAdmission extends JViewLegacy
 							$item->action = $actions[$note[0]];
 							$menuActions[] = $item;
 						}
-					} else $menuActions[] = $item;
+					} else {
+						$menuActions[] = $item;
+					}
 				}
 
 				$this->items = $menuActions;
@@ -119,7 +122,7 @@ class EmundusViewAdmission extends JViewLegacy
 			default :
 				$cfnum 	= $jinput->getString('cfnum', null);
 
-				$params = JComponentHelper::getParams('com_emundus');
+				$params = ComponentHelper::getParams('com_emundus');
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
 
 				$m_admission = $this->getModel('Admission');
@@ -128,8 +131,6 @@ class EmundusViewAdmission extends JViewLegacy
 				$m_user = new EmundusModelUsers();
 
                 $m_admission->code = $m_user->getUserGroupsProgrammeAssoc($this->_user->id);
-                //$m_admission->fnum_assoc = $m_user->getApplicantsAssoc($this->_user->id);
-                // get all fnums manually associated to user
 		        $groups = $m_user->getUserGroups($this->_user->id, 'Column');
 
         		$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
@@ -254,11 +255,9 @@ class EmundusViewAdmission extends JViewLegacy
 								$userObj->emUser = $m_user->getUserInfos((int)substr($value, -7));
 								$line['fnum'] = $userObj;
 							}
-
 							elseif ($key == 'name' || $key == 'evaluation_id' || $key == 'admission_id' || $key == 'recorded_by' || $key == 'status_class' || $key == 'step') {
 								continue;
 							}
-
 							elseif ($key == 'evaluator') {
 
 								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
@@ -270,7 +269,6 @@ class EmundusViewAdmission extends JViewLegacy
 								$userObj->type = 'html';
 								$line['evaluator'] = $userObj;
 							}
-
 							elseif (isset($elements) && in_array($key, array_keys($elements))) {
 
 								$userObj->val 			= $value;
@@ -286,7 +284,8 @@ class EmundusViewAdmission extends JViewLegacy
 									$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
 								}
 
-							} else {
+							}
+							else {
 
 								$userObj->val 			= $value;
 								$userObj->type 			= 'text';
@@ -297,6 +296,7 @@ class EmundusViewAdmission extends JViewLegacy
 
 						foreach ($this->colsSup as $key => $obj) {
 							$userObj = new stdClass();
+
 							if (!is_null($obj)) {
 								if (array_key_exists($user['fnum'], $obj)) {
 									$userObj->val = $obj[$user['fnum']];
@@ -318,7 +318,7 @@ class EmundusViewAdmission extends JViewLegacy
 					}
 
 					if (isset($this->colsSup['overall'])) {
-						require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+						require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
 						$m_evaluation = new EmundusModelEvaluation();
 						$this->colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
 					}

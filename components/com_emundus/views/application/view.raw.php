@@ -13,20 +13,22 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.application.component.view');
 
+use Joomla\CMS\Factory;
+
 /**
  * HTML View class for the Emundus Component
  *
  * @package    Emundus
  */
-require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-require_once (JPATH_COMPONENT.DS.'models'.DS.'files.php');
-require_once (JPATH_COMPONENT.DS.'models'.DS.'emails.php');
-require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
-require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
-require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
-require_once (JPATH_COMPONENT.DS.'models'.DS.'interview.php');
-require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
-require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'interview.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
 class EmundusViewApplication extends JViewLegacy {
     protected $_user = null;
@@ -36,12 +38,12 @@ class EmundusViewApplication extends JViewLegacy {
     protected $synthesis;
 
     function __construct($config = array()) {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'emails.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
         $this->_user = JFactory::getSession()->get('emundusUser');
         $this->_db = JFactory::getDbo();

@@ -58,21 +58,14 @@ class EmundusModelProfile extends JModelList {
      * @return mixed
      */
     public function getApplicantsProfiles() {
-		if(version_compare(JVERSION, '4.0', '>'))
-		{
-			$db = Factory::getContainer()->get('DatabaseDriver');
-		} else {
-			$db = Factory::getDBO();
-		}
-
-		$query = $db->getQuery(true);
+		$query = $this->_db->getQuery(true);
 
 		$query->select('*')
-			->from($db->quoteName('#__emundus_setup_profiles'))
-			->where($db->quoteName('published') . ' = 1')
-			->order($db->quoteName('label'));
-        $db->setQuery($query);
-        return $db->loadObjectList();
+			->from($this->_db->quoteName('#__emundus_setup_profiles'))
+			->where($this->_db->quoteName('published') . ' = 1')
+			->order($this->_db->quoteName('label'));
+	    $this->_db->setQuery($query);
+        return $this->_db->loadObjectList();
     }
 
     /**
@@ -464,13 +457,12 @@ class EmundusModelProfile extends JModelList {
      * @return  array
      **/
     function getProfileByStatus($fnum) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $this->_db->getQuery(true);
 
         $res = array();
 
         try {
-            require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
+            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
             $m_campaign = new EmundusModelCampaign();
             $workflow = $m_campaign->getCurrentCampaignWorkflow($fnum);
 
@@ -480,7 +472,7 @@ class EmundusModelProfile extends JModelList {
                     ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
                     ->where($this->_db->quoteName('cc.fnum').' LIKE '. $this->_db->quote($fnum));
                 $this->_db->setQuery($query);
-                $res = $db->loadAssoc();
+                $res = $this->_db->loadAssoc();
 
                 $query->clear()
                     ->select('esp.id AS profile, esp.label, esp.menutype, esp.published')
@@ -488,7 +480,7 @@ class EmundusModelProfile extends JModelList {
                     ->where('esp.id = ' . $this->_db->quote($workflow->profile));
                 $this->_db->setQuery($query);
 
-                $profile = $db->loadAssoc();
+                $profile = $this->_db->loadAssoc();
 
                 $res = array_merge($res, $profile);
             }
@@ -518,11 +510,11 @@ class EmundusModelProfile extends JModelList {
                     $res = $this->_db->loadAssoc();
                 }
             }
-            return $res;
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
-            
         }
+
+	    return $res;
     }
 
     // TODO: if it is used, update

@@ -12,7 +12,6 @@
  * details.
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
-JHTML::_('behavior.tooltip');
 ?>
 
 <div class="ui grid">
