@@ -1272,8 +1272,8 @@ class EmundusModelEvaluation extends JModelList {
             ->where($this->db->quoteName('c.state').' = 1')
             ->andWhere($this->db->quoteName('c.email').' <> ""');
 
-        $this->_db->setQuery($query);
-        return $this->_db->loadAssocList();
+        $this->db->setQuery($query);
+        return $this->db->loadAssocList();
     }
 
     /**

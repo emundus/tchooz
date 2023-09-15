@@ -1,14 +1,15 @@
 ﻿<?php
 defined('_JEXEC') or die('Restricted access'); 
 
-$itemid 	= JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
-$view 		= JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
-$task 		= JFactory::getApplication()->input->get('task', null, 'GET', 'none',0);
-$tmpl 		= JFactory::getApplication()->input->get('tmpl', null, 'GET', 'none',0);
+use Joomla\CMS\Factory;
+
+$app = Factory::getApplication();
+$itemid 	= $app->input->get('Itemid', null, 'GET', 'none',0);
+$view 		= $app->input->get('view', null, 'GET', 'none',0);
+$task 		= $app->input->get('task', null, 'GET', 'none',0);
+$tmpl 		= $app->input->get('tmpl', null, 'GET', 'none',0);
  
 jimport( 'joomla.utilities.date' );
-JHTML::_('behavior.tooltip'); 
-JHTML::_('behavior.modal');
 ?>
 <form id="adminForm" name="adminForm" onSubmit="return OnSubmitForm();" method="POST" >
 		<div class="emundusraw em-container-email">

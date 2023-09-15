@@ -25,6 +25,8 @@ use Joomla\CMS\Factory;
  */
 class EmundusModelFiles extends JModelLegacy
 {
+	private $app;
+
 	private $_db;
     /**
      * @var null
@@ -65,13 +67,13 @@ class EmundusModelFiles extends JModelLegacy
     public function __construct() {
         parent::__construct();
 
-	    $mainframe = Factory::getApplication();
+	    $this->app = Factory::getApplication();
 
 		if(version_compare(JVERSION, '4.0', '>')) {
 			$this->_db = Factory::getContainer()->get('DatabaseDriver');
-			$current_user = $mainframe->getIdentity();
-			$language = $mainframe->getLanguage();
-			$session = $mainframe->getSession();
+			$current_user = $this->app->getIdentity();
+			$language = $this->app->getLanguage();
+			$session = $this->app->getSession();
 		} else {
 			$this->_db = Factory::getDbo();
 			$current_user = Factory::getUser();
@@ -84,10 +86,10 @@ class EmundusModelFiles extends JModelLegacy
         JPluginHelper::importPlugin('emundus');
 
         // Get current menu parameters
-        $menu = $mainframe->getMenu();
+        $menu = $this->app->getMenu();
         $current_menu = $menu->getActive();
 
-        $Itemid = $mainframe->input->getInt('Itemid', $current_menu->id);
+        $Itemid = $this->app->input->getInt('Itemid', $current_menu->id);
         $menu_params = $menu->getParams($Itemid);
 		$this->use_module_filters = boolval($menu_params->get('em_use_module_for_filters', false));
 
@@ -119,7 +121,7 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         if (!$session->has('limit')) {
-            $limit = $mainframe->getCfg('list_limit');
+            $limit = $this->app->getCfg('list_limit');
             $limitstart = 0;
             $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
@@ -618,8 +620,7 @@ class EmundusModelFiles extends JModelLegacy
     public function getAllUsers($limitStart = 0, $limit = 20) {
 		$user_files = [];
 
-        $app = JFactory::getApplication();
-        $current_menu = $app->getMenu()->getActive();
+        $current_menu = $this->app->getMenu()->getActive();
         if (!empty($current_menu)) {
             $menu_params = $current_menu->getParams();
             $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
@@ -627,7 +628,6 @@ class EmundusModelFiles extends JModelLegacy
             $em_other_columns = array();
         }
 
-        $this->_dbo = $this->getDbo();
         $query = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, jecc.applicant_id, jecc.campaign_id ';
 
         // prevent double left join on query
@@ -667,23 +667,23 @@ class EmundusModelFiles extends JModelLegacy
 						$already_joined_tables[] = $table_to_join;
 					} else {
 						$joined = false;
-						$query_find_join = $this->_dbo->getQuery(true);
+						$query_find_join = $this->_db->getQuery(true);
 						foreach ($already_joined_tables as $already_join_alias => $already_joined_table_name) {
 							$query_find_join->clear()
 								->select('*')
 								->from('#__fabrik_joins')
-								->where('table_join = ' . $this->_dbo->quote($already_joined_table_name))
-								->andWhere('join_from_table = ' . $this->_dbo->quote($table_to_join))
-								->andWhere('table_key = ' . $this->_dbo->quote('id'))
-								->andWhere('list_id = ' . $this->_dbo->quote($elt->table_list_id));
+								->where('table_join = ' . $this->_db->quote($already_joined_table_name))
+								->andWhere('join_from_table = ' . $this->_db->quote($table_to_join))
+								->andWhere('table_key = ' . $this->_db->quote('id'))
+								->andWhere('list_id = ' . $this->_db->quote($elt->table_list_id));
 
-							$this->_dbo->setQuery($query_find_join);
-							$join_informations = $this->_dbo->loadAssoc();
+							$this->_db->setQuery($query_find_join);
+							$join_informations = $this->_db->loadAssoc();
 
 							if (!empty($join_informations)) {
 								$already_joined_tables[] = $table_to_join;
 
-								$leftJoin .= ' LEFT JOIN ' . $this->_dbo->quoteName($join_informations['join_from_table']) . ' ON ' . $this->_dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $this->_dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+								$leftJoin .= ' LEFT JOIN ' . $this->_db->quoteName($join_informations['join_from_table']) . ' ON ' . $this->_db->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $this->_db->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
 								$joined = true;
 								break;
 							}
@@ -738,17 +738,17 @@ class EmundusModelFiles extends JModelLegacy
         $query .=  $this->_buildContentOrderBy();
 
 		try {
-	        $this->_dbo->setQuery($query);
-	        $this->_applicants = $this->_dbo->loadAssocList();
+	        $this->_db->setQuery($query);
+	        $this->_applicants = $this->_db->loadAssocList();
 
             if ($limit > 0) {
                 $query .= " limit $limitStart, $limit ";
             }
 
-            $this->_dbo->setQuery($query);
-	        $user_files = $this->_dbo->loadAssocList();
+            $this->_db->setQuery($query);
+	        $user_files = $this->_db->loadAssocList();
         } catch(Exception $e) {
-			$app->enqueueMessage(JText::_('COM_EMUNDUS_GET_ALL_FILES_ERROR') . ' ' . $e->getMessage(), 'error');
+			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_GET_ALL_FILES_ERROR') . ' ' . $e->getMessage(), 'error');
             JLog::add(JUri::getInstance().' :: USER ID : '. JFactory::getUser()->id.' ' . $e->getMessage() . ' -> '. $query, JLog::ERROR, 'com_emundus.error');
         }
 
@@ -1955,7 +1955,12 @@ class EmundusModelFiles extends JModelLegacy
         include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
         $m_users = new EmundusModelUsers;
 
-        $current_user = JFactory::getUser();
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $current_user = $this->app->getIdentity();
+		} else {
+			$current_user = Factory::getUser();
+	    }
 
         $this->code = $m_users->getUserGroupsProgrammeAssoc($current_user->id);
 
@@ -3668,7 +3673,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function deleteFile($fnum) {
 
-        
+
         JFactory::getApplication()->triggerEvent('onBeforeDeleteFile', $fnum);
         JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
 
@@ -4250,8 +4255,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         $msg = '';
 
-        $app = JFactory::getApplication();
-        $email_from_sys = $app->getCfg('mailfrom');
+        $email_from_sys = $this->app->get('mailfrom');
         $fnumsInfos = $this->getFnumsInfos($fnums);
         $status = $this->getStatus();
 

@@ -3719,24 +3719,27 @@ class EmundusModelApplication extends JModelList
 
     public function getApplication($fnum)
     {
-        $dbo = $this->getDbo();
+	    $result = null;
+		$query = $this->_db->getQuery(true);
+
         try
         {
-            $query = 'SELECT ecc.*, esc.*, ess.step, ess.value, ess.class, esp.id as prog_id, esp.color as tag_color, esp.label as prog_label
-                        FROM #__emundus_campaign_candidature AS ecc
-                        LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id=ecc.campaign_id
-                        LEFT JOIN #__emundus_setup_status AS ess ON ess.step=ecc.status
-                        LEFT JOIN #__emundus_setup_programmes as esp on esc.training = esp.code
-                        WHERE ecc.fnum like '.$dbo->Quote($fnum).'
-                        ORDER BY esc.end_date DESC';
-            $dbo->setQuery($query);
-            $result = $dbo->loadObject();
-            return $result;
+			$query->select('ecc.*, esc.*, ess.step, ess.value, ess.class, esp.id as prog_id, esp.color as tag_color, esp.label as prog_label')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id=ecc.campaign_id')
+				->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ess.step=ecc.status')
+				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON esc.training = esp.code')
+				->where($this->_db->quoteName('ecc.fnum') . ' like ' . $this->_db->quote($fnum))
+				->order($this->_db->quoteName('esc.end_date') . ' DESC');
+	        $this->_db->setQuery($query);
+            $result = $this->_db->loadObject();
         }
         catch(Exception $e)
         {
             throw $e;
         }
+
+		return $result;
     }
 
     /**
