@@ -1,24 +1,38 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-JHTML::_('behavior.modal');
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
 
-
-$document = JFactory::getDocument();
-$document->addScript("https://cdn.jsdelivr.net/npm/sweetalert2@8");
-$mainframe = JFactory::getApplication();
+$app = Factory::getApplication();
+if (version_compare(JVERSION, '4.0', '>'))
+{
+	$document = $app->getDocument();
+	$wa = $document->getWebAssetManager();
+	$wa->registerAndUseScript('com_emundus.checklist.swal', 'https://cdn.jsdelivr.net/npm/sweetalert2@8', [], ['version' => 'auto', 'relative' => true]);
+	$session = $app->getSession();
+	$_db = Factory::getContainer()->get('DatabaseDriver');
+	$user = $app->getIdentity();
+} else {
+	$document = Factory::getDocument();
+	$document->addScript("https://cdn.jsdelivr.net/npm/sweetalert2@8");
+    $session = Factory::getSession();
+	$_db = Factory::getDBO();
+	$user = Factory::getUser();
+}
 
 $chemin = EMUNDUS_PATH_REL;
-$itemid = $mainframe->input->get('Itemid', null);
 
-// check if it is possible to upload file
-$eMConfig = JComponentHelper::getParams('com_emundus');
+$itemid = $app->input->get('Itemid', null);
+
+$eMConfig = ComponentHelper::getParams('com_emundus');
 $copy_application_form = $eMConfig->get('copy_application_form', 0);
 $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
 $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', 0);
 $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
 $id_applicants = $eMConfig->get('id_applicants', '0');
 $applicants = explode(',',$id_applicants);
+
 //ADDPIPE
 $addpipe_activation = $eMConfig->get('addpipe_activation', 0);
 $addpipe_account_hash = $eMConfig->get('addpipe_account_hash', null);
@@ -31,7 +45,7 @@ $addpipe_mrt = $eMConfig->get('addpipe_mrt', 60);
 $addpipe_qualityurl = $eMConfig->get('addpipe_qualityurl', 'avq/480p.xml');
 $addpipe_size = $eMConfig->get('addpipe_size', '{width:640,height:510}');
 
-$offset = $mainframe->get('offset', 'UTC');
+$offset = $app->get('offset', 'UTC');
 try {
 	$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 	$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
@@ -200,8 +214,14 @@ if (!empty($this->custom_title)) :?>
                     <td>';
 				///Video
 				if ($attachment->allowed_types == 'video' && $addpipe_activation == 1) {
-					$document->addStyleSheet("//cdn.addpipe.com/2.0/pipe.css" );
-					$document->addScript("//cdn.addpipe.com/2.0/pipe.js" );
+					if (version_compare(JVERSION, '4.0', '>'))
+					{
+                        $wa->registerAndUseScript('com_emundus.checklist.addpipe', 'https://cdn.addpipe.com/2.0/pipe.js', [], ['version' => 'auto', 'relative' => true]);
+                        $wa->registerAndUseStyle('com_emundus.checklist.addpipe', 'https://cdn.addpipe.com/2.0/pipe.css', [], ['version' => 'auto', 'relative' => true]);
+                    } else {
+						$document->addStyleSheet("//cdn.addpipe.com/2.0/pipe.css" );
+						$document->addScript("//cdn.addpipe.com/2.0/pipe.js" );
+                    }
 
 					$div .= '<div id="recorder-'.$attachment->id.'-'.$attachment->nb.'"></div>';
 					$div .= '<pre id="log"></pre>';
@@ -588,9 +608,9 @@ if (!empty($this->custom_title)) :?>
 			}
 		} else {
 			if ($this->isLimitObtained === true) {
-				$mainframe->enqueueMessage(JText::_('LIMIT_OBTAINED'), 'notice');
+				$app->enqueueMessage(JText::_('LIMIT_OBTAINED'), 'notice');
 			} else {
-				$mainframe->enqueueMessage(JText::_('COM_EMUNDUS_READONLY'), 'warning');
+				$app->enqueueMessage(JText::_('COM_EMUNDUS_READONLY'), 'warning');
 			}
 		}
 		$div .= '</table></div></fieldset>';
