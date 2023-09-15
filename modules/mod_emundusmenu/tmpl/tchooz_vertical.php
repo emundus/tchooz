@@ -87,6 +87,24 @@ defined('_JEXEC') or die;
     .active .item .image-title{
         color: var(--em-coordinator-primary-color);
     }
+
+    li .message-tooltip .message-tooltip-block a {
+        color: var(--neutral-900);
+    }
+
+   .tchooz-vertical-item a.g-menu-item-container:hover {
+        text-decoration: none;
+    }
+
+    .tchooz-vertical-item.active a.g-menu-item-container .g-menu-item-title span {
+        color: var(--neutral-900);
+    }
+
+    .tchooz-vertical-toplevel .tchooz-vertical-item a.item {
+        color: var(--neutral-900);
+        text-decoration: none !important;
+    }
+
     .g-menu-parent-indicator{
         margin-left: 20px;
         align-self: center;
@@ -123,6 +141,7 @@ defined('_JEXEC') or die;
         z-index: 2;
         transition: all 0.3s ease-in-out;
     }
+
     .tchooz-vertical-item a img{
         width: 30px;
         height: 30px;
