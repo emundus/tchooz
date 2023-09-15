@@ -54,6 +54,13 @@
     height: auto !important;
     margin: 0 !important;
 }
+
+#userDropdownMenu li  a.logout-button-user,
+#userDropdownMenu li  a.edit-button-user {
+    width: 100%;
+    display: block;
+}
+
 #userDropdownIcon {
     background-color: var(--blue-500);
     border: 2px solid var(--blue-500);
@@ -264,6 +271,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 }
 .logout-button-user:hover{
     background: var(--red-700) !important;
+    text-decoration: none;
 }
 .logout-button-user:focus{
     background: var(--red-700) !important;
@@ -284,6 +292,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 #header-c #userDropdownMenu a.edit-button-user:focus,
 #header-c #userDropdownMenu a.edit-button-user:active {
     background: transparent !important;
+    text-decoration: none;
 }
 
 @media all and (max-width: 767px) {
