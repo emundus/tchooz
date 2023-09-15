@@ -1532,9 +1532,9 @@ footer#g-footer > .g-container {
 }
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
-  width: auto;
-  left: 38px;
   position: relative;
+  margin: 0 auto;
+  width: calc(100% - 76px);
 }
 
 .view-list, .g-back-office-emundus-tableau {
