@@ -28,6 +28,7 @@ class EmundusModelUsers extends JModelList {
 
 	private $db;
 	private $app;
+	private $user;
 
     /**
      * Constructor
@@ -65,8 +66,10 @@ class EmundusModelUsers extends JModelList {
 	    if (version_compare(JVERSION, '4.0', '>'))
 	    {
 		    $this->db = Factory::getContainer()->get('DatabaseDriver');
+			$this->user = $this->app->getIdentity();
 		} else {
 			$this->db = Factory::getDBO();
+			$this->user = Factory::getUser();
 	    }
     }
 
@@ -1544,18 +1547,23 @@ class EmundusModelUsers extends JModelList {
 
     // Get groups of user
     public function getUserGroups($uid, $return = 'AssocList') {
+	    $user_id = empty($uid) ? $this->user->id : $uid;
+
+		$query = $this->db->getQuery(true);
+
         try {
-            $query = "SELECT esg.id, esg.label
-                      from #__emundus_groups as g
-                      left join #__emundus_setup_groups as esg on g.group_id = esg.id
-                      where g.user_id = " .$uid;
-            $db = $this->getDbo();
-            $db->setQuery($query);
+			$query->select('esg.id, esg.label')
+				->from($this->db->quoteName('#__emundus_groups', 'g'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_groups','esg').' ON '.$this->db->quoteName('g.group_id').' = '.$this->db->quoteName('esg.id'))
+				->where($this->db->quoteName('g.user_id') . ' = ' . $user_id);
+	        $this->db->setQuery($query);
+
             if ($return == 'Column') {
-	            return $db->loadColumn();
+	            return $this->db->loadColumn();
             } else {
-	            return $db->loadAssocList('id', 'label');
+	            return $this->db->loadAssocList('id', 'label');
             }
+
         } catch(Exception $e) {
             return false;
         }
@@ -1661,26 +1669,24 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    // get programme associated to user groups
-    public static function getUserGroupsProgrammeAssoc($uid, $select = 'jesgrc.course') {
+    public function getUserGroupsProgrammeAssoc($uid, $select = 'jesgrc.course') {
 	    $program_ids = [];
 
-	    $user_id = empty($user_id) ? JFactory::getUser()->id : $user_id;
+	    $user_id = empty($uid) ? $this->user->id : $uid;
 
 	    if (!empty($user_id)) {
-		    $db = JFactory::getDbo();
-		    $query = $db->getQuery(true);
+		    $query = $this->db->getQuery(true);
 
-		    $query->select('DISTINCT ' . $db->quoteName($select))
-			    ->from($db->quoteName('#__emundus_setup_programmes', 'jesp'))
-			    ->innerJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc').' ON '.$db->quoteName('jesp.code').' = '.$db->quoteName('jesgrc.course'))
-			    ->innerJoin($db->quoteName('#__emundus_groups', 'jeg').' ON '.$db->quoteName('jeg.group_id').' = '.$db->quoteName('jesgrc.parent_id'))
-			    ->where($db->quoteName('jeg.user_id').' = '.$user_id.' AND '.$db->quoteName('jesp.published').' = 1');
+		    $query->select('DISTINCT ' . $this->db->quoteName($select))
+			    ->from($this->db->quoteName('#__emundus_setup_programmes', 'jesp'))
+			    ->innerJoin($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc').' ON '.$this->db->quoteName('jesp.code').' = '.$this->db->quoteName('jesgrc.course'))
+			    ->innerJoin($this->db->quoteName('#__emundus_groups', 'jeg').' ON '.$this->db->quoteName('jeg.group_id').' = '.$this->db->quoteName('jesgrc.parent_id'))
+			    ->where($this->db->quoteName('jeg.user_id').' = '.$user_id.' AND '.$this->db->quoteName('jesp.published').' = 1');
 
-		    $db->setQuery($query);
+		    $this->db->setQuery($query);
 
 		    try {
-			    $program_ids = $db->loadColumn();
+			    $program_ids = $this->db->loadColumn();
 		    } catch (Exception $e) {
 			    JLog::add('Error getting all profiles associated to user in model/access at query : '.$query->__toString(), JLog::ERROR, 'com_emundus');
 		    }
@@ -1724,16 +1730,16 @@ class EmundusModelUsers extends JModelList {
         $applications = [];
 
         if (!empty($gid)) {
-            $db = $this->getDbo();
 
-            $query = $db->getQuery(true);
+            $query = $this->db->getQuery(true);
+
             $query->select('DISTINCT ga.fnum')
-                ->from($db->quoteName('#__emundus_group_assoc', 'ga'))
+                ->from($this->db->quoteName('#__emundus_group_assoc', 'ga'))
                 ->where('ga.group_id IN (' . implode(',', $gid) . ')');
 
             try {
-                $db->setQuery($query);
-                $applications = $db->loadColumn();
+	            $this->db->setQuery($query);
+                $applications = $this->db->loadColumn();
             } catch(Exception $e) {
                 JLog::add('Failed to get applications assoc to group ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
@@ -1748,16 +1754,15 @@ class EmundusModelUsers extends JModelList {
         $applications = [];
 
         if (!empty($uid)) {
-            $db = $this->getDbo();
-            $query = $db->getQuery(true);
+            $query = $this->db->getQuery(true);
 
             $query->select('DISTINCT eua.fnum')
-                ->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+                ->from($this->db->quoteName('#__emundus_users_assoc', 'eua'))
                 ->where('eua.user_id = ' . $uid);
 
             try {
-                $db->setQuery($query);
-                $applications = $db->loadColumn();
+	            $this->db->setQuery($query);
+                $applications = $this->db->loadColumn();
             } catch(Exception $e) {
                 JLog::add('Failed to get applications assoc to user ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }

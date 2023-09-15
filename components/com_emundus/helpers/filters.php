@@ -16,6 +16,8 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+use Joomla\CMS\Factory;
+
 /**
  * Content Component Query Helper
  *
@@ -303,7 +305,14 @@ class EmundusHelperFilters {
 	* @return   array 	list of Fabrik element ID used in evaluation form
 	**/
 	static function getElementsByGroups($groups, $show_in_list_summary=1, $hidden=0) {
-		$db = JFactory::getDBO();
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+		} else {
+			$db = Factory::getDBO();
+		}
+
+		$elements = array();
 
 		$query = 'SELECT element.name, element.label, element.plugin, element.id as element_id, groupe.id, groupe.label AS group_label, element.params,
 				INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
@@ -323,13 +332,14 @@ class EmundusHelperFilters {
 					AND element.plugin != "display"
 				ORDER BY formgroup.ordering, element.ordering';
 		try {
-			//die(str_replace("#_", "jos", $query));
 			$db->setQuery($query);
-			return $db->loadObjectList();
+			$elements = $db->loadObjectList();
 
 		} catch (Exception $e) {
 			throw $e;
 		}
+
+		return $elements;
 	}
 
 	/**
