@@ -2625,20 +2625,19 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function getProfileAttachments($user_id,$fnum = null){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $this->db->getQuery(true);
 
         try {
             $query->select('esa.*,eua.expires_date,eua.date_time,eua.filename,eua.id as default_id,eua.validation')
-                ->from($db->quoteName('#__emundus_users_attachments','eua'))
-                ->leftJoin($db->quoteName('#__emundus_setup_attachments','esa').' ON '.$db->quoteName('esa.id').' = '.$db->quoteName('eua.attachment_id'));
+                ->from($this->db->quoteName('#__emundus_users_attachments','eua'))
+                ->leftJoin($this->db->quoteName('#__emundus_setup_attachments','esa').' ON '.$this->db->quoteName('esa.id').' = '.$this->db->quoteName('eua.attachment_id'));
             if(!empty($fnum)){
-                $query->where($db->quoteName('eua.attachment_id') . ' NOT IN (SELECT distinct attachment_id FROM #__emundus_uploads WHERE fnum = '.$db->quote($fnum).')');
+                $query->where($this->db->quoteName('eua.attachment_id') . ' NOT IN (SELECT distinct attachment_id FROM #__emundus_uploads WHERE fnum = '.$this->db->quote($fnum).')');
             }
-            $query->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user_id))
-                ->andWhere($db->quoteName('eua.published') . ' = 1');
-            $db->setQuery($query);
-            return $db->loadObjectList();
+            $query->where($this->db->quoteName('eua.user_id') . ' = ' . $this->db->quote($user_id))
+                ->andWhere($this->db->quoteName('eua.published') . ' = 1');
+	        $this->db->setQuery($query);
+            return $this->db->loadObjectList();
         } catch (Exception $e) {
             JLog::add(' com_emundus/models/users.php | Cannot get default attachments uploaded by the applicant : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return [];
@@ -2646,15 +2645,14 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function getProfileAttachmentsAllowed(){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $this->db->getQuery(true);
 
         try {
             $query->select('*')
-                ->from($db->quoteName('#__emundus_setup_attachments'))
-                ->where($db->quoteName('default_attachment') . ' = 1');
-            $db->setQuery($query);
-            return $db->loadObjectList();
+                ->from($this->db->quoteName('#__emundus_setup_attachments'))
+                ->where($this->db->quoteName('default_attachment') . ' = 1');
+	        $this->db->setQuery($query);
+            return $this->db->loadObjectList();
         } catch (Exception $e) {
             JLog::add(' com_emundus/models/users.php | Cannot get attachments allowed to default values : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return [];

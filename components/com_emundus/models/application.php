@@ -3749,34 +3749,33 @@ class EmundusModelApplication extends JModelList
     public function getHikashopOrder($fnumInfos, $cancelled = false, $confirmed = true) {
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $this->_db->getQuery(true);
 
         /* First determine the program the user is applying to is in the emundus_hikashop_programs */
         $query
             ->select('hp.id')
-            ->from($db->quoteName('#__emundus_hikashop_programs', 'hp'))
-            ->leftJoin($db->quoteName('jos_emundus_hikashop_programs_repeat_code_prog','hpr').' ON '.$db->quoteName('hpr.parent_id').' = '.$db->quoteName('hp.id'))
-            ->where($db->quoteName('hpr.code_prog') . ' = ' .$db->quote($fnumInfos['training']));
-        $db->setQuery($query);
-        $rule = $db->loadResult();
+            ->from($this->_db->quoteName('#__emundus_hikashop_programs', 'hp'))
+            ->leftJoin($this->_db->quoteName('jos_emundus_hikashop_programs_repeat_code_prog','hpr').' ON '.$this->_db->quoteName('hpr.parent_id').' = '.$this->_db->quoteName('hp.id'))
+            ->where($this->_db->quoteName('hpr.code_prog') . ' = ' .$this->_db->quote($fnumInfos['training']));
+	    $this->_db->setQuery($query);
+        $rule = $this->_db->loadResult();
 
         /* If we find a row, we use the emundus_hikashop_programs, otherwise we use the eMundus config */
         $em_application_payment = isset($rule) ? 'programmes' : $eMConfig->get('application_payment', 'user');
 
         $order_status = array();
         if ($cancelled) {
-            array_push($order_status, 'cancelled');
+            $order_status[] = 'cancelled';
         } else {
             if($confirmed) {
-                array_push($order_status, 'confirmed');
+                $order_status[] = 'confirmed';
             }
             switch ($eMConfig->get('accept_other_payments', 0)) {
                 case 1:
-                    array_push($order_status, 'created');
+                    $order_status[] = 'created';
                     break;
                 case 3:
-                    array_push($order_status, 'pending');
+                    $order_status[] = 'pending';
                     break;
                 case 4:
                     array_push($order_status, 'created', 'pending');
@@ -3790,29 +3789,29 @@ class EmundusModelApplication extends JModelList
 
         $query
             ->clear()
-            ->select(['ho.*', $db->quoteName('eh.user', 'user_cms_id')])
-            ->from($db->quoteName('#__emundus_hikashop', 'eh'))
-            ->leftJoin($db->quoteName('#__hikashop_order','ho').' ON '.$db->quoteName('ho.order_id').' = '.$db->quoteName('eh.order_id'))
-            ->where($db->quoteName('ho.order_status') . ' IN (' . implode(", ", $db->quote($order_status)) . ')')
-            ->order($db->quoteName('order_created') . ' DESC');
+            ->select(['ho.*', $this->_db->quoteName('eh.user', 'user_cms_id')])
+            ->from($this->_db->quoteName('#__emundus_hikashop', 'eh'))
+            ->leftJoin($this->_db->quoteName('#__hikashop_order','ho').' ON '.$this->_db->quoteName('ho.order_id').' = '.$this->_db->quoteName('eh.order_id'))
+            ->where($this->_db->quoteName('ho.order_status') . ' IN (' . implode(", ", $this->_db->quote($order_status)) . ')')
+            ->order($this->_db->quoteName('order_created') . ' DESC');
 
         switch ($em_application_payment) {
 
             default :
             case 'fnum' :
                 $query
-                    ->where($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+                    ->where($this->_db->quoteName('eh.fnum') . ' LIKE ' . $this->_db->quote($fnumInfos['fnum']));
                 break;
 
             case 'user' :
                 $query
-                    ->where($db->quoteName('eh.user') . ' = ' . $db->quote($fnumInfos['applicant_id']));
+                    ->where($this->_db->quoteName('eh.user') . ' = ' . $this->_db->quote($fnumInfos['applicant_id']));
                 break;
 
             case 'campaign' :
                 $query
-                    ->where($db->quoteName('eh.campaign_id') . ' = ' . $db->quote($fnumInfos['id']))
-                    ->where($db->quoteName('eh.user') . ' = ' . $db->quote($fnumInfos['applicant_id']));
+                    ->where($this->_db->quoteName('eh.campaign_id') . ' = ' . $this->_db->quote($fnumInfos['id']))
+                    ->where($this->_db->quoteName('eh.user') . ' = ' . $this->_db->quote($fnumInfos['applicant_id']));
                 break;
 
             case 'status' :
@@ -3821,53 +3820,53 @@ class EmundusModelApplication extends JModelList
 
                 if (in_array($fnumInfos['status'], $payment_status)) {
                     $query
-                        ->where($db->quoteName('eh.status') . ' = ' . $db->quote($fnumInfos['status']))
-                        ->where($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+                        ->where($this->_db->quoteName('eh.status') . ' = ' . $this->_db->quote($fnumInfos['status']))
+                        ->where($this->_db->quoteName('eh.fnum') . ' LIKE ' . $this->_db->quote($fnumInfos['fnum']));
                 } else{
                     $query
-                        ->where($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+                        ->where($this->_db->quoteName('eh.fnum') . ' LIKE ' . $this->_db->quote($fnumInfos['fnum']));
                 }
                 break;
 
             case 'programmes' :
                 /* By using the parent_id from the emundus_hikashop_programs table, we can get the list of the other programs that use the same settings */
                 /* We check only those with a payment_type of 2, for the others it's one payment by file */
-                $hika_query = $db->getQuery(true);
+                $hika_query = $this->_db->getQuery(true);
                 $hika_query->select('hpr.code_prog')
-                    ->from($db->quoteName('#__emundus_hikashop_programs_repeat_code_prog', 'hpr'))
-                    ->leftJoin($db->quoteName('#__emundus_hikashop_programs','hp').' ON '.$db->quoteName('hpr.parent_id').' = '.$db->quoteName('hp.id'))
-                    ->where($db->quoteName('hpr.parent_id').' = '.$db->quote($rule))
-                    ->andWhere($db->quoteName('hp.payment_type').' = '.$db->quote(2));
-                $db->setQuery($hika_query);
-                $progs_to_check = $db->loadColumn();
+                    ->from($this->_db->quoteName('#__emundus_hikashop_programs_repeat_code_prog', 'hpr'))
+                    ->leftJoin($this->_db->quoteName('#__emundus_hikashop_programs','hp').' ON '.$this->_db->quoteName('hpr.parent_id').' = '.$this->_db->quoteName('hp.id'))
+                    ->where($this->_db->quoteName('hpr.parent_id').' = '.$this->_db->quote($rule))
+                    ->andWhere($this->_db->quoteName('hp.payment_type').' = '.$this->_db->quote(2));
+	            $this->_db->setQuery($hika_query);
+                $progs_to_check = $this->_db->loadColumn();
 
                 /* If there are programs, we must check if there was a payment on one of the campaigns this year */
                 if (!empty($progs_to_check)) {
-                    $fnum_query = $db->getQuery(true);
+                    $fnum_query = $this->_db->getQuery(true);
                     /* Get the list of the candiate's files that are in the list of programs in the year*/
                     $fnum_query->select('cc.fnum')
-                        ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
-                        ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
-                        ->where($db->quoteName('sc.training') . ' IN (' .implode(',',$db->quote($progs_to_check)) . ')')
-                        ->andWhere($db->quoteName('sc.year') . ' = ' .$db->quote($fnumInfos['year']))
-                        ->andWhere($db->quoteName('cc.applicant_id') . ' = ' .$db->quote($fnumInfos['applicant_id']));
-                    $db->setQuery($fnum_query);
-                    $program_year_fnum = $db->loadColumn();
+                        ->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
+                        ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$this->_db->quoteName('sc.id').' = '.$this->_db->quoteName('cc.campaign_id'))
+                        ->where($this->_db->quoteName('sc.training') . ' IN (' .implode(',',$this->_db->quote($progs_to_check)) . ')')
+                        ->andWhere($this->_db->quoteName('sc.year') . ' = ' .$this->_db->quote($fnumInfos['year']))
+                        ->andWhere($this->_db->quoteName('cc.applicant_id') . ' = ' .$this->_db->quote($fnumInfos['applicant_id']));
+	                $this->_db->setQuery($fnum_query);
+                    $program_year_fnum = $this->_db->loadColumn();
                 }
 
                 /* If we find another file in the list of programs during the same year, we can determine that he's already paid*/
                 if(!empty($program_year_fnum)) {
                     $query
-                        ->where($db->quoteName('eh.fnum') . ' IN (' . implode(',', $program_year_fnum) . ')');
+                        ->where($this->_db->quoteName('eh.fnum') . ' IN (' . implode(',', $program_year_fnum) . ')');
                 } else {
                     $query
-                        ->where($db->quoteName('eh.fnum') . ' LIKE ' . $db->quote($fnumInfos['fnum']));
+                        ->where($this->_db->quoteName('eh.fnum') . ' LIKE ' . $this->_db->quote($fnumInfos['fnum']));
                 }
                 break;
         }
         try {
-            $db->setQuery($query);
-            return $db->loadObject();
+	        $this->_db->setQuery($query);
+            return $this->_db->loadObject();
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');

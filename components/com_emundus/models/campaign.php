@@ -729,12 +729,7 @@ class EmundusModelCampaign extends JModelList {
     public function isLimitObtained($id) {
         $is_limit_obtained = null;
 
-        $user = JFactory::getSession()->get('emundusUser');
-        if (empty($user)) {
-            $user = $this->_user;
-        }
-
-        if (EmundusHelperAccess::isApplicant($user->id) && !empty($id)) {
+        if (EmundusHelperAccess::isApplicant($this->_user->id) && !empty($id)) {
             $limit = $this->getLimit($id);
 
             if (!empty($limit->is_limited)) {
