@@ -6,26 +6,17 @@ var lastIndex = 0;
 var loading;
 
 function reloadActions(view) {
-	var multi = $('.em-check:checked').length;
-	$.ajax({
-		type: 'GET',
-		url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=inline&multi=' + multi,
-		dataType: 'html',
-		success: function (data) {
+	let multi = document.querySelectorAll('.em-check:checked').length;
+	let url = window.location.origin+'/index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=inline&multi=' + multi;
+
+	fetch(url)
+		.then(response => response.text())
+		.then(data => {
 			let navbar = $('.navbar.navbar-inverse');
 			navbar.empty();
 			navbar.append(data);
-		},
-		error: function (jqXHR) {
-			console.log(jqXHR.responseText);
-		}
-	});
+		});
 }
-
-/*function clearchosen(cible) {
-	$(cible).val("%");
-	$(cible).trigger('chosen:updated');
-}*/
 
 function clearchosen(target){
 	$(target)[0].sumo.unSelectAll();
@@ -132,58 +123,62 @@ function formCheck(id) {
 function reloadData(loader = true) {
 	loader ? addLoader() : '';
 
-	$.ajax({
-		type: 'GET',
-		url: 'index.php?option=com_emundus&view=users&format=raw&layout=user&Itemid=' + itemId,
-		dataType: 'html',
-		success: function (data) {
-			loader ? removeLoader() : '';
-			$('.col-md-9 .panel.panel-default').empty();
-			$('.col-md-9 .panel.panel-default').append(data);
-
-			reloadActions($('#view').val(), undefined, false);
-		},
-		error: function (jqXHR) {
-			removeLoader();
-			console.log(jqXHR.responseText);
+	let url = window.location.origin+'/index.php?option=com_emundus&view=users&format=raw&layout=user&Itemid=' + itemId;
+	fetch(url, {
+		method: 'GET',
+	}).then((response) => {
+		loader ? removeLoader() : '';
+		if (response.ok) {
+			return response.text();
 		}
+		throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+	}).then((result) => {
+		let table = document.querySelector('.col-md-9 .panel.panel-default');
+		while(table.firstChild) table.removeChild(table.firstChild)
+
+		$('.col-md-9 .panel.panel-default').append(result);
+
+		reloadActions($('#view').val(), undefined, false);
 	});
 }
 
 function refreshFilter() {
-	$.ajax({
-		type: 'GET',
-		url: 'index.php?option=com_emundus&view=users&format=raw&layout=filter&Itemid=' + itemId,
-		dataType: 'html',
-		success: function (data) {
-			$("#em-user-filters .panel-body").empty();
-			$("#em-user-filters .panel-body").append(data);
-			$('.chzn-select').chosen();
-			reloadData();
-		},
-		error: function (jqXHR) {
-			console.log(jqXHR.responseText);
+	let url = window.location.origin+'/index.php?option=com_emundus&view=users&format=raw&layout=filter&Itemid=' + itemId;
+
+	fetch(url, {
+		method: 'GET',
+	}).then((response) => {
+		if (response.ok) {
+			return response.text();
 		}
+		throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+	}).then((result) => {
+		$("#em-user-filters .panel-body").empty();
+		$("#em-user-filters .panel-body").append(result);
+		$('.chzn-select').chosen();
+		reloadData();
 	});
 }
 
 function tableOrder(order) {
-	$.ajax({
-		type: 'POST',
-		url: 'index.php?option=com_emundus&controller=users&task=order',
-		dataType: 'json',
-		data: {
-			filter_order: order
-		},
-		success: function (result) {
-			if (result.status) {
-				reloadData();
-			}
-		},
-		error: function (jqXHR) {
-			console.log(jqXHR.responseText);
+	let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=order';
+
+	let formData = new FormData();
+	formData.append('filter_order', order);
+
+	fetch(url, {
+		method: 'POST',
+		body: formData,
+	}).then((response) => {
+		if (response.ok) {
+			return response.json();
 		}
-	});
+		throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+	}).then((result) => {
+		if (result.status) {
+			reloadData();
+		}
+	})
 }
 
 function exist(fnum) {
@@ -226,24 +221,25 @@ function search() {
 		});
 	});
 
-	$.ajax({
-		type: 'POST',
-		dataType: 'json',
-		url: 'index.php?option=com_emundus&controller=users&task=setfilters&1',
-		data: ({
-			val: JSON.stringify(inputs),
-			multi: false,
-			elements: true
-		}),
-		success: function (result) {
-			if (result.status) {
-				reloadData($('#view').val());
-			}
-		},
-		error: function (jqXHR) {
-			console.log(jqXHR.responseText);
+	let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=setfilters&1';
+	let formData = new FormData();
+	formData.append('val', JSON.stringify(inputs));
+	formData.append('multi', false);
+	formData.append('elements', true);
+
+	fetch(url, {
+		method: 'POST',
+		body: formData,
+	}).then((response) => {
+		if (response.ok) {
+			return response.json();
 		}
-	});
+		throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+	}).then((result) => {
+		if (result.status) {
+			reloadData($('#view').val());
+		}
+	})
 }
 
 $(document).ready(function () {
@@ -265,25 +261,28 @@ $(document).ready(function () {
 	});
 
 	$(document).on('click', 'input:button', function (e) {
+
 		if (e.event !== true) {
 			e.handle = true;
 			var name = $(this).attr('name');
 			switch (name) {
 				case 'clear-search':
 					lastVal = new Object();
-					$.ajax({
-						type: 'POST',
-						url: 'index.php?option=com_emundus&controller=users&task=clear',
-						dataType: 'json',
-						success: function (result) {
-							if (result.status) {
-								refreshFilter();
-							}
-						},
-						error: function (jqXHR) {
-							console.log(jqXHR.responseText);
+
+					let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=clear';
+					fetch(url, {
+						method: 'GET',
+					}).then((response) => {
+						if (response.ok) {
+							return response.json();
+						}
+						throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+					}).then((result) => {
+						if (result.status) {
+							refreshFilter();
 						}
 					});
+
 					break;
 				case 'search':
 					search();
@@ -297,19 +296,24 @@ $(document).ready(function () {
 		if (e.handle !== true) {
 			e.handle = true;
 			var id = $(this).attr('id');
-			$.ajax({
-				type: 'POST',
-				url: 'index.php?option=com_emundus&controller=users&task=setlimitstart',
-				dataType: 'json',
-				data: ({
-					limitstart: id
-				}),
-				success: function (result) {
-					if (result.status) {
-						reloadData();
-					}
+
+			let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=setlimitstart';
+			let formData = new FormData();
+			formData.append('limitstart', id);
+
+			fetch(url, {
+				method: 'POST',
+				body: formData,
+			}).then((response) => {
+				if (response.ok) {
+					return response.json();
 				}
-			});
+				throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+			}).then((result) => {
+				if (result.status) {
+					reloadData();
+				}
+			})
 		}
 	});
 	$(document).on('click', '#em-last-open .list-group-item', function (e) {
@@ -323,27 +327,25 @@ $(document).ready(function () {
 
 			$('#' + fnum.fnum + '_check').prop('checked', true);
 
-			$.ajax({
-				type: 'get',
-				url: 'index.php?option=com_emundus&controller=users&task=getfnuminfos',
-				dataType: 'json',
-				data: ({
-					fnum: fnum.fnum
-				}),
-				success: function (result) {
-					if (result.status) {
-						var fnumInfos = result.fnumInfos;
-						fnum.name = fnumInfos.name;
-						fnum.label = fnumInfos.label;
-						openFiles(fnum);
-					}
-				},
-				error: function (jqXHR) {
-					console.log(jqXHR.responseText);
+			let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=getfnuminfos&fnum=' + fnum.fnum;
+			fetch(url, {
+				method: 'GET',
+			}).then((response) => {
+				if (response.ok) {
+					return response.json();
+				}
+				throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+			}).then((result) => {
+				if (result.status) {
+					var fnumInfos = result.fnumInfos;
+					fnum.name = fnumInfos.name;
+					fnum.label = fnumInfos.label;
+					openFiles(fnum);
 				}
 			});
 		}
 	});
+
 	$(document).on('click', 'button', function (e) {
 		if (e.handle != true) {
 			e.handle = true;
@@ -352,31 +354,32 @@ $(document).ready(function () {
 				case 'save-filter':
 					var filName = prompt(filterName);
 					if (filName != '') {
-						$.ajax({
-							type: 'POST',
-							url: 'index.php?option=com_emundus&controller=users&task=savefilters&Itemid=' + itemId,
-							dataType: 'json',
-							data: ({
-								name: filName
-							}),
-							success: function (result) {
-								if (result.status) {
-									$('#select_filter').append('<option id="' + result.filter.id + '" selected="">' + result.filter.name + '<option>');
-									$("#select_filter").trigger("chosen:updated");
-									$('#saved-filter').show();
-									setTimeout(function (e) {
-										$('#saved-filter').hide();
-									}, 600);
 
-								} else {
-									$('#error-filter').show();
-									setTimeout(function (e) {
-										$('#error-filter').hide();
-									}, 600);
-								}
-							},
-							error: function (jqXHR) {
-								console.log(jqXHR.responseText);
+						let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=savefilters&Itemid=' + itemId;
+						let formData = new FormData();
+						formData.append('name', filName);
+
+						fetch(url, {
+							method: 'POST',
+							body: formData,
+						}).then((response) => {
+							if (response.ok) {
+								return response.json();
+							}
+							throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+						}).then((result) => {
+							if (result.status) {
+								$('#select_filter').append('<option id="' + result.filter.id + '" selected="">' + result.filter.name + '<option>');
+								$("#select_filter").trigger("chosen:updated");
+								$('#saved-filter').show();
+								setTimeout(function (e) {
+									$('#saved-filter').hide();
+								}, 600);
+							} else {
+								$('#error-filter').show();
+								setTimeout(function (e) {
+									$('#error-filter').hide();
+								}, 600);
 							}
 						});
 					} else {
@@ -388,31 +391,31 @@ $(document).ready(function () {
 					var id = $('#select_filter').val();
 
 					if (id != 0) {
-						$.ajax({
-							type: 'POST',
-							url: 'index.php?option=com_emundus&controller=users&task=deletefilters&Itemid=' + itemId,
-							dataType: 'json',
-							data: ({
-								id: id
-							}),
-							success: function (result) {
-								if (result.status) {
-									$('#select_filter option:selected').remove();
-									$("#select_filter").trigger("chosen:updated");
-									$('#deleted-filter').show();
-									setTimeout(function () {
-										$('#deleted-filter').hide();
-									}, 600);
-								} else {
-									$('#error-filter').show();
-									setTimeout(function () {
-										$('#error-filter').hide();
-									}, 600);
-								}
+						let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=deletefilters&Itemid=' + itemId;
+						let formData = new FormData();
+						formData.append('id', id);
 
-							},
-							error: function (jqXHR) {
-								console.log(jqXHR.responseText);
+						fetch(url, {
+							method: 'POST',
+							body: formData,
+						}).then((response) => {
+							if (response.ok) {
+								return response.json();
+							}
+							throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+						}).then((result) => {
+							if (result.status) {
+								$('#select_filter option:selected').remove();
+								$("#select_filter").trigger("chosen:updated");
+								$('#deleted-filter').show();
+								setTimeout(function () {
+									$('#deleted-filter').hide();
+								}, 600);
+							} else {
+								$('#error-filter').show();
+								setTimeout(function () {
+									$('#error-filter').hide();
+								}, 600);
 							}
 						});
 					} else {
@@ -441,23 +444,20 @@ $(document).ready(function () {
 					$('.em-check:checked').prop('checked', false);
 					$('#' + fnum.fnum + '_check').prop('checked', true);
 
-					$.ajax({
-						type: 'get',
-						url: 'index.php?option=com_emundus&controller=users&task=getfnuminfos',
-						dataType: 'json',
-						data: ({
-							fnum: fnum.fnum
-						}),
-						success: function (result) {
-							if (result.status) {
-								var fnumInfos = result.fnumInfos;
-								fnum.name = fnumInfos.name;
-								fnum.label = fnumInfos.label;
-								openFiles(fnum);
-							}
-						},
-						error: function (jqXHR) {
-							console.log(jqXHR.responseText);
+					let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=getfnuminfos&fnum=' + fnum.fnum;
+					fetch(url, {
+						method: 'GET',
+					}).then((response) => {
+						if (response.ok) {
+							return response.json();
+						}
+						throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+					}).then((result) => {
+						if (result.status) {
+							var fnumInfos = result.fnumInfos;
+							fnum.name = fnumInfos.name;
+							fnum.label = fnumInfos.label;
+							openFiles(fnum);
 						}
 					});
 
@@ -467,31 +467,32 @@ $(document).ready(function () {
 					if (r == true) {
 						var fnum = $(this).parents('a').attr('href').split('-')[0];
 						fnum = fnum.substr(1, fnum.length);
-						$.ajax({
-							type: 'POST',
-							url: 'index.php?option=com_emundus&controller=users&task=deletefile',
-							dataType: 'json',
-							data: {
-								fnum: fnum
-							},
-							success: function (result) {
-								if (result.status) {
-									if ($('#' + fnum + '-collapse').parent('div').hasClass('panel-primary')) {
-										$('.em-open-files').remove();
-										$('.em-hide').hide();
-										$('#em-last-open').show();
-										$('#em-last-open .list-group .list-group-item').removeClass('active');
-										$('#em-user-filters').show();
-										$('.em-check:checked').prop('checked', false);
-										$('.col-md-9.col-xs-16 .panel.panel-default').show();
-									}
-									$('#em-last-open #' + fnum + '_ls_op').remove();
-									$('#' + fnum + '-collapse').parent('div').remove();
 
+						let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=deletefile';
+						let formData = new FormData();
+						formData.append('fnum', fnum);
+
+						fetch(url, {
+							method: 'POST',
+							body: formData,
+						}).then((response) => {
+							if (response.ok) {
+								return response.json();
+							}
+							throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+						}).then((result) => {
+							if (result.status) {
+								if ($('#' + fnum + '-collapse').parent('div').hasClass('panel-primary')) {
+									$('.em-open-files').remove();
+									$('.em-hide').hide();
+									$('#em-last-open').show();
+									$('#em-last-open .list-group .list-group-item').removeClass('active');
+									$('#em-user-filters').show();
+									$('.em-check:checked').prop('checked', false);
+									$('.col-md-9.col-xs-16 .panel.panel-default').show();
 								}
-							},
-							error: function (jqXHR) {
-								console.log(jqXHR.responseText);
+								$('#em-last-open #' + fnum + '_ls_op').remove();
+								$('#' + fnum + '-collapse').parent('div').remove();
 							}
 						});
 					}
@@ -508,17 +509,22 @@ $(document).ready(function () {
 	$(document).on('change', '#pager-select', function (e) {
 		if (e.handle !== true) {
 			e.handle = true;
-			$.ajax({
-				type: 'POST',
-				url: 'index.php?option=com_emundus&controller=users&task=setlimit',
-				dataType: 'json',
-				data: ({
-					limit: $(this).val()
-				}),
-				success: function (result) {
-					if (result.status) {
-						reloadData();
-					}
+
+			let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=setlimit';
+			let formData = new FormData();
+			formData.append('limit', $(this).val());
+
+			fetch(url, {
+				method: 'POST',
+				body: formData,
+			}).then((response) => {
+				if (response.ok) {
+					return response.json();
+				}
+				throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+			}).then((result) => {
+				if (result.status) {
+					reloadData();
 				}
 			});
 		}
@@ -527,45 +533,46 @@ $(document).ready(function () {
 	$(document).on('change', '#select_filter', function (e) {
 		var id = $(this).attr('id');
 		var val = $('#' + id).val();
-		$.ajax({
-			type: 'POST',
-			dataType: 'json',
-			url: 'index.php?option=com_emundus&controller=users&task=setfilters&3',
-			data: ({
-				id: $('#' + id).attr('name'),
-				val: val,
-				multi: false
-			}),
-			success: function (result) {
-				if (result.status) {
-					$.ajax({
-						type: 'POST',
-						dataType: 'json',
-						url: 'index.php?option=com_emundus&controller=users&task=loadfilters',
-						data: {
-							id: val
-						},
-						success: function (result) {
-							if (result.status) {
-								refreshFilter();
 
-								reloadData();
-							}
-						},
-						error: function (jqXHR, textStatus, errorThrown) {
-							console.log(jqXHR.responseText);
-						}
+		let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=setfilters&3';
+		let formData = new FormData();
+		formData.append('id', $('#' + id).attr('name'));
+		formData.append('val', val);
+		formData.append('multi', false);
 
-					});
+		fetch(url, {
+			method: 'POST',
+			body: formData,
+		}).then((response) => {
+			if (response.ok) {
+				return response.json();
+			}
+			throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+		}).then((result) => {
+			if (result.status) {
 
-				}
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				console.log(jqXHR.responseText);
+				let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=loadfilters';
+				let formData = new FormData();
+				formData.append('id', val);
+
+				fetch(url, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.json();
+					}
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					if (result.status) {
+						refreshFilter();
+						reloadData();
+					}
+				});
 			}
 		});
-
 	});
+
 	$(document).on('click', '#suppr-filt', function (e) {
 		var fId = $(this).parent('fieldset').attr('id');
 		var index = fId.split('-');
@@ -573,24 +580,26 @@ $(document).ready(function () {
 		var sonName = $('#em-adv-fil-' + index[index.length - 1]).attr('name');
 
 		$('#' + fId).remove();
-		$.ajax({
-			type: 'POST',
-			url: 'index.php?option=com_emundus&controller=users&task=deladvfilter',
-			dataType: 'json',
-			data: ({
-				elem: sonName,
-				id: index[index.length - 1]
-			}),
-			success: function (result) {
-				if (result.status) {
-					reloadData();
-				}
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-				console.log(jqXHR.responseText);
+		let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=deladvfilter';
+		let formData = new FormData();
+		formData.append('elem', sonName);
+		formData.append('id', index[index.length - 1]);
+
+		fetch(url, {
+			method: 'POST',
+			body: formData,
+		}).then((response) => {
+			if (response.ok) {
+				return response.json();
+			}
+			throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+		}).then((result) => {
+			if (result.status) {
+				reloadData();
 			}
 		});
 	});
+
 	$(document).on('click', '.em-dropdown', function (e) {
 		var id = $(this).attr('id');
 		$('ul.dropdown-menu.open').hide();
@@ -685,6 +694,7 @@ $(document).ready(function () {
 			controller: view,
 			Itemid: itemId
 		});
+		url = window.location.origin + url;
 
 		const checkInput = getUserCheck();
 
@@ -726,20 +736,19 @@ $(document).ready(function () {
 				html = '<div id="data"></div>';
 				addLoader();
 
-				$.ajax({
-					type: 'get',
-					url: url,
-					dataType: 'html',
-					success: function (result) {
-						$('#data').append(result);
-
-						removeLoader();
-					},
-					error: function (jqXHR) {
-						removeLoader();
-						console.log(jqXHR.responseText);
+				fetch(url, {
+					method: 'GET',
+				}).then((response) => {
+					if (response.ok) {
+						return response.text();
 					}
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					$('#data').append(result);
+
+					removeLoader();
 				});
+
 				break;
 			case 24:
 				swalForm = true;
@@ -749,133 +758,107 @@ $(document).ready(function () {
 
 				addLoader();
 
-				$.ajax({
-					type: 'get',
-					url: url,
-					dataType: 'html',
-					data: {
-						user: sid
-					},
-					success: function (result) {
-						$('#data').append(result);
-
-						removeLoader();
-					},
-					error: function (jqXHR, textStatus, errorThrown) {
-						removeLoader();
-						console.log(jqXHR.responseText);
+				fetch(url, {
+					method: 'GET',
+				}).then((response) => {
+					if (response.ok) {
+						return response.text();
 					}
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					$('#data').append(result);
+
+					removeLoader();
 				});
+
 				break;
 
 			case 21:
-				$.ajax({
-					type: 'POST',
-					url: url,
-					dataType: 'json',
-					data: {
-						users: checkInput,
-						state: 0
-					},
-					success: (result) => {
-						if (result.status){
-							Swal.fire({
-								position: 'center',
-								type: 'success',
-								title: result.msg,
-								showConfirmButton: false,
-								timer: 1500,
-								customClass: {
-									title: 'w-full justify-center',
-								}
-							}).then(() => {
-								reloadData(false);
-							});
-						}
+				var formData = new FormData();
+				formData.append('users', checkInput);
+				formData.append('state', 0);
 
-					},
-					error: function (jqXHR) {
-						if (jqXHR.status === 302) {
-							Swal.fire({
-								position: 'center',
-								type: 'warning',
-								title: result.msg,
-								customClass: {
-									title: 'em-swal-title',
-									confirmButton: 'em-swal-confirm-button',
-									actions: "em-swal-single-action",
-								},
-							}).then(function() {
-								window.location.replace('/user');
-							});
-						}
+				fetch(url, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.json();
+					}
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					if (result.status) {
+						Swal.fire({
+							position: 'center',
+							type: 'success',
+							title: result.msg,
+							showConfirmButton: false,
+							timer: 1500,
+							customClass: {
+								title: 'w-full justify-center',
+							}
+						}).then(() => {
+							reloadData(false);
+						});
 					}
 				});
+
 				break;
 
 			case 22:
-				$.ajax({
-					type: 'POST',
-					url: url,
-					dataType: 'json',
-					data: {
-						users: checkInput,
-						state: 1
-					},
-					success: (result) => {
-						if (result.status){
-							Swal.fire({
-								position: 'center',
-								type: 'success',
-								title: result.msg,
-								showConfirmButton: false,
-								timer: 1500,
-								customClass: {
-									title: 'w-full justify-center',
-								}
-							}).then(() => {
-								reloadData(false);
-							});
-						}
+				var formData = new FormData();
+				formData.append('users', checkInput);
+				formData.append('state', 1);
 
-					},
-					error: function (jqXHR) {
-						if (jqXHR.status === 302) {
-							Swal.fire({
-								position: 'center',
-								type: 'success',
-								title: result.msg,
-								showConfirmButton: false,
-								timer: 1500
-							});
-							window.location.replace('/user');
-						}
+				fetch(url, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.json();
 					}
-				});
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					if (result.status) {
+						Swal.fire({
+							position: 'center',
+							type: 'success',
+							title: result.msg,
+							showConfirmButton: false,
+							timer: 1500,
+							customClass: {
+								title: 'w-full justify-center',
+							}
+						}).then(() => {
+							reloadData(false);
+						});
+					}
+				})
+
 				break;
 
 			case 25:
 				addLoader();
-				await $.ajax({
-					type: 'get',
-					url: url,
-					dataType: 'html',
-					data: {
-						user: sid
-					},
-					success: function (result) {
-						removeLoader();
+				var formData = new FormData();
+				formData.append('users', checkInput);
 
-						swalForm = true;
-						title = 'COM_EMUNDUS_USERS_SHOW_USER_RIGHTS';
-						swal_popup_class = 'em-w-auto';
-						html = result
-					},
-					error: function (jqXHR) {
-						removeLoader();
-						console.log(jqXHR.responseText);
+				fetch(url, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.text();
 					}
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					removeLoader();
+
+					swalForm = true;
+					title = 'COM_EMUNDUS_USERS_SHOW_USER_RIGHTS';
+					swal_popup_class = 'em-w-auto';
+					html = result
 				});
+
 				break;
 
 			case 26:
@@ -896,45 +879,46 @@ $(document).ready(function () {
 					if (result.value) {
 						addLoader();
 
-						$.ajax({
-							type: 'POST',
-							url: 'index.php?option=com_emundus&controller=users&task=deleteusers&Itemid=' + itemId,
-							data: {
-								users: checkInput
-							},
-							dataType: 'json',
-							success: (result) => {
-								removeLoader();
+						var formData = new FormData();
+						formData.append('users', checkInput);
 
-								if (result.status) {
-									Swal.fire({
-										position: 'center',
-										type: 'success',
-										title: result.msg,
-										showConfirmButton: false,
-										timer: 1500,
-										customClass: {
-											title: 'w-full justify-center',
-										}
-									});
-									reloadData();
-								} else {
-									Swal.fire({
-										position: 'center',
-										type: 'warning',
-										title: result.msg,
-										customClass: {
-											title: 'em-swal-title',
-											confirmButton: 'em-swal-confirm-button',
-											actions: "em-swal-single-action",
-										},
-									});
-								}
+						let url = window.location.origin+'/index.php?option=com_emundus&controller=users&task=deleteusers&Itemid=' + itemId;
 
-							},
-							error: function (jqXHR) {
-								removeLoader();
-								console.log(jqXHR.responseText);
+						fetch(url, {
+							method: 'POST',
+							body: formData,
+						}).then((response) => {
+							if (response.ok) {
+								return response.json();
+							}
+							throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+						}).then((result) => {
+							removeLoader();
+
+							if (result.status) {
+								Swal.fire({
+									position: 'center',
+									type: 'success',
+									title: result.msg,
+									showConfirmButton: false,
+									timer: 1500,
+									customClass: {
+										title: 'w-full justify-center',
+									}
+								}).then(() => {
+									reloadData(false);
+								});
+							} else {
+								Swal.fire({
+									position: 'center',
+									type: 'warning',
+									title: result.msg,
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
+								});
 							}
 						});
 					}
@@ -962,6 +946,7 @@ $(document).ready(function () {
 
 						const formData = new FormData();
 						formData.append('users', checkInput);
+
 						fetch('index.php?option=com_emundus&controller=users&task=passrequest&Itemid=' + itemId, {
 							method: 'POST',
 							body: formData

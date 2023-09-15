@@ -17,6 +17,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Factory;
+
 /**
  * HTML View class for the Emundus Component
  *
@@ -24,6 +26,9 @@ jimport('joomla.application.component.view');
  */
 class EmundusViewFiles extends JViewLegacy
 {
+	private $app;
+	private $user;
+	
 	protected $itemId;
 	protected $cfnum;
 
@@ -69,9 +74,17 @@ class EmundusViewFiles extends JViewLegacy
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 
-		$menu = JFactory::getApplication()->getMenu();
+		$this->app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$this->user = $this->app->getIdentity();
+		} else {
+			$this->user = Factory::getUser();
+		}
+		
+		$menu = $this->app->getMenu();
 		$current_menu = $menu->getActive();
-		$menu_params = $menu->getParams(@$current_menu->id);
+		$menu_params = $menu->getParams($current_menu->id);
 		$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
 
 		parent::__construct($config);
@@ -80,28 +93,26 @@ class EmundusViewFiles extends JViewLegacy
 	/** @noinspection PhpInconsistentReturnPointsInspection */
 	public function display($tpl = null)
 	{
-		$current_user = JFactory::getUser();
 		$h_files = new EmundusHelperFiles;
 
-		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
-		$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_emundus');
 		$default_actions = $params->get('default_actions', 0);
 		$hide_default_actions = $params->get('hide_default_actions', 0);
 
-		$this->itemId = $app->input->getInt('Itemid', null);
-		$this->cfnum = $app->input->getString('cfnum', null);
-		$layout = $app->input->getString('layout', null);
+		$this->itemId = $this->app->input->getInt('Itemid', null);
+		$this->cfnum = $this->app->input->getString('cfnum', null);
+		$layout = $this->app->input->getString('layout', null);
 
 		$m_files = new EmundusModelFiles();
 		$h_files->setMenuFilter();
 
 		switch ($layout) {
 			case 'access':
-				$fnums = $app->input->getString('users', null);
+				$fnums = $this->app->input->getString('users', null);
 				$fnums_obj = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
 				if (@$fnums_obj[0] == 'all') {
@@ -131,13 +142,13 @@ class EmundusViewFiles extends JViewLegacy
 				break;
 
 			case 'menuactions':
-				$fnum = $app->input->getString("fnum", "0");
+				$fnum = $this->app->input->getString("fnum", "0");
 
-				$display = $app->input->getString('display', 'none');
-				$menu = @JFactory::getApplication()->getMenu();
+				$display = $this->app->input->getString('display', 'none');
+				$menu = $this->app->getMenu();
 				$current_menu = $menu->getActive();
 
-				$Itemid = $app->input->getInt('Itemid', $current_menu->id);
+				$Itemid = $this->app->input->getInt('Itemid', $current_menu->id);
 
 				if (isset($current_menu) && !empty($current_menu)) {
 
@@ -161,12 +172,12 @@ class EmundusViewFiles extends JViewLegacy
 			case 'filters':
 				if (!$this->use_module_for_filters) {
 					$m_user = new EmundusModelUsers();
-					$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
+					$m_files->code = $m_user->getUserGroupsProgrammeAssoc($this->user->id);
 
 					// get all fnums manually associated to user
-					$groups = $m_user->getUserGroups($current_user->id, 'Column');
+					$groups = $m_user->getUserGroups($this->user->id, 'Column');
 					$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
-					$fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
+					$fnum_assoc = $m_user->getApplicantsAssoc($this->user->id);
 					$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
 					$this->code = $m_files->code;
@@ -178,7 +189,7 @@ class EmundusViewFiles extends JViewLegacy
 				break;
 
             case 'docs':
-                $fnumsObj = $app->input->getString('fnums', "");
+                $fnumsObj = $this->app->input->getString('fnums', "");
 
                 if (!empty($fnumsObj)) {
                     $fnums = array();
@@ -219,22 +230,22 @@ class EmundusViewFiles extends JViewLegacy
 
 			// Get list of application files
 			default:
-				$menu = $app->getMenu();
+				$menu = $this->app->getMenu();
 				$current_menu = $menu->getActive();
 
-				$Itemid = $app->input->getInt('Itemid', $current_menu->id);
+				$Itemid = $this->app->input->getInt('Itemid', $current_menu->id);
 				$menu_params = $menu->getParams($Itemid);
 
 				$columnSupl = explode(',', $menu_params->get('em_other_columns'));
 
 				$m_user = new EmundusModelUsers();
 
-				$m_files->code = $m_user->getUserGroupsProgrammeAssoc($current_user->id);
+				$m_files->code = $m_user->getUserGroupsProgrammeAssoc($this->user->id);
 
 				// get all fnums manually associated to user
-				$groups = $m_user->getUserGroups($current_user->id, 'Column');
+				$groups = $m_user->getUserGroups($this->user->id, 'Column');
 				$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
-				$fnum_assoc = $m_user->getApplicantsAssoc($current_user->id);
+				$fnum_assoc = $m_user->getApplicantsAssoc($this->user->id);
 				$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
 
                 $this->code = $m_files->code;
@@ -322,7 +333,7 @@ class EmundusViewFiles extends JViewLegacy
 								// Get every module without a positon.
 								$mod_emundus_custom = array();
 								foreach (JModuleHelper::getModules('') as $module) {
-									if ($module->module == 'mod_emundus_custom' && ($module->menuid == 0 || $module->menuid == $app->input->get('Itemid', null))) {
+									if ($module->module == 'mod_emundus_custom' && ($module->menuid == 0 || $module->menuid == $this->app->input->get('Itemid', null))) {
 										$mod_emundus_custom[$module->title] = $module->content;
 										$data[0][$module->title] = JText::_($module->title);
 										$colsSup[$module->title] = array();
