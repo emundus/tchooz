@@ -1,18 +1,27 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+
 JHTML::_('behavior.modal');
 JHTML::stylesheet( 'emundus.css', 'media/com_emundus/css/' );
 
-$tmpl = JFactory::getApplication()->input->get('tmpl', null, 'GET', 'none',0);
-$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
-$limitstart = JFactory::getApplication()->input->get('limitstart', null, 'GET', 'none',0);
-$ls = JFactory::getApplication()->input->get('limitstart', null, 'GET', 'none',0);
-$filter_order = JFactory::getApplication()->input->get('filter_order', null, 'GET', 'none',0);
-$filter_order_Dir = JFactory::getApplication()->input->get('filter_order_Dir', null, 'GET', 'none',0);
-$v = JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
+$app = Factory::getApplication();
 
-$user = JFactory::getUser();
+$tmpl = $app->input->get('tmpl', null, 'GET', 'none',0);
+$itemid = $app->input->get('Itemid', null, 'GET', 'none',0);
+$limitstart = $app->input->get('limitstart', null, 'GET', 'none',0);
+$ls = $app->input->get('limitstart', null, 'GET', 'none',0);
+$filter_order = $app->input->get('filter_order', null, 'GET', 'none',0);
+$filter_order_Dir = $app->input->get('filter_order_Dir', null, 'GET', 'none',0);
+$v = $app->input->get('view', null, 'GET', 'none',0);
+
+if (version_compare(JVERSION, '4.0', '>'))
+{
+	$user = $app->getIdentity();
+} else {
+    $user = Factory::getUser();
+}
 
 ?>
 <div id="em_campaigns" class="em_campaigns">

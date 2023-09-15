@@ -22,12 +22,11 @@ class EmundusViewCampaigns extends JViewLegacy {
 	function display($tpl = null) {
         $jinput = Factory::getApplication()->input;
 
-        // Display the template
         $layout = $jinput->getString('layout', null);
         if ($layout == 'add') {
             $this->id = $jinput->getString('cid', null);
 		}
-		// Display the template
+
 		parent::display($tpl);
 	}
 }

@@ -1,16 +1,19 @@
 ﻿<?php
 defined('_JEXEC') or die('Restricted access');
 
-$itemid 	= JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none',0);
-$view 		= JFactory::getApplication()->input->get('view', null, 'GET', 'none',0);
-$task 		= JFactory::getApplication()->input->get('task', null, 'GET', 'none',0);
-$tmpl 		= JFactory::getApplication()->input->get('tmpl', null, 'GET', 'none',0);
+use Joomla\CMS\Factory;
+
+$app  = Factory::getApplication();
+$itemid 	= $app->input->get('Itemid', null, 'GET', 'none',0);
+$view 		= $app->input->get('view', null, 'GET', 'none',0);
+$task 		= $app->input->get('task', null, 'GET', 'none',0);
+$tmpl 		= $app->input->get('tmpl', null, 'GET', 'none',0);
 
 jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.modal');
 
 function age($naiss) {
-	@list($annee, $mois, $jour) = split('[-.]', $naiss);
+	@list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
 	$today['mois'] = date('n');
 	$today['jour'] = date('j');
 	$today['annee'] = date('Y');
@@ -670,21 +673,6 @@ function deleteData(id, table){
 		{
 			if(xhr.responseText!="SQL Error"){
 				return true;
-                /*var comment = (($('comment_'+comment_id).parentNode).parentNode).id;
-                var comment_content = ($('comment_'+comment_id).parentNode).id;
-                var comment_icon = $('comment_'+comment_id);
-                var i;
-                for (i=0;i<comment_icon.childNodes.length;i++)
-                {
-                    comment_icon.childNodes[i].src = "<?php echo JURI::base(); ?>/media/com_emundus/images/icones/trash.png";
-                    comment_icon.childNodes[i].onclick = null;
-                }
-                $(comment).style.background="#B0B4B3";
-                $(comment_content).style.background="#B0B4B3";
-                $(comment).style.color="#FFFFFF";
-                $(comment_content).style.color="#FFFFFF";
-                $(comment).style.textDecoration="line-through";
-                $(comment_content).style.textDecoration="line-through";*/
 			}else{
 				alert(xhr.responseText);
 			}

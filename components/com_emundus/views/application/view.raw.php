@@ -15,6 +15,7 @@ jimport( 'joomla.application.component.view');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\User\UserFactoryInterface;
 
 /**
  * HTML View class for the Emundus Component
@@ -105,6 +106,13 @@ class EmundusViewApplication extends JViewLegacy {
         $m_profiles = new EmundusModelProfile();
         $fnumInfos = $m_profiles->getFnumDetails($fnum);
 
+	    if (version_compare(JVERSION, '4.0', '>'))
+	    {
+		    $this->student = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(intval($fnumInfos['applicant_id']));
+		} else {
+			$this->student = Factory::getUser($fnumInfos['applicant_id']);
+	    }
+
         $m_application = $this->getModel('Application');
 
         $expire = time()+60*60*24*30;
@@ -178,7 +186,6 @@ class EmundusViewApplication extends JViewLegacy {
 
                 case 'assessment':
                     if (EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum)) {
-                        $this->student = JFactory::getUser(intval($fnumInfos['applicant_id']));
                         $this->campaign_id = $fnumInfos['campaign_id'];
                     } else {
                         echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
@@ -192,7 +199,6 @@ class EmundusViewApplication extends JViewLegacy {
                         $can_copy_evaluations = $params->get('can_copy_evaluations', 0);
                         $multi_eval = $params->get('multi_eval', 0);
 
-                        $this->student = JFactory::getUser(intval($fnumInfos['applicant_id']));
                         $m_evaluation = new EmundusModelEvaluation();
 
                         // get evaluation form ID
@@ -257,7 +263,6 @@ class EmundusViewApplication extends JViewLegacy {
 
                 case 'decision':
                     if (EmundusHelperAccess::asAccessAction(29, 'r', $this->user->id, $fnum)) {
-                        $this->student = JFactory::getUser(intval($fnumInfos['applicant_id']));
                         $m_evaluation = new EmundusModelEvaluation();
                         $myEval = $m_evaluation->getDecisionFnum($fnum);
 
@@ -301,7 +306,7 @@ class EmundusViewApplication extends JViewLegacy {
 
                         // TRACK THE LOGS
                         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-                        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 29, 'r', 'COM_EMUNDUS_DECISION_READ');
+                        EmundusModelLogs::log($this->user->id, $applicant_id, $fnum, 29, 'r', 'COM_EMUNDUS_DECISION_READ');
                     } else {
                         echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
@@ -471,7 +476,6 @@ class EmundusViewApplication extends JViewLegacy {
 
                 case 'admission':
                     if (EmundusHelperAccess::asAccessAction(32, 'r', $this->user->id, $fnum)) {
-                        $this->student = JFactory::getUser(intval($fnumInfos['applicant_id']));
 
                         $m_admission = new EmundusModelAdmission();
                         $m_application = new EmundusModelApplication();
@@ -512,7 +516,7 @@ class EmundusViewApplication extends JViewLegacy {
 
                         // TRACK THE LOGS
                         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-                        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 32, 'r', 'COM_EMUNDUS_ADMISSION_READ');
+                        EmundusModelLogs::log($this->user->id, $applicant_id, $fnum, 32, 'r', 'COM_EMUNDUS_ADMISSION_READ');
 
                     }
 					else {
@@ -529,8 +533,6 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $params = JComponentHelper::getParams('com_emundus');
                         $multi_eval = $params->get('multi_eval', 0);
-
-                        $this->student = JFactory::getUser(intval($fnumInfos['applicant_id']));
 
                         $m_interview = new EmundusModelInterview();
                         $myEval = $m_interview->getEvaluationsFnumUser($fnum, $this->user->id);

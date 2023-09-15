@@ -21,9 +21,10 @@ use Joomla\CMS\Factory;
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
 class EmundusModelCampaign extends JModelList {
-	var $_em_user = null;
-	var $_user = null;
-	var $_db = null;
+	private $_em_user;
+	private $_user;
+	private $_db;
+	private $config;
 
 	function __construct() {
 		parent::__construct();
@@ -36,10 +37,12 @@ class EmundusModelCampaign extends JModelList {
 			$this->_db = Factory::getContainer()->get('DatabaseDriver');
 			$this->_em_user = $mainframe->getSession()->get('emundusUser');
 			$this->_user = $mainframe->getIdentity();
+			$this->config = $mainframe->getConfig();
 		} else {
 			$this->_db = Factory::getDBO();
 			$this->_em_user = Factory::getSession()->get('emundusUser');
 			$this->_user = Factory::getUser();
+			$this->config = Factory::getConfig();
 		}
 
 		// Get pagination request variables
@@ -65,10 +68,9 @@ class EmundusModelCampaign extends JModelList {
      * @since version v6
      */
 	function getActiveCampaign() {
-		// Lets load the data if it doesn't already exist
 		$query = $this->_buildQuery();
 		$query .= $this->_buildContentOrderBy();
-		return $this->_getList( $query, $this->getState('limitstart'), $this->getState('limit'));
+		return $this->_getList($query, $this->getState('limitstart'), $this->getState('limit'));
 	}
 
     /**
@@ -79,10 +81,8 @@ class EmundusModelCampaign extends JModelList {
      * @since version v6
      */
 	function _buildQuery() {
-		$config = JFactory::getConfig();
-
-        $timezone = new DateTimeZone( $config->get('offset') );
-		$now = JFactory::getDate()->setTimezone($timezone);
+        $timezone = new DateTimeZone($this->config->get('offset'));
+		$now = Factory::getDate()->setTimezone($timezone);
 
 		return 'SELECT id, label, year, description, start_date, end_date
 		FROM #__emundus_setup_campaigns
@@ -102,7 +102,6 @@ class EmundusModelCampaign extends JModelList {
        	$filter_order_Dir = $this->getState('filter_order_Dir');
 
 		$can_be_ordering = array ('id', 'label', 'year', 'start_date', 'end_date');
-        /* Error handling is never a bad thing*/
         if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
         	$orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
 		}
@@ -192,11 +191,13 @@ class EmundusModelCampaign extends JModelList {
 	 * @since version v6
 	 */
 	function getMyCampaign() {
-		$query = 'SELECT esc.*
-					FROM #__emundus_campaign_candidature AS ecc
-					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
-					WHERE ecc.applicant_id='.$this->_em_user->id.'
-					ORDER BY ecc.date_submitted DESC';
+		$query = $this->_db->getQuery(true);
+
+		$query->select('esc.*')
+			->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+			->join('LEFT', $this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
+			->where($this->_db->quoteName('ecc.applicant_id') . ' = ' . $this->_db->quote($this->_em_user->id))
+			->order('ecc.date_submitted DESC');
 		$this->_db->setQuery( $query );
 		return $this->_db->loadObjectList();
 	}

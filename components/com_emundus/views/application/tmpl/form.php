@@ -5,15 +5,21 @@
  * Date: 19/06/14
  * Time: 11:23
  */
-JFactory::getSession()->set('application_layout', 'form');
+
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>'))
+{
+	Factory::getApplication()->getSession()->set('application_layout', 'form');
+} else {
+	Factory::getSession()->set('application_layout', 'form');
+}
 
 $pids = json_decode($this->pids);
 $defaultpid = $this->defaultpid;
 $user = $this->userid;
-?>
 
-<!--<div class="active title" id="em_application_forms"> <i class="dropdown icon"></i> </div>
--->
+?>
 
 <style type="text/css">
     .group-result { color: #16afe1 !important; }
@@ -25,7 +31,7 @@ $user = $this->userid;
             <h3 class="panel-title">
                 <span class="material-icons">list_alt</span>
                 <?php echo JText::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM').' - '.$this->formsProgress." % ".JText::_("COM_EMUNDUS_APPLICATION_COMPLETED"); ?>
-                <?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
+                <?php if (EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum)):?>
                     <a id="download-pdf" class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&task=pdf&user=<?php echo $this->sid; ?>&fnum=<?php echo $this->fnum; ?>">
                         <button class="btn btn-default" data-title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>" data-toggle="tooltip" data-placement="right" title="<?= JText::_('COM_EMUNDUS_APPLICATION_DOWNLOAD_APPLICATION_FORM'); ?>"><span class="material-icons">file_download</span></button>
                     </a>
@@ -36,7 +42,7 @@ $user = $this->userid;
                 <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
             </div>
         </div>
-	    <?php if (!EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)) : ?>
+	    <?php if (!EmundusHelperAccess::isDataAnonymized($this->_user->id)) : ?>
             <div class="em-flex-row em-mt-16">
                 <div class="em-flex-row em-small-flex-column em-small-align-items-start">
                     <div class="em-profile-picture-big no-hover"

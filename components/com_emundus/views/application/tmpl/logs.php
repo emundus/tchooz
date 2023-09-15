@@ -5,7 +5,15 @@
  * Date: 13/11/14
  * Time: 11:24
  */
-JFactory::getSession()->set('application_layout', 'logs');
+
+use Joomla\CMS\Factory;
+
+if (version_compare(JVERSION, '4.0', '>'))
+{
+	Factory::getApplication()->getSession()->set('application_layout', 'logs');
+} else {
+	Factory::getSession()->set('application_layout', 'logs');
+}
 
 ?>
 
