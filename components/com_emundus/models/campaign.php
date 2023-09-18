@@ -21,6 +21,7 @@ use Joomla\CMS\Factory;
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
 class EmundusModelCampaign extends JModelList {
+	private $app;
 	private $_em_user;
 	private $_user;
 	private $_db;
@@ -30,14 +31,22 @@ class EmundusModelCampaign extends JModelList {
 		parent::__construct();
 		global $option;
 
-		$mainframe = JFactory::getApplication();
+		JLog::addLogger([
+			'text_file' => 'com_emundus.campaign.error.php',
+			'text_entry_format' => '{DATETIME} {PRIORITY} {MESSAGE}'
+			],
+			JLog::ERROR,
+			array('com_emundus')
+		);
+
+		$this->app = Factory::getApplication();
 
 		if(version_compare(JVERSION,'4.0','>'))
 		{
 			$this->_db = Factory::getContainer()->get('DatabaseDriver');
-			$this->_em_user = $mainframe->getSession()->get('emundusUser');
-			$this->_user = $mainframe->getIdentity();
-			$this->config = $mainframe->getConfig();
+			$this->_em_user = $this->app->getSession()->get('emundusUser');
+			$this->_user = $this->app->getIdentity();
+			$this->config = $this->app->getConfig();
 		} else {
 			$this->_db = Factory::getDBO();
 			$this->_em_user = Factory::getSession()->get('emundusUser');
@@ -46,18 +55,16 @@ class EmundusModelCampaign extends JModelList {
 		}
 
 		// Get pagination request variables
-		$filter_order = $mainframe->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'label', 'cmd' );
-        $filter_order_Dir = $mainframe->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
-        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-		$limitstart = $mainframe->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
+		$filter_order = $this->app->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'label', 'cmd' );
+        $filter_order_Dir = $this->app->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
+        $limit = $this->app->getUserStateFromRequest('global.list.limit', 'limit', $this->app->getCfg('list_limit'), 'int');
+		$limitstart = $this->app->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
         $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
  		$this->setState('filter_order', $filter_order);
         $this->setState('filter_order_Dir', $filter_order_Dir);
         $this->setState('limit', $limit);
         $this->setState('limitstart', $limitstart);
-
-        JLog::addLogger(['text_file' => 'com_emundus.error.php'], JLog::ERROR, array('com_emundus'));
     }
 
     /**
@@ -1219,14 +1226,18 @@ class EmundusModelCampaign extends JModelList {
         $campaign_id = 0;
 
         if (!empty($data) && !empty($data['label'])) {
-	        require_once (JPATH_ROOT . '/components/com_emundus/models/falang.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-            $m_falang = new EmundusModelFalang;
             $m_settings = new EmundusModelSettings;
             $m_emails = new EmundusModelEmails;
 
-            $lang = JFactory::getLanguage();
+	        if (version_compare(JVERSION, '4.0', '>'))
+	        {
+		        $lang = $this->app->getLanguage();
+			} else {
+				$lang = Factory::getLanguage();
+	        }
+
             $actualLanguage = !empty($lang->getTag()) ? substr($lang->getTag(), 0 , 2) : 'fr';
 
             $i = 0;
@@ -1240,16 +1251,17 @@ class EmundusModelCampaign extends JModelList {
             $data['label'] = json_decode($data['label'], true);
 
 
-            JFactory::getApplication()->triggerEvent('onBeforeCampaignCreate', $data);
-            JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeCampaignCreate', ['campaign' => $data]]);
+            $this->app->triggerEvent('onBeforeCampaignCreate', $data);
+	        $this->app->triggerEvent('callEventHandler', ['onBeforeCampaignCreate', ['campaign' => $data]]);
 
             $query = $this->_db->getQuery(true);
+
             foreach ($data as $key => $val) {
                 if (!in_array($key, $campaign_columns)) {
                     unset($data[$key]);
                 } else {
                     if ($key == 'profileLabel') {
-                        array_splice($data, $i, 1);
+                        unset($data['profileLabel']);
                     }
                     if ($key == 'label') {
                         $labels->fr = !empty($data['label']['fr']) ? $data['label']['fr'] : '';
@@ -1261,7 +1273,7 @@ class EmundusModelCampaign extends JModelList {
 					}
                     if ($key == 'limit_status') {
                         $limit_status = $data['limit_status'];
-                        array_splice($data, $i, 1);
+						unset($data['limit_status']);
                     }
                     if ($key == 'profile_id') {
                         $query->select('id')
@@ -1270,16 +1282,15 @@ class EmundusModelCampaign extends JModelList {
                             ->andWhere($this->_db->quoteName('status') . ' = 1');
                         $this->_db->setQuery($query);
                         $data['profile_id'] = $this->_db->loadResult();
+
                         if (empty($data['profile_id'])) {
                             unset($data['profile_id']);
                             $data['published'] = 0;
                         }
                     }
                 }
-                $i++;
             }
 
-            // Label is the minimum required to create campaign
             if (!empty($data['label'])) {
                 $query->clear()
                     ->insert($this->_db->quoteName('#__emundus_setup_campaigns'))
@@ -1305,9 +1316,7 @@ class EmundusModelCampaign extends JModelList {
                             }
                         }
 
-                        $user = JFactory::getUser();
-                        $m_settings->onAfterCreateCampaign($user->id);
-
+                        $m_settings->onAfterCreateCampaign($this->_user->id);
 
                         // Create a default trigger
                         if (!empty($data['training'])) {
@@ -1329,7 +1338,7 @@ class EmundusModelCampaign extends JModelList {
                                         'target' => -1,
                                         'program' => $pid,
                                     );
-                                    $m_emails->createTrigger($trigger, array(), $user);
+                                    $m_emails->createTrigger($trigger, array(), $this->_user);
                                 }
                             }
                         }
@@ -1337,7 +1346,7 @@ class EmundusModelCampaign extends JModelList {
                         // Create teaching unity
                         $this->createYear($data);
 
-                        JFactory::getApplication()->triggerEvent('onAfterCampaignCreate', $campaign_id);
+                        JFactory::getApplication()->triggerEvent('onAfterCampaignCreate', ['campaign_id' => $campaign_id]);
                         JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterCampaignCreate', ['campaign' => $campaign_id]]);
                     }
                 } catch (Exception $e) {
@@ -1496,14 +1505,16 @@ class EmundusModelCampaign extends JModelList {
                         ->set($this->_db->quoteName('label') . ' = ' . $this->_db->quote($data['label']))
                         ->set($this->_db->quoteName('schoolyear') . ' = ' . $this->_db->quote($data['year']))
                         ->set($this->_db->quoteName('published') . ' = 1')
-                        ->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($prid));
+                        ->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($prid))
+                        ->set($this->_db->quoteName('date_start') . ' = ' . $this->_db->quote($data['start_date']))
+                        ->set($this->_db->quoteName('date_end') . ' = ' . $this->_db->quote($data['end_date']));
                     $this->_db->setQuery($query);
                     $created = $this->_db->execute();
                 } else {
                     $created = true;
                 }
             } catch (Exception $e) {
-                JLog::add('component/com_emundus/models/campaign | Error when create the campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+                JLog::add('component/com_emundus/models/campaign | Error at year creation : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
             }
         }
 

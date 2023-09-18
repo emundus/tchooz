@@ -1008,23 +1008,23 @@ $(document).ready(function () {
 				swal_confirm_button = 'COM_EMUNDUS_MAIL_SEND_NEW';
 				html = '<div id="data"></div>';
 
-				$.ajax({
-					type: 'POST',
-					url: url,
-					dataType: 'html',
-					data: {
-						users: checkInput,
-					},
-					success: (result) => {
-						removeLoader();
+				var formData = new FormData();
+				formData.append('users', checkInput);
 
-						$('#data').append(result);
-					},
-					error: jqXHR => {
-						removeLoader();
-						console.log(jqXHR.responseText);
+				fetch(url, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.text();
 					}
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					removeLoader();
+
+					$('#data').append(result);
 				});
+
 				break;
 		}
 
@@ -1055,7 +1055,7 @@ $(document).ready(function () {
 				if (result.value) {
 					runAction(id, url, preconfirm_value);
 				}
-	});
+			});
 
 			$('.em-chosen').chosen({width: '100%'});
 		}

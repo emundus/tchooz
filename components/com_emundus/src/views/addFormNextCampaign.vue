@@ -126,6 +126,9 @@ import addFormulaire from "@/components/FunnelFormulaire/addFormulaire";
 import AddEvaluationGrid from "@/components/FunnelFormulaire/addEvaluationGrid";
 import Swal from "sweetalert2";
 
+/* SERVICES */
+import settingsService from 'com_emundus/src/services/settings';
+
 const qs = require("qs");
 
 export default {
@@ -376,7 +379,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      window.location.href = link;
+      settingsService.redirectJRoute(link);
     },
 
     getCookie(cname) {

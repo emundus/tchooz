@@ -450,7 +450,9 @@ export default {
 					});
 				}
 
-				window.location.href = url;
+        settingsService.redirectJRoute(url)
+
+				//window.location.href = url;
 			} else {
 				let url = 'index.php?option=com_emundus&controller=' + action.controller + '&task=' + action.action;
 

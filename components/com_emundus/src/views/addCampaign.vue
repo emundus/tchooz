@@ -229,6 +229,7 @@ import Translation from "../components/translation"
 
 /** SERVICES **/
 import campaignService from 'com_emundus/src/services/campaign';
+import settingsService from 'com_emundus/src/services/settings';
 import EditorQuill from "../components/editorQuill";
 
 const qs = require("qs");
@@ -681,7 +682,7 @@ export default {
 
     quitFunnelOrContinue(quit) {
       if (quit === 0) {
-        this.redirectJRoute('index.php?option=com_emundus&view=campaign');
+        this.redirectJRoute('index.php?option=com_emundus&view=campaigns');
       } else if (quit === 1) {
         document.cookie = 'campaign_'+this.campaignId+'_menu = 1; expires=Session; path=/';
         this.redirectJRoute('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=0')
@@ -689,7 +690,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      window.location.href = link
+      settingsService.redirectJRoute(link);
     },
 
     onSearchYear(value) {
