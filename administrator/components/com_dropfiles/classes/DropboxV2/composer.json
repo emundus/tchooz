@@ -1,0 +1,10 @@
+{
+  "name": "joomunited/dropbox-sdk",
+  "config": {
+    "vendor-dir": "packages"
+  },
+  "require": {
+    "league/oauth2-client": "^2.6",
+    "guzzlehttp/guzzle": ">=6.3.3"
+  }
+}

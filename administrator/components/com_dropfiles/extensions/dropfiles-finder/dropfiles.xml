@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="finder" method="upgrade">
+	<name>Smart Search - Dropfiles</name>
+	<author>JoomUnited</author>
+	<creationDate>2023-03-02 03:58:44</creationDate>
+	<copyright/>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<authorEmail>contact@joomunited.com</authorEmail>
+	<authorUrl>http://www.joomunited.com</authorUrl>
+	<version>6.1.5</version>
+	<description>This plugin indexes Joomla! Dropfiles.</description>
+	<files>
+		<filename plugin="dropfiles">dropfiles.php</filename>
+		<filename>index.html</filename>
+	</files>
+</extension>

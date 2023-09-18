@@ -1,0 +1,20 @@
+a {
+    text-decoration: none;
+}
+
+a:visited {
+    color: #025A8D;
+    text-decoration: none;
+    outline: none;
+}
+
+a:link {
+    color: #025A8D;
+    text-decoration: none;
+    outline: none;
+}
+
+.dropfileslist .downloadlink {
+    display: inline-block;
+    float: right;
+}

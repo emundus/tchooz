@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.8" type="plugin" group="sppagebuilder" method="upgrade">
+	<name>Dropfiles - SP Page Builder</name>
+	<author>JoomUnited</author>
+	<creationDate>24th Nov 2022</creationDate>
+	<authorEmail>contact@joomunited.com</authorEmail>
+	<authorUrl>http://www.joomunited.com</authorUrl>
+	<copyright/>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>Dropfiles addons for SP Page Builder</description>
+	<version>6.1.5</version>
+
+	<files>
+		<filename plugin="dropfiles">dropfiles.php</filename>
+		<folder>addons</folder>
+	</files>
+
+</extension>
