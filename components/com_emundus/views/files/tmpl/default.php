@@ -12,14 +12,12 @@
  * details.
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
-JHTML::stylesheet('media/com_emundus/css/emundus_panel.css');
-JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.4.1/css/all.css');
 
 ?>
 
 
-<div class="container-fluid">
-	<div class="row">
+<div>
+	<div>
 		<div class="col-md-3 side-panel" style="height: calc(100vh - 72px);overflow-y: auto;">
 			<div class="panel panel-info em-containerFilter" id="em-files-filters">
 				<div class="panel-heading em-containerFilter-heading">

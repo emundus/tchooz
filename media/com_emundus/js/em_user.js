@@ -1082,6 +1082,8 @@ $(document).ready(function () {
 			}
 		}
 
+		let action = '';
+
 		/**
 		 * 19: create group
 		 * 20: create user
@@ -1096,6 +1098,8 @@ $(document).ready(function () {
 		 */
 		switch (id) {
 			case 19:
+				action = window.location.origin + '/' + document.querySelector('#em-add-group').getAttribute('action');
+
 				var programs = $('#gprogs');
 				var progs = "";
 				if (programs.val() != null) {
@@ -1108,49 +1112,50 @@ $(document).ready(function () {
 
 				addLoader();
 
-				$.ajax({
-					type: 'POST',
-					url: $('#em-add-group').attr('action'),
-					data: {
-						gname: $('#gname').val(),
-						gdesc: $('#gdescription').val(),
-						gprog: progs
-					},
-					dataType: 'json',
-					success: function (result) {
-						removeLoader();
-						if (result.status) {
+				var formData = new FormData();
+				formData.append('gname', $('#gname').val());
+				formData.append('gdesc', $('#gdescription').val());
+				formData.append('gprog', progs);
 
-							Swal.fire({
-								position: 'center',
-								type: 'success',
-								title: result.msg,
-								showConfirmButton: false,
-								timer: 1500
-							}).then(function() {
-								window.location.replace('index.php?option=com_emundus&view=users&layout=showgrouprights&Itemid=1169&rowid='+result.status);
-							});
-
-						} else {
-							Swal.fire({
-								position: 'center',
-								type: 'warning',
-								title: result.msg,
-								customClass: {
-									title: 'em-swal-title',
-									confirmButton: 'em-swal-confirm-button',
-									actions: "em-swal-single-action",
-								},
-							});
-						}
-					},
-					error: function (jqXHR) {
-						console.log(jqXHR.responseText);
+				fetch(action, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.json();
+					}
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					removeLoader();
+					if (result.status) {
+						Swal.fire({
+							position: 'center',
+							type: 'success',
+							title: result.msg,
+							showConfirmButton: false,
+							timer: 1500
+						}).then(function() {
+							window.location.replace('index.php?option=com_emundus&view=users&layout=showgrouprights&Itemid=1169&rowid='+result.status);
+						});
+					} else {
+						Swal.fire({
+							position: 'center',
+							type: 'warning',
+							title: result.msg,
+							customClass: {
+								title: 'em-swal-title',
+								confirmButton: 'em-swal-confirm-button',
+								actions: "em-swal-single-action",
+							},
+						});
 					}
 				});
+
 				break;
 
 			case 20:
+				action = window.location.origin + '/' + document.querySelector('#em-add-user').getAttribute('action');
+
 				var groups = "";
 				var campaigns = "";
 				var oprofiles = "";
@@ -1190,64 +1195,63 @@ $(document).ready(function () {
 				}
 
 				addLoader();
-				$.ajax({
-					type: 'POST',
-					url: $('#em-add-user').attr('action'),
-					data: {
-						login: login,
-						firstname: fn,
-						lastname: ln,
-						campaigns: campaigns.substr(0, campaigns.length - 1),
-						oprofiles: oprofiles.substr(0, oprofiles.length - 1),
-						groups: groups.substr(0, groups.length - 1),
-						profile: profile,
-						jgr: $('#profiles option:selected').attr('id'),
-						email: email,
-						newsletter: $('#news').is(':checked') ? 1 : 0,
-						university_id: $('#univ').val(),
-						ldap: $('#ldap').is(':checked') ? 1 : 0
-					},
-					dataType: 'json',
-					success: function (result) {
-						removeLoader();
 
-						if (result.status) {
-							Swal.fire({
-								position: 'center',
-								type: 'success',
-								title: result.msg,
-								showConfirmButton: false,
-								timer: 1500,
-							});
+				var formData = new FormData();
+				formData.append('login', login);
+				formData.append('firstname', fn);
+				formData.append('lastname', ln);
+				formData.append('campaigns', campaigns.substr(0, campaigns.length - 1));
+				formData.append('oprofiles', oprofiles.substr(0, oprofiles.length - 1));
+				formData.append('groups', groups.substr(0, groups.length - 1));
+				formData.append('profile', profile);
+				formData.append('jgr', $('#profiles option:selected').attr('id'));
+				formData.append('email', email);
+				formData.append('newsletter', $('#news').is(':checked') ? 1 : 0);
+				formData.append('university_id', $('#univ').val());
+				formData.append('ldap', $('#ldap').is(':checked') ? 1 : 0);
 
-							$('#em-modal-actions').modal('hide');
+				fetch(action, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.json();
+					}
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					removeLoader();
 
+					if (result.status) {
+						Swal.fire({
+							position: 'center',
+							type: 'success',
+							title: result.msg,
+							showConfirmButton: false,
+							timer: 1500,
+						}).then(() => {
 							reloadData();
 
 							reloadActions($('#view').val(), undefined, false);
-							$('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-						} else {
-							Swal.fire({
-								position: 'center',
-								type: 'warning',
-								title: result.msg,
-								customClass: {
-									title: 'em-swal-title',
-									confirmButton: 'em-swal-confirm-button',
-									actions: "em-swal-single-action",
-								},
-							});
-						}
-
-					},
-					error: function (jqXHR) {
-						removeLoader();
-						console.log(jqXHR.responseText);
+						});
+					} else {
+						Swal.fire({
+							position: 'center',
+							type: 'warning',
+							title: result.msg,
+							customClass: {
+								title: 'em-swal-title',
+								confirmButton: 'em-swal-confirm-button',
+								actions: "em-swal-single-action",
+							},
+						});
 					}
 				});
+
 				break;
 
 			case 23:
+				action = window.location.origin + '/' + document.querySelector('#em-affect-groups').getAttribute('action');
+
 				var checkInput = getUserCheck();
 
 				if ($('#agroups').val() == null) {
@@ -1262,43 +1266,45 @@ $(document).ready(function () {
 					}
 				}
 
-				$.ajax({
-					type: 'POST',
-					url: $('#em-affect-groups').attr('action'),
-					data: {
-						users: checkInput,
-						groups: groups.substr(0, groups.length - 1)
-					},
-					dataType: 'json',
-					success: function (result) {
-						removeLoader();
+				var formData = new FormData();
+				formData.append('users', checkInput);
+				formData.append('groups', groups.substr(0, groups.length - 1));
 
-						if (result.status) {
-							Swal.fire({
-								position: 'center',
-								type: 'success',
-								title: result.msg,
-								showConfirmButton: false,
-								timer: 1500
-							});
-						} else {
-							Swal.fire({
-								position: 'center',
-								type: 'warning',
-								title: result.msg,
-								customClass: {
-									title: 'em-swal-title',
-									confirmButton: 'em-swal-confirm-button',
-									actions: "em-swal-single-action",
-								},
-							});
-						}
-
-					},
-					error: function (jqXHR, textStatus, errorThrown) {
-						console.log(jqXHR.responseText);
+				fetch(action, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.json();
 					}
-				});
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					removeLoader();
+
+					if (result.status) {
+						Swal.fire({
+							position: 'center',
+							type: 'success',
+							title: result.msg,
+							showConfirmButton: false,
+							timer: 1500
+						}).then(() => {
+							reloadData();
+						});
+					} else {
+						Swal.fire({
+							position: 'center',
+							type: 'warning',
+							title: result.msg,
+							customClass: {
+								title: 'em-swal-title',
+								confirmButton: 'em-swal-confirm-button',
+								actions: "em-swal-single-action",
+							},
+						});
+					}
+				})
+
 				break;
 
 			case 24:
@@ -1338,79 +1344,69 @@ $(document).ready(function () {
 				}
 				addLoader();
 
-				let addUserData = {
-					login: login,
-					email: email,
-					sameLoginEmail: sameLoginEmail,
-					firstname: fn,
-					lastname: ln,
-					campaigns: campaigns.substr(0, campaigns.length - 1),
-					oprofiles: oprofiles.substr(0, oprofiles.length - 1),
-					groups: groups.substr(0, groups.length - 1),
-					profile: profile,
-					jgr: $('#profiles option:selected').attr('id'),
-					newsletter: $('#news').is(':checked') ? 1 : 0,
-					university_id: $('#univ').val()
-				}
-
-				const action = document.getElementById('em-add-user').getAttribute('action');
+				var formData = new FormData();
+				formData.append('login', login);
+				formData.append('firstname', fn);
+				formData.append('lastname', ln);
+				formData.append('campaigns', campaigns.substr(0, campaigns.length - 1));
+				formData.append('oprofiles', oprofiles.substr(0, oprofiles.length - 1));
+				formData.append('groups', groups.substr(0, groups.length - 1));
+				formData.append('profile', profile);
+				formData.append('jgr', $('#profiles option:selected').attr('id'));
+				formData.append('email', email);
+				formData.append('newsletter', $('#news').is(':checked') ? 1 : 0);
+				formData.append('university_id', $('#univ').val());
+				formData.append('sameLoginEmail', sameLoginEmail);
+				action = window.location.origin + document.getElementById('em-add-user').getAttribute('action');
 				if(action.indexOf('edituser') !== -1) {
-					addUserData.id =  $('.em-check:checked').attr('id').split('_')[0];
+					formData.append('id', $('.em-check:checked').attr('id').split('_')[0]);
 				}
 
-				$.ajax({
-					type: 'POST',
-					url: action,
-					data: addUserData,
-					dataType: 'json',
-					success: function (result) {
-						removeLoader();
-
-						if (result.status) {
-							Swal.fire({
-								position: 'center',
-								type: 'success',
-								title: result.msg,
-								showConfirmButton: false,
-								timer: 1500
-							});
-
-							reloadData();
-
-						} else {
-							Swal.fire({
-								position: 'center',
-								type: 'warning',
-								title: result.msg,
-								customClass: {
-									title: 'em-swal-title',
-									confirmButton: 'em-swal-confirm-button',
-									actions: "em-swal-single-action",
-								},
-							});
-						}
-					},
-					error: function (jqXHR) {
-						removeLoader();
-						console.log(jqXHR.responseText);
-						displayErrorMessage(jqXHR.responseText);
+				fetch(action, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.json();
 					}
-				});
+					throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					removeLoader();
+
+					if (result.status) {
+						Swal.fire({
+							position: 'center',
+							type: 'success',
+							title: result.msg,
+							showConfirmButton: false,
+							timer: 1500,
+						}).then(() => {
+							reloadData();
+						});
+					} else {
+						Swal.fire({
+							position: 'center',
+							type: 'warning',
+							title: result.msg,
+							customClass: {
+								title: 'em-swal-title',
+								confirmButton: 'em-swal-confirm-button',
+								actions: "em-swal-single-action",
+							},
+						});
+					}
+				})
+
 				break;
 
 			/* Send an email to a user.*/
 			case 34:
+				action = window.location.origin + '/index.php?option=com_emundus&controller=messages&task=useremail';
+
 				addLoader();
 
 				/* Get all form elements.*/
 				let data = {
-					recipients 		: $('#uids').val(),
-					template		: $('#message_template :selected').val(),
-					Bcc 			: $('#sendUserACopy').prop('checked'),
-					mail_from_name 	: $('#mail_from_name').text(),
-					mail_from 		: $('#mail_from').text(),
-					mail_subject 	: $('#mail_subject').text(),
-					message			: $('#mail_body').val(),
 					attachments		: []
 				};
 
@@ -1419,74 +1415,81 @@ $(document).ready(function () {
 					data.attachments.push(attachment.find('.value').text());
 				});
 
-				$.ajax({
-					type: 'POST',
-					url: "index.php?option=com_emundus&controller=messages&task=useremail",
-					data: data,
-					success: result => {
-						removeLoader();
+				var formData = new FormData();
+				formData.append('recipients', $('#uids').val());
+				formData.append('template', $('#message_template :selected').val());
+				formData.append('Bcc', $('#sendUserACopy').prop('checked'));
+				formData.append('mail_from_name', $('#mail_from_name').text());
+				formData.append('mail_from', $('#mail_from').text());
+				formData.append('mail_subject', $('#mail_subject').text());
+				formData.append('message', $('#mail_body').val());
+				formData.append('attachments', data.attachments);
 
-						result = JSON.parse(result);
-						if (result.status) {
+				fetch(action, {
+					method: 'POST',
+					body: formData,
+				}).then((response) => {
+					if (response.ok) {
+						return response.json();
+					}
+					throw new Error(Joomla.JText._('SEND_FAILED'));
+				}).then((result) => {
+					removeLoader();
 
-							if (result.sent.length > 0) {
+					if(result.status) {
+						if (result.sent.length > 0) {
 
-								var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
-								result.sent.forEach(element => {
-									sent_to += '<li class="list-group-item alert-success">'+element+'</li>';
-								});
+							var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+							result.sent.forEach(element => {
+								sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
+							});
 
-								Swal.fire({
-									position: 'center',
-									type: 'success',
-									title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
-									html:  sent_to + '</ul>',
-									customClass: {
-										title: 'w-full justify-center',
-										confirmButton: 'em-swal-confirm-button',
-										actions: "em-swal-single-action",
-									},
-								});
-
-							} else {
-								Swal.fire({
-									type: 'error',
-									title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
-									customClass: {
-										title: 'em-swal-title',
-										confirmButton: 'em-swal-confirm-button',
-										actions: "em-swal-single-action",
-									},
-								});
-							}
-
-							if (result.failed.length > 0) {
-
-								// add sibling to #em-mails-sent
-								const emailNotSentMessage = document.createElement('p');
-								emailNotSentMessage.classList.add('em-mt-16');
-								emailNotSentMessage.innerText = "Certains utilisateurs n'ont pas reçu l'email";
-
-								const emailNotSent = document.createElement('div');
-								emailNotSent.classList.add('alert', 'alert-danger', 'em-mt-16');
-								emailNotSent.innerHTML = '<span class="badge">'+result.failed.length+'</span>';
-								emailNotSent.appendChild(document.createElement('ul'));
-								result.failed.forEach(element => {
-									const emailNotSentItem = document.createElement('li');
-									emailNotSentItem.innerHTML = element;
-									emailNotSent.querySelector('ul').appendChild(emailNotSentItem);
-								});
-
-								$('#em-mails-sent').after(emailNotSent);
-								$('#em-mails-sent').after(emailNotSentMessage);
-							}
+							Swal.fire({
+								position: 'center',
+								type: 'success',
+								title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+								html: sent_to + '</ul>',
+								customClass: {
+									title: 'w-full justify-center',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
+							});
 
 						} else {
-							$("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+							Swal.fire({
+								type: 'error',
+								title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
+							});
 						}
-					},
-					error : () => {
-						$("#em-email-messages").append('<span class="alert alert-danger">'+Joomla.JText._('SEND_FAILED')+'</span>')
+
+						if (result.failed.length > 0) {
+
+							// add sibling to #em-mails-sent
+							const emailNotSentMessage = document.createElement('p');
+							emailNotSentMessage.classList.add('em-mt-16');
+							emailNotSentMessage.innerText = "Certains utilisateurs n'ont pas reçu l'email";
+
+							const emailNotSent = document.createElement('div');
+							emailNotSent.classList.add('alert', 'alert-danger', 'em-mt-16');
+							emailNotSent.innerHTML = '<span class="badge">' + result.failed.length + '</span>';
+							emailNotSent.appendChild(document.createElement('ul'));
+							result.failed.forEach(element => {
+								const emailNotSentItem = document.createElement('li');
+								emailNotSentItem.innerHTML = element;
+								emailNotSent.querySelector('ul').appendChild(emailNotSentItem);
+							});
+
+							$('#em-mails-sent').after(emailNotSent);
+							$('#em-mails-sent').after(emailNotSentMessage);
+						}
+					} else {
+						$("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>');
 					}
 				});
 

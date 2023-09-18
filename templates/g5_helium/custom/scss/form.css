@@ -855,6 +855,8 @@
         background-color: var(--em-form-bgc-focus);
       }
     }
+
+
   }
 
   input[type="text"],
@@ -961,8 +963,12 @@
   }
 
   /* CHOSEN */
+  .files-board.com_emundus .chzn-container {
+    width: 100% !important;
+  }
   .chzn-container, .chzn-container.chzn-container-multi, .chzn-container.chzn-container-multi.chzn-container-active {
     width: auto;
+    max-width: unset !important;
 
     .chzn-drop {
       border-radius: var(--em-form-br);

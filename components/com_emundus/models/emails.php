@@ -1468,7 +1468,7 @@ class EmundusModelEmails extends JModelList {
 
         require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
         $h_date = new EmundusHelperDate();
-        $now = $h_date->getNow();
+        $now = $h_date::getNow();
 
         $query = $this->_db->getQuery(true);
 

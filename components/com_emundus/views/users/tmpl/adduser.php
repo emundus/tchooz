@@ -6,15 +6,19 @@
  * Time: 10:30
  */
 
-$jinput = JFactory::getApplication()->input;
-$limitstart = $jinput->getString('limitstart', null);
+use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
 
-$s = JFactory::getApplication()->input->get( 's', null, 'get', 'none',0);
+$app = Factory::getApplication();
+
+$limitstart = $app->input->getString('limitstart', null);
+
+$s = $app->input->get( 's', null, 'get', 'none',0);
 if ($s == '') {
-	$s = $jinput->getString('lastname' , null);
+	$s = $app->input->getString('lastname' , null);
 }
 
-$eMConfig = JComponentHelper::getParams('com_emundus');
+$eMConfig = ComponentHelper::getParams('com_emundus');
 $applicant_option = false;
 $applicant_option_others = false;
 

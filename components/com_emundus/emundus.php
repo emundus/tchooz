@@ -702,7 +702,7 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
         $wa->registerAndUseScript('com_emundus_sumoselect','media/com_emundus/lib/sumoselect/jquery.sumoselect.min.js');
 
         $wa->registerAndUseStyle('com_emundus_reset','media/com_emundus/css/reset.css');
-        $wa->registerAndUseStyle('com_emundus_chosen','media/jui/css/chosen.css');
+        $wa->registerAndUseStyle('com_emundus_chosen','media/com_emundus/css/chosen/chosen.css');
         $wa->registerAndUseStyle('com_emundus_bootstrap','media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
         $wa->registerAndUseStyle('com_emundus_files','media/com_emundus/css/emundus_files.css');
         $wa->registerAndUseStyle('com_emundus_normalize','media/com_emundus/lib/selectize/dist/css/normalize.css');
@@ -728,7 +728,7 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
         JHTML::script('media/com_emundus/lib/selectize/dist/js/standalone/selectize.js' );
         JHTML::script('media/com_emundus/lib/sumoselect/jquery.sumoselect.min.js');
 
-        JHtml::styleSheet('media/jui/css/chosen.css');
+        JHtml::styleSheet('media/com_emundus/css/chosen/chosen.css');
         JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
         JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
         JHTML::stylesheet('media/com_emundus/lib/selectize/dist/css/normalize.css' );

@@ -2929,3 +2929,7 @@ a.copy-0:focus {
     height: 300px;
     overflow-y: scroll;
 }
+
+.files-board #system-message-container {
+    padding: 0;
+}

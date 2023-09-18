@@ -80,6 +80,10 @@ body {
     font-family: var(--em-default-font);
 }
 
+label {
+    display: block;
+}
+
 .after-em-border::after{
     content: "";
     width: 40px;
