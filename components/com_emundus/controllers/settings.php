@@ -835,19 +835,17 @@ class EmundusControllersettings extends JControllerLegacy {
     }
 
     public function uploaddropfiledoc() {
-        $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
             $result = 0;
             echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
         } else {
 
-	        require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
+	        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
             $m_campaign = new EmundusModelCampaign();
 
-            $jinput = JFactory::getApplication()->input;
-            $file = $jinput->files->get('file');
-            $cid = $jinput->get('cid');
+            $file = $this->input->files->get('file');
+            $cid = $this->input->get('cid');
 
             if(isset($file)) {
                 $campaign_category = $m_campaign->getCampaignCategory($cid);

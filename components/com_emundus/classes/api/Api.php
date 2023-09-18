@@ -11,9 +11,10 @@ namespace classes\api;
 
 use GuzzleHttp\Client as GuzzleClient;
 use JLog;
-use JComponentHelper;
+use Joomla\CMS\Component\ComponentHelper;
 
 defined('_JEXEC') or die('Restricted access');
+
 class Api
 {
 	/**
@@ -117,7 +118,7 @@ class Api
 
 	public function setAuth(): void
 	{
-		$config = JComponentHelper::getParams('com_emundus');
+		$config = ComponentHelper::getParams('com_emundus');
 
 		$this->auth['bearer_token'] = $config->get('api_bearer_token', '');
 	}
@@ -132,7 +133,9 @@ class Api
 		{
 			$url_params = http_build_query($params);
 			$url = !empty($url_params) ? $url . '?' . $url_params : $url;
+
 			$request = $this->client->get($this->baseUrl.'/'.$url, ['headers' => $this->getHeaders()]);
+
 			$response['status'] = $request->getStatusCode();
 			$response['data'] = json_decode($request->getBody());
 		}
@@ -144,6 +147,7 @@ class Api
 			}
 
 			JLog::add('[GET] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.api');
+
 			$response['status'] = $e->getCode();
 			$response['message'] = $e->getMessage();
 		}

@@ -2037,7 +2037,7 @@ class EmundusModelCampaign extends JModelList {
 
 				if (!$campaign_dropfile_cat) {
 					JPluginHelper::importPlugin('emundus', 'setup_category');
-					$result = \Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterCampaignCreate', [$cid]);
+					$result = $this->app->triggerEvent('onAfterCampaignCreate', [$cid]);
 					if ($result) {
 						$campaign_dropfile_cat = $this->getCampaignCategory($cid);
 					}
