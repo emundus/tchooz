@@ -2989,13 +2989,13 @@ ul.unstyled.em-linkForgot li a {
 .com_emundus:not(.view-programme):not(.view-form):not(.view-users.layout-edit):not(.view-checklist):not(.files-board),
 .com_emundus.view-form .com_emundus_vue {
 
-  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico) {
+  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico):not(.fa):not([class^=icon-]) {
     font-family: var(--em-coordinator-font);
   }
 }
 
 .files-board.com_emundus, .view-list.com_fabrik {
-  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico) {
+  *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico):not(.fa):not([class^=icon-]) {
     font-family: var(--em-coordinator-font);
   }
 }
@@ -3004,7 +3004,7 @@ ul.unstyled.em-linkForgot li a {
   font-family: var(--em-coordinator-font-title);
 }
 
-.indicateurs-page *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico) {
+.indicateurs-page *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico):not(.fa):not([class^=icon-]) {
   font-family: var(--em-coordinator-font);
 }
 

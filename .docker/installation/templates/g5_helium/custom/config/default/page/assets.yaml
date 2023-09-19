@@ -25,6 +25,12 @@ css:
     extra: '{  }'
     priority: '0'
     name: Main
+  -
+    location: /media/vendor/fontawesome-free/css/fontawesome.min.css
+    inline: ''
+    extra: {  }
+    priority: '0'
+    name: Fontawesome
 javascript:
   -
     location: 'https://cdn.jsdelivr.net/npm/sweetalert2@8'
