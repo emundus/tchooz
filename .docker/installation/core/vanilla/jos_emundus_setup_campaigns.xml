@@ -32,29 +32,5 @@
    <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="fb_order_start_date_INDEX" Seq_in_index="1" Column_name="start_date" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_campaigns" Non_unique="1" Key_name="fb_order_end_date_INDEX" Seq_in_index="1" Column_name="end_date" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__emundus_setup_campaigns">
-   <row>
-    <field name="id">3</field>
-    <field name="date_time">2023-06-16 14:29:26</field>
-    <field name="user">95</field>
-    <field name="label">Campagne 1</field>
-    <field name="description"></field>
-    <field name="short_description"></field>
-    <field name="start_date">2023-06-15 14:29:38</field>
-    <field name="end_date">2024-06-16 14:29:45</field>
-    <field name="profile_id">9</field>
-    <field name="training">programme1-648c546bc1234</field>
-    <field name="year">2023</field>
-    <field name="published">1</field>
-    <field name="eval_end_date"></field>
-    <field name="admission_start_date"></field>
-    <field name="admission_end_date"></field>
-    <field name="is_limited"></field>
-    <field name="limit"></field>
-    <field name="limit_status"></field>
-    <field name="pinned"></field>
-    <field name="eval_start_date"></field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

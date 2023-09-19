@@ -39,6 +39,11 @@
     <field name="title">Tag</field>
     <field name="mime"></field>
    </row>
+   <row>
+    <field name="id">7</field>
+    <field name="title">Dropfiles</field>
+    <field name="mime"></field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

@@ -124,6 +124,14 @@
     <field name="description">Menu for applicant</field>
     <field name="client_id">0</field>
    </row>
+   <row>
+    <field name="id">15</field>
+    <field name="asset_id">125</field>
+    <field name="menutype">dropfiles</field>
+    <field name="title">Dropfiles menu</field>
+    <field name="description">Dropfiles menu</field>
+    <field name="client_id">0</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

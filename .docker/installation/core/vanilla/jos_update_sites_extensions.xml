@@ -48,6 +48,14 @@
     <field name="update_site_id">9</field>
     <field name="extension_id">348</field>
    </row>
+   <row>
+    <field name="update_site_id">10</field>
+    <field name="extension_id">654</field>
+   </row>
+   <row>
+    <field name="update_site_id">10</field>
+    <field name="extension_id">663</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

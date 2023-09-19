@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__dropfiles">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="" />
+   <field Field="type" Type="varchar(20)" Null="NO" Key="" Extra="" />
+   <field Field="cloud_id" Type="varchar(100)" Null="YES" Key="UNI" Extra="" />
+   <field Field="path" Type="varchar(200)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="params" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="theme" Type="varchar(20)" Null="NO" Key="" Extra="" />
+   <field Field="count" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__dropfiles" Non_unique="0" Key_name="id" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__dropfiles" Non_unique="0" Key_name="cloud_id" Seq_in_index="1" Column_name="cloud_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

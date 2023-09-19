@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__dropfiles_options">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="name" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="value" Type="longtext" Null="NO" Key="" Extra="" />
+   <key Table="#__dropfiles_options" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__dropfiles_options">
+   <row>
+    <field name="id">1</field>
+    <field name="name">_dropfiles_previewer_generate_queue_files</field>
+    <field name="value">{&quot;2&quot;:{&quot;date_added&quot;:1695041863,&quot;type&quot;:&quot;server&quot;,&quot;file_id&quot;:2,&quot;file_path&quot;:&quot;\/var\/www\/html\/media\/com_dropfiles\/16\/650849473d604.pdf&quot;,&quot;file_ext&quot;:&quot;pdf&quot;,&quot;file_last_updated&quot;:&quot;2023-09-18 12:57:43&quot;,&quot;retries&quot;:0,&quot;in_process&quot;:0,&quot;request_id&quot;:0,&quot;preview_generated&quot;:0}}</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

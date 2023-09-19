@@ -57,6 +57,16 @@
     <field name="parent"></field>
     <field name="params">{&quot;configuration&quot;:&quot;24&quot;,&quot;preset&quot;:&quot;_joomla_-_gantry4&quot;}</field>
    </row>
+   <row>
+    <field name="id">25</field>
+    <field name="template">dropfilesfrontend</field>
+    <field name="client_id">0</field>
+    <field name="home">0</field>
+    <field name="title">Dropfiles frontend - Par défaut</field>
+    <field name="inheritable">0</field>
+    <field name="parent"></field>
+    <field name="params">{&quot;templateColor&quot;:&quot;#08C&quot;,&quot;templateBackgroundColor&quot;:&quot;#F4F6F7&quot;,&quot;logoFile&quot;:&quot;&quot;,&quot;sitetitle&quot;:&quot;&quot;,&quot;sitedescription&quot;:&quot;&quot;,&quot;googleFont&quot;:&quot;1&quot;,&quot;googleFontName&quot;:&quot;Open+Sans&quot;}</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

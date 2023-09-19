@@ -12,31 +12,5 @@
    <key Table="#__emundus_setup_dashboard" Non_unique="1" Key_name="jos_emundus_setup_dashboard_jos_emundus_users_user_id_fk" Seq_in_index="1" Column_name="user" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_dashboard" Non_unique="1" Key_name="jos_emundus_setup_dashboard_jos_emundus_setup_profiles_id_fk" Seq_in_index="1" Column_name="profile" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__emundus_setup_dashboard">
-   <row>
-    <field name="id">1</field>
-    <field name="user">62</field>
-    <field name="widget"></field>
-    <field name="updated">2023-03-21 08:29:44</field>
-    <field name="updated_by">62</field>
-    <field name="profile">1</field>
-   </row>
-   <row>
-    <field name="id">2</field>
-    <field name="user">95</field>
-    <field name="widget"></field>
-    <field name="updated">2023-03-21 08:56:18</field>
-    <field name="updated_by">95</field>
-    <field name="profile">2</field>
-   </row>
-   <row>
-    <field name="id">3</field>
-    <field name="user">2</field>
-    <field name="widget"></field>
-    <field name="updated">2023-08-28 15:30:13</field>
-    <field name="updated_by">2</field>
-    <field name="profile">2</field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

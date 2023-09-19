@@ -52,7 +52,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2008-09-17 22:00:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">1511</field>
     <field name="rows_per_page">20</field>
@@ -82,7 +82,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2008-09-20 02:00:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">1766</field>
     <field name="rows_per_page">10</field>
@@ -112,7 +112,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2008-10-08 20:00:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">96</field>
     <field name="rows_per_page">25</field>
@@ -142,7 +142,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2008-10-13 12:00:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">8</field>
     <field name="hits">151</field>
     <field name="rows_per_page">50</field>
@@ -172,7 +172,7 @@
     <field name="checked_out_time">2023-05-11 11:40:30</field>
     <field name="published">1</field>
     <field name="publish_up">2010-06-28 06:39:06</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">873</field>
     <field name="rows_per_page">50</field>
@@ -202,7 +202,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2022-04-13 14:11:26</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">1749</field>
     <field name="rows_per_page">100</field>
@@ -232,7 +232,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2010-07-22 00:38:21</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">8</field>
     <field name="hits">13</field>
     <field name="rows_per_page">10</field>
@@ -262,7 +262,7 @@
     <field name="checked_out_time">2023-06-21 08:21:37</field>
     <field name="published">1</field>
     <field name="publish_up">2010-07-23 04:40:16</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">8</field>
     <field name="hits">40</field>
     <field name="rows_per_page">10</field>
@@ -292,7 +292,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2010-09-27 07:59:30</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">8</field>
     <field name="hits">153</field>
     <field name="rows_per_page">10</field>
@@ -314,17 +314,17 @@
     <field name="auto_inc">1</field>
     <field name="connection_id">1</field>
     <field name="created">2010-12-01 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2023-06-06 13:20:38</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="published">1</field>
     <field name="publish_up">2010-12-01 15:00:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
-    <field name="hits">974</field>
+    <field name="hits">977</field>
     <field name="rows_per_page">50</field>
     <field name="template">emundus</field>
     <field name="order_by">[&quot;1422&quot;]</field>
@@ -352,7 +352,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2011-01-20 13:00:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">2036</field>
     <field name="rows_per_page">100</field>
@@ -382,7 +382,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2011-09-28 06:48:54</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">8</field>
     <field name="hits">8</field>
     <field name="rows_per_page">10</field>
@@ -412,7 +412,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2012-01-10 12:18:18</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">140</field>
     <field name="rows_per_page">10</field>
@@ -442,7 +442,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2012-06-20 06:35:42</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">8</field>
     <field name="hits">6</field>
     <field name="rows_per_page">10</field>
@@ -472,7 +472,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2021-11-05 14:50:13</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">1901</field>
     <field name="rows_per_page">50</field>
@@ -502,7 +502,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2017-06-16 12:15:23</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">8</field>
     <field name="hits">7</field>
     <field name="rows_per_page">10</field>
@@ -532,7 +532,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2021-10-25 14:35:46</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">1607</field>
     <field name="rows_per_page">100</field>
@@ -562,7 +562,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">1951</field>
     <field name="rows_per_page">100</field>
@@ -592,7 +592,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2010-07-23 10:40:16</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">8</field>
     <field name="hits">12</field>
     <field name="rows_per_page">10</field>
@@ -622,7 +622,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">3</field>
     <field name="hits">2</field>
     <field name="rows_per_page">10</field>
@@ -652,7 +652,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">8</field>
     <field name="hits">2</field>
     <field name="rows_per_page">10</field>
@@ -682,7 +682,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">311</field>
     <field name="rows_per_page">100</field>
@@ -712,7 +712,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2022-04-01 11:17:11</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">8</field>
     <field name="hits">11</field>
     <field name="rows_per_page">10</field>
@@ -742,7 +742,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">1</field>
     <field name="rows_per_page">10</field>
@@ -772,7 +772,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2019-07-17 11:44:04</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">8</field>
     <field name="rows_per_page">10</field>
@@ -802,7 +802,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">11</field>
     <field name="rows_per_page">10</field>
@@ -832,7 +832,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">349</field>
     <field name="rows_per_page">10</field>
@@ -862,7 +862,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">281</field>
     <field name="rows_per_page">20</field>
@@ -892,7 +892,7 @@
     <field name="checked_out_time"></field>
     <field name="published">0</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">1</field>
     <field name="rows_per_page">10</field>
@@ -922,7 +922,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">7</field>
     <field name="rows_per_page">10</field>
@@ -952,7 +952,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">2</field>
     <field name="rows_per_page">10</field>
@@ -982,7 +982,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2022-10-19 10:24:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">220</field>
     <field name="rows_per_page">20</field>
@@ -1012,7 +1012,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">229</field>
     <field name="rows_per_page">20</field>
@@ -1042,7 +1042,7 @@
     <field name="checked_out_time"></field>
     <field name="published">0</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">2</field>
     <field name="rows_per_page">10</field>
@@ -1072,7 +1072,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2018-09-13 08:43:45</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">5</field>
     <field name="rows_per_page">10</field>
@@ -1102,7 +1102,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1132,7 +1132,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">8</field>
     <field name="hits">141</field>
     <field name="rows_per_page">10</field>
@@ -1162,7 +1162,7 @@
     <field name="checked_out_time"></field>
     <field name="published">0</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1192,7 +1192,7 @@
     <field name="checked_out_time">2023-04-27 12:15:49</field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">3</field>
     <field name="rows_per_page">10</field>
@@ -1222,7 +1222,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">2</field>
     <field name="rows_per_page">10</field>
@@ -1252,7 +1252,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1282,7 +1282,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1312,7 +1312,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1342,7 +1342,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1372,7 +1372,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1402,7 +1402,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1432,7 +1432,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">2</field>
     <field name="rows_per_page">10</field>
@@ -1462,7 +1462,7 @@
     <field name="checked_out_time">2023-03-17 12:40:33</field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">5</field>
     <field name="rows_per_page">10</field>
@@ -1492,7 +1492,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2022-12-29 11:07:47</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">1</field>
     <field name="rows_per_page">10</field>
@@ -1522,7 +1522,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2022-12-29 11:07:55</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1552,7 +1552,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">16</field>
     <field name="rows_per_page">10</field>
@@ -1582,7 +1582,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2022-12-29 11:08:18</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1612,7 +1612,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2020-06-09 08:52:29</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">5</field>
     <field name="rows_per_page">10</field>
@@ -1642,7 +1642,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2020-06-09 08:52:58</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">5</field>
     <field name="rows_per_page">10</field>
@@ -1672,7 +1672,7 @@
     <field name="checked_out_time">2023-04-07 13:32:38</field>
     <field name="published">1</field>
     <field name="publish_up">2021-02-15 09:29:57</field>
-    <field name="publish_down">2030-02-15 10:53:58</field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">17</field>
     <field name="rows_per_page">10</field>
@@ -1702,7 +1702,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2018-09-13 08:43:45</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">9</field>
     <field name="hits">5</field>
     <field name="rows_per_page">10</field>
@@ -1732,7 +1732,7 @@
     <field name="checked_out_time">2021-03-26 16:00:25</field>
     <field name="published">1</field>
     <field name="publish_up">2021-03-23 13:40:19</field>
-    <field name="publish_down">2099-03-26 16:00:25</field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">79</field>
     <field name="rows_per_page">10</field>
@@ -1762,7 +1762,7 @@
     <field name="checked_out_time">2021-03-26 16:00:25</field>
     <field name="published">1</field>
     <field name="publish_up">2021-03-23 13:44:32</field>
-    <field name="publish_down">2099-03-26 16:00:25</field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1792,7 +1792,7 @@
     <field name="checked_out_time">2021-03-26 16:00:25</field>
     <field name="published">1</field>
     <field name="publish_up">2021-03-26 16:00:25</field>
-    <field name="publish_down">2099-03-26 16:00:25</field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">31</field>
     <field name="rows_per_page">10</field>
@@ -1822,7 +1822,7 @@
     <field name="checked_out_time">2021-12-13 10:01:14</field>
     <field name="published">1</field>
     <field name="publish_up">2021-12-10 13:35:54</field>
-    <field name="publish_down">2099-12-13 10:01:14</field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">24</field>
     <field name="rows_per_page">10</field>
@@ -1852,7 +1852,7 @@
     <field name="checked_out_time">2099-11-25 00:00:00</field>
     <field name="published">1</field>
     <field name="publish_up">2021-11-25 14:51:26</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">122</field>
     <field name="rows_per_page">50</field>
@@ -1882,7 +1882,7 @@
     <field name="checked_out_time">2023-04-07 13:36:54</field>
     <field name="published">1</field>
     <field name="publish_up">2021-12-09 09:41:30</field>
-    <field name="publish_down">2099-12-09 00:00:00</field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">27</field>
     <field name="rows_per_page">10</field>
@@ -1912,7 +1912,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2022-05-10 14:37:14</field>
-    <field name="publish_down">2099-05-10 14:37:14</field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">1</field>
     <field name="hits">0</field>
     <field name="rows_per_page">10</field>
@@ -1942,7 +1942,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2022-10-06 11:42:45</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">6</field>
     <field name="rows_per_page">10</field>
@@ -1972,7 +1972,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2022-10-19 10:26:07</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">6</field>
     <field name="hits">4</field>
     <field name="rows_per_page">10</field>
@@ -2002,7 +2002,7 @@
     <field name="checked_out_time"></field>
     <field name="published">1</field>
     <field name="publish_up">2022-12-16 16:21:10</field>
-    <field name="publish_down"></field>
+    <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
     <field name="hits">2</field>
     <field name="rows_per_page">10</field>

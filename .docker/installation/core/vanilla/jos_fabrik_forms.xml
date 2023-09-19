@@ -778,7 +778,7 @@
     <field name="modified"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="publish_up"></field>
     <field name="publish_down"></field>
     <field name="reset_button_label"></field>

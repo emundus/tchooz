@@ -29,5 +29,33 @@
    <key Table="#__falang_content" Non_unique="1" Key_name="reference_table" Seq_in_index="1" Column_name="reference_table" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__falang_content" Non_unique="1" Key_name="reference_field" Seq_in_index="1" Column_name="reference_field" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
+  <table_data name="#__falang_content">
+   <row>
+    <field name="id">1</field>
+    <field name="language_id">2</field>
+    <field name="reference_id">4</field>
+    <field name="reference_table">emundus_setup_campaigns</field>
+    <field name="reference_field">label</field>
+    <field name="value">Campagne 3</field>
+    <field name="original_value"></field>
+    <field name="original_text"></field>
+    <field name="modified">2023-09-18 11:49:39</field>
+    <field name="modified_by">2</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">4</field>
+    <field name="reference_table">emundus_setup_campaigns</field>
+    <field name="reference_field">label</field>
+    <field name="value">Campagne 2</field>
+    <field name="original_value"></field>
+    <field name="original_text"></field>
+    <field name="modified">2023-09-18 11:49:39</field>
+    <field name="modified_by">2</field>
+    <field name="published">1</field>
+   </row>
+  </table_data>
  </database>
 </mysqldump>

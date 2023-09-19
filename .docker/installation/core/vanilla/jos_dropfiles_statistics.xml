@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__dropfiles_statistics">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="related_id" Type="varchar(200)" Null="NO" Key="" Extra="" />
+   <field Field="related_users" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="type" Type="varchar(200)" Null="NO" Key="" Extra="" />
+   <field Field="date" Type="date" Null="NO" Key="" Default="0000-00-00" Extra="" />
+   <field Field="count" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__dropfiles_statistics" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

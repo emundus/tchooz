@@ -10,22 +10,5 @@
    <key Table="#__emundus_groups" Non_unique="1" Key_name="user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_groups" Non_unique="1" Key_name="user_id" Seq_in_index="2" Column_name="group_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__emundus_groups">
-   <row>
-    <field name="id">2</field>
-    <field name="user_id">62</field>
-    <field name="group_id">1</field>
-   </row>
-   <row>
-    <field name="id">41</field>
-    <field name="user_id">95</field>
-    <field name="group_id">1</field>
-   </row>
-   <row>
-    <field name="id">45</field>
-    <field name="user_id">95</field>
-    <field name="group_id">25</field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

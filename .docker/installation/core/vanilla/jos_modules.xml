@@ -1048,6 +1048,46 @@
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
+   <row>
+    <field name="id">125</field>
+    <field name="asset_id">123</field>
+    <field name="title">Dropfiles Search</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">1</field>
+    <field name="position"></field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">0</field>
+    <field name="module">mod_dropfiles_search</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params"></field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">126</field>
+    <field name="asset_id">124</field>
+    <field name="title">Dropfiles Latest</field>
+    <field name="note"></field>
+    <field name="content"></field>
+    <field name="ordering">2</field>
+    <field name="position"></field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+    <field name="published">0</field>
+    <field name="module">mod_dropfiles_latest</field>
+    <field name="access">1</field>
+    <field name="showtitle">1</field>
+    <field name="params"></field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

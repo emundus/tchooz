@@ -19,20 +19,5 @@
    <key Table="#__emundus_setup_emails_trigger" Non_unique="1" Key_name="programme_id" Seq_in_index="1" Column_name="programme_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_emails_trigger" Non_unique="1" Key_name="email_id" Seq_in_index="1" Column_name="email_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__emundus_setup_emails_trigger">
-   <row>
-    <field name="id">5</field>
-    <field name="date_time"></field>
-    <field name="user">95</field>
-    <field name="step">1</field>
-    <field name="programme_id"></field>
-    <field name="email_id">1</field>
-    <field name="to_current_user">1</field>
-    <field name="profile_id"></field>
-    <field name="user_id"></field>
-    <field name="to_applicant">0</field>
-    <field name="group_id"></field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>
