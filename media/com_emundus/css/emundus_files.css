@@ -429,6 +429,10 @@ fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-
     align-items: center;
     color: #fff;
 }
+.g-back-office-emundus-tableau .navbar .nav > li > a:hover{
+    background: transparent;
+}
+
 .navbar.navbar-inverse {
     height: auto;
     border-radius: 0;
@@ -439,6 +443,7 @@ fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-
     display: flex;
     width: 100%;
     align-items: center;
+    flex-wrap: unset;
 }
 
 button#em-close-file {
@@ -488,10 +493,32 @@ button#em-close-file {
     background: #ffffff;
     margin-top: 20px;
     border: unset;
+    position: absolute;
 }
 
 .navbar .nav>li>.dropdown-menu:before {
     border: #ffffff;
+    position: absolute;
+    top: -7px;
+    left: 9px;
+    display: inline-block;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid #ccc;
+    border-left: 7px solid transparent;
+    border-bottom-color: rgba(0, 0, 0, 0.2);
+    content: '';
+    background-color: #fff;
+}
+
+.navbar .nav > li > .dropdown-menu:after {
+    position: absolute;
+    top: -6px;
+    left: 10px;
+    display: inline-block;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #ffffff;
+    border-left: 6px solid transparent;
+    content: '';
 }
 
 /* VUE DANS LE DOSSIER */
@@ -1346,7 +1373,7 @@ p {
     margin-top: 0;
 }
 
-.navbar-brand{
+.em-container-menuaction .navbar-brand{
     padding: 0;
     height: unset;
     font-size: 16px;
@@ -1369,12 +1396,6 @@ p {
     margin-bottom: 10px;
     font-weight: 400 !important;
 }
-
-/*.navbar .navbar-inverse{
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 16px;
-}*/
 
 #check {
     width: 80px !important;

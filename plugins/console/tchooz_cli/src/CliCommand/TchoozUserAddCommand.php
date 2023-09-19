@@ -105,6 +105,15 @@ class TchoozUserAddCommand extends AbstractCommand
      */
     private $userProfiles = [];
 
+	/**
+	 * The useremundusgroups
+	 *
+	 * @var    array
+	 *
+	 * @since  4.0.0
+	 */
+	private $userEmundusGroups = [];
+
     /**
      * Command constructor.
      *
@@ -140,6 +149,7 @@ class TchoozUserAddCommand extends AbstractCommand
         $this->password   = $this->getStringFromOption('password', 'Please enter a password');
         $this->userGroups = $this->getUserGroups();
         $this->userProfiles = $this->getUserProfiles();
+        $this->userEmundusGroups = $this->getEmundusUserGroups();
 
         if (\in_array("error", $this->userGroups)) {
             $this->ioStyle->error("'" . $this->userGroups[1] . "' user group doesn't exist!");
@@ -183,7 +193,7 @@ class TchoozUserAddCommand extends AbstractCommand
             return 1;
         }
 
-        $this->createEmundusUser($userObj,$this->firstname,$this->lastname,$this->userProfiles);
+        $this->createEmundusUser($userObj,$this->firstname,$this->lastname,$this->userProfiles,$this->userEmundusGroups);
 
         $this->ioStyle->success("User created!");
 
@@ -233,6 +243,28 @@ class TchoozUserAddCommand extends AbstractCommand
 
         return $db->loadResult();
     }
+
+	/**
+	 * Method to get profileId by groupName
+	 *
+	 * @param   string  $profileName  name of group
+	 *
+	 * @return  integer
+	 *
+	 * @since   4.0.0
+	 */
+	protected function getEmundusGroupId($groupName)
+	{
+		$db    = $this->getDatabase();
+		$query = $db->getQuery(true)
+			->select($db->quoteName('id'))
+			->from($db->quoteName('#__emundus_setup_groups'))
+			->where($db->quoteName('label') . ' = :groupName')
+			->bind(':groupName', $groupName);
+		$db->setQuery($query);
+
+		return $db->loadResult();
+	}
 
     /**
      * Method to get a value from option
@@ -371,7 +403,56 @@ class TchoozUserAddCommand extends AbstractCommand
         return $profileList;
     }
 
-    protected function createEmundusUser($user,$firstname,$lastname,$profiles)
+	protected function getEmundusUserGroups(): array
+	{
+		$emundusGroups = $this->getApplication()->getConsoleInput()->getOption('useremundusgroups');
+		$db     = $this->getDatabase();
+
+		$groupsList = [];
+
+		// Group names have been supplied as input arguments
+		if (!\is_null($emundusGroups) && $emundusGroups[0]) {
+			$emundusGroups = explode(',', $emundusGroups);
+
+			foreach ($emundusGroups as $group) {
+				$groupId = $this->getEmundusGroupId($group);
+
+				if (empty($groupId)) {
+					$this->ioStyle->error("Invalid group name '" . $group . "'");
+					throw new InvalidOptionException("Invalid group name " . $group);
+				}
+
+				$groupsList[] = $this->getEmundusGroupId($group);
+			}
+
+			return $groupsList;
+		}
+
+		// Generate select list for user
+		$query = $db->getQuery(true)
+			->select($db->quoteName('label'))
+			->from($db->quoteName('#__emundus_setup_groups'))
+			->order($db->quoteName('id') . 'ASC');
+		$db->setQuery($query);
+
+		$list = $db->loadColumn();
+
+		$choice = new ChoiceQuestion(
+			'Please select an emundus group (separate multiple groups with a comma)',
+			$list
+		);
+		$choice->setMultiselect(true);
+
+		$answer = (array) $this->ioStyle->askQuestion($choice);
+
+		foreach ($answer as $group) {
+			$groupsList[] = $this->getEmundusGroupId($group);
+		}
+
+		return $groupsList;
+	}
+
+    protected function createEmundusUser($user,$firstname,$lastname,$profiles,$emundusGroups)
     {
         $db = $this->getDatabase();
 
@@ -404,6 +485,23 @@ class TchoozUserAddCommand extends AbstractCommand
                 $this->ioStyle->error("An error occurred while inserting data in #__emundus_users_profiles");
             }
         }
+
+		foreach ($emundusGroups as $group) {
+			$columns = array('user_id', 'group_id');
+			$values = array($user->id, $group);
+
+			$query->clear()
+				->insert($db->quoteName('#__emundus_groups'))
+				->columns($db->quoteName($columns))
+				->values(implode(',', $values));
+
+			$db->setQuery($query);
+
+			if(!$db->execute())
+			{
+				$this->ioStyle->error("An error occurred while inserting data in #__emundus_groups");
+			}
+		}
     }
 
     /**
@@ -440,6 +538,7 @@ class TchoozUserAddCommand extends AbstractCommand
         $this->addOption('email', null, InputOption::VALUE_OPTIONAL, 'email address');
         $this->addOption('usergroup', null, InputOption::VALUE_OPTIONAL, 'usergroup (separate multiple groups with comma ",")');
         $this->addOption('userprofiles', null, InputOption::VALUE_OPTIONAL, 'profiles (separate multiple groups with comma ",")');
+        $this->addOption('useremundusgroups', null, InputOption::VALUE_OPTIONAL, 'emundus groups (separate multiple groups with comma ",")');
         $this->setDescription('Add a Tchooz user');
         $this->setHelp($help);
     }

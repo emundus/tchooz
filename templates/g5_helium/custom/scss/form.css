@@ -1080,3 +1080,8 @@
     display: none;
   }
 }
+
+/** SUMO SELECT **/
+.SumoSelect {
+  width: 100%;
+}
