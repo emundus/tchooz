@@ -895,23 +895,23 @@ class EmundusModelEvaluation extends JModelList {
 					    $already_joined_tables[] = $table_to_join;
 				    } else {
 					    $joined = false;
-					    $query_find_join = $this->dbo->getQuery(true);
+					    $query_find_join = $this->db->getQuery(true);
 					    foreach ($already_joined_tables as $already_join_alias => $already_joined_table_name) {
 						    $query_find_join->clear()
 							    ->select('*')
 							    ->from('#__fabrik_joins')
-							    ->where('table_join = ' . $this->dbo->quote($already_joined_table_name))
-							    ->andWhere('join_from_table = ' . $this->dbo->quote($table_to_join))
-							    ->andWhere('table_key = ' . $this->dbo->quote('id'))
-							    ->andWhere('list_id = ' . $this->dbo->quote($elt->table_list_id));
+							    ->where('table_join = ' . $this->db->quote($already_joined_table_name))
+							    ->andWhere('join_from_table = ' . $this->db->quote($table_to_join))
+							    ->andWhere('table_key = ' . $this->db->quote('id'))
+							    ->andWhere('list_id = ' . $this->db->quote($elt->table_list_id));
 
-						    $this->dbo->setQuery($query_find_join);
-						    $join_informations = $this->dbo->loadAssoc();
+						    $this->db->setQuery($query_find_join);
+						    $join_informations = $this->db->loadAssoc();
 
 						    if (!empty($join_informations)) {
 							    $already_joined_tables[] = $table_to_join;
 
-							    $leftJoin .= ' LEFT JOIN ' . $this->dbo->quoteName($join_informations['join_from_table']) . ' ON ' . $this->dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $this->dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+							    $leftJoin .= ' LEFT JOIN ' . $this->db->quoteName($join_informations['join_from_table']) . ' ON ' . $dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
 							    $joined = true;
 							    break;
 						    }
@@ -959,7 +959,7 @@ class EmundusModelEvaluation extends JModelList {
         if (empty($current_fnum)) {
             $query .= ' WHERE jecc.status > 0 ';
         } else {
-            $query .= ' WHERE jecc.fnum like '. $this->dbo->quote($current_fnum) . ' ';
+            $query .= ' WHERE jecc.fnum like '. $this->db->quote($current_fnum) . ' ';
         }
 
         $query .= ' AND esc.published = 1 ';
@@ -968,9 +968,9 @@ class EmundusModelEvaluation extends JModelList {
 
         $query .=  $this->_buildContentOrderBy();
 
-        $this->dbo->setQuery($query);
+        $this->db->setQuery($query);
         try {
-            $res = $this->dbo->loadAssocList();
+            $res = $this->db->loadAssocList();
             $this->_applicants = $res;
 
             if (empty($current_fnum)) {
@@ -982,8 +982,8 @@ class EmundusModelEvaluation extends JModelList {
                 }
             }
 
-            $this->dbo->setQuery($query);
-            return $this->dbo->loadAssocList();
+            $this->db->setQuery($query);
+            return $this->db->loadAssocList();
         } catch(Exception $e) {
             echo $query . ' ' . $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.str_replace('#_', 'jos', $query), JLog::ERROR, 'com_emundus');
