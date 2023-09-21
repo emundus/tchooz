@@ -204,7 +204,7 @@ endif;
             groupintro.style.opacity = 0;
         }
 
-        let elements = document.querySelectorAll('.fabrikGroup .row-fluid');
+        let elements = document.querySelectorAll('.fabrikGroup .row');
         let elements_fields = document.querySelectorAll('.fabrikElementContainer');
         for (field of elements_fields) {
             field.style.opacity = 0;

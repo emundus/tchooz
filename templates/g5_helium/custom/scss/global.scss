@@ -56,7 +56,7 @@ body {
   margin-top: 20px !important;
 }
 
-.g-grid .span12 {
+.g-grid .col {
   min-height: 0;
 }
 
@@ -634,7 +634,7 @@ footer#g-footer > .g-container {
   }
 }
 
-.view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
+.view-registration.login .fabrikActions.form-actions .row .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
 .view-form .em-formRegistrationCenter .button.btn.btn-primary.save-btn.sauvegarder.button.register {
   background-color: var(--em-primary-color);
   color: var(--neutral-0);
@@ -658,7 +658,7 @@ footer#g-footer > .g-container {
     display: none !important;
   }
 
-  form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row-fluid {
+  form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row {
     padding-left: 4px;
     margin-bottom: 0;
   }
@@ -1358,7 +1358,7 @@ footer#g-footer > .g-container {
     }
   }
 
-  .fabrikButtonsContainer.row-fluid ul li {
+  .fabrikButtonsContainer.row ul li {
 
     a {
       padding-left: 0;
@@ -1517,12 +1517,12 @@ footer#g-footer > .g-container {
   padding-right: 5%;
 }
 
-.row-fluid .span3 {
+.row .span3 {
   display: flex;
   align-items: center;
 }
 
-.row-striped .row-fluid {
+.row-striped .row {
   width: 100%;
 }
 
@@ -1842,24 +1842,24 @@ tr.fabrikFilterContainer {
   padding: 15px 0;
 }
 
-.form-actions .row-fluid .span4 .btn-group .register {
+.form-actions .row .span4 .btn-group .register {
   color: var(--em-primary-color);
   border: 1px solid var(--em-primary-color);
 }
 
-.form-actions .row-fluid .span4 .btn-group .register:hover {
+.form-actions .row .span4 .btn-group .register:hover {
   background-color: var(--em-primary-color);
   border: 1px solid var(--em-primary-color);
 }
 
 .view-checklist .form-horizontal .controls .em-deleteFile,
-.view-checklist .row-fluid .plg-emundus_fileupload .em-deleteFile {
+.view-checklist .row .plg-emundus_fileupload .em-deleteFile {
   color: var(--em-primary-color);
   border: 1px solid var(--em-primary-color);
 }
 
 .view-checklist .form-horizontal .controls .em-deleteFile,
-.view-checklist .row-fluid .plg-emundus_fileupload .em-deleteFile:hover {
+.view-checklist .row .plg-emundus_fileupload .em-deleteFile:hover {
   background: var(--em-primary-color);
   background-color: var(--em-primary-color);
   border: 1px solid var(--em-primary-color);
@@ -2149,7 +2149,7 @@ p.readmore .btn,
   letter-spacing: normal;
 }
 
-.fabrikActions.form-actions .row-fluid {
+.fabrikActions.form-actions .row {
 
   .span4.offset1 button.btn.goback-btn,
   .span4.offset1 button.btn[name="Goback"] {
@@ -2169,7 +2169,7 @@ p.readmore .btn,
     }
   }
 
-  .span12 button.btn[name="Goback"] {
+  .col button.btn[name="Goback"] {
     background: transparent;
     border: 1px solid var(--em-secondary-color);
     border-radius: var(--em-applicant-br) !important;
@@ -3844,7 +3844,7 @@ div#em-appli-block {
 
 
   /* BLOC FORMULAIRE */
-  .span12 {
+  .col {
 
     /* INTRO FORMULAIRE */
     .emundus-form {
@@ -3908,7 +3908,7 @@ div#em-appli-block {
 
         /** DATABASEJOIN - RADIO - CHECKBOX - AUTRES **/
 
-        .row-fluid[data-role="fabrik-rowopts"] {
+        .row[data-role="fabrik-rowopts"] {
 
           div[data-role="suboption"] {
             margin-top: 12px;
@@ -3954,7 +3954,7 @@ div#em-appli-block {
         }
 
         /* BLOC ELEMENT */
-        .row-fluid .fabrikElementContainer.control-group {
+        .row .fabrikElementContainer.form-group {
           &:not(.plg-display) {
             flex-direction: column;
 
@@ -4056,13 +4056,13 @@ div#em-appli-block {
 /* VIEW DETAILS */
 
 .view-details {
-  .span12 h1 {
+  .col h1 {
     margin: 12px 0;
     font-family: var(--em-coordinator-font-title);
     color: var(--neutral-900);
   }
 
-  .span12 .fabrikGroup .legend {
+  .col .fabrikGroup .legend {
     font-family: var(--em-coordinator-font-title);
     color: var(--neutral-900);
   }
@@ -4074,7 +4074,7 @@ div#em-appli-block {
 }
 
 /* EVAL / DECISION */
-.gantry.contentpane.modal .platform-content.row-fluid > .span12 {
+.gantry.contentpane.modal .platform-content.container > .col {
   margin-top: 0 !important;
 
   h2 {
@@ -4087,7 +4087,7 @@ div#em-appli-block {
   }
 }
 
-.view-form:not(.com_emundus).gantry .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .row-fluid .fabrikgrid_radio label.radio input[type="radio"] {
+.view-form:not(.com_emundus).gantry .col form .fabrikGroup .row .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .row .fabrikgrid_radio label.radio input[type="radio"] {
   -webkit-appearance: radio !important;
   padding: 0 !important;
   -moz-appearance: radio !important;
@@ -4203,7 +4203,7 @@ screen and (max-height: 769px) {
     padding-right: 8px !important;
   }
 
-  .view-form:not(.com_emundus) .span12 .page-header h1 {
+  .view-form:not(.com_emundus) .col .page-header h1 {
     hyphens: auto;
   }
 
@@ -4218,7 +4218,7 @@ screen and (max-height: 769px) {
 
 
   /* BIRTHDAY */
-  .view-form:not(.com_emundus) .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
+  .view-form:not(.com_emundus) .col form .fabrikGroup .row .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
     .fabrikinput.inputbox {
       margin-bottom: 8px;
     }
@@ -4253,7 +4253,7 @@ screen and (max-height: 769px) {
   }
 
   /* .view-form.applicant-form,.view-form.emundus-form{
-     .span12 .emundus-form{
+     .col .emundus-form{
        margin-top: 0;
      }
 
@@ -4280,13 +4280,13 @@ screen and (max-height: 769px) {
     width: 100%;
   }
 
-  .view-form .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group.plg-databasejoin.mode-dropdown {
+  .view-form .col form .fabrikGroup .row .fabrikElementContainer.control-group.plg-databasejoin.mode-dropdown {
     display: flex;
     justify-content: flex-end;
     width: auto;
   }
 
-  .view-form .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group.plg-display label {
+  .view-form .col form .fabrikGroup .row .fabrikElementContainer.control-group.plg-display label {
     word-break: break-all;
   }
 
@@ -4401,7 +4401,7 @@ screen and (max-height: 769px) {
           padding: 0 !important;
         }
 
-        .form-actions .row-fluid {
+        .form-actions .row {
           padding: 0;
         }
 
@@ -4595,7 +4595,7 @@ screen and (max-height: 769px) {
   }
 
   /* BIRTHDAY */
-  .view-form:not(.com_emundus) .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
+  .view-form:not(.com_emundus) .col form .fabrikGroup .row .fabrikElementContainer.control-group:not(.plg-display) .fabrikElement .fabrikSubElementContainer {
      .fabrikinput.inputbox {
       margin: 0 !important;
     }
@@ -4656,7 +4656,7 @@ screen and (max-height: 769px) {
     }
   }
 
-  .view-form .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group.plg-databasejoin.mode-dropdown {
+  .view-form .col form .fabrikGroup .row .fabrikElementContainer.control-group.plg-databasejoin.mode-dropdown {
     display: flex;
     justify-content: flex-end;
   }

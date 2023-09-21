@@ -12,11 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-$rowStarted      = false;
 $layout          = FabrikHelperHTML::getLayout('form.fabrik-control-group');
-$gridStartLayout = FabrikHelperHTML::getLayout('grid.fabrik-grid-start');
-$gridEndLayout   = FabrikHelperHTML::getLayout('grid.fabrik-grid-end');
-
+$rowStarted      = 0;
 foreach ($this->elements as $element) :
 	$this->element = $element;
 	$this->class = 'fabrikErrorMessage';
@@ -27,19 +24,13 @@ foreach ($this->elements as $element) :
 		$element->containerClass .= ' error';
 		$this->class .= ' help-inline text-danger';
 	endif;
-
-	if ($element->startRow) :
-		echo $gridStartLayout->render(new stdClass);
-		$rowStarted = true;
-	endif;
-
-	$style = $element->hidden ? 'style="display:none"' : '';
-	$span  = $element->hidden ? '' : ' ' . $element->span;
+	$rowStarted = $rowStarted + (int)$element->startRow - (int)$element->endRow; //see getLayout('form.fabrik-control-group')
 
 	$displayData = array(
-		'class' => $element->containerClass,
-		'style' => $style,
-		'span' => $span
+		'class' => $element->containerClass . ($element->hidden ? ' d-none' : ''),
+		'startRow' => $element->startRow,
+		'endRow' => $element->endRow,
+		'column' => $element->column,
 	);
 
 	$labelsAbove = $element->labels;
@@ -52,7 +43,7 @@ foreach ($this->elements as $element) :
 	{
 		$displayData['row'] = $this->loadTemplate('group_labels_none');
 	}
-	elseif ($element->span == FabrikHelperHTML::getGridSpan(12) || $element->span == '' || $labelsAbove == 0)
+	elseif ($labelsAbove == 0)
 	{
 		$displayData['row'] = $this->loadTemplate('group_labels_side');
 	}
@@ -65,13 +56,9 @@ foreach ($this->elements as $element) :
 	echo $layout->render((object) $displayData);
 
 	?><?php
-	if ($element->endRow) :
-		echo $gridEndLayout->render(new stdClass);
-		$rowStarted = false;
-	endif;
 endforeach;
 
 // If the last element was not closing the row add an additional div
-if ($rowStarted === true) :
-	echo $gridEndLayout->render(new stdClass);
-endif;
+if ($rowStarted > 0) :?>
+</div><!-- end row for open row -->
+<?php endif;?>

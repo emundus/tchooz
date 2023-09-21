@@ -103,7 +103,7 @@ requirejs(['fab/fabrik'], function () {
             groupintro.style.opacity = 1;
         }
 
-        let elements = document.querySelectorAll('.fabrikGroup .row-fluid');
+        let elements = document.querySelectorAll('.fabrikGroup .row');
         let elements_fields = document.querySelectorAll('.fabrikElementContainer');
         for (field of elements_fields){
             field.style.opacity = 1;

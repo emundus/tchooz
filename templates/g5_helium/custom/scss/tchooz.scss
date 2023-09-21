@@ -121,7 +121,9 @@
   }
 }
 
-.em-error-button:hover {
+.em-error-button:hover,
+.em-error-button:focus,
+.em-error-button:active {
   background: var(--neutral-0);
   border: 1px solid var(--red-500);
   color: var(--red-500);
@@ -184,12 +186,13 @@
   width: 24px;
   height: 24px;
 
-  background: var(--neutral-0);
+  background: transparent;
   border: 1px solid transparent;
   border-radius: 4px;
 
   &.active {
     border: 1px solid var(--neutral-300);
+    background: var(--neutral-0);
   }
 }
 
@@ -811,6 +814,9 @@ input:focus + .em-slider {
 
 .em-w-100{
   width: 100%;
+}
+.swal2-popup.em-w-100 {
+    width: 100% !important;
 }
 
 .em-w-40-vw{
@@ -1618,7 +1624,7 @@ input:focus + .em-slider {
 
 .em-card-neutral-100{
   background-color: var(--neutral-100);
-  border-radius: var(--em-default-br-cards);
+  border-radius: var(--em-coordinator-br-cards);
   padding: 32px;
   cursor: pointer;
 }
@@ -1864,7 +1870,6 @@ button.em-swal-delete-button:hover{
 
 /** PROGRAMME **/
 .em-programme-tag{
-  border-radius: var(--em-default-br);
   width: fit-content;
   font-size: 12px;
   font-weight: 600;

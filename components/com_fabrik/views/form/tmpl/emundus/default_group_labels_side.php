@@ -13,10 +13,16 @@
 defined('_JEXEC') or die('Restricted access');
 
 $element = $this->element;
+$width = 10;	// default input width
+if (property_exists($element, 'bsClass') && !empty($element->bsClass)) {
+	/* Get the selected value and normalize it withing the 10 columns allowed for the field */
+	$width = min((int)substr($element->bsClass, strrpos($element->bsClass, '-')+1), 12);
+	$width = (int)round(($width*10)/12);
+}
 ?>
+<div class="row mt-3">
 <?php echo $element->label;?>
 
-<div class="controls">
 	<?php if ($this->tipLocation == 'above') : ?>
 		<span class="fabrikElementTip fabrikElementTipAbove"><?php echo $element->tipAbove ?></span>
 	<?php endif ?>
@@ -33,8 +39,7 @@ $element = $this->element;
 		<span class="fabrikElementTip"><?php echo $element->tipSide ?></span>
 	<?php endif ?>
 
-</div>
-
 <?php if ($this->tipLocation == 'below') :?>
 	<span class="fabrikElementTip fabrikElementTipBelow"><?php echo $element->tipBelow ?></span>
 <?php endif ?>
+</div>
