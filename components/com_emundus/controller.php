@@ -41,7 +41,7 @@ class EmundusController extends JControllerLegacy {
 
     function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
-        if (!JFactory::getApplication()->input->get('view')) {
+        if (!$this->input->get('view')) {
             if (!empty($this->_user->usertype) && $this->_user->usertype == "Registered") {
                 $checklist = $this->getView( 'checklist', 'html' );
                 $checklist->setModel( $this->getModel( 'checklist'), true );
@@ -49,7 +49,7 @@ class EmundusController extends JControllerLegacy {
             } else {
                 $default = 'users';
             }
-            JFactory::getApplication()->input->set('view', $default );
+            $this->input->set('view', $default );
         }
 
         parent::display();
@@ -1617,6 +1617,7 @@ class EmundusController extends JControllerLegacy {
 
             $first_part_of_filename = explode('_', $file)[0];
             if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 28) {
+                $fileInfo = new stdClass();
                 $fileInfo->fnum = $first_part_of_filename;
                 $fileInfo->can_be_viewed = 1;
             }

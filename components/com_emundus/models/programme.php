@@ -23,7 +23,7 @@ class EmundusModelProgramme extends JModelList {
 	private $app;
 	private $_em_user;
 	private $_user;
-	private $_db;
+	protected $_db;
 	private $config;
 
 	function __construct()

@@ -27,7 +27,7 @@ class EmundusModelFiles extends JModelLegacy
 {
 	private $app;
 
-	private $_db;
+	protected $_db;
     /**
      * @var null
      */

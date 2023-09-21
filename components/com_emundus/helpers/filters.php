@@ -49,7 +49,7 @@ class EmundusHelperFilters {
 							$results[$key][$option] = '';
 						}
 					}
-				} else {
+			} else if (property_exists($result, 'params')) {
 
 					$results[$key]->table_label = JText::_($results[$key]->table_label);
 					$results[$key]->group_label = JText::_($results[$key]->group_label);
@@ -57,7 +57,7 @@ class EmundusHelperFilters {
 
 					$params = json_decode($result->params);
 					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options)) {
+					if (property_exists($params, 'sub_options') && property_exists($params->sub_options, $option)) {
 							$results[$key]->$option = implode('|', $params->sub_options->$option);
 						} else {
 							$results[$key]->$option = '';

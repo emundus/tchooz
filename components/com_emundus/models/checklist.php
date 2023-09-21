@@ -22,7 +22,7 @@ class EmundusModelChecklist extends JModelList
 {
 	private $app;
 	private $_user;
-	private $_db;
+	protected $_db;
 	private $_need = 0;
 	protected $_forms = 0;
 	private $_attachments = 0;
