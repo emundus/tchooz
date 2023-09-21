@@ -204,7 +204,7 @@
     <field name="publish_up">2022-04-13 14:11:26</field>
     <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
-    <field name="hits">1749</field>
+    <field name="hits">1751</field>
     <field name="rows_per_page">100</field>
     <field name="template">emundus</field>
     <field name="order_by">[&quot;1180&quot;]</field>
@@ -324,7 +324,7 @@
     <field name="publish_up">2010-12-01 15:00:00</field>
     <field name="publish_down">2099-12-30 00:00:00</field>
     <field name="access">7</field>
-    <field name="hits">977</field>
+    <field name="hits">991</field>
     <field name="rows_per_page">50</field>
     <field name="template">emundus</field>
     <field name="order_by">[&quot;1422&quot;]</field>

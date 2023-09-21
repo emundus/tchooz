@@ -10,31 +10,5 @@
    <key Table="#__emundus_setup_dashbord_repeat_widgets" Non_unique="1" Key_name="jos_emundus_setup_dashbord_repeat_dashboard_id_fk" Seq_in_index="1" Column_name="parent_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_dashbord_repeat_widgets" Non_unique="1" Key_name="jos_emundus_setup_dashbord_repeat_widgets_id_fk" Seq_in_index="1" Column_name="widget" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__emundus_setup_dashbord_repeat_widgets">
-   <row>
-    <field name="id">1</field>
-    <field name="parent_id">2</field>
-    <field name="widget">5</field>
-    <field name="position">2</field>
-   </row>
-   <row>
-    <field name="id">2</field>
-    <field name="parent_id">2</field>
-    <field name="widget">6</field>
-    <field name="position">3</field>
-   </row>
-   <row>
-    <field name="id">3</field>
-    <field name="parent_id">3</field>
-    <field name="widget">5</field>
-    <field name="position">2</field>
-   </row>
-   <row>
-    <field name="id">4</field>
-    <field name="parent_id">3</field>
-    <field name="widget">6</field>
-    <field name="position">3</field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

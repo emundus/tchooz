@@ -1,0 +1,1289 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="data_currency">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="symbol" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="iso3" Type="varchar(3)" Null="NO" Key="" Extra="" />
+   <field Field="name" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="published" Type="tinyint(1)" Null="NO" Key="" Default="1" Extra="" />
+   <key Table="data_currency" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="data_currency">
+   <row>
+    <field name="id">1</field>
+    <field name="symbol">€</field>
+    <field name="iso3">EUR</field>
+    <field name="name">Euro</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="symbol">$</field>
+    <field name="iso3">USD</field>
+    <field name="name">United States dollar</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="symbol">¥</field>
+    <field name="iso3">JPY</field>
+    <field name="name">Japanese yen</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="symbol">£</field>
+    <field name="iso3">GBP</field>
+    <field name="name">British pound</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="symbol">$</field>
+    <field name="iso3">CAD</field>
+    <field name="name">Canadian dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="symbol">$</field>
+    <field name="iso3">AUD</field>
+    <field name="name">Australian dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="symbol">$</field>
+    <field name="iso3">NZD</field>
+    <field name="name">New Zealand dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="symbol">؋</field>
+    <field name="iso3">AFN</field>
+    <field name="name">Afghan afghani</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="symbol">Lek</field>
+    <field name="iso3">ALL</field>
+    <field name="name">Albanian lek</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="symbol">د.ج</field>
+    <field name="iso3">DZD</field>
+    <field name="name">Algerian dinar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="symbol">Kz </field>
+    <field name="iso3">AOA</field>
+    <field name="name">Angolan kwanza</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="symbol">$</field>
+    <field name="iso3">ARS</field>
+    <field name="name">Argentine peso</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="symbol">դր.</field>
+    <field name="iso3">AMD</field>
+    <field name="name">Armenian dram</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="symbol">ƒ</field>
+    <field name="iso3">AWG</field>
+    <field name="name">Aruban florin</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="symbol">ман</field>
+    <field name="iso3">AZN</field>
+    <field name="name">Azerbaijani manat</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="symbol">$</field>
+    <field name="iso3">BSD</field>
+    <field name="name">Bahamian dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">17</field>
+    <field name="symbol">ب.د</field>
+    <field name="iso3">BHD</field>
+    <field name="name">Bahraini dinar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">18</field>
+    <field name="symbol">৳</field>
+    <field name="iso3">BDT</field>
+    <field name="name">Bangladeshi taka</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">19</field>
+    <field name="symbol">$</field>
+    <field name="iso3">BBD</field>
+    <field name="name">Barbadian dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">20</field>
+    <field name="symbol">p.</field>
+    <field name="iso3">BYR</field>
+    <field name="name">Belarusian ruble</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">21</field>
+    <field name="symbol">BZ$</field>
+    <field name="iso3">BZD</field>
+    <field name="name">Belize dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">22</field>
+    <field name="symbol">$</field>
+    <field name="iso3">BMD</field>
+    <field name="name">Bermudian dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">23</field>
+    <field name="symbol">BTN</field>
+    <field name="iso3">BTN</field>
+    <field name="name">Bhutanese ngultrum</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">24</field>
+    <field name="symbol">$b</field>
+    <field name="iso3">BOB</field>
+    <field name="name">Bolivian boliviano</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">25</field>
+    <field name="symbol">XBA</field>
+    <field name="iso3">XBA</field>
+    <field name="name">Bond Markets</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">26</field>
+    <field name="symbol">KM</field>
+    <field name="iso3">BAM</field>
+    <field name="name">Bosnia and Herzegovina convert</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="symbol">P</field>
+    <field name="iso3">BWP</field>
+    <field name="name">Botswana pula</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">28</field>
+    <field name="symbol">R$</field>
+    <field name="iso3">BRL</field>
+    <field name="name">Brazilian real</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">29</field>
+    <field name="symbol">$</field>
+    <field name="iso3">BND</field>
+    <field name="name">Brunei dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">30</field>
+    <field name="symbol">лв</field>
+    <field name="iso3">BGN</field>
+    <field name="name">Bulgarian lev</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">31</field>
+    <field name="symbol">Fr </field>
+    <field name="iso3">BIF</field>
+    <field name="name">Burundian franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">32</field>
+    <field name="symbol">៛</field>
+    <field name="iso3">KHR</field>
+    <field name="name">Cambodian riel</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">33</field>
+    <field name="symbol">$</field>
+    <field name="iso3">CVE</field>
+    <field name="name">Cape Verdean escudo</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">34</field>
+    <field name="symbol">$</field>
+    <field name="iso3">KYD</field>
+    <field name="name">Cayman Islands dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">35</field>
+    <field name="symbol">Fr </field>
+    <field name="iso3">XAF</field>
+    <field name="name">Central African CFA franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">36</field>
+    <field name="symbol">Fr </field>
+    <field name="iso3">XPF</field>
+    <field name="name">CFP franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">37</field>
+    <field name="symbol">$</field>
+    <field name="iso3">CLP</field>
+    <field name="name">Chilean peso</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">38</field>
+    <field name="symbol">元</field>
+    <field name="iso3">CNY</field>
+    <field name="name">Chinese renminbi yuan</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">39</field>
+    <field name="symbol">XTS</field>
+    <field name="iso3">XTS</field>
+    <field name="name">Codes specif</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">40</field>
+    <field name="symbol">$</field>
+    <field name="iso3">COP</field>
+    <field name="name">Colombian peso</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">41</field>
+    <field name="symbol">Fr </field>
+    <field name="iso3">KMF</field>
+    <field name="name">Comorian franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">42</field>
+    <field name="symbol">Fr </field>
+    <field name="iso3">CDF</field>
+    <field name="name">Congolese franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">43</field>
+    <field name="symbol">₡</field>
+    <field name="iso3">CRC</field>
+    <field name="name">Costa Rican colón</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">44</field>
+    <field name="symbol">kn</field>
+    <field name="iso3">HRK</field>
+    <field name="name">Croatian kuna</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">45</field>
+    <field name="symbol">₱</field>
+    <field name="iso3">CUP</field>
+    <field name="name">Cuban peso</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">46</field>
+    <field name="symbol">Kč</field>
+    <field name="iso3">CZK</field>
+    <field name="name">Czech koruna</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">47</field>
+    <field name="symbol">kr</field>
+    <field name="iso3">DKK</field>
+    <field name="name">Danish krone</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">48</field>
+    <field name="symbol">Fr </field>
+    <field name="iso3">DJF</field>
+    <field name="name">Djiboutian franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">49</field>
+    <field name="symbol">RD$</field>
+    <field name="iso3">DOP</field>
+    <field name="name">Dominican peso</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">50</field>
+    <field name="symbol">$</field>
+    <field name="iso3">XCD</field>
+    <field name="name">East Caribbean dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">51</field>
+    <field name="symbol">£</field>
+    <field name="iso3">EGP</field>
+    <field name="name">Egyptian pound</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">52</field>
+    <field name="symbol">Nfk </field>
+    <field name="iso3">ERN</field>
+    <field name="name">Eritrean nakfa</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">53</field>
+    <field name="symbol">kr</field>
+    <field name="iso3">EEK</field>
+    <field name="name">Estonian kroon</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">54</field>
+    <field name="symbol">ETB</field>
+    <field name="iso3">ETB</field>
+    <field name="name">Ethiopian birr</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">55</field>
+    <field name="symbol">XBB</field>
+    <field name="iso3">XBB</field>
+    <field name="name">European Mon</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">56</field>
+    <field name="symbol">XBD</field>
+    <field name="iso3">XBD</field>
+    <field name="name">European Uni</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">57</field>
+    <field name="symbol">XBC</field>
+    <field name="iso3">XBC</field>
+    <field name="name">European Uni</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">58</field>
+    <field name="symbol">£</field>
+    <field name="iso3">FKP</field>
+    <field name="name">Falkland pound</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">59</field>
+    <field name="symbol">$</field>
+    <field name="iso3">FJD</field>
+    <field name="name">Fijian dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">60</field>
+    <field name="symbol">D </field>
+    <field name="iso3">GMD</field>
+    <field name="name">Gambian dalasi</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">61</field>
+    <field name="symbol">ლ</field>
+    <field name="iso3">GEL</field>
+    <field name="name">Georgian lari</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">62</field>
+    <field name="symbol">₵</field>
+    <field name="iso3">GHS</field>
+    <field name="name">Ghanaian cedi</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">63</field>
+    <field name="symbol">£</field>
+    <field name="iso3">GIP</field>
+    <field name="name">Gibraltar pound</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">64</field>
+    <field name="symbol">Gold</field>
+    <field name="iso3">XAU</field>
+    <field name="name">Gold</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">65</field>
+    <field name="symbol">Q</field>
+    <field name="iso3">GTQ</field>
+    <field name="name">Guatemalan quetzal</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">66</field>
+    <field name="symbol">GWP</field>
+    <field name="iso3">GWP</field>
+    <field name="name">Guinea-Bissa</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">67</field>
+    <field name="symbol">Fr </field>
+    <field name="iso3">GNF</field>
+    <field name="name">Guinean franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">68</field>
+    <field name="symbol">$</field>
+    <field name="iso3">GYD</field>
+    <field name="name">Guyanese dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">69</field>
+    <field name="symbol">G </field>
+    <field name="iso3">HTG</field>
+    <field name="name">Haitian gourde</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">70</field>
+    <field name="symbol">L</field>
+    <field name="iso3">HNL</field>
+    <field name="name">Honduran lempira</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">71</field>
+    <field name="symbol">元</field>
+    <field name="iso3">HKD</field>
+    <field name="name">Hong Kong dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">72</field>
+    <field name="symbol">Ft</field>
+    <field name="iso3">HUF</field>
+    <field name="name">Hungarian forint</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">73</field>
+    <field name="symbol">kr</field>
+    <field name="iso3">ISK</field>
+    <field name="name">Icelandic króna</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">74</field>
+    <field name="symbol">₨</field>
+    <field name="iso3">INR</field>
+    <field name="name">Indian rupee</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">75</field>
+    <field name="symbol">Rp</field>
+    <field name="iso3">IDR</field>
+    <field name="name">Indonesian rupiah</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">76</field>
+    <field name="symbol">﷼</field>
+    <field name="iso3">IRR</field>
+    <field name="name">Iranian rial</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">77</field>
+    <field name="symbol">ع.د</field>
+    <field name="iso3">IQD</field>
+    <field name="name">Iraqi dinar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">78</field>
+    <field name="symbol">₪</field>
+    <field name="iso3">ILS</field>
+    <field name="name">Israeli new sheqel</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">79</field>
+    <field name="symbol">J$</field>
+    <field name="iso3">JMD</field>
+    <field name="name">Jamaican dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">80</field>
+    <field name="symbol">د.ا</field>
+    <field name="iso3">JOD</field>
+    <field name="name">Jordanian dinar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">81</field>
+    <field name="symbol">лв</field>
+    <field name="iso3">KZT</field>
+    <field name="name">Kazakhstani tenge</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">82</field>
+    <field name="symbol">Sh </field>
+    <field name="iso3">KES</field>
+    <field name="name">Kenyan shilling</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">83</field>
+    <field name="symbol">د.ك</field>
+    <field name="iso3">KWD</field>
+    <field name="name">Kuwaiti dinar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">84</field>
+    <field name="symbol">лв</field>
+    <field name="iso3">KGS</field>
+    <field name="name">Kyrgyzstani som</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">85</field>
+    <field name="symbol">₭</field>
+    <field name="iso3">LAK</field>
+    <field name="name">Lao kip</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">86</field>
+    <field name="symbol">Ls</field>
+    <field name="iso3">LVL</field>
+    <field name="name">Latvian lats</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">87</field>
+    <field name="symbol">£</field>
+    <field name="iso3">LBP</field>
+    <field name="name">Lebanese pound</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">88</field>
+    <field name="symbol">L </field>
+    <field name="iso3">LSL</field>
+    <field name="name">Lesotho loti</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">89</field>
+    <field name="symbol">$</field>
+    <field name="iso3">LRD</field>
+    <field name="name">Liberian dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">90</field>
+    <field name="symbol">ل.د</field>
+    <field name="iso3">LYD</field>
+    <field name="name">Libyan dinar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">91</field>
+    <field name="symbol">Lt</field>
+    <field name="iso3">LTL</field>
+    <field name="name">Lithuanian litas</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">92</field>
+    <field name="symbol">P </field>
+    <field name="iso3">MOP</field>
+    <field name="name">Macanese pataca</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">93</field>
+    <field name="symbol">ден</field>
+    <field name="iso3">MKD</field>
+    <field name="name">Macedonian denar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">94</field>
+    <field name="symbol">MGA</field>
+    <field name="iso3">MGA</field>
+    <field name="name">Malagasy ariary</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">95</field>
+    <field name="symbol">MK </field>
+    <field name="iso3">MWK</field>
+    <field name="name">Malawian kwacha</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">96</field>
+    <field name="symbol">RM</field>
+    <field name="iso3">MYR</field>
+    <field name="name">Malaysian ringgit</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">97</field>
+    <field name="symbol">ރ.</field>
+    <field name="iso3">MVR</field>
+    <field name="name">Maldivian rufiyaa</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">98</field>
+    <field name="symbol">UM </field>
+    <field name="iso3">MRO</field>
+    <field name="name">Mauritanian ouguiya</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">99</field>
+    <field name="symbol">₨</field>
+    <field name="iso3">MUR</field>
+    <field name="name">Mauritian rupee</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">100</field>
+    <field name="symbol">$</field>
+    <field name="iso3">MXN</field>
+    <field name="name">Mexican peso</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">101</field>
+    <field name="symbol">MXV</field>
+    <field name="iso3">MXV</field>
+    <field name="name">Mexican Unid</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">102</field>
+    <field name="symbol">L </field>
+    <field name="iso3">MDL</field>
+    <field name="name">Moldovan leu</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">103</field>
+    <field name="symbol">₮</field>
+    <field name="iso3">MNT</field>
+    <field name="name">Mongolian tögrög</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">104</field>
+    <field name="symbol">د.م.</field>
+    <field name="iso3">MAD</field>
+    <field name="name">Moroccan dirham</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">105</field>
+    <field name="symbol">MT</field>
+    <field name="iso3">MZN</field>
+    <field name="name">Mozambican metical</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">106</field>
+    <field name="symbol">BOV</field>
+    <field name="iso3">BOV</field>
+    <field name="name">Mvdol</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">107</field>
+    <field name="symbol">K </field>
+    <field name="iso3">MMK</field>
+    <field name="name">Myanmar kyat</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">108</field>
+    <field name="symbol">$</field>
+    <field name="iso3">NAD</field>
+    <field name="name">Namibian dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">109</field>
+    <field name="symbol">₨</field>
+    <field name="iso3">NPR</field>
+    <field name="name">Nepalese rupee</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">110</field>
+    <field name="symbol">ƒ</field>
+    <field name="iso3">ANG</field>
+    <field name="name">Netherlands Antillean gulden</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">111</field>
+    <field name="symbol">NT$</field>
+    <field name="iso3">TWD</field>
+    <field name="name">New Taiwan dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">112</field>
+    <field name="symbol">C$</field>
+    <field name="iso3">NIO</field>
+    <field name="name">Nicaraguan córdoba</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">113</field>
+    <field name="symbol">₦</field>
+    <field name="iso3">NGN</field>
+    <field name="name">Nigerian naira</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">114</field>
+    <field name="symbol">₩</field>
+    <field name="iso3">KPW</field>
+    <field name="name">North Korean won</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">115</field>
+    <field name="symbol">kr</field>
+    <field name="iso3">NOK</field>
+    <field name="name">Norwegian krone</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">116</field>
+    <field name="symbol">﷼</field>
+    <field name="iso3">OMR</field>
+    <field name="name">Omani rial</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">117</field>
+    <field name="symbol">₨</field>
+    <field name="iso3">PKR</field>
+    <field name="name">Pakistani rupee</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">118</field>
+    <field name="symbol">XPD</field>
+    <field name="iso3">XPD</field>
+    <field name="name">Palladium</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">119</field>
+    <field name="symbol">B/.</field>
+    <field name="iso3">PAB</field>
+    <field name="name">Panamanian balboa</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">120</field>
+    <field name="symbol">K </field>
+    <field name="iso3">PGK</field>
+    <field name="name">Papua New Guinean kina</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">121</field>
+    <field name="symbol">₲</field>
+    <field name="iso3">PYG</field>
+    <field name="name">Paraguayan guaraní</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">122</field>
+    <field name="symbol">S/.</field>
+    <field name="iso3">PEN</field>
+    <field name="name">Peruvian nuevo sol</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">123</field>
+    <field name="symbol">₱</field>
+    <field name="iso3">PHP</field>
+    <field name="name">Philippine peso</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">124</field>
+    <field name="symbol">XPT</field>
+    <field name="iso3">XPT</field>
+    <field name="name">Platinum</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">125</field>
+    <field name="symbol">zł</field>
+    <field name="iso3">PLN</field>
+    <field name="name">Polish Złoty</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">126</field>
+    <field name="symbol">﷼</field>
+    <field name="iso3">QAR</field>
+    <field name="name">Qatari riyal</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">127</field>
+    <field name="symbol">lei</field>
+    <field name="iso3">RON</field>
+    <field name="name">Romanian leu</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">128</field>
+    <field name="symbol">руб</field>
+    <field name="iso3">RUB</field>
+    <field name="name">Russian ruble</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">129</field>
+    <field name="symbol">Fr </field>
+    <field name="iso3">RWF</field>
+    <field name="name">Rwandan franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">130</field>
+    <field name="symbol">£</field>
+    <field name="iso3">SHP</field>
+    <field name="name">Saint Helenian pound</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">131</field>
+    <field name="symbol">$</field>
+    <field name="iso3">SVC</field>
+    <field name="name">Salvadoran colón</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">132</field>
+    <field name="symbol">T </field>
+    <field name="iso3">WST</field>
+    <field name="name">Samoan tala</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">133</field>
+    <field name="symbol">Db </field>
+    <field name="iso3">STD</field>
+    <field name="name">São Tomé and Príncipe dobra</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">134</field>
+    <field name="symbol">﷼</field>
+    <field name="iso3">SAR</field>
+    <field name="name">Saudi riyal</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">135</field>
+    <field name="symbol">XDR</field>
+    <field name="iso3">XDR</field>
+    <field name="name">SDR</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">136</field>
+    <field name="symbol">Дин.</field>
+    <field name="iso3">RSD</field>
+    <field name="name">Serbian dinar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">137</field>
+    <field name="symbol">₨</field>
+    <field name="iso3">SCR</field>
+    <field name="name">Seychellois rupee</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">138</field>
+    <field name="symbol">Le </field>
+    <field name="iso3">SLL</field>
+    <field name="name">Sierra Leonean leone</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">139</field>
+    <field name="symbol">XAG</field>
+    <field name="iso3">XAG</field>
+    <field name="name">Silver</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">140</field>
+    <field name="symbol">$</field>
+    <field name="iso3">SGD</field>
+    <field name="name">Singapore dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">141</field>
+    <field name="symbol">Sk </field>
+    <field name="iso3">SKK</field>
+    <field name="name">Slovak koruna</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">142</field>
+    <field name="symbol">$</field>
+    <field name="iso3">SBD</field>
+    <field name="name">Solomon Islands dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">143</field>
+    <field name="symbol">S</field>
+    <field name="iso3">SOS</field>
+    <field name="name">Somali shilling</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">144</field>
+    <field name="symbol">R</field>
+    <field name="iso3">ZAR</field>
+    <field name="name">South African rand</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">145</field>
+    <field name="symbol">₩</field>
+    <field name="iso3">KRW</field>
+    <field name="name">South Korean won</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">146</field>
+    <field name="symbol">₨</field>
+    <field name="iso3">LKR</field>
+    <field name="name">Sri Lankan rupee</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">147</field>
+    <field name="symbol">£ </field>
+    <field name="iso3">SDG</field>
+    <field name="name">Sudanese pound</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">148</field>
+    <field name="symbol">$</field>
+    <field name="iso3">SRD</field>
+    <field name="name">Surinamese dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">149</field>
+    <field name="symbol">L </field>
+    <field name="iso3">SZL</field>
+    <field name="name">Swazi lilangeni</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">150</field>
+    <field name="symbol">kr</field>
+    <field name="iso3">SEK</field>
+    <field name="name">Swedish krona</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">151</field>
+    <field name="symbol">CHF</field>
+    <field name="iso3">CHF</field>
+    <field name="name">Swiss franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">152</field>
+    <field name="symbol">£</field>
+    <field name="iso3">SYP</field>
+    <field name="name">Syrian pound</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">153</field>
+    <field name="symbol">ЅМ</field>
+    <field name="iso3">TJS</field>
+    <field name="name">Tajikistani somoni</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">154</field>
+    <field name="symbol">Sh </field>
+    <field name="iso3">TZS</field>
+    <field name="name">Tanzanian shilling</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">155</field>
+    <field name="symbol">฿</field>
+    <field name="iso3">THB</field>
+    <field name="name">Thai baht</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">156</field>
+    <field name="symbol">XXX</field>
+    <field name="iso3">XXX</field>
+    <field name="name">The codes as</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">157</field>
+    <field name="symbol">T$ </field>
+    <field name="iso3">TOP</field>
+    <field name="name">Tongan paʻanga</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">158</field>
+    <field name="symbol">TT$</field>
+    <field name="iso3">TTD</field>
+    <field name="name">Trinidad and Tobago dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">159</field>
+    <field name="symbol">د.ت</field>
+    <field name="iso3">TND</field>
+    <field name="name">Tunisian dinar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">160</field>
+    <field name="symbol">YTL</field>
+    <field name="iso3">TRY</field>
+    <field name="name">Turkish new lira</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">161</field>
+    <field name="symbol">m </field>
+    <field name="iso3">TMM</field>
+    <field name="name">Turkmenistani manat</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">162</field>
+    <field name="symbol">Sh </field>
+    <field name="iso3">UGX</field>
+    <field name="name">Ugandan shilling</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">163</field>
+    <field name="symbol">XFU</field>
+    <field name="iso3">XFU</field>
+    <field name="name">UIC-Franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">164</field>
+    <field name="symbol">₴</field>
+    <field name="iso3">UAH</field>
+    <field name="name">Ukrainian hryvnia</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">165</field>
+    <field name="symbol">COU</field>
+    <field name="iso3">COU</field>
+    <field name="name">Unidad de Va</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">166</field>
+    <field name="symbol">CLF</field>
+    <field name="iso3">CLF</field>
+    <field name="name">Unidades de </field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">167</field>
+    <field name="symbol">د.إ</field>
+    <field name="iso3">AED</field>
+    <field name="name">United Arab Emirates dirham</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">168</field>
+    <field name="symbol">UYI</field>
+    <field name="iso3">UYI</field>
+    <field name="name">Uruguay Peso</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">169</field>
+    <field name="symbol">$</field>
+    <field name="iso3">UYU</field>
+    <field name="name">Uruguayan peso</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">170</field>
+    <field name="symbol">$</field>
+    <field name="iso3">USN</field>
+    <field name="name">US Dollar (Next Day)</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">171</field>
+    <field name="symbol">$</field>
+    <field name="iso3">USS</field>
+    <field name="name">US Dollar (Second Day)</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">172</field>
+    <field name="symbol">лв</field>
+    <field name="iso3">UZS</field>
+    <field name="name">Uzbekistani som</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">173</field>
+    <field name="symbol">Vt </field>
+    <field name="iso3">VUV</field>
+    <field name="name">Vanuatu vatu</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">174</field>
+    <field name="symbol">Bs</field>
+    <field name="iso3">VEF</field>
+    <field name="name">Venezuelan bolívar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">175</field>
+    <field name="symbol">₫</field>
+    <field name="iso3">VND</field>
+    <field name="name">Vietnamese Dong</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">176</field>
+    <field name="symbol">Fr </field>
+    <field name="iso3">XOF</field>
+    <field name="name">West African CFA franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">177</field>
+    <field name="symbol">€</field>
+    <field name="iso3">CHE</field>
+    <field name="name">WIR Euro</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">178</field>
+    <field name="symbol">CHW</field>
+    <field name="iso3">CHW</field>
+    <field name="name">WIR Franc</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">179</field>
+    <field name="symbol">﷼</field>
+    <field name="iso3">YER</field>
+    <field name="name">Yemeni rial</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">180</field>
+    <field name="symbol">ZK </field>
+    <field name="iso3">ZMK</field>
+    <field name="name">Zambian kwacha</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">181</field>
+    <field name="symbol">Z$</field>
+    <field name="iso3">ZWD</field>
+    <field name="name">Zimbabwean dollar</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">182</field>
+    <field name="symbol">p.</field>
+    <field name="iso3">BYN</field>
+    <field name="name">Belarusian ruble</field>
+    <field name="published">0</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -136,7 +136,7 @@
     <field name="metakey"></field>
     <field name="metadesc"></field>
     <field name="access">1</field>
-    <field name="hits">19</field>
+    <field name="hits">21</field>
     <field name="metadata">{&quot;robots&quot;:&quot;&quot;,&quot;author&quot;:&quot;&quot;,&quot;rights&quot;:&quot;&quot;}</field>
     <field name="featured">0</field>
     <field name="language">*</field>

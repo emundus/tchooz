@@ -9660,13 +9660,13 @@ return $current_user-&gt;campaign_id;</field>
     <field name="group_id">797</field>
     <field name="plugin">field</field>
     <field name="label">FIRST_NAME</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2023-09-20 15:27:20</field>
     <field name="created">2019-03-27 08:50:15</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">sysadmin_demo</field>
-    <field name="modified">2019-03-27 09:08:12</field>
-    <field name="modified_by">62</field>
+    <field name="modified">2023-09-20 15:27:20</field>
+    <field name="modified_by">1</field>
     <field name="width">30</field>
     <field name="height">6</field>
     <field name="default"></field>
@@ -9703,7 +9703,7 @@ return $current_user-&gt;campaign_id;</field>
     <field name="default"></field>
     <field name="hidden">0</field>
     <field name="eval">0</field>
-    <field name="ordering">5</field>
+    <field name="ordering">1</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">1</field>
@@ -10133,7 +10133,7 @@ return $cid;</field>
     <field name="plugin">radiobutton</field>
     <field name="label">CIVILITY</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2019-05-02 15:18:35</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>

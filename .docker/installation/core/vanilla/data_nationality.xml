@@ -1,0 +1,1033 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="data_nationality">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="label_fr" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="label_en" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <key Table="data_nationality" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="data_nationality">
+   <row>
+    <field name="id">1</field>
+    <field name="label_fr">Afghane</field>
+    <field name="label_en">Afghan</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="label_fr">Albanaise</field>
+    <field name="label_en">Albanian</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="label_fr">Algérienne</field>
+    <field name="label_en">Algerian</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="label_fr">Allemande</field>
+    <field name="label_en">German</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="label_fr">Americaine</field>
+    <field name="label_en">American</field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="label_fr">Andorrane</field>
+    <field name="label_en">Andorran</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="label_fr">Angolaise</field>
+    <field name="label_en">Angolan</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="label_fr">Antiguaise-Et-Barbudienne</field>
+    <field name="label_en">Antiguan</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="label_fr">Argentine</field>
+    <field name="label_en">Argentinian</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="label_fr">Armenienne</field>
+    <field name="label_en">Armenian</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="label_fr">Australienne</field>
+    <field name="label_en">Australian</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="label_fr">Autrichienne</field>
+    <field name="label_en">Austrian</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="label_fr">Azerbaïdjanaise</field>
+    <field name="label_en">Azerbaijani</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="label_fr">Bahamienne</field>
+    <field name="label_en">Bahamian</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="label_fr">Bahreinienne</field>
+    <field name="label_en">Bahraini</field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="label_fr">Bangladaise</field>
+    <field name="label_en">Bangladeshi</field>
+   </row>
+   <row>
+    <field name="id">17</field>
+    <field name="label_fr">Barbadienne</field>
+    <field name="label_en">Barbadian</field>
+   </row>
+   <row>
+    <field name="id">18</field>
+    <field name="label_fr">Belge</field>
+    <field name="label_en">Belgian</field>
+   </row>
+   <row>
+    <field name="id">19</field>
+    <field name="label_fr">Belizienne</field>
+    <field name="label_en">Belizean</field>
+   </row>
+   <row>
+    <field name="id">20</field>
+    <field name="label_fr">Béninoise</field>
+    <field name="label_en">Beninese</field>
+   </row>
+   <row>
+    <field name="id">21</field>
+    <field name="label_fr">Bhoutanaise</field>
+    <field name="label_en">Bhutanese</field>
+   </row>
+   <row>
+    <field name="id">22</field>
+    <field name="label_fr">Biélorusse</field>
+    <field name="label_en">Belarussian</field>
+   </row>
+   <row>
+    <field name="id">23</field>
+    <field name="label_fr">Birmane</field>
+    <field name="label_en">Burmese</field>
+   </row>
+   <row>
+    <field name="id">24</field>
+    <field name="label_fr">Bissau-Guinéenne</field>
+    <field name="label_en">Bissau-Guinean</field>
+   </row>
+   <row>
+    <field name="id">25</field>
+    <field name="label_fr">Bolivienne</field>
+    <field name="label_en">Bolivian</field>
+   </row>
+   <row>
+    <field name="id">26</field>
+    <field name="label_fr">Bosnienne</field>
+    <field name="label_en">Bosnian</field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="label_fr">Botswanaise</field>
+    <field name="label_en">Botswanan</field>
+   </row>
+   <row>
+    <field name="id">28</field>
+    <field name="label_fr">Brésilienne</field>
+    <field name="label_en">Brazilian</field>
+   </row>
+   <row>
+    <field name="id">29</field>
+    <field name="label_fr">Britannique</field>
+    <field name="label_en">British</field>
+   </row>
+   <row>
+    <field name="id">30</field>
+    <field name="label_fr">Brunéienne</field>
+    <field name="label_en">Bruneian</field>
+   </row>
+   <row>
+    <field name="id">31</field>
+    <field name="label_fr">Bulgare</field>
+    <field name="label_en">Bulgarian</field>
+   </row>
+   <row>
+    <field name="id">32</field>
+    <field name="label_fr">Burkinabée</field>
+    <field name="label_en">Burkinabe</field>
+   </row>
+   <row>
+    <field name="id">33</field>
+    <field name="label_fr">Burundaise</field>
+    <field name="label_en">Burundian</field>
+   </row>
+   <row>
+    <field name="id">34</field>
+    <field name="label_fr">Cambodgienne</field>
+    <field name="label_en">Cambodian</field>
+   </row>
+   <row>
+    <field name="id">35</field>
+    <field name="label_fr">Camerounaise</field>
+    <field name="label_en">Cameroonian</field>
+   </row>
+   <row>
+    <field name="id">36</field>
+    <field name="label_fr">Canadienne</field>
+    <field name="label_en">Canadian</field>
+   </row>
+   <row>
+    <field name="id">37</field>
+    <field name="label_fr">Cap-Verdienne</field>
+    <field name="label_en">Cape Verdean</field>
+   </row>
+   <row>
+    <field name="id">38</field>
+    <field name="label_fr">Centrafricaine</field>
+    <field name="label_en">Central African</field>
+   </row>
+   <row>
+    <field name="id">39</field>
+    <field name="label_fr">Chilienne</field>
+    <field name="label_en">Chilean</field>
+   </row>
+   <row>
+    <field name="id">40</field>
+    <field name="label_fr">Chinoise</field>
+    <field name="label_en">Chinese</field>
+   </row>
+   <row>
+    <field name="id">41</field>
+    <field name="label_fr">Chypriote</field>
+    <field name="label_en">Cypriot</field>
+   </row>
+   <row>
+    <field name="id">42</field>
+    <field name="label_fr">Colombienne</field>
+    <field name="label_en">Colombian</field>
+   </row>
+   <row>
+    <field name="id">43</field>
+    <field name="label_fr">Comorienne</field>
+    <field name="label_en">Comorian</field>
+   </row>
+   <row>
+    <field name="id">44</field>
+    <field name="label_fr">Congolaise</field>
+    <field name="label_en">Congolese</field>
+   </row>
+   <row>
+    <field name="id">45</field>
+    <field name="label_fr">Congolaise (Rdc)</field>
+    <field name="label_en">Congolese (Drc)</field>
+   </row>
+   <row>
+    <field name="id">46</field>
+    <field name="label_fr">Cookienne</field>
+    <field name="label_en">Cookian</field>
+   </row>
+   <row>
+    <field name="id">47</field>
+    <field name="label_fr">Costaricaine</field>
+    <field name="label_en">Costa Rican</field>
+   </row>
+   <row>
+    <field name="id">48</field>
+    <field name="label_fr">Croate</field>
+    <field name="label_en">Croatian</field>
+   </row>
+   <row>
+    <field name="id">49</field>
+    <field name="label_fr">Cubaine</field>
+    <field name="label_en">Cuban</field>
+   </row>
+   <row>
+    <field name="id">50</field>
+    <field name="label_fr">Danoise</field>
+    <field name="label_en">Danish</field>
+   </row>
+   <row>
+    <field name="id">51</field>
+    <field name="label_fr">Djiboutienne</field>
+    <field name="label_en">Djiboutian</field>
+   </row>
+   <row>
+    <field name="id">52</field>
+    <field name="label_fr">Dominicaine</field>
+    <field name="label_en">Dominican</field>
+   </row>
+   <row>
+    <field name="id">53</field>
+    <field name="label_fr">Dominiquaise</field>
+    <field name="label_en">Dominiquais</field>
+   </row>
+   <row>
+    <field name="id">54</field>
+    <field name="label_fr">Égyptienne</field>
+    <field name="label_en">Egyptian</field>
+   </row>
+   <row>
+    <field name="id">55</field>
+    <field name="label_fr">Émirienne</field>
+    <field name="label_en">Emirati</field>
+   </row>
+   <row>
+    <field name="id">56</field>
+    <field name="label_fr">Équato-Guineenne</field>
+    <field name="label_en">Equatorial Guinean</field>
+   </row>
+   <row>
+    <field name="id">57</field>
+    <field name="label_fr">Équatorienne</field>
+    <field name="label_en">Ecuadorian</field>
+   </row>
+   <row>
+    <field name="id">58</field>
+    <field name="label_fr">Érythréenne</field>
+    <field name="label_en">Etritrean</field>
+   </row>
+   <row>
+    <field name="id">59</field>
+    <field name="label_fr">Espagnole</field>
+    <field name="label_en">Spanish</field>
+   </row>
+   <row>
+    <field name="id">60</field>
+    <field name="label_fr">Est-Timoraise</field>
+    <field name="label_en">East Timorese</field>
+   </row>
+   <row>
+    <field name="id">61</field>
+    <field name="label_fr">Estonienne</field>
+    <field name="label_en">Estonian</field>
+   </row>
+   <row>
+    <field name="id">62</field>
+    <field name="label_fr">Éthiopienne</field>
+    <field name="label_en">Ethiopian</field>
+   </row>
+   <row>
+    <field name="id">63</field>
+    <field name="label_fr">Fidjienne</field>
+    <field name="label_en">Fidji</field>
+   </row>
+   <row>
+    <field name="id">64</field>
+    <field name="label_fr">Finlandaise</field>
+    <field name="label_en">Finnish</field>
+   </row>
+   <row>
+    <field name="id">65</field>
+    <field name="label_fr">Française</field>
+    <field name="label_en">French</field>
+   </row>
+   <row>
+    <field name="id">66</field>
+    <field name="label_fr">Gabonaise</field>
+    <field name="label_en">Gabonese</field>
+   </row>
+   <row>
+    <field name="id">67</field>
+    <field name="label_fr">Gambienne</field>
+    <field name="label_en">Gambian</field>
+   </row>
+   <row>
+    <field name="id">68</field>
+    <field name="label_fr">Georgienne</field>
+    <field name="label_en">Georgian</field>
+   </row>
+   <row>
+    <field name="id">69</field>
+    <field name="label_fr">Ghanéenne</field>
+    <field name="label_en">Ghanaian</field>
+   </row>
+   <row>
+    <field name="id">70</field>
+    <field name="label_fr">Gibraltarienne</field>
+    <field name="label_en">Gibraltarian</field>
+   </row>
+   <row>
+    <field name="id">71</field>
+    <field name="label_fr">Grecque</field>
+    <field name="label_en">Greek</field>
+   </row>
+   <row>
+    <field name="id">72</field>
+    <field name="label_fr">Grenadienne</field>
+    <field name="label_en">Grenadin</field>
+   </row>
+   <row>
+    <field name="id">73</field>
+    <field name="label_fr">Groenlandaise</field>
+    <field name="label_en">Greenlandic</field>
+   </row>
+   <row>
+    <field name="id">74</field>
+    <field name="label_fr">Guatémaltèque</field>
+    <field name="label_en">Guatemalan</field>
+   </row>
+   <row>
+    <field name="id">75</field>
+    <field name="label_fr">Guinéenne</field>
+    <field name="label_en">Guinean</field>
+   </row>
+   <row>
+    <field name="id">76</field>
+    <field name="label_fr">Guyanienne</field>
+    <field name="label_en">Guyanese</field>
+   </row>
+   <row>
+    <field name="id">77</field>
+    <field name="label_fr">Haïtienne</field>
+    <field name="label_en">Haitian</field>
+   </row>
+   <row>
+    <field name="id">78</field>
+    <field name="label_fr">Hondurienne</field>
+    <field name="label_en">Honduran</field>
+   </row>
+   <row>
+    <field name="id">79</field>
+    <field name="label_fr">Hongroise</field>
+    <field name="label_en">Hungarian</field>
+   </row>
+   <row>
+    <field name="id">80</field>
+    <field name="label_fr">Indienne</field>
+    <field name="label_en">Indian</field>
+   </row>
+   <row>
+    <field name="id">81</field>
+    <field name="label_fr">Indonésienne</field>
+    <field name="label_en">Indonesia</field>
+   </row>
+   <row>
+    <field name="id">82</field>
+    <field name="label_fr">Irakienne</field>
+    <field name="label_en">Iraqi</field>
+   </row>
+   <row>
+    <field name="id">83</field>
+    <field name="label_fr">Iranienne</field>
+    <field name="label_en">Iranian</field>
+   </row>
+   <row>
+    <field name="id">84</field>
+    <field name="label_fr">Irlandaise</field>
+    <field name="label_en">Irish</field>
+   </row>
+   <row>
+    <field name="id">85</field>
+    <field name="label_fr">Irlandaise Du Nord</field>
+    <field name="label_en">Northern Irish</field>
+   </row>
+   <row>
+    <field name="id">86</field>
+    <field name="label_fr">Islandaise</field>
+    <field name="label_en">Icelandic</field>
+   </row>
+   <row>
+    <field name="id">87</field>
+    <field name="label_fr">Israélienne</field>
+    <field name="label_en">Israeli</field>
+   </row>
+   <row>
+    <field name="id">88</field>
+    <field name="label_fr">Italienne</field>
+    <field name="label_en">Italian</field>
+   </row>
+   <row>
+    <field name="id">89</field>
+    <field name="label_fr">Ivoirienne</field>
+    <field name="label_en">Ivorian</field>
+   </row>
+   <row>
+    <field name="id">90</field>
+    <field name="label_fr">Jamaïcaine</field>
+    <field name="label_en">Jamaican</field>
+   </row>
+   <row>
+    <field name="id">91</field>
+    <field name="label_fr">Japonaise</field>
+    <field name="label_en">Japanese</field>
+   </row>
+   <row>
+    <field name="id">92</field>
+    <field name="label_fr">Jordanienne</field>
+    <field name="label_en">Jordanian</field>
+   </row>
+   <row>
+    <field name="id">93</field>
+    <field name="label_fr">Kazakhstanaise</field>
+    <field name="label_en">Kazakh</field>
+   </row>
+   <row>
+    <field name="id">94</field>
+    <field name="label_fr">Kenyane</field>
+    <field name="label_en">Kenyan</field>
+   </row>
+   <row>
+    <field name="id">95</field>
+    <field name="label_fr">Kirghize</field>
+    <field name="label_en">Kyrgyzstani</field>
+   </row>
+   <row>
+    <field name="id">96</field>
+    <field name="label_fr">Kiribatienne</field>
+    <field name="label_en">Kiribati</field>
+   </row>
+   <row>
+    <field name="id">97</field>
+    <field name="label_fr">Kittitienne</field>
+    <field name="label_en">Kittitian</field>
+   </row>
+   <row>
+    <field name="id">98</field>
+    <field name="label_fr">Koweïtienne</field>
+    <field name="label_en">Kuwaiti</field>
+   </row>
+   <row>
+    <field name="id">99</field>
+    <field name="label_fr">Laotienne</field>
+    <field name="label_en">Laotian</field>
+   </row>
+   <row>
+    <field name="id">100</field>
+    <field name="label_fr">Lesothane</field>
+    <field name="label_en">Lesothane</field>
+   </row>
+   <row>
+    <field name="id">101</field>
+    <field name="label_fr">Lettone</field>
+    <field name="label_en">Latvian</field>
+   </row>
+   <row>
+    <field name="id">102</field>
+    <field name="label_fr">Libanaise</field>
+    <field name="label_en">Lebanese</field>
+   </row>
+   <row>
+    <field name="id">103</field>
+    <field name="label_fr">Libérienne</field>
+    <field name="label_en">Liberian</field>
+   </row>
+   <row>
+    <field name="id">104</field>
+    <field name="label_fr">Libyenne</field>
+    <field name="label_en">Libyan</field>
+   </row>
+   <row>
+    <field name="id">105</field>
+    <field name="label_fr">Liechtensteinoise</field>
+    <field name="label_en">Leichtenstein</field>
+   </row>
+   <row>
+    <field name="id">106</field>
+    <field name="label_fr">Lituanienne</field>
+    <field name="label_en">Lithuanian</field>
+   </row>
+   <row>
+    <field name="id">107</field>
+    <field name="label_fr">Luxembourgeoise</field>
+    <field name="label_en">Luxembourg</field>
+   </row>
+   <row>
+    <field name="id">108</field>
+    <field name="label_fr">Macanaise</field>
+    <field name="label_en">Macanese</field>
+   </row>
+   <row>
+    <field name="id">109</field>
+    <field name="label_fr">Macédonienne</field>
+    <field name="label_en">Macedonian</field>
+   </row>
+   <row>
+    <field name="id">110</field>
+    <field name="label_fr">Malaisienne</field>
+    <field name="label_en">Malaysian</field>
+   </row>
+   <row>
+    <field name="id">111</field>
+    <field name="label_fr">Malawienne</field>
+    <field name="label_en">Malawian</field>
+   </row>
+   <row>
+    <field name="id">112</field>
+    <field name="label_fr">Maldivienne</field>
+    <field name="label_en">Maldivian</field>
+   </row>
+   <row>
+    <field name="id">113</field>
+    <field name="label_fr">Malgache</field>
+    <field name="label_en">Malagasy</field>
+   </row>
+   <row>
+    <field name="id">114</field>
+    <field name="label_fr">Maliennes</field>
+    <field name="label_en">Malian</field>
+   </row>
+   <row>
+    <field name="id">115</field>
+    <field name="label_fr">Maltaise</field>
+    <field name="label_en">Maltese</field>
+   </row>
+   <row>
+    <field name="id">116</field>
+    <field name="label_fr">Marocaine</field>
+    <field name="label_en">Moroccan</field>
+   </row>
+   <row>
+    <field name="id">117</field>
+    <field name="label_fr">Marshallaise</field>
+    <field name="label_en">Marshallese</field>
+   </row>
+   <row>
+    <field name="id">118</field>
+    <field name="label_fr">Mauricienne</field>
+    <field name="label_en">Mauritian</field>
+   </row>
+   <row>
+    <field name="id">119</field>
+    <field name="label_fr">Mauritanienne</field>
+    <field name="label_en">Mauritanian</field>
+   </row>
+   <row>
+    <field name="id">120</field>
+    <field name="label_fr">Mexicaine</field>
+    <field name="label_en">Mexican</field>
+   </row>
+   <row>
+    <field name="id">121</field>
+    <field name="label_fr">Micronésienne</field>
+    <field name="label_en">Mikronesian</field>
+   </row>
+   <row>
+    <field name="id">122</field>
+    <field name="label_fr">Moldave</field>
+    <field name="label_en">Moldovan</field>
+   </row>
+   <row>
+    <field name="id">123</field>
+    <field name="label_fr">Monegasque</field>
+    <field name="label_en">Monegasque</field>
+   </row>
+   <row>
+    <field name="id">124</field>
+    <field name="label_fr">Mongole</field>
+    <field name="label_en">Mongolian</field>
+   </row>
+   <row>
+    <field name="id">125</field>
+    <field name="label_fr">Monténégrine</field>
+    <field name="label_en">Montenegrin</field>
+   </row>
+   <row>
+    <field name="id">126</field>
+    <field name="label_fr">Mozambicaine</field>
+    <field name="label_en">Mozambican</field>
+   </row>
+   <row>
+    <field name="id">127</field>
+    <field name="label_fr">Namibienne</field>
+    <field name="label_en">Namibian</field>
+   </row>
+   <row>
+    <field name="id">128</field>
+    <field name="label_fr">Nauruane</field>
+    <field name="label_en">Nauruan</field>
+   </row>
+   <row>
+    <field name="id">129</field>
+    <field name="label_fr">Néerlandaise</field>
+    <field name="label_en">Dutch</field>
+   </row>
+   <row>
+    <field name="id">130</field>
+    <field name="label_fr">Néo-Zélandaise</field>
+    <field name="label_en">New Zealand</field>
+   </row>
+   <row>
+    <field name="id">131</field>
+    <field name="label_fr">Népalaise</field>
+    <field name="label_en">Nepalese</field>
+   </row>
+   <row>
+    <field name="id">132</field>
+    <field name="label_fr">Nicaraguayenne</field>
+    <field name="label_en">Nicaraguan</field>
+   </row>
+   <row>
+    <field name="id">133</field>
+    <field name="label_fr">Nigériane</field>
+    <field name="label_en">Nigerian</field>
+   </row>
+   <row>
+    <field name="id">134</field>
+    <field name="label_fr">Nigérienne</field>
+    <field name="label_en">Nigerien</field>
+   </row>
+   <row>
+    <field name="id">135</field>
+    <field name="label_fr">Niuéenne</field>
+    <field name="label_en">Niuean</field>
+   </row>
+   <row>
+    <field name="id">136</field>
+    <field name="label_fr">Nord-Coréenne</field>
+    <field name="label_en">North Korean</field>
+   </row>
+   <row>
+    <field name="id">137</field>
+    <field name="label_fr">Norvégienne</field>
+    <field name="label_en">Norwegian</field>
+   </row>
+   <row>
+    <field name="id">138</field>
+    <field name="label_fr">Omanaise</field>
+    <field name="label_en">Omani</field>
+   </row>
+   <row>
+    <field name="id">139</field>
+    <field name="label_fr">Ougandaise</field>
+    <field name="label_en">Ugandan</field>
+   </row>
+   <row>
+    <field name="id">140</field>
+    <field name="label_fr">Ouzbéke</field>
+    <field name="label_en">Uzbek</field>
+   </row>
+   <row>
+    <field name="id">141</field>
+    <field name="label_fr">Pakistanaise</field>
+    <field name="label_en">Pakistani</field>
+   </row>
+   <row>
+    <field name="id">142</field>
+    <field name="label_fr">Palaosienne</field>
+    <field name="label_en">Palauan</field>
+   </row>
+   <row>
+    <field name="id">143</field>
+    <field name="label_fr">Palestinienne</field>
+    <field name="label_en">Palestinian</field>
+   </row>
+   <row>
+    <field name="id">144</field>
+    <field name="label_fr">Panaméenne</field>
+    <field name="label_en">Panamanian</field>
+   </row>
+   <row>
+    <field name="id">145</field>
+    <field name="label_fr">Papouane-Néo-Guinéenne</field>
+    <field name="label_en">Papua New Guinean</field>
+   </row>
+   <row>
+    <field name="id">146</field>
+    <field name="label_fr">Paraguayenne</field>
+    <field name="label_en">Paraguayan</field>
+   </row>
+   <row>
+    <field name="id">147</field>
+    <field name="label_fr">Péruvienne</field>
+    <field name="label_en">Peruvian</field>
+   </row>
+   <row>
+    <field name="id">148</field>
+    <field name="label_fr">Philippine</field>
+    <field name="label_en">Filipino</field>
+   </row>
+   <row>
+    <field name="id">149</field>
+    <field name="label_fr">Pitcairnaise</field>
+    <field name="label_en">Pitcairnese</field>
+   </row>
+   <row>
+    <field name="id">150</field>
+    <field name="label_fr">Polonaise</field>
+    <field name="label_en">Polish</field>
+   </row>
+   <row>
+    <field name="id">151</field>
+    <field name="label_fr">Portugaise</field>
+    <field name="label_en">Portugese</field>
+   </row>
+   <row>
+    <field name="id">152</field>
+    <field name="label_fr">Qatarienne</field>
+    <field name="label_en">Qatari</field>
+   </row>
+   <row>
+    <field name="id">153</field>
+    <field name="label_fr">Roumaine</field>
+    <field name="label_en">Romanian</field>
+   </row>
+   <row>
+    <field name="id">154</field>
+    <field name="label_fr">Russe</field>
+    <field name="label_en">Russian</field>
+   </row>
+   <row>
+    <field name="id">155</field>
+    <field name="label_fr">Rwandaise</field>
+    <field name="label_en">Rwandese</field>
+   </row>
+   <row>
+    <field name="id">156</field>
+    <field name="label_fr">Saint-Lucienne</field>
+    <field name="label_en">Saint Lucian</field>
+   </row>
+   <row>
+    <field name="id">157</field>
+    <field name="label_fr">Saint-Marinaise</field>
+    <field name="label_en">Sanmarinese</field>
+   </row>
+   <row>
+    <field name="id">158</field>
+    <field name="label_fr">Saint-Vincentaise</field>
+    <field name="label_en">Vincentian</field>
+   </row>
+   <row>
+    <field name="id">159</field>
+    <field name="label_fr">Salomonaise</field>
+    <field name="label_en">Solomon</field>
+   </row>
+   <row>
+    <field name="id">160</field>
+    <field name="label_fr">Salvadorienne</field>
+    <field name="label_en">Salvadorean</field>
+   </row>
+   <row>
+    <field name="id">161</field>
+    <field name="label_fr">Samoane</field>
+    <field name="label_en">Samoan</field>
+   </row>
+   <row>
+    <field name="id">162</field>
+    <field name="label_fr">Santoméenne</field>
+    <field name="label_en">Santomean</field>
+   </row>
+   <row>
+    <field name="id">163</field>
+    <field name="label_fr">Saoudienne</field>
+    <field name="label_en">Saudi Arabian</field>
+   </row>
+   <row>
+    <field name="id">164</field>
+    <field name="label_fr">Sénégalaise</field>
+    <field name="label_en">Senegalese</field>
+   </row>
+   <row>
+    <field name="id">165</field>
+    <field name="label_fr">Serbe</field>
+    <field name="label_en">Serbian</field>
+   </row>
+   <row>
+    <field name="id">166</field>
+    <field name="label_fr">Seychelloise</field>
+    <field name="label_en">Seychellois</field>
+   </row>
+   <row>
+    <field name="id">167</field>
+    <field name="label_fr">Sierra-Léonaise</field>
+    <field name="label_en">Sierra Leonese</field>
+   </row>
+   <row>
+    <field name="id">168</field>
+    <field name="label_fr">Singapourienne</field>
+    <field name="label_en">Singaporean</field>
+   </row>
+   <row>
+    <field name="id">169</field>
+    <field name="label_fr">Slovaque</field>
+    <field name="label_en">Slovakian</field>
+   </row>
+   <row>
+    <field name="id">170</field>
+    <field name="label_fr">Slovène</field>
+    <field name="label_en">Slovenian</field>
+   </row>
+   <row>
+    <field name="id">171</field>
+    <field name="label_fr">Somalienne</field>
+    <field name="label_en">Somalian</field>
+   </row>
+   <row>
+    <field name="id">172</field>
+    <field name="label_fr">Soudanaise</field>
+    <field name="label_en">Sudanese</field>
+   </row>
+   <row>
+    <field name="id">173</field>
+    <field name="label_fr">Sri-Lankaise</field>
+    <field name="label_en">Sri Lankan</field>
+   </row>
+   <row>
+    <field name="id">174</field>
+    <field name="label_fr">Sud-Africaine</field>
+    <field name="label_en">South African</field>
+   </row>
+   <row>
+    <field name="id">175</field>
+    <field name="label_fr">Sud-Coréenne</field>
+    <field name="label_en">South Korean</field>
+   </row>
+   <row>
+    <field name="id">176</field>
+    <field name="label_fr">Sud-Soudanaise</field>
+    <field name="label_en">South Sudanese</field>
+   </row>
+   <row>
+    <field name="id">177</field>
+    <field name="label_fr">Suédoise</field>
+    <field name="label_en">Swedish</field>
+   </row>
+   <row>
+    <field name="id">178</field>
+    <field name="label_fr">Suisse</field>
+    <field name="label_en">Swiss</field>
+   </row>
+   <row>
+    <field name="id">179</field>
+    <field name="label_fr">Surinamaise</field>
+    <field name="label_en">Surinamese</field>
+   </row>
+   <row>
+    <field name="id">180</field>
+    <field name="label_fr">Swazie</field>
+    <field name="label_en">Swasi</field>
+   </row>
+   <row>
+    <field name="id">181</field>
+    <field name="label_fr">Syrienne</field>
+    <field name="label_en">Syrian</field>
+   </row>
+   <row>
+    <field name="id">182</field>
+    <field name="label_fr">Tadjike</field>
+    <field name="label_en">Tajik</field>
+   </row>
+   <row>
+    <field name="id">183</field>
+    <field name="label_fr">Taïwanaise</field>
+    <field name="label_en">Taiwanese</field>
+   </row>
+   <row>
+    <field name="id">184</field>
+    <field name="label_fr">Tanzanienne</field>
+    <field name="label_en">Tanzanian</field>
+   </row>
+   <row>
+    <field name="id">185</field>
+    <field name="label_fr">Tchadienne</field>
+    <field name="label_en">Chadian</field>
+   </row>
+   <row>
+    <field name="id">186</field>
+    <field name="label_fr">Tchèque</field>
+    <field name="label_en">Czech</field>
+   </row>
+   <row>
+    <field name="id">187</field>
+    <field name="label_fr">Thaïlandaise</field>
+    <field name="label_en">Thai</field>
+   </row>
+   <row>
+    <field name="id">188</field>
+    <field name="label_fr">Togolaise</field>
+    <field name="label_en">Togolese</field>
+   </row>
+   <row>
+    <field name="id">189</field>
+    <field name="label_fr">Tonguienne</field>
+    <field name="label_en">Tongan</field>
+   </row>
+   <row>
+    <field name="id">190</field>
+    <field name="label_fr">Trinidadienne</field>
+    <field name="label_en">Trinidadian</field>
+   </row>
+   <row>
+    <field name="id">191</field>
+    <field name="label_fr">Tunisienne</field>
+    <field name="label_en">Tunisian</field>
+   </row>
+   <row>
+    <field name="id">192</field>
+    <field name="label_fr">Turkmène</field>
+    <field name="label_en">Turkmen</field>
+   </row>
+   <row>
+    <field name="id">193</field>
+    <field name="label_fr">Turque</field>
+    <field name="label_en">Turkish</field>
+   </row>
+   <row>
+    <field name="id">194</field>
+    <field name="label_fr">Tuvaluane</field>
+    <field name="label_en">Tuvaluan</field>
+   </row>
+   <row>
+    <field name="id">195</field>
+    <field name="label_fr">Ukrainienne</field>
+    <field name="label_en">Ukrainian</field>
+   </row>
+   <row>
+    <field name="id">196</field>
+    <field name="label_fr">Uruguayenne</field>
+    <field name="label_en">Uruguayan</field>
+   </row>
+   <row>
+    <field name="id">197</field>
+    <field name="label_fr">Vanuatuane</field>
+    <field name="label_en">Vanuatuan</field>
+   </row>
+   <row>
+    <field name="id">198</field>
+    <field name="label_fr">Vaticane</field>
+    <field name="label_en">Vatican</field>
+   </row>
+   <row>
+    <field name="id">199</field>
+    <field name="label_fr">Vénézuélienne</field>
+    <field name="label_en">Venezuelan</field>
+   </row>
+   <row>
+    <field name="id">200</field>
+    <field name="label_fr">Vietnamienne</field>
+    <field name="label_en">Vietnamese</field>
+   </row>
+   <row>
+    <field name="id">201</field>
+    <field name="label_fr">Yéménite</field>
+    <field name="label_en">Yemeni</field>
+   </row>
+   <row>
+    <field name="id">202</field>
+    <field name="label_fr">Zambienne</field>
+    <field name="label_en">Zambian</field>
+   </row>
+   <row>
+    <field name="id">203</field>
+    <field name="label_fr">Zimbabwéenne</field>
+    <field name="label_en">Zimbabwean</field>
+   </row>
+   <row>
+    <field name="id">204</field>
+    <field name="label_fr">Autre Nationalité</field>
+    <field name="label_en">Other Nationality</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>
