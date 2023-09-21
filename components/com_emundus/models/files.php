@@ -1126,7 +1126,7 @@ class EmundusModelFiles extends JModelLegacy
     public function getEvalGroups()
     {
         try {
-            $this->_db = $this->getDbo();
+            
 
             $query = 'select * from #__emundus_setup_groups where 1';
             $this->_db->setQuery($query);
@@ -1158,7 +1158,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function shareGroups($groups, $actions, $fnums) {
         try {
-            $this->_db = $this->getDbo();
+            
             $insert = [];
 
             foreach ($fnums as $fnum) {
@@ -1201,7 +1201,7 @@ class EmundusModelFiles extends JModelLegacy
         $error = null;
         try {
 
-            $this->_db = $this->getDbo();
+            
             $insert = [];
 
             foreach ($fnums as $fnum) {
@@ -1285,7 +1285,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getAllGroups() {
         $query = 'select * from #__emundus_setup_groups where published=1';
-        $this->_db = $this->getDbo();
+        
 
         try {
             $this->_db->setQuery($query);
@@ -1310,7 +1310,7 @@ class EmundusModelFiles extends JModelLegacy
 					WHERE sg.id IN (SELECT g.group_id FROM jos_emundus_groups AS g WHERE g.user_id = '.$user->id.') AND sg.published = 1';
         }
 
-        $this->_db = $this->getDbo();
+        
 
         try {
             $this->_db->setQuery($query);
@@ -1326,7 +1326,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getAllInstitutions() {
         $query = 'select * from #__categories where extension="com_contact" order by lft';
-        $this->_db = $this->getDbo();
+        
 
         try {
             $this->_db->setQuery($query);
@@ -1343,7 +1343,7 @@ class EmundusModelFiles extends JModelLegacy
     public function getAllStatus()
     {
         $query = 'select * from #__emundus_setup_status order by ordering';
-        $this->_db = $this->getDbo();
+        
 
         try
         {
@@ -1364,7 +1364,7 @@ class EmundusModelFiles extends JModelLegacy
     public function getStatusByID($id)
     {
         $query = 'select * from #__emundus_setup_status where id='.$id;
-        $this->_db = $this->getDbo();
+        
 
         try
         {
@@ -1388,7 +1388,7 @@ class EmundusModelFiles extends JModelLegacy
                   from #__emundus_campaign_candidature as ecc
                   left join #__emundus_setup_status as ess on ess.step=ecc.status
                   where ecc.fnum in ("'.implode('","', $fnums).'")';
-        $this->_db = $this->getDbo();
+        
 
         try
         {
@@ -1414,7 +1414,7 @@ class EmundusModelFiles extends JModelLegacy
             \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeTagAdd', ['fnums' => $fnums, 'tag' => $tags]]);
 
             try {
-                $this->_db = $this->getDbo();
+                
                 if (empty($user)) {
                     $user = JFactory::getUser()->id;
                 }
@@ -1478,7 +1478,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getTaggedFile($tag = null)
     {
-        $this->_db = $this->getDbo();
+        
         $query = 'select t.fnum, sat.class from #__emundus_tag_assoc as t join #__emundus_setup_action_tag as sat on sat.id = t.id_tag where ';
         $user = JFactory::getUser()->id;
 
@@ -1518,7 +1518,7 @@ class EmundusModelFiles extends JModelLegacy
         $res = false;
 
         if (!empty($fnums) && isset($state)) {
-            $this->_db = $this->getDbo();
+            
             $query = $this->_db->getQuery(true);
             $fnums = is_array($fnums) ? $fnums : [$fnums];
 
@@ -1618,7 +1618,7 @@ class EmundusModelFiles extends JModelLegacy
 
 
 
-        $this->_db = $this->getDbo();
+        
         foreach ($fnums as $fnum) {
 
             // Log the update in the eMundus logging system.
@@ -1713,7 +1713,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getEvaluatorsFromGroup() {
         try {
-            $this->_db = $this->getDbo();
+            
             $query = 'select distinct ga.fnum, u.name, g.title, g.id  from #__emundus_group_assoc  as ga
 						left join #__user_usergroup_map as uum on uum.group_id = ga.group_id
 						left join #__users as u on u.id = uum.user_id
@@ -1735,7 +1735,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         try
         {
-            $this->_db = $this->getDbo();
+            
             $query = 'select * from #__usergroups where title = "Evaluator"';
             $this->_db->setQuery($query);
             $eval = $this->_db->loadAssoc();
@@ -1823,7 +1823,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         try
         {
-            $this->_db = $this->getDbo();
+            
             $query = 'select u.name, u.email, cc.fnum, ss.step, ss.value, sc.label, sc.start_date, sc.end_date, sc.year, sc.id as campaign_id, sc.published, sc.training, cc.applicant_id
                         from #__emundus_campaign_candidature as cc
                         left join #__users as u on u.id = cc.applicant_id
@@ -1854,7 +1854,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         try
         {
-            $this->_db = $this->getDbo();
+            
             $query = 'select u.name as applicant_name, u.email as applicant_email, u.username as username, cc.fnum, sc.id as campaign_id , sc.label as campaign_label, sc.training as campaign_code,  sc.start_date as campaign_start, sc.end_date as campaign_end, sc.year as campaign_year,  jesp.code as training_code, jesp.label as training_programme, cc.applicant_id as applicant_id, jess.value as application_status, group_concat(jesat.label) as application_tags
                         from jos_emundus_campaign_candidature as cc
                         left join jos_users as u on u.id = cc.applicant_id
@@ -1882,7 +1882,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         try
         {
-            $this->_db = $this->getDbo();
+            
             $query = 'select u.name as applicant_name, u.email as applicant_email, u.username as username, cc.fnum, sc.id as campaign_id , sc.label as campaign_label, sc.training as campaign_code,  sc.start_date as campaign_start, sc.end_date as campaign_end, sc.year as campaign_year,  jesp.code as training_code, jesp.label as training_programme, cc.applicant_id as applicant_id, jess.value as application_status, group_concat(jesat.label) as application_tags
                         from jos_emundus_campaign_candidature as cc
                         left join jos_users as u on u.id = cc.applicant_id
@@ -1908,7 +1908,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getApplicantIdByFnum($fnum)
     {
-        $this->_db = $this->getDbo();
+        
         $query = $this->_db->getQuery(true);
 
         try
@@ -1935,7 +1935,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         try
         {
-            $this->_db = $this->getDbo();
+            
             $query = "update #__emundus_campaign_candidature set published = ".$published." where fnum like " . $this->_db->quote($fnum);
             $this->_db->setQuery($query);
             $res = $this->_db->execute();
@@ -1998,7 +1998,7 @@ class EmundusModelFiles extends JModelLegacy
     */
 	public function getFnumArray($fnums, $elements, $methode=0, $start=0, $pas=0, $raw=0, $defaultElement='') {
 
-		$this->_db = $this->getDbo();
+		
 		$locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
 
 		$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
@@ -2538,6 +2538,23 @@ class EmundusModelFiles extends JModelLegacy
                         $join_column = str_replace('{thistable}', $element_params['join_db_name'], $join_column);
                         $join_column = str_replace('{shortlang}', $current_lang, $join_column);
                         $join_column = str_replace('{my->id}', $current_user, $join_column);
+                        $where_condition = '';
+
+                        if (!empty($element_params['database_join_where_sql']) && strpos($element_params['database_join_where_sql'], '{jos_') === false && strpos($element_params['database_join_where_sql'], '{rowid}') === false) {
+	                        $where_condition = preg_replace('/WHERE/', '', $where_condition, 1);
+							$where_condition = str_replace('{thistable}', $element_params['join_db_name'], $where_condition);
+                            $where_condition = str_replace('{my->id}', $current_user, $where_condition);
+                            foreach ($already_joined as $alias => $table) {
+                                str_replace($table . '.', $alias . '.', $where_condition);
+                            }
+                            if (stripos($where_condition, 'ORDER BY') !== false) {
+                                $where_condition = substr($where_condition, 0, strpos($where_condition, 'ORDER BY'));
+                            }
+
+							if (!empty(trim($where_condition))) {
+								$where_condition = ' AND (' . $where_condition . ')';
+							}
+						}
 
                         $databasejoin_sub_query = '';
 
@@ -2584,15 +2601,15 @@ class EmundusModelFiles extends JModelLegacy
                                     }
 
                                     $databasejoin_sub_query = ' (' . $databasejoin_sub_query;
-                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . '))';
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . $where_condition . '))';
                                     $databasejoin_sub_query .= ' AS ' . $already_joined[$child_table_alias] . '___' . $element->element_name;
                                 }
                             } else {
                                 if ($is_repeat) {
-                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_element_table_alias . '.' . $element->element_name . ')';
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_element_table_alias . '.' . $element->element_name . $where_condition . ')';
                                     $databasejoin_sub_query .= ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
                                 } else {
-                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . ')';
+                                    $databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . $where_condition . ')';
                                     $databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
                                 }
                             }
@@ -2769,6 +2786,7 @@ class EmundusModelFiles extends JModelLegacy
 				$data = $this->_db->loadAssocList();
 			} catch(Exception $e) {
 				JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+	            return false;
 			}
 
 			if (!empty($data)) {
@@ -2820,7 +2838,7 @@ class EmundusModelFiles extends JModelLegacy
 
         try {
 
-            $this->_db = $this->getDbo();
+            
             $query = 'select * from #__emundus_evaluations where fnum in ("'.implode('","', $fnums).'")';
             $this->_db->setQuery($query);
             return $this->_db->loadAssocList('fnum');
@@ -2838,7 +2856,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         try
         {
-            $this->_db = $this->getDbo();
+            
             $query = 'select * from #__emundus_evaluations where fnum in ("'.$fnum.'")';
             $this->_db->setQuery($query);
             return $this->_db->loadAssocList('fnum');
@@ -2858,7 +2876,7 @@ class EmundusModelFiles extends JModelLegacy
 
         try {
 
-            $this->_db = $this->getDbo();
+            
             $query = 'SELECT * FROM #__emundus_evaluations WHERE fnum = '.$fnum.' AND user = '.$evaluator_id;
             $this->_db->setQuery($query);
             return $this->_db->loadAssocList();
@@ -2878,7 +2896,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         try
         {
-            $this->_db = $this->getDbo();
+            
             $query = 'select * from #__emundus_comments where fnum in ("'.implode('","', $fnums).'")';
             $this->_db->setQuery($query);
             return $this->_db->loadAssocList();
@@ -2895,7 +2913,7 @@ class EmundusModelFiles extends JModelLegacy
      */
     public function getFilesByFnums($fnums, $attachment_ids = null)
     {
-        $this->_db = $this->getDbo();
+        
         if(!empty($attachment_ids))
             $query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("'.implode('","', $fnums).'") and fu.attachment_id in ("'.implode('","', $attachment_ids).'") order by fu.fnum';
         else
@@ -2928,7 +2946,7 @@ class EmundusModelFiles extends JModelLegacy
                     where cc.fnum in ("'.implode('","', $fnums).'") group by cc.fnum';
         try
         {
-            $this->_db = $this->getDbo();
+            
             $this->_db->setQuery($query);
             return $this->_db->loadAssocList('fnum', 'groupe');
         }
@@ -2952,7 +2970,7 @@ class EmundusModelFiles extends JModelLegacy
                   where cc.fnum in ("'.implode('","', $fnums).'") group by cc.fnum';
         try
         {
-            $this->_db = $this->getDbo();
+            
             $this->_db->setQuery($query);
             return $this->_db->loadAssocList('fnum', $column);
         }
@@ -2977,7 +2995,7 @@ class EmundusModelFiles extends JModelLegacy
                   where ua.user_id='.$user;
         try
         {
-            $this->_db = $this->getDbo();
+            
             $this->_db->setQuery($query);
             return $this->_db->loadColumn();
         }
@@ -3011,7 +3029,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         try
         {
-            $this->_db = $this->getDbo();
+            
             $query = "SELECT form_id
                         FROM `#__fabrik_formgroup`
                         WHERE group_id IN (
@@ -3043,7 +3061,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         try
         {
-            $this->_db = $this->getDbo();
+            
             $query = "SELECT form_id
                         FROM `#__fabrik_formgroup`
                         WHERE group_id IN (
@@ -3074,7 +3092,7 @@ class EmundusModelFiles extends JModelLegacy
     public function getAdmissionFormidByFnum($fnum) {
         try {
 
-            $this->_db = $this->getDbo();
+            
             $query = $this->_db->getQuery(true);
 
             $query
@@ -3112,7 +3130,7 @@ class EmundusModelFiles extends JModelLegacy
     {
         try
         {
-            $this->_db = $this->getDbo();
+            
             $query = "SELECT *
                         FROM `#__fabrik_formgroup`
                         WHERE group_id IN (
@@ -3136,61 +3154,22 @@ class EmundusModelFiles extends JModelLegacy
      * @return array|bool
      */
     public function getAccessorByFnums($fnums) {
+        $access = array();
 		$query = $this->_db->getQuery(true);
 
-		$query->select('jecc.fnum,jesg.id, GROUP_CONCAT(jesg.label) as label, GROUP_CONCAT(jesg.class) as class')
-			->from($this->_db->quoteName('#__emundus_campaign_candidature', 'jecc'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'jesc').' ON '.$this->_db->quoteName('jesc.id').' = '.$this->_db->quoteName('jecc.campaign_id'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'jesp').' ON '.$this->_db->quoteName('jesp.code').' = '.$this->_db->quoteName('jesc.training'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc').' ON '.$this->_db->quoteName('jesgrc.course').' = '.$this->_db->quoteName('jesp.code'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_groups', 'jesg').' ON '.$this->_db->quoteName('jesg.id').' = '.$this->_db->quoteName('jesgrc.parent_id'))
-			->leftJoin($this->_db->quoteName('#__emundus_acl', 'jea').' ON '.$this->_db->quoteName('jea.group_id').' = '.$this->_db->quoteName('jesg.id'))
-			->where($this->_db->quoteName('jea.action_id').' = 1 AND '.$this->_db->quoteName('jea.r').' = 1 AND '.$this->_db->quoteName('jecc.fnum').' IN ("'.implode('","', $fnums).'")')
-			->group($this->_db->quoteName('jecc.fnum'));
+        // Select all users associated directly to the file
+        $query->select([$this->_db->quoteName('jeua.fnum'), $this->_db->quoteName('ju.name', 'uname'), $this->_db->quoteName('jesp.class')])
+            ->from($this->_db->quoteName('#__emundus_users_assoc', 'jeua'))
+            ->leftJoin($this->_db->quoteName('#__users', 'ju').' ON '.$this->_db->quoteName('ju.id').' = '.$this->_db->quoteName('jeua.user_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_users', 'jeu').' ON '.$this->_db->quoteName('ju.id').' = '.$this->_db->quoteName('jeu.user_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'jesp').' ON '.$this->_db->quoteName('jeu.profile').' = '.$this->_db->quoteName('jesp.id'))
+            ->where($this->_db->quoteName('jeua.action_id').' = 1 AND '.$this->_db->quoteName('jeua.r').' = 1 AND '.$this->_db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
 
         try {
             $this->_db->setQuery($query);
             $res = $this->_db->loadAssocList();
 
-            $access = array();
-            foreach ($res as $r) {
-                $group_labels = explode(',',$r['label']);
-                $class_labels = explode(',',$r['class']);
-                foreach ($group_labels as $key => $g_label) {
-                    $assocTagcampaign = '<div class="flex"><span class="circle '.$class_labels[$key].'" id="'.$r['id'].'"></span>';
-                    $assocTagcampaign .= '<span id="'.$r['id'].'">'.$g_label.'</span></div>';
-                    $access[$r['fnum']] .= $assocTagcampaign;
-                }
-            }
-
-			$query->clear()
-				->select('jega.fnum, jesg.label, jesg.class')
-				->from($this->_db->quoteName('#__emundus_group_assoc', 'jega'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_groups', 'jesg').' ON '.$this->_db->quoteName('jesg.id').' = '.$this->_db->quoteName('jega.group_id'))
-				->where($this->_db->quoteName('jega.action_id').' = 1 AND '.$this->_db->quoteName('jega.r').' = 1 AND '.$this->_db->quoteName('jega.fnum').' IN ("'.implode('","', $fnums).'")');
-            $this->_db->setQuery($query);
-            $res = $this->_db->loadAssocList();
-
-            foreach ($res as $r) {
-                $assocTaggroup = '<div class="flex"><span class="circle '.$r['class'].'"></span>';
-                $assocTaggroup .= '<span id="'.$r['id'].'">'.$r['label'].'</span></div>';
-                if (isset($access[$r['fnum']])) {
-                    $access[$r['fnum']] .= ''.$assocTaggroup;
-                } else {
-                    $access[$r['fnum']] .= $assocTaggroup;
-                }
-            }
-
-            $query->clear()
-	            ->select([$this->_db->quoteName('jeua.fnum'), $this->_db->quoteName('ju.name', 'uname'), $this->_db->quoteName('jesp.class')])
-                ->from($this->_db->quoteName('#__emundus_users_assoc', 'jeua'))
-                ->leftJoin($this->_db->quoteName('#__users', 'ju').' ON '.$this->_db->quoteName('ju.id').' = '.$this->_db->quoteName('jeua.user_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_users', 'jeu').' ON '.$this->_db->quoteName('ju.id').' = '.$this->_db->quoteName('jeu.user_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'jesp').' ON '.$this->_db->quoteName('jeu.profile').' = '.$this->_db->quoteName('jesp.id'))
-                ->where($this->_db->quoteName('jeua.action_id').' = 1 AND '.$this->_db->quoteName('jeua.r').' = 1 AND '.$this->_db->quoteName('jeua.fnum').' IN ("'.implode('","', $fnums).'")');
-            $this->_db->setQuery($query);
-            $res = $this->_db->loadAssocList();
-
+            // Write the code to show the results to the user
             foreach ($res as $r) {
                 if (isset($access[$r['fnum']])) {
                     $access[$r['fnum']] .= '<div class="flex"><span class="circle '.$r['class'].'"></span><span>'.$r['uname'].'</span></div>';
@@ -3199,9 +3178,59 @@ class EmundusModelFiles extends JModelLegacy
                 }
             }
 
+            // Then, select all groups associated directly to the file
+			$query->clear()
+                ->select($this->_db->quoteName(array('jega.fnum','jesg.label','jesg.class')))
+				->from($this->_db->quoteName('#__emundus_group_assoc', 'jega'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_groups', 'jesg').' ON '.$this->_db->quoteName('jesg.id').' = '.$this->_db->quoteName('jega.group_id'))
+                ->where($this->_db->quoteName('jega.action_id').' = 1')
+                ->andWhere($this->_db->quoteName('jega.r').' = 1')
+                ->andWhere($this->_db->quoteName('jega.fnum').' IN (\''.implode('\',\'',$fnums).'\')')
+                ->order($this->_db->quoteName('jesg.id').' DESC');
+
+            $this->_db->setQuery($query);
+            $res = $this->_db->loadAssocList();
+
+            // Write the code to show the results to the user
+            foreach ($res as $r) {
+                $assocTaggroup = '<div class="flex"><span class="circle '.$r['class'].'"></span><span id="'.$r['id'].'">'.$r['label'].'</span></div>';
+                if (isset($access[$r['fnum']])) {
+                    $access[$r['fnum']] .= ''.$assocTaggroup;
+                } else {
+                    $access[$r['fnum']] .= $assocTaggroup;
+                }
+            }
+
+            // Finally, select all groups associated to the file by its program
+            $query->clear()
+                ->select(array($this->_db->quoteName('jecc.fnum'), $this->_db->quoteName('jesg.id'), 'GROUP_CONCAT('.$this->_db->quoteName('jesg.label').' ORDER BY '.$this->_db->quoteName('jesg.id').' DESC) as label', 'GROUP_CONCAT('.$this->_db->quoteName('jesg.class').' ORDER BY '.$this->_db->quoteName('jesg.id').' DESC) as class'))
+                ->from($this->_db->quoteName('#__emundus_campaign_candidature','jecc'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','jesc').' ON '.$this->_db->quoteName('jesc.id').' = '.$this->_db->quoteName('jecc.campaign_id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_programmes','jesp').' ON '.$this->_db->quoteName('jesp.code').' = '.$this->_db->quoteName('jesc.training'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_groups_repeat_course','jesgrc').' ON '.$this->_db->quoteName('jesgrc.course').' = '.$this->_db->quoteName('jesp.code'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_groups','jesg').' ON '.$this->_db->quoteName('jesg.id').' = '.$this->_db->quoteName('jesgrc.parent_id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_acl','jea').' ON '.$this->_db->quoteName('jea.group_id').' = '.$this->_db->quoteName('jesg.id'))
+                ->where($this->_db->quoteName('jea.action_id').' = 1')
+                ->andWhere($this->_db->quoteName('jea.r').' = 1')
+                ->andWhere($this->_db->quoteName('jecc.fnum').' IN (\''.implode('\',\'',$fnums).'\')')
+                ->group($this->_db->quoteName('jecc.fnum'));
+
+            $this->_db->setQuery($query);
+            $res = $this->_db->loadAssocList();
+
+            // Write the code to show the results to the user
+            foreach ($res as $r) {
+                $group_labels = explode(',',$r['label']);
+                $class_labels = explode(',',$r['class']);
+                foreach ($group_labels as $key => $g_label) {
+                    $assocTagcampaign = '<div class="flex"><span class="circle '.$class_labels[$key].'" id="'.$r['id'].'"></span><span id="'.$r['id'].'">'.$g_label.'</span></div>';
+                    $access[$r['fnum']] .= $assocTagcampaign;
+                }
+            }
+
             return $access;
         } catch(Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus.email');
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -3218,7 +3247,7 @@ class EmundusModelFiles extends JModelLegacy
     public function getAssocByFnums($fnums, $groups = true, $users = true) {
 
         $access = [];
-        $this->_db = $this->getDbo();
+        
 
         if ($groups) {
 
@@ -3328,13 +3357,12 @@ class EmundusModelFiles extends JModelLegacy
 
     public function getTagsByIdFnumUser($tid, $fnum, $user_id)
     {
-        $this->_dbo = $this->getDbo();
         $query = 'SELECT * FROM #__emundus_tag_assoc 
                     WHERE id_tag = '.$tid.' AND fnum LIKE "'.$fnum.'" AND user_id = '.$user_id;
         try
         {
-            $this->_dbo->setQuery($query);
-            $res = $this->_dbo->loadAssocList();
+            $this->_db->setQuery($query);
+            $res = $this->_db->loadAssocList();
             if(count($res) > 0)
                 return true;
             else
@@ -3351,15 +3379,15 @@ class EmundusModelFiles extends JModelLegacy
      * @return Exception|mixed|Exception
      */
     public function getProgByFnums($fnums) {
-        $this->_dbo = $this->getDbo();
+        
         try {
             $query = 'select  jesp.code, jesp.label  from #__emundus_campaign_candidature as jecc
                         left join #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
                         left join #__emundus_setup_programmes as jesp on jesp.code like jesc.training
                         left join #__emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like jesp.code
                         where jecc.fnum in ("'.implode('","', $fnums).'") and jeslrt.parent_id IS NOT NULL  group by jesp.code order by jesp.code';
-            $this->_dbo->setQuery($query);
-            return $this->_dbo->loadAssocList('code', 'label');
+            $this->_db->setQuery($query);
+            return $this->_db->loadAssocList('code', 'label');
         } catch(Exception $e) {
             return $e;
         }
@@ -3370,14 +3398,14 @@ class EmundusModelFiles extends JModelLegacy
      * @return Exception|mixed|Exception
      */
     public function getDocsByProg($code) {
-        $this->_dbo = $this->getDbo();
+        
         try {
             $query = 'select jesl.title, jesl.template_type, jesl.id as file_id 
                         from #__emundus_setup_letters as jesl
                         left join #__emundus_setup_letters_repeat_training as jeslrt on jeslrt.parent_id = jesl.id
-                        where jeslrt.training = '.$this->_dbo->quote($code).' ORDER BY jesl.title';
-            $this->_dbo->setQuery($query);
-            return $this->_dbo->loadAssocList();
+                        where jeslrt.training = '.$this->_db->quote($code).' ORDER BY jesl.title';
+            $this->_db->setQuery($query);
+            return $this->_db->loadAssocList();
         } catch(Exception $e) {
             return $e;
         }
@@ -3388,10 +3416,10 @@ class EmundusModelFiles extends JModelLegacy
      * @return mixed
      */
     public function getAttachmentInfos($id) {
-        $this->_dbo = $this->getDbo();
+        
         $query = "select * from jos_emundus_setup_attachments where id = {$id}";
-        $this->_dbo->setQuery($query);
-        return $this->_dbo->loadAssoc();
+        $this->_db->setQuery($query);
+        return $this->_db->loadAssoc();
     }
 
     /**
@@ -3404,11 +3432,11 @@ class EmundusModelFiles extends JModelLegacy
      * @return int
      */
     public function addAttachment($fnum, $name, $uid, $cid, $attachment_id, $desc, $canSee = 0) {
-        $this->_dbo = $this->getDbo();
-        $query = "insert into jos_emundus_uploads (user_id, fnum, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id) values ({$uid}, {$this->_dbo->quote($fnum)}, {$attachment_id}, {$this->_dbo->quote($name)}, {$this->_dbo->quote($desc)}, 0, {$canSee}, {$cid})";
-        $this->_dbo->setQuery($query);
-        $this->_dbo->execute();
-        return $this->_dbo->insertid();
+        
+        $query = "insert into jos_emundus_uploads (user_id, fnum, attachment_id, filename, description, can_be_deleted, can_be_viewed, campaign_id) values ({$uid}, {$this->_db->quote($fnum)}, {$attachment_id}, {$this->_db->quote($name)}, {$this->_db->quote($desc)}, 0, {$canSee}, {$cid})";
+        $this->_db->setQuery($query);
+        $this->_db->execute();
+        return $this->_db->insertid();
     }
 
     /**
@@ -3417,14 +3445,14 @@ class EmundusModelFiles extends JModelLegacy
      * @return mixed
      */
     public function checkFnumsDoc($code, $fnums) {
-        $this->_dbo = $this->getDbo();
+        
         $query = "select distinct (jecc.fnum) from jos_emundus_campaign_candidature as jecc
                     left join jos_emundus_setup_letters_repeat_status as jeslrs on jeslrs.status = jecc.status
                     left join jos_emundus_setup_letters as jesl on jesl.id = jeslrs.parent_id
-                    left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like {$this->_dbo->quote($code)}
+                    left join jos_emundus_setup_letters_repeat_training as jeslrt on jeslrt.training like {$this->_db->quote($code)}
                     WHERE jecc.fnum in ('".implode("','", $fnums)."') group by jecc.fnum";
-        $this->_dbo->setQuery($query);
-        return $this->_dbo->loadColumn();
+        $this->_db->setQuery($query);
+        return $this->_db->loadColumn();
     }
 
     /**
@@ -3436,15 +3464,15 @@ class EmundusModelFiles extends JModelLegacy
         $attachments = [];
 
         if (!empty($ids)) {
-            $this->_dbo = $this->getDbo();
-            $query = $this->_dbo->getQuery(true);
+            
+            $query = $this->_db->getQuery(true);
             $query->select('jeu.fnum, jeu.filename, jeu.id, jecc.applicant_id, jeu.attachment_id')
                 ->from('#__emundus_uploads AS jeu')
                 ->leftJoin('#__emundus_campaign_candidature AS jecc ON jecc.fnum = jeu.fnum')
                 ->where('jeu.id IN (' . implode(',', $ids) . ')');
             try {
-                $this->_dbo->setQuery($query);
-                $attachments = $this->_dbo->loadAssocList();
+                $this->_db->setQuery($query);
+                $attachments = $this->_db->loadAssocList();
             } catch(Exception $e) {
                 JLog::add('Failed to get attachment by ids ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             }
@@ -3454,11 +3482,14 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     public function getSetupAttachmentsById($ids) {
-        $this->_dbo = $this->getDbo();
-        $query = 'select * from jos_emundus_setup_attachments where id in ("'.implode('","', $ids).'")';
+        
+        $query = $this->_db->getQuery(true);
+        $query->select('*')
+            ->from($this->_db->quoteName('#__emundus_setup_attachments'))
+            ->where($this->_db->quoteName('id').' IN (' . implode(',', $ids) . ')');
         try {
-            $this->_dbo->setQuery($query);
-            return $this->_dbo->loadAssocList();
+            $this->_db->setQuery($query);
+            return $this->_db->loadAssocList();
         } catch(Exception $e) {
             throw $e;
         }
@@ -3475,18 +3506,19 @@ class EmundusModelFiles extends JModelLegacy
             return [];
         }
 
-        $this->_dbo = $this->getDbo();
-        $select = "select jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join
-                    from jos_fabrik_elements as jfe
-                    left join #__fabrik_formgroup as jff on jff.group_id = jfe.group_id
-                    left join #__fabrik_groups as jfg on jfg.id = jff.group_id
-                    left join #__fabrik_forms as jff2 on jff2.id = jff.form_id
-                    left join #__fabrik_lists as jfl on jfl.form_id = jff2.id
-                    LEFT JOIN #__fabrik_joins AS jfj ON jfl.id = jfj.list_id AND jfg.id=jfj.group_id
-                    where jfe.id in (".implode(',', $idFabrik).")";
+        
+        $query = $this->_db->getQuery(true);
+        $query->select('jfe.id, jfe.name, jfe.plugin, jfe.params, jfg.params as group_params, jfg.id as group_id, jfl.db_table_name, jfj.table_join')
+            ->from($this->_db->quoteName('#__fabrik_elements','jfe'))
+            ->leftJoin($this->_db->quoteName('#__fabrik_formgroup','jff').' ON '.$this->_db->quoteName('jff.group_id').' = '.$this->_db->quoteName('jfe.group_id'))
+            ->leftJoin($this->_db->quoteName('#__fabrik_groups','jfg').' ON '.$this->_db->quoteName('jfg.id').' = '.$this->_db->quoteName('jff.group_id'))
+            ->leftJoin($this->_db->quoteName('#__fabrik_forms','jff2').' ON '.$this->_db->quoteName('jff2.id').' = '.$this->_db->quoteName('jff.form_id'))
+            ->leftJoin($this->_db->quoteName('#__fabrik_lists','jfl').' ON '.$this->_db->quoteName('jfl.form_id').' = '.$this->_db->quoteName('jff2.id'))
+            ->leftJoin($this->_db->quoteName('#__fabrik_joins','jfj').' ON '.$this->_db->quoteName('jfl.id').' = '.$this->_db->quoteName('jfj.list_id').' AND '.$this->_db->quoteName('jfg.id').' = '.$this->_db->quoteName('jfj.group_id'))
+            ->where($this->_db->quoteName('jfe.id').' IN (' . implode(',', $idFabrik) . ')');
         try {
-            $this->_dbo->setQuery($select);
-            return $this->_dbo->loadAssocList();
+            $this->_db->setQuery($query);
+            return $this->_db->loadAssocList();
         } catch(Exception $e) {
             throw $e;
         }
@@ -3556,11 +3588,11 @@ class EmundusModelFiles extends JModelLegacy
         $isFnumsNull = ($fnums === null);
         $isDatabaseJoin = ($plugin === 'databasejoin');
         $isMulti = (@$params->database_join_display_type == "multilist" || @$params->database_join_display_type == "checkbox");
-        $this->_dbo = $this->getDbo();
+        
 
         if ($plugin === 'date') {
             $date_form_format = $this->dateFormatToMysql($params->date_form_format);
-            $query = 'select GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name.', '.$this->_dbo->quote($date_form_format).')  SEPARATOR ", ") as val, t_origin.fnum ';
+            $query = 'select GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name.', '.$this->_db->quote($date_form_format).')  SEPARATOR ", ") as val, t_origin.fnum ';
         } elseif ($isDatabaseJoin) {
             if ($groupRepeat) {
                 $query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
@@ -3606,12 +3638,12 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         try{
-            $this->_dbo->setQuery($query);
+            $this->_db->setQuery($query);
 
             if (!$isFnumsNull) {
-                $res = $this->_dbo->loadAssocList('fnum');
+                $res = $this->_db->loadAssocList('fnum');
             } else {
-                $res = $this->_dbo->loadAssocList();
+                $res = $this->_db->loadAssocList();
             }
 
             return $res;
@@ -3632,17 +3664,17 @@ class EmundusModelFiles extends JModelLegacy
         if (!is_array($fnums))
             $fnums = [$fnums];
 
-        $this->_dbo = JFactory::getDbo();
+        $this->_db = JFactory::getDbo();
         if ($dateFormat !== null) {
             $dateFormat = $this->dateFormatToMysql($dateFormat);
-            $query = "select fnum, DATE_FORMAT({$name}, ".$this->_dbo->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
+            $query = "select fnum, DATE_FORMAT({$name}, ".$this->_db->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         } else {
-            $query = "select fnum, $this->_dbo->quote({$name}) as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
+            $query = "select fnum, $this->_db->quote({$name}) as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         }
 
         try {
-            $this->_dbo->setQuery($query);
-            return $this->_dbo->loadAssocList('fnum');
+            $this->_db->setQuery($query);
+            return $this->_db->loadAssocList('fnum');
         } catch(Exception $e) {
             throw $e;
         }
@@ -4055,7 +4087,7 @@ class EmundusModelFiles extends JModelLegacy
 
     public function getStatusByStep($step)
     {
-        $this->_db = $this->getDbo();
+        
         $query = $this->_db->getQuery(true);
 
         try {
@@ -4214,7 +4246,7 @@ class EmundusModelFiles extends JModelLegacy
 
             require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
             $h_files = new EmundusHelperFiles();
-            $fnum = $h_files->createFnum($campaign_id, $user_id);
+            $fnum = EmundusHelperFiles::createFnum($campaign_id, $user_id);
 
             if (!empty($fnum)) {
                 $config = JFactory::getConfig();

@@ -1962,8 +1962,9 @@ class EmundusModelForm extends JModelList {
             ->leftJoin($db->quoteName('#__menu_types', 'mt').' ON '.$db->quoteName('mt.menutype').' = '.$db->quoteName('menu.menutype'))
             ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'sp').' ON '.$db->quoteName('sp.menutype').' = '.$db->quoteName('mt.menutype'))
             ->where($db->quoteName('sp.id') . ' = '.$prid)
-            ->where($db->quoteName('menu.parent_id') . ' = 1')
-            ->where($db->quoteName('menu.type') . ' = ' . $db->quote('component'));
+            ->andWhere($db->quoteName('menu.parent_id').' = 1')
+            ->andWhere($db->quoteName('menu.type').' = '.$db->quote('component'))
+            ->andWhere($db->quoteName('menu.published').' = 1');
 
         try {
             $db->setQuery($query);

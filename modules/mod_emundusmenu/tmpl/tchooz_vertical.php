@@ -622,11 +622,11 @@ defined('_JEXEC') or die;
             }
 
             if (window.innerWidth >= 1280) {
-                document.querySelector("#g-container-main").style.paddingLeft = "80px";
+                document.querySelector("#g-container-main").style.paddingLeft = "76px";
                 if(document.querySelector("#g-footer")) {
-                    document.querySelector("#g-footer").style.paddingLeft = "80px";
+                    document.querySelector("#g-footer").style.paddingLeft = "76px";
                     if(document.querySelector("#footer-rgpd")) {
-                        document.querySelector("#footer-rgpd").style.paddingLeft = "80px";
+                        document.querySelector("#footer-rgpd").style.paddingLeft = "76px";
                     }
                 }
                 document.querySelector("#header-a").style.opacity = "0";

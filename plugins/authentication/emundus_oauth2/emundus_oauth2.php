@@ -82,15 +82,18 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
 
         $response->type = 'OAuth2';
 
-        if (JArrayHelper::getValue($options, 'action') == 'core.login.site') {
+        if (\Joomla\Utilities\ArrayHelper::getValue($options, 'action') == 'core.login.site') {
 
-            $username = JArrayHelper::getValue($credentials, 'username');
+            $username = \Joomla\Utilities\ArrayHelper::getValue($credentials, 'username');
             if (!$username) {
                 $response->status = JAuthentication::STATUS_FAILURE;
                 $response->error_message = JText::_('JGLOBAL_AUTH_NO_USER');
             } else {
                 try {
-                    $token = JArrayHelper::getValue($options, 'token');
+                    $token = \Joomla\Utilities\ArrayHelper::getValue($options, 'token');
+					if(empty($token)) {
+						return true;
+					}
                     $url = $this->params->get('sso_account_url');
                     $oauth2 = new JOAuth2Client;
                     $oauth2->setToken($token);
@@ -358,12 +361,10 @@ class plgAuthenticationEmundus_Oauth2 extends JPlugin
 
                 if ($send !== true) {
 
-                    JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                    JLog::add($send, JLog::ERROR, 'com_emundus');
                     return false;
 
                 } else {
-
-                    $sent[] = $user['email'];
                     $log = [
                         'user_id_to' => $user_id,
                         'subject' => $subject,

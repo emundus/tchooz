@@ -1002,7 +1002,8 @@ class EmundusModelProfile extends JModelList {
                 $this->_db->setQuery($query);
                 $res = $this->_db->loadAssoc();
             } catch(Exception $e) {
-                JLog::add(JUri::getInstance().' :: query : -> '.$query, JLog::ERROR, 'com_emundus.error');
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus.error');
+
             }
         }
 
