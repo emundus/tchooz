@@ -88,7 +88,7 @@ button.btn-primary:hover{
     font-family: var(--em-applicant-font);
     font-size: 16px;
     font-style: normal;
-    font-weight: 500;
+    font-weight: 400;
     line-height: 19px;
     letter-spacing: 0.0015em;
     text-align: left;
@@ -133,14 +133,29 @@ ul.nav.nav-tabs.nav-stacked {
 .login .form-horizontal .control-label {
     width: 100%;
 }
+
 .view-login .form-horizontal .control-group {
     display: flex;
     justify-content: center;
     flex-direction: column;
+}
+
+.view-login .form-horizontal .control-group.em-float-right {
+    margin-bottom: 32px;
+    margin-top: 0;
+}
+
+.view-login .form-horizontal .control-group.com-users-login__submit {
+    margin-bottom: 32px;
+    margin-top: 0;
+}
+
+.view-login .form-horizontal .control-group.com-users-login__input:nth-child(1) {
+    margin-top: 32px;
     margin-bottom: 32px;
 }
 
-.view-login .form-horizontal .control-group:nth-child(2) {
+.view-login .form-horizontal .control-group.com-users-login__input:nth-child(2) {
     margin-bottom: 8px;
 }
 
@@ -436,7 +451,8 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 .password-group {
     width: 100%;
 }
-.com-users-login__input .password-group .input-password-toggle {
+
+.view-login .com-users-login__input .password-group .input-password-toggle {
     position: absolute;
     right: 10px;
     opacity: 0.3;
@@ -446,9 +462,9 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     height: auto;
     padding: 0;
     margin: 0;
-    top: 20px;
+    top: 16px;
     z-index: 20;
 }
-.com-users-login__input .password-group .input-password-toggle:hover {
+.view-login .com-users-login__input .password-group .input-password-toggle:hover {
     background: transparent;
 }
