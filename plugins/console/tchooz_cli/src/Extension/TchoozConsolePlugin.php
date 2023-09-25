@@ -3,6 +3,7 @@ namespace Emundus\Plugin\Console\Tchooz\Extension;
 
 \defined('_JEXEC') or die;
 
+use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozUpdateCommand;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Application\ApplicationEvents;
@@ -21,7 +22,9 @@ class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
     public function registerCommands(): void
     {
         $app = Factory::getApplication();
-        $db = Factory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
         $app->addCommand(new TchoozUserAddCommand($db));
+        $app->addCommand(new TchoozUpdateCommand($db));
     }
 }

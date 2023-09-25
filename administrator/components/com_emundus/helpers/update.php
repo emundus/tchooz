@@ -10,6 +10,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Table\Table;
+use Joomla\Component\Cache\Administrator\Model\CacheModel;
 
 /**
  * Emundus helper.
@@ -18,8 +19,8 @@ class EmundusHelperUpdate
 {
 
 	public static function clearJoomlaCache(){
-		require_once (JPATH_ROOT . '/administrator/components/com_cache/models/cache.php');
-		$m_cache = new CacheModelCache();
+		require_once (JPATH_BASE . '/administrator/components/com_cache/src/Model/CacheModel.php');
+		$m_cache = new CacheModel();
 		$clients    = array(1, 0);
 
 		foreach ($clients as $client)
@@ -40,7 +41,7 @@ class EmundusHelperUpdate
 
 	public static function recompileGantry5(){
 		$dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
-		if(!empty($dir)) {
+		if(is_dir($dir) && !empty($dir)) {
 			foreach (glob($dir . '/*') as $file) {
 				unlink($file);
 			}
@@ -520,7 +521,7 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function insertTranslationsTag($tag,$value,$type = 'override', $reference_id = null, $reference_table = null, $reference_field = null, $lang = 'fr-FR'){
+    public static function insertTranslationsTag($tag,$value,$type = 'override', $reference_id = 0, $reference_table = null, $reference_field = null, $lang = 'fr-FR'){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -533,7 +534,8 @@ class EmundusHelperUpdate
             $tag_existing = $db->loadResult();
 
             if(empty($tag_existing)) {
-                $query->insert($db->quoteName('#__emundus_setup_languages'))
+                $query->clear()
+	                ->insert($db->quoteName('#__emundus_setup_languages'))
                     ->set($db->quoteName('tag') . ' = ' . $db->quote($tag))
                     ->set($db->quoteName('lang_code') . ' = ' . $db->quote($lang))
                     ->set($db->quoteName('override') . ' = ' . $db->quote($value))
