@@ -1,4 +1,5 @@
 <?php
+
 namespace Emundus\Plugin\Console\Tchooz\CliCommand;
 
 defined('_JEXEC') or die;
@@ -15,87 +16,117 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class TchoozUpdateCommand extends AbstractCommand
 {
-    use DatabaseAwareTrait;
+	use DatabaseAwareTrait;
 
-    /**
-     * The default command name
-     *
-     * @var    string
-     * @since  4.0.0
-     */
-    protected static $defaultName = 'tchooz:update';
+	/**
+	 * The default command name
+	 *
+	 * @var    string
+	 * @since  4.0.0
+	 */
+	protected static $defaultName = 'tchooz:update';
 
-    /**
-     * SymfonyStyle Object
-     * @var   object
-     * @since 4.0.0
-     */
-    private $ioStyle;
+	/**
+	 * SymfonyStyle Object
+	 * @var   SymfonyStyle
+	 * @since 4.0.0
+	 */
+	private SymfonyStyle $ioStyle;
 
-    /**
-     * Stores the Input Object
-     * @var   object
-     * @since 4.0.0
-     */
-    private $cliInput;
+	/**
+	 * Stores the Input Object
+	 * @var   InputInterface
+	 * @since 4.0.0
+	 */
+	private InputInterface $cliInput;
 
-	private $components;
+	/**
+	 * Components to be updated
+	 * @var  array
+	 * @since version 4.0.0
+	 */
+	private array $components;
 
-	private $schema_version;
+	/**
+	 * Check if it's first run
+	 * @var bool
+	 * @since version 4.0.0
+	 */
+	private bool $firstrun = false;
 
-	private $firstrun;
+	/**
+	 * Store count of components updated
+	 * @var int
+	 * @since version 4.0.0
+	 */
+	private int $count_exec = 0;
 
-    /**
-     * Command constructor.
-     *
-     * @param   DatabaseInterface  $db  The database
-     *
-     * @since   4.2.0
-     */
-    public function __construct(DatabaseInterface $db)
-    {
-        parent::__construct();
+	/**
+	 * Store manifest xml
+	 * @var \SimpleXMLElement|false
+	 * @since version 4.0.0
+	 */
+	private \SimpleXMLElement|false $manifest_xml;
 
-        $this->setDatabase($db);
-    }
+	/**
+	 * Command constructor.
+	 *
+	 * @param   DatabaseInterface  $db  The database
+	 *
+	 * @since   4.2.0
+	 */
+	public function __construct(DatabaseInterface $db)
+	{
+		parent::__construct();
 
-    /**
-     * Internal function to execute the command.
-     *
-     * @param   InputInterface   $input   The input to inject into the command.
-     * @param   OutputInterface  $output  The output to inject into the command.
-     *
-     * @return  integer  The command exit code
-     *
-     * @since   4.0.0
-     */
-    protected function doExecute(InputInterface $input, OutputInterface $output): int
-    {
-        $this->configureIO($input, $output);
-        $this->ioStyle->title('Update Tchooz');
+		$this->setDatabase($db);
+	}
 
-	    $availableComponents = array('com_emundus', 'com_fabrik', 'com_hikashop', 'com_hikamarket', 'com_falang', 'com_dpcalendar', 'com_dropfiles', 'com_loginguard', 'com_admintools',
-		    'com_jumi', 'com_gantry5', 'com_securitycheckpro');
-	    $choice = new ChoiceQuestion(
-		    'Please select components to update (separate multiple profiles with a comma)',
-		    $availableComponents
-	    );
-	    $choice->setMultiselect(true);
+	/**
+	 * Internal function to execute the command.
+	 *
+	 * @param   InputInterface   $input   The input to inject into the command.
+	 * @param   OutputInterface  $output  The output to inject into the command.
+	 *
+	 * @return  integer  The command exit code
+	 *
+	 * @since   4.0.0
+	 */
+	protected function doExecute(InputInterface $input, OutputInterface $output): int
+	{
+		$this->configureIO($input, $output);
+		$this->ioStyle->title('Update Tchooz');
 
-	    $answer = (array) $this->ioStyle->askQuestion($choice);
+		$availableComponents = array('all', 'com_emundus', 'com_fabrik', 'com_hikashop', 'com_hikamarket', 'com_falang', 'com_dpcalendar', 'com_dropfiles', 'com_loginguard', 'com_admintools',
+			'com_jumi', 'com_gantry5', 'com_securitycheckpro');
+		$choice              = new ChoiceQuestion(
+			'Please select components to update (separate multiple profiles with a comma)',
+			$availableComponents
+		);
+		$choice->setMultiselect(true);
 
-	    foreach ($answer as $component) {
-		    $this->components[] = $component;
-	    }
+		$answer = (array) $this->ioStyle->askQuestion($choice);
 
-	    $this->components = $this->getComponentsElement('extensions', $this->components);
+		foreach ($answer as $component) {
+			$this->components[] = $component;
+		}
 
-		$this->updateComponents();
+		$this->components = $this->getComponentsElement('extensions', $this->components);
 
-        $this->ioStyle->success("Tchooz updated successfully");
+		$result = $this->updateComponents();
 
-        return Command::SUCCESS;
-    }
+		if($result)
+		{
+			$this->ioStyle->text("\n" . $this->count_exec . " component(s) updated");
+			$this->ioStyle->success("Tchooz updated successfully");
+		}
+		else
+		{
+			$this->ioStyle->error("Tchooz update failed");
+		}
+
+		return Command::SUCCESS;
+	}
 
 	private function getComponentsElement($table, $comp)
 	{
@@ -112,10 +143,10 @@ class TchoozUpdateCommand extends AbstractCommand
 
 	private function updateComponents()
 	{
-		$installer = Installer::getInstance();
-		$success = true;
-		$failure_msg = '';
-		$count_exec = 0;
+		$installer        = Installer::getInstance();
+		$success          = true;
+		$failure_msg      = '';
+		$this->count_exec = 0;
 
 		# Case where element isn't defined in script parameters -> update all
 		$elements = empty($elements) ? array_keys($this->components) : $elements;
@@ -126,24 +157,21 @@ class TchoozUpdateCommand extends AbstractCommand
 			return false;
 		}
 
-		$count_exec += count($elements);
+		$this->count_exec += count($elements);
 
-		# Process update for each component listed
 		foreach ($elements as $element) {
-			# Get component row & load manifest cache
-			$elementArr = $this->components[$element];
+			$elementArr     = $this->components[$element];
 			$manifest_cache = json_decode($elementArr['manifest_cache'], true);
 
-			# Check xml path
 			if ($manifest_cache['filename']) {
 				$xml_file = $manifest_cache['filename'] . '.xml';
-			} else {
+			}
+			else {
 				$xml_file = preg_split("/[_]+/", $elementArr["element"], 2)[1] . '.xml';
 			}
-			$path = is_dir(JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/') ? JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' : JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
-
-			# Load xml or fail
+			$path     = is_dir(JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/') ? JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' : JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
 			$xml_path = $path . $xml_file;
+
 			if ($element == 'com_extplorer' || $element == 'com_dropfiles') {
 				if (empty($manifest_cache['version'])) {
 					$manifest_cache['version'] = $this->refreshManifestCache($elementArr['extension_id'], $elementArr['element']);
@@ -151,23 +179,27 @@ class TchoozUpdateCommand extends AbstractCommand
 				if (!file_exists($xml_path)) {
 					if ($element == 'com_extplorer') {
 						$short_element = str_replace('com_', '', $element);
-						$file = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.j30.xml';
-					} elseif ($element == 'com_dropfiles') {
-						$file = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $element . '.xml';
+						$file          = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.j30.xml';
+					}
+					elseif ($element == 'com_dropfiles') {
+						$file          = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $element . '.xml';
 						$short_element = str_replace('com_', '', $element);
 					}
+
 					if (file_exists($file)) {
 						$rename_file = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.xml';
 						rename($file, $rename_file);
 						$xml_path = $rename_file;
-					} else {
+					}
+					else {
 						$xml_path = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.xml';
 					}
 				}
 			}
+
+			$schema_version = '';
 			if (file_exists($xml_path)) {
 				$this->manifest_xml = simplexml_load_file($xml_path);
-				$this->ioStyle->text("*--------------------*\n");
 
 				$regex = '/^6\.[0-9]*/m';
 				preg_match_all($regex, $manifest_cache['version'], $matches, PREG_SET_ORDER, 0);
@@ -178,29 +210,31 @@ class TchoozUpdateCommand extends AbstractCommand
 					$this->ioStyle->text("** Script first run **");
 
 					# Set schema version and align manifest cache version
-					$this->schema_version = '2.0.0';
+					$schema_version            = '2.0.0';
 					$manifest_cache['version'] = '2.0.0';
-					$this->updateSchema($elementArr['extension_id'], null, null, $this->schema_version);
+					$this->updateSchema($elementArr['extension_id'], null, null, $schema_version);
 				}
 
-				# Update loop
 				if ($this->firstrun or version_compare($manifest_cache['version'], $this->manifest_xml->version, '<=')) {
 					$this->ioStyle->text("UPDATE " . $manifest_cache['name'] . ' (' . $manifest_cache['version'] . ' to ' . $this->manifest_xml->version . ')');
 
-					# Require scriptfile
 					if ($this->manifest_xml->scriptfile) {
 						$scriptfile = JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' . $this->manifest_xml->scriptfile;
+
 						try {
 							if (file_exists($scriptfile) && is_readable($scriptfile)) {
 								require_once $scriptfile;
-							} else {
+							}
+							else {
 								$this->ioStyle->error($elementArr['element'] . " scriptfile doesn't exists or is not readable.");
 							}
-						} catch (\Exception $e) {
+						}
+						catch (\Exception $e) {
 							$this->ioStyle->error("-> " . $e->getMessage());
 							continue;
 						}
-					} else {
+					}
+					else {
 						unset($scriptfile);
 					}
 
@@ -208,18 +242,16 @@ class TchoozUpdateCommand extends AbstractCommand
 						$this->firstrun = false;
 					}
 
-					# Step 2 : Check custom updates
-					# Setup adapter
 					$installer->setPath('source', $path);
 
 					if (!$adapter = $installer->setupInstall('update', true)) {
 						$this->ioStyle->error("-> Couldn't detect manifest file");
+
 						return false;
 					}
 
 					$scriptClass = $elementArr['element'] . "InstallerScript";
 					if (class_exists($scriptClass)) {
-						# Create a new instance
 						$script = new $scriptClass();
 
 						try {
@@ -238,13 +270,15 @@ class TchoozUpdateCommand extends AbstractCommand
 										if (method_exists($scriptClass, 'postflight')) {
 											$script->postflight('update', $adapter);
 										}
-									} catch (\RuntimeException $e) {
-										// Install failed, roll back changes
+									}
+									catch (\RuntimeException $e) {
 										$this->ioStyle->error($e);
 										$installer->abort($e->getMessage());
+
 										return false;
 									}
 									ob_end_clean();
+
 									break;
 								case 'com_emundus':
 									if (method_exists($scriptClass, 'preflight')) {
@@ -274,26 +308,31 @@ class TchoozUpdateCommand extends AbstractCommand
 										$script->postflight('update', $adapter);
 									}
 									ob_end_clean();
+
 									break;
 							}
 
-						} catch (\Throwable $e) {
+						}
+						catch (\Throwable $e) {
 							$success = false;
 						}
-					} else {
+					}
+					else {
 						$this->ioStyle->error("-> Scriptfile doesn't exists");
 					}
-				} else {
+				}
+				else {
 					$this->ioStyle->text($elementArr['element'] . " component already up-to-date\n", 's');
 					$this->updateSchema($elementArr['extension_id'], null, null, $this->manifest_xml->version);
 					continue;
 				}
-			} else {
+			}
+			else {
 				$this->ioStyle->error("-> Manifest path doesn't exists");
 				$success = false;
 			}
 
-			$this->schema_version = $this->getSchemaVersion($elementArr['extension_id']);
+			$schema_version = $this->getSchemaVersion($elementArr['extension_id']);
 		}
 
 		return $success;
@@ -309,9 +348,9 @@ class TchoozUpdateCommand extends AbstractCommand
 
 		# For Joomla update method works, we need to rename manifest file for some extensions (extplorer and dropfiles)
 		if ($element == 'com_extplorer' or $element == 'com_dropfiles') {
-			$comp = $this->getElementFromId('extensions', array($ext_id));
-			$manifest = json_decode($comp[0]['manifest_cache'], true);
-			$file = JPATH_ADMINISTRATOR . '/components/' . $comp[0]['element'] . '/' . $comp[0]['element'] . '.xml';
+			$comp          = $this->getElementFromId('extensions', array($ext_id));
+			$manifest      = json_decode($comp[0]['manifest_cache'], true);
+			$file          = JPATH_ADMINISTRATOR . '/components/' . $comp[0]['element'] . '/' . $comp[0]['element'] . '.xml';
 			$short_element = str_replace('com_', '', $comp[0]['element']);
 			if (file_exists($file)) {
 				$rename_file = JPATH_ADMINISTRATOR . '/components/' . $comp[0]['element'] . '/' . $short_element . '.xml';
@@ -325,8 +364,8 @@ class TchoozUpdateCommand extends AbstractCommand
 		if ($element == 'com_extplorer' or $element == 'com_dropfiles') {
 			if (file_exists($rename_file)) {
 				rename($rename_file, $file);
-				$manifest['version'] = (string)$this->manifest_xml->version;
-				$manifest = json_encode($manifest);
+				$manifest['version']                  = (string) $this->manifest_xml->version;
+				$manifest                             = json_encode($manifest);
 				$installer->extension->manifest_cache = $manifest;
 				$installer->extension->store();
 			}
@@ -341,7 +380,7 @@ class TchoozUpdateCommand extends AbstractCommand
 
 	private function getElementFromId($table, $ids)
 	{
-		$db = $this->getDatabase();
+		$db    = $this->getDatabase();
 		$query = $db->getQuery(true);
 
 		$query->select('*')
@@ -354,7 +393,7 @@ class TchoozUpdateCommand extends AbstractCommand
 
 	private function updateSchema($eid, $files = null, $method = null, $version = null)
 	{
-		$db = $this->getDatabase();
+		$db    = $this->getDatabase();
 		$query = $db->getQuery(true);
 
 		$query->delete('#__schemas')
@@ -367,7 +406,8 @@ class TchoozUpdateCommand extends AbstractCommand
 					->insert($db->quoteName('#__schemas'))
 					->columns(array($db->quoteName('extension_id'), $db->quoteName('version_id')))
 					->values($eid . ', ' . $db->quote($method($files)));
-			} else {
+			}
+			else {
 				$query->clear()
 					->insert($db->quoteName('#__schemas'))
 					->columns(array($db->quoteName('extension_id'), $db->quoteName('version_id')))
@@ -381,7 +421,7 @@ class TchoozUpdateCommand extends AbstractCommand
 
 	private function getSchemaVersion($eid)
 	{
-		$db = $this->getDatabase();
+		$db    = $this->getDatabase();
 		$query = $db->getQuery(true);
 
 		$query->select('version_id')
@@ -392,35 +432,35 @@ class TchoozUpdateCommand extends AbstractCommand
 		return $db->loadResult();
 	}
 
-    /**
-     * Configure the IO.
-     *
-     * @param   InputInterface   $input   The input to inject into the command.
-     * @param   OutputInterface  $output  The output to inject into the command.
-     *
-     * @return  void
-     *
-     * @since   4.0.0
-     */
-    private function configureIO(InputInterface $input, OutputInterface $output)
-    {
-        $this->cliInput = $input;
-        $this->ioStyle  = new SymfonyStyle($input, $output);
-    }
+	/**
+	 * Configure the IO.
+	 *
+	 * @param   InputInterface   $input   The input to inject into the command.
+	 * @param   OutputInterface  $output  The output to inject into the command.
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	private function configureIO(InputInterface $input, OutputInterface $output)
+	{
+		$this->cliInput = $input;
+		$this->ioStyle  = new SymfonyStyle($input, $output);
+	}
 
-    /**
-     * Configure the command.
-     *
-     * @return  void
-     *
-     * @since   4.0.0
-     */
-    protected function configure(): void
-    {
-        $help = "<info>%command.name%</info> will update Tchooz product
+	/**
+	 * Configure the command.
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	protected function configure(): void
+	{
+		$help = "<info>%command.name%</info> will update Tchooz product
 		\nUsage: <info>php %command.full_name%</info>";
 
-        $this->setDescription('Update Tchooz core product');
-        $this->setHelp($help);
-    }
+		$this->setDescription('Update Tchooz core product');
+		$this->setHelp($help);
+	}
 }
