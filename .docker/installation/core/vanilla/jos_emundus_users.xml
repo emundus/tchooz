@@ -15,7 +15,6 @@
    <field Field="cancellation_received" Type="date" Null="YES" Key="" Extra="" />
    <field Field="university_id" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="email" Type="varchar(255)" Null="YES" Key="" Extra="" />
-   <field Field="password" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="name" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="confirm_email" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="terms_and_conditions" Type="text" Null="YES" Key="" Extra="" />
