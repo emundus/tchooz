@@ -16,14 +16,30 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.plugin.plugin' );
 
+use Joomla\CMS\Plugin\CMSPlugin;
+
 /**
  * emundus_period candidature periode check
  *
  * @package     Joomla
  * @subpackage  System
  */
-class plgSystemEmundus_block_user extends JPlugin
+class plgSystemEmundus_block_user extends CMSPlugin
 {
+	/**
+	 * @var    \Joomla\CMS\Application\CMSApplication
+	 *
+	 * @since  3.2
+	 */
+	protected $app;
+
+	/**
+	 * @var    \Joomla\Database\DatabaseDriver
+	 *
+	 * @since  3.2
+	 */
+	protected $db;
+
     /**
      * Constructor
      *
@@ -42,12 +58,18 @@ class plgSystemEmundus_block_user extends JPlugin
     function onAfterInitialise() {
         include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
-        $app    =  JFactory::getApplication();
-        $user   =  JFactory::getSession()->get('emundusUser');
-        $jinput = JFactory::getApplication()->input;
+        $user   =  $this->app->getSession()->get('emundusUser');
+        $input = $this->app->input;
+		$uri = JUri::getInstance();
 
-        if (!$app->isClient('administrator') && isset($user->id) && !empty($user->id) && EmundusHelperAccess::isApplicant($user->id) && ($jinput->get('option', '') != 'com_emundus' && $jinput->get('view', '') != 'user')) {
-
+        if (
+			!$this->app->isClient('administrator') &&
+			!empty($user->id) &&
+			EmundusHelperAccess::isApplicant($user->id) &&
+			($input->get('option', '') != 'com_emundus' && $input->get('view', '') != 'user') &&
+			strpos($uri->toString(), 'activation') === false &&
+			strpos($uri->toString(), 'logout') === false
+        ) {
             $table = JTable::getInstance('user', 'JTable');
 
             $table->load($user->id);
@@ -55,11 +77,11 @@ class plgSystemEmundus_block_user extends JPlugin
 
             $token = $params->get('emailactivation_token');
             $token = md5($token);
-            if (!empty($token) && strlen($token) === 32 && $app->input->getInt($token, 0, 'get') === 1) {
+            if (!empty($token) && strlen($token) === 32 && $this->app->input->getInt($token, 0, 'get') === 1) {
                 $table->activation = 1;
             }
-            if ($table->activation == -1) {
-                header('location: index.php?option=com_emundus&view=user');
+            if ((int)$table->activation == -1) {
+				$this->app->redirect('activation');
             }
 
         }

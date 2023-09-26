@@ -7,13 +7,42 @@
  * @license GNU General Public License version 2, or later
  */
 
-// Protect from unauthorized access
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageFactoryInterface;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Mail\MailTemplate;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserHelper;
+use Joomla\Database\Exception\ExecutionFailureException;
+use Joomla\Database\ParameterType;
+use Joomla\Registry\Registry;
+use Joomla\CMS\Table\Table;
+use Joomla\CMS\Plugin\PluginHelper;
 
+// phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die('Restricted access');
 defined('DS') or define('DS', DIRECTORY_SEPARATOR);
+// phpcs:enable PSR1.Files.SideEffects
 
-class plgUserEmundus_registration_email extends JPlugin {
+class plgUserEmundus_registration_email extends CMSPlugin 
+{
+	/**
+	 * @var    \Joomla\CMS\Application\CMSApplication
+	 *
+	 * @since  3.2
+	 */
+	protected $app;
+
+	/**
+	 * @var    \Joomla\Database\DatabaseDriver
+	 *
+	 * @since  3.2
+	 */
+	protected $db;
 
     /**
      * Constructor
@@ -31,17 +60,15 @@ class plgUserEmundus_registration_email extends JPlugin {
         parent::__construct($subject, $config);
         $this->loadLanguage();
 
-        $input = JFactory::getApplication()->input;
+        $input = $this->app->input;
 
         if ($input->getInt('emailactivation')) {
             $userId = $input->getInt('u');
-            $app    = JFactory::getApplication();
-            $user   = JFactory::getUser($userId);
+            $user   = Factory::getUser($userId);
 
             if (!$user->guest) {
 
-                // need to load fresh instance
-                $table = JTable::getInstance('user', 'JTable');
+                $table = Table::getInstance('user', 'JTable');
                 $table->load($userId);
 
                 if (empty($table->id)) {
@@ -50,13 +77,11 @@ class plgUserEmundus_registration_email extends JPlugin {
 
                 $params = new JRegistry($table->params);
 
-                // get token from user parameters
                 $token = $params->get('emailactivation_token');
                 $token = md5($token);
 
                 $redirect = $this->params->get('activation_redirect','index.php');
 
-                // Check that the token is in a valid format.
                 if (!empty($token) && strlen($token) === 32 && $input->getInt($token, 0, 'get') === 1) {
 
                     // Remove token and from user params.
@@ -69,19 +94,19 @@ class plgUserEmundus_registration_email extends JPlugin {
 
                     // save user data
                     if ($table->store()) {
-                        $app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'),'success');
+                        $this->app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'),'success');
                     } else {
                         throw new RuntimeException($table->getError());
                     }
 
                 } elseif ($table->block == 0) {
-                    $app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ALREADY_ACTIVATED'), 'warning');
+                    $this->app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ALREADY_ACTIVATED'), 'warning');
                 } else {
-                    $app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ERROR_ACTIVATED'), 'error');
+                    $this->app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ERROR_ACTIVATED'), 'error');
                 }
 
                 if (!empty($redirect)) {
-                    $app->redirect($redirect);
+                    $this->app->redirect($redirect);
                 }
             }
         }
@@ -119,16 +144,15 @@ class plgUserEmundus_registration_email extends JPlugin {
      */
     public function onAfterStoreUser($new, $isnew, $result, $error) {
         $userId = (int) $new['id'];
-        $user = JFactory::getUser($userId);
-        $app = JFactory::getApplication();
-        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $user = Factory::getUser($userId);
+        $eMConfig = ComponentHelper::getParams('com_emundus');
 
-        if (!$isnew || !JFactory::getUser()->guest) {
+        if (!$isnew || !Factory::getUser()->guest) {
             return;
         }
 
         // If user is found in the LDAP system.
-        if (JPluginHelper::getPlugin('authentication','ldap')) {
+        if (PluginHelper::getPlugin('authentication','ldap')) {
             require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
             $m_users = new EmundusModelusers();
             $return = $m_users->searchLDAP($user->username);
@@ -138,7 +162,7 @@ class plgUserEmundus_registration_email extends JPlugin {
             }
         }
 
-        if (JPluginHelper::getPlugin('authentication','miniorangesaml')) {
+        if (PluginHelper::getPlugin('authentication','miniorangesaml')) {
             require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
             $m_users = new EmundusModelusers();
             $isSamlUser = $m_users->isSamlUser($userId);
@@ -148,7 +172,6 @@ class plgUserEmundus_registration_email extends JPlugin {
             }
         }
 
-        // if saving user's data was successful
         if ($result && !$error) {
             // for anonym sessions
             $allow_anonym_files = $eMConfig->get('allow_anonym_files', 0);
@@ -162,15 +185,11 @@ class plgUserEmundus_registration_email extends JPlugin {
 
             // Store token in User's Parameters
             $user->setParam('emailactivation_token', $activation);
-
-            // Get the raw User Parameters
-            $params = $user->getParameters();
-            $user->set('params', $params);
+			$user->save();
 
             // Set the user table instance to include the new token.
-            $table = JTable::getInstance('user', 'JTable');
+            $table = Table::getInstance('user');
             $table->load($userId);
-            $table->params = $params->toString();
 
             // Block the user (until he activates).
             $table->block = $eMConfig->get('block_user',1);
@@ -184,51 +203,57 @@ class plgUserEmundus_registration_email extends JPlugin {
             if ($this->sendActivationEmail($user->getProperties(), $activation)) {
                 //Force user logout
                 if ($this->params->get('logout', null) && $userId === (int) JFactory::getUser()->id) {
-                    $app->logout();
-                    $app->redirect(JRoute::_(''), false);
+                    $this->app->logout();
+                    $this->app->redirect(JRoute::_(''), false);
                 }
             }
 
             $this->onUserAfterLogin($new);
         }
     }
+
     /**
-     * This method should handle any login logic and report back to the subject
+     * Hooks on the Joomla! login event. Detects silent logins and disables the Multi-Factor
+     * Authentication page in this case.
      *
-     * @param	array	$user		Holds the user data.
-     * @param	array	$options	Extra options.
+     * Moreover, it will save the redirection URL and the Captive URL which is necessary in Joomla 4. You see, in Joomla
+     * 4 having unified sessions turned on makes the backend login redirect you to the frontend of the site AFTER
+     * logging in, something which would cause the Captive page to appear in the frontend and redirect you to the public
+     * frontend homepage after successfully passing the Two Step verification process.
      *
-     * @return	boolean	True on success
-     * @since	1.5
+     * @param   array  $options  Passed by Joomla. user: a User object; responseType: string, authentication response type.
+     *
+     * @return void
+     * @since  4.2.0
      */
-    public function onUserAfterLogin($options)
+    public function onUserAfterLogin(array $options): void
     {
-        $app = JFactory::getApplication();
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $this->app = JFactory::getApplication();
+        $query = $this->db->getQuery(true);
 
-        $query->select($db->quoteName(array('id','block', 'params')));
-        $query->from($db->quoteName('#__users'));
-        $query->where($db->quoteName('username') . ' LIKE ' . $db->quote($options['username']));
-
-        $db->setQuery($query);
-        $result = $db->loadObject();
+        $query->select($this->db->quoteName(array('id','block', 'params')))
+	        ->from($this->db->quoteName('#__users'))
+	        ->where($this->db->quoteName('username') . ' LIKE ' . $this->db->quote($options['username']));
+        $this->db->setQuery($query);
+        $result = $this->db->loadObject();
 
         $token = json_decode($result->params);
         $token = $token->emailactivation_token;
 
         if ($token != null) {
-            $query = $db->getQuery(true);
             $fields = array(
-                $db->quoteName('block') . ' = ' . $db->quote(0),
-                $db->quoteName('activation') . ' = ' . $db->quote(-1),
+                $this->db->quoteName('block') . ' = ' . $this->db->quote(0),
+                $this->db->quoteName('activation') . ' = ' . $this->db->quote(-1),
             );
             $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote($options['id']),
+                $this->db->quoteName('id') . ' = ' . $this->db->quote($options['id']),
             );
-            $query->update($db->quoteName('#__users'))->set($fields)->where($conditions);
-            $db->setQuery($query);
-            $db->execute();
+            $query->clear()
+	            ->update($this->db->quoteName('#__users'))
+	            ->set($fields)
+	            ->where($conditions);
+            $this->db->setQuery($query);
+            $this->db->execute();
 
             $credentials = array();
             $credentials['username'] = $options['username'];
@@ -236,21 +261,24 @@ class plgUserEmundus_registration_email extends JPlugin {
 
             $options = array();
             $options['redirect'] = '/index.php?option=com_emundus&view=user';
-            $app->login($credentials,$options);
+            $this->app->login($credentials,$options);
         } else {
-            $query = $db->getQuery(true);
             $fields = array(
-                $db->quoteName('block') . ' = ' . $db->quote(0),
-                $db->quoteName('activation') . ' = ' . $db->quote(1),
+                $this->db->quoteName('block') . ' = ' . $this->db->quote(0),
+                $this->db->quoteName('activation') . ' = ' . $this->db->quote(1),
             );
             $conditions = array(
-                $db->quoteName('id') . ' = ' . $db->quote($options['id']),
+                $this->db->quoteName('id') . ' = ' . $this->db->quote($options['id']),
             );
-            $query->update($db->quoteName('#__users'))->set($fields)->where($conditions);
-            $db->setQuery($query);
-            $db->execute();
+            $query->clear()
+	            ->update($this->db->quoteName('#__users'))
+	            ->set($fields)
+	            ->where($conditions);
+            $this->db->setQuery($query);
+            $this->db->execute();
         }
     }
+
     /**
      * Send activation email to user in order to proof it
      * @since  3.9.1
@@ -270,9 +298,9 @@ class plgUserEmundus_registration_email extends JPlugin {
             return false;
         }
 
-        $jinput = JFactory::getApplication()->input;
-        $civility = is_array($jinput->post->get('jos_emundus_users___civility')) ? $jinput->post->get('jos_emundus_users___civility')[0] : $jinput->post->get('jos_emundus_users___civility');
-        $password = !empty($data['password_clear']) ? $data['password_clear'] : $jinput->post->get('jos_emundus_users___password');
+        $input = $this->app->input;
+        $civility = is_array($input->post->get('jos_emundus_users___civility')) ? $input->post->get('jos_emundus_users___civility')[0] : $input->post->get('jos_emundus_users___civility');
+        $password = !empty($data['password_clear']) ? $data['password_clear'] : $input->post->get('jos_emundus_users___password');
 
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
         $c_messages = new EmundusControllerMessages();
