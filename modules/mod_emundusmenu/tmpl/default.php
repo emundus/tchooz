@@ -11,11 +11,7 @@ defined('_JEXEC') or die;
 
 // Note. It is important to remove spaces between elements.
 ?>
-<ul class="<?php echo $class_sfx;?>"<?php
-	if (!empty($tag)) {;
-		echo ' id="'.$tag.'"';
-	}
-?>>
+<ul class="gf-menu l1 emundus" id="em_user_menu">
 <?php
 foreach ($list as $i => &$item) :
 	$item->anchor_css="item";
