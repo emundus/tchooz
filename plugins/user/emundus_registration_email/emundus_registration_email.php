@@ -62,7 +62,7 @@ class plgUserEmundus_registration_email extends CMSPlugin
 
         $input = $this->app->input;
 
-        if ($input->getInt('emailactivation')) {
+        if ($input->getInt('emailactivation') && Factory::getUser()->guest) {
             $userId = $input->getInt('u');
             $user   = Factory::getUser($userId);
 
