@@ -691,7 +691,7 @@ class EmundusModelPayment extends JModelList
     {
         JPluginHelper::importPlugin('emundus');
 
-        $extended_config = JFactory::getApplication()->triggerEvent('callEventHandler', ['extendFlywireConfig', ['config' => $config]]);
+        $extended_config = JFactory::getApplication()->triggerEvent('onCallEventHandler', ['extendFlywireConfig', ['config' => $config]]);
 
         if (!empty($extended_config)) {
             foreach($extended_config[0] as $extend) {
@@ -1005,7 +1005,7 @@ class EmundusModelPayment extends JModelList
 
     public function resetPaymentSession() {
 	    JPluginHelper::importPlugin('emundus','custom_event_handler');
-	    \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onHikashopResetSession', ['fnum' => JFactory::getSession()->get('emundusUser')->fnum]]);
+	    \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopResetSession', ['fnum' => JFactory::getSession()->get('emundusUser')->fnum]]);
 
 	    JFactory::getSession()->set('emundusPayment', null);
     }
@@ -1018,7 +1018,7 @@ class EmundusModelPayment extends JModelList
         $valid_session = true;
         $app = JFactory::getApplication();
 
-        if (!$app->isAdmin()) {
+        if (!$app->isClient('administrator')) {
             $emundus_payment = JFactory::getSession()->get('emundusPayment');
             $user = JFactory::getSession()->get('emundusUser');
 

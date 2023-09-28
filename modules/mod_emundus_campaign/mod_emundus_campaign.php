@@ -25,6 +25,8 @@ if (version_compare(JVERSION, '4.0', '>')) {
     $document = $app->getDocument();
     $wa = $document->getWebAssetManager();
     $lang_tag = $app->getLanguage()->getTag();
+
+    $wa->useScript('jquery');
 } else {
     $config = Factory::getConfig();
     $session = Factory::getSession();

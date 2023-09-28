@@ -160,7 +160,7 @@ class PlgFabrik_FormEmundusconfirmpostgkqcm extends plgFabrik_Form
 
 		JPluginHelper::importPlugin('emundus');
         JFactory::getApplication()->triggerEvent('onBeforeSubmitFile', [$student->id, $student->fnum]);
-        JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
         // Get status by element
         $status_defined = false;

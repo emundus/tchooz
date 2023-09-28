@@ -619,7 +619,7 @@ class plgUserEmundus extends CMSPlugin
 			}
 
 			PluginHelper::importPlugin('emundus', 'custom_event_handler');
-			Factory::getApplication()->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
+			Factory::getApplication()->triggerEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
 
 			if (!empty($previous_url)) {
 				$this->app->redirect($previous_url);

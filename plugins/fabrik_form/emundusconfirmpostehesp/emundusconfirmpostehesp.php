@@ -159,7 +159,7 @@ class PlgFabrik_FormEmundusconfirmpostehesp extends plgFabrik_Form
 
 		JPluginHelper::importPlugin('emundus');
         JFactory::getApplication()->triggerEvent('onBeforeSubmitFile', [$student->id, $student->fnum]);
-        JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		$status_by_fnum = $student->fnums[$student->fnum]->status;
 		$status_actuel = $this->getParam('emundusconfirmpost_status_actual',0);

@@ -73,16 +73,15 @@ class EmundusControllerAdmission extends JControllerLegacy
 	public function applicantEmail()
 	{
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
-		@EmundusHelperEmails::sendApplicantEmail();
+		EmundusHelperEmails::sendApplicantEmail();
 	}
 
 	public function clear()
 	{
-		@EmundusHelperFiles::clear();
+		EmundusHelperFiles::clear();
 		echo json_encode((object) (array('status' => true)));
 		exit;
 	}
-
 
 	public function setfilters()
 	{
@@ -90,7 +89,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 		$elements   = $this->input->getString('elements', null);
 		$multi      = $this->input->getString('multi', null);
 
-		@EmundusHelperFiles::clearfilter();
+		EmundusHelperFiles::clearfilter();
 
 		if ($multi == "true")
 		{
@@ -141,7 +140,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 	{
 		$id = $this->input->getInt('id', null);
 
-		$filter                  = @EmundusHelperFiles::getEmundusFilters($id);
+		$filter                  = EmundusHelperFiles::getEmundusFilters($id);
 		$params                  = (array) json_decode($filter->constraints);
 		$params['select_filter'] = $id;
 		$params                  = json_decode($filter->constraints, true);
@@ -310,7 +309,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 
 		$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
-		$m_application = new EmundusModelApplication();
+		$m_application = $this->getModel('Application');
 
 		if (is_array($fnums))
 		{
@@ -344,8 +343,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 		elseif ($fnums == 'all')
 		{
 			//all result find by the request
-			$m_files       = new EmundusModelFiles();
-			$m_application = new EmundusModelApplication();
+			$m_files       = $this->getModel('Files');
 
 			$fnums = $m_files->getAllFnums();
 			foreach ($fnums as $fnum)
@@ -468,17 +466,18 @@ class EmundusControllerAdmission extends JControllerLegacy
 
 	public function deletetags()
 	{
-
+		$result = true;
 		$fnums = $this->input->getString('fnums', null);
 		$tags  = $this->input->getVar('tag', null);
 
 		$fnums = ($fnums == 'all') ? 'all' : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
-		$m_files       = new EmundusModelFiles();
-		$m_application = new EmundusModelApplication();
+		$m_files       = $this->getModel('Files');
+		$m_application = $this->getModel('Application');
 
-		if ($fnums == "all")
+		if ($fnums == "all") {
 			$fnums = $m_files->getAllFnums();
+		}
 
 		foreach ($fnums as $fnum)
 		{
@@ -501,7 +500,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 		unset($fnums);
 		unset($tags);
 
-		echo json_encode((object) (array('status' => true, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
+		echo json_encode((object) (array('status' => $result, 'msg' => JText::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
 		exit;
 	}
 
@@ -712,7 +711,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 		$code = explode(',', $code);
 
 		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'admission.php');
-		$m_admission = new EmundusModelAdmission();
+		$m_admission = $this->getModel('Admission');
 		$h_files     = new EmundusHelperFiles;
 
 		$defaultElements = $m_admission->getAdmissionElementsName(0, 1, $code);
@@ -767,11 +766,8 @@ class EmundusControllerAdmission extends JControllerLegacy
 			}
 		}
 
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'campaign.php');
-
-		$m_profile  = new EmundusModelProfile();
-		$m_campaign = new EmundusModelCampaign();
+		$m_profile  = $this->getModel('Profile');
+		$m_campaign = $this->getModel('Campaign');
 
 		if (!empty($fnum))
 		{
@@ -869,8 +865,6 @@ class EmundusControllerAdmission extends JControllerLegacy
 
 	public function getfnums_csv()
 	{
-
-
 		$fnums_post  = $this->input->getVar('fnums', null);
 		$fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 		$m_files     = $this->getModel('Files');
@@ -912,11 +906,12 @@ class EmundusControllerAdmission extends JControllerLegacy
 	public function generate_array()
 	{
 
-		if (!@EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		if (!@EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
 
-		$m_files       = new EmundusModelFiles();
-		$m_application = new EmundusModelApplication();
+		$m_files       = $this->getModel('Files');
+		$m_application = $this->getModel('Application');
 
 		$fnums   = $this->session->get('fnums_export');
 		if (count($fnums) == 0)
@@ -944,7 +939,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 			exit();
 		}
 
-		$elements = @EmundusHelperFiles::getElementsName(implode(',', $col));
+		$elements = EmundusHelperFiles::getElementsName(implode(',', $col));
 
 		// re-order elements
 		$ordered_elements = array();
@@ -993,13 +988,13 @@ class EmundusControllerAdmission extends JControllerLegacy
 					$colOpt['attachment'] = $m_application->getAttachmentsProgress($fnums);
 					break;
 				case "assessment":
-					$colOpt['assessment'] = @EmundusHelperFiles::getEvaluation('text', $fnums);
+					$colOpt['assessment'] = EmundusHelperFiles::getEvaluation('text', $fnums);
 					break;
 				case "comment":
 					$colOpt['comment'] = $m_files->getCommentsByFnum($fnums);
 					break;
 				case 'evaluators':
-					$colOpt['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $m_files);
+					$colOpt['evaluators'] = EmundusHelperFiles::createEvaluatorList($col[1], $m_files);
 					break;
 			}
 		}
@@ -1254,7 +1249,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 	{
 		$view         = $this->input->get('view');
 
-		if ((!@EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) && $view != 'renew_application')
+		if ((!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) && $view != 'renew_application')
 		{
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}

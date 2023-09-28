@@ -432,4 +432,13 @@ export default {
 #add-form-next-campaign{
   width: 100%;
 }
+
+.nav-tabs > li > a {
+  line-height: 20px;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  padding: 8px 12px;
+  margin-right: 2px;
+  display: block;
+}
 </style>

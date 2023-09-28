@@ -195,10 +195,10 @@ class PlgFabrik_FormEmundusconfirmpostbyelement extends plgFabrik_Form
 
         if($student->status != $step) {
             $app->triggerEvent('onBeforeStatusChange', [$student->fnum, $step]);
-            $app->triggerEvent('callEventHandler', ['onBeforeStatusChange', ['fnum' => $student->fnum, 'state' => $step]]);
+            $app->triggerEvent('onCallEventHandler', ['onBeforeStatusChange', ['fnum' => $student->fnum, 'state' => $step]]);
         }
         $app->triggerEvent('onBeforeSubmitFile', [$student->id, $student->fnum]);
-        $app->triggerEvent('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        $app->triggerEvent('onCallEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
         $query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $db->Quote($now) . ', status='.$step.' WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
         $db->setQuery($query);
@@ -219,7 +219,7 @@ class PlgFabrik_FormEmundusconfirmpostbyelement extends plgFabrik_Form
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
         JFactory::getApplication()->triggerEvent('onAfterSubmitFile', [$student->id, $student->fnum]);
-        JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+        JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
         $student->candidature_posted = 1;
 

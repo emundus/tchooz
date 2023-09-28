@@ -26,7 +26,7 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
  * @since       3.0
  */
 
-class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
+class PlgFabrik_FormEmundustriggers extends PlgFabrik_Form
 {
 
     /**
@@ -78,8 +78,9 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
     public function onBeforeLoad() {
         $formModel = $this->getModel();
 
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeLoad', ['formModel' => $formModel]]);
+        JPluginHelper::importPlugin('emundus');
+
+	    $result = \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeLoad', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -94,7 +95,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onLoad', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onLoad', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -109,7 +110,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onJSReady', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onJSReady', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -124,7 +125,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onJSOpts', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onJSOpts', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -139,7 +140,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onCanEditGroup', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onCanEditGroup', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -154,7 +155,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeProcess', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeProcess', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -169,7 +170,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeStore', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeStore', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -184,7 +185,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeCalculations', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeCalculations', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -199,7 +200,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterProcess', ['formModel' => $formModel, 'plugin_options' => $this->getParams()]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterProcess', ['formModel' => $formModel, 'plugin_options' => $this->getParams()]]);
 
         return true;
     }
@@ -214,7 +215,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onError', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onError', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -229,7 +230,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['getTopContent', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['getTopContent', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -244,7 +245,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['getBottomContent', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['getBottomContent', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -259,7 +260,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['getEndContent', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['getEndContent', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -274,7 +275,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onDeleteRowsForm', ['formModel' => $formModel, 'groups' => $groups]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onDeleteRowsForm', ['formModel' => $formModel, 'groups' => $groups]]);
 
         return true;
     }
@@ -289,7 +290,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterDeleteRowsForm', ['formModel' => $formModel, 'groups' => $groups]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterDeleteRowsForm', ['formModel' => $formModel, 'groups' => $groups]]);
 
         return true;
     }
@@ -304,7 +305,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onSavePage', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onSavePage', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -319,7 +320,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onElementCanUse', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onElementCanUse', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -334,7 +335,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onElementCanView', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onElementCanView', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -349,7 +350,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onElementContainerClass', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onElementContainerClass', ['formModel' => $formModel]]);
 
         return true;
     }

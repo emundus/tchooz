@@ -4124,7 +4124,7 @@ class EmundusModelApplication extends JModelList
                 $db->execute();
 
                 JPluginHelper::importPlugin('emundus');
-                JFactory::getApplication()->triggerEvent('callEventHandler', array(
+                JFactory::getApplication()->triggerEvent('onCallEventHandler', array(
                         'onAfterMoveApplication',
                         array(
                             'fnum_from' => $fnum_from,
@@ -4372,7 +4372,7 @@ class EmundusModelApplication extends JModelList
         }
 
         JPluginHelper::importPlugin('emundus');
-        JFactory::getApplication()->triggerEvent('callEventHandler', array(
+        JFactory::getApplication()->triggerEvent('onCallEventHandler', array(
             'onAfterCopyApplication',
             array(
                 'fnum_from' => $fnum_from,

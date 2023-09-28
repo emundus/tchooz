@@ -8,24 +8,14 @@
  */
 
 // No direct access
-/*
-if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 
-    use PhpOffice\PhpWord\IOFactory;
-    use PhpOffice\PhpWord\PhpWord;
-    use PhpOffice\PhpWord\TemplateProcessor;
-}
-*/
-
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-//use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
-
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
-jimport( 'joomla.user.helper' );
-require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'award.php');
+jimport('joomla.user.helper');
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'award.php');
+
+use Joomla\CMS\Factory;
 
 /**
  * eMundus Component Controller
@@ -34,77 +24,74 @@ require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'award.
  * @subpackage eMundus
  */
 //error_reporting(E_ALL);
+
 /**
  * Class EmundusControllerFiles
  */
 class EmundusControllerAward extends JControllerLegacy
 {
-    public function __construct($config = array())
-    {
+	private $_user;
 
+	public function __construct($config = array())
+	{
+		$this->_user = Factory::getUser();
 
-        $this->_user = JFactory::getSession()->get('emundusUser');
+		parent::__construct($config);
+	}
 
-        $this->_db = JFactory::getDBO();
+	public function addvote()
+	{
+		$fnum        = $this->input->post->getVar('fnum', null);
+		$user        = $this->input->post->getString('user', null);
+		$thematique  = $this->input->post->getString('thematique', null);
+		$engagement  = $this->input->post->getString('engagement', null);
+		$campaign_id = $this->input->post->getString('campaign_id', null);
+		$student_id  = $this->input->post->getString('student_id', null);
 
-        parent::__construct($config);
-    }
-    public function addvote(){
+		$m_award = $this->getModel('Award');
 
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->post->getVar('fnum', null);
-        $user = $jinput->post->getString('user', null);
-        $thematique = $jinput->post->getString('thematique', null);
-        $engagement = $jinput->post->getString('engagement', null);
-        $campaign_id = $jinput->post->getString('campaign_id', null);
-        $student_id = $jinput->post->getString('student_id', null);
+		try {
+			$m_award->updatePlusNbVote($fnum, $user, $thematique, $engagement, $student_id, $campaign_id);
+			$res = true;
+		}
+		catch (Exception $e) {
+			$res = false;
+			echo "Captured Throwable: " . $e->getMessage() . PHP_EOL;
+		}
 
+		$results = array('status' => $res);
 
+		echo json_encode($results);
+		exit;
+	}
 
-        $m_model = new EmundusModelAward();
+	public function favoris()
+	{
+		$fnum = $this->input->post->getString('fnum', null);
+		$user = $this->input->post->getString('user', null);
 
-        try{
-            $m_model->updatePlusNbVote($fnum,$user,$thematique,$engagement, $student_id, $campaign_id);
-            $res = true;
+		$m_award = $this->getModel('Award');
 
-        }
-        catch(Exception $e){
-            $res = false;
-            echo "Captured Throwable: " . $e->getMessage() . PHP_EOL;
-        }
+		try {
+			$favoris = $m_award->getFavoris($fnum, $user);
+			if (empty($favoris)) {
+				$m_award->addToFavoris($fnum, $user);
+				$res = 'add';
+			}
+			else {
+				$m_award->deleteToFavoris($fnum, $user);
+				$res = 'delete';
+			}
 
-        $results = array('status'=>$res);
+		}
+		catch (Exception $e) {
+			$res = false;
+			echo "Captured Throwable: " . $e->getMessage() . PHP_EOL;
+		}
+		$results = array('status' => $res);
 
-        echo json_encode($results);
-        exit;
-    }
-    public function favoris(){
-        $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->post->getString('fnum', null);
-        $user = $jinput->post->getString('user', null);
+		echo json_encode($results);
+		exit;
 
-        $m_model = new EmundusModelAward();
-
-        try{
-            $favoris = $m_model->getFavoris($fnum,$user);
-            if(empty($favoris)){
-                $m_model->addToFavoris($fnum,$user);
-                $res='add';
-            }
-            else{
-                $m_model->deleteToFavoris($fnum,$user);
-                $res='delete';
-            }
-
-        }
-        catch(Exception $e){
-            $res = false;
-            echo "Captured Throwable: " . $e->getMessage() . PHP_EOL;
-        }
-        $results = array('status'=>$res);
-
-        echo json_encode($results);
-        exit;
-
-    }
+	}
 }

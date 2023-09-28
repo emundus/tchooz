@@ -858,7 +858,7 @@ class EmundusModelUsers extends JModelList {
 		    }
 
 		    $this->app->triggerEvent('onBeforeSaveEmundusUser', [$user_id, $params]);
-		    $this->app->triggerEvent('callEventHandler', ['onBeforeSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
+		    $this->app->triggerEvent('onCallEventHandler', ['onBeforeSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
 
 		    $query = $this->db->getQuery(true);
 
@@ -881,13 +881,13 @@ class EmundusModelUsers extends JModelList {
 		    $this->db->execute();
 
 		    $this->app->triggerEvent('onAfterSaveEmundusUser', [$user_id, $params]);
-		    $this->app->triggerEvent('callEventHandler', ['onAfterSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
+		    $this->app->triggerEvent('onCallEventHandler', ['onAfterSaveEmundusUser', ['user_id' => $user_id, 'params' => $params]]);
 			
 
 		    if (!empty($groups)) {
 			    foreach ($groups as $group) {
 				    $this->app->triggerEvent('onBeforeAddUserToGroup', [$user_id, $group]);
-				    $this->app->triggerEvent('callEventHandler', ['onBeforeAddUserToGroup', ['user_id' => $user_id, 'group' => $group]]);
+				    $this->app->triggerEvent('onCallEventHandler', ['onBeforeAddUserToGroup', ['user_id' => $user_id, 'group' => $group]]);
 
 				    $query->clear()
 					    ->insert($this->db->quoteName('#__emundus_groups'))
@@ -897,14 +897,14 @@ class EmundusModelUsers extends JModelList {
 				    $this->db->execute();
 
 				    $this->app->triggerEvent('onAfterAddUserToGroup', [$user_id, $group]);
-				    $this->app->triggerEvent('callEventHandler', ['onAfterAddUserToGroup', ['user_id' => $user_id, 'group' => $group]]);
+				    $this->app->triggerEvent('onCallEventHandler', ['onAfterAddUserToGroup', ['user_id' => $user_id, 'group' => $group]]);
 			    }
 		    }
 
 		    if (!empty($campaigns) && is_array($campaigns)) {
 			    foreach ($campaigns as $campaign) {
 				    $this->app->triggerEvent('onBeforeCampaignCandidature', [$user_id, $this->user->id, $campaign]);
-				    $this->app->triggerEvent('callEventHandler', ['onBeforeCampaignCandidature', ['user_id' => $user_id, 'connected' => $this->user->id, 'campaign' => $campaign]]);
+				    $this->app->triggerEvent('onCallEventHandler', ['onBeforeCampaignCandidature', ['user_id' => $user_id, 'connected' => $this->user->id, 'campaign' => $campaign]]);
 
 				    $query->clear()
 					    ->insert($this->db->quoteName('#__emundus_campaign_candidature'))
@@ -914,12 +914,12 @@ class EmundusModelUsers extends JModelList {
 				    $this->db->execute();
 
 				    $this->app->triggerEvent('onAfterCampaignCandidature', [$user_id, $this->user->id, $campaign]);
-				    $this->app->triggerEvent('callEventHandler', ['onAfterCampaignCandidature', ['user_id' => $user_id, 'connected' => $this->user->id, 'campaign' => $campaign]]);
+				    $this->app->triggerEvent('onCallEventHandler', ['onAfterCampaignCandidature', ['user_id' => $user_id, 'connected' => $this->user->id, 'campaign' => $campaign]]);
 			    }
 		    }
 
 		    $this->app->triggerEvent('onBeforeAddUserProfile', [$user_id, $profile]);
-		    $this->app->triggerEvent('callEventHandler', ['onBeforeAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
+		    $this->app->triggerEvent('onCallEventHandler', ['onBeforeAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
 
 		    $query->clear()
 			    ->insert($this->db->quoteName('#__emundus_users_profiles'))
@@ -929,12 +929,12 @@ class EmundusModelUsers extends JModelList {
 		    $this->db->execute() or die($this->db->getErrorMsg());
 
 		    $this->app->triggerEvent('onAfterAddUserProfile', [$user_id, $profile]);
-		    $this->app->triggerEvent('callEventHandler', ['onAfterAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
+		    $this->app->triggerEvent('onCallEventHandler', ['onAfterAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
 
 		    if (!empty($oprofiles)) {
 			    foreach ($oprofiles as $profile) {
 				    $this->app->triggerEvent('onBeforeAddUserProfile', [$user_id, $profile]);
-				    $this->app->triggerEvent('callEventHandler', ['onBeforeAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
+				    $this->app->triggerEvent('onCallEventHandler', ['onBeforeAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
 
 				    $query->clear()
 					    ->insert($this->db->quoteName('#__emundus_users_profiles'))
@@ -944,7 +944,7 @@ class EmundusModelUsers extends JModelList {
 				    $this->db->execute();
 
 				    $this->app->triggerEvent('onAfterAddUserProfile', [$user_id, $profile]);
-				    $this->app->triggerEvent('callEventHandler', ['onAfterAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
+				    $this->app->triggerEvent('onCallEventHandler', ['onAfterAddUserProfile', ['user_id' => $user_id, 'profile' => $profile]]);
 
 				    $query->clear()
 					    ->select('acl_aro_groups')
@@ -1039,7 +1039,7 @@ class EmundusModelUsers extends JModelList {
         $options = array('action' => 'core.login.site', 'remember' => false);
 
         $this->app->triggerEvent( 'onUserLogin', $instance );
-        $this->app->triggerEvent('callEventHandler', ['onUserLogin', ['instance' => $instance]]);
+        $this->app->triggerEvent('onCallEventHandler', ['onUserLogin', ['instance' => $instance]]);
 
         return $instance;
 
@@ -2646,7 +2646,7 @@ class EmundusModelUsers extends JModelList {
 	        $saved = $this->db->execute();
 	        if ($saved) {
 		        JPluginHelper::importPlugin('emundus');
-				\Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onAfterSaveUserProfile', ['user' => $uid, 'data' => $user, 'columns' => $columns]]);
+				\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterSaveUserProfile', ['user' => $uid, 'data' => $user, 'columns' => $columns]]);
 		    }
 
         } catch (Exception $e) {
@@ -2709,7 +2709,7 @@ class EmundusModelUsers extends JModelList {
             JPluginHelper::importPlugin('emundus');
             
             $this->app->triggerEvent('onAfterProfileAttachmentUpload', [$user_id, (int)$attachment_id, $filename]);
-            $this->app->triggerEvent('callEventHandler', ['onAfterProfileAttachmentUpload', ['user_id' => $user_id, 'attachment_id' => (int)$attachment_id, 'file' => $filename]]);
+            $this->app->triggerEvent('onCallEventHandler', ['onAfterProfileAttachmentUpload', ['user_id' => $user_id, 'attachment_id' => (int)$attachment_id, 'file' => $filename]]);
 
             return $result;
         } catch (Exception $e) {
@@ -2738,7 +2738,7 @@ class EmundusModelUsers extends JModelList {
             JPluginHelper::importPlugin('emundus');
             
             $this->app->triggerEvent('onAfterProfileAttachmentDelete', [$user_id, (int)$default_attachment->attachment_id]);
-            $this->app->triggerEvent('callEventHandler', ['onAfterProfileAttachmentDelete', ['user_id' => $user_id, 'attachment_id' => (int)$default_attachment->attachment_id, 'filename' => $default_attachment->filename]]);
+            $this->app->triggerEvent('onCallEventHandler', ['onAfterProfileAttachmentDelete', ['user_id' => $user_id, 'attachment_id' => (int)$default_attachment->attachment_id, 'filename' => $default_attachment->filename]]);
 
             return $result;
         } catch (Exception $e) {
@@ -2857,7 +2857,7 @@ class EmundusModelUsers extends JModelList {
                     JPluginHelper::importPlugin('emundus');
                     
                     $this->app->triggerEvent('onAfterProfileAttachmentUpload', [$uid, (int)$attachment_to_copy->attachment_id, $root_dir . '/' . $target_file]);
-                    $this->app->triggerEvent('callEventHandler', ['onAfterProfileAttachmentUpload', ['user_id' => $uid, 'attachment_id' => (int)$attachment_to_copy->attachment_id, 'file' => $root_dir . '/' . $target_file]]);
+                    $this->app->triggerEvent('onCallEventHandler', ['onAfterProfileAttachmentUpload', ['user_id' => $uid, 'attachment_id' => (int)$attachment_to_copy->attachment_id, 'file' => $root_dir . '/' . $target_file]]);
                 }
             }
 

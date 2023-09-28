@@ -17,40 +17,45 @@ class plgEmundusCustom_event_handler extends JPlugin {
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.custom_event_handler.php'), JLog::ALL, array('com_emundus.custom_event_handler'));
 
-        require_once (JPATH_SITE.'/components/com_emundus/helpers/events.php');
+	    require_once (JPATH_SITE.'/components/com_emundus/helpers/events.php');
         $this->hEvents = new EmundusHelperEvents();
-    }
+	}
 
 
-    function callEventHandler(String $event, array $args = null): array
+    function onCallEventHandler(String $event, array $args = null): array
     {
-        $events = [];
-        $codes = [];
-        $params = json_decode($this->params);
+		try {
+			$events = [];
+			$codes = [];
+			$params = json_decode($this->params);
 
-        if (!empty($params) && !empty($params->event_handlers)) {
-            foreach ($params->event_handlers as $event_handler) {
-                if ($event_handler->event == $event && $event_handler->published) {
-                    $events[] = $event_handler->event;
-                    $codes[] = $event_handler->code;
-                }
-            }
-        }
+			if (!empty($params) && !empty($params->event_handlers)) {
+				foreach ($params->event_handlers as $event_handler) {
+					if ($event_handler->event == $event && $event_handler->published) {
+						$events[] = $event_handler->event;
+						$codes[] = $event_handler->code;
+					}
+				}
+			}
 
-        $returned_values = [];
+			$returned_values = [];
 
-        if (method_exists($this->hEvents, $event)) {
-            $this->hEvents->{$event}($args);
-        }
+			if (method_exists($this->hEvents, $event)) {
+				$this->hEvents->{$event}($args);
+			}
 
-        foreach ($events as $index => $caller_index) {
-            try {
-                $returned_values[$caller_index] = $this->_runPHP($codes[$index], $args);
-            } catch (ParseError $p) {
-                JLog::add('Error while running event ' . $caller_index . ' : "' . $p->getMessage() .'"', JLog::ERROR,'com_emundus');
-                continue;
-            }
-        }
+			foreach ($events as $index => $caller_index) {
+				try {
+					$returned_values[$caller_index] = $this->_runPHP($codes[$index], $args);
+				} catch (ParseError $p) {
+					JLog::add('Error while running event ' . $caller_index . ' : "' . $p->getMessage() .'"', JLog::ERROR,'com_emundus');
+					continue;
+				}
+			}
+		} catch (Exception $e) {
+			echo '<pre>'; var_dump('here'); echo '</pre>'; die;
+		}
+
 
         return $returned_values;
     }

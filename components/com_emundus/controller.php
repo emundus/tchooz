@@ -682,7 +682,7 @@ class EmundusController extends JControllerLegacy {
 
 
 	    JFactory::getApplication()->triggerEvent('onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]);
-	    JFactory::getApplication()->triggerEvent('callEventHandler', ['onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]]);
+	    JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]]);
 
         $app->redirect($redirect);
     }
@@ -1319,7 +1319,7 @@ class EmundusController extends JControllerLegacy {
 
 
                 JFactory::getApplication()->triggerEvent('onAfterAttachmentUpload', [$fnum, (int)$attachments, $paths]);
-                JFactory::getApplication()->triggerEvent('callEventHandler', ['onAfterAttachmentUpload', ['fnum' => $fnum, 'attachment_id' => (int)$attachments, 'file' => $paths]]);
+                JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterAttachmentUpload', ['fnum' => $fnum, 'attachment_id' => (int)$attachments, 'file' => $paths]]);
 
                 if ($format == "raw") {
                     echo '{"id":"'.$id.'","status":true, "message":"'.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'"}';
