@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
+require_once(JPATH_SITE.'/components/com_emundus/helpers/cache.php');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
 require_once(JPATH_SITE.'/components/com_emundus/helpers/list.php');
@@ -1789,30 +1790,42 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public function getFnumInfos($fnum) {
-        try {
-            $query = $this->_db->getQuery(true);
-            $query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
-                ->from($this->_db->quoteName('#__emundus_campaign_candidature','cc'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','c').' ON '.$this->_db->quoteName('c.id').' = '.$this->_db->quoteName('cc.campaign_id'))
-                ->leftJoin($this->_db->quoteName('#__users','u').' ON '.$this->_db->quoteName('u.id').' = '.$this->_db->quoteName('cc.applicant_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_status','ss').' ON '.$this->_db->quoteName('ss.step').' = '.$this->_db->quoteName('cc.status'))
-                ->where($this->_db->quoteName('cc.fnum').' LIKE '.$this->_db->quote($fnum));
-            $this->_db->setQuery($query);
-            $fnumInfos = $this->_db->loadAssoc();
 
-            $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-            if ($anonymize_data) {
-                $fnumInfos['name'] = $fnum;
-                $fnumInfos['email'] = $fnum;
-            }
+	    $cache = new EmundusHelperCache('com_emundus','','5');
+	    $cacheId = 'fnum_infos_' . $fnum;
 
-            return $fnumInfos;
+	    $fnumInfos = $cache->get($cacheId);
 
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
+		if(empty($fnumInfos)) {
+			try {
+				$query = $this->_db->getQuery(true);
+				$query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
+					->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->_db->quoteName('c.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
+					->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ss') . ' ON ' . $this->_db->quoteName('ss.step') . ' = ' . $this->_db->quoteName('cc.status'))
+					->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $this->_db->quote($fnum));
+				$this->_db->setQuery($query);
+				$fnumInfos = $this->_db->loadAssoc();
+
+				$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+				if ($anonymize_data) {
+					$fnumInfos['name']  = $fnum;
+					$fnumInfos['email'] = $fnum;
+				}
+
+				$cache->set($cacheId, $fnumInfos);
+
+			}
+			catch (Exception $e) {
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+
+				return false;
+			}
+		}
+
+	    return $fnumInfos;
     }
 
     /**

@@ -21,20 +21,18 @@ use \setasign\Fpdi\PdfReader;
  * @subpackage Components
  */
 class EmundusController extends JControllerLegacy {
-    var $_user = null;
-    var $_db = null;
+    private $_user;
+	private $_db;
 
     function __construct($config = array()){
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        include_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        include_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
-        include_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
-        include_once (JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+        include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
 
-        $this->_user = JFactory::getSession()->get('emundusUser');
-        $this->_db = JFactory::getDBO();
+        $this->_user = Factory::getSession()->get('emundusUser');
+        $this->_db = Factory::getDBO();
 
         parent::__construct($config);
     }
@@ -71,15 +69,13 @@ class EmundusController extends JControllerLegacy {
     }
 
     function pdf() {
-        $user = JFactory::getSession()->get('emundusUser');
-        $jinput = JFactory::getApplication()->input;
-        $student_id = $jinput->get('user', null, 'string');
-        $fnum = $jinput->get('fnum', null, 'string');
-        $profile = $jinput->get('profile', null, 'string');
+        $student_id = $this->input->get('user', null, 'string');
+        $fnum = $this->input->get('fnum', null, 'string');
+        $profile = $this->input->get('profile', null, 'string');
 
-        $fnum = !empty($fnum)?$fnum:$user->fnum;
-        $m_profile = new EmundusModelProfile();
-        $m_campaign = new EmundusModelCampaign();
+        $fnum = !empty($fnum)?$fnum:$this->_user->fnum;
+        $m_profile = $this->getModel('Profile');
+        $m_campaign = $this->getModel('Campaign');
 
         $options = array(
           'aemail',
@@ -130,11 +126,11 @@ class EmundusController extends JControllerLegacy {
 
         require_once($file);
 
-        if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile,null,null);
+        if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+            application_form_pdf(!empty($student_id)?$student_id:$this->_user->id, $fnum, true, 1, null, $options, null, $profile,null,null);
             exit;
-        } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-            application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile,null,null);
+        } elseif (EmundusHelperAccess::isApplicant($this->_user->id)) {
+            application_form_pdf($this->_user->id, $fnum, true, 1, $formid, $options, null, $profile,null,null);
             exit;
         } else {
             die(JText::_('ACCESS_DENIED'));
@@ -143,10 +139,10 @@ class EmundusController extends JControllerLegacy {
 
     function pdf_by_form() {
         $user = JFactory::getSession()->get('emundusUser');
-        $jinput = JFactory::getApplication()->input;
-        $student_id = $jinput->get('user', null, 'string');
-        $fnum = $jinput->get('fnum', null, 'string');
-        $formid = [$jinput->get('form', null, 'string')];
+        
+        $student_id = $this->input->get('user', null, 'string');
+        $fnum = $this->input->get('fnum', null, 'string');
+        $formid = [$this->input->get('form', null, 'string')];
 
         $fnum = !empty($fnum)?$fnum:$user->fnum;
         $m_profile = $this->getModel('profile');
@@ -205,11 +201,11 @@ class EmundusController extends JControllerLegacy {
      */
     function pdf_by_status() {
         $user = JFactory::getSession()->get('emundusUser');
-        $jinput = JFactory::getApplication()->input;
-        $student_id = $jinput->get('user', null, 'string');
-        $profile = $jinput->get('profile', null, 'string');
+        
+        $student_id = $this->input->get('user', null, 'string');
+        $profile = $this->input->get('profile', null, 'string');
 
-        $fnum = $jinput->get('fnum', null, 'string');
+        $fnum = $this->input->get('fnum', null, 'string');
         $fnum = !empty($fnum)?$fnum:$user->fnum;
         // Don't go any further if we don't find a fnum
         if (empty($fnum)) {
@@ -328,12 +324,12 @@ class EmundusController extends JControllerLegacy {
     function deletefile() {
         //@TODO ADD COMMENT ON DELETE
         $app = JFactory::getApplication();
-        $jinput = $app->input;
+        $this->input = $app->input;
         $m_profile = new EmundusModelProfile;
 
-        $student_id = $jinput->get->get('sid', null);
-        $fnum = $jinput->get->get('fnum', null);
-        $redirect = $jinput->get->getBase64('redirect', null);
+        $student_id = $this->input->get->get('sid', null);
+        $fnum = $this->input->get->get('fnum', null);
+        $redirect = $this->input->get->getBase64('redirect', null);
         // Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
 
         if (empty($redirect)) {
@@ -380,13 +376,13 @@ class EmundusController extends JControllerLegacy {
     /* complete file */
     function completefile() {
         $app = JFactory::getApplication();
-        $jinput = $app->input;
+        $this->input = $app->input;
         $m_profile = new EmundusModelProfile;
 
-        $student_id = $jinput->get->get('sid', null);
-        $fnum = $jinput->get->getVar('fnum', null);
-        $status = $jinput->get->get('status', null);
-        $redirect = $jinput->get->getBase64('redirect', null);
+        $student_id = $this->input->get->get('sid', null);
+        $fnum = $this->input->get->getVar('fnum', null);
+        $status = $this->input->get->get('status', null);
+        $redirect = $this->input->get->getBase64('redirect', null);
         // Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
         if (empty($redirect) || empty($status)) {
         	$redirect = 'index.php';
@@ -424,13 +420,13 @@ class EmundusController extends JControllerLegacy {
     /* publish file */
     function publishfile() {
         $app = JFactory::getApplication();
-        $jinput = $app->input;
+        $this->input = $app->input;
         $m_profile = new EmundusModelProfile;
 
-        $student_id    = $jinput->get->get('sid', null);
-        $fnum          = $jinput->get->getVar('fnum', null);
-        $status          = $jinput->get->get('status', null);
-        $redirect      = $jinput->get->getBase64('redirect', null);
+        $student_id    = $this->input->get->get('sid', null);
+        $fnum          = $this->input->get->getVar('fnum', null);
+        $status          = $this->input->get->get('status', null);
+        $redirect      = $this->input->get->getBase64('redirect', null);
         // Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
 
         if (empty($redirect))
@@ -478,17 +474,17 @@ class EmundusController extends JControllerLegacy {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $copy_application_form = $eMConfig->get('copy_application_form', 0);
         $m_profile = new EmundusModelProfile;
-        $jinput = JFactory::getApplication()->input;
+        
 
-        $student_id    = $jinput->get->get('sid');
-        $upload_id     = $jinput->get->get('uid');
-        $attachment_id = $jinput->get->get('aid');
-        $duplicate     = $jinput->get->get('duplicate');
-        $nb            = $jinput->get->get('nb');
-        $layout        = $jinput->get->get('layout');
-        $format        = $jinput->get->get('format');
-        $itemid        = $jinput->get('Itemid');
-        $fnum          = $jinput->get->get('fnum');
+        $student_id    = $this->input->get->get('sid');
+        $upload_id     = $this->input->get->get('uid');
+        $attachment_id = $this->input->get->get('aid');
+        $duplicate     = $this->input->get->get('duplicate');
+        $nb            = $this->input->get->get('nb');
+        $layout        = $this->input->get->get('layout');
+        $format        = $this->input->get->get('format');
+        $itemid        = $this->input->get('Itemid');
+        $fnum          = $this->input->get->get('fnum');
         $current_user  = JFactory::getSession()->get('emundusUser');
         $status_for_send = $eMConfig->get('status_for_send',0);
         $chemin = EMUNDUS_PATH_ABS;
@@ -635,12 +631,12 @@ class EmundusController extends JControllerLegacy {
 		} else {
 			$session = Factory::getSession();
 		}
-        $jinput = $app->input;
-        $fnum = $jinput->get->get('fnum', null);
-        $confirm = $jinput->get->get('confirm', null);
+        $this->input = $app->input;
+        $fnum = $this->input->get->get('fnum', null);
+        $confirm = $this->input->get->get('confirm', null);
 
         // Redirection URL used to bring the user back to the right spot.
-        $redirect = $jinput->get->getBase64('redirect', null);
+        $redirect = $this->input->get->getBase64('redirect', null);
 
         if (!empty($redirect)) {
             $redirect = base64_decode($redirect);
@@ -692,9 +688,9 @@ class EmundusController extends JControllerLegacy {
         include_once (JPATH_SITE.'/components/com_emundus/models/profile.php');
         include_once (JPATH_SITE.'/components/com_emundus/models/users.php');
 
-        $jinput = Factory::getApplication()->input;
-        $profile_fnum = $jinput->get('profnum', null);
-        $redirect = $jinput->get('redirect', null);
+        $this->input = Factory::getApplication()->input;
+        $profile_fnum = $this->input->get('profnum', null);
+        $redirect = $this->input->get('redirect', null);
 
         $ids = explode('.', $profile_fnum);
         $profile = $ids[0];
@@ -807,14 +803,14 @@ class EmundusController extends JControllerLegacy {
 
         $db = JFactory::getDBO();
 	    $query_updating_file = null;
-        $jinput = JFactory::getApplication()->input;
+        
 
-        $student_id = $jinput->get->get('sid', null);
-        $duplicate  = $jinput->get->get('duplicate', null);
-        $layout     = $jinput->get->get('layout', null);
-        $format     = $jinput->get->get('format', null);
-        $itemid     = $jinput->get('Itemid', null);
-        $fnum       = $jinput->get->get('fnum', null);
+        $student_id = $this->input->get->get('sid', null);
+        $duplicate  = $this->input->get->get('duplicate', null);
+        $layout     = $this->input->get->get('layout', null);
+        $format     = $this->input->get->get('format', null);
+        $itemid     = $this->input->get('Itemid', null);
+        $fnum       = $this->input->get->get('fnum', null);
 
         $fnums = array();
         $current_user = JFactory::getSession()->get('emundusUser');
@@ -1562,8 +1558,8 @@ class EmundusController extends JControllerLegacy {
     function getfile() {
 
         // Get the filename and user ID from the URL.
-        $jinput = JFactory::getApplication()->input;
-        $url = $jinput->get->get('u', null, 'RAW');
+        
+        $url = $this->input->get->get('u', null, 'RAW');
 
 	    $eMConfig = JComponentHelper::getParams('com_emundus');
 	    $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
@@ -1676,8 +1672,8 @@ class EmundusController extends JControllerLegacy {
     function getfilereferent() {
 
         // Get the filename and user ID from the URL.
-        $jinput = JFactory::getApplication()->input;
-        $url = $jinput->get->get('u', null, 'RAW');
+        
+        $url = $this->input->get->get('u', null, 'RAW');
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
@@ -1697,9 +1693,9 @@ class EmundusController extends JControllerLegacy {
         $file = $urltab[$cpt-1];
 
         // Check if there is an awaiting file request with this keyid and fnum from less than 6 months ago
-        $keyid = $jinput->get('keyid', null);
+        $keyid = $this->input->get('keyid', null);
         if (!empty($keyid)) {
-            $fnum =  $jinput->get->get('fnum', null);
+            $fnum =  $this->input->get->get('fnum', null);
             if (!empty($fnum)) {
                 // Can't use helper date here because we need to get now - 6 months
                 $now = new DateTime();
@@ -1782,10 +1778,10 @@ class EmundusController extends JControllerLegacy {
         $response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$jinput = JFactory::getApplication()->input;
-			$itemid = $jinput->getInt('Itemid', null);
-			$sid    = $jinput->getInt('sid', null);
-			$fnum   = $jinput->getString('fnum', null);
+			
+			$itemid = $this->input->getInt('Itemid', null);
+			$sid    = $this->input->getInt('sid', null);
+			$fnum   = $this->input->getString('fnum', null);
 
 
 			if (!empty($fnum)) {
@@ -1854,10 +1850,10 @@ class EmundusController extends JControllerLegacy {
     public function export_fiche_synthese() {
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
         $user = JFactory::getSession()->get('emundusUser');
-        $jinput = JFactory::getApplication()->input;
+        
 
         /// get valid fnum
-        $fnums_post = $jinput->getRaw('checkInput');
+        $fnums_post = $this->input->getRaw('checkInput');
         $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         $validFnums = array();
@@ -1871,9 +1867,9 @@ class EmundusController extends JControllerLegacy {
         $fnumsInfo = $m_files->getFnumsInfos($validFnums);
 
         /// set params
-        $file = $jinput->getRaw('file', null);
+        $file = $this->input->getRaw('file', null);
         $totalfile = count($validFnums);
-        $model = $jinput->getRaw('model', null);
+        $model = $this->input->getRaw('model', null);
         $start = 0;
         $limit = 2;
 
@@ -2003,8 +1999,8 @@ class EmundusController extends JControllerLegacy {
      */
     function unregisterevent(){
         $app = JFactory::getApplication();
-        $jinput = $app->input;
-        $fnum = $jinput->get('fnum', null);
+        $this->input = $app->input;
+        $fnum = $this->input->get('fnum', null);
 
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');

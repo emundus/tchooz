@@ -1,5 +1,6 @@
 <?php
-use setasign\Fpdi\Tcpdf\Fpdi;
+
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -787,7 +788,6 @@ function data_to_img($match) {
 function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
-    require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'tcpdf.php');
     require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
 
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
@@ -795,9 +795,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'form.php');
 
-	$db = JFactory::getDBO();
-	$app = JFactory::getApplication();
-	$current_user = JFactory::getUser();
+	$db = Factory::getDBO();
+	$app = Factory::getApplication();
 
     if (empty($file_lbl)) {
         $file_lbl = "_application";
@@ -805,10 +804,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#000000'); //déclaration couleur principale
-    $profile_color = '#20835F';
 
     $config = JFactory::getConfig();
-    $offset = $config->get('offset');
 
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
@@ -829,17 +826,18 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 
 		    // Users informations
-		    $query = 'SELECT u.id AS user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted
-	                        FROM #__emundus_campaign_candidature AS ecc
-	                        LEFT JOIN #__users AS u ON u.id=ecc.applicant_id
-	                        LEFT JOIN #__emundus_users AS c ON u.id = c.user_id
-	                        LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ' . $campaign_id . '
-	                        LEFT JOIN #__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = ' . EMUNDUS_PHOTO_AID . ' AND a.fnum like ' . $db->Quote($fnum) . '
-	                        LEFT JOIN #__emundus_setup_profiles AS p ON p.id = esc.profile_id
-	                        LEFT JOIN #__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like ' . $db->Quote($fnum) . '
-	                        LEFT JOIN #__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like ' . $db->Quote($fnum) . '
-	                        WHERE ecc.fnum like ' . $db->Quote($fnum) . '
-	                        ORDER BY esc.id DESC';
+		    $query = $db->getQuery(true);
+			$query->select('u.id as user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted')
+				->from('#__emundus_campaign_candidature AS ecc')
+				->leftJoin('#__users AS u ON u.id=ecc.applicant_id')
+				->leftJoin('#__emundus_users AS c ON u.id = c.user_id')
+				->leftJoin('#__emundus_setup_campaigns AS esc ON esc.id = ' . $campaign_id)
+				->leftJoin('#__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = ' . EMUNDUS_PHOTO_AID . ' AND a.fnum like ' . $db->quote($fnum))
+				->leftJoin('#__emundus_setup_profiles AS p ON p.id = esc.profile_id')
+				->leftJoin('#__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like ' . $db->quote($fnum))
+				->leftJoin('#__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like ' . $db->quote($fnum))
+				->where('ecc.fnum like ' . $db->Quote($fnum))
+				->order('esc.id DESC');
 		    $db->setQuery($query);
 		    $item = $db->loadObject();
 
@@ -991,8 +989,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         } catch (Exception $e) {
             JLog::add('SQL error in emundus pdf library at query : ' . $query, JLog::ERROR, 'com_emundus');
         }
-
-        if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
+		
+        if ($form_post == 1 && (empty($form_ids)) && !empty($elements)) {
             $profile_menu = array_keys($elements);
 
             // Get form HTML
@@ -1016,7 +1014,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         else {
 	        $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, null, $attachments);
         }
-
+		
         /*** Applicant   ***/
 	    $htmldata .= "
 			<style>
@@ -1184,7 +1182,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    $options->set('defaultFont', 'helvetica');
 		$options->set('isPhpEnabled', true);
 	    $dompdf = new Dompdf($options);
-
+		
 	    try {
 		    $dompdf->loadHtml($htmldata);
 		    $dompdf->render();
