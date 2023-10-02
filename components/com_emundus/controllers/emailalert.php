@@ -5,51 +5,79 @@
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
-*/
-jimport( 'joomla.application.component.view');
+ */
+jimport('joomla.application.component.view');
 
-class EmundusControllerEmailalert extends JControllerLegacy {
+use Joomla\CMS\Factory;
 
-	function display($cachable = false, $urlparams = false) {
+class EmundusControllerEmailalert extends JControllerLegacy
+{
+	protected $app;
+
+	private $_db;
+
+	function display($cachable = false, $urlparams = false)
+	{
 		// Set a default view if none exists
-		if ( ! JFactory::getApplication()->input->get( 'view' ) ) {
+		if (!$this->input->get('view')) {
 			$default = 'emailalert';
-			JFactory::getApplication()->input->set('view', $default );
+			$this->input->set('view', $default);
 		}
+
 		parent::display();
-    }
-	
-	function generate(){		
-		$model = new EmundusModelEmailalert();
-		$key = $model->getKey();
-		if($key){
+	}
+
+	function __construct($config = array())
+	{
+		parent::__construct($config);
+
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$this->_db = Factory::getContainer()->get('DatabaseDriver');
+		}
+		else {
+			$this->_db = Factory::getDBO();
+		}
+
+		$this->app = Factory::getApplication();
+
+	}
+
+	function generate()
+	{
+		$model = $this->getModel('emailalert');
+		$key   = $model->getKey();
+		if ($key) {
 			$model->getInsert();
 		}
-		else echo JText::_('NOT_ALLOWED'); 
+		else {
+			echo JText::_('NOT_ALLOWED');
+		}
 	}
-	
-	function send(){
-		$app = JFactory::getApplication();
-		$db	= JFactory::getDBO();
 
-		$model = new EmundusModelEmailalert();
-		$key = $model->getKey();
+	function send()
+	{
 
-		if($key){
-			$emailfrom = $app->getCfg('mailfrom');
-			$fromname = $app->getCfg('fromname');
-			$message = $model->getSend();
-			foreach($message as $m){
-				if(JUtility::sendMail( $emailfrom, $fromname, $m->email, $m->subject, $m->message, true )){
+		$model = $this->getModel('emailalert');
+		$key   = $model->getKey();
+
+		if ($key) {
+			$emailfrom = $this->app->getCfg('mailfrom');
+			$fromname  = $this->app->getCfg('fromname');
+			$message   = $model->getSend();
+
+			foreach ($message as $m) {
+				if (JUtility::sendMail($emailfrom, $fromname, $m->email, $m->subject, $m->message, true)) {
 					usleep(100);
-					$query = 'UPDATE #__messages SET state = 0 WHERE user_id_to ='.$m->user_id_to;
-					$db->setQuery($query);
-					$db->Query();
+					$query = 'UPDATE #__messages SET state = 0 WHERE user_id_to =' . $m->user_id_to;
+					$this->_db->setQuery($query);
+					$this->_db->execute();
 				}
 			}
-		} else{
+		}
+		else {
 			echo JText::_('NOT_ALLOWED');
 		}
 	}
 }
+
 ?>

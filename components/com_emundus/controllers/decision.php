@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * eMundus Component Controller
  *
@@ -38,8 +40,15 @@ class EmundusControllerDecision extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/decision.php');
 
-		$this->_user = JFactory::getSession()->get('emundusUser');
-		$this->_db   = JFactory::getDBO();
+		$this->app   = Factory::getApplication();
+
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$this->_db = Factory::getContainer()->get('DatabaseDriver');
+			$this->_user = $this->app->getIdentity();
+		} else {
+			$this->_db = Factory::getDBO();
+			$this->_user = Factory::getUser();
+		}
 
 		parent::__construct($config);
 	}
