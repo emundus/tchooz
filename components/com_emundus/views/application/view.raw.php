@@ -395,17 +395,17 @@ class EmundusViewApplication extends JViewLegacy {
 						if(!isset($applicant[0]->profile_picture) || empty($applicant[0]->profile_picture)){
 							$applicant[0]->profile_picture = $m_user->getIdentityPhoto($fnum,$fnumInfos['applicant_id']);
 						}
-
+						
                         /* detect user_id from fnum */
                         $this->userid = $fnumInfos['applicant_id'];
                         $pid = (!empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
                         /* get all campaigns by user */
                         $campaignsRaw = $m_campaign->getCampaignByFnum($fnum);
-
+						
                         /* get all profiles (order by step) by campaign */
                         $pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id],'object');
-
+						
                         $noPhasePids = array();
                         $hasPhasePids = array();
 
@@ -436,7 +436,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->formsProgress = $m_application->getFormsProgress($fnum);
                         $this->forms = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $pid);
 						$this->applicant = $applicant[0];
-                    }
+					}
 					else {
                         echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();

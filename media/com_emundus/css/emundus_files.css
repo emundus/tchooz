@@ -422,6 +422,14 @@ fieldset.em_filters_filedset > label, fieldset#em_select_filter > label, .panel-
     height: auto;
 }
 
+.em-menuaction .em-container-menuaction .navbar-nav.em-container-menuaction-nav {
+    position: relative;
+    left: 0;
+    display: block;
+    float: left;
+    margin: 0 10px 0 0;
+}
+
 .g-back-office-emundus-tableau .navbar .nav > li > a {
     padding: 0 15px 0;
     margin: 0;

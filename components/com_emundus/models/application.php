@@ -1761,7 +1761,7 @@ class EmundusModelApplication extends JModelList
 													elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0)
 													{
                                                         preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $r_elt, $matches);
-                                                        if (count($matches) == 0) {
+                                                        if (empty($matches)) {
                                                             $elt = $r_elt;
                                                         } else {
                                                             $format = $params->list_date_format;
@@ -1966,7 +1966,7 @@ class EmundusModelApplication extends JModelList
                                             $this->_db->setQuery($query);
                                             $res = $this->_db->loadRow();
 
-                                            if (count($res) > 1) {
+                                            if (!empty($res)) {
                                                 $element->content = $res[1];
                                                 $element->content_id = $res[0];
                                             } else {
@@ -1974,7 +1974,7 @@ class EmundusModelApplication extends JModelList
                                                 $element->content_id = -1;
                                             }
 
-                                            if (count($res) > 1) {
+                                            if (!empty($res)) {
                                                 if ($element->plugin == 'display') {
                                                     $element->content = empty($element->eval) ? $element->default : $res[1];
                                                 } else {

@@ -420,14 +420,14 @@ class EmundusModelCampaign extends JModelList {
 	 * @since version v6
 	 */
 	function getCampaignByFnum($fnum) {
-		$query = $this->db->getQuery(true);
+		$query = $this->_db->getQuery(true);
 
 		$query->clear()
 			->select('esc.*,ecc.fnum, esp.menutype, esp.label as profile_label')
-			->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-			->join('LEFT', $this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
-			->join('LEFT', $this->db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('esc.profile_id'))
-			->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($fnum))
+			->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+			->join('LEFT', $this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
+			->join('LEFT', $this->_db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('esc.profile_id'))
+			->where($this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quote($fnum))
 			->order('ecc.date_time DESC');
 		$this->_db->setQuery($query);
 		return $this->_db->loadObject();

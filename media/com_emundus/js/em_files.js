@@ -424,9 +424,9 @@ function openFiles(fnum, page = 0, vue = false) {
         success: function (result) {
             if (result) {
                 $('#em-assoc-files .panel-body').append(result);
-                document.getElementById('em-assoc-files').show();
+                document.getElementById('em-assoc-files').style.display = 'block';
             } else {
-                document.getElementById('em-assoc-files').hide();
+                document.getElementById('em-assoc-files').style.display = 'none';
             }
 
         },
@@ -456,7 +456,7 @@ function openFiles(fnum, page = 0, vue = false) {
             var panel = result;
             //.main-panel
             $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
-            if (result) {
+            if (result.trim() != '') {
                 let panelBody = $('#em-synthesis .panel-body');
                 panelBody.empty();
                 panelBody.append(panel);
