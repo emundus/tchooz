@@ -1,20 +1,27 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgSystemHikashopanalytics extends JPlugin
+include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
+class plgSystemHikashopanalytics extends hikashopJoomlaPlugin
 {
 	public function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
 
 		if(isset($this->params))
 			return;
+
+
+		if(HIKASHOP_J50 && !class_exists('JPluginHelper'))
+			class_alias('Joomla\CMS\Plugin\PluginHelper', 'JPluginHelper');
+		if(HIKASHOP_J50 && !class_exists('JRegistry'))
+			class_alias('Joomla\Registry\Registry', 'JRegistry');
 		$plugin = JPluginHelper::getPlugin('system', 'hikashopanalytics');
 		$this->params = new JRegistry($plugin->params);
 	}
@@ -66,6 +73,8 @@ class plgSystemHikashopanalytics extends JPlugin
 		if(empty($_POST['checkout']['analytics']['ga']))
 			return;
 
+		if(HIKASHOP_J50 && !class_exists('JFactory'))
+			class_alias('Joomla\CMS\Factory', 'JFactory');
 		$app = JFactory::getApplication();
 		$checkout = $app->input->get('checkout', '', 'array');
 		$_SESSION['hikashop_analytics_ga'] = $checkout['analytics']['ga'];

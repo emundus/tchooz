@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,4 +23,4 @@ $mode_noform = $params->get('mode_noform', 0);
 $currency = hikashop_get('type.currency');
 $config =& hikashop_config();
 $redirectUrl = hikashop_currentURL();
-require(JModuleHelper::getLayoutPath('mod_hikashop_currency'));
+require(JModuleHelper::getLayoutPath('mod_hikashop_currency', $params->get('layout', 'default')));

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -266,7 +266,7 @@ window.localPage.createBox = function(el,href,options) {
 		if(!empty($id) && !$isOnclick)
 			$onClick = ' onclick="return window.hikashop.openBox(this);"';
 
-		$html = '<a rel="nofollow" '.$a.$onClick.' id="'.$id.'" href="'.$url.'" data-hk-popup="vex" data-vex="{x:'.$params['width'].', y:'.$params['height'].'}">';
+		$html = '<a rel="nofollow" '.$a.$onClick.' id="'.$id.'" href="'.$url.'" data-hk-popup="vex" data-vex=\'{"x":'.$params['width'].', "y":'.$params['height'].'}\'>';
 		if($params['type'] == 'button')
 			$html .= '<button class="btn" onclick="return false">';
 		$html .= $text;
@@ -288,6 +288,8 @@ window.localPage.createBox = function(el,href,options) {
 				return $this->imageShadowbox($content, $url, $id, $attr, $params);
 			case 'no':
 				return '<a href="'.$url.'" target="_blank" '.$attr.'>'.$content.'</a>';
+			case 'without_link':
+				return '<span '.$attr.' style="cursor:default;">'.$content.'</span>';
 		}
 		$plugins = $this->getPlugins();
 		if(isset($plugins['image'][$popupMode])) {

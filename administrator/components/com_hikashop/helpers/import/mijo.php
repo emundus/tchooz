@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1228,7 +1228,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 			'order_mijo_id' => 'mjo.order_id',
 			'order_user_id' => 'hkusr.user_id',
 			'order_status' => 'hkc.category_name',
-			'order_created' => 'mjo.date_added', // UNIX_TIMESTAMP(...)
+			'order_created' => 'UNIX_TIMESTAMP(mjo.date_added)', // UNIX_TIMESTAMP(...)
 			'order_ip' => 'mjo.ip',
 			'order_currency_id' => 'hkcur.currency_id',
 			'order_shipping_price' => "''", //?
@@ -1237,7 +1237,7 @@ class hikashopImportmijoHelper extends hikashopImportHelper
 			'order_payment_id' => 0,
 			'order_payment_method' => 'mjo.payment_method',
 			'order_full_price' => 'mjot.value',
-			'order_modified' => 'mjo.date_modified', // UNIX_TIMESTAMP(...)
+			'order_modified' => 'UNIX_TIMESTAMP(mjo.date_modified)', // UNIX_TIMESTAMP(...)
 			'order_partner_id' => 0,
 			'order_partner_price' => 0,
 			'order_partner_paid' => 0,

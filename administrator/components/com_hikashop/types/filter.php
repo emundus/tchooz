@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 
-class hikashopFilterType{
+class hikashopFilterType extends hikashopType{
 	var $allValues;
 	function load(){
 		$this->allValues = array();
@@ -30,9 +30,10 @@ class hikashopFilterType{
 		$this->load();
 		$js = "function updateFilterType(){
 			newType = document.getElementById('filtertype').value;
-			hiddenAll = new Array('rangeSize', 'titlePositionCursor', 'cursorWidth', 'cursorEffet', 'cursorStep','applyOnCursor', 'textBoxSize', 'filterSize','titlePosition','applyOntext','applyOn','filterValues','filterCategories', 'cursorNumber', 'cursorMax', 'cursorMin', 'currencies', 'filter_categories','max_char', 'characteristic', 'sort_by', 'product_information', 'button_align', 'dimension_unit', 'weight_unit', 'searchProcessing');
+					words_skipped
+			hiddenAll = new Array('rangeSize', 'titlePositionCursor', 'cursorWidth', 'cursorEffet', 'cursorStep','applyOnCursor', 'textBoxSize', 'filterSize','titlePosition','applyOntext','applyOn','filterValues','filterCategories', 'cursorNumber', 'cursorMax', 'cursorMin', 'currencies', 'filter_categories', 'max_char', 'min_char', 'words_skipped', 'characteristic', 'sort_by', 'product_information', 'button_align', 'dimension_unit', 'weight_unit', 'searchProcessing');
 			allTypes = new Array();
-			allTypes['text'] = new Array('applyOntext','titlePosition','max_char', 'textBoxSize', 'searchProcessing', 'attribute');
+			allTypes['text'] = new Array('applyOntext','titlePosition','max_char','min_char', 'words_skipped', 'textBoxSize', 'searchProcessing', 'attribute');
 			allTypes['radio'] = new Array('applyOn','titlePosition','filterValues','filterCategories', 'button_align');
 			allTypes['checkbox'] = new Array('applyOn','titlePosition','filterValues','filterCategories', 'button_align');
 			allTypes['singledropdown'] = new Array('applyOn','titlePosition','filterValues','filterCategories','filterSize');

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -133,10 +133,9 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 	}
 ?>
-				<td class="order">
+				<td class="order column_move">
 <?php if($this->manage) { ?>
-					<span><?php echo $this->pagination->orderUpIcon($i, $this->ordering->reverse XOR ( $row->orderstatus_ordering >= @$this->rows[$i-1]->orderstatus_ordering ), $this->ordering->orderUp, 'Move Up', $this->ordering->ordering); ?></span>
-					<span><?php echo $this->pagination->orderDownIcon($i, $nbRows, $this->ordering->reverse XOR ( $row->orderstatus_ordering <= @$this->rows[$i+1]->orderstatus_ordering ), $this->ordering->orderDown, 'Move Down', $this->ordering->ordering); ?></span>
+	<span class="move_icon"><img src="../media/com_hikashop/images/move.png" alt=""></span>
 					<input type="text" name="order[]" size="5" <?php if(!$this->ordering->ordering) echo 'disabled="disabled"'?> value="<?php echo $row->orderstatus_ordering; ?>" class="text_area" style="text-align: center" />
 <?php } else { echo $row->orderstatus_ordering; } ?>
 				</td>

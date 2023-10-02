@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -870,10 +870,16 @@ class hikashopMailClass {
 			$this->mailer->Body = str_replace(" ",' ',$this->mailer->Body);
 
 			$result = $this->mailer->Send();
+		} catch( Joomla\CMS\Mail\Exception\MailDisabledException $e) {
+			$result = false;
+			$app->enqueueMessage($e->getMessage(), 'error');
+			hikashop_writeToLog($e->getMessage());
 		} catch( Exception $e) {
 			$result = false;
 			if(hikashop_isClient('administrator')) {
 				$app->enqueueMessage($e->getMessage(), 'error');
+			} else {
+				hikashop_writeToLog($e->getMessage());
 			}
 		}
 		if(!$result || !empty($result->message)) {

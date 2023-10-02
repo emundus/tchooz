@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,6 +33,7 @@ class checkoutController extends checkoutLegacyController {
 	protected $config = null;
 	protected $app = null;
 	protected $dispatcher = null;
+	protected $workflow = null;
 
 	public function __construct($config = array(), $skip = false) {
 		parent::__construct($config, $skip);
@@ -242,12 +243,25 @@ class checkoutController extends checkoutLegacyController {
 		hikaInput::get()->set('layout', 'showblock');
 		if(in_array($tmpl, array('component', 'ajax', 'raw'))) {
 			ob_end_clean();
-			echo hikashop_getHTML(function() {
+			$html = hikashop_getHTML(function() {
 				$this->display();
 			});
 			if(!headers_sent())
 				header('X-Robots-Tag: noindex');
-			$this->app->triggerEvent('onAfterRender');
+			if(class_exists('JResponse')) {
+				JResponse::setBody($html);
+				$this->app->triggerEvent('onAfterRender');
+				$html = JResponse::getBody();
+			} else {
+				$this->app->setBody($html);
+				if(HIKASHOP_J50) {
+					$this->app->triggerEvent('onAfterRender', array('subject' => $this->app));
+				} else {
+					$this->app->triggerEvent('onAfterRender');
+				}
+				$html = $this->app->getBody();
+			}
+			echo $html;
 			exit;
 		}
 		return $this->display();
@@ -423,8 +437,9 @@ class checkoutController extends checkoutLegacyController {
 				if(!$check)
 					break;
 			}
-			if($check && $v !== $newMarkers[$k])
+			if($check && $v !== $newMarkers[$k]) {
 				return $this->show();
+			}
 		}
 
 		if(!empty($cartMarkers['plugins'])) {
@@ -510,6 +525,8 @@ class checkoutController extends checkoutLegacyController {
 
 		$empty = true;
 		foreach($this->workflow['steps'][$step]['content'] as $k => $content) {
+			$content['params']['step'] = $step;
+			$content['params']['pos'] = $k;
 			$task = $content['task'];
 			$ctrl = hikashop_get('helper.checkout-' . $task);
 			if(!empty($ctrl)) {
@@ -518,6 +535,8 @@ class checkoutController extends checkoutLegacyController {
 					$empty = false;
 			} else {
 				$empty = false;
+				$obj =& $this;
+				$this->app->triggerEvent('onCheckoutEmptyContentCheck', array(&$obj, &$content['params'], &$empty));
 			}
 			if($empty == false)
 				break;
@@ -680,7 +699,7 @@ class checkoutController extends checkoutLegacyController {
 		if($order === false) {
 			$new_messages = $this->app->getMessageQueue();
 			if(count($new_messages) <= count($old_messages)) {
-				$this->app->enqueueMessage('A plugin cancelled the update of the order creation without displaying any error message.');
+				$this->app->enqueueMessage('A plugin cancelled the order creation without displaying any error message.');
 			}
 			$this->app->redirect($checkoutHelper->completeLink('cid='.((int)$step + 1), false, true, false, $checkout_itemid));
 		}

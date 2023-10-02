@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,10 +17,19 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="hikashop_checkout_loading_spinner"></div>
 <!-- PROGRESS BAR -->
 <?php
-if((int)$this->config->get('display_checkout_bar', 2) > 0) {
-	echo $this->displayBlock('bar', 0, array(
-		'display_end' => ((int)$this->config->get('display_checkout_bar', 2) == 1)
-	));
+$display_checkout_bar = (int)$this->config->get('display_checkout_bar', 2);
+$mode = $this->config->get('display_checkout_mode', 'bar');
+if($display_checkout_bar > 0) {
+	if($mode == 'bar') {
+		echo $this->displayBlock('bar', 0, array(
+			'display_end' => ($display_checkout_bar == 1)
+		));
+	} elseif($mode == 'accordion') {
+		echo $this->displayBlock('accordion', 0, array(
+			'display_end' => ($display_checkout_bar == 1),
+			'location' => 'before'
+		));
+	}
 }
 ?>
 <!-- EO PROGRESS BAR -->
@@ -64,6 +73,19 @@ if(!empty($this->extra_data) && !isset($this->extraData['checkout']))
 	echo implode("\r\n", $this->extra_data);
 ?>
 <!-- EO OTHER EXTRA DATA -->
+<!-- PROGRESS BAR END -->
+<?php
+if($display_checkout_bar > 0) {
+	if($mode == 'bar') {
+	} elseif($mode == 'accordion') {
+		echo $this->displayBlock('accordion', 0, array(
+			'display_end' => ($display_checkout_bar == 1),
+			'location' => 'after'
+		));
+	}
+}
+?>
+<!-- EO PROGRESS BAR END -->
 <?php
 $doc = JFactory::getDocument();
 $doc->addScript(HIKASHOP_JS.'checkout.js');

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -236,25 +236,25 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		$vars["x_email"]=$this->user->user_email;
 
 		if(!empty($order->cart->billing_address)){
-			$vars["x_first_name"]=mb_substr(@$order->cart->billing_address->address_firstname,0,50);
-			$vars["x_last_name"]=mb_substr(@$order->cart->billing_address->address_lastname,0,50);
-			$vars["x_address"]=mb_substr(@$order->cart->billing_address->address_street,0,60);
-			$vars["x_company"]=mb_substr(@$order->cart->billing_address->address_company,0,50);
-			$vars["x_country"]=mb_substr(@$order->cart->billing_address->address_country->zone_name_english,0,60);
-			$vars["x_zip"]=mb_substr(@$order->cart->billing_address->address_post_code,0,20);
-			$vars["x_city"]=mb_substr(@$order->cart->billing_address->address_city,0,40);
-			$vars["x_state"]=mb_substr(@$order->cart->billing_address->address_state->zone_name_english,0,40);
-			$vars["x_phone"]=mb_substr(@$order->cart->billing_address->address_telephone,0,25);
+			$vars["x_first_name"]=mb_substr((string)@$order->cart->billing_address->address_firstname,0,50);
+			$vars["x_last_name"]=mb_substr((string)@$order->cart->billing_address->address_lastname,0,50);
+			$vars["x_address"]=mb_substr((string)@$order->cart->billing_address->address_street,0,60);
+			$vars["x_company"]=mb_substr((string)@$order->cart->billing_address->address_company,0,50);
+			$vars["x_country"]=mb_substr((string)@$order->cart->billing_address->address_country->zone_name_english,0,60);
+			$vars["x_zip"]=mb_substr((string)@$order->cart->billing_address->address_post_code,0,20);
+			$vars["x_city"]=mb_substr((string)@$order->cart->billing_address->address_city,0,40);
+			$vars["x_state"]=mb_substr((string)@$order->cart->billing_address->address_state->zone_name_english,0,40);
+			$vars["x_phone"]=mb_substr((string)@$order->cart->billing_address->address_telephone,0,25);
 		}
 		if(!empty($order->cart->shipping_address)){
-			$vars["x_ship_to_first_name"]=mb_substr(@$order->cart->shipping_address->address_firstname,0,50);
-			$vars["x_ship_to_last_name"]=mb_substr(@$order->cart->shipping_address->address_lastname,0,50);
-			$vars["x_ship_to_address"]=mb_substr(@$order->cart->shipping_address->address_street,0,60);
-			$vars["x_ship_to_company"]=mb_substr(@$order->cart->shipping_address->address_company,0,50);
-			$vars["x_ship_to_country"]=mb_substr(@$order->cart->shipping_address->address_country->zone_name_english,0,60);
-			$vars["x_ship_to_zip"]=mb_substr(@$order->cart->shipping_address->address_post_code,0,20);
-			$vars["x_ship_to_city"]=mb_substr(@$order->cart->shipping_address->address_city,0,40);
-			$vars["x_ship_to_state"]=mb_substr(@$order->cart->shipping_address->address_state->zone_name_english,0,40);
+			$vars["x_ship_to_first_name"]=mb_substr((string)@$order->cart->shipping_address->address_firstname,0,50);
+			$vars["x_ship_to_last_name"]=mb_substr((string)@$order->cart->shipping_address->address_lastname,0,50);
+			$vars["x_ship_to_address"]=mb_substr((string)@$order->cart->shipping_address->address_street,0,60);
+			$vars["x_ship_to_company"]=mb_substr((string)@$order->cart->shipping_address->address_company,0,50);
+			$vars["x_ship_to_country"]=mb_substr((string)@$order->cart->shipping_address->address_country->zone_name_english,0,60);
+			$vars["x_ship_to_zip"]=mb_substr((string)@$order->cart->shipping_address->address_post_code,0,20);
+			$vars["x_ship_to_city"]=mb_substr((string)@$order->cart->shipping_address->address_city,0,40);
+			$vars["x_ship_to_state"]=mb_substr((string)@$order->cart->shipping_address->address_state->zone_name_english,0,40);
 		}
 
 		if(isset($this->payment_params->details) && !$this->payment_params->details){
@@ -314,7 +314,8 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		if(@$this->payment_params->api=='aim'){
 			$viewType='thankyou';
 			$this->payment_params->return_url =  HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=after_end&order_id='.$order->order_id.$this->url_itemid;
-			$this->removeCart = true;
+			$app = JFactory::getApplication();
+			$app->redirect($this->payment_params->return_url);
 		}else{
 			$vars = $this->_loadStandardVars($order);
 			$viewType = 'end';
@@ -381,6 +382,10 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 			return 'Order unkown';
 		}
 		$this->payment_params->return_url =  HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=after_end&order_id='.$order_id.$this->url_itemid;
+		$lang = hikaInput::get()->getString('lang');
+		if(!empty($lang)) {
+			$this->payment_params->return_url.='&lang='.$lang;
+		}
 		if(@$this->payment_params->api=='dpm' && @$_GET['iframe']){
 			$vars = json_decode(base64_decode($vars['iframe']),true);
 			$this->vars =& $vars;
@@ -416,7 +421,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 
 				$email = new stdClass();
 				$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER','Authorize.net').'invalid response';
-				$body = JText::sprintf("Hello,\r\n An Authorize.net notification was refused because the response from the Authorize.net server was invalid. The hash received was ".$vars['x_SHA2_Hash']." while the calculated hash was ".$vars['x_Hash_calculated'].". Please cehck that you're set the same signature key in Authorize.net and the plugin")."\r\n\r\n".$order_text;
+				$body = JText::sprintf("Hello,\r\n An Authorize.net notification was refused because the response from the Authorize.net server was invalid. The hash received was ".$vars['x_SHA2_Hash']." while the calculated hash was ".$vars['x_Hash_calculated'].". Please check that you've set the same signature key in Authorize.net and the plugin")."\r\n\r\n".$order_text;
 				$email->body = $body;
 
 				$this->modifyOrder($order_id, $this->payment_params->invalid_status,false,$email);

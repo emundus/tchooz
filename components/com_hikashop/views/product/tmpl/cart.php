@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,6 +11,10 @@ defined('_JEXEC') or die('Restricted access');
 $tmpl = hikaInput::get()->getWord('tmpl', '');
 $module_id = (int)$this->params->get('id', 0);
 
+$extra_class = 'hika_j3';
+if (HIKASHOP_J40) {
+	$extra_class = 'hika_j4';
+}
 if(!in_array($tmpl, array('component', 'ajax', 'raw'))) {
 	$events = ($this->cart_type == 'cart') ? '["cart.updated","checkout.cart.updated"]' : '"wishlist.updated"';
 ?>
@@ -21,8 +25,26 @@ window.Oby.registerAjax(<?php echo $events; ?>, function(params) {
 	if(params && params.resp && params.resp.module == <?php echo (int)$module_id; ?>) return;
 	if(params && params.type && params.type != '<?php echo $this->cart_type; ?>') return;
 	o.addClass(el, "hikashop_checkout_loading");
-	window.hikashop.xRequest("<?php echo hikashop_completeLink('product&task=cart&module_id='.$module_id . '&module_type='.$this->cart_type.$this->url_itemid, true, false, true); ?>", {update: el, mode:'POST', data:'return_url=<?php echo urlencode(base64_encode(hikashop_currentURL('return_url'))); ?>'}, function(xhr){
+	window.hikashop.xRequest("<?php echo hikashop_completeLink('product&task=cart&module_id='.$module_id . '&module_type='.$this->cart_type.$this->url_itemid, true, false, true); ?>", {update:false, mode:'POST', data:'return_url=<?php echo urlencode(base64_encode(hikashop_currentURL('return_url'))); ?>'}, function(xhr){
 		o.removeClass(el, "hikashop_checkout_loading");
+		var cartDropdown = document.querySelector('#hikashop_cart_<?php echo $module_id; ?> .hikashop_cart_dropdown_content');
+		if(cartDropdown) {
+			var dropdownType = 'click';
+			var dropdownLink = document.querySelector('#hikashop_cart_<?php echo $module_id; ?> .hikashop_small_cart_checkout_link');
+			if(dropdownLink) {
+				var hover = dropdownLink.getAttribute('onmousehover');
+				if(hover) {
+					dropdownType = 'hover';
+				}
+			}
+			window.hikashop.updateElem(el, xhr.responseText, true);
+			if(cartDropdown.toggleOpen) {
+				cartDropdown = document.querySelector('#hikashop_cart_<?php echo $module_id; ?> .hikashop_cart_dropdown_content');
+				window.hikashop.toggleOverlayBlock(cartDropdown, dropdownType);
+			}
+		} else {
+			window.hikashop.updateElem(el, xhr.responseText, true);
+		}
 	});
 });
 </script>
@@ -58,7 +80,7 @@ if(empty($this->rows)) {
 
 	if(!in_array($tmpl, array('component', 'ajax', 'raw'))) {
 ?>
-<div id="hikashop_cart_<?php echo $module_id; ?>" class="hikashop_cart">
+<div id="hikashop_cart_<?php echo $module_id; ?>" class="hikashop_cart <?php echo $extra_class; ?>">
 <?php
 	}
 ?>
@@ -104,7 +126,7 @@ $this->params->set('show_quantity_field', 0);
 
 if(!in_array($tmpl, array('component', 'ajax', 'raw'))) {
 ?>
-<div id="hikashop_cart_<?php echo $module_id; ?>" class="hikashop_cart">
+<div id="hikashop_cart_<?php echo $module_id; ?>" class="hikashop_cart <?php echo $extra_class; ?>">
 <?php
 }
 ?>

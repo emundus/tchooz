@@ -1,14 +1,28 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgFinderHikashop extends plgFinderHikashopBridge {
+jimport('joomla.application.component.helper');
+require_once JPATH_ADMINISTRATOR . '/components/com_finder/helpers/indexer/adapter.php';
+
+abstract class plgFinderHikashopBridge extends FinderIndexerAdapter {
+	public $resultClass = 'FinderIndexerResult';
+
+	public function __construct(&$subject, $config) {
+		if(!isset($this->params)) {
+			$plugin = JPluginHelper::getPlugin('finder', 'hikashop');
+			$this->params = new JRegistry(@$plugin->params);
+		}
+
+		parent::__construct($subject, $config);
+	}
+
 	protected function index(FinderIndexerResult $item, $format = 'html')
 	{
 		if (JComponentHelper::isEnabled($this->extension) == false)
@@ -95,5 +109,42 @@ class plgFinderHikashop extends plgFinderHikashopBridge {
 		FinderIndexerHelper::getContentExtras($item);
 
 		$this->indexer->index($item);
+		$this->handleOtherLanguages($item);
 	}
+
+	public function prepareContent($summary, $params) {
+		return FinderIndexerHelper::prepareContent($summary, $params);
+	}
+
+	protected function addAlias(&$element){
+		if(empty($element->alias)){
+			if(empty($element->title))
+				return;
+			$element->alias = strip_tags(preg_replace('#<span class="hikashop_product_variant_subname">.*</span>#isU','',$element->title));
+		}
+
+		$config = JFactory::getConfig();
+		if(!$config->get('unicodeslugs')){
+			$lang = JFactory::getLanguage();
+			$element->alias = str_replace(array(',', "'", '"'), array('-', '-', '-'), $lang->transliterate($element->alias));
+		}
+		$app = JFactory::getApplication();
+		if(method_exists($app,'stringURLSafe')){
+			$element->alias = $app->stringURLSafe($element->alias);
+		}elseif(method_exists('JFilterOutput','stringURLUnicodeSlug')){
+			$element->alias = JFilterOutput::stringURLUnicodeSlug($element->alias);
+		}else{
+			$element->alias = JFilterOutput::stringURLSafe($element->alias);
+		}
+	}
+
+	public function toObject($row) {
+		if(HIKASHOP_J30) {
+			$item = Joomla\Utilities\ArrayHelper::toObject($row, 'FinderIndexerResult');
+		} else {
+			$item = ArrayHelper::toObject((array) $row, 'FinderIndexerResult');
+		}
+		return $item;
+	}
+
 }

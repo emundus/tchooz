@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -2734,6 +2734,9 @@ class hikashopMassactionClass extends hikashopClass{
 			        $component = false;
 			        $tableName = str_replace('joomla_','',$keyTable);
 			    }
+			    if($keyTable == 'usergroups') {
+			        $component = false;
+			    }
 				if($keyTable == 'files' || $keyTable == 'images')
 					$tableName = 'file';
 				if($keyTable == 'related' || $keyTable == 'options')
@@ -2908,6 +2911,8 @@ class HikaShopQuery {
 	var $value = 500;
 	var $ordering = array();
 	var $direction = '';
+	var $group = '';
+	var $db = null;
 
 	function __construct() {
 		$this->db = JFactory::getDBO();

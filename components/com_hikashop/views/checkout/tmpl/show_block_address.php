@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -31,7 +31,8 @@ if(!empty($this->options['display'])) {
 	$this->checkoutHelper->displayMessages('address');
 
 	$shippingAddress_override = $this->checkoutHelper->getShippingAddressOverride();
-	if(!empty($shippingAddress_override) && @$this->options['edit_address'] === true && !empty($this->options['show_shipping']) && @$this->options['new_address_type'] == 'shipping') {
+
+	if($shippingAddress_override !== false && @$this->options['edit_address'] === true && !empty($this->options['show_shipping']) && @$this->options['new_address_type'] == 'shipping') {
 		$this->options['edit_address'] = false;
 	}
 	if(empty($this->options['edit_address']) && !empty($this->options['show_billing']) && !empty($this->options['show_shipping'])) {
@@ -117,7 +118,7 @@ if(!empty($this->options['display'])) {
 	<?php
 		$user = JFactory::getUser();
 		if(!empty($this->options['multi_address']) && (empty($this->edit_address->address_id) || empty($this->edit_address->address_default)) && empty($user->guest)) {
-			$type = (!empty($this->edit_address->address_type) ? $this->edit_address->address_type : $this->options['new_address_type']);
+			$type = (!empty($this->edit_address->address_type) ? $this->edit_address->address_type : (empty($this->options['new_address_type']) ? 'billing' : $this->options['new_address_type']));
 ?>
 	<div class="hkform-group control-group hikashop_checkout_address_default" id="hikashop_checkout_address_<?php echo $this->step . '_' . $this->module_position .'_default'; ?>">
 		<div class="<?php echo $labelcolumnclass; ?>"></div>
@@ -141,7 +142,7 @@ if(!empty($this->options['display'])) {
 		<div class="<?php echo $labelcolumnclass; ?>"></div>
 		<div class="<?php echo $inputcolumnclass;?>">
 			<label><input type="checkbox"<?php echo $checked; ?> name="data[address_bothtypes_<?php echo $this->step . '_' . $this->module_position; ?>]" value="1"> <?php
-				$other = ($this->options['new_address_type'] == 'billing') ? 'shipping' : 'billing';
+				$other = (empty($this->options['new_address_type']) || $this->options['new_address_type'] == 'billing') ? 'shipping' : 'billing';
 				echo JText::_('HIKASHOP_ALSO_'.strtoupper($other).'_ADDRESS');
 			?></label>
 		</div>
@@ -287,14 +288,13 @@ if(!empty($this->options['display'])) {
 	}
 
 	if(empty($this->options['edit_address']) && !empty($this->options['show_shipping'])) {
-		if($shippingAddress_override !== '') {
 ?>
 
 			<fieldset class="hika_address_field hikashop_checkout_shipping_address_block">
 				<legend><?php echo JText::_('HIKASHOP_SHIPPING_ADDRESS'); ?></legend>
 <?php
 			$shipping_address_id = (int)$cart->cart_shipping_address_ids;
-			if(!empty($shippingAddress_override)) {
+			if(isset($shippingAddress_override) && is_string($shippingAddress_override)) {
 ?>
 				<span class="hikashop_checkout_shipping_address_info"><?php
 					echo $shippingAddress_override;
@@ -394,7 +394,6 @@ if(!empty($this->options['display'])) {
 ?>
 			</fieldset>
 <?php
-		}
 	}
 
 	if(empty($this->options['edit_address']) && !empty($this->options['show_billing']) && !empty($this->options['show_shipping'])) {

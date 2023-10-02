@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,7 +26,10 @@ if(!empty($this->params->file_name)) {
 ?>
 	<span class="file_name" style="white-space:nowrap"><?php echo $content; ?></span><br/>
 	<span class="file_size"><?php
-		echo hikashop_human_readable_bytes($this->params->file_size);
+		if($this->params->file_size)
+			echo hikashop_human_readable_bytes($this->params->file_size);
+		else
+			hikashop_display(JText::_('FILE_NOT_FOUND'),'error');
 	?></span>
 <?php
 }

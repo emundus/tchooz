@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -159,7 +159,7 @@ class CartController extends hikashopController {
 			if(!empty($cart_id)) {
 				$cart = $cartClass->get($cart_id, null, array('skip_user_check' => true));
 				$user_id = hikashop_loadUser(false);
-				if(!empty($cart) && empty($user_id)) {
+				if(!empty($cart) && !empty($cart->cart_products) && empty($user_id)) {
 					$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
 
 					global $Itemid;
@@ -587,6 +587,9 @@ window.hikashop.ready(function(){
 
 		$group = $config->get('group_options', 0);
 
+		global $Itemid;
+		$suffix = (!empty($Itemid) ? '&Itemid=' . $Itemid : '');
+
 		$cart_id = hikashop_getCID('cart_id');
 		$addto_type = hikaInput::get()->getCmd('addto_type', 'cart');
 		$addto_id = hikaInput::get()->getInt('addto_id', 0);
@@ -599,7 +602,7 @@ window.hikashop.ready(function(){
 
 		if(empty($cart)) {
 			$app->enqueueMessage(JText::_('ERROR'), 'error');
-			$app->redirect( hikashop_completeLink('cart&task=listing', false, true) );
+			$app->redirect( hikashop_completeLink('cart&task=listing'.$suffix, false, true) );
 			return false;
 		}
 
@@ -612,7 +615,7 @@ window.hikashop.ready(function(){
 			else
 				$app->enqueueMessage(JText::_('LOGIN_REQUIRED_FOR_WISHLISTS'), 'error');
 
-			$app->redirect( hikashop_completeLink('cart&task=show&cid='.$cart_id, false, true) );
+			$app->redirect( hikashop_completeLink('cart&task=show&cid='.$cart_id.$suffix, false, true) );
 			return false;
 		}
 
@@ -629,7 +632,7 @@ window.hikashop.ready(function(){
 
 		if(empty($products)) {
 			$app->enqueueMessage(JText::_('PLEASE_SELECT_A_PRODUCT_FIRST'), 'error');
-			$app->redirect( hikashop_completeLink('cart&task=show&cid='.$cart_id, false, true) );
+			$app->redirect( hikashop_completeLink('cart&task=show&cid='.$cart_id.$suffix, false, true) );
 			return false;
 		}
 
@@ -681,14 +684,14 @@ window.hikashop.ready(function(){
 
 		if(empty($ret)) {
 			$app->enqueueMessage(JText::_('ERROR'), 'error');
-			$app->redirect( hikashop_completeLink('cart&task=listing', false, true) );
+			$app->redirect( hikashop_completeLink('cart&task=listing'.$suffix, false, true) );
 			return false;
 		}
 
 		$translation = $addto_type == 'wishlist' ? 'PRODUCT_SUCCESSFULLY_ADDED_TO_WISHLIST' : 'PRODUCT_SUCCESSFULLY_ADDED_TO_CART';
 		$app->enqueueMessage(JText::_($translation));
 
-		$app->redirect( hikashop_completeLink('cart&task=show&cid='.$ret, false, true) );
+		$app->redirect( hikashop_completeLink('cart&task=show&cid='.$ret.$suffix, false, true) );
 		return false;
 	}
 
@@ -706,14 +709,17 @@ window.hikashop.ready(function(){
 
 		$ret = $cartClass->convert($cart_id, false);
 
+		global $Itemid;
+		$suffix = (!empty($Itemid) ? '&Itemid=' . $Itemid : '');
+
 		if(!$ret) {
 			$app->enqueueMessage(JText::_('ERROR'), 'error');
-			$app->redirect( hikashop_completeLink('cart&task=listing', false, true) );
+			$app->redirect( hikashop_completeLink('cart&task=listing'.$suffix, false, true) );
 			return false;
 		}
 
 		$app->enqueueMessage(JText::_('SUCCESS'));
-		$app->redirect( hikashop_completeLink('cart&task=show&cid='.(int)$cart_id, false, true) );
+		$app->redirect( hikashop_completeLink('cart&task=show&cid='.(int)$cart_id.$suffix, false, true) );
 		return true;
 	}
 
@@ -742,6 +748,10 @@ window.hikashop.ready(function(){
 		}
 
 		$url_params = ($cart->cart_type == 'cart') ? '' : '&cart_type='.$cart->cart_type;
+		global $Itemid;
+		if(!empty($Itemid)) {
+			$url_params .= '&Itemid='.$Itemid;
+		}
 		$app->redirect( hikashop_completeLink('cart&task=listing'.$url_params, false, true) );
 		return false;
 	}
@@ -794,7 +804,7 @@ window.hikashop.ready(function(){
 			$user = JFactory::getUser();
 			$config = hikashop_config();
 			if(empty($user->guest) && $config->get('enable_multicart')) {
-				$app->redirect( hikashop_completeLink('cart&task=listing'.$cart_type, false, true) );
+				$app->redirect( hikashop_completeLink('cart&task=listing'.$cart_type.$url_itemid, false, true) );
 			} else {
 				hikashop_get('helper.checkout');
 				$checkoutHelper = hikashopCheckoutHelper::get();

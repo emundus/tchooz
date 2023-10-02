@@ -1,14 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgQuickiconHikaShop  extends JPlugin {
+include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
+class plgQuickiconHikaShop  extends hikashopJoomlaPlugin {
 	public function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
 		$this->loadLanguage('com_hikashop.sys');
@@ -18,7 +19,17 @@ class plgQuickiconHikaShop  extends JPlugin {
 		if(!defined('DS'))
 			define('DS',DIRECTORY_SEPARATOR);
 		$hikashopHelper = rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php';
-		if($context != $this->params->get('context', 'mod_quickicon') || !file_exists($hikashopHelper) || !JFactory::getUser()->authorise('core.manage', 'com_hikashop')) {
+
+		if(HIKASHOP_J50)
+			$paramContext = $this->params->get('context', 'site_quickicon');
+		else
+			$paramContext = $this->params->get('context', 'mod_quickicon');
+		if(is_string($context)) {
+			$functionContext = $context;
+		} else {
+			$functionContext = $context->getContext();
+		}
+		if($functionContext != $paramContext || !file_exists($hikashopHelper) || !JFactory::getUser()->authorise('core.manage', 'com_hikashop')) {
 			return;
 		}
 
@@ -30,7 +41,12 @@ class plgQuickiconHikaShop  extends JPlugin {
 			$img = JURI::base().'../media/com_hikashop/images/icons/icon-48-hikashop.png';
 		}
 
-		return array(
+		if(HIKASHOP_J50 && !class_exists('JRoute'))
+			class_alias('Joomla\CMS\Router\Route', 'JRoute');
+		if(HIKASHOP_J50 && !class_exists('JText'))
+			class_alias('Joomla\CMS\Language\Text', 'JText');
+
+		$result = array(
 			array(
 				'link' => JRoute::_('index.php?option=com_hikashop'),
 				'image' => $img,
@@ -39,5 +55,13 @@ class plgQuickiconHikaShop  extends JPlugin {
 				'id' => 'plg_quickicon_hikashop'
 			)
 		);
+		$jversion = preg_replace('#[^0-9\.]#i','',JVERSION);
+		if(version_compare($jversion,'4.0.0','>=')) {
+			$resultArray = $context->getArgument('result', []);
+			$resultArray[] = $result;
+			$context->setArgument('result', $resultArray);
+			return;
+		}	
+		return $result;
 	}
 }

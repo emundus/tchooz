@@ -1,34 +1,55 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgFinderHikashop extends plgFinderHikashopBridge {
+use Joomla\Component\Finder\Administrator\Indexer\Helper;
+use Joomla\Component\Finder\Administrator\Indexer\Indexer;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\Registry\Registry;
+use Joomla\Component\Finder\Administrator\Indexer\Adapter;
+use Joomla\Component\Finder\Administrator\Indexer\Result;
+use Joomla\CMS\Plugin\PluginHelper;
+jimport('joomla.application.component.helper');
+
+
+abstract class plgFinderHikashopBridge extends Adapter {
+
+	public $resultClass = 'Joomla\Component\Finder\Administrator\Indexer\Result';
+
+	public function __construct(&$subject, $config) {
+		if(!isset($this->params)) {
+			$plugin = PluginHelper::getPlugin('finder', 'hikashop');
+			$this->params = new Registry(@$plugin->params);
+		}
+
+		parent::__construct($subject, $config);
+	}
 
 	protected function index(Joomla\Component\Finder\Administrator\Indexer\Result $item)
 	{
-		if (JComponentHelper::isEnabled($this->extension) == false)
+		if (ComponentHelper::isEnabled($this->extension) == false)
 		{
 			return;
 		}
 
-		$registry = new JRegistry;
+		$registry = new Registry;
 		if(!empty($item->params))
 			$registry->loadString($item->params);
-		$item->params = JComponentHelper::getParams('com_hikashop', true);
+		$item->params = ComponentHelper::getParams('com_hikashop', true);
 		$item->params->merge($registry);
 
-		$registry = new JRegistry;
+		$registry = new Registry;
 		$registry->loadString($item->metadata);
 		$item->metadata = $registry;
 
-		$item->summary = FinderIndexerHelper::prepareContent($item->summary, $item->params);
-		$item->body    = FinderIndexerHelper::prepareContent($item->body, $item->params);
+		$item->summary = Helper::prepareContent($item->summary, $item->params);
+		$item->body    = Helper::prepareContent($item->body, $item->params);
 
 		$menusClass = hikashop_get('class.menus');
 		$itemid = $menusClass->getPublicMenuItemId();
@@ -66,9 +87,9 @@ class plgFinderHikashop extends plgFinderHikashopBridge {
 			$item->imageAlt = @$image->file_name;
 		}
 
-		$item->addInstruction(FinderIndexer::META_CONTEXT, 'metakey');
-		$item->addInstruction(FinderIndexer::META_CONTEXT, 'metadesc');
-		$item->addInstruction(FinderIndexer::META_CONTEXT, 'created_by_alias');
+		$item->addInstruction(Indexer::META_CONTEXT, 'metakey');
+		$item->addInstruction(Indexer::META_CONTEXT, 'metadesc');
+		$item->addInstruction(Indexer::META_CONTEXT, 'created_by_alias');
 
 		$fields = $this->params->get('fields');
 		if(!is_array($fields)){
@@ -77,7 +98,7 @@ class plgFinderHikashop extends plgFinderHikashopBridge {
 		if(!empty($fields) && count($fields)) {
 			foreach($fields as $field) {
 				if(!in_array($field, array('product_name', 'product_description', 'product_keywords', 'product_meta_description')))
-					$item->addInstruction(FinderIndexer::META_CONTEXT, $field);
+					$item->addInstruction(Indexer::META_CONTEXT, $field);
 			}
 		}
 
@@ -90,8 +111,48 @@ class plgFinderHikashop extends plgFinderHikashopBridge {
 
 		$item->addTaxonomy('Language', 		$item->language);
 
-		FinderIndexerHelper::getContentExtras($item);
+		Helper::getContentExtras($item);
 
 		$this->indexer->index($item);
+
+		$this->handleOtherLanguages($item);
+	}
+
+	public function prepareContent($summary, $params) {
+		return Helper::prepareContent($summary, $params);
+	}
+
+	protected function addAlias(&$element){
+		if(empty($element->alias)){
+			if(empty($element->title))
+				return;
+			$element->alias = strip_tags(preg_replace('#<span class="hikashop_product_variant_subname">.*</span>#isU','',$element->title));
+		}
+
+		$config = JFactory::getConfig();
+		if(!$config->get('unicodeslugs')){
+			$lang = JFactory::getLanguage();
+			$element->alias = str_replace(array(',', "'", '"'), array('-', '-', '-'), $lang->transliterate($element->alias));
+		}
+		$app = JFactory::getApplication();
+		if(method_exists($app,'stringURLSafe')){
+			$element->alias = $app->stringURLSafe($element->alias);
+		}elseif(method_exists('Joomla\CMS\Filter\OutputFilter','stringURLUnicodeSlug')){
+			$element->alias = Joomla\CMS\Filter\OutputFilter::stringURLUnicodeSlug($element->alias);
+		}else{
+			$element->alias = Joomla\CMS\Filter\OutputFilter::stringURLSafe($element->alias);
+		}
+	}
+
+	public function toObject($row) {
+		if(HIKASHOP_J40) {
+			$item = Joomla\Utilities\ArrayHelper::toObject($row, 'Joomla\Component\Finder\Administrator\Indexer\Result');
+		}elseif(HIKASHOP_J30) {
+			$item = Joomla\Utilities\ArrayHelper::toObject($row, 'FinderIndexerResult');
+		} else {
+			$item = ArrayHelper::toObject((array) $row, 'FinderIndexerResult');
+		}
+
+		return $item;
 	}
 }

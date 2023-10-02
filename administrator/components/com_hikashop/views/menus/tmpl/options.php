@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -36,7 +36,7 @@ if (HIKASHOP_J40) {
 }
 
 ?>
-<div id="hikashop_main_content_<?php echo $this->type; ?>" class="hikashop_main_content hk-container-fluid item-menu-interface hika_j<?php echo (int)HIKASHOP_JVERSION; ?>">
+<div id="hikashop_main_content_<?php echo $this->type; ?>" class="hikashop_main_content hk-container-fluid item-menu-interface hika_j<?php echo (int)HIKASHOP_JVERSION; if(HIKASHOP_JVERSION>4) echo ' hika_j4'; ?>">
 	<div id="hikashop_menu_backend_page_edition">
 		<div class="hk-row-fluid hikashop_edit_display_type">
 <?php
@@ -51,7 +51,7 @@ if (HIKASHOP_J40) {
 		if($value->value == 'inherit' && $this->type == 'category')
 			$value->text = $value->text.' (div)';
 ?>
-			<div class="<?php echo $grid_class; ?> hikashop_menu_block_content_type hikashop_menu_edit_display_type_<?php echo $value->value; ?>" onclick="window.optionMgr.tabChange(this);" data-type="<?php echo $this->type; ?>_layout_choice" data-layout="<?php echo $this->type.'_'.$value->value; ?>">
+			<div class="<?php echo $grid_class; ?> hikashop_menu_block_content_type hikashop_menu_edit_display_type_<?php echo $value->value; ?>" onclick="window.optionMgr.tabChange(this, false);" data-type="<?php echo $this->type; ?>_layout_choice" data-layout="<?php echo $this->type.'_'.$value->value; ?>">
 				<img class="hikashop_menu_block_img_unselected" src="<?php echo HIKASHOP_IMAGES; ?>icons/icon-24-<?php echo $src; ?>.png">
 				<img class="hikashop_menu_block_img_selected" src="<?php echo HIKASHOP_IMAGES; ?>icons/icon-24-<?php echo $src; ?>-selected.png">
 				<?php echo $value->text; ?>
@@ -161,7 +161,7 @@ window.hikashop.ready(function(){
 ";
 $js .= "
 	hkjQuery('div[data-type=\'".$this->type."_layout\']').hide();
-	window.optionMgr.tabChange('div[data-layout=\'".$this->type."_".$this->element['layout_type']."\']');
+	window.optionMgr.tabChange('div[data-layout=\'".$this->type."_".$this->element['layout_type']."\']', true);
 ";
 $js .= "
 	hkjQuery('#hikashop_menu_backend_page_edition .hikashop_menu_edit_display .hikashop_option_value').find('input').change(function(){
@@ -198,9 +198,18 @@ $js .="
 		var name = hkjQuery(this).attr('name').replace('[columns]','').replace('[rows]','');
 		var listType = hkjQuery(this).parent().attr('data-list-type');
 		var cCol = 1;
-		if(listType != 'table')
+		if(listType != 'table') {
 			cCol = hkjQuery('input[name=\''+name+'[columns]\']').val();
+			if(cCol < 1) {
+				cCol = 1;
+				hkjQuery('input[name=\''+name+'[columns]\']').val(1);
+			}
+		}
 		var cRow = hkjQuery('input[name=\''+name+'[rows]\']').val();
+		if(cRow < 1) {
+			cRow = 1;
+			hkjQuery('input[name=\''+name+'[rows]\']').val(1);
+		}
 		hkjQuery('input[name=\''+name+'[limit]\']').val(parseInt(cRow) * parseInt(cCol));
 		window.optionMgr.fillSelector(cCol,cRow,name);
 	});
@@ -254,7 +263,7 @@ window.optionMgr = {
 				hkjQuery(this).addClass('selected');
 		});
 	},
-	tabChange : function(el) {
+	tabChange : function(el, init) {
 		var val = hkjQuery(el).attr('data-layout');
 		if(val == 'category_table')
 			val = 'category_inherit';
@@ -275,6 +284,27 @@ window.optionMgr = {
 			hkjQuery('div[data-display-tab=\'div\']').show();
 		else
 			hkjQuery('div[data-display-tab=\'div\']').hide();
+
+		if(!init) {
+			var mainEl = hkjQuery('div[data-layout=\''+val+'\'] .listing_item_quantity_selector');
+			var cells = hkjQuery('div[data-layout=\''+val+'\'] .listing_item_quantity_selector div.selected');
+			var name = mainEl.attr('data-name');
+			var maxCol = 1;
+			var maxRow = 1;
+			cells.each(function(index, cell) {
+				var classes = hkjQuery(cell).attr('class').split(' ');
+				var col = parseInt(classes[0].replace('col',''))+1;
+				if(col > maxCol)
+					maxCol = col;
+				var row = parseInt(classes[1].replace('row',''))+1;
+				if(row > maxRow)
+					maxRow = row;
+			});
+
+			hkjQuery('input[name=\''+name+'[columns]\']').val(maxCol);
+			hkjQuery('input[name=\''+name+'[rows]\']').val(maxRow);
+			hkjQuery('input[name=\''+name+'[limit]\']').val(maxCol*maxRow);
+		}
 	},
 	hideDisplayOptions : function(optionName,newValue) {
 		var dynamicHide = {
@@ -387,7 +417,7 @@ else
 	$hkMenusJs = "
 window.hikashop.ready(function(){
 	hkjQuery('div[data-type=\'".$this->type."_layout\']').hide();
-	window.optionMgr.tabChange('div[data-layout=\'".$this->type."_".$this->element['layout_type']."\']');
+	window.optionMgr.tabChange('div[data-layout=\'".$this->type."_".$this->element['layout_type']."\']', true);
 });
 	";
 $hkMenusJs .= "

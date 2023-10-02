@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -39,17 +39,21 @@ $table =& $this->table;
 	</div>
 	</div>
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
-	<input type="hidden" name="task" value="batch_process" />
+	<input type="hidden" name="task" value="<?php echo hikaInput::get()->get('task'); ?>" />
 	<input type="hidden" name="tmpl" value="component" />
 	<input type="hidden" name="table_type" value="<?php echo $table->table; ?>" />
-	<input type="hidden" name="ctrl" value="massaction" />
+	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->get('ctrl'); ?>" />
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>
 <script type="text/javascript">
 addHikaMassAction('<?php echo $table->table; ?>','action');
 function process_batch() {
+	if(confirm('<?php echo JText::_('PROCESS_CONFIRMATION', false); ?>') != true)
+		return false;
 	var checkboxes = window.parent.document.querySelectorAll('input[name="cid[]"]');
 	var batchForm = document.getElementById('adminForm');
+	batchForm.task.value = 'batch_process';
+	batchForm.ctrl.value = 'massaction';
 	console.log(checkboxes);
 	checkboxes.forEach(elem => {
 		var clone = elem.cloneNode();

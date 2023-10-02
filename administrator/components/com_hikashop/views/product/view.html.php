@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1878,7 +1878,7 @@ class ProductViewProduct extends hikashopView
 			$editor->name = 'product_description';
 			$editor->content = $product->product_description;
 		}
-		$editor->height = 200;
+		$editor->height = 300;
 		$this->assignRef('editor', $editor);
 
 		if(!isset($product->product_quantity) || $product->product_quantity < 0)
@@ -1949,6 +1949,13 @@ class ProductViewProduct extends hikashopView
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')
 		);
+
+		$page_title = JText::_('NEW_PRODUCT_FORM');
+		if(!empty($product->product_id)) {
+			$page_title = $product->product_name.' - '.$product->product_code.' - '.JText::_('HIKA_EDIT');
+		}
+
+		hikashop_setPageTitle($page_title);
 
 		$cancel_url = hikaInput::get()->getVar('cancel_redirect');
 		if(!empty($cancel_url)) {
@@ -2242,7 +2249,7 @@ class ProductViewProduct extends hikashopView
 		}
 		$editor->id = 'product_variant_editors_'.time();
 		$editor->setEditor($editorType);
-		$editor->height = 200;
+		$editor->height = 300;
 		$this->assignRef('editor', $editor);
 
 		if(!isset($product->product_quantity) || $product->product_quantity < 0)

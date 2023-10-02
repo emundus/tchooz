@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,9 +28,14 @@ function HikashopBuildRoute( &$query ) { return _HikashopBuildRoute($query, ':')
 function _HikashopBuildRoute( &$query, $separator = '-' )
 {
 	$segments = array();
+	$params = array('option','Itemid','start','format','limitstart','lang','cart_id', 'tmpl');
 	if(!defined('DS'))
 		define('DS', DIRECTORY_SEPARATOR);
 	if(function_exists('hikashop_config') || include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php')) {
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeHikashopBuildRoute', array(&$query, $separator, &$params));
+
 		$config =& hikashop_config();
 		if($config->get('activate_sef',1)){
 			$categorySef=$config->get('category_sef_name','category');
@@ -138,7 +143,7 @@ function _HikashopBuildRoute( &$query, $separator = '-' )
 
 	if(!empty($query)){
 		foreach($query as $name => $value){
-			if(!in_array($name,array('option','Itemid','start','format','limitstart','lang','cart_id'))){
+			if(!in_array($name, $params) && substr($name,0,6) != 'x-wblr'){
 					if(is_array($value)) $value = implode('-',$value);
 					$segments[] = $name.$separator.$value;
 				unset($query[$name]);

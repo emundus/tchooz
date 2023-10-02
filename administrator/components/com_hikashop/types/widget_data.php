@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class hikashopwidget_dataType{
+class hikashopwidget_dataType extends hikashopType{
 	function load(){
 		$this->values = array(
 			JHTML::_('select.option', 'gauge',JText::_('GAUGE')),
@@ -120,6 +120,6 @@ window.hikashop.ready( function(){ updateDisplay(); });";
 		$doc->addScriptDeclaration( $js );
 
 		hikashop_loadJslib('vex');
-		return '<a href="#" data-hk-popup="vex" data-vex="{x: 760, y: 480}" style="display:none;" id="table_popup_link"></a>'.JHTML::_('hikaselect.radiolist',   $this->values, $map, 'class="custom-select" size="1" onchange="updateDisplay(); displayTablePopup();"'.$option, 'value', 'text', $value, $id.'_' );
+		return '<a href="#" data-hk-popup="vex" data-vex=\'{"x": 760, "y": 480}\' style="display:none;" id="table_popup_link"></a>'.JHTML::_('hikaselect.radiolist',   $this->values, $map, 'class="custom-select" size="1" onchange="updateDisplay(); displayTablePopup();"'.$option, 'value', 'text', $value, $id.'_' );
 	}
 }

@@ -1,18 +1,18 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-if(!empty($this->element->mail->dst_email) && is_array($this->element->mail->dst_email))
+if(isset($this->element->mail->dst_email) && is_array($this->element->mail->dst_email))
 	$this->element->mail->dst_email = implode(',',$this->element->mail->dst_email);
-if(!empty($this->element->mail->cc_email) && is_array($this->element->mail->cc_email))
+if(isset($this->element->mail->cc_email) && is_array($this->element->mail->cc_email))
 	$this->element->mail->cc_email = implode(',',$this->element->mail->cc_email);
-if(!empty($this->element->mail->bcc_email) && is_array($this->element->mail->bcc_email))
+if(isset($this->element->mail->bcc_email) && is_array($this->element->mail->bcc_email))
 	$this->element->mail->bcc_email = implode(',',$this->element->mail->bcc_email);
 
 	$hide_cc = 'false';

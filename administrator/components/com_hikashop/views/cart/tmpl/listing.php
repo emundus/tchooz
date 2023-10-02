@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -50,6 +50,9 @@ if($this->config->get('cart_ip', 1)) {
 				</th>
 				<th class="title title_cart_quantity">
 					<?php  echo JText::_('PRODUCT_QUANTITY'); ?>
+				</th>
+				<th class="hikashop_cart_products_title title default" data-alias="products">
+					<?php echo JText::_('PRODUCTS'); ?>
 				</th>
 				<th class="title title_cart_total">
 					<?php echo JText::_('CART_PRODUCT_TOTAL_PRICE'); ?>
@@ -137,6 +140,20 @@ if($this->config->get('cart_ip', 1)) {
 				<td><?php
 					echo (int)@$cart->quantity;
 				?></td>
+				<td>
+<?php
+					$products = '<ul>';
+					if(!empty($cart->full_cart->products)) {
+						foreach($cart->full_cart->products as $p) {
+							if(empty($p->cart_product_quantity) || !empty($p->cart_product_option_parent_id))
+								continue;
+							$products .= '<li>'.$p->product_name.' (x'.$p->cart_product_quantity.')</li>';
+						}
+					}
+					$products .= '</ul>';
+					echo $products;
+?>
+				</td>
 				<td>
 					<span class='hikashop_product_price_full hikashop_product_price'><?php
 						echo $this->currencyClass->format($cart->price, $cart->currency);

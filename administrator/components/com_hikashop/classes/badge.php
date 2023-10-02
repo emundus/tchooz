@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -224,10 +224,13 @@ class hikashopBadgeClass extends hikashopClass {
 			$position_left = (int)($badge->badge_horizontal_distance + $options['horizontal']);
 			$position_bottom = (int)($badge->badge_vertical_distance + $options['vertical']);
 
-			$styletopleft = 'position:absolute; z-index:2; top:'.$position_top.'px; left:'.$position_left.'px; margin-top:10px;';
-			$styletopright = 'position:absolute; z-index:3; top:'.$position_top.'px; right:'.$position_right.'px; margin-top:10px;';
-			$stylebottomleft = 'position:absolute; z-index:4; bottom:'.$position_bottom.'px; left:'.$position_left.'px; margin-bottom:10px;';
-			$stylebottomright = 'position:absolute; z-index:5; bottom:'.$position_bottom.'px; right:'.$position_right.'px; margin-bottom:10px;';
+			$common = 'position:absolute; ';
+			if(empty($badge->badge_url))
+				$common .= 'pointer-events: none; ';
+			$styletopleft = $common . 'z-index:2; top:'.$position_top.'px; left:'.$position_left.'px; margin-top:10px;';
+			$styletopright = $common . 'z-index:3; top:'.$position_top.'px; right:'.$position_right.'px; margin-top:10px;';
+			$stylebottomleft = $common . 'z-index:4; bottom:'.$position_bottom.'px; left:'.$position_left.'px; margin-bottom:10px;';
+			$stylebottomright = $common . 'z-index:5; bottom:'.$position_bottom.'px; right:'.$position_right.'px; margin-bottom:10px;';
 
 			$image_options = array('default' => true,'forcesize' => $config->get('image_force_size', true), 'scale' => $config->get('image_scale_mode', 'inside'));
 			$img = $image->getThumbnail(@$badge->badge_image, array('width' => $badge_width, 'height' => $badge_height), $image_options);

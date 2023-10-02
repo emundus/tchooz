@@ -1,15 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-jimport('joomla.plugin.plugin');
-class plgSystemHikashopuser extends JPlugin {
+include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
+class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 	public $hikashopRegistrationInProgress = false;
 	public $oldUser = null;
 	public $currency = null;
@@ -19,16 +19,23 @@ class plgSystemHikashopuser extends JPlugin {
 	public $wishlist = null;
 	public $checkout_fields = null;
 	public $checkout_fields_ok = null;
+
 	public function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
 
 		if (version_compare(JVERSION,'4.0','>=') && !(Joomla\CMS\Factory::getApplication() instanceof Joomla\CMS\Application\WebApplication)) return;
 
 		if(!isset($this->params)) {
+			if(HIKASHOP_J50 && !class_exists('JPluginHelper'))
+				class_alias('Joomla\CMS\Plugin\PluginHelper', 'JPluginHelper');
+			if(HIKASHOP_J50 && !class_exists('JRegistry'))
+				class_alias('Joomla\Registry\Registry', 'JRegistry');
 			$plugin = JPluginHelper::getPlugin('system', 'hikashopuser');
 			$this->params = new JRegistry($plugin->params);
 		}
 
+		if(HIKASHOP_J50 && !class_exists('JFactory'))
+			class_alias('Joomla\CMS\Factory', 'JFactory');
 		$app = JFactory::getApplication();
 		$this->currency = $app->getUserState('com_hikashop.currency_id');
 		$this->entries = $app->getUserState('com_hikashop.entries_fields');
@@ -43,6 +50,27 @@ class plgSystemHikashopuser extends JPlugin {
 
 	}
 
+	public function _alwaysLoadHikaShop() {
+		$app = JFactory::getApplication();
+		if(version_compare(JVERSION,'4.0','>=') && !$app->isClient('site'))
+			return true;
+		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
+			return true;
+
+		$load = $this->params->get('load_hikashop_on_all_pages');
+		if(is_null($load))
+			$load = 1;
+		if(!empty($load)) {
+			if(!defined('DS'))
+				define('DS', DIRECTORY_SEPARATOR);
+			if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php'))
+				return true;
+			JPluginHelper::importPlugin('hikashop');
+			$plugin = hikashop_import('hikashop', 'cartnotify');
+			$plugin->onBeforeCompileHead();
+		}
+	}
+
 	public function onAfterProductCreate(&$product) {
 		$app = JFactory::getApplication();
 		JPluginHelper::importPlugin('finder');
@@ -51,6 +79,7 @@ class plgSystemHikashopuser extends JPlugin {
 		$context = 'com_hikashop.product';
 		$app->triggerEvent('onFinderAfterSave', array($context, $product, $isNew));
 	}
+
 	public function onBeforeProductCreate(&$product, &$do) {
 		$app = JFactory::getApplication();
 		JPluginHelper::importPlugin('finder');
@@ -111,6 +140,8 @@ class plgSystemHikashopuser extends JPlugin {
 	}
 
 	public function onBeforeCompileHead(){
+
+		$this->_alwaysLoadHikaShop();
 
 		if(version_compare(JVERSION,'3.7','<'))
 			return;
@@ -195,7 +226,7 @@ class plgSystemHikashopuser extends JPlugin {
 	public function onUserAfterDelete($user, $success, $msg) {
 		return $this->onAfterDeleteUser($user, $success, $msg);
 	}
-	public function onUserLogin($user, $options) {
+	public function onUserLogin($user, $options = null) {
 		return $this->onLoginUser($user, $options);
 	}
 
@@ -354,7 +385,11 @@ class plgSystemHikashopuser extends JPlugin {
 		if(empty($user['id'])) {
 			if(!empty($user['username'])) {
 				jimport('joomla.user.helper');
+				if(HIKASHOP_J50 && !class_exists('JUser'))
+					class_alias('Joomla\CMS\User\User', 'JUser');
 				$instance = new JUser();
+				if(HIKASHOP_J50 && !class_exists('JUserHelper'))
+					class_alias('Joomla\CMS\User\UserHelper', 'JUserHelper');
 				if($id = intval(JUserHelper::getUserId($user['username'])))  {
 					$instance->load($id);
 				}
@@ -554,7 +589,7 @@ class plgSystemHikashopuser extends JPlugin {
 				hikaInput::get()->set('task', $layout);
 			}
 		}
-		if(in_array((string)$view, array('product', 'category', '')) && in_array((string)$layout, array('show', 'listing', ''))) {
+		if(version_compare(JVERSION,'3.0','>=') && in_array((string)$view, array('product', 'category', '')) && in_array((string)$layout, array('show', 'listing', ''))) {
 			$app = JFactory::getApplication();
 			$body = $app->getBody();
 			if(strpos($body, 'hreflang')) {
@@ -672,7 +707,7 @@ class plgSystemHikashopuser extends JPlugin {
 			JResponse::setBody($body);
 	}
 
-	 public function onPreprocessMenuItems($name, &$items, $params = null, $enabled = true) {
+	 public function onPreprocessMenuItems($name, $items = null, $params = null, $enabled = true) {
 		if($name != 'com_menus.administrator.module' )
 			return;
 
@@ -726,6 +761,9 @@ class plgSystemHikashopuser extends JPlugin {
 	public function onPrivacyCollectAdminCapabilities() {
 		$lang = JFactory::getLanguage();
 		$lang->load('com_hikashop', JPATH_SITE, null, true);
+
+		if(HIKASHOP_J50 && !class_exists('JText'))
+			class_alias('Joomla\CMS\Language\Text', 'JText');
 		$capabilities = array(
 			'HikaShop' => array(
 				JText::_('HIKASHOP_PRIVACY_CAPABILITY_IP_ADDRESS'),
@@ -766,6 +804,9 @@ class plgSystemHikashopuser extends JPlugin {
 
 		jimport('joomla.access.access');
 		$my = JFactory::getUser($id);
+
+		if(HIKASHOP_J50 && !class_exists('JAccess'))
+			class_alias('Joomla\CMS\Access\Access', 'JAccess');
 		$userGroups = JAccess::getGroupsByUser($my->id, (bool)$this->_config('inherit_parent_group_access', false));
 
 		$inter = array_intersect($userGroups,$allowedGroups);

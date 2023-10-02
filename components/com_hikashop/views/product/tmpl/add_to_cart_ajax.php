@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -78,7 +78,10 @@ if($start_date > 0 && $start_date > $now) {
 ?>
 <!-- EO SALE START MESSAGE -->
 <!-- STOCK MESSAGE -->
-<span class="hikashop_product_stock_count">
+<?php
+$stock_class = ($this->row->product_quantity != 0) ? "" : " hikashop_product_no_stock";
+?>
+<span class="hikashop_product_stock_count<?php echo $stock_class; ?>">
 <?php
 	if(!empty($this->row->product_stock_message))
 		echo JText::sprintf($this->row->product_stock_message, $this->row->product_quantity);

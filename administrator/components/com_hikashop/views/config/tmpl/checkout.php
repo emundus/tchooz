@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -135,6 +135,12 @@ jQuery(document).ready(function(){
 		<td class="hk_tbl_key"<?php echo $this->docTip('display_checkout_bar');?>><?php echo JText::_('DISPLAY_CHECKOUT_BAR'); ?></td>
 		<td><?php
 			echo $this->checkout->display('config[display_checkout_bar]', $this->config->get('display_checkout_bar'));
+			$values = array(
+				JHTML::_('select.option', 'bar', JText::_('HIKASHOP_PROGRESS_BAR')),
+				JHTML::_('select.option', 'accordion', JText::_('HIKASHOP_ACCORDION'))
+			);
+			echo JHTML::_('hikaselect.radiolist', $values, 'config[display_checkout_mode]', '', 'value', 'text', $this->config->get('display_checkout_mode', 'bar'));
+
 		?></td>
 	</tr>
 <?php

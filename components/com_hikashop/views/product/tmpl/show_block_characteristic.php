@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -324,7 +324,14 @@ function getValidVariants(pos) {
 }
 
 function hikashopVariantSelected(obj) {
-<?php if(($characteristics_dynamic_display && $count > 1) || $characteristics_dynamic_display > 1) { ?>
+<?php
+	if(($characteristics_dynamic_display && $count > 1) || $characteristics_dynamic_display > 1) {
+		$config = hikashop_config();
+		$characteristics_dynamic_autoselect = 'false';
+		if($config->get('characteristics_dynamic_autoselect', 1)) {
+			$characteristics_dynamic_autoselect = 'true';
+		}
+?>
 	if(typeof(obj) == "string")
 		obj = document.getElementById(obj);
 	if(!obj)
@@ -340,11 +347,15 @@ function hikashopVariantSelected(obj) {
 			var next = parseInt(pos) + 1;
 			var nextEl = document.querySelector('[data-characteristic="'+next+'"]');
 			var nextRow = document.querySelector('[data-characrow="'+next+'"]');
+			var previouslySelected = null;
 			if(nextEl.tagName.toLowerCase() == 'select') {
+				previouslySelected = nextEl.selectedIndex;
 				nextEl.selectedIndex = 0;
 			} else {
 				var inputs = nextRow.querySelectorAll('input');
 				for (index = 0; index < inputs.length; ++index) {
+					if(inputs[index].checked)
+						previouslySelected = index;
 					inputs[index].checked = false;
 				}
 			}
@@ -362,6 +373,7 @@ function hikashopVariantSelected(obj) {
 			if(nextEl.tagName.toLowerCase() == 'select') {
 				var count = 0;
 				var lastIndexFound = 0;
+				var first = -1;
 				for (index = 0; index < nextEl.options.length; ++index) {
 					var found = false;
 					for (i = 0; i < validVariants.length; ++i) {
@@ -371,6 +383,7 @@ function hikashopVariantSelected(obj) {
 							lastIndexFound = index;
 							nextEl.options[index].hidden = false;
 							nextEl.options[index].disabled = false;
+							if(first== -1 || index == previouslySelected) first = index;
 						}
 					}
 					if(!found && index != 0) {
@@ -384,7 +397,10 @@ function hikashopVariantSelected(obj) {
 				if(count==2) {
 					autoSelect = true;
 					nextEl.selectedIndex = lastIndexFound;
-				}
+				} else if( count > 2 && first != -1 && <?php echo $characteristics_dynamic_autoselect; ?>) {
+					autoSelect = true;
+					nextEl.selectedIndex = first;
+                }
 				if(window.jQuery && typeof(jQuery().chosen) == "function") {
 					jQuery( "#hikashop_product_characteristics select" ).chosen('destroy').chosen({disable_search_threshold:10, search_contains: true});
 				}
@@ -392,6 +408,7 @@ function hikashopVariantSelected(obj) {
 				var inputs = nextRow.querySelectorAll('input');
 				var count = 0;
 				var lastIndexFound = 0;
+				var first = -1;
 				for (index = 0; index < inputs.length; ++index) {
 					var found = false;
 					for (i = 0; i < validVariants.length; ++i) {
@@ -400,6 +417,7 @@ function hikashopVariantSelected(obj) {
 							found = true;
 							lastIndexFound = index;
 							inputs[index].parentNode.style.setProperty('display', '', 'important');
+							if(first== -1 || index == previouslySelected) first = index;
 						}
 					}
 
@@ -409,10 +427,13 @@ function hikashopVariantSelected(obj) {
 						count++;
 					}
 				}
-				if(count==2) {
+				if(count==1) {
 					autoSelect = true;
 					inputs[lastIndexFound].checked = true;
-				}
+				}else if(first != -1 && <?php echo $characteristics_dynamic_autoselect; ?>) {
+					autoSelect = true;
+					inputs[first].checked = true;
+                }
 			}
 
 			if(qtyArea) {

@@ -1,13 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+$css_button = $this->config->get('css_button','hikabtn');
+
 if(empty($this->cartHelper))
 	$this->cartHelper = hikashop_get('helper.cart');
 $quantity_counter = $this->cartHelper->getQuantityCounter($this);
@@ -108,10 +110,10 @@ switch($quantityLayout) {
 			<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 			<div class="add-on hikashop_product_quantity_div hikashop_product_quantity_change_div_regrouped">
 				<div class="hikashop_product_quantity_change_div_plus_regrouped">
-					<a class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="1" onclick="<?php echo $increment_script; ?>">+</a>
+					<a class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change <?php echo $css_button; ?>" href="#" data-hk-qty-mod="1" onclick="<?php echo $increment_script; ?>">+</a>
 				</div>
-				<div class="hikashop_product_quantity_change_div_plus_regrouped">
-					<a class="hikashop_product_quantity_field_change_minus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="-1" onclick="<?php echo $increment_script; ?>">&ndash;</a>
+				<div class="hikashop_product_quantity_change_div_minus_regrouped">
+					<a class="hikashop_product_quantity_field_change_minus hikashop_product_quantity_field_change <?php echo $css_button; ?>" href="#" data-hk-qty-mod="-1" onclick="<?php echo $increment_script; ?>">&ndash;</a>
 				</div>
 			</div>
 		</div>
@@ -136,7 +138,7 @@ switch($quantityLayout) {
 				$r[] = $max_quantity;
 			$values = array_combine($r, $r);
 			ksort($values);
-			echo JHTML::_('select.genericlist', $values, '', 'style="width:auto;" class="no-chzn" onchange="var el = document.getElementById(\''.$id.'\'); el.value = this.value; el.onchange();"', 'value', 'text', $current_quantity, $id.'_select');
+			echo JHTML::_('select.genericlist', $values, '', 'style="width:auto;" class="no-chzn '.$extra_classes.'" onchange="var el = document.getElementById(\''.$id.'\'); el.value = this.value; el.onchange();"', 'value', 'text', $current_quantity, $id.'_select');
 			?>
 			<input id="<?php echo $id; ?>" type="hidden" value="<?php echo $current_quantity; ?>" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 		</div>
@@ -181,19 +183,14 @@ switch($quantityLayout) {
 		break;
 
 	case 'show_leftright':
-
-	$extra_class = '';
-	if (HIKASHOP_J40) {
-		$extra_class = 'hika_j4';
-	}
 ?>
-		<div id="<?php echo $id; ?>_area" class="input-prepend input-append hikashop_product_quantity_div hikashop_product_quantity_change_div_leftright <?php echo $extra_class; ?>">
+		<div id="<?php echo $id; ?>_area" class="input-prepend input-append hikashop_product_quantity_div hikashop_product_quantity_change_div_leftright">
 			<span class="add-on">
-				<a class="hikashop_product_quantity_field_change_minus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="-1" onclick="<?php echo $increment_script; ?>">&ndash;</a>
+				<a class="hikashop_product_quantity_field_change_minus hikashop_product_quantity_field_change <?php echo $css_button; ?>" href="#" data-hk-qty-mod="-1" onclick="<?php echo $increment_script; ?>">&ndash;</a>
 			</span>
 			<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 			<span class="add-on">
-				<a class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="1" onclick="<?php echo $increment_script; ?>">+</a>
+				<a class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change <?php echo $css_button; ?>" href="#" data-hk-qty-mod="1" onclick="<?php echo $increment_script; ?>">+</a>
 			</span>
 		</div>
 <?php
@@ -224,12 +221,12 @@ switch($quantityLayout) {
 					<input id="<?php echo $id; ?>" type="text" value="<?php echo $current_quantity; ?>" onfocus="this.select()" class="hikashop_product_quantity_field <?php echo $extra_classes; ?>" name="<?php echo $quantity_fieldname; ?>" data-hk-qty-old="<?php echo $current_quantity; ?>" data-hk-qty-min="<?php echo $min_quantity; ?>" data-hk-qty-max="<?php echo $max_quantity; ?>"<?php echo $extra_data_attribute; ?> onchange="<?php echo $script; ?>" <?php echo $extra_data; ?> />
 				</td>
 				<td>
-					<a class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="1" onclick="<?php echo $increment_script; ?>">+</a>
+					<a class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change <?php echo $css_button; ?>" href="#" data-hk-qty-mod="1" onclick="<?php echo $increment_script; ?>">+</a>
 				</td>
 			</tr>
 			<tr>
 				<td>
-					<a class="hikashop_product_quantity_field_change_minus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="-1" onclick="<?php echo $increment_script; ?>">&ndash;</a>
+					<a class="hikashop_product_quantity_field_change_minus hikashop_product_quantity_field_change <?php echo $css_button; ?>" href="#" data-hk-qty-mod="-1" onclick="<?php echo $increment_script; ?>">&ndash;</a>
 				</td>
 			</tr>
 		</table>
@@ -245,10 +242,10 @@ switch($quantityLayout) {
 			</div>
 			<div class="hikashop_product_quantity_div hikashop_product_quantity_change_div_default">
 				<div class="hikashop_product_quantity_change_div_plus_default">
-					<a class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="1" onclick="<?php echo $increment_script; ?>">+</a>
+					<a class="hikashop_product_quantity_field_change_plus hikashop_product_quantity_field_change <?php echo $css_button; ?>" href="#" data-hk-qty-mod="1" onclick="<?php echo $increment_script; ?>">+</a>
 				</div>
 				<div class="hikashop_product_quantity_change_div_minus_default">
-					<a class="hikashop_product_quantity_field_change_minus hikashop_product_quantity_field_change" href="#" data-hk-qty-mod="-1" onclick="<?php echo $increment_script; ?>">&ndash;</a>
+					<a class="hikashop_product_quantity_field_change_minus hikashop_product_quantity_field_change <?php echo $css_button; ?>" href="#" data-hk-qty-mod="-1" onclick="<?php echo $increment_script; ?>">&ndash;</a>
 				</div>
 			</div>
 		</div>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -69,8 +69,8 @@ class VoteController extends hikashopController {
 		}else{
 			$return['success'] = array('code' => $voteClass->error['code'],'message' => $voteClass->error['message']);
 			if(!empty($voteClass->values)){
-				$return['values'] = array('average' => round($voteClass->values['average'],2), 'rounded' => round($voteClass->values['average']), 'total' => $voteClass->values['total']);
-				$return['tooltip'] = JText::sprintf('HIKA_VOTE_TOOLTIP',round($voteClass->values['average'],2),$voteClass->values['total'],$element->vote_rating);
+				$return['values'] = array('average' => round((float)$voteClass->values['average'],2), 'rounded' => round((float)$voteClass->values['average']), 'total' => $voteClass->values['total']);
+				$return['tooltip'] = JText::sprintf('HIKA_VOTE_TOOLTIP',round((float)$voteClass->values['average'],2),$voteClass->values['total'],$element->vote_rating);
 			}
 		}
 		ob_get_clean();

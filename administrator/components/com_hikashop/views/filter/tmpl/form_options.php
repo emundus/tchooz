@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -182,7 +182,24 @@ defined('_JEXEC') or die('Restricted access');
 							<?php echo JText::_( 'MAXLENGTH' ); ?>
 						</td>
 						<td>
-							<input type="text" name="data[filter][max_char]" id="name" class="inputbox" size="10" value="<?php echo $this->escape(@$this->element->filter_options['max_char']); ?>" />
+							<input type="text" name="data[filter][max_char]" id="max_char" class="inputbox" size="10" value="<?php echo $this->escape(@$this->element->filter_options['max_char']); ?>" />
+						</td>
+					</tr>
+					<tr id="min_char">
+						<td class="key">
+							<?php echo JText::_( 'MINLENGTH' ); ?>
+						</td>
+						<td>
+							<input type="text" name="data[filter][min_char]" id="min_char" class="inputbox" size="10" value="<?php echo $this->escape(@$this->element->filter_options['min_char']); ?>" />
+						</td>
+					</tr>
+
+					<tr id="words_skipped">
+						<td class="key">
+							<?php echo JText::_( 'WORDS_TO_IGNORE' ); ?>
+						</td>
+						<td>
+							<textarea rows="6" cols="60" name="data[filter][words_skipped]" id="words_to_ignore"><?php echo $this->escape(@$this->element->filter_options['words_skipped']); ?></textarea>
 						</td>
 					</tr>
 					<tr id="attributes">
@@ -190,7 +207,7 @@ defined('_JEXEC') or die('Restricted access');
 							<?php echo JText::_( 'FIELD_ATTRIBUTE' ); ?>
 						</td>
 						<td>
-							<input type="text" name="data[filter][attribute]" id="name" class="inputbox" size="10" value="<?php echo $this->escape(@$this->element->filter_options['attribute']); ?>" />
+							<input type="text" name="data[filter][attribute]" id="attributes" class="inputbox" size="10" value="<?php echo $this->escape(@$this->element->filter_options['attribute']); ?>" />
 						</td>
 					</tr>
 					<tr id="currencies" <?php echo $displayPrice; ?>>

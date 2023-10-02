@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -27,6 +27,9 @@ class hikashopVolumeHelper{
 		'ft'=>array('m'=>0.3048,'dm'=>3.048,'cm'=>30.48,'mm'=>304.8,'in'=>12,'yd'=>0.333333333),
 		'yd'=>array('m'=>0.9144,'dm'=>9.144,'cm'=>91.44,'mm'=>914.4,'in'=>36,'ft'=>3),
 	);
+
+	protected $symbols = null;
+	protected $main_symbol = null;
 
 	function __construct(){
 		$this->getSymbol();

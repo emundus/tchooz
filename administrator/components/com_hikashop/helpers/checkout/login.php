@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -258,7 +258,7 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			$params['same_address'] = 1;
 
 		$shippingAddress_override = $checkoutHelper->getShippingAddressOverride();
-		if(!$checkoutHelper->isShipping() || !empty($shippingAddress_override)) {
+		if(!$checkoutHelper->isShipping() || $shippingAddress_override !== false) {
 			$params['same_address'] = 0;
 		}
 
@@ -544,6 +544,8 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			if(empty($view->mainUser))
 				$view->mainUser = new stdClass();
 			foreach($data as $key => $val) {
+				if(HIKASHOP_J50 && $key == 'password2')
+					continue;
 				$view->mainUser->$key = $val;
 			}
 		}
@@ -578,7 +580,7 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			if($params['same_address']) {
 				$checkoutHelper = hikashopCheckoutHelper::get();
 				$shippingAddress_override = $checkoutHelper->getShippingAddressOverride();
-				if(!$checkoutHelper->isShipping() ||  !empty($shippingAddress_override)) {
+				if(!$checkoutHelper->isShipping() ||  $shippingAddress_override !== false) {
 					$params['same_address'] = false;
 				}
 			}
@@ -617,26 +619,36 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function checkMarker($markerName, $oldMarkers, $newMarkers, &$controller, $params) {
-		if(!in_array($markerName, array('billing_address', 'billing_addresses', 'shipping_address', 'shipping_addresses', 'user')))
-			return true;
-
 		if(!empty($params['register_done'])){
-			if(!isset($params['address_on_registration'])){
-				$config = hikashop_config();
-				$params['address_on_registration'] = (int)$config->get('address_on_registration', 1);
+			$user = JFactory::getUser();
+			if(!empty($user->guest)) {
+				$workflow_step = hikashop_getCID('step');
+				if($workflow_step > 0)
+					$workflow_step--;
+				$checkoutHelper = hikashopCheckoutHelper::get();
+				$workflow = $checkoutHelper->checkout_workflow;
+				if(count($workflow['steps'][$workflow_step]['content']) == 1)
+					return false;
 			}
-			if($params['address_on_registration'])
-				return false;
 
-			$checkoutHelper = hikashopCheckoutHelper::get();
-			$workflow = $checkoutHelper->checkout_workflow;
-			foreach($workflow['steps'] as $step) {
-				foreach($step['content'] as $step_content) {
-					if($step_content['task'] == 'address')
-						return true;
+			if(in_array($markerName, array('billing_address', 'billing_addresses', 'shipping_address', 'shipping_addresses', 'user'))) {
+				if(!isset($params['address_on_registration'])){
+					$config = hikashop_config();
+					$params['address_on_registration'] = (int)$config->get('address_on_registration', 1);
 				}
+				if($params['address_on_registration'])
+					return false;
+
+				$checkoutHelper = hikashopCheckoutHelper::get();
+				$workflow = $checkoutHelper->checkout_workflow;
+				foreach($workflow['steps'] as $step) {
+					foreach($step['content'] as $step_content) {
+						if($step_content['task'] == 'address')
+							return true;
+					}
+				}
+				return false;
 			}
-			return false;
 		}
 
 		return true;

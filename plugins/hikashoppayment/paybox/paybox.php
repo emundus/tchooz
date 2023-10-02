@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -265,6 +265,261 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		'ZW' => '716',
 	);
 
+	var $phone_codes = array(
+		"AF" => 93,
+		"AX" => 358,
+		"AL" => 355,
+		"DZ" => 213,
+		"AS" => 1684,
+		"AD" => 376,
+		"AO" => 244,
+		"AI" => 1264,
+		"AQ" => 672,
+		"AG" => 1268,
+		"AR" => 54,
+		"AM" => 374,
+		"AW" => 297,
+		"AU" => 61,
+		"AT" => 43,
+		"AZ" => 994,
+		"BS" => 1242,
+		"BH" => 973,
+		"BD" => 880,
+		"BB" => 1246,
+		"BY" => 375,
+		"BE" => 32,
+		"BZ" => 501,
+		"BJ" => 229,
+		"BM" => 1441,
+		"BT" => 975,
+		"BO" => 591,
+		"BQ" => 599,
+		"BA" => 387,
+		"BW" => 267,
+		"BV" => 55,
+		"BR" => 55,
+		"IO" => 246,
+		"BN" => 673,
+		"BG" => 359,
+		"BF" => 226,
+		"BI" => 257,
+		"KH" => 855,
+		"CM" => 237,
+		"CA" => 1,
+		"CV" => 238,
+		"KY" => 1345,
+		"CF" => 236,
+		"TD" => 235,
+		"CL" => 56,
+		"CN" => 86,
+		"CX" => 61,
+		"CC" => 672,
+		"CO" => 57,
+		"KM" => 269,
+		"CG" => 242,
+		"CD" => 242,
+		"CK" => 682,
+		"CR" => 506,
+		"CI" => 225,
+		"HR" => 385,
+		"CU" => 53,
+		"CW" => 599,
+		"CY" => 357,
+		"CZ" => 420,
+		"DK" => 45,
+		"DJ" => 253,
+		"DM" => 1767,
+		"DO" => 1809,
+		"EC" => 593,
+		"EG" => 20,
+		"SV" => 503,
+		"GQ" => 240,
+		"ER" => 291,
+		"EE" => 372,
+		"ET" => 251,
+		"FK" => 500,
+		"FO" => 298,
+		"FJ" => 679,
+		"FI" => 358,
+		"FR" => 33,
+		"GF" => 594,
+		"PF" => 689,
+		"TF" => 262,
+		"GA" => 241,
+		"GM" => 220,
+		"GE" => 995,
+		"DE" => 49,
+		"GH" => 233,
+		"GI" => 350,
+		"GR" => 30,
+		"GL" => 299,
+		"GD" => 1473,
+		"GP" => 590,
+		"GU" => 1671,
+		"GT" => 502,
+		"GG" => 44,
+		"GN" => 224,
+		"GW" => 245,
+		"GY" => 592,
+		"HT" => 509,
+		"HM" => 0,
+		"VA" => 39,
+		"HN" => 504,
+		"HK" => 852,
+		"HU" => 36,
+		"IS" => 354,
+		"IN" => 91,
+		"ID" => 62,
+		"IR" => 98,
+		"IQ" => 964,
+		"IE" => 353,
+		"IM" => 44,
+		"IL" => 972,
+		"IT" => 39,
+		"JM" => 1876,
+		"JP" => 81,
+		"JE" => 44,
+		"JO" => 962,
+		"KZ" => 7,
+		"KE" => 254,
+		"KI" => 686,
+		"KP" => 850,
+		"KR" => 82,
+		"XK" => 383,
+		"KW" => 965,
+		"KG" => 996,
+		"LA" => 856,
+		"LV" => 371,
+		"LB" => 961,
+		"LS" => 266,
+		"LR" => 231,
+		"LY" => 218,
+		"LI" => 423,
+		"LT" => 370,
+		"LU" => 352,
+		"MO" => 853,
+		"MK" => 389,
+		"MG" => 261,
+		"MW" => 265,
+		"MY" => 60,
+		"MV" => 960,
+		"ML" => 223,
+		"MT" => 356,
+		"MH" => 692,
+		"MQ" => 596,
+		"MR" => 222,
+		"MU" => 230,
+		"YT" => 262,
+		"MX" => 52,
+		"FM" => 691,
+		"MD" => 373,
+		"MC" => 377,
+		"MN" => 976,
+		"ME" => 382,
+		"MS" => 1664,
+		"MA" => 212,
+		"MZ" => 258,
+		"MM" => 95,
+		"NA" => 264,
+		"NR" => 674,
+		"NP" => 977,
+		"NL" => 31,
+		"AN" => 599,
+		"NC" => 687,
+		"NZ" => 64,
+		"NI" => 505,
+		"NE" => 227,
+		"NG" => 234,
+		"NU" => 683,
+		"NF" => 672,
+		"MP" => 1670,
+		"NO" => 47,
+		"OM" => 968,
+		"PK" => 92,
+		"PW" => 680,
+		"PS" => 970,
+		"PA" => 507,
+		"PG" => 675,
+		"PY" => 595,
+		"PE" => 51,
+		"PH" => 63,
+		"PN" => 64,
+		"PL" => 48,
+		"PT" => 351,
+		"PR" => 1787,
+		"QA" => 974,
+		"RE" => 262,
+		"RO" => 40,
+		"RU" => 7,
+		"RW" => 250,
+		"BL" => 590,
+		"SH" => 290,
+		"KN" => 1869,
+		"LC" => 1758,
+		"MF" => 590,
+		"PM" => 508,
+		"VC" => 1784,
+		"WS" => 684,
+		"SM" => 378,
+		"ST" => 239,
+		"SA" => 966,
+		"SN" => 221,
+		"RS" => 381,
+		"CS" => 381,
+		"SC" => 248,
+		"SL" => 232,
+		"SG" => 65,
+		"SX" => 721,
+		"SK" => 421,
+		"SI" => 386,
+		"SB" => 677,
+		"SO" => 252,
+		"ZA" => 27,
+		"GS" => 500,
+		"SS" => 211,
+		"ES" => 34,
+		"LK" => 94,
+		"SD" => 249,
+		"SR" => 597,
+		"SJ" => 47,
+		"SZ" => 268,
+		"SE" => 46,
+		"CH" => 41,
+		"SY" => 963,
+		"TW" => 886,
+		"TJ" => 992,
+		"TZ" => 255,
+		"TH" => 66,
+		"TL" => 670,
+		"TG" => 228,
+		"TK" => 690,
+		"TO" => 676,
+		"TT" => 1868,
+		"TN" => 216,
+		"TR" => 90,
+		"TM" => 7370,
+		"TC" => 1649,
+		"TV" => 688,
+		"UG" => 256,
+		"UA" => 380,
+		"AE" => 971,
+		"GB" => 44,
+		"US" => 1,
+		"UM" => 1,
+		"UY" => 598,
+		"UZ" => 998,
+		"VU" => 678,
+		"VE" => 58,
+		"VN" => 84,
+		"VG" => 1284,
+		"VI" => 1340,
+		"WF" => 681,
+		"EH" => 212,
+		"YE" => 967,
+		"ZM" => 260,
+		"ZW" => 263
+	);
+
 	var $multiple = true;
 	var $name = 'paybox';
 	var $doc_form = 'paybox';
@@ -376,9 +631,7 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 				}
 				break;
 			case 'sofinco':
-				$simpleXMLElement = new SimpleXMLElement("<Customer/>");
-				$simpleXMLElement->addChild('Id',$this->user->user_id);        
-				$this->vars['PBX_CUSTOMER'] = $simpleXMLElement->asXML();
+				$this->vars['PBX_CUSTOMER'] = $this->exportToXml('<?xml version="1.0" encoding="utf-8"?><Customer><Id>'.$this->user->user_id.'</Id></Customer>');
 				break;
 			case '':
 			default:
@@ -407,6 +660,11 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 			if(!empty($typecarte)) $this->vars['PBX_TYPECARTE'] = $typecarte;
 		}
 
+		if(@$this->payment_params->bank == 'sofinco') {
+			$this->url = 'https://'.$srv.'/php/';
+			$this->vars['PBX_BILLING'] = $this->getBillingInformation($order, 'sofinco');
+		}
+
 
 		$payboxLanguages = array('FRA','GBR','ESP','ITA','DEU','NLD','SWE','PRT');
 		$lang = JFactory::getLanguage();
@@ -424,6 +682,8 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		$this->vars['PBX_HMAC'] = strtoupper(hash_hmac('sha512', $msg, $binKey));
 		$this->vars['PBX_SHOPPINGCART'] = htmlspecialchars($this->vars['PBX_SHOPPINGCART'], ENT_QUOTES,'UTF-8');
 		$this->vars['PBX_BILLING'] =  htmlspecialchars($this->vars['PBX_BILLING'], ENT_QUOTES,'UTF-8');
+		if(isset($this->vars['PBX_CUSTOMER']))
+			$this->vars['PBX_CUSTOMER'] =  htmlspecialchars($this->vars['PBX_CUSTOMER'], ENT_QUOTES,'UTF-8');
 		unset($msg);
 
 		if(!empty($this->payment_params->debug)) {
@@ -433,16 +693,75 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		return $this->showPage('end');
 	}
 
-	function getBillingInformation(&$order) {
+	function getBillingInformation(&$order, $type = 'default') {
 		$country = 'FR';
-		if(empty($order->cart->billing_address->address_country->zone_code_2)) {
+		$countryName = 'France';
+		$countryCode = '+33';
+		if(!empty($order->cart->billing_address->address_country->zone_code_2)) {
 			$country = $order->cart->billing_address->address_country->zone_code_2;
+			if(!empty($order->cart->billing_address->address_country->zone_name_english))
+				$countryName = $order->cart->billing_address->address_country->zone_name_english;
+		}
+		if(isset($this->phone_codes[$country])) {
+			$countryCode = '+'.$this->phone_codes[$country];
+		}
+		$telephone = $order->cart->billing_address->address_telephone;
+		if($telephone[0] == '+') {
+			$prefix = substr($telephone, 0, strlen($countryCode));
+			if($prefix == $countryCode) {
+				$telephone = substr($telephone, strlen($countryCode));
+				if($telephone[0] != '0') {
+					$telephone = '0'.$telephone;
+				}
+			} elseif(isset($this->phone_codes[substr($prefix,1)])) {
+				$countryCode = $prefix;
+				$telephone = substr($telephone, strlen($countryCode));
+				if($telephone[0] != '0') {
+					$telephone = '0'.$telephone;
+				}
+			}
 		}
 		if(isset($this->country_codes[$country]))
 			$country = $this->country_codes[$country];
 		else
 			$country = '250';
-		$xml = '<?xml version="1.0" encoding="utf-8"?><Billing><Address><FirstName>'.
+		if($type=='sofinco') {
+			$title = 'Monsieur';
+			switch($order->cart->billing_address->address_title) {
+				case 'Mrs':
+					$title = 'Madame';
+					break;
+				case 'Miss':
+					$title = 'Mademoiselle';
+					break;
+				default:
+					break;
+			}
+			$xml = '<?xml version="1.0" encoding="utf-8"?><Billing><Address><Title>'.
+			$this->formatTextValue($title, 'ANP', 12).
+		'</Title><FirstName>'.
+			$this->formatTextValue($order->cart->billing_address->address_firstname, 'ANP', 50).
+		'</FirstName><LastName>'.
+			$this->formatTextValue($order->cart->billing_address->address_lastname, 'ANP', 50).
+		'</LastName><Address1>'.
+			$this->formatTextValue($order->cart->billing_address->address_street, 'ANS', 50).
+		'</Address1><Address2>'.
+			$this->formatTextValue($order->cart->billing_address->address_street2, 'ANS', 50).
+		'</Address2><ZipCode>'.
+			$this->formatTextValue($order->cart->billing_address->address_post_code, 'ANS', 12).
+		'</ZipCode><City>'.
+			$this->formatTextValue($order->cart->billing_address->address_city, 'ANS', 50).
+		'</City><CountryCode>'.
+			$country.
+		'</CountryCode><CountryCodeHomePhone>'.
+		$countryCode.
+	'</CountryCodeHomePhone><HomePhone>'.
+		$telephone.
+	'</HomePhone><CountryName>'.
+		$this->formatTextValue($countryName, 'ANS', 50).
+	'</CountryName></Address></Billing>';
+		} else {
+			$xml = '<?xml version="1.0" encoding="utf-8"?><Billing><Address><FirstName>'.
 			$this->formatTextValue($order->cart->billing_address->address_firstname, 'ANP', 30).
 		'</FirstName><LastName>'.
 			$this->formatTextValue($order->cart->billing_address->address_lastname, 'ANP', 30).
@@ -457,6 +776,7 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		'</City><CountryCode>'.
 			$country.
 		'</CountryCode></Address></Billing>';
+		}
 
 		return $this->exportToXml($xml);
 	}

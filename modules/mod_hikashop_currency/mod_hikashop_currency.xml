@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="1.5.0" method="upgrade" client="site">
 	<name>Hikashop Currency Switcher Module</name>
-	<creationDate>08 juin 2023</creationDate>
-	<version>4.7.3</version>
+	<creationDate>29 septembre 2023</creationDate>
+	<version>5.0.0</version>
 	<author>Hikari Software</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -52,7 +52,21 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
-				<field  name="moduleclass_sfx" type="text" label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL" />
+				<field
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					class="form-select"
+					description="JFIELD_ALT_MODULE_LAYOUT_DESC"
+					validate="moduleLayout"
+				/>
+				<field
+					name="moduleclass_sfx"
+					type="textarea"
+					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC"
+					rows="3"
+				/>
 				<field name="mode_noform" type="radio" default="0" label="DO_NOT_USE_A_FORM" description="DO_NOT_USE_A_FORM_DESC" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>

@@ -1,20 +1,21 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+$jversion = preg_replace('#[^0-9\.]#i','',JVERSION);
+if(version_compare($jversion,'4.0.0','>=')) {
+	include_once(__DIR__.'/hikashop_j4.php');
+} else {
+	include_once(__DIR__.'/hikashop_j3.php');
+}
 
-
-jimport('joomla.application.component.helper');
-
-require_once JPATH_ADMINISTRATOR . '/components/com_finder/helpers/indexer/adapter.php';
-
-abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
+class plgFinderHikashop extends plgFinderHikashopBridge
 {
 	protected $context = 'Product';
 	protected $extension = 'com_hikashop';
@@ -23,13 +24,105 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 	protected $table = '#__hikashop_product';
 	protected $state_field = 'product_published';
 	protected $item = null;
-	public function __construct(&$subject, $config) {
-		if(!isset($this->params)) {
-			$plugin = JPluginHelper::getPlugin('finder', 'hikashop');
-			$this->params = new JRegistry(@$plugin->params);
+
+	protected function handleOtherLanguages(&$item) {
+		hikashop_writeToLog($item);
+		$translationHelper = hikashop_get('helper.translation');
+		if($translationHelper->isMulti() && !$translationHelper->falang) {
+			$languages = $translationHelper->loadLanguages();
+
+			$mainColumns = array(
+				'title' => 'product_name',
+				'summary' => 'product_description',
+				'metakey' => 'product_keywords',
+				'metadesc' => 'product_meta_description',
+				'product_alias' => 'product_alias'
+			);
+			$fields = $this->params->get('fields');
+			if(!is_array($fields)){
+				$fields = explode(',',(string)$fields);
+			}
+			if(!empty($fields) && count($fields)) {
+				$columns = array_merge($mainColumns, $fields);
+			} else {
+				$columns = $mainColumns;
+			}
+			foreach($languages as $language) {
+				$originals = array();
+				foreach($columns as $column) {
+					if(!empty($item->$column)) {
+						$originals[$column] = $item->$column;
+					}
+				}
+				if(count($originals)) {
+					$translations = hikashop_translate($originals, $language->code);
+					$copy = null;
+					foreach($originals as $k => $o) {
+						if($o == $translations[$k])
+							continue;
+						if(is_null($copy)) {
+							$serialize = $item->serialize();
+							$class = $this->resultClass;
+							$copy = new $class();
+							@$copy->unserialize($serialize);
+							$copy->language = $language->code;
+							$copy->addTaxonomy('Language', $copy->language);
+						}
+						$copy->$k = $translations[$k];
+
+						foreach($columns as $column) {
+							if(in_array($column, $mainColumns)) {
+								$key = array_search($column, $mainColumns);
+								if($key == 'summary') {
+									$copy->summary = $this->prepareContent($copy->summary, $copy->params);
+								} else {
+									$copy->$key = $copy->$column;
+
+								}
+							}
+						}
+
+						$copy->alias = '';
+						$this->addAlias($copy);
+					}
+					if(!is_null($copy)) {
+						$menusClass = hikashop_get('class.menus');
+						$itemid = $menusClass->getPublicMenuItemId();
+						$extra = '';
+						if(!empty($itemid))
+							$extra = '&Itemid='.$itemid;
+
+						$copy->url   = "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $copy->id."&name=".$copy->alias.$extra;
+						$copy->route = "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $copy->id."&name=".$copy->alias.$extra;
+						$this->indexer->index($copy);
+					}
+				}
+			}
+		}
+	}
+
+	public function onFinderGarbageCollection()
+	{
+		$db      = $this->db;
+		$type_id = $this->getTypeId();
+
+		$query    = $db->getQuery(true);
+		$subquery = $db->getQuery(true);
+		$subquery->select('CONCAT(' . $db->quote($this->getUrl('%', $this->extension, $this->layout)) . ', product_id)')
+			->from($db->quoteName($this->table));
+		$query->select($db->quoteName('l.link_id'))
+			->from($db->quoteName('#__finder_links', 'l'))
+			->where($db->quoteName('l.type_id') . ' = ' . $type_id)
+			->where($db->quoteName('l.url') . ' LIKE ' . $db->quote($this->getUrl('%', $this->extension, $this->layout)))
+			->where($db->quoteName('l.url') . ' NOT IN (' . $subquery . ')');
+		$db->setQuery($query);
+		$items = $db->loadColumn();
+
+		foreach ($items as $item) {
+			$this->indexer->remove($item);
 		}
 
-		parent::__construct($subject, $config);
+		return count($items);
 	}
 
 	public function onFinderCategoryChangeState($extension, $pks, $value)
@@ -60,7 +153,7 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 
 	public function onFinderAfterSave($context, $row, $isNew)
 	{
-		if ($context == 'com_hikashop.product')
+		if ($context == 'com_hikashop.product' && !is_null($row))
 		{
 
 			if(!empty($row->categories)) {
@@ -112,26 +205,6 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 			$this->pluginDisable($pks);
 		}
 	}
-	protected function addAlias(&$element){
-		if(empty($element->alias)){
-			$element->alias = strip_tags(preg_replace('#<span class="hikashop_product_variant_subname">.*</span>#isU','',$element->title));
-		}
-
-		$config = JFactory::getConfig();
-		if(!$config->get('unicodeslugs')){
-			$lang = JFactory::getLanguage();
-			$element->alias = str_replace(array(',', "'", '"'), array('-', '-', '-'), $lang->transliterate($element->alias));
-		}
-		$app = JFactory::getApplication();
-		if(method_exists($app,'stringURLSafe')){
-			$element->alias = $app->stringURLSafe($element->alias);
-		}elseif(method_exists('JFilterOutput','stringURLUnicodeSlug')){
-			$element->alias = JFilterOutput::stringURLUnicodeSlug($element->alias);
-		}else{
-			$element->alias = JFilterOutput::stringURLSafe($element->alias);
-		}
-	}
-
 
 	protected function setup()
 	{
@@ -149,23 +222,32 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 	protected function getUrl($id, $extension, $view)
 	{
 		static $extra = null;
-		if(is_null($extra)) {
-			$this->_setup();
-			$menusClass = hikashop_get('class.menus');
-			$itemid = $menusClass->getPublicMenuItemId();
-			if($itemid)
-				$extra = '&Itemid='.$itemid;
-			else
-				$extra = '';
+		$url = 'index.php?option=' . $extension . '&ctrl=' . $view . '&task=show&cid=';
+		if(!empty($id)) {
+			if(is_numeric($id)) {
+				if(is_null($extra)) {
+					$this->_setup();
+					$menusClass = hikashop_get('class.menus');
+					$itemid = $menusClass->getPublicMenuItemId();
+					if($itemid)
+						$extra = '&Itemid='.$itemid;
+					else
+						$extra = '';
+				}
+				$productClass = hikashop_get('class.product');
+				$item = $productClass->get($id);
+				if($item->product_type == 'variant') {
+					$parent = $productClass->get($item->product_parent_id);
+					if($parent)
+						$item->alias = $parent->alias;
+				}
+				$url .= $id ."&name=".$item->alias. $extra;
+			} elseif($id === '%') {
+				$url .= $id;
+			}
 		}
-		$productClass = hikashop_get('class.product');
-		$item = $productClass->get($id);
-		if($item->product_type == 'variant') {
-			$parent = $productClass->get($item->product_parent_id);
-			if($parent)
-				$item->alias = $parent->alias;
-		}
-		return 'index.php?option=' . $extension . '&ctrl=' . $view . '&task=show&cid=' . $id ."&name=".$item->alias. $extra;
+
+		return $url;
 	}
 
 	protected function getListQuery($query = null)
@@ -178,7 +260,7 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 			->select('a.product_keywords AS metakey, a.product_meta_description AS metadesc, "" AS metadata, a.product_access AS access')
 			->select('"" AS created_by_alias, a.product_modified AS modified, "" AS modified_by')
 			->select('a.product_sale_start AS publish_start_date, a.product_sale_end AS publish_end_date')
-			->select('a.product_published AS state, a.product_sale_start AS start_date, 1 AS access')
+			->select($this->getStateColumn().' AS state, a.product_sale_start AS start_date, 1 AS access')
 			->select('brand.category_name AS brand, brand.category_alias as brandalias, brand.category_published AS brand_state, 1 AS brand_access');
 		if($category) {
 			$query->select('c.category_name AS category, c.category_alias as categoryalias, c.category_published AS cat_state, 1 AS cat_access');
@@ -211,11 +293,7 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 		if(empty($row))
 			$row = array();
 
-		if(HIKASHOP_J30) {
-			$item = Joomla\Utilities\ArrayHelper::toObject($row, 'FinderIndexerResult');
-		} else {
-			$item = ArrayHelper::toObject((array) $row, 'FinderIndexerResult');
-		}
+		$item = $this->toObject($row);
 
 		$item->type_id = $this->type_id;
 
@@ -295,7 +373,7 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 
 		$query->select('a.product_id AS id, c.category_id AS catid');
 
-		$query->select('a.product_published AS state, c.category_published AS cat_state');
+		$query->select($this->getStateColumn().' AS state, c.category_published AS cat_state');
 		$query->select('1 AS access,  1 AS cat_access')
 			->from($this->table . ' AS a')
 			->join('LEFT', '#__hikashop_product_category AS pc ON a.product_id = pc.product_id')
@@ -303,10 +381,16 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 
 		return $query;
 	}
-}
-$jversion = preg_replace('#[^0-9\.]#i','',JVERSION);
-if(version_compare($jversion,'4.0.0','>=')) {
-	include_once(__DIR__.'/hikashop_j4.php');
-} else {
-	include_once(__DIR__.'/hikashop_j3.php');
+
+	protected function getStateColumn() {
+		$state = 'a.product_published';
+		if(!function_exists('hikashop_config'))
+			$this->setup();
+		$config = hikashop_config();
+		$out_of_stock = (int)$config->get('show_out_of_stock','1');
+		if(!$out_of_stock){
+			$state = '(CASE a.product_quantity WHEN 0 THEN 0 ELSE a.product_published END)';
+		}
+		return $state;
+	}
 }

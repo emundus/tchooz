@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -229,15 +229,15 @@ class CategoryViewCategory extends HikaShopView {
 		if($oldValue != $pageInfo->limit->value) {
 			hikaInput::get()->set('limitstart_category',0);
 		}
-
-
-		if($config->get('redirect_post',0)){
-			$pageInfo->limit->start = 0;
-			if(isset($_REQUEST['limitstart_category'])){
-				$pageInfo->limit->start = hikaInput::get()->getInt('limitstart_category');
+		$pageInfo->limit->start = 0;
+		if(empty($this->module) || hikaInput::get()->getVar('hikashop_front_end_main', 0)){
+			if($config->get('redirect_post',0)){
+				if(isset($_REQUEST['limitstart_category'])){
+					$pageInfo->limit->start = hikaInput::get()->getInt('limitstart_category');
+				}
+			} else {
+				$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart_category', 'limitstart_category', 0, 'int' );
 			}
-		} else {
-			$pageInfo->limit->start = $app->getUserStateFromRequest( $this->paramBase.'.limitstart_category', 'limitstart_category', 0, 'int' );
 		}
 
 		if(empty($this->module)){

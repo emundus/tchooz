@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -151,7 +151,6 @@ class hikashopOrderClass extends hikashopClass {
 		unset($order->order_shipping_tax_namekey);
 		unset($order->order_payment_tax_namekey);
 		unset($order->order_discount_tax_namekey);
-		unset($order->total_number_of_products);
 
 		if($new && empty($order->order_lang)) {
 			$lang = JFactory::getLanguage();
@@ -181,10 +180,9 @@ class hikashopOrderClass extends hikashopClass {
 		if(!$do)
 			return false;
 
-		$unsets = array('value', 'order_current_lgid', 'order_current_locale', 'mail_status');
+		$unsets = array('value', 'order_current_lgid', 'order_current_locale', 'mail_status', 'total_number_of_products');
 		foreach($unsets as $unset) {
-			if(isset($order->$unset))
-				unset($order->$unset);
+			unset($order->$unset);
 		}
 
 		$serializes = array('order_tax_info', 'order_currency_info', 'order_shipping_params', 'order_payment_params');
@@ -197,15 +195,14 @@ class hikashopOrderClass extends hikashopClass {
 			$this->capturePayment($order, 0);
 		}
 
-		if(empty($order->old))
-			unset($order->old);
-
-		if(isset($order->order_url))
-			unset($order->order_url);
-		if(isset($order->mail_params))
-			unset($order->mail_params);
+		$old = $order->old;
+		unset($order->old);
+		unset($order->order_url);
+		unset($order->mail_params);
 
 		$order->order_id = parent::save($order);
+
+		$order->old = $old;
 
 		foreach($serializes as $serialize) {
 			if(isset($order->$serialize) && is_string($order->$serialize))
@@ -2004,6 +2001,18 @@ class hikashopOrderClass extends hikashopClass {
 		if(!empty($Itemid)) {
 			$url='&Itemid='.$Itemid;
 		}
+		if(empty($element->customer->user_cms_id)) {
+			if(empty($element->order_token)) {
+				if(!empty($element->old->order_token)) {
+					$element->order_token = $element->old->order_token;
+				} elseif(!empty($element->order->order_token)) {
+					$element->order_token = $element->order->order_token;
+				} else {
+					$element->order_token = '';
+				}
+			}
+			$url.='&order_token='.$element->order_token;
+		}
 		$element->order_url = hikashop_contentLink('order&task=show&cid[]='.$element->order_id.$url, $element, false, false, false, true);
 
 		$element->order = $this->get($element->order_id);
@@ -2031,7 +2040,8 @@ class hikashopOrderClass extends hikashopClass {
 
 	public function loadNotification($order_id, $type = 'order_status_notification', $params = null) {
 		$order = $this->get($order_id);
-		$this->loadOrderNotification($order,$type, $params);
+		if($order)
+			$this->loadOrderNotification($order,$type, $params);
 		return $order;
 	}
 

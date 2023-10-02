@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -107,7 +107,9 @@ defined('_JEXEC') or die('Restricted access');
 	if(!empty($this->fields)){
 		foreach($this->fields as $field){
 			if($field->field_type == 'customtext') continue;
-			echo '<th class="title">'.JHTML::_('grid.sort', $this->fieldsClass->trans($field->field_realname), 'b.'.$field->field_namekey, $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ).'</th>';
+			echo '<th class="title custom_field" data-alias="'.$field->field_realname.'">'.
+				JHTML::_('grid.sort', $this->fieldsClass->trans($field->field_realname), 'b.'.$field->field_namekey, $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value ).
+			'</th>';
 		}
 		$count_extrafields += count($this->fields);
 	}
@@ -232,11 +234,10 @@ defined('_JEXEC') or die('Restricted access');
 			}
 		}
 ?>
-							<td class="order"><?php
+							<td class="order column_move"><?php
 								if($this->doOrdering){
 									if($this->manage){ ?>
-										<span><?php echo $this->pagination->orderUpIcon( $i, $this->order->reverse XOR ( $row->ordering >= @$this->rows[$i-1]->ordering ), $this->order->orderUp, 'Move Up',$this->order->ordering ); ?></span>
-										<span><?php echo $this->pagination->orderDownIcon( $i, $a, $this->order->reverse XOR ( $row->ordering <= @$this->rows[$i+1]->ordering ), $this->order->orderDown, 'Move Down' ,$this->order->ordering); ?></span>
+										<span class="move_icon"><img src="../media/com_hikashop/images/move.png" alt=""></span>
 										<input type="text" name="order[]" size="5" <?php if(!$this->order->ordering) echo 'disabled="disabled"'?> value="<?php echo $row->ordering; ?>" class="text_area" style="text-align: center" />
 									<?php }else{ echo $row->ordering; }
 								} else {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,9 +9,10 @@
 defined('_JEXEC') or die('Restricted access');
 ?><div id="hikashop_order_listing">
 <?php
+	$url_itemid = (!empty($this->Itemid) ? '&Itemid=' . $this->Itemid : '');
 	echo $this->toolbarHelper->process($this->toolbar, $this->title);
 ?>
-<form action="<?php echo hikashop_completeLink('order'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo hikashop_completeLink('order'.$url_itemid); ?>" method="post" name="adminForm" id="adminForm">
 
 <div class="hk-row-fluid">
 	<div class="hkc-md-6">
@@ -51,7 +52,6 @@ defined('_JEXEC') or die('Restricted access');
 		</div>
 <?php
 	} else {
-		$url_itemid = (!empty($this->Itemid) ? '&Itemid=' . $this->Itemid : '');
 		$cancel_orders = false;
 		$print_invoice = false;
 		$cancel_url = '&cancel_url='.base64_encode(hikashop_currentURL());

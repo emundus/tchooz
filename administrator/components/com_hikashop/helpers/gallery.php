@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -24,12 +24,12 @@ class hikashopGalleryHelper {
 	}
 
 	function setRoot($dir) {
-		if(strpos($dir,JPATH_ROOT)!==false){
+		if(strpos((string)$dir,JPATH_ROOT)!==false){
 			$dir = str_replace(JPATH_ROOT,'',$dir);
 		}
 
 		$dir = ltrim($dir,'/');
-		if(strpos($dir, '..') !== false)
+		if(strpos((string)$dir, '..') !== false)
 			return false;
 		$this->root = JPath::clean(JPATH_ROOT.DS.$dir);
 		$app = JFactory::getApplication();
@@ -54,7 +54,7 @@ class hikashopGalleryHelper {
 	function getTreeList($folder = '', $openTo = '') {
 		$id = 'hikashopGallery';
 
-		if(strpos($folder, '..') !== false)
+		if(strpos((string)$folder, '..') !== false)
 			return false;
 
 		jimport('joomla.filesystem.folder');
@@ -82,7 +82,7 @@ var data_'.$id.' = ['.$this->_getTreeChildList(null, '/').'];
 		$ret = '';
 		if(empty($parent))
 			$parent = '';
-		if(strpos($folder, '..') !== false)
+		if(strpos((string)$folder, '..') !== false)
 			return false;
 		if(!JFolder::exists($this->root . $parent . DS . $folder))
 			return false;
@@ -149,7 +149,7 @@ var data_'.$id.' = ['.$this->_getTreeChildList(null, '/').'];
 		$ret = array();
 		$this->filecount = 0;
 		jimport('joomla.filesystem.folder');
-		if(strpos($folder, '..') !== false)
+		if(strpos((string)$folder, '..') !== false)
 			return false;
 		if(!JFolder::exists($this->root . $folder))
 			return false;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -202,7 +202,7 @@ class hikashopAddressClass extends hikashopClass {
 			foreach($fields as $field) {
 				$fieldname = $field->field_namekey;
 				if(!empty($address->$fieldname))
-					$html = str_replace('{'.$fieldname.'}', $fieldsClass->show($field,$address->$fieldname), $html);
+					$html = str_replace('{'.$fieldname.'}', (string)$fieldsClass->show($field,$address->$fieldname), $html);
 			}
 		}
 
@@ -695,7 +695,7 @@ class hikashopAddressClass extends hikashopClass {
 
 				foreach($fields as $field){
 					$fieldname = $field->field_namekey;
-					$ret = str_replace('{'.$fieldname.'}', $this->fieldsClass->show($field, @$address->$fieldname), $ret);
+					$ret = str_replace('{'.$fieldname.'}', (string)$this->fieldsClass->show($field, @$address->$fieldname), $ret);
 				}
 			} elseif(!empty($address)) {
 				foreach($address as $k => $v) {
@@ -726,7 +726,7 @@ class hikashopAddressClass extends hikashopClass {
 
 			foreach($fields as $field) {
 				$fieldname = $field->field_namekey;
-				$ret = str_replace('{'.$fieldname.'}', $this->fieldsClass->show($field, @$address->$fieldname), $ret);
+				$ret = str_replace('{'.$fieldname.'}', (string)$this->fieldsClass->show($field, @$address->$fieldname), $ret);
 			}
 		} else {
 			foreach($address as $k => $v) {

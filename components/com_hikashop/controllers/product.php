@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -211,7 +211,13 @@ class productController extends hikashopController {
 				if(!isset($productClass))
 					$productClass = hikashop_get('class.product');
 				$productClass->addAlias($product);
-				$app->redirect(hikashop_contentLink('product&task=show&cid='.$product->product_id.'&name='.$product->alias.$url_itemid, $product, false, true));
+
+				$redirect = $config->get('product_contact_redirect_to_product_page', 1);
+				if($redirect) {
+					$app->redirect(hikashop_contentLink('product&task=show&cid='.$product->product_id.'&name='.$product->alias.$url_itemid, $product, false, true));
+				} else {
+					$app->enqueueMessage(JText::sprintf('CLICK_HERE_TO_GO_BACK_TO_PRODUCT',hikashop_contentLink('product&task=show&cid='.$product->product_id.'&name='.$product->alias.$url_itemid, $product)));
+				}
 			}
 		}
 

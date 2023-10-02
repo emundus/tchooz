@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,6 +20,7 @@ class hikashopWeightHelper {
 		'ozt'=>array('t'=>0.0000311034768,'kg'=>0.0311034768,'dag'=>3.11034768,'g'=>31.1034768,'mg'=>31103.4768,'lb'=>0.0685714286,'oz'=>1.09714286)
 	);
 	protected $main_symbol = null;
+	protected $symbols = null;
 
 	public function __construct() {
 		$this->getSymbol();

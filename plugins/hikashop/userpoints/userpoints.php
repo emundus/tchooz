@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,8 +21,13 @@ class plgHikashopUserpoints extends hikashopPlugin {
 		$this->currency = $currency->get($this->main_currency);
 
 		$this->modes = array();
-		if($this->getAUP(false, true))
-			$this->modes[] = JHTML::_('select.option', 'aup', JText::_('ALPHA_USER_POINTS'));
+		if($this->getAUP(false, true)) {
+			$name = JText::_('ALPHA_USER_POINTS');
+			if(HIKASHOP_J40) {
+				$name = 'UserPoints';
+			}	
+			$this->modes[] = JHTML::_('select.option', 'aup', $name);
+		}
 		if($this->getEasysocial(false))
 			$this->modes[] = JHTML::_('select.option', 'esp', JText::_('EASYSOCIAL_POINTS'));
 		$this->modes[] = JHTML::_('select.option', 'hk', JText::_('HIKASHOP_USER_POINTS'));
@@ -184,7 +189,7 @@ class plgHikashopUserpoints extends hikashopPlugin {
 		if(!isset($order->order_status))
 			return true;
 
-		if( (!empty($order->order_type) && $order->order_type != 'sale') || $order->old->order_type != 'sale' )
+		if( (!empty($order->order_type) && $order->order_type != 'sale') || (!empty($order->old->order_type) && $order->old->order_type != 'sale') )
 			return true;
 		if( !empty($order->userpoints_process->updated) )
 			return true;
@@ -880,8 +885,12 @@ class plgHikashopUserpoints extends hikashopPlugin {
 				}
 				if(is_string($v->order_payment_params))
 					$v->order_payment_params = hikashop_unserialize($v->order_payment_params);
-				if(!empty($v->order_payment_params->userpoints->earn_points) && !empty($v->order_payment_params->userpoints->use_mode) && !empty($v->order_payment_params->userpoints->earn_points[$v->order_payment_params->userpoints->use_mode])) {
-					$view->rows[$k]->points_earned = $v->order_payment_params->userpoints->earn_points[$v->order_payment_params->userpoints->use_mode];
+				if(!empty($v->order_payment_params->userpoints->earn_points)) {
+					foreach($v->order_payment_params->userpoints->earn_points as $m => $points) {
+						if(empty($view->rows[$k]->points_earned))
+							$view->rows[$k]->points_earned = 0;
+						$view->rows[$k]->points_earned += $points;
+					}
 				}
 			}
 		}
@@ -1045,20 +1054,31 @@ class plgHikashopUserpoints extends hikashopPlugin {
 		static $aup_init = false;
 		if(!isset($aup)) {
 			$aup = false;
-			$api_AUP = JPATH_SITE.DS.'components'.DS.'com_alphauserpoints'.DS.'helper.php';
+			$api_AUP = JPATH_SITE.DS.'components'.DS.'com_userpoints'.DS.'helper.php';
 			if(file_exists($api_AUP)) {
 				require_once ($api_AUP);
-				if(class_exists('AlphaUserPointsHelper'))
+				if(class_exists('UserPointsHelper')){
 					$aup = true;
+					if(!class_exists('AlphaUserPointsHelper')) {
+						require_once(JPATH_SITE.DS.'plugins'.DS.'hikashop'.DS.'userpoints'.DS.'userpoints_bup_compat.php');
+					}
+				}
 			} else {
-				$api_AUP = JPATH_SITE.DS.'components'.DS.'com_altauserpoints'.DS.'helper.php';
-				if (file_exists($api_AUP) ) {
+				$api_AUP = JPATH_SITE.DS.'components'.DS.'com_alphauserpoints'.DS.'helper.php';
+				if(file_exists($api_AUP)) {
 					require_once ($api_AUP);
-
-					if(class_exists('AltaUserPointsHelper')){
+					if(class_exists('AlphaUserPointsHelper'))
 						$aup = true;
-						if(!class_exists('AlphaUserPointsHelper')) {
-							require_once(JPATH_SITE.DS.'plugins'.DS.'hikashop'.DS.'userpoints'.DS.'userpoints_aup_compat.php');
+				} else {
+					$api_AUP = JPATH_SITE.DS.'components'.DS.'com_altauserpoints'.DS.'helper.php';
+					if (file_exists($api_AUP) ) {
+						require_once ($api_AUP);
+
+						if(class_exists('AltaUserPointsHelper')){
+							$aup = true;
+							if(!class_exists('AlphaUserPointsHelper')) {
+								require_once(JPATH_SITE.DS.'plugins'.DS.'hikashop'.DS.'userpoints'.DS.'userpoints_aup_compat.php');
+							}
 						}
 					}
 				}
@@ -1066,7 +1086,7 @@ class plgHikashopUserpoints extends hikashopPlugin {
 			if(!$aup && $warning) {
 				$app = JFactory::getApplication();
 				if(hikashop_isClient('administrator'))
-					$app->enqueueMessage('The HikaShop UserPoints plugin requires the component AltaUserPoints to be installed. If you want to use it, please install the component or use another mode.');
+					$app->enqueueMessage('The HikaShop UserPoints plugin requires one of the components AltaUserPoints, AlphaUserPoints or UserPoints to be installed. If you want to use it, please install the component or use another mode.');
 			}
 		}
 		if($aup === true && $init && !$aup_init) {

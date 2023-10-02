@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,7 +33,7 @@ defined('_JEXEC') or die('Restricted access');
 		}
 ?>
 		<li class="<?php echo $stepClass; ?>">
-			<span class="hkbadge <?php echo $badgeClass; ?>"><?php echo ($k + 1); ?></span><?php echo $name; ?>
+			<span class="hkbadge <?php echo $badgeClass; ?>"><?php echo ($k + 1); ?></span><span class="hikashop_checkout_step_name"><?php echo $name; ?></span>
 			<span class="hikashop_chevron"></span>
 		</li>
 <?php

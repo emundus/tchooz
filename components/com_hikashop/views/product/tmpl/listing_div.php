@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -81,12 +81,12 @@ $attributes = ($columns > 1 && $this->params->get('consistencyheight', 1)) ? ' d
 
 if(!empty($this->rows)) {
 	if ($switchMode) {
+		$config = hikashop_config();
 		if(isset($_COOKIE['hikashop_switcher_cookie']) && ($_COOKIE['hikashop_switcher_cookie'] == 'display_grid' || $_COOKIE['hikashop_switcher_cookie'] == 'display_list')) {
 			$cookie_value = $_COOKIE['hikashop_switcher_cookie'];
 		} else {
-			$cookie_value = 'display_grid';
+			$cookie_value = $config->get('switcher_default_mode','display_grid');
 		}
-		$config = hikashop_config();
 		$delay = (int)$config->get('switcher_cookie_retaining_period', 31557600);
 		setcookie('hikashop_switcher_cookie', $cookie_value, time() + $delay, "/");
 	}

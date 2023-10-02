@@ -1,23 +1,35 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-jimport('joomla.plugin.plugin');
-class plgSystemHikashopsocial extends JPlugin {
+include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
+class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 	var $meta = array();
 	var $headScripts = array();
+	var $uploadFolder = null;
+	var $main_uploadFolder = null;
+	var $uploadFolder_url = null;
+	var $main_uploadFolder_url = null;
+	var $thumbnail = null;
+	var $thumbnail_x = null;
+	var $thumbnail_y = null;
+	var $main_thumbnail_x = null;
+	var $main_thumbnail_y = null;
 
 	function __construct(&$subject, $params) {
 		parent::__construct($subject, $params);
 	}
 
 	function onAfterRender() {
+
+		if(HIKASHOP_J50 && !class_exists('JFactory'))
+			class_alias('Joomla\CMS\Factory', 'JFactory');
 		$app = JFactory::getApplication();
 
 		if(version_compare(JVERSION,'3.0','>=')) {
@@ -53,40 +65,57 @@ class plgSystemHikashopsocial extends JPlugin {
 
 		$pluginsClass = hikashop_get('class.plugins');
 		$plugin = $pluginsClass->getByName('system', 'hikashopsocial');
-		if(!isset($plugin->params['position'])) {
-			$default = array(
-				'position' => 0,
-				'display_twitter' => 1,
-				'display_pinterest' => 1,
-				'display_fb' => 1,
-				'display_google' => 1,
-				'fb_style' => 0,
-				'fb_faces' => 1,
-				'fb_verb' => 0,
-				'fb_theme' => 0,
-				'fb_font' => 0,
-				'fb_type' => 0,
-				'fb_mode' => 'fb-like',
-				'twitter_count' => 0,
-				'google_size' => 2,
-				'google_count' => 1
-			);
 
-			if(empty($plugin->params))
-				$plugin->params = array();
-			$plugin->params = array_merge($plugin->params, $default);
-		}
-		if(!isset($plugin->params['fb_send']))
-			$plugin->params['fb_send'] = 0;
-		if(!isset($plugin->params['fb_tag']))
-			$plugin->params['fb_tag'] = 'iframe';
+
+		$default = array(
+			'position' => 0,
+			'display_twitter' => 1,
+			'display_pinterest' => 1,
+			'display_fb' => 1,
+			'display_linkedin' => 1,
+			'fb_style' => 0,
+			'fb_faces' => 1,
+			'fb_verb' => 0,
+			'fb_theme' => 0,
+			'fb_font' => 0,
+			'fb_type' => 0,
+			'fb_send' => 0,
+			'fb_tag' => 'iframe',
+			'fb_mode' => 'fb-like',
+			'twitter_count' => 0,
+			'display_url_btn' => 0,
+			'redirection_btn' => 'tab',
+			'redirect' => 'tab',
+			'display_mode' => 'hikashopsocial_inline',
+			'hashtag_twitter' => '',
+		);
+
+		if(empty($plugin->params))
+			$plugin->params = array();
+		$plugin->params = array_merge($default, $plugin->params);
+
+		$plugin->params['redirect'] = $plugin->params['redirection_btn'];
+		$plugin->params['display'] = $plugin->params['display_mode'];
+		$plugin->params['legacy'] = $plugin->params['display_url_btn'];
+
+		$PinterestButton = '';
+		if ($plugin->params['display_pinterest'] == 1)
+			$PinterestButton = $this->_addPinterestButton($plugin, $plugin->params);
+		$TwitterButton = '';
+		if ($plugin->params['display_twitter'] == 1)
+			$TwitterButton = $this->_addTwitterButton($plugin, $plugin->params);
+		$FacebookButton = '';
+		if ($plugin->params['display_fb'] == 1)
+			$FacebookButton = $this->_addFacebookButton($plugin, $plugin->params);
+		$LinkedInButton = '';
+		if ($plugin->params['display_twitter'] == 1)
+				$LinkedInButton = $this->_addLinkedInButton($plugin, $plugin->params);
 
 		$html = array(
-			$this->_addTwitterButton($plugin),
-			$this->_addPinterestButton($plugin),
-			$this->_addGoogleButton($plugin),
-			$this->_addAddThisButton($plugin),
-			$this->_addFacebookButton($plugin)
+			$TwitterButton,
+			$PinterestButton,
+			$FacebookButton,
+			$LinkedInButton
 		);
 
 		$styles = 'text-align:left;';
@@ -144,300 +173,318 @@ class plgSystemHikashopsocial extends JPlugin {
 		}
 
 	}
-
-	function _addAddThisButton(&$plugin) {
-		if(empty($plugin->params['display_addThis']))
+	function _addLinkedInButton(&$plugin, $params) {
+		if(!empty($plugin->params['legacy']) || empty($plugin->params['display_linkedin']))
 			return '';
 
-		$var = array();
-		$vars = '';
-		if(!empty($plugin->params['services_exclude']))
-			$var[] = 'services_exclude: "'.$plugin->params['services_exclude'].'"';
-		if(!empty($var))
-			$vars = '<script type="text/javascript">var addthis_config = { '.implode(';',$var).' }</script>';
-		$this->headScripts['addThis'] = '<script type="text/javascript" src="//s7.addthis.com/js/250/addthis_widget.js"></script>'.$vars;
+		$current_url = urlencode(hikashop_currentURL());
+		$btn_mode = $this->rs_mode($params['redirect'], 'https://www.linkedin.com/sharing/share-offsite/?url='. $current_url, '');
 
-		$class = '';
-		$divClass = '';
-		$atClass = '';
-		$endDiv = '';
+		$array_elem = array(
+			'icon' => 'linkedin_icon.png',
+			'class' => 'hikasocial_linkedin',
+			'display' => $params['display'],
+			'btn_mode' => $btn_mode,
+			'name' => 'Linkedin'
+		);
 
-		if($plugin->params['addThis_display'] == 0)
-			$atClass = 'addthis_button_compact';
+		$btn_html = $this->btn_build($array_elem);
 
-		if($plugin->params['addThis_display'] == 1) {
-			$atClass = 'addthis_button_compact';
-			$divClass = '<div class="addthis_default_style addthis_toolbox addthis_32x32_style">';
-			$endDiv = '</div>';
-		}
-
-		if($plugin->params['addThis_display'] == 2)
-			$atClass = 'addthis_counter';
-
-		if($plugin->params['position'] == 1)
-			$class = '_right';
-
-		return '<span class="hikashop_social_addThis'.$class.'" >'.$divClass.'<a class="'.$atClass.'"></a>'.$endDiv.'</span>';
+		return $btn_html;
 	}
 
-	function _addGoogleButton(&$plugin) {
-		if(empty($plugin->params['display_google']))
-			return '';
-
-		$mainLang = JFactory::getLanguage();
-		$tag = $mainLang->get('tag');
-		if(!in_array($tag, array('zh-CN', 'zh-TW', 'en-GB', 'en-US', 'pt-BR', 'pt-PT')))
-			$tag = strtolower(substr($tag, 0, 2));
-		$lang = '{"lang": "'.$tag.'"}';
-		$this->headScripts['google'] = '<script type="text/javascript" src="https://apis.google.com/js/plusone.js">'.$lang.'</script>';
-
-		$count = empty($plugin->params['google_count']) ? 'false' : 'true';
-
-		$c = 'hikashop_social_google';
-		if($plugin->params['position'] == 1)
-			$c = 'hikashop_social_google_right';
-
-		$size = '';
-		$sizes = array( 0 => 'standard', 1 => 'small', 2 => 'medium', 3 => 'tall' );
-		if(isset($sizes[ (int)$plugin->params['google_size'] ]))
-			$size = 'size="' . $sizes[ (int)$plugin->params['google_size'] ] . '"';
-
-		return '<span class="'.$c.'"><g:plusone '.$size.' count="'.$count.'"></g:plusone></span>';
-	}
-
-	function _addPinterestButton(&$plugin) {
-		if(empty($plugin->params['display_pinterest']))
-			return '';
-
-		$element = $this->_getElementInfo();
-		$imageUrl = $this->_getImageURL($element);
-
-		$this->headScripts['pinterest'] = '<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>';
-
-		$c = '';
-		if($plugin->params['position'] == 1)
-			$c = '_right';
-
-		$layouts = array(0 => 'horizontal', 1 => 'vertical', 2 => 'none');
-		$count = $layouts[ (int)@$plugin->params['pinterest_display'] ];
-
+	function _addPinterestButton(&$plugin, $params) {
 		if(!empty($element->url_canonical))
 			$url = hikashop_cleanURL($element->url_canonical);
 		else
 			$url = hikashop_currentURL('',false);
-		$description = $this->_cleanDescription($element->description, 500);
-		return '<span class="hikashop_social_pinterest'.$c.'"><a href="//pinterest.com/pin/create/button/?url='.urlencode($url).'&media='.urlencode($imageUrl).'&description='.rawurlencode($description).'" class="pin-it-button" count-layout="'.$count.'"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a></span>';
-	}
-
-	function _addTwitterButton(&$plugin) {
-		if(empty($plugin->params['display_twitter']))
-			return '';
 
 		$element = $this->_getElementInfo();
-		if(empty($element))
-			return '';
-
+		$imageUrl = $this->_getImageURL($element);
+		$description = $this->_cleanDescription($element->description, 500);
 		$layouts = array(0 => 'horizontal', 1 => 'vertical', 2 => 'none');
-		$count = $layouts[ (int)$plugin->params['twitter_count'] ];
+		$count = $layouts[ (int)@$plugin->params['pinterest_display'] ];
 
-		$c = '';
-		if($plugin->params['twitter_count'] == 0)
-			$c .= '_horizontal';
-		if($plugin->params['position'] == 1)
-			$c .= '_right';
+		if ($params['legacy']) {
+			if(empty($plugin->params['display_pinterest']))
+				return '';
 
-		$message = '';
-		if(!empty($plugin->params['twitter_text']))
-			$message = ' data-text="'.$plugin->params['twitter_text'].'"';
+			$this->headScripts['pinterest'] = '<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>';
 
-		$mention = '';
-		if(!empty($plugin->params['twitter_mention']))
-			$mention = ' data-via="'.$plugin->params['twitter_mention'].'"';
+			$c = '';
+			if($plugin->params['position'] == 1)
+				$c = '_right';
 
-		$mainLang = JFactory::getLanguage();
-		$locale = strtolower(substr($mainLang->get('tag'), 0, 2));
+			$return = '<span class="hikashop_social_pinterest'.$c.'"><a href="//pinterest.com/pin/create/button/?url='.urlencode($url).'&media='.urlencode($imageUrl).'&description='.rawurlencode($description).'" class="pin-it-button" count-layout="'.$count.'"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a></span>';
+		}
+		else {
+			$current_url = urlencode(hikashop_currentURL());
+			$btn_mode = $this->rs_mode($params['redirect'], 'http://pinterest.com/pin/create/button/?url='.$current_url.'&media='.$imageUrl, '');
 
-		$lang = '';
-		if(in_array($locale, array('fr', 'de', 'es', 'it', 'ja', 'ru', 'tr', 'ko')))
-			$lang = ' data-lang="'.$locale.'"';
+			$array_elem = array(
+				'icon' => 'pintinterest_icon.png',
+				'class' => 'hikasocial_pintinterest',
+				'display' => $params['display'],
+				'btn_mode' => $btn_mode,
+				'name' => 'Pinterest'
+			);
 
-		if (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) != 'off')) {
-			$this->meta['hikashop_twitter_js_code'] = '
-<script type="text/javascript">
-function twitterPop(str) {
-	mywindow = window.open(\'http://twitter.com/share?url=\'+str,"Tweet_widow","channelmode=no,directories=no,location=no,menubar=no,scrollbars=no,toolbar=no,status=no,width=500,height=375,left=300,top=200");
-	mywindow.focus();
-}
-</script>';
+			$btn_html = $this->btn_build($array_elem);
+			$return = $btn_html;
+		}
+		return $return;
+	}
+
+	function _addTwitterButton(&$plugin, $params) {
+		if ($params['legacy']) {
+			if(empty($plugin->params['display_twitter']))
+				return '';
+
+			$element = $this->_getElementInfo();
+			if(empty($element))
+				return '';
+
+			$layouts = array(0 => 'horizontal', 1 => 'vertical', 2 => 'none');
+			$count = $layouts[ (int)$plugin->params['twitter_count'] ];
+
+			$c = '';
+			if($plugin->params['twitter_count'] == 0)
+				$c .= '_horizontal';
+			if($plugin->params['position'] == 1)
+				$c .= '_right';
+
+			$message = '';
+			if(!empty($plugin->params['twitter_text']))
+				$message = ' data-text="'.$plugin->params['twitter_text'].'"';
+
+			$mention = '';
+			if(!empty($plugin->params['twitter_mention']))
+				$mention = ' data-via="'.$plugin->params['twitter_mention'].'"';
+
+			$mainLang = JFactory::getLanguage();
+			$locale = strtolower(substr($mainLang->get('tag'), 0, 2));
+
+			$lang = '';
+			if(in_array($locale, array('fr', 'de', 'es', 'it', 'ja', 'ru', 'tr', 'ko')))
+				$lang = ' data-lang="'.$locale.'"';
+
+			if (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) != 'off')) {
+				$this->meta['hikashop_twitter_js_code'] = '
+	<script type="text/javascript">
+	function twitterPop(str) {
+		mywindow = window.open(\'http://twitter.com/share?url=\'+str,"Tweet_widow","channelmode=no,directories=no,location=no,menubar=no,scrollbars=no,toolbar=no,status=no,width=500,height=375,left=300,top=200");
+		mywindow.focus();
+	}
+	</script>';
+				if(!empty($element->url_canonical))
+					$url = hikashop_cleanURL($element->url_canonical);
+				else
+					$url = hikashop_currentURL('',false);
+
+				return '<span class="hikashop_social_tw'.$c.'"><a href="javascript:twitterPop(\''.$url.'\')"><img src="'.HIKASHOP_IMAGES.'icons/tweet_button.jpg"></a></span>';
+			}
+			$return = '<span class="hikashop_social_tw'.$c.'"><a href="//twitter.com/share" class="twitter-share-button"'.$message.' data-count="'.$count.'"'.$mention.$lang.'>Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script></span>';
+		}
+		else {
+			$hashtag = '';
+			if ($plugin->params['hashtag_twitter'] != "")
+				$hashtag = '&hashtags=' . $plugin->params['hashtag_twitter'];
+
+			$current_url = urlencode(hikashop_currentURL());
+			$btn_mode = $this->rs_mode($params['redirect'], 'https://twitter.com/intent/tweet?url='.$current_url, $hashtag);
+
+			$array_elem = array(
+				'icon' => 'twitter_icon.png',
+				'class' => 'hikasocial_twitter',
+				'display' => $params['display'],
+				'btn_mode' => $btn_mode,
+				'name' => 'Twitter'
+			);
+
+			$return = $this->btn_build($array_elem);
+		}
+		return $return;
+	}
+
+	function _addFacebookButton(&$plugin, $params) {
+		if ($params['legacy']) {
+			if(empty($plugin->params['display_fb']))
+				return '';
+
+			$element = $this->_getElementInfo();
+			if(empty($element))
+				return '';
+
+			$options = array(
+				'layout' => 'standard',
+				'width' => 400
+			);
+			$xfbml_options = array();
+
+			$classname = 'standard';
+			switch((int)$plugin->params['fb_style']) {
+				case 1:
+					$classname = 'button_count';
+					$options['layout'] = 'button_count';
+					$xfbml_options['layout'] = 'button_count';
+					$options['width'] = 115;
+					break;
+				case 2:
+					$classname = 'box_count';
+					$options['layout'] = 'box_count';
+					$xfbml_options['layout'] = 'box_count';
+					$options['width'] = 115;
+					break;
+				case 3:
+					$classname = 'button';
+					$options['layout'] = 'button';
+					$xfbml_options['layout'] = 'button';
+					$options['width'] = 65;
+					break;
+			}
+
+			if(empty($plugin->params['fb_faces'])) {
+				$options['show_faces'] = 'false';
+				$xfbml_options['show-faces'] = 'false';
+			} else {
+				$options['show_faces'] = 'true';
+				$xfbml_options['show-faces'] = 'false'; // in the first version of the plugin, in fact is was set to "false", so...
+			}
+
+			if(empty($plugin->params['fb_verb'])) {
+				$options['action'] = 'like';
+			} else {
+				$options['action'] = 'recommend';
+				$xfbml_options['action'] = 'recommend';
+			}
+
+			if(empty($plugin->params['fb_theme'])) {
+				$options['colorscheme'] = 'light';
+			} else {
+				$options['colorscheme'] = 'dark';
+				$xfbml_options['colorscheme'] = 'dark';
+			}
+
+			$fonts = array(
+				0 => 'arial',
+				1 => 'lucida%20grande',
+				2 => 'segoe%20ui',
+				3 => 'tahoma',
+				4 => 'trebuchet%20ms',
+				5 => 'verdana',
+			);
+			if(isset($fonts[ (int)$plugin->params['fb_font'] ])) {
+				$options['font'] = $fonts[ (int)$plugin->params['fb_font'] ];
+				$xfbml_options['font'] = $fonts[ (int)$plugin->params['fb_font'] ];
+			}
+
+			if(!empty($plugin->params['fb_send']))
+				$xfbml_options['send'] = 'true';
 
 			if(!empty($element->url_canonical))
 				$url = hikashop_cleanURL($element->url_canonical);
 			else
-				$url = hikashop_currentURL('',false);
+				$url = hikashop_currentURL('', false);
 
-			return '<span class="hikashop_social_tw'.$c.'"><a href="javascript:twitterPop(\''.$url.'\')"><img src="'.HIKASHOP_IMAGES.'icons/tweet_button.jpg"></a></span>';
-		}
+			$html = '';
 
-		return '<span class="hikashop_social_tw'.$c.'"><a href="//twitter.com/share" class="twitter-share-button"'.$message.' data-count="'.$count.'"'.$mention.$lang.'>Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script></span>';
-	}
+			if($plugin->params['display_fb'] != 2) {
+				$html = '<span class="hikashop_social_fb">';
+				if($plugin->params['position'] == 1)
+					$html = '<span class="hikashop_social_fb_right">';
 
-	function _addFacebookButton(&$plugin) {
-		if(empty($plugin->params['display_fb']))
-			return '';
+				$url_options = array();
+				if($plugin->params['fb_tag'] == 'iframe') {
 
-		$element = $this->_getElementInfo();
-		if(empty($element))
-			return '';
+					foreach($options as $k => $v) {
+						$url_options[] = $k . '=' . urlencode($v);
+					}
 
-		$options = array(
-			'layout' => 'standard',
-			'width' => 400
-		);
-		$xfbml_options = array();
-
-		$classname = 'standard';
-		switch((int)$plugin->params['fb_style']) {
-			case 1:
-				$classname = 'button_count';
-				$options['layout'] = 'button_count';
-				$xfbml_options['layout'] = 'button_count';
-				$options['width'] = 115;
-				break;
-			case 2:
-				$classname = 'box_count';
-				$options['layout'] = 'box_count';
-				$xfbml_options['layout'] = 'box_count';
-				$options['width'] = 115;
-				break;
-			case 3:
-				$classname = 'button';
-				$options['layout'] = 'button';
-				$xfbml_options['layout'] = 'button';
-				$options['width'] = 65;
-				break;
-		}
-
-		if(empty($plugin->params['fb_faces'])) {
-			$options['show_faces'] = 'false';
-			$xfbml_options['show-faces'] = 'false';
-		} else {
-			$options['show_faces'] = 'true';
-			$xfbml_options['show-faces'] = 'false'; // in the first version of the plugin, in fact is was set to "false", so...
-		}
-
-		if(empty($plugin->params['fb_verb'])) {
-			$options['action'] = 'like';
-		} else {
-			$options['action'] = 'recommend';
-			$xfbml_options['action'] = 'recommend';
-		}
-
-		if(empty($plugin->params['fb_theme'])) {
-			$options['colorscheme'] = 'light';
-		} else {
-			$options['colorscheme'] = 'dark';
-			$xfbml_options['colorscheme'] = 'dark';
-		}
-
-		$fonts = array(
-			0 => 'arial',
-			1 => 'lucida%20grande',
-			2 => 'segoe%20ui',
-			3 => 'tahoma',
-			4 => 'trebuchet%20ms',
-			5 => 'verdana',
-		);
-		if(isset($fonts[ (int)$plugin->params['fb_font'] ])) {
-			$options['font'] = $fonts[ (int)$plugin->params['fb_font'] ];
-			$xfbml_options['font'] = $fonts[ (int)$plugin->params['fb_font'] ];
-		}
-
-		if(!empty($plugin->params['fb_send']))
-			$xfbml_options['send'] = 'true';
-
-		if(!empty($element->url_canonical))
-			$url = hikashop_cleanURL($element->url_canonical);
-		else
-			$url = hikashop_currentURL('', false);
-
-		$html = '';
-
-		if($plugin->params['display_fb'] != 2) {
-			$html = '<span class="hikashop_social_fb">';
-			if($plugin->params['position'] == 1)
-				$html = '<span class="hikashop_social_fb_right">';
-
-			$url_options = array();
-			if($plugin->params['fb_tag'] == 'iframe') {
-
-				foreach($options as $k => $v) {
-					$url_options[] = $k . '=' . urlencode($v);
+					$html .= '<iframe '.
+						'src="//www.facebook.com/plugins/like.php?href='.urlencode($url).'&amp;send=false&amp;'.implode('&amp;', $url_options).'&amp;height=30" '.
+						'scrolling="no" frameborder="0" allowTransparency="true" '.
+						'style="border:none; overflow:hidden;" class="hikashop_social_fb_'.$classname.'"></iframe>';
+				} else {
+					foreach($xfbml_options as $k => $v) {
+						$url_options[] = 'data-' . $k . '="' . urlencode($v) . '"';
+					}
+					if(empty($plugin->params['fb_mode'])){
+						$plugin->params['fb_mode'] = 'fb-like';
+					}
+					$html .= '<div class="'.$plugin->params['fb_mode'].'" data-href="'.$url.'" '.implode(' ', $url_options).'></div>';
 				}
 
-				$html .= '<iframe '.
-					'src="//www.facebook.com/plugins/like.php?href='.urlencode($url).'&amp;send=false&amp;'.implode('&amp;', $url_options).'&amp;height=30" '.
-					'scrolling="no" frameborder="0" allowTransparency="true" '.
-					'style="border:none; overflow:hidden;" class="hikashop_social_fb_'.$classname.'"></iframe>';
-			} else {
-				foreach($xfbml_options as $k => $v) {
-					$url_options[] = 'data-' . $k . '="' . urlencode($v) . '"';
-				}
-				if(empty($plugin->params['fb_mode'])){
-					$plugin->params['fb_mode'] = 'fb-like';
-				}
-				$html .= '<div class="'.$plugin->params['fb_mode'].'" data-href="'.$url.'" '.implode(' ', $url_options).'></div>';
+				$html .= '</span>';
 			}
 
-			$html .= '</span>';
+			$this->meta['property="og:title"'] = '<meta property="og:title" content="'.htmlspecialchars($element->name, ENT_COMPAT,'UTF-8').'"/> ';
+
+			$types = array(
+				0 => 'product',
+				1 => 'album',
+				2 => 'book',
+				3 => 'company',
+				4 => 'drink',
+				5 => 'game',
+				6 => 'movie',
+				7 => 'song',
+			);
+			if(isset($types[ (int)$plugin->params['fb_type']]))
+				$this->meta['property="og:type"']='<meta property="og:type" content="'.$types[ (int)$plugin->params['fb_type']].'"/> ';
+
+			$config =& hikashop_config();
+			$uploadFolder = ltrim(JPath::clean(html_entity_decode($config->get('uploadfolder','media/com_hikashop/upload/'))), DS);
+			$uploadFolder = rtrim($uploadFolder,DS) . DS;
+			$this->uploadFolder_url = str_replace(DS, '/', $uploadFolder);
+			$this->uploadFolder = JPATH_ROOT . DS . $uploadFolder;
+			$this->thumbnail = $config->get('thumbnail', 1);
+			$this->thumbnail_y = $config->get('product_image_y', $config->get('thumbnail_y'));
+			$this->thumbnail_x = $config->get('product_image_x', $config->get('thumbnail_x'));
+			$this->main_thumbnail_x = $this->thumbnail_x;
+			$this->main_thumbnail_y = $this->thumbnail_y;
+			$this->main_uploadFolder_url = $this->uploadFolder_url;
+			$this->main_uploadFolder = $this->uploadFolder;
+
+			$imageUrl = $this->_getImageURL($element);
+			if(!empty($imageUrl))
+				$this->meta['property="og:image"']='<meta property="og:image" content="'.$imageUrl.'" /> ';
+
+			$this->meta['property="og:url"']='<meta property="og:url" content="'.$url.'" />';
+			$description = $this->_cleanDescription($element->description);
+			$this->meta['property="og:description"'] = '<meta property="og:description" content="'.$description.'"/> ';
+
+			$jconf = JFactory::getConfig();
+			if(HIKASHOP_J30)
+				$siteName = $jconf->get('sitename');
+			else
+				$siteName = $jconf->getValue('config.sitename');
+			$this->meta['property="og:site_name"'] = '<meta property="og:site_name" content="'.htmlspecialchars($siteName, ENT_COMPAT,'UTF-8').'"/> ';
+
+			if(!empty($plugin->params['admin']))
+				$this->meta['property="fb:admins"'] = '<meta property="fb:admins" content="'.htmlspecialchars($plugin->params['admin'], ENT_COMPAT,'UTF-8').'" />';
+
+			return $html;
 		}
+		else {
+			$display = 'popup';
+			if($params['redirection_btn'] == 'tab') {
+				$display = 'page';
+			}
+			$current_url = urlencode(hikashop_currentURL());
+			$share_url ='https://www.facebook.com/sharer/sharer.php?u='.$current_url.'&display='.$display;
+			$btn_mode = $this->rs_mode($params['redirect'], $share_url, '');
 
-		$this->meta['property="og:title"'] = '<meta property="og:title" content="'.htmlspecialchars($element->name, ENT_COMPAT,'UTF-8').'"/> ';
+			$array_elem = array(
+				'icon' => 'facebook_icon.png',
+				'class' => 'fb-share-button hikasocial_facebook " data-href="'.HIKASHOP_LIVE,
+				'display' => $params['display'],
+				'btn_mode' => $btn_mode,
+				'name' => 'Facebook'
+			);
 
-		$types = array(
-			0 => 'product',
-			1 => 'album',
-			2 => 'book',
-			3 => 'company',
-			4 => 'drink',
-			5 => 'game',
-			6 => 'movie',
-			7 => 'song',
-		);
-		if(isset($types[ (int)$plugin->params['fb_type']]))
-			$this->meta['property="og:type"']='<meta property="og:type" content="'.$types[ (int)$plugin->params['fb_type']].'"/> ';
-
-		$config =& hikashop_config();
-		$uploadFolder = ltrim(JPath::clean(html_entity_decode($config->get('uploadfolder','media/com_hikashop/upload/'))), DS);
-		$uploadFolder = rtrim($uploadFolder,DS) . DS;
-		$this->uploadFolder_url = str_replace(DS, '/', $uploadFolder);
-		$this->uploadFolder = JPATH_ROOT . DS . $uploadFolder;
-		$this->thumbnail = $config->get('thumbnail', 1);
-		$this->thumbnail_y = $config->get('product_image_y', $config->get('thumbnail_y'));
-		$this->thumbnail_x = $config->get('product_image_x', $config->get('thumbnail_x'));
-		$this->main_thumbnail_x = $this->thumbnail_x;
-		$this->main_thumbnail_y = $this->thumbnail_y;
-		$this->main_uploadFolder_url = $this->uploadFolder_url;
-		$this->main_uploadFolder = $this->uploadFolder;
-
-		$imageUrl = $this->_getImageURL($element);
-		if(!empty($imageUrl))
-			$this->meta['property="og:image"']='<meta property="og:image" content="'.$imageUrl.'" /> ';
-
-		$this->meta['property="og:url"']='<meta property="og:url" content="'.$url.'" />';
-		$description = $this->_cleanDescription($element->description);
-		$this->meta['property="og:description"'] = '<meta property="og:description" content="'.$description.'"/> ';
-
-		$jconf = JFactory::getConfig();
-		if(HIKASHOP_J30)
-			$siteName = $jconf->get('sitename');
-		else
-			$siteName = $jconf->getValue('config.sitename');
-		$this->meta['property="og:site_name"'] = '<meta property="og:site_name" content="'.htmlspecialchars($siteName, ENT_COMPAT,'UTF-8').'"/> ';
-
-		if(!empty($plugin->params['admin']))
-			$this->meta['property="fb:admins"'] = '<meta property="fb:admins" content="'.htmlspecialchars($plugin->params['admin'], ENT_COMPAT,'UTF-8').'" />';
-
-		return $html;
+			$return = $this->btn_build($array_elem);
+		}
+		return $return;
 	}
 
 	function _getElementInfo() {
@@ -576,5 +623,34 @@ function twitterPop(str) {
 		if($max && strlen($description) > $max)
 			$description = substr($description, 0, $max-4).'...';
 		return $description;
+	}
+
+	function btn_build($array_elem){
+	$btn_html = ''.
+		'<span class="'.$array_elem['display'].' hikasocial_btn '.$array_elem['class'].'">'.
+			$array_elem['btn_mode'].
+				'<span class="hikasocial_icon">'.
+					'<img src="'.HIKASHOP_IMAGES.'icons/'.$array_elem['icon'].'" >'.
+				'</span>'.
+				'<span class="hikasocial_name">'.$array_elem['name'].'</span>'.
+			'</a>'.
+		'</span>';
+
+		return $btn_html;
+	}
+
+	function rs_mode($redirect, $url, $hashtag) {
+
+		if ($redirect == 'popup') {
+			$js = "window.open('".$url.$hashtag."','popup','width=600,height=600'); return false;";
+			$js = 'onclick="'.$js.'"';
+
+			$btn_mode = '<a href="'.$url.$hashtag.'" target="popup" '.$js.'>';
+		}
+
+		else 
+			$btn_mode = '<a href="'.$url.$hashtag.'" target="_blank" >';
+
+		return $btn_mode;
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,14 +10,19 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 if(!defined('DS'))
 	define('DS',DIRECTORY_SEPARATOR);
-jimport('joomla.plugin.plugin');
-
-class plgSystemHikashopmassaction extends JPlugin {
+include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
+class plgSystemHikashopmassaction extends hikashopJoomlaPlugin {
 
 	function __construct(&$subject, $config){
 		parent::__construct($subject, $config);
 		if(!isset($this->params)){
+
+			if(HIKASHOP_J50 && !class_exists('JPluginHelper'))
+				class_alias('Joomla\CMS\Plugin\PluginHelper', 'JPluginHelper');
 			$plugin = JPluginHelper::getPlugin('system', 'hikashopmassaction');
+
+			if(HIKASHOP_J50 && !class_exists('JRegistry'))
+				class_alias('Joomla\Registry\Registry', 'JRegistry');
 			$this->params = new JRegistry(@$plugin->params);
 		}
 	}
@@ -1951,7 +1956,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 				foreach($attributes as $key => $value) {
 					if(is_object($value) || is_array($value))
 						continue;
-					$code = str_replace('{'.$key.'}', $value, $code);
+					$code = str_replace('{'.$key.'}', (string)$value, $code);
 				}
 				try {
 					eval($code);
@@ -1987,7 +1992,7 @@ class plgSystemHikashopmassaction extends JPlugin {
 				foreach($attributes as $key => $value) {
 					if(is_object($value) || is_array($value))
 						continue;
-					$query = str_replace('{'.$key.'}', $value, $query);
+					$query = str_replace('{'.$key.'}', (string)$value, $query);
 				}
 				$db->setQuery($query);
 				$db->execute();

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -43,7 +43,6 @@ class hikashopBridgePaginationHelper extends JPagination {
 			$list['all']['active'] = false;
 			$list['all']['data'] = ($itemOverride) ? pagination_item_inactive($data->all) : $this->_item_inactive($data->all);
 		}
-		$data->start->start = true;
 		if ($data->start->base !== null) {
 			$list['start']['active'] = true;
 			$list['start']['data'] = ($itemOverride) ? pagination_item_active($data->start) : $this->_item_active($data->start);
@@ -52,7 +51,6 @@ class hikashopBridgePaginationHelper extends JPagination {
 			$list['start']['active'] = false;
 			$list['start']['data'] = ($itemOverride) ? pagination_item_inactive($data->start) : $this->_item_inactive($data->start);
 		}
-		$data->previous->previous = true;
 		if ($data->previous->base !== null) {
 			$list['previous']['active'] = true;
 			$list['previous']['data'] = ($itemOverride) ? pagination_item_active($data->previous) : $this->_item_active($data->previous);
@@ -72,7 +70,6 @@ class hikashopBridgePaginationHelper extends JPagination {
 				$list['pages'][$i]['data'] = ($itemOverride) ? pagination_item_inactive($page) : $this->_item_inactive($page);
 			}
 		}
-		$data->next->next = true;
 		if ($data->next->base !== null) {
 			$list['next']['active'] = true;
 			$list['next']['data'] = ($itemOverride) ? pagination_item_active($data->next) : $this->_item_active($data->next);
@@ -81,7 +78,6 @@ class hikashopBridgePaginationHelper extends JPagination {
 			$list['next']['active'] = false;
 			$list['next']['data'] = ($itemOverride) ? pagination_item_inactive($data->next) : $this->_item_inactive($data->next);
 		}
-		$data->end->end = true;
 		if ($data->end->base !== null) {
 			$list['end']['active'] = true;
 			$list['end']['data'] = ($itemOverride) ? pagination_item_active($data->end) : $this->_item_active($data->end);
@@ -220,13 +216,16 @@ class hikashopBridgePaginationHelper extends JPagination {
 	}
 
 	function _link($start){
-		$current_url = hikashop_currentURL();
+		$current_url = str_replace(array('&&', '?&'),array('&', '?'),rtrim(hikashop_currentURL(), '&?'));
 		$ret_start = false;
 		$ret_limit = false;
 		if(isset($_GET['limitstart'.$this->hikaSuffix])){
 			$ret_start = true;
 			$old_start = hikaInput::get()->getInt('limitstart'.$this->hikaSuffix);
-			$current_url = preg_replace('#limitstart'.$this->hikaSuffix.'(=|-)[0-9]+#','limitstart'.$this->hikaSuffix.'${1}'.$start, $current_url);
+			$replace = '';
+			if($start > 0)
+				$replace = 'limitstart'.$this->hikaSuffix.'${1}'.$start;
+			$current_url = preg_replace('#limitstart'.$this->hikaSuffix.'(=|-)[0-9]+#',$replace, $current_url);
 		}
 
 		if(isset($_POST['limit'.$this->hikaSuffix]) || isset($_GET['limit'.$this->hikaSuffix])){
@@ -237,13 +236,21 @@ class hikashopBridgePaginationHelper extends JPagination {
 
 		if($ret_start && $ret_limit)
 			return $current_url;
-		elseif($ret_start && !$ret_limit)
+		elseif($ret_start && !$ret_limit) {
+			if(strpos($current_url, '&limit='.$this->limit)) {
+				return $current_url;
+			}
 			return $current_url . '&limit='.$this->limit;
+		}
 
 		$sep = '?';
 		if(strpos($current_url, '?'))
 			$sep = '&';
-		return $current_url.$sep.'limitstart'.$this->hikaSuffix.'='.$start.'&limit='.$this->limit;
+		$return_url = $current_url.$sep.'limitstart'.$this->hikaSuffix.'='.$start;
+		if(strpos($return_url, '&limit='.$this->limit)) {
+			return $return_url;
+		}
+		return $return_url.'&limit='.$this->limit;
 	}
 
 	function _list_footer($list) {
@@ -336,12 +343,6 @@ class hikashopBridgePaginationHelper extends JPagination {
 		}
 
 		$class = 'pagenav page-link';
-		$specials = array('start','end','previous','next');
-		foreach($specials as $special) {
-			if(!empty($item->$special)) {
-				$class.=' hikashop_'.$special.'_link';
-			}
-		}
 		if($item->base > 0)
 			return "<a href=\"".$this->_link($item->base)."\" class=\"".$class."\" title=\"".$item->text."\">".$item->text."</a>";
 		return "<a href=\"".$this->_link('0')."\" class=\"".$class."\" title=\"".$item->text."\">".$item->text."</a>";

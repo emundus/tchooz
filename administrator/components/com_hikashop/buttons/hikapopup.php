@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -57,7 +57,7 @@ if(!HIKASHOP_J30) {
 			if($check)
 				$onclick = 'if (document.adminForm.boxchecked.value == 0) { alert(Joomla.JText._(\'JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST\')); } else {'.$onclick.'}';
 
-			return '<button onclick="'.$onclick.'" href="'.$url.'" data-hk-popup="vex" data-vex="{x:'.(int)$width.', y:'.(int)$height.'}" class="'.$btnClass.'">'.
+			return '<button onclick="'.$onclick.'" href="'.$url.'" data-hk-popup="vex" data-vex=\'{"x":'.(int)$width.', "y":'.(int)$height.'}\' class="'.$btnClass.'">'.
 				'<span class="icon-'.trim($icon).'"></span> ' . JText::_($text) .
 			'</button>';
 		}
@@ -74,6 +74,11 @@ if(!HIKASHOP_J30) {
 		}
 	}
 } else {
+	if(HIKASHOP_J50) {
+		if(!class_exists('JToolbarButton')) {
+			class_alias('Joomla\CMS\Toolbar\ToolbarButton', 'JToolbarButton');
+		}
+	}
 	class JToolbarButtonHikaPopup extends JToolbarButton {
 		protected $_name = 'HikaPopup';
 
@@ -96,7 +101,7 @@ if(!HIKASHOP_J30) {
 
 			return '
 			<joomla-toolbar-button'.$attribs.'>'.
-				'<button onclick="return window.hikashop.openBox(this);" href="'.$url.'" data-hk-popup="vex" data-vex="{x:'.(int)$width.', y:'.(int)$height.'}" class="'.$btnClass.'">'.
+				'<button onclick="return window.hikashop.openBox(this);" href="'.$url.'" data-hk-popup="vex" data-vex=\'{"x":'.(int)$width.', "y":'.(int)$height.'}\' class="'.$btnClass.'">'.
 					'<span class="icon-'.trim($icon).'"></span> ' . JText::_($text) .
 				'</button>' .
 			'</joomla-toolbar-button>';

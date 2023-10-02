@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -40,14 +40,12 @@ if(hikashop_level(2)){
 					<p class="field_columns"><?php echo JText::_( 'FIELD_COLUMNS' ); ?></p>
 					<div class="listing_item_quantity_selector" data-name="<?php echo $this->name; ?>">
 <?php
-		if(!isset($this->element['limit']))
+		if(empty($this->element['limit']) || $this->element['limit']=='NaN')
 			$this->element['limit'] = '20';
-		if(!isset($this->element['columns']))
+		if(empty($this->element['columns']))
 			$this->element['columns'] = '3';
 		$colsNb = @$this->element['columns'];
-		$rowsNb = 0;
-		if(@$this->element['columns'] != 0)
-			$rowsNb = round((int)$this->element['limit'] / (int)$this->element['columns']);
+		$rowsNb = round((int)$this->element['limit'] / (int)$this->element['columns']);
 		for($j = 0; $j < 12; $j++){
 			for($i = 0; $i < 6; $i++){
 				$class = ($i < $colsNb && $j < $rowsNb) ? ' selected' : '';

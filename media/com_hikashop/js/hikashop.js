@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.7.3
+ * @version    5.0.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -174,10 +174,36 @@ var Oby = {
 	evalJSON: function(text, secure) {
 		if( typeof(text) != "string" || !text.length) return null;
 		if(JSON !== undefined && typeof(JSON.parse) == 'function') {
-			try { var ret = JSON.parse(text); return ret; } catch(e) { }
+			try { var ret = JSON.parse(text); return ret; } catch(e) {
+				return this.extractJSON(text);
+			}
 		}
 		if(secure && !(/^[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]*$/).test(text.replace(/\\./g, '@').replace(/"[^"\\\n\r]*"/g, ''))) return null;
 		try { var ret = eval('(' + text + ')'); return ret; } catch(e) { }
+		return null;
+	},
+	extractJSON: function(str) {
+		var firstOpen, firstClose, candidate;
+		firstOpen = str.indexOf('{', firstOpen + 1);
+		do {
+			firstClose = str.lastIndexOf('}');
+			if(firstClose <= firstOpen) {
+				return null;
+			}
+			do {
+				candidate = str.substring(firstOpen, firstClose + 1);
+				try {
+					var res = JSON.parse(candidate);
+					return res;
+				}
+				catch(e) {
+					console.log('failed parsing JSON in string below:');
+					console.log(candidate);
+				}
+				firstClose = str.substr(0, firstClose).lastIndexOf('}');
+			} while(firstClose > firstOpen);
+			firstOpen = str.indexOf('{', firstOpen + 1);
+		} while(firstOpen != -1);
 		return null;
 	},
 	getXHR: function() {
@@ -1111,6 +1137,11 @@ var hikashop = {
 		if(navigator && navigator.userAgent && r.test(navigator.userAgent))
 			return false;
 
+		var process = true;
+		window.Oby.fireAjax(cart_type+'-button.clicked', {el: el, product_id: product_id, type: cart_type, cart_id: dest_id, process: process});
+		if(!process)
+			return true;
+
 		// No product ID - fallback mode
 		if(!product_id || !url) {
 			if(containerName && d.forms[containerName]) {
@@ -1519,13 +1550,20 @@ var hikashop = {
 			window.hikashop.addScript(scripts);
 		}
 	},
-	addScript: function (code) {
+	addScript: function (code, url) {
 		if(code == '')
 			return;
-		var oNew = document.createElement("script");
-		oNew.type = "text/javascript";
-		oNew.textContent = code;
-		document.getElementsByTagName("head")[0].appendChild(oNew);
+		try {
+			var oNew = document.createElement("script");
+			oNew.type = "text/javascript";
+			oNew.textContent = code;
+			document.getElementsByTagName("head")[0].appendChild(oNew);
+		} catch (e) {
+			if (e instanceof SyntaxError) {
+				console.log(e.message + ' for ' + url);
+				console.log(code);
+			}
+		}
 	},	
 	loadScripts: function(scripts, complete) {
 		var xhr = window.Oby.getXHR();
@@ -1538,7 +1576,7 @@ var hikashop = {
 				return;
 			if (xhr.status == 200) {
 				try {
-					window.hikashop.addScript(xhr.responseText);
+					window.hikashop.addScript(xhr.responseText, xhr.responseURL);
 				} catch (e) {
 					if (e instanceof SyntaxError) {
 						console.log(e.message + ' for ' + xhr.responseURL);

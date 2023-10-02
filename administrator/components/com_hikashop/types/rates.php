@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class hikashopRatesType{
+class hikashopRatesType extends hikashopType{
 	public $results = null;
 	public $values = null;
 
@@ -32,7 +32,7 @@ class hikashopRatesType{
 		$this->load($form, $allowNoRate);
 		$options .= ' class="custom-select" size="1"';
 		if(!$form){
-			$options .=' onchange="document.adminForm.submit();"';
+			$options .=' onchange="this.form.task=\'\';document.adminForm.submit();"';
 		}
 		if($allowNoRate && empty($value))
 			$value = '-1';

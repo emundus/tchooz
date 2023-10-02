@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -415,9 +415,8 @@ class orderController extends hikashopController {
 			$cartClass->addCoupon(0, $order->order_discount_code);
 		}
 
-		$itemid_for_checkout = $config->get('checkout_itemid','0');
-		$item = (!empty($itemid_for_checkout) ? '&Itemid='.(int)$itemid_for_checkout : '');
-		$app->redirect( hikashop_completeLink('checkout'.$item, false, true) );
+		$menusClass = hikashop_get('class.menus');
+		$app->redirect( $menusClass->getCheckoutURL(true) );
 	}
 
 	public function pay() {

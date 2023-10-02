@@ -1,14 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgSystemHikashopproductInsert extends JPlugin {
+include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
+class plgSystemHikashopproductInsert extends hikashopJoomlaPlugin {
 
 	var $name = 0;
 	var $pricetax = 0;
@@ -30,11 +31,15 @@ class plgSystemHikashopproductInsert extends JPlugin {
 		if(isset($this->params))
 			return;
 
+		if(HIKASHOP_J50 && !class_exists('JPluginHelper'))
+			class_alias('Joomla\CMS\Plugin\PluginHelper', 'JPluginHelper');
 		$plugin = JPluginHelper::getPlugin('system', 'hikashopproductinsert');
 		if(version_compare(JVERSION,'2.5','<')){
 			jimport('joomla.html.parameter');
 			$this->params = new JParameter($plugin->params);
 		} else {
+			if(HIKASHOP_J50 && !class_exists('JRegistry'))
+				class_alias('Joomla\Registry\Registry', 'JRegistry');
 			$this->params = new JRegistry($plugin->params);
 		}
 	}
@@ -49,6 +54,8 @@ class plgSystemHikashopproductInsert extends JPlugin {
 		if(!$load)
 			return;
 
+		if(HIKASHOP_J50 && !class_exists('JFactory'))
+			class_alias('Joomla\CMS\Factory', 'JFactory');
 		$app = JFactory::getApplication();
 
 		if(version_compare(JVERSION,'3.0','>=')) {
@@ -83,6 +90,9 @@ class plgSystemHikashopproductInsert extends JPlugin {
 	}
 
 	function onAfterRender() {
+
+		if(HIKASHOP_J50 && !class_exists('JFactory'))
+			class_alias('Joomla\CMS\Factory', 'JFactory');
 		$app = JFactory::getApplication();
 
 		if(version_compare(JVERSION,'3.0','>=')) {
@@ -151,7 +161,7 @@ class plgSystemHikashopproductInsert extends JPlugin {
 			foreach($matches[0] as $k => $match) {
 
 				$show = ($matches[1][$k] == 'show');
-				$content = $matches[3][$k];
+				$content = hikashop_translate($matches[3][$k], null, true);
 				$attributes = trim($matches[2][$k]);
 				if(!empty($attributes)) {
 					$attributes = explode(' ', $attributes);
@@ -205,6 +215,12 @@ class plgSystemHikashopproductInsert extends JPlugin {
 								if(!empty($cart->$totalName->prices[0]->price_value_with_tax))
 									$total = $cart->$totalName->prices[0]->price_value_with_tax;
 								$key = substr($key, 0, 3);
+
+								$difference = abs($amount-$total);
+								$currencyClass = hikashop_get('class.currency');
+								$difference = $currencyClass->format($difference, hikashop_getCurrency());
+								$content = str_replace('{'.$key.'}', $difference, $content);
+
 								if(
 									($key == 'max' && $total > $amount) ||
 									($key == 'min' && $total < $amount)

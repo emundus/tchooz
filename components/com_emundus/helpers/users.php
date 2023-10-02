@@ -16,6 +16,8 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+use Joomla\CMS\Factory;
+
 /**
  * Content Component Query Helper
  *
@@ -79,4 +81,16 @@ class EmundusHelperUsers {
         $rand_token = openssl_random_pseudo_bytes($length);
         return bin2hex($rand_token);
     }
+
+	static function getEmundusUser()
+	{
+		$app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>')) {
+			$session = $app->getSession();
+		} else {
+			$session = Factory::getSession();
+		}
+
+		return $session->get('emundusUser', null);
+	}
 }

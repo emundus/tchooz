@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -662,10 +662,16 @@ class plgHikashopMassaction_order extends JPlugin
 	function onProcessOrderMassActionsendEmail(&$elements,&$action,$k){
 		if(!empty($action['emailAddress'])){
 
-			if($action['emailAddress'] == 'user.user_email' && count($elements) == '1'){
-				$userClass = hikashop_get('class.user');
-				$user = $userClass->get($elements[0]->order_user_id);
-				$action['emailAddress'] = 	$user->user_email;
+			if(count($elements) == '1') {
+				if($action['emailAddress'] == 'user.user_email'){
+					$userClass = hikashop_get('class.user');
+					$user = $userClass->get($elements[0]->order_user_id);
+					$action['emailAddress'] = 	$user->user_email;
+				}
+				foreach(get_object_vars($elements[0]) as $k => $v) {
+					$action['emailSubject'] = str_replace('{' . $k .'}',(string)$v, $action['emailSubject']);
+					$action['bodyData'] = str_replace('{' . $k .'}',(string)$v, $action['bodyData']);
+				}
 			}
 
 			$config = hikashop_config();

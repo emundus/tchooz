@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -393,7 +393,7 @@ class CartViewCart extends HikaShopView {
 			$toolbar['share'] = array(
 				'icon' => 'email',
 				'name' => JText::_('SHARE'),
-				'url' => hikashop_completeLink('cart&task=share=&cart_id='.$cart->cart_id.'&Itemid='.$Itemid, true),
+				'url' => hikashop_completeLink('cart&task=share&cart_id='.$cart->cart_id.'&Itemid='.$Itemid, true),
 				'popup' => array(
 					'id' => 'hikashop_share_cart',
 					'width' => 360,

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashoppayment">
 	<name>Hikashop CardSave Payment Plugin</name>
-	<creationDate>08 juin 2023</creationDate>
-	<version>4.7.3</version>
+	<creationDate>29 septembre 2023</creationDate>
+	<version>5.0.0</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>

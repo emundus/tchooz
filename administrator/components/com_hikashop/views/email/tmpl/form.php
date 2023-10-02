@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -135,7 +135,7 @@ activate: true,
 				</div>
 				<div class="hikashop_mail_edit_linevar">
 					<p style="margin-left:10px;height:46px;"><?php echo JText::_('HIKA_EMAIL_LINEVAR_INFO'); ?>
-					<a style="font-size:0.9em;" rel="nofollow" onclick="return window.hikashop.openBox(this);" id="hikashop_linevar_screen" href="https://www.hikashop.com/images/stories/linevar-position.png" data-hk-popup="vex" data-vex="{x:850, y:260}">
+					<a style="font-size:0.9em;" rel="nofollow" onclick="return window.hikashop.openBox(this);" id="hikashop_linevar_screen" href="https://www.hikashop.com/images/stories/linevar-position.png" data-hk-popup="vex" data-vex='{"x":850, "y":260}'>
 						<?php echo JText::_('HIKA_EMAIL_LINEVAR_POS'); ?>
 					</a>
 					</p>

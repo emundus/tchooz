@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class hikashopEditorHelper {
+class hikashopEditorHelper extends stdClass {
 	var $width = '100%';
 	var $height = '500';
 	var $cols = 100;
@@ -31,7 +31,7 @@ class hikashopEditorHelper {
 
 	function setDescription() {
 		$this->width = 700;
-		$this->height = 200;
+		$this->height = 300;
 		$this->cols = 80;
 		$this->rows = 10;
 	}
@@ -76,6 +76,10 @@ var hikaInitEditor_'.$id.' = function(){
 	var el = document.getElementById("'.$id.'_ifr");
 	if(!el) { setTimeout(hikaInitEditor_'.$id.', 250); return; }
 	el.style.height = "'.$this->height.'px";
+	var parendDiv = el.closest(".tox-tinymce");
+	if(parendDiv) {
+		parendDiv.style.height = "'.($this->height+100).'px";
+	}
 };
 window.hikashop.ready(hikaInitEditor_'.$id.');
 ');

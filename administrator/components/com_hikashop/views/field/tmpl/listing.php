@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -134,10 +134,9 @@ defined('_JEXEC') or die('Restricted access');
 						<span id="<?php echo $requiredid ?>" class="loading"><?php echo $this->toggleClass->toggle($requiredid,(int) $row->field_required,'field') ?></span>
 					<?php }else{ echo $this->toggleClass->display('activate',$row->field_required); } ?>
 				</td>
-				<td class="order">
+				<td class="order column_move">
 					<?php if($this->manage){ ?>
-						<span><?php echo $this->pagination->orderUpIcon( $i, $row->field_ordering >= @$this->rows[$i-1]->field_ordering ,'orderup', 'Move Up',true ); ?></span>
-						<span><?php echo $this->pagination->orderDownIcon( $i, $a, $row->field_ordering <= @$this->rows[$i+1]->field_ordering , 'orderdown', 'Move Down' ,true); ?></span>
+						<span class="move_icon"><img src="../media/com_hikashop/images/move.png" alt=""></span>
 						<input type="text" name="order[]" size="5" value="<?php echo $row->field_ordering; ?>" class="text_area" style="text-align: center" />
 					<?php }else{ $row->field_ordering; } ?>
 				</td>

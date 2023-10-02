@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -43,7 +43,7 @@ if (HIKASHOP_J40) {
 }
 
 ?>
-<div id="hikashop_main_content" class="hikashop_main_content hk-container-fluid item-module-interface hika_j<?php echo (int)HIKASHOP_JVERSION; ?>">
+<div id="hikashop_main_content" class="hikashop_main_content hk-container-fluid item-module-interface hika_j<?php echo (int)HIKASHOP_JVERSION; if(HIKASHOP_JVERSION>4) echo ' hika_j4'; ?>">
 	<!-- module edition -->
 	<div id="hikashop_module_backend_page_edition">
 		<!-- Top part (Layout selection) -->
@@ -69,7 +69,7 @@ if (HIKASHOP_J40) {
 			}
 			$src = strtolower($value->value);
 		?>
-			<div class="<?php echo $class; ?> hikashop_module_block_content_type hikashop_module_edit_display_type_<?php echo $value->value; ?>" <?php echo $dataDisplay; ?> onclick="window.optionMgr.tabChange(this);" data-type="product_layout_choice" data-layout="<?php echo 'product_'.$value->value; ?>">
+			<div class="<?php echo $class; ?> hikashop_module_block_content_type hikashop_module_edit_display_type_<?php echo $value->value; ?>" <?php echo $dataDisplay; ?> onclick="window.optionMgr.tabChange(this, false);" data-type="product_layout_choice" data-layout="<?php echo 'product_'.$value->value; ?>">
 				<img class="hikashop_menu_block_img_unselected" src="<?php echo HIKASHOP_IMAGES; ?>icons/icon-24-<?php echo $src; ?>.png">
 				<img class="hikashop_menu_block_img_selected" src="<?php echo HIKASHOP_IMAGES; ?>icons/icon-24-<?php echo $src; ?>-selected.png">
 				<?php echo $value->text; ?>
@@ -176,7 +176,7 @@ window.hikashop.ready(function(){
 ";
 $js .= "
 	hkjQuery('div[data-type=\'product_layout\']').hide();
-	window.optionMgr.tabChange('div[data-layout=\'product_".$this->element['layout_type']."\']');
+	window.optionMgr.tabChange('div[data-layout=\'product_".$this->element['layout_type']."\']', true);
 ";
 $js .= "
 	hkjQuery('div.accordion-group #hikashop_main_content').prev().hide();
@@ -205,7 +205,7 @@ $js .= "
 			hkjQuery('div[data-display-type=\'category\']').show();
 			hkjQuery('.hikashop_edit_display_type').children('div').removeClass('hkc-xl-3').addClass('hkc-xl-4');
 		}
-		window.optionMgr.tabChange('div[data-layout=\'product_inherit\']');
+		window.optionMgr.tabChange('div[data-layout=\'product_inherit\']', false);
 	});
 ";
 $js .="
@@ -243,9 +243,18 @@ $js .="
 		var name = hkjQuery(this).attr('name').replace('[columns]','').replace('[rows]','');
 		var listType = hkjQuery(this).closest('.listing_item_quantity_fields').attr('data-list-type');
 		var cCol = 1;
-		if(listType != 'table')
+		if(listType != 'table') {
 			cCol = hkjQuery('input[name=\''+name+'[columns]\']').val();
+			if(cCol < 1) {
+				cCol = 1;
+				hkjQuery('input[name=\''+name+'[columns]\']').val(1);
+			}
+		}
 		var cRow = hkjQuery('input[name=\''+name+'[rows]\']').val();
+		if(cRow < 1) {
+			cRow = 1;
+			hkjQuery('input[name=\''+name+'[rows]\']').val(1);
+		}
 		hkjQuery('input[name=\''+name+'[limit]\']').val(parseInt(cRow) * parseInt(cCol));
 		window.optionMgr.fillSelector(cCol,cRow, name);
 	});
@@ -299,7 +308,7 @@ window.optionMgr = {
 				hkjQuery(this).addClass('selected');
 		});
 	},
-	tabChange : function(el) {
+	tabChange : function(el, init) {
 		var val = hkjQuery(el).attr('data-layout'), ctype = hkjQuery('[name=\'".$this->name."[content_type]\']').val();
 		if(ctype == 'manufacturer')
 			ctype = 'category';
@@ -325,6 +334,28 @@ window.optionMgr = {
 				hkjQuery('div[data-display-tab=\'div\']').show();
 			else
 				hkjQuery('div[data-display-tab=\'div\']').hide();
+		}
+
+
+		if(!init) {
+			var mainEl = hkjQuery('div[data-layout=\''+val+'\'] .listing_item_quantity_selector');
+			var cells = hkjQuery('div[data-layout=\''+val+'\'] .listing_item_quantity_selector div.selected');
+			var name = mainEl.attr('data-name');
+			var maxCol = 1;
+			var maxRow = 1;
+			cells.each(function(index, cell) {
+				var classes = hkjQuery(cell).attr('class').split(' ');
+				var col = parseInt(classes[0].replace('col',''))+1;
+				if(col > maxCol)
+					maxCol = col;
+				var row = parseInt(classes[1].replace('row',''))+1;
+				if(row > maxRow)
+					maxRow = row;
+			});
+
+			hkjQuery('input[name=\''+name+'[columns]\']').val(maxCol);
+			hkjQuery('input[name=\''+name+'[rows]\']').val(maxRow);
+			hkjQuery('input[name=\''+name+'[limit]\']').val(maxCol*maxRow);
 		}
 	},
 	hideDisplayOptions : function(optionName,newValue) {

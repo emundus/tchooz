@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -76,6 +76,8 @@ class HikaShopTagsHelper {
 		$xmlConf = new SimpleXMLElement('<field name="'.$options['name'].'" type="tag" mode="'.$options['mode'].'" label="" class="'.$options['class'].'" multiple="'.($options['multiple']?'true':'false').'"></field>');
 		JFormHelper::loadFieldClass('tag');
 		$jform = new JForm('hikashop');
+		if(HIKASHOP_J50 && !class_exists('JFormFieldTag'))
+			class_alias('Joomla\CMS\Form\Field\TagField', 'JFormFieldTag');
 		$fieldTag = new JFormFieldTag();
 		$fieldTag->setForm($jform);
 		$fieldTag->setup($xmlConf, $tags);
@@ -99,6 +101,8 @@ class HikaShopTagsHelper {
 		$id = $structure['id'];
 		$ret = false;
 		if(!empty($element->$id)) {
+			if(HIKASHOP_J50 && !class_exists('JHelperTags'))
+				class_alias('Joomla\CMS\Helper\TagsHelper', 'JHelperTags');
 			$tagsHelper = new JHelperTags();
 			$ret = $tagsHelper->getItemTags($alias, $element->$id, false);
 		}
@@ -115,6 +119,8 @@ class HikaShopTagsHelper {
 			$component = $structure['component'];
 		$alias = 'com_'.$component.'.'.$structure['table'];
 
+		if(HIKASHOP_J50 && !class_exists('JHelperTags'))
+			class_alias('Joomla\CMS\Helper\TagsHelper', 'JHelperTags');
 		$tagsHelper = new JHelperTags();
 		$tagsHelper->typeAlias = $alias;
 		$tagsTable = new JHikaShopTagTable($structure, $element);
@@ -140,6 +146,8 @@ class HikaShopTagsHelper {
 			$component = $structure['component'];
 		$alias = 'com_'.$component.'.'.$structure['table'];
 
+		if(HIKASHOP_J50 && !class_exists('JHelperTags'))
+			class_alias('Joomla\CMS\Helper\TagsHelper', 'JHelperTags');
 		$tagsHelper = new JHelperTags();
 		$tagsHelper->typeAlias = $alias;
 

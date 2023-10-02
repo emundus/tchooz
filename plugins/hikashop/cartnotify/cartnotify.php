@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,6 +29,11 @@ class plgHikashopCartnotify extends JPlugin
 			if($app->isClient('administrator'))
 				return;
 		}
+
+		static $done = false;
+		if($done)
+			return;
+		$done = true;
 
 		$reference = $this->params->get('notification_reference', 'global');
 		if($reference == 'popup')
@@ -129,7 +134,6 @@ jQuery(document).on("click", ".notifyjs-hidable", function(e) {
 
 		$base = (hikashop_isClient('administrator')) ? '..' : JURI::base(true);
 		$doc->addScript($base.'/plugins/hikashop/cartnotify/media/notify-vex.js');
-		$doc->addStyleSheet($base.'/media/com_hikashop/css/notify-metro.css');
 
 		$menusClass = hikashop_get('class.menus');
 		$url_checkout = $menusClass->getCheckoutURL(true);

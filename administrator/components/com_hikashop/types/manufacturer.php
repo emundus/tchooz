@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class hikashopManufacturerType{
+class hikashopManufacturerType extends hikashopType{
 	function load($value){
 		$this->values = array();
 		$query = 'SELECT category_id,category_name FROM '.hikashop_table('category').' WHERE category_type = "manufacturer" AND category_depth != 1 ORDER BY category_name ASC';
@@ -27,6 +27,6 @@ class hikashopManufacturerType{
 		if(empty($this->values)){
 			$this->load($value);
 		}
-		if ($this->values) return JHTML::_('select.genericlist',   $this->values, $map, 'class="custom-select" size="1" onchange="document.adminForm.submit();" '.$options, 'value', 'text', $value );
+		if ($this->values) return JHTML::_('select.genericlist',   $this->values, $map, 'class="custom-select" size="1" onchange="this.form.task=\'\';document.adminForm.submit();" '.$options, 'value', 'text', $value );
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -183,7 +183,7 @@ if(!empty($data->cart->products)){
 		if(!empty($itemFields)){
 			foreach($itemFields as $field){
 				$namekey = $field->field_namekey;
-				if(!isset($item->$namekey) || (empty($item->$namekey) && !strlen($item->$namekey))) continue;
+				if(!isset($item->$namekey) || (empty($item->$namekey) && !strlen((string)$item->$namekey))) continue;
 				$t .= '<p>'.$fieldsClass->getFieldName($field).': '.$fieldsClass->show($field,$item->$namekey,'user_email').'</p>';
 			}
 		}

@@ -1,13 +1,18 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+if($this->config->get('carousel_version', 'swiper') == 'swiper') {
+	$this->setLayout('carousel_swiper');
+	echo $this->loadTemplate();
+	return;
+}
 if(!HIKASHOP_J40 && $this->config->get('carousel_legacy', true)) {
 	$this->setLayout('carousel_legacy');
 	echo $this->loadTemplate();

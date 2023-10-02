@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -231,7 +231,7 @@ if(!empty($this->options['address_on_registration']) && !empty($this->extraField
 	$type = 'address';
 ?>
 <!-- BILLING ADDRESS TITLE -->
-	<div class="">
+	<div class="hika_registration_address">
 		<legend><?php echo JText::_( 'ADDRESS_INFORMATION' ); ?></legend>
 	</div>
 <!-- EO BILLING ADDRESS TITLE -->

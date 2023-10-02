@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.7.3
+ * @version	5.0.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -22,7 +22,8 @@ class HikashopExpressionInc {
         'sin','sinh','arcsin','asin','arcsinh','asinh',
         'cos','cosh','arccos','acos','arccosh','acosh',
         'tan','tanh','arctan','atan','arctanh','atanh',
-        'sqrt','abs','ln','log', 'ceil', 'intval', 'floor', 'round', 'exp');
+        'sqrt','abs','ln','log', 'ceil', 'intval', 'floor',
+        'round', 'exp', 'boolval');
 
     var $functions = array(); // function defined outside of Expression as closures
 
@@ -142,7 +143,7 @@ class HikashopExpressionInc {
                 break;
             } elseif (((in_array($op, $ops) or $ex) and $expecting_op) or in_array($op, $ops) and !$expecting_op or
                       (!$matcher && $ex && preg_match("%^" . $regex . "$%", $match[1]))) {
-                while($stack->count > 0 and ($o2 = $stack->last()) and in_array($o2, $ops) and ($ops_r[$op] ? $ops_p[$op] < $ops_p[$o2] : $ops_p[$op] <= $ops_p[$o2])) {
+                while($stack->count > 0 and ($o2 = $stack->last()) and in_array($o2, $ops) && isset($ops_p[$o2]) && isset($ops_p[$op]) and (isset($ops_r[$op]) && $ops_r[$op] ? $ops_p[$op] < $ops_p[$o2] : $ops_p[$op] <= $ops_p[$o2])) {
                     $output[] = $stack->pop(); // pop stuff off the stack into the output
 
                 }
@@ -271,24 +272,24 @@ class HikashopExpressionInc {
                         }
                         break;
                     case '-':
-                        $stack->push($op1 - $op2); break;
+                        $stack->push((float)$op1 - (float)$op2); break;
                     case '*':
-                        $stack->push($op1 * $op2); break;
+                        $stack->push((float)$op1 * (float)$op2); break;
                     case '/':
                         if ($op2 == 0) return $this->trigger("division by zero");
-                        $stack->push($op1 / $op2); break;
+                        $stack->push((float)$op1 / (float)$op2); break;
                     case '%':
-                        $stack->push($op1 % $op2); break;
+                        $stack->push((float)$op1 % (float)$op2); break;
                     case '^':
-                        $stack->push(pow($op1, $op2)); break;
+                        $stack->push(pow((float)$op1, (float)$op2)); break;
                     case '>':
-                        $stack->push($op1 > $op2); break;
+                        $stack->push((float)$op1 > (float)$op2); break;
                     case '<':
-                        $stack->push($op1 < $op2); break;
+                        $stack->push((float)$op1 < (float)$op2); break;
                     case '>=':
-                        $stack->push($op1 >= $op2); break;
+                        $stack->push((float)$op1 >= (float)$op2); break;
                     case '<=':
-                        $stack->push($op1 <= $op2); break;
+                        $stack->push((float)$op1 <= (float)$op2); break;
                     case '==':
                         if (is_array($op1) && is_array($op2)) {
                             $stack->push(json_encode($op1) == json_encode($op2));
@@ -430,6 +431,6 @@ class HikashopExpressionStack {
         if (isset($this->stack[$this->count-$n])) {
           return $this->stack[$this->count-$n];
         }
-        return;
+        return '';
     }
 }

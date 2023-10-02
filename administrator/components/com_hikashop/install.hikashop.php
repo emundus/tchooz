@@ -30,12 +30,13 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Business';
-	var $version = '4.7.3';
+	var $version = '5.0.0';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
 	var $fromVersion = '';
 	var $db;
+	var $databaseHelper = null;
 
 	public function __construct() {
 		$this->db = JFactory::getDBO();
