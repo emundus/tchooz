@@ -34,7 +34,7 @@ if (count($languages) > 1) {
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
 ?>

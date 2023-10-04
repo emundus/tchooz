@@ -910,14 +910,14 @@
    </row>
    <row>
     <field name="id">118</field>
-    <field name="asset_id">108</field>
+    <field name="asset_id">127</field>
     <field name="title">Menu</field>
     <field name="note"></field>
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">header-b</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2023-09-27 12:40:46</field>
     <field name="publish_up">2023-04-24 13:32:00</field>
     <field name="publish_down"></field>
     <field name="published">1</field>
@@ -1015,10 +1015,10 @@
     <field name="note"></field>
     <field name="content"></field>
     <field name="ordering">1</field>
-    <field name="position">content-top-a</field>
+    <field name="position">drawer</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
+    <field name="publish_up">2023-09-28 16:03:39</field>
     <field name="publish_down"></field>
     <field name="published">1</field>
     <field name="module">mod_emundusflow</field>
@@ -1038,9 +1038,9 @@
     <field name="position">sidebar-a</field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
+    <field name="publish_up">2023-09-28 14:42:44</field>
     <field name="publish_down"></field>
-    <field name="published">0</field>
+    <field name="published">1</field>
     <field name="module">mod_emundus_checklist</field>
     <field name="access">2</field>
     <field name="showtitle">0</field>

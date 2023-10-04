@@ -100,7 +100,7 @@
    </row>
    <row>
     <field name="config_namekey">cart_retaining_period_checked</field>
-    <field name="config_value">1687176086</field>
+    <field name="config_value">1696247312</field>
     <field name="config_default"></field>
    </row>
    <row>
@@ -411,7 +411,7 @@
    <row>
     <field name="config_namekey">level</field>
     <field name="config_value">Business</field>
-    <field name="config_default">Business</field>
+    <field name="config_default"></field>
    </row>
    <row>
     <field name="config_namekey">main_currency</field>
@@ -926,8 +926,8 @@ United Kingdom</field>
    </row>
    <row>
     <field name="config_namekey">version</field>
-    <field name="config_value">4.7.3</field>
-    <field name="config_default">4.7.3</field>
+    <field name="config_value">5.0.0</field>
+    <field name="config_default"></field>
    </row>
    <row>
     <field name="config_namekey">volume_symbols</field>

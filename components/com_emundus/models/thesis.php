@@ -130,7 +130,7 @@ class EmundusModelThesis extends JModelItem {
     }
 
     public function getTable($type = 'Thesis', $prefix = 'EmundusTable', $config = array()) {
-        $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR . '/tables');
+        $this->addTablePath(JPATH_BASE.DS.'components'.DS.'com_emundus'_ADMINISTRATOR . '/tables');
         return JTable::getInstance($type, $prefix, $config);
     }
 

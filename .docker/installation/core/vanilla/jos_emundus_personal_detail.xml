@@ -4,13 +4,13 @@
   <table_structure name="#__emundus_personal_detail">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
    <field Field="time_date" Type="datetime" Null="NO" Key="" Default="CURRENT_TIMESTAMP" />
-   <field Field="fnum" Type="varchar(28)" Null="NO" Key="UNI" Extra="" />
+   <field Field="fnum" Type="varchar(28)" Null="YES" Key="UNI" Extra="" />
    <field Field="user" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="profile" Type="int" Null="YES" Key="" Extra="" />
    <field Field="gender" Type="text" Null="YES" Key="" Extra="" />
    <field Field="first_name" Type="varchar(50)" Null="YES" Key="" Extra="" />
    <field Field="last_name" Type="varchar(50)" Null="YES" Key="MUL" Extra="" />
-   <field Field="birth_date" Type="date" Null="YES" Key="" Extra="" />
+   <field Field="birth_date" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="nationality" Type="int" Null="YES" Key="" Extra="" />
    <field Field="city" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="email" Type="varchar(255)" Null="YES" Key="" Extra="" />
@@ -44,7 +44,7 @@
    <field Field="e_287_7906" Type="text" Null="YES" Key="" Extra="" />
    <field Field="e_287_7907" Type="text" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_personal_detail" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
-   <key Table="#__emundus_personal_detail" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_personal_detail" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_personal_detail" Non_unique="1" Key_name="fb_tableorder_last_name_INDEX" Seq_in_index="1" Column_name="last_name" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
    <key Table="#__emundus_personal_detail" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>

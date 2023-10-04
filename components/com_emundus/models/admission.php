@@ -840,7 +840,7 @@ class EmundusModelAdmission extends JModelList
     }
 
     public function getUsers($current_fnum = null) {
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 
         $app 		= JFactory::getApplication();
         $session 	= JFactory::getSession();

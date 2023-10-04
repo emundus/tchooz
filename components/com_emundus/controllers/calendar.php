@@ -260,7 +260,7 @@ class EmundusControllerCalendar extends JControllerLegacy
 
 		$m_calendar->authenticateClient();
 
-		JFactory::getApplication()->redirect('/index.php');
+		$this->app->redirect('/index.php');
 	}
 
 }

@@ -23,15 +23,11 @@ jimport('joomla.application.component.controller');
  */
 class EmundusControllerUser extends JControllerLegacy
 {
-    private $_user = null;
-    private $m_user = null;
+    private $_user;
 
     public function __construct($config = array())
     {
-        require_once(JPATH_COMPONENT . DS . 'models' . DS . 'user.php');
-
         $this->_user = JFactory::getSession()->get('emundusUser');
-        $this->m_user = new EmundusModelUser();
 
         parent::__construct($config);
     }
@@ -40,9 +36,9 @@ class EmundusControllerUser extends JControllerLegacy
     public function display($cachable = false, $urlparams = false)
     {
         // Set a default view if none exists
-        if (!JFactory::getApplication()->input->get('view')) {
+        if (!$this->input->get('view')) {
             $default = 'user';
-            JFactory::getApplication()->input->set('view', $default);
+            $this->input->set('view', $default);
         }
 
         if ($this->_user->guest == 0)
@@ -53,7 +49,7 @@ class EmundusControllerUser extends JControllerLegacy
 
 	public function redirectMeWithMessage()
 	{
-		$input = JFactory::getApplication()->input;
+		$input = $this->input;
 		$message = $input->getString('message', null);
 
 		$this->setRedirect('/', $message);

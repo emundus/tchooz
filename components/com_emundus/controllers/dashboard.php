@@ -56,8 +56,7 @@ class EmundusControllerDashboard extends JControllerLegacy
 		$query = $db->getQuery(true);
 
 		try {
-			$app    = JFactory::getApplication();
-			$menu   = $app->getMenu();
+			$menu   = $this->app->getMenu();
 			$active = $menu->getActive();
 			if (empty($active)) {
 				$menuid = 1079;

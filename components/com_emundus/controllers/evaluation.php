@@ -286,7 +286,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus' . '/models/application.php');
-        $appModel = new EmundusModelApplication();
+        $appModel = $this->getModel('Application');
 
 
         if (is_array($fnums)) {
@@ -426,7 +426,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 			 }
 
 			 require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . '/models/application.php');
-			 $m_application = new EmundusModelApplication();
+			 $m_application = $this->getModel('Application');
 
 			 foreach ($fnums as $fnum) {
 				 foreach ($tags as $tag){
@@ -535,8 +535,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     public function updatestate() {
 
-	    $app    = JFactory::getApplication();
-	    $this->input = $app->input;
+	    $app    = $this->app;
+	    
 	    $fnums  = $this->input->getString('fnums', null);
 	    $state  = $this->input->getInt('state', null);
 
@@ -561,7 +561,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
 	    if ($res !== false) {
 		    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus' . '/models/application.php');
-		    $m_application = new EmundusModelApplication();
+		    $m_application = $this->getModel('Application');
 		    $status = $m_files->getStatus();
 		    // Get all codes from fnum
 		    $code = array();
@@ -579,7 +579,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 		    //*********************************************************************
 		    // Get triggered email
             include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
-		    $m_email = new EmundusModelEmails;
+		    $m_email = $this->getModel('Emails');
 		    $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
 
 		    if (count($trigger_emails) > 0) {
@@ -874,8 +874,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
         if (!EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
             die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
-        $m_profile = new EmundusModelProfile();
-        $m_campaign = new EmundusModelCampaign();
+        $m_profile = $this->getModel('Profile');
+        $m_campaign = $this->getModel('Campaign');
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
@@ -926,7 +926,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
                 $user = JFactory::getUser();    # logged user
 
                 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-                $mFile = new EmundusModelFiles();
+                $mFile = $this->getModel('Files');
                 $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
                 EmundusModelLogs::log($user->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
@@ -946,7 +946,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
                     $user = JFactory::getUser();    # logged user
 
                     require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-                    $mFile = new EmundusModelFiles();
+                    $mFile = $this->getModel('Files');
                     $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
                     EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
@@ -975,8 +975,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-        $m_profile = new EmundusModelProfile();
-        $m_campaign = new EmundusModelCampaign();
+        $m_profile = $this->getModel('Profile');
+        $m_campaign = $this->getModel('Campaign');
 
         if (!empty($fnum)) {
             $candidature = $m_profile->getFnumDetails($fnum);
@@ -1101,7 +1101,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         $m_files = $this->getModel('Files');
 	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus' . '/models/application.php');
-	    $m_application = new EmundusModelApplication();
+	    $m_application = $this->getModel('Application');
 
         
         $fnums = $this->_session->get('fnums_export');
@@ -1138,7 +1138,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         // On met a jour la liste des fnums traités
         $fnums = array();
         foreach ($fnumsArray as $fnum) {
-            array_push($fnums, $fnum['fnum']);
+            $fnums[] = $fnum['fnum'];
         }
         foreach ($colsup as $col) {
             $col = explode('.', $col);

@@ -210,9 +210,9 @@ class EmundusControllerAdmission extends JControllerLegacy
 
 	public function savefilters()
 	{
-		$name         = $this->input->get('name', null, 'POST', 'none', 0);
+		$name         = $this->input->get('name', null, 'POST');
 		$user_id      = $this->user->id;
-		$itemid       = $this->input->get('Itemid', null, 'GET', 'none', 0);
+		$itemid       = $this->input->get('Itemid', null, 'GET');
 		$filt_params  = $this->session->get('filt_params');
 		$adv_params   = $this->session->get('adv_cols');
 		$constraints  = array('filter' => $filt_params, 'col' => $adv_params);
@@ -220,7 +220,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 		$constraints = json_encode($constraints);
 
 		if (empty($itemid))
-			$itemid = $this->input->get('Itemid', null, 'POST', 'none', 0);
+			$itemid = $this->input->get('Itemid', null, 'POST');
 
 		$time_date = (date('Y-m-d H:i:s'));
 
@@ -365,7 +365,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 		{
 			$m_files    = $this->getModel('Files');
 			$evalGroups = $m_files->getEvalGroups();
-			$actions    = $m_files->getAllActions('1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18');
+			$actions    = $m_files->getAllActions();
 			$response   = [
 				'status'       => true,
 				'code'         => 200,
@@ -953,7 +953,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 		$fnums = array();
 		foreach ($fnumsArray as $fnum)
 		{
-			array_push($fnums, $fnum['fnum']);
+			$fnums[] = $fnum['fnum'];
 		}
 
 		foreach ($colsup as $col)
@@ -1332,7 +1332,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 		$fid   = $this->input->getString('fabrik_id', null);
 		$value = $this->input->getString('value', null);
 
-		$m_admission = new EmundusModelAdmission();
+		$m_admission = $this->getModel('Admission');
 
 		// Check if fnum is found in DB table in order to determine if we do a create or update
 		$exists = $m_admission->getAdmissionFnum($fnum);
@@ -1362,6 +1362,6 @@ class EmundusControllerAdmission extends JControllerLegacy
 		}
 
 		echo json_encode($data);
-		JFactory::getApplication()->close();
+		$this->app->close();
 	}
 }

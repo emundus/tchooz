@@ -241,9 +241,9 @@ class EmundusHelperFilters {
 	}
 
 	public static function getElements() {
-		require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
-		require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
-		require_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$export_pdf = $eMConfig->get('export_pdf');

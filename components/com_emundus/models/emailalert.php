@@ -111,7 +111,7 @@ class EmundusModelEmailalert extends JModelList{
 		$cfromname = $conf->getValue('config.fromname');
 		$date = date('Y-m-d G:i:s');
 
-		require_once(JPATH_COMPONENT.DS.'models'.DS.'check.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'check.php');
 		$model = new EmundusModelCheck;
 
 		$insert = $this->getMailtosend();

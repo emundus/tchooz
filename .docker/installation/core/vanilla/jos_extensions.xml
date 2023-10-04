@@ -246,7 +246,7 @@
     <field name="protected">1</field>
     <field name="locked">1</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;com_languages&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;2006-04&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2006 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;4.0.0&quot;,&quot;description&quot;:&quot;COM_LANGUAGES_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Joomla\\Component\\Languages&quot;}</field>
-    <field name="params">{&quot;administrator&quot;:&quot;fr-FR&quot;,&quot;site&quot;:&quot;fr-FR&quot;}</field>
+    <field name="params">{&quot;administrator&quot;:&quot;fr-FR&quot;,&quot;site&quot;:&quot;en-GB&quot;}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
@@ -3722,7 +3722,7 @@
     <field name="protected">0</field>
     <field name="locked">1</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;plg_system_debug&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;2006-12&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2006 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;3.0.0&quot;,&quot;description&quot;:&quot;PLG_DEBUG_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Joomla\\Plugin\\System\\Debug&quot;,&quot;filename&quot;:&quot;debug&quot;}</field>
-    <field name="params">{&quot;profile&quot;:&quot;1&quot;,&quot;queries&quot;:&quot;1&quot;,&quot;memory&quot;:&quot;1&quot;,&quot;language_files&quot;:&quot;1&quot;,&quot;language_strings&quot;:&quot;1&quot;,&quot;strip-first&quot;:&quot;1&quot;,&quot;strip-prefix&quot;:&quot;&quot;,&quot;strip-suffix&quot;:&quot;&quot;}</field>
+    <field name="params">{&quot;refresh_assets&quot;:1,&quot;filter_groups&quot;:[7],&quot;memory&quot;:1,&quot;request&quot;:1,&quot;session&quot;:1,&quot;profile&quot;:1,&quot;queries&quot;:1,&quot;query_traces&quot;:1,&quot;query_profiles&quot;:0,&quot;query_explains&quot;:0,&quot;track_request_history&quot;:0,&quot;language_errorfiles&quot;:1,&quot;language_files&quot;:1,&quot;language_strings&quot;:1,&quot;strip-first&quot;:1,&quot;strip-prefix&quot;:&quot;&quot;,&quot;strip-suffix&quot;:&quot;&quot;,&quot;logs&quot;:&quot;1&quot;,&quot;log-deprecated-core&quot;:0}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
@@ -3827,7 +3827,7 @@
     <field name="changelogurl"></field>
     <field name="folder">system</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">1</field>
@@ -3849,7 +3849,7 @@
     <field name="changelogurl"></field>
     <field name="folder">system</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">1</field>
@@ -4162,7 +4162,7 @@
     <field name="protected">0</field>
     <field name="locked">1</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;plg_system_updatenotification&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;2015-05&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2015 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;3.5.0&quot;,&quot;description&quot;:&quot;PLG_SYSTEM_UPDATENOTIFICATION_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;updatenotification&quot;}</field>
-    <field name="params">{&quot;lastrun&quot;:1695733204}</field>
+    <field name="params">{&quot;lastrun&quot;:1696419536}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
@@ -7264,7 +7264,7 @@
     <field name="protected">0</field>
     <field name="locked">0</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;com_fabrik&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;August 2023&quot;,&quot;author&quot;:&quot;Henk van Klinken&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;&quot;,&quot;authorUrl&quot;:&quot;&quot;,&quot;version&quot;:&quot;4.0Epsilon&quot;,&quot;description&quot;:&quot;COM_FABRIK_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;fabrik&quot;}</field>
-    <field name="params">{}</field>
+    <field name="params">{&quot;fabrik_product_key&quot;:&quot;&quot;,&quot;enable_big_selects&quot;:&quot;0&quot;,&quot;disable_caching&quot;:&quot;1&quot;,&quot;google_api_key&quot;:&quot;&quot;,&quot;google_api_language&quot;:&quot;&quot;,&quot;google_buisness_client_id&quot;:&quot;&quot;,&quot;google_buisness_signature&quot;:&quot;&quot;,&quot;fabrik_salesforce_username&quot;:&quot;&quot;,&quot;fabrik_salesforce_password&quot;:&quot;&quot;,&quot;fabrik_salesforce_token&quot;:&quot;&quot;,&quot;unpublish_clones&quot;:&quot;0&quot;,&quot;allow_user_defines&quot;:&quot;0&quot;,&quot;fabrik_pdf_lib&quot;:&quot;dompdf&quot;,&quot;fabrik_truncate_length&quot;:&quot;&quot;,&quot;fabrik_private_key&quot;:&quot;&quot;,&quot;fabrik_public_key&quot;:&quot;&quot;,&quot;fbConf_alter_existing_db_cols&quot;:&quot;1&quot;,&quot;filter_build_method&quot;:&quot;1&quot;,&quot;filter_list_max&quot;:&quot;100&quot;,&quot;enable_single_sorting&quot;:&quot;0&quot;,&quot;user_elements_as_related_data&quot;:&quot;0&quot;,&quot;list_pdf&quot;:&quot;0&quot;,&quot;allow_pdf_localhost_view&quot;:&quot;0&quot;,&quot;allow_pdf_localhost_ip&quot;:&quot;&quot;,&quot;actionMethod&quot;:&quot;inline&quot;,&quot;csv_delimiter&quot;:&quot;&quot;,&quot;fabrik_check_custom_list_layout&quot;:&quot;0&quot;,&quot;int&quot;:&quot;field&quot;,&quot;decimal&quot;:&quot;field&quot;,&quot;tinyint&quot;:&quot;field&quot;,&quot;smallint&quot;:&quot;field&quot;,&quot;mediumint&quot;:&quot;field&quot;,&quot;bigint&quot;:&quot;field&quot;,&quot;varchar&quot;:&quot;field&quot;,&quot;text&quot;:&quot;textarea&quot;,&quot;tinytext&quot;:&quot;textarea&quot;,&quot;mediumtext&quot;:&quot;textarea&quot;,&quot;longtext&quot;:&quot;textarea&quot;,&quot;datetime&quot;:&quot;jdate&quot;,&quot;date&quot;:&quot;jdate&quot;,&quot;timestamp&quot;:&quot;jdate&quot;,&quot;time&quot;:&quot;field&quot;,&quot;format_labels&quot;:&quot;0&quot;,&quot;spoofcheck_on_formsubmission&quot;:&quot;1&quot;,&quot;fbConf_wysiwyg_label&quot;:&quot;0&quot;,&quot;form_print&quot;:&quot;0&quot;,&quot;form_email&quot;:&quot;0&quot;,&quot;form_pdf&quot;:&quot;0&quot;,&quot;error_icon&quot;:&quot;warning&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;advanced_behavior_options&quot;:&quot;{}&quot;,&quot;use_mediabox&quot;:&quot;1&quot;,&quot;mediabox_style&quot;:&quot;Dark&quot;,&quot;include_lightbox_js&quot;:&quot;1&quot;,&quot;tipfx&quot;:&quot;linear&quot;,&quot;tipfx_ease&quot;:&quot;easeIn&quot;,&quot;tipfx_duration&quot;:&quot;500&quot;,&quot;tipfx_distance&quot;:&quot;50&quot;,&quot;tipfx_fadein&quot;:&quot;0&quot;,&quot;autocomplete_min_trigger_chars&quot;:&quot;3&quot;,&quot;autocomplete_autoload_single&quot;:&quot;0&quot;,&quot;autocomplete_max_rows&quot;:&quot;10&quot;,&quot;requirejs_base_uri&quot;:&quot;&quot;,&quot;use_fabrikdebug&quot;:&quot;1&quot;,&quot;burst_js&quot;:&quot;0&quot;,&quot;pdf_debug&quot;:&quot;0&quot;,&quot;verify_peer&quot;:&quot;1&quot;,&quot;oai_repository_identifier&quot;:&quot;&quot;}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
     <field name="checked_out_time"></field>
@@ -7615,7 +7615,7 @@
     <field name="access">0</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;08 juin 2023&quot;,&quot;author&quot;:&quot;hikashop.com&quot;,&quot;copyright&quot;:&quot;(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;4.7.3&quot;,&quot;description&quot;:&quot;E-Commerce software built for simplicity and flexibility&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;29 septembre 2023&quot;,&quot;author&quot;:&quot;hikashop.com&quot;,&quot;copyright&quot;:&quot;(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.0&quot;,&quot;description&quot;:&quot;E-Commerce software built for simplicity and flexibility&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
@@ -13203,7 +13203,7 @@
     <field name="access">0</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;Mai 2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2013 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.2&quot;,&quot;description&quot;:&quot;fr-FR site language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;08-2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2013 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.4&quot;,&quot;description&quot;:&quot;fr-FR site language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
@@ -13225,7 +13225,7 @@
     <field name="access">0</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;Mai 2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2013 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.2&quot;,&quot;description&quot;:&quot;fr-FR Administrator language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;08-2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2013 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.4&quot;,&quot;description&quot;:&quot;fr-FR Administrator language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
@@ -13247,7 +13247,7 @@
     <field name="access">0</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;Mai 2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2020 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.2&quot;,&quot;description&quot;:&quot;fr-FR api language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;08-2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2020 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.4&quot;,&quot;description&quot;:&quot;fr-FR api language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>
@@ -13269,7 +13269,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR) Language pack&quot;,&quot;type&quot;:&quot;package&quot;,&quot;creationDate&quot;:&quot;Mai 2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2019 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.2.1&quot;,&quot;description&quot;:&quot;&lt;div style=\&quot;text-align: left;\&quot;&gt;\n&lt;h3&gt;Joomla! 4 Full French (fr-FR) Language Package - Version 4.3.2 v1&lt;\/h3&gt;\n&lt;h3&gt;Pack de langue Joomla! 4 fran\u00e7ais (fr-FR) complet - Version 4.3.2 v1&lt;\/h3&gt;\n&lt;p&gt;&lt;a href=\&quot;https:\/www.joomla.fr\&quot; target=\&quot;_blank\&quot;&gt;www.joomla.fr&lt;\/a&gt; - &lt;a href=\&quot;mailto:traduction@joomla.fr\&quot;&gt;traduction@joomla.fr&lt;\/a&gt;&lt;\/p&gt;\n&lt;\/div&gt;&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pkg_fr-FR&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR) Language pack&quot;,&quot;type&quot;:&quot;package&quot;,&quot;creationDate&quot;:&quot;08-2023&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2019 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;4.3.4.1&quot;,&quot;description&quot;:&quot;&lt;div style=\&quot;text-align: left;\&quot;&gt;\n&lt;h3&gt;Joomla! 4 Full French (fr-FR) Language Package - Version 4.3.4 v1&lt;\/h3&gt;\n&lt;h3&gt;Pack de langue Joomla! 4 fran\u00e7ais (fr-FR) complet - Version 4.3.4 v1&lt;\/h3&gt;\n&lt;p&gt;&lt;a href=\&quot;https:\/www.joomla.fr\&quot; target=\&quot;_blank\&quot;&gt;www.joomla.fr&lt;\/a&gt; - &lt;a href=\&quot;mailto:traduction@joomla.fr\&quot;&gt;traduction@joomla.fr&lt;\/a&gt;&lt;\/p&gt;\n&lt;\/div&gt;&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pkg_fr-FR&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out"></field>

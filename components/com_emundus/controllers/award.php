@@ -30,12 +30,9 @@ use Joomla\CMS\Factory;
  */
 class EmundusControllerAward extends JControllerLegacy
 {
-	private $_user;
 
 	public function __construct($config = array())
 	{
-		$this->_user = Factory::getUser();
-
 		parent::__construct($config);
 	}
 

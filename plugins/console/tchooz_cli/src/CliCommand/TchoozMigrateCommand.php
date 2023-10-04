@@ -60,6 +60,7 @@ class TchoozMigrateCommand extends AbstractCommand
 
 		// CONFIG
 		'getCfg' => 'get',
+		'JFactory::getConfig()' => 'JFactory::getApplication()->get(',
 	];
 
     /**

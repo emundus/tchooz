@@ -30,7 +30,7 @@ class EmundusViewFiles extends JViewLegacy
 	{
 		$menu = JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
-		$menu_params = $menu->getParams(@$current_menu->id);
+		$menu_params = $menu->getParams($current_menu->id);
 		$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
 
 		parent::__construct($config);
@@ -44,7 +44,7 @@ class EmundusViewFiles extends JViewLegacy
 		}
 
 		$m_files = new EmundusModelFiles();
-
+		
     	// translation to load in javacript file ; /media/com_emundus/em_files.js
     	// put it in com_emundus/emundus.php
 		//JHTML::stylesheet("media/jui/css/chosen.min.css");

@@ -272,7 +272,7 @@ class EmundusHelperList{
     // @param   boolean checklevel : if true will check J! Access Level of logged user
     // @return  array Menu links of all forms needed to apply
     static function getFormsListByProfileID($profile_id, $checklevel=true){
-        require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
         return EmundusHelperMenu::buildMenuQuery($profile_id, null, $checklevel);
     }
 

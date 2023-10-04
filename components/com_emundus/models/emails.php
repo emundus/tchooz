@@ -438,7 +438,7 @@ class EmundusModelEmails extends JModelList {
      *  @since version v6
      */
     public function getFabrikElementValues($fnum, $element_ids) {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
         $db = JFactory::getDBO();
 
         $element_details = @EmundusHelperList::getElementsDetailsByID('"'.implode('","', $element_ids).'"');
@@ -972,7 +972,7 @@ class EmundusModelEmails extends JModelList {
 
         } elseif ($type == 'expert') {
 
-            require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+            require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
             include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
             $eMConfig   = JComponentHelper::getParams('com_emundus');
             $formid     = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328}'));

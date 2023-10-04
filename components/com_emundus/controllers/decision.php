@@ -38,7 +38,6 @@ class EmundusControllerDecision extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/decision.php');
 
 		$this->app   = Factory::getApplication();
 
@@ -63,7 +62,6 @@ class EmundusControllerDecision extends JControllerLegacy
 		parent::display();
 	}
 
-////// EMAIL APPLICANT WITH CUSTOM MESSAGE///////////////////
 	public function applicantEmail()
 	{
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
@@ -197,10 +195,10 @@ class EmundusControllerDecision extends JControllerLegacy
 
 	public function savefilters()
 	{
-		$name         = $this->input->get('name', null, 'POST', 'none', 0);
+		$name         = $this->input->get('name', null, 'POST');
 		$current_user = JFactory::getUser();
 		$user_id      = $current_user->id;
-		$itemid       = $this->input->get('Itemid', null, 'GET', 'none', 0);
+		$itemid       = $this->input->get('Itemid', null, 'GET');
 		$filt_params  = JFactory::getSession()->get('filt_params');
 		$adv_params   = JFactory::getSession()->get('adv_cols');
 		$constraints  = array('filter' => $filt_params, 'col' => $adv_params);
@@ -208,7 +206,7 @@ class EmundusControllerDecision extends JControllerLegacy
 		$constraints = json_encode($constraints);
 
 		if (empty($itemid))
-			$itemid = $this->input->get('Itemid', null, 'POST', 'none', 0);
+			$itemid = $this->input->get('Itemid', null, 'POST');
 
 		$time_date = (date('Y-m-d H:i:s'));
 
@@ -852,7 +850,7 @@ class EmundusControllerDecision extends JControllerLegacy
 		// On met a jour la liste des fnums traités
 		$fnums = array();
 		foreach ($fnumsArray as $fnum) {
-			array_push($fnums, $fnum['fnum']);
+			$fnums[] = $fnum['fnum'];
 		}
 		foreach ($colsup as $col) {
 			$col = explode('.', $col);

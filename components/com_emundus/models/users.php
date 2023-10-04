@@ -725,7 +725,7 @@ class EmundusModelUsers extends JModelList {
      */
     public function getForm($data = array(), $loadData = true) {
         // Get the form.
-        $form = JForm::getInstance('com_emundus.registration', JPATH_COMPONENT.DS.'models'.DS.'forms'.DS.'registration.xml', array('control' => 'jform', 'load_data' => $loadData));
+        $form = JForm::getInstance('com_emundus.registration', JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'forms'.DS.'registration.xml', array('control' => 'jform', 'load_data' => $loadData));
 
         if (empty($form)) {
             return false;

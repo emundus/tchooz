@@ -11,9 +11,9 @@ JHTML::stylesheet( 'templates/system/csssystem.css/' );
 // AJAX upload
 JHTML::script('media/com_emundus/js/webtoolkit.aim.js');
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'emails.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
 
 $current_user = JFactory::getUser();
 if (!EmundusHelperAccess::isCoordinator($current_user->id)) {

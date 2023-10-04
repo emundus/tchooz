@@ -55,7 +55,7 @@ class EmundusController extends JControllerLegacy {
     }
 
     function clear() {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
         EmundusHelperFilters::clear();
     }
 
@@ -621,8 +621,8 @@ class EmundusController extends JControllerLegacy {
     */
     function openfile() {
 
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
-        require_once(JPATH_COMPONENT.DS.'models'.DS.'application.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
         $app = Factory::getApplication();
 		if(version_compare(JVERSION, '4.0', '>'))
@@ -641,7 +641,7 @@ class EmundusController extends JControllerLegacy {
         if (!empty($redirect)) {
             $redirect = base64_decode($redirect);
         }
-
+		
         if (empty($fnum)) {
             $app->redirect($redirect);
         }
@@ -650,7 +650,7 @@ class EmundusController extends JControllerLegacy {
 
         $m_profile = new EmundusModelProfile;
         $infos = $m_profile->getFnumDetails($fnum);
-		
+
         if ($aid->id != $infos['applicant_id']) {
             return;
         }
@@ -790,11 +790,11 @@ class EmundusController extends JControllerLegacy {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $copy_application_form = $eMConfig->get('copy_application_form', 0);
         $can_submit_encrypted = $eMConfig->get('can_submit_encrypted', 1);
-        require_once (JPATH_COMPONENT.'/helpers/checklist.php');
-        require_once (JPATH_COMPONENT.'/helpers/date.php');
-        require_once (JPATH_COMPONENT.'/helpers/export.php');
-        require_once (JPATH_COMPONENT.'/models/checklist.php');
-        require_once (JPATH_COMPONENT.'/models/application.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.'/helpers/checklist.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.'/helpers/date.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.'/helpers/export.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.'/models/checklist.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.'/models/application.php');
         $h_checklist = new EmundusHelperChecklist;
         $h_date = new EmundusHelperDate;
         $m_application = new EmundusModelApplication;

@@ -6,8 +6,6 @@
  * @license         GNU General Public License
  */
 
-use \setasign\Fpdi\Fpdi;
-
 // ensure this file is being included by a parent file
 defined('_JEXEC') or die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
@@ -64,9 +62,9 @@ class EmundusControllerApplication extends JControllerLegacy
 		}
 
 		$attachments = $this->input->get('attachments', null, 'POST', 'array', 0);
-		$user_id     = $this->input->get('sid', null, 'POST', 'none', 0);
-		$view        = $this->input->get('view', null, 'POST', 'none', 0);
-		$tmpl        = $this->input->get('tmpl', null, 'POST', 'none', 0);
+		$user_id     = $this->input->get('sid', null, 'POST');
+		$view        = $this->input->get('view', null, 'POST');
+		$tmpl        = $this->input->get('tmpl', null, 'POST');
 
 		$url = !empty($tmpl) ? 'index.php?option=com_emundus&view=' . $view . '&sid=' . $user_id . '&tmpl=' . $tmpl . '#attachments' : 'index.php?option=com_emundus&view=' . $view . '&sid=' . $user_id . '&tmpl=component#attachments';
 		ArrayHelper::toInteger($attachments, 0);
@@ -121,7 +119,7 @@ class EmundusControllerApplication extends JControllerLegacy
 			die(JText::_("ACCESS_DENIED"));
 		}
 
-		$id = $this->input->get('id', null, 'GET', 'none', 0);
+		$id = $this->input->get('id', null, 'GET');
 
 		$m_application = $this->getModel('Application');
 
@@ -160,12 +158,12 @@ class EmundusControllerApplication extends JControllerLegacy
 			die(JText::_("ACCESS_DENIED"));
 		}
 
-		$aid            = $this->input->get('attachment_id', null, 'POST', 'none', 0);
-		$uid            = $this->input->get('uid', null, 'POST', 'none', 0);
-		$filename       = $this->input->get('filename', null, 'POST', 'none', 0);
-		$campaign_id    = $this->input->get('campaign_id', null, 'POST', 'none', 0);
-		$can_be_viewed  = $this->input->get('can_be_viewed', null, 'POST', 'none', 0);
-		$can_be_deleted = $this->input->get('can_be_deleted', null, 'POST', 'none', 0);
+		$aid            = $this->input->get('attachment_id', null, 'POST');
+		$uid            = $this->input->get('uid', null, 'POST');
+		$filename       = $this->input->get('filename', null, 'POST');
+		$campaign_id    = $this->input->get('campaign_id', null, 'POST');
+		$can_be_viewed  = $this->input->get('can_be_viewed', null, 'POST');
+		$can_be_deleted = $this->input->get('can_be_deleted', null, 'POST');
 
 		$targetFolder = EMUNDUS_PATH_ABS . $uid;
 
@@ -309,7 +307,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
 	public function deletecomment()
 	{
-		$comment_id = $this->input->get('comment_id', null, 'GET', 'none', 0);
+		$comment_id = $this->input->get('comment_id', null, 'GET');
 
 		$m_application = $this->getModel('Application');
 
@@ -388,9 +386,9 @@ class EmundusControllerApplication extends JControllerLegacy
 			die(JText::_("ACCESS_DENIED"));
 		}
 
-		$id    = $this->input->get('id', null, 'GET', 'none', 0);
-		$sid   = $this->input->get('sid', null, 'GET', 'none', 0);
-		$table = $this->input->get('t', null, 'GET', 'none', 0);
+		$id    = $this->input->get('id', null, 'GET');
+		$sid   = $this->input->get('sid', null, 'GET');
+		$table = $this->input->get('t', null, 'GET');
 
 		$m_application = $this->getModel('Application');
 		$result        = $m_application->deleteData($id, $table);
@@ -1034,7 +1032,7 @@ class EmundusControllerApplication extends JControllerLegacy
 				if (!empty($action) && !empty($fnum)) {
 					require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
 					$h_files            = new EmundusHelperFiles;
-					$fnums              = $h_files->getApplicantFnums($user_id);
+					$fnums              = $h_files->getApplicantFnums($this->_user->id);
 					$current_user_fnums = array_keys($fnums);
 
 					if (in_array($fnum, $current_user_fnums)) {

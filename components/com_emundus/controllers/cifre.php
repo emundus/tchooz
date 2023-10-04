@@ -581,7 +581,7 @@ class EmundusControllerCifre extends JControllerLegacy
 		// Remove the contact request from the DB.
 		if ($this->m_cifre->deleteContactRequest($link->user_to, $link->user_from, $link->fnum_to)) {
 
-			$m_messages = new EmundusModelMessages();
+			$m_messages = $this->getModel('Messages');
 
 			// Either we are user_from: send to fnum_to about fnum_to
 			// Or we are user_to and fnum_from exists: send to fnum_from about fnum_from
@@ -613,8 +613,8 @@ class EmundusControllerCifre extends JControllerLegacy
 				$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
 
 				// We cannot use the usual mailing function in c_messages because the recipient is not an fnum.
-				require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
-				require_once(JPATH_COMPONENT . DS . 'models' . DS . 'emails.php');
+				require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+				require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
 
 				$m_emails = $this->getModel('Emails');
 

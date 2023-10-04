@@ -7,8 +7,8 @@ JHTML::stylesheet( 'media/com_emundus/css/emundus.css' );
 JHTML::stylesheet( 'templates/system/css/general.css' );
 JHTML::stylesheet( 'templates/system/css/system.css' );
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
 
 $current_user = JFactory::getUser();
 

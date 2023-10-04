@@ -12,11 +12,39 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * Ametys controller class.
  */
 class EmundusControllerAmetys extends EmundusController
 {
+	protected $app;
+
+	private $_user;
+
+	public function __construct($config = array())
+	{
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
+
+		$this->app = Factory::getApplication();
+		if (version_compare(JVERSION, '4.0', '>'))
+		{
+			$this->_user = $this->app->getIdentity();
+		}
+		else
+		{
+			$this->_user = Factory::getUser();
+		}
+
+		parent::__construct($config);
+	}
 
 	/**
 	 * Method to display tools.
@@ -59,11 +87,11 @@ class EmundusControllerAmetys extends EmundusController
 	public function addcampaigns()
 	{
 		$data                      = array();
-		$data['start_date']        = $this->input->get('start_date', null, 'POST', 'none', 0);
-		$data['end_date']          = $this->input->get('end_date', null, 'POST', 'none', 0);
-		$data['profile_id']        = $this->input->get('profile_id', null, 'POST', 'none', 0);
-		$data['year']              = $this->input->get('year', null, 'POST', 'none', 0);
-		$data['short_description'] = $this->input->get('short_description', null, 'POST', 'none', 0);
+		$data['start_date']        = $this->input->get('start_date', null, 'POST');
+		$data['end_date']          = $this->input->get('end_date', null, 'POST');
+		$data['profile_id']        = $this->input->get('profile_id', null, 'POST');
+		$data['year']              = $this->input->get('year', null, 'POST');
+		$data['short_description'] = $this->input->get('short_description', null, 'POST');
 
 		$m_campaign  = $this->getModel('Campaign');
 		$m_programme = $this->getModel('Programme');

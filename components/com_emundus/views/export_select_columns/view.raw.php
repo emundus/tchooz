@@ -25,9 +25,9 @@ class EmundusViewExport_select_columns extends JViewLegacy {
 	var $_db = null;
 
 	function __construct($config = array()){
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'programme.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
+		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
 
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
@@ -37,9 +37,9 @@ class EmundusViewExport_select_columns extends JViewLegacy {
 
     function display($tpl = null) {
         $m_program  = new EmundusModelProgramme();
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'decision.php');
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'decision.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
 
 
         $jinput = JFactory::getApplication()->input;

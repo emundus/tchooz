@@ -28,8 +28,6 @@ class EmundusControllerCampaign extends JControllerLegacy
 	protected $app;
 
 	private $_user;
-	private $_em_user;
-	private $_db;
 	private $m_campaign;
 
 	function __construct($config = array())
@@ -42,16 +40,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (version_compare(JVERSION, '4.0', '>')) {
 			$this->_user = $this->app->getIdentity();
-			$this->_db   = Factory::getContainer()->get('DatabaseDriver');
-			$session     = $this->app->getSession();
 		}
 		else {
 			$this->_user = Factory::getUser();
-			$this->_db   = Factory::getDBO();
-			$session     = Factory::getSession();
 		}
-
-		$this->_em_user = $session->get('emundusUser');
 
 		$this->m_campaign = $this->getModel('Campaign');
 	}
@@ -88,11 +80,11 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$data                      = array();
-			$data['start_date']        = $this->input->get('start_date', null, 'POST', 'none', 0);
-			$data['end_date']          = $this->input->get('end_date', null, 'POST', 'none', 0);
-			$data['profile_id']        = $this->input->get('profile_id', null, 'POST', 'none', 0);
-			$data['year']              = $this->input->get('year', null, 'POST', 'none', 0);
-			$data['short_description'] = $this->input->get('short_description', null, 'POST', 'none', 0);
+			$data['start_date']        = $this->input->get('start_date', null, 'POST');
+			$data['end_date']          = $this->input->get('end_date', null, 'POST');
+			$data['profile_id']        = $this->input->get('profile_id', null, 'POST');
+			$data['year']              = $this->input->get('year', null, 'POST');
+			$data['short_description'] = $this->input->get('short_description', null, 'POST');
 
 			$m_programme = $this->getModel('Programme');
 			$programmes  = $m_programme->getProgrammes(1);

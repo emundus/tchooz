@@ -66,7 +66,7 @@
     <field name="template_style_id">0</field>
     <field name="params"></field>
     <field name="lft">0</field>
-    <field name="rgt">319</field>
+    <field name="rgt">375</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4914,6 +4914,258 @@
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">295</field>
+    <field name="menutype">main</field>
+    <field name="title">HikaShop</field>
+    <field name="alias">hikashop</field>
+    <field name="note"></field>
+    <field name="path">hikashop</field>
+    <field name="link">index.php?option=com_hikashop</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">348</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../media/com_hikashop/images/icons/icon-16-hikashop.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">319</field>
+    <field name="rgt">336</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">296</field>
+    <field name="menutype">main</field>
+    <field name="title">Products</field>
+    <field name="alias">Products</field>
+    <field name="note"></field>
+    <field name="path"></field>
+    <field name="link">index.php?option=com_hikashop&amp;ctrl=product</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">295</field>
+    <field name="level">2</field>
+    <field name="component_id">348</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">0</field>
+    <field name="img">./templates/bluestork/images/menu/icon-16-article.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params"></field>
+    <field name="lft">320</field>
+    <field name="rgt">321</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">297</field>
+    <field name="menutype">main</field>
+    <field name="title">Categories</field>
+    <field name="alias">Categories</field>
+    <field name="note"></field>
+    <field name="path"></field>
+    <field name="link">index.php?option=com_hikashop&amp;ctrl=category&amp;filter_id=product</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">295</field>
+    <field name="level">2</field>
+    <field name="component_id">348</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">0</field>
+    <field name="img">./templates/bluestork/images/menu/icon-16-category.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params"></field>
+    <field name="lft">322</field>
+    <field name="rgt">323</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">298</field>
+    <field name="menutype">main</field>
+    <field name="title">Users</field>
+    <field name="alias">Users</field>
+    <field name="note"></field>
+    <field name="path"></field>
+    <field name="link">index.php?option=com_hikashop&amp;ctrl=user&amp;filter_partner=0</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">295</field>
+    <field name="level">2</field>
+    <field name="component_id">348</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">0</field>
+    <field name="img">./templates/bluestork/images/menu/icon-16-user.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params"></field>
+    <field name="lft">324</field>
+    <field name="rgt">325</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">299</field>
+    <field name="menutype">main</field>
+    <field name="title">Orders</field>
+    <field name="alias">Orders</field>
+    <field name="note"></field>
+    <field name="path"></field>
+    <field name="link">index.php?option=com_hikashop&amp;ctrl=order&amp;order_type=sale&amp;filter_partner=0</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">295</field>
+    <field name="level">2</field>
+    <field name="component_id">348</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">0</field>
+    <field name="img">./templates/bluestork/images/menu/icon-16-content.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params"></field>
+    <field name="lft">326</field>
+    <field name="rgt">327</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">300</field>
+    <field name="menutype">main</field>
+    <field name="title">Configuration</field>
+    <field name="alias">Configuration</field>
+    <field name="note"></field>
+    <field name="path"></field>
+    <field name="link">index.php?option=com_hikashop&amp;ctrl=config</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">295</field>
+    <field name="level">2</field>
+    <field name="component_id">348</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">0</field>
+    <field name="img">./templates/bluestork/images/menu/icon-16-config.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params"></field>
+    <field name="lft">328</field>
+    <field name="rgt">329</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">301</field>
+    <field name="menutype">main</field>
+    <field name="title">Discounts</field>
+    <field name="alias">Discounts</field>
+    <field name="note"></field>
+    <field name="path"></field>
+    <field name="link">index.php?option=com_hikashop&amp;ctrl=discount</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">295</field>
+    <field name="level">2</field>
+    <field name="component_id">348</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">0</field>
+    <field name="img">./templates/bluestork/images/menu/icon-16-default.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params"></field>
+    <field name="lft">330</field>
+    <field name="rgt">331</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">302</field>
+    <field name="menutype">main</field>
+    <field name="title">Help</field>
+    <field name="alias">Help</field>
+    <field name="note"></field>
+    <field name="path"></field>
+    <field name="link">index.php?option=com_hikashop&amp;ctrl=documentation</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">295</field>
+    <field name="level">2</field>
+    <field name="component_id">348</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">0</field>
+    <field name="img">./templates/bluestork/images/menu/icon-16-help.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params"></field>
+    <field name="lft">332</field>
+    <field name="rgt">333</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">1</field>
+    <field name="publish_up"></field>
+    <field name="publish_down"></field>
+   </row>
+   <row>
+    <field name="id">303</field>
+    <field name="menutype">main</field>
+    <field name="title">Update_About</field>
+    <field name="alias">Update / About</field>
+    <field name="note"></field>
+    <field name="path"></field>
+    <field name="link">index.php?option=com_hikashop&amp;ctrl=update</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">295</field>
+    <field name="level">2</field>
+    <field name="component_id">348</field>
+    <field name="checked_out"></field>
+    <field name="checked_out_time"></field>
+    <field name="browserNav">0</field>
+    <field name="access">0</field>
+    <field name="img">./templates/bluestork/images/menu/icon-16-help-jrd.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params"></field>
+    <field name="lft">334</field>
+    <field name="rgt">335</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">1</field>
     <field name="publish_up"></field>
     <field name="publish_down"></field>
    </row>

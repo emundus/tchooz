@@ -4,7 +4,7 @@ defined('JPATH_BASE') or die;
 
 $input = JFactory::getApplication()->input;
 /*jimport('joomla.form.form');
-JForm::addFormPath(JPATH_COMPONENT . '/models/forms');
+JForm::addFormPath(JPATH_BASE.DS.'components'.DS.'com_emundus' . '/models/forms');
 $form = JForm::getInstance('com_emundus.job', 'job');*/
 
 $filters = true;

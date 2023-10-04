@@ -66,11 +66,11 @@ class EmundusViewFiles extends JViewLegacy
 
 	public function __construct($config = array())
 	{
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'emails.php');
-		require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'export.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'users.php');
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'evaluation.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'list.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'export.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 

@@ -633,9 +633,9 @@ class EmundusModelTranslations extends JModelList
 					$this->_db->quote($reference_field),
 					1,
 					$user->id,
-					time(),
+					$this->_db->quote(date('Y-m-d H:i:s')),
 					$user->id,
-					time()
+					$this->_db->quote(date('Y-m-d H:i:s'))
 				];
 
 				$query->insert($this->_db->quoteName('#__emundus_setup_languages'))

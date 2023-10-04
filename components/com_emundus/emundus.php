@@ -15,13 +15,13 @@ use Joomla\CMS\Language\Text;
 $app = Factory::getApplication();
 
 // Require the base controller
-require_once( JPATH_COMPONENT.DS.'controller.php' );
+require_once( JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controller.php' );
 
 // Helpers
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'javascript.php');
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'javascript.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
 
 // LOGGER
 jimport('joomla.log.log');
@@ -642,7 +642,7 @@ Text::script('COM_EMUNDUS_MAIL_GB_BUTTON');
 
 // Require specific controller if requested
 if ($controller = $app->input->get('controller', '', 'WORD')) {
-    $path = JPATH_COMPONENT.DS.'controllers'.DS.$controller.'.php';
+    $path = JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.$controller.'.php';
     if (file_exists($path)) {
         require_once $path;
     } else {
@@ -662,7 +662,7 @@ $task = $app->input->get('task', '', 'CMD');
 $format = $app->input->get('format', '', 'CMD');
 $token = $app->input->get('token', '', 'ALNUM');
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'cache.php');
+require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
 if(version_compare(JVERSION, '4.0', '>'))
@@ -770,7 +770,6 @@ if(version_compare(JVERSION, '4.0', '>'))
 if ($task == 'getproductpdf') {
     $controller->execute($task);
 }
-
 if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis'))
 {
     $controller->execute($task);

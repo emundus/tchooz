@@ -39,10 +39,10 @@ class EmundusControllerFormations extends JControllerLegacy {
 
     public function deletecompany() {
 
-        $jinput = JFactory::getApplication()->input;
-        $id = $jinput->post->get('id', null);
+        
+        $id = $this->input->post->get('id', null);
 
-        $m_formations = new EmundusModelFormations();
+        $m_formations = $this->getModel('Formations');
 
         $isHR = $m_formations->checkHR($id, $this->user->id);
         if (!empty($isHR)) {
@@ -58,11 +58,11 @@ class EmundusControllerFormations extends JControllerLegacy {
 
 
     public function deleteassociate() {
-        $jinput = JFactory::getApplication()->input;
-        $id = $jinput->post->get('id', null);
-        $cid = $jinput->post->get('cid', null);
+        
+        $id = $this->input->post->get('id', null);
+        $cid = $this->input->post->get('cid', null);
 
-        $m_formations = new EmundusModelFormations();
+        $m_formations = $this->getModel('Formations');
 
         echo json_encode((object)[
             'status' => $m_formations->deleteAssociate($id, $cid, $this->user->id)
