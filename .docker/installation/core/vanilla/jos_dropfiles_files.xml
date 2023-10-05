@@ -27,5 +27,55 @@
    <key Table="#__dropfiles_files" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__dropfiles_files" Non_unique="1" Key_name="id_gallery" Seq_in_index="1" Column_name="catid" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
+  <table_data name="#__dropfiles_files">
+   <row>
+    <field name="id">1</field>
+    <field name="catid">11</field>
+    <field name="file">43094.pdf</field>
+    <field name="state">1</field>
+    <field name="ordering">1</field>
+    <field name="title">sample</field>
+    <field name="description"></field>
+    <field name="ext">pdf</field>
+    <field name="remoteurl"></field>
+    <field name="size">3028</field>
+    <field name="hits">0</field>
+    <field name="version"></field>
+    <field name="file_multi_category"></field>
+    <field name="canview">0</field>
+    <field name="created_time">2023-10-05 09:30:54</field>
+    <field name="modified_time">2023-10-05 09:30:54</field>
+    <field name="publish">2023-10-05 09:30:54</field>
+    <field name="publish_down">0000-00-00 00:00:00</field>
+    <field name="author">2</field>
+    <field name="language"></field>
+    <field name="file_tags"></field>
+    <field name="custom_icon"></field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="catid">11</field>
+    <field name="file">20811.docx</field>
+    <field name="state">1</field>
+    <field name="ordering">2</field>
+    <field name="title">courrier</field>
+    <field name="description"></field>
+    <field name="ext">docx</field>
+    <field name="remoteurl"></field>
+    <field name="size">4871</field>
+    <field name="hits">0</field>
+    <field name="version"></field>
+    <field name="file_multi_category"></field>
+    <field name="canview">0</field>
+    <field name="created_time">2023-10-05 09:31:00</field>
+    <field name="modified_time">2023-10-05 09:31:00</field>
+    <field name="publish">2023-10-05 09:31:00</field>
+    <field name="publish_down">0000-00-00 00:00:00</field>
+    <field name="author">2</field>
+    <field name="language"></field>
+    <field name="file_tags"></field>
+    <field name="custom_icon"></field>
+   </row>
+  </table_data>
  </database>
 </mysqldump>

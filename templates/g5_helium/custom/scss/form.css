@@ -576,6 +576,10 @@
       }
     }
 
+    select[size] {
+      height: var(--em-form-height) !important;
+    }
+
     /** RADIO **/
     .plg-radiobutton {
       .fabrikSubElementContainer {
@@ -802,6 +806,24 @@
         background-color: var(--em-form-bgc-focus);
         border-top-left-radius: unset;
         border-bottom-left-radius: unset;
+      }
+    }
+
+    /** BIRTHDAY **/
+    .plg-birthday {
+      .fabrikElement {
+        .fabrikSubElementContainer {
+          table {
+            border: unset;
+            width: auto;
+            tbody td {
+              width: auto;
+              select {
+                min-width: 85px;
+              }
+            }
+          }
+        }
       }
     }
 
@@ -1170,6 +1192,23 @@
 
   .chzn-container-multi:not(.chzn-container-active) .chzn-drop {
     display: none;
+  }
+
+  /** ATTAHCMENTS **/
+  .em-attachmentList {
+    .em-fieldset-attachment-table {
+      border: unset;
+
+      .em-attachment-dropzone {
+        .row > * {
+          padding: 0;
+        }
+
+        .dz-default.dz-message {
+          margin-top: var(--em-spacing-3);
+        }
+      }
+    }
   }
 }
 

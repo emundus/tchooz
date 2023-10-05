@@ -2941,16 +2941,16 @@
 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 $m_campaign = new EmundusModelCampaign();
 
-$user = JFactory::getUser();
+$user = JFactory::getApplication()-&gt;getIdentity();
 
-if($app-&gt;input-&gt;get('cid', '', 'UINT') != ''){
+if($app-&gt;getInput()-&gt;get('cid', '', 'UINT') != ''){
   $allowed_campaigns = $m_campaign-&gt;getAllowedCampaign($user-&gt;id);
   
-  if (!in_array($app-&gt;input-&gt;get('cid', '', 'UINT'), $allowed_campaigns)) {
+  if (!in_array($app-&gt;getInput()-&gt;get('cid', '', 'UINT'), $allowed_campaigns)) {
       $app-&gt;redirect('index.php', JText::_('USER_HAS_FILE_FOR_CAMPAIGN'));
   }
   
-  return $app-&gt;input-&gt;get('cid', '', 'UINT');
+  return $app-&gt;getInput()-&gt;get('cid', '', 'UINT');
 }</field>
     <field name="hidden">0</field>
     <field name="eval">1</field>
@@ -3447,7 +3447,7 @@ if($app-&gt;input-&gt;get('cid', '', 'UINT') != ''){
     <field name="modified_by">62</field>
     <field name="width">3</field>
     <field name="height">6</field>
-    <field name="default">$db = JFactory::getDBO();
+    <field name="default">$db = JFactory::getContainer()-&gt;get('DatabaseDriver');
 $query = &quot;select count(id) as cpt FROM jos_emundus_setup_programmes WHERE published=1&quot;;
 $db-&gt;setQuery($query);
 return $db-&gt;loadResult()+1;</field>
@@ -3791,7 +3791,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="modified_by">63</field>
     <field name="width">30</field>
     <field name="height">6</field>
-    <field name="default">return JRequest::getVar('email', null,'GET');</field>
+    <field name="default">return JFactory::getApplication()-&gt;getInput()-&gt;get('email', null,'GET');</field>
     <field name="hidden">1</field>
     <field name="eval">1</field>
     <field name="ordering">5</field>
@@ -4256,7 +4256,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="modified_by">62</field>
     <field name="width">30</field>
     <field name="height">0</field>
-    <field name="default">$user = JFactory::getUser();
+    <field name="default">$user = JFactory::getApplication()-&gt;getIdentity();
 $campaign_id = '{jos_emundus_campaign_candidature___campaign_id_raw}';
 return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user-&gt;id, 7, '0', STR_PAD_LEFT);</field>
     <field name="hidden">1</field>
@@ -4376,16 +4376,16 @@ return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user-
     <field name="group_id">175</field>
     <field name="plugin">field</field>
     <field name="label">STATUS</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2023-10-05 13:41:49</field>
     <field name="created">2014-09-08 11:55:48</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
-    <field name="modified_by">62</field>
+    <field name="modified">2023-10-05 13:40:09</field>
+    <field name="modified_by">1</field>
     <field name="width">20</field>
     <field name="height">0</field>
-    <field name="default"></field>
+    <field name="default">0</field>
     <field name="hidden">1</field>
     <field name="eval">0</field>
     <field name="ordering">8</field>
@@ -4399,7 +4399,7 @@ return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user-
     <field name="access">6</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;6&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_fake_key&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tipsoverelement&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;8&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[],&quot;join_val_column_concat&quot;:null,&quot;inc_in_search_all&quot;:0}</field>
+    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;col-sm-6&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;6&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;col-sm-6&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;8&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
    </row>
    <row>
     <field name="id">2755</field>
@@ -5532,7 +5532,7 @@ return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user-
     <field name="modified_by">62</field>
     <field name="width">28</field>
     <field name="height">6</field>
-    <field name="default">$user=JFactory::getSession()-&gt;get('emundusUser');
+    <field name="default">$user=JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');
 return $user-&gt;fnum;</field>
     <field name="hidden">1</field>
     <field name="eval">1</field>
@@ -5657,7 +5657,7 @@ return $user-&gt;fnum;</field>
     <field name="modified_by">62</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default">$user = JFactory::getSession()-&gt;get('emundusUser');
+    <field name="default">$user = JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');
 return $user-&gt;fnum;</field>
     <field name="hidden">1</field>
     <field name="eval">1</field>
@@ -5782,7 +5782,7 @@ return $user-&gt;fnum;</field>
     <field name="modified_by">95</field>
     <field name="width">44</field>
     <field name="height">0</field>
-    <field name="default">$user = JFactory::getSession()-&gt;get('emundusUser');
+    <field name="default">$user = JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');
 return $user-&gt;fnum;</field>
     <field name="hidden">1</field>
     <field name="eval">1</field>
@@ -5921,7 +5921,7 @@ return $user-&gt;fnum;</field>
     <field name="access">1</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;3&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;input-xlarge&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;11&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;The recommendation letter will be sent to this address.&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;bottom&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;isemail-message&quot;:[&quot;Please check email&quot;,&quot;&quot;],&quot;isemail-validation_condition&quot;:[&quot;&quot;,&quot;&quot;],&quot;isemail-allow_empty&quot;:[&quot;0&quot;,&quot;&quot;],&quot;isemail-check_mx&quot;:[&quot;1&quot;,&quot;&quot;],&quot;tip_text&quot;:[&quot;&quot;,&quot;&quot;],&quot;icon&quot;:[&quot;&quot;,&quot;&quot;],&quot;php-message&quot;:[&quot;&quot;,&quot;Not your own E-mail please&quot;],&quot;php-validation_condition&quot;:[&quot;&quot;,&quot;&quot;],&quot;php-code&quot;:[&quot;&quot;,&quot;$user=JFactory::getSession()-&gt;get('emundusUser');\r\nreturn $user-&gt;email != \&quot;{jos_emundus_references___Email_1}\&quot;;&quot;],&quot;php-match&quot;:[&quot;&quot;,&quot;1&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;isemail&quot;,&quot;php&quot;],&quot;plugin_published&quot;:[&quot;1&quot;,&quot;1&quot;],&quot;validate_in&quot;:[&quot;both&quot;,&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;,&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;0&quot;,&quot;1&quot;],&quot;must_validate&quot;:[&quot;1&quot;,&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;,&quot;1&quot;]}}</field>
+    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;3&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;input-xlarge&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;11&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;The recommendation letter will be sent to this address.&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;bottom&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;isemail-message&quot;:[&quot;Please check email&quot;,&quot;&quot;],&quot;isemail-validation_condition&quot;:[&quot;&quot;,&quot;&quot;],&quot;isemail-allow_empty&quot;:[&quot;0&quot;,&quot;&quot;],&quot;isemail-check_mx&quot;:[&quot;1&quot;,&quot;&quot;],&quot;tip_text&quot;:[&quot;&quot;,&quot;&quot;],&quot;icon&quot;:[&quot;&quot;,&quot;&quot;],&quot;php-message&quot;:[&quot;&quot;,&quot;Not your own E-mail please&quot;],&quot;php-validation_condition&quot;:[&quot;&quot;,&quot;&quot;],&quot;php-code&quot;:[&quot;&quot;,&quot;$user=JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');\r\nreturn $user-&gt;email != \&quot;{jos_emundus_references___Email_1}\&quot;;&quot;],&quot;php-match&quot;:[&quot;&quot;,&quot;1&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;isemail&quot;,&quot;php&quot;],&quot;plugin_published&quot;:[&quot;1&quot;,&quot;1&quot;],&quot;validate_in&quot;:[&quot;both&quot;,&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;,&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;0&quot;,&quot;1&quot;],&quot;must_validate&quot;:[&quot;1&quot;,&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;,&quot;1&quot;]}}</field>
    </row>
    <row>
     <field name="id">5416</field>
@@ -6636,7 +6636,7 @@ return $user-&gt;fnum;</field>
     <field name="modified_by">62</field>
     <field name="width">28</field>
     <field name="height">6</field>
-    <field name="default">$user = JFactory::getSession()-&gt;get('emundusUser');
+    <field name="default">$user = JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');
 return $user-&gt;fnum;</field>
     <field name="hidden">1</field>
     <field name="eval">1</field>
@@ -7505,7 +7505,7 @@ return $user-&gt;fnum;</field>
     <field name="modified_by">62</field>
     <field name="width">30</field>
     <field name="height">6</field>
-    <field name="default">$db = JFactory::getDBO();
+    <field name="default">$db = JFactory::getContainer()-&gt;get('DatabaseDriver');
 $db-&gt;setQuery('SELECT MAX(step) FROM `jos_emundus_setup_status`');
 return $db-&gt;loadResult()+1;</field>
     <field name="hidden">0</field>
@@ -7569,7 +7569,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="modified_by">62</field>
     <field name="width">30</field>
     <field name="height">6</field>
-    <field name="default">$db = JFactory::getDBO();
+    <field name="default">$db = JFactory::getContainer()-&gt;get('DatabaseDriver');
 $db-&gt;setQuery('SELECT MAX(ordering) FROM `jos_emundus_setup_status`');
 return $db-&gt;loadResult()+1;</field>
     <field name="hidden">0</field>
@@ -7926,7 +7926,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="access">1</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;input-xlarge&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;11&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;isemail-message&quot;:[&quot;&quot;,&quot;&quot;,&quot;&quot;],&quot;isemail-validation_condition&quot;:[&quot;&quot;,&quot;&quot;,&quot;&quot;],&quot;isemail-allow_empty&quot;:[&quot;0&quot;,&quot;&quot;,&quot;&quot;],&quot;isemail-check_mx&quot;:[&quot;1&quot;,&quot;&quot;,&quot;&quot;],&quot;tip_text&quot;:[&quot;&quot;,&quot;&quot;,&quot;&quot;],&quot;icon&quot;:[&quot;&quot;,&quot;&quot;,&quot;&quot;],&quot;php-message&quot;:[&quot;&quot;,&quot;Not your own E-mail please&quot;,&quot;You can not have the same reference E-mail&quot;],&quot;php-validation_condition&quot;:[&quot;&quot;,&quot;&quot;,&quot;&quot;],&quot;php-code&quot;:[&quot;&quot;,&quot;$user=JFactory::getSession()-&gt;get('emundusUser');\r\nreturn $user-&gt;email != \&quot;{jos_emundus_references___Email_2}\&quot;;&quot;,&quot;return \&quot;{jos_emundus_references___Email_2}\&quot; != \&quot;{jos_emundus_references___Email_1}\&quot;;&quot;],&quot;php-match&quot;:[&quot;&quot;,&quot;1&quot;,&quot;1&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;isemail&quot;,&quot;php&quot;,&quot;php&quot;],&quot;plugin_published&quot;:[&quot;1&quot;,&quot;1&quot;,&quot;1&quot;],&quot;validate_in&quot;:[&quot;both&quot;,&quot;both&quot;,&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;,&quot;both&quot;,&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;0&quot;,&quot;0&quot;,&quot;1&quot;],&quot;must_validate&quot;:[&quot;1&quot;,&quot;0&quot;,&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;,&quot;0&quot;,&quot;1&quot;]}}</field>
+    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;input-xlarge&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;11&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;isemail-message&quot;:[&quot;&quot;,&quot;&quot;,&quot;&quot;],&quot;isemail-validation_condition&quot;:[&quot;&quot;,&quot;&quot;,&quot;&quot;],&quot;isemail-allow_empty&quot;:[&quot;0&quot;,&quot;&quot;,&quot;&quot;],&quot;isemail-check_mx&quot;:[&quot;1&quot;,&quot;&quot;,&quot;&quot;],&quot;tip_text&quot;:[&quot;&quot;,&quot;&quot;,&quot;&quot;],&quot;icon&quot;:[&quot;&quot;,&quot;&quot;,&quot;&quot;],&quot;php-message&quot;:[&quot;&quot;,&quot;Not your own E-mail please&quot;,&quot;You can not have the same reference E-mail&quot;],&quot;php-validation_condition&quot;:[&quot;&quot;,&quot;&quot;,&quot;&quot;],&quot;php-code&quot;:[&quot;&quot;,&quot;$user=JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');\r\nreturn $user-&gt;email != \&quot;{jos_emundus_references___Email_2}\&quot;;&quot;,&quot;return \&quot;{jos_emundus_references___Email_2}\&quot; != \&quot;{jos_emundus_references___Email_1}\&quot;;&quot;],&quot;php-match&quot;:[&quot;&quot;,&quot;1&quot;,&quot;1&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;isemail&quot;,&quot;php&quot;,&quot;php&quot;],&quot;plugin_published&quot;:[&quot;1&quot;,&quot;1&quot;,&quot;1&quot;],&quot;validate_in&quot;:[&quot;both&quot;,&quot;both&quot;,&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;,&quot;both&quot;,&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;0&quot;,&quot;0&quot;,&quot;1&quot;],&quot;must_validate&quot;:[&quot;1&quot;,&quot;0&quot;,&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;,&quot;0&quot;,&quot;1&quot;]}}</field>
    </row>
    <row>
     <field name="id">6456</field>
@@ -8027,8 +8027,8 @@ return $db-&gt;loadResult()+1;</field>
     <field name="group_id">683</field>
     <field name="plugin">field</field>
     <field name="label">FIRST_NAME</field>
-    <field name="checked_out">62</field>
-    <field name="checked_out_time">2023-02-15 13:04:15</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2018-07-12 12:16:36</field>
     <field name="created_by">63</field>
     <field name="created_by_alias">coordinateur</field>
@@ -8036,7 +8036,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="modified_by">62</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default">$user = JFactory::getSession()-&gt;get('emundusUser');
+    <field name="default">$user = JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');
 return $user-&gt;firstname;</field>
     <field name="hidden">0</field>
     <field name="eval">1</field>
@@ -8059,8 +8059,8 @@ return $user-&gt;firstname;</field>
     <field name="group_id">683</field>
     <field name="plugin">field</field>
     <field name="label">LAST_NAME</field>
-    <field name="checked_out">62</field>
-    <field name="checked_out_time">2023-02-15 13:04:13</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2018-07-12 12:16:36</field>
     <field name="created_by">63</field>
     <field name="created_by_alias">coordinateur</field>
@@ -8068,7 +8068,7 @@ return $user-&gt;firstname;</field>
     <field name="modified_by">62</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default">$user =JFactory::getSession()-&gt;get('emundusUser');
+    <field name="default">$user =JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');
 return $user-&gt;lastname;</field>
     <field name="hidden">0</field>
     <field name="eval">1</field>
@@ -8092,7 +8092,7 @@ return $user-&gt;lastname;</field>
     <field name="plugin">databasejoin</field>
     <field name="label">NATIONALITY</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2018-07-12 12:16:36</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -8120,20 +8120,36 @@ return $user-&gt;lastname;</field>
     <field name="id">6479</field>
     <field name="name">birth_date</field>
     <field name="group_id">683</field>
-    <field name="plugin">birthday</field>
+    <field name="plugin">field</field>
     <field name="label">DATE_OF_BIRTH</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2018-07-12 12:16:36</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified">2022-03-22 13:38:19</field>
-    <field name="modified_by">62</field>
+    <field name="modified">2023-10-05 12:15:27</field>
+    <field name="modified_by">1</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default"></field>
+    <field name="default">$db = JFactory::getContainer()-&gt;get('DatabaseDriver');
+$fnum = JFactory::getApplication()-&gt;getInput()-&gt;get('rowid') ?: JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser')-&gt;fnum;
+
+$query = $db-&gt;getQuery(true);
+
+$query
+  -&gt;select($db-&gt;quoteName('jeu.birth_date'))
+  -&gt;from($db-&gt;quoteName('#__emundus_users', 'jeu'))
+  -&gt;leftjoin($db-&gt;qn('#__emundus_campaign_candidature', 'jecc') . ' ON ' . $db-&gt;qn('jeu.user_id') . ' = ' . $db-&gt;qn('jecc.applicant_id'))
+ -&gt;where($db-&gt;quoteName('jecc.fnum').' LIKE '.$db-&gt;quote($fnum));
+$db-&gt;setQuery($query);
+
+try {
+    return $db-&gt;loadResult();
+} catch(Exception $e) {
+    return '';
+}</field>
     <field name="hidden">0</field>
-    <field name="eval">0</field>
+    <field name="eval">1</field>
     <field name="ordering">4</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
@@ -8145,7 +8161,7 @@ return $user-&gt;lastname;</field>
     <field name="access">1</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;birthday_daylabel&quot;:&quot;&quot;,&quot;birthday_monthlabel&quot;:&quot;&quot;,&quot;birthday_yearlabel&quot;:&quot;&quot;,&quot;birthday_yearopt&quot;:&quot;number&quot;,&quot;birthday_yearstart&quot;:&quot;120&quot;,&quot;birthday_forward&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;details_date_format&quot;:&quot;d\/m\/Y&quot;,&quot;details_dateandage&quot;:&quot;0&quot;,&quot;list_date_format&quot;:&quot;d\/m\/Y&quot;,&quot;list_age_format&quot;:&quot;no&quot;,&quot;empty_is_null&quot;:&quot;1&quot;,&quot;list_filter_layout&quot;:&quot;individual&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;notempty-message&quot;:[&quot;&quot;,&quot;&quot;],&quot;notempty-validation_condition&quot;:[&quot;&quot;,&quot;&quot;],&quot;tip_text&quot;:[&quot;&quot;,&quot; &quot;],&quot;icon&quot;:[&quot;&quot;,&quot;&quot;],&quot;php-message&quot;:[&quot;&quot;,&quot;&quot;],&quot;php-validation_condition&quot;:[&quot;&quot;,&quot;&quot;],&quot;php-code&quot;:[&quot;&quot;,&quot;$shortdate_time = strtotime(date('Y-m-d', strtotime($data)));\r\n$today_time = strtotime(date('Y-m-d'));\r\nreturn $shortdate_time &lt; $today_time;&quot;],&quot;php-match&quot;:[&quot;&quot;,&quot;1&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;notempty&quot;,&quot;php&quot;],&quot;plugin_published&quot;:[&quot;1&quot;,&quot;1&quot;],&quot;validate_in&quot;:[&quot;both&quot;,&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;,&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;1&quot;,&quot;1&quot;],&quot;must_validate&quot;:[&quot;0&quot;,&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;,&quot;0&quot;]}}</field>
+    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;col-sm-6&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;11&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;99\/99\/9999&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;notempty-message&quot;:[&quot;&quot;],&quot;notempty-validation_condition&quot;:[&quot;&quot;],&quot;tip_text&quot;:[&quot;&quot;],&quot;icon&quot;:[&quot;&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;notempty&quot;],&quot;plugin_published&quot;:[&quot;1&quot;],&quot;validate_in&quot;:[&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;1&quot;],&quot;must_validate&quot;:[&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;]}}</field>
    </row>
    <row>
     <field name="id">6486</field>
@@ -8246,22 +8262,22 @@ return $user-&gt;lastname;</field>
     <field name="group_id">715</field>
     <field name="plugin">field</field>
     <field name="label">fnum</field>
-    <field name="checked_out">62</field>
-    <field name="checked_out_time">2022-05-25 13:17:32</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2018-07-12 12:16:36</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified">2022-05-25 13:17:32</field>
-    <field name="modified_by">62</field>
+    <field name="modified">2023-10-05 13:09:40</field>
+    <field name="modified_by">1</field>
     <field name="width">44</field>
     <field name="height">0</field>
-    <field name="default">$emundusUser = JFactory::getSession()-&gt;get('emundusUser');
+    <field name="default">$emundusUser = JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');
 if (!empty($emundusUser-&gt;fnum)) {
   $fnum = $emundusUser-&gt;fnum;
 }
 
 if (!isset($fnum)) {
-  return JFactory::getApplication()-&gt;input-&gt;get-&gt;get('rowid');
+  return JFactory::getApplication()-&gt;getInput()-&gt;get-&gt;get('rowid');
 }
 
 return $fnum;</field>
@@ -8278,7 +8294,7 @@ return $fnum;</field>
     <field name="access">1</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;input-medium&quot;,&quot;text_format&quot;:&quot;integer&quot;,&quot;integer_length&quot;:&quot;44&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;8&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
+    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;col-sm-6&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;28&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;8&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
    </row>
    <row>
     <field name="id">6492</field>
@@ -8295,8 +8311,8 @@ return $fnum;</field>
     <field name="modified_by">2</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default">$db = JFactory::getDbo();
-$user = JFactory::getUser();
+    <field name="default">$db = JFactory::getContainer()-&gt;get('DatabaseDriver');
+$user = JFactory::getApplication()-&gt;getIdentity();
 $db-&gt;setQuery('SELECT civility FROM #__emundus_users WHERE user_id ='.$user-&gt;id);
 if ($db-&gt;loadResult() == &quot;Monsieur&quot;) {
   return &quot;M&quot;;
@@ -8644,7 +8660,7 @@ elseif ($db-&gt;loadResult() == &quot;Madame&quot;) {
     <field name="modified_by">62</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default">$user=JFactory::getSession()-&gt;get('emundusUser');
+    <field name="default">$user=JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');
 return $user-&gt;email;</field>
     <field name="hidden">0</field>
     <field name="eval">1</field>
@@ -8862,7 +8878,7 @@ return $user-&gt;email;</field>
     <field name="modified_by">0</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default">$current_user=JFactory::getSession()-&gt;get('emundusUser');
+    <field name="default">$current_user=JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');
 return $current_user-&gt;campaign_id;</field>
     <field name="hidden">1</field>
     <field name="eval">1</field>
@@ -9745,7 +9761,7 @@ return $current_user-&gt;campaign_id;</field>
     <field name="access">1</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;calc_calculation&quot;:&quot;$cid = \&quot;{jos_emundus_users___campaign_id_raw}\&quot;;\r\n\r\n$pid = 1000;\r\n\r\nif($cid &gt; 0) {\r\n  $db = JFactory::getDbo();\r\n  $query = $db\r\n      -&gt;getQuery(true)\r\n      -&gt;select('profile_id')\r\n      -&gt;from($db-&gt;quoteName('#__emundus_setup_campaigns'))\r\n      -&gt;where($db-&gt;quoteName('id') . \&quot; = \&quot; . $db-&gt;quote($cid));\r\n  \r\n  $db-&gt;setQuery($query);\r\n  \r\n  $pid = $db-&gt;loadResult();\r\n  \r\n  $pid = ($pid &gt; 0) ? $pid : 1000;\r\n} \r\n\r\nreturn $pid;&quot;,&quot;calc_format_string&quot;:&quot;&quot;,&quot;calc_on_save_only&quot;:&quot;0&quot;,&quot;calc_ajax&quot;:&quot;1&quot;,&quot;calc_ajax_observe_all&quot;:&quot;0&quot;,&quot;calc_ajax_observe&quot;:&quot;&quot;,&quot;calc_on_load&quot;:&quot;1&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
+    <field name="params">{&quot;calc_calculation&quot;:&quot;$cid = \&quot;{jos_emundus_users___campaign_id_raw}\&quot;;\r\n\r\n$pid = 1000;\r\n\r\nif($cid &gt; 0) {\r\n  $db = JFactory::getContainer()-&gt;get('DatabaseDriver');\r\n  $query = $db\r\n      -&gt;getQuery(true)\r\n      -&gt;select('profile_id')\r\n      -&gt;from($db-&gt;quoteName('#__emundus_setup_campaigns'))\r\n      -&gt;where($db-&gt;quoteName('id') . \&quot; = \&quot; . $db-&gt;quote($cid));\r\n  \r\n  $db-&gt;setQuery($query);\r\n  \r\n  $pid = $db-&gt;loadResult();\r\n  \r\n  $pid = ($pid &gt; 0) ? $pid : 1000;\r\n} \r\n\r\nreturn $pid;&quot;,&quot;calc_format_string&quot;:&quot;&quot;,&quot;calc_on_save_only&quot;:&quot;0&quot;,&quot;calc_ajax&quot;:&quot;1&quot;,&quot;calc_ajax_observe_all&quot;:&quot;0&quot;,&quot;calc_ajax_observe&quot;:&quot;&quot;,&quot;calc_on_load&quot;:&quot;1&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
    </row>
    <row>
     <field name="id">7065</field>
@@ -10055,7 +10071,7 @@ return $current_user-&gt;campaign_id;</field>
     <field name="access">1</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;calc_calculation&quot;:&quot;$cid = \&quot;{jos_emundus_setup_csv_import___campaign_raw}\&quot;;\r\n\r\n$pid = 1000;\r\n\r\nif($cid &gt; 0) {\r\n  $db = JFactory::getDbo();\r\n  $query = $db\r\n      -&gt;getQuery(true)\r\n      -&gt;select('profile_id')\r\n      -&gt;from($db-&gt;quoteName('#__emundus_setup_campaigns'))\r\n      -&gt;where($db-&gt;quoteName('id') . \&quot; = \&quot; . $db-&gt;quote($cid));\r\n  \r\n  $db-&gt;setQuery($query);\r\n  \r\n  $pid = $db-&gt;loadResult();\r\n  \r\n  $pid = ($pid &gt; 0) ? $pid : 1000;\r\n} \r\n\r\nreturn $pid;&quot;,&quot;calc_format_string&quot;:&quot;&quot;,&quot;calc_on_save_only&quot;:&quot;0&quot;,&quot;calc_ajax&quot;:&quot;1&quot;,&quot;calc_ajax_observe_all&quot;:&quot;0&quot;,&quot;calc_ajax_observe&quot;:&quot;&quot;,&quot;calc_on_load&quot;:&quot;1&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-mini&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
+    <field name="params">{&quot;calc_calculation&quot;:&quot;$cid = \&quot;{jos_emundus_setup_csv_import___campaign_raw}\&quot;;\r\n\r\n$pid = 1000;\r\n\r\nif($cid &gt; 0) {\r\n  $db = JFactory::getContainer()-&gt;get('DatabaseDriver');\r\n  $query = $db\r\n      -&gt;getQuery(true)\r\n      -&gt;select('profile_id')\r\n      -&gt;from($db-&gt;quoteName('#__emundus_setup_campaigns'))\r\n      -&gt;where($db-&gt;quoteName('id') . \&quot; = \&quot; . $db-&gt;quote($cid));\r\n  \r\n  $db-&gt;setQuery($query);\r\n  \r\n  $pid = $db-&gt;loadResult();\r\n  \r\n  $pid = ($pid &gt; 0) ? $pid : 1000;\r\n} \r\n\r\nreturn $pid;&quot;,&quot;calc_format_string&quot;:&quot;&quot;,&quot;calc_on_save_only&quot;:&quot;0&quot;,&quot;calc_ajax&quot;:&quot;1&quot;,&quot;calc_ajax_observe_all&quot;:&quot;0&quot;,&quot;calc_ajax_observe&quot;:&quot;&quot;,&quot;calc_on_load&quot;:&quot;1&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-mini&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
    </row>
    <row>
     <field name="id">7112</field>
@@ -10072,11 +10088,11 @@ return $current_user-&gt;campaign_id;</field>
     <field name="modified_by">62</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default">$jinput = JFactory::getApplication()-&gt;input;
+    <field name="default">$jinput = JFactory::getApplication()-&gt;getInput();
 $cid = $jinput-&gt;get-&gt;getInt('cid');
 if(empty($cid)){
-  $cid = JFactory::getSession()-&gt;get('campaign_id');
-  JFactory::getSession()-&gt;clear('campaign_id');
+  $cid = JFactory::getApplication()-&gt;getSession()-&gt;get('campaign_id');
+  JFactory::getApplication()-&gt;getSession()-&gt;clear('campaign_id');
 }
 
 return $cid;</field>
@@ -10637,7 +10653,7 @@ return $cid;</field>
     <field name="modified_by">62</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default">return JFactory::GetApplication()-&gt;input-&gt;get-&gt;get('rowid');</field>
+    <field name="default">return JFactory::getApplication()-&gt;getInput()-&gt;get-&gt;get('rowid');</field>
     <field name="hidden">1</field>
     <field name="eval">1</field>
     <field name="ordering">3</field>
@@ -10761,7 +10777,7 @@ return $cid;</field>
     <field name="modified_by">62</field>
     <field name="width">30</field>
     <field name="height">6</field>
-    <field name="default">return JFactory::GetApplication()-&gt;input-&gt;get-&gt;get('rowid');</field>
+    <field name="default">return JFactory::getApplication()-&gt;getInput()-&gt;get-&gt;get('rowid');</field>
     <field name="hidden">1</field>
     <field name="eval">1</field>
     <field name="ordering">4</field>
@@ -11319,7 +11335,7 @@ return $cid;</field>
     <field name="modified_by">62</field>
     <field name="width">28</field>
     <field name="height">6</field>
-    <field name="default">return JFactory::GetApplication()-&gt;input-&gt;get-&gt;get('rowid');</field>
+    <field name="default">return JFactory::getApplication()-&gt;getInput()-&gt;get-&gt;get('rowid');</field>
     <field name="hidden">1</field>
     <field name="eval">1</field>
     <field name="ordering">3</field>
@@ -11753,7 +11769,7 @@ return $cid;</field>
     <field name="modified_by">62</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default">return JFactory::GetApplication()-&gt;input-&gt;get-&gt;get('rowid');</field>
+    <field name="default">return JFactory::getApplication()-&gt;getInput()-&gt;get-&gt;get('rowid');</field>
     <field name="hidden">1</field>
     <field name="eval">1</field>
     <field name="ordering">4</field>
@@ -12001,7 +12017,7 @@ return $cid;</field>
     <field name="modified_by">62</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default">return JFactory::GetApplication()-&gt;input-&gt;get-&gt;get('rowid');</field>
+    <field name="default">return JFactory::getApplication()-&gt;getInput()-&gt;get-&gt;get('rowid');</field>
     <field name="hidden">1</field>
     <field name="eval">1</field>
     <field name="ordering">4</field>
@@ -13707,7 +13723,7 @@ return $cid;</field>
     <field name="width">0</field>
     <field name="height">0</field>
     <field name="default">$app = JFactory::getApplication();
-$email_from_sys = $app-&gt;getCfg('mailfrom');
+$email_from_sys = $app-&gt;get('mailfrom');
 
 return $email_from_sys;</field>
     <field name="hidden">1</field>
@@ -13741,7 +13757,7 @@ return $email_from_sys;</field>
     <field name="width">0</field>
     <field name="height">0</field>
     <field name="default">$app = JFactory::getApplication();
-$email_from_sys = $app-&gt;getCfg('mailfrom');
+$email_from_sys = $app-&gt;get('mailfrom');
 
 return $email_from_sys;</field>
     <field name="hidden">1</field>
@@ -13775,7 +13791,7 @@ return $email_from_sys;</field>
     <field name="width">0</field>
     <field name="height">0</field>
     <field name="default">$app = JFactory::getApplication();
-$email_from_sys = $app-&gt;getCfg('mailfrom');
+$email_from_sys = $app-&gt;get('mailfrom');
 
 return $email_from_sys;</field>
     <field name="hidden">1</field>
@@ -15256,22 +15272,22 @@ return $email_from_sys;</field>
     <field name="group_id">763</field>
     <field name="plugin">field</field>
     <field name="label">fnum</field>
-    <field name="checked_out">62</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2021-05-31 09:11:53</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified">2021-11-25 13:20:08</field>
-    <field name="modified_by">62</field>
+    <field name="modified">2023-10-05 13:09:40</field>
+    <field name="modified_by">1</field>
     <field name="width">44</field>
     <field name="height">0</field>
-    <field name="default">$emundusUser = JFactory::getSession()-&gt;get('emundusUser');
+    <field name="default">$emundusUser = JFactory::getApplication()-&gt;getSession()-&gt;get('emundusUser');
 if (!empty($emundusUser-&gt;fnum)) {
   $fnum = $emundusUser-&gt;fnum;
 }
 
 if (!isset($fnum)) {
-  return JFactory::getApplication()-&gt;input-&gt;get-&gt;get('rowid');
+  return JFactory::getApplication()-&gt;getInput()-&gt;get-&gt;get('rowid');
 }
 
 return $fnum;</field>
@@ -15288,7 +15304,7 @@ return $fnum;</field>
     <field name="access">1</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">6491</field>
-    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;input-medium&quot;,&quot;text_format&quot;:&quot;integer&quot;,&quot;integer_length&quot;:&quot;44&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;8&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[],&quot;parent_linked&quot;:1}</field>
+    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;col-sm-6&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;28&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;8&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[],&quot;parent_linked&quot;:1}</field>
    </row>
    <row>
     <field name="id">7752</field>
@@ -15359,12 +15375,12 @@ return $fnum;</field>
     <field name="plugin">checkbox</field>
     <field name="label">ELEMENT_764_7754</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2021-05-31 11:12:18</field>
     <field name="created_by">95</field>
     <field name="created_by_alias">coordinator</field>
-    <field name="modified">2023-03-03 13:28:55</field>
-    <field name="modified_by">62</field>
+    <field name="modified">2023-10-05 13:11:25</field>
+    <field name="modified_by">1</field>
     <field name="width">0</field>
     <field name="height">0</field>
     <field name="default"></field>
@@ -15381,7 +15397,7 @@ return $fnum;</field>
     <field name="access">1</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;sub_options&quot;:{&quot;sub_values&quot;:[&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;],&quot;sub_labels&quot;:[&quot;SUBLABEL_764_7754_0&quot;,&quot;SUBLABEL_764_7754_1&quot;,&quot;SUBLABEL_764_7754_2&quot;,&quot;SUBLABEL_764_7754_3&quot;]},&quot;ck_options_per_row&quot;:&quot;1&quot;,&quot;sub_default_value&quot;:&quot;&quot;,&quot;sub_default_label&quot;:&quot;&quot;,&quot;allow_frontend_addtocheckbox&quot;:&quot;0&quot;,&quot;chk-allowadd-onlylabel&quot;:&quot;0&quot;,&quot;chk-savenewadditions&quot;:&quot;0&quot;,&quot;options_split_str&quot;:&quot;&quot;,&quot;dropdown_populate&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;notempty-message&quot;:[&quot;&quot;],&quot;notempty-validation_condition&quot;:[&quot;&quot;],&quot;tip_text&quot;:[&quot;&quot;],&quot;icon&quot;:[&quot;&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;notempty&quot;],&quot;plugin_published&quot;:[&quot;1&quot;],&quot;validate_in&quot;:[&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;0&quot;],&quot;must_validate&quot;:[&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;]}}</field>
+    <field name="params">{&quot;bootstrap_class&quot;:&quot;col-sm-6&quot;,&quot;sub_options&quot;:{&quot;sub_values&quot;:[&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;],&quot;sub_labels&quot;:[&quot;SUBLABEL_764_7754_0&quot;,&quot;SUBLABEL_764_7754_1&quot;,&quot;SUBLABEL_764_7754_2&quot;,&quot;SUBLABEL_764_7754_3&quot;]},&quot;ck_options_per_row&quot;:&quot;1&quot;,&quot;sub_default_value&quot;:&quot;&quot;,&quot;sub_default_label&quot;:&quot;&quot;,&quot;allow_frontend_addtocheckbox&quot;:&quot;0&quot;,&quot;chk-allowadd-onlylabel&quot;:&quot;0&quot;,&quot;chk-savenewadditions&quot;:&quot;0&quot;,&quot;options_split_str&quot;:&quot;&quot;,&quot;dropdown_populate&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;notempty-message&quot;:[&quot;&quot;],&quot;notempty-validation_condition&quot;:[&quot;&quot;],&quot;tip_text&quot;:[&quot;&quot;],&quot;icon&quot;:[&quot;&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;notempty&quot;],&quot;plugin_published&quot;:[&quot;1&quot;],&quot;validate_in&quot;:[&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;0&quot;],&quot;must_validate&quot;:[&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;]}}</field>
    </row>
    <row>
     <field name="id">7755</field>

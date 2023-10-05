@@ -20,7 +20,6 @@ if (version_compare(JVERSION, '4.0', '>')) {
 	$document = $app->getDocument();
 	$wa       = $document->getWebAssetManager();
 	$wa->registerAndUseStyle('mod_emundus_applications', 'modules/mod_emundus_applications/style/mod_emundus_applications.css');
-	$wa->registerAndUseScript('jquery-plugin-circliful-master', 'media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js', ['jquery']);
 	$wa->useScript('jquery');
 	$user = $app->getSession()->get('emundusUser');
 }

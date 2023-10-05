@@ -202,8 +202,7 @@ class TchoozMigrateCommand extends AbstractCommand
 							->where($db->quoteName('id') . ' = ' . $db->quote($element['id']));
 						$db->setQuery($query);
 
-						$results['fabrik_elements']['id']           = $element['id'];
-						$results['fabrik_elements']['id']['status'] = $db->execute();
+						$results['fabrik_elements'][$element['id']]['status'] = $db->execute();
 					}
 				}
 				break;
@@ -237,8 +236,7 @@ class TchoozMigrateCommand extends AbstractCommand
 								->where($db->quoteName('id') . ' = ' . $db->quote($form['id']));
 							$db->setQuery($query);
 
-							$results['fabrik_forms']['id']           = $form['id'];
-							$results['fabrik_forms']['id']['status'] = $db->execute();
+							$results['fabrik_forms'][$form['id']]['status'] = $db->execute();
 						}
 					}
 				}

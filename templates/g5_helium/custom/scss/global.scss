@@ -58,6 +58,7 @@ body {
 
 .g-grid .col {
   min-height: 0;
+  padding: 0;
 }
 
 #content-top-a .platform-content {
@@ -3845,6 +3846,7 @@ div#em-appli-block {
 
   /* BLOC FORMULAIRE */
   .col {
+    padding: 0;
 
     /* INTRO FORMULAIRE */
     .emundus-form {

@@ -796,6 +796,506 @@
     <field name="d">0</field>
     <field name="time_date">2023-09-15 14:36:20</field>
    </row>
+   <row>
+    <field name="id">79</field>
+    <field name="group_id">5</field>
+    <field name="action_id">1</field>
+    <field name="c">0</field>
+    <field name="r">1</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">80</field>
+    <field name="group_id">5</field>
+    <field name="action_id">4</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">81</field>
+    <field name="group_id">5</field>
+    <field name="action_id">5</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">82</field>
+    <field name="group_id">5</field>
+    <field name="action_id">6</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">83</field>
+    <field name="group_id">5</field>
+    <field name="action_id">7</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">84</field>
+    <field name="group_id">5</field>
+    <field name="action_id">8</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">85</field>
+    <field name="group_id">5</field>
+    <field name="action_id">9</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">86</field>
+    <field name="group_id">5</field>
+    <field name="action_id">10</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">87</field>
+    <field name="group_id">5</field>
+    <field name="action_id">11</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">88</field>
+    <field name="group_id">5</field>
+    <field name="action_id">12</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">89</field>
+    <field name="group_id">5</field>
+    <field name="action_id">13</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">90</field>
+    <field name="group_id">5</field>
+    <field name="action_id">14</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">91</field>
+    <field name="group_id">5</field>
+    <field name="action_id">15</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">92</field>
+    <field name="group_id">5</field>
+    <field name="action_id">16</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">93</field>
+    <field name="group_id">5</field>
+    <field name="action_id">18</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">94</field>
+    <field name="group_id">5</field>
+    <field name="action_id">19</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">95</field>
+    <field name="group_id">5</field>
+    <field name="action_id">27</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">96</field>
+    <field name="group_id">5</field>
+    <field name="action_id">28</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">97</field>
+    <field name="group_id">5</field>
+    <field name="action_id">29</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">98</field>
+    <field name="group_id">5</field>
+    <field name="action_id">31</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">99</field>
+    <field name="group_id">5</field>
+    <field name="action_id">32</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">100</field>
+    <field name="group_id">5</field>
+    <field name="action_id">34</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">101</field>
+    <field name="group_id">5</field>
+    <field name="action_id">35</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">102</field>
+    <field name="group_id">5</field>
+    <field name="action_id">36</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">103</field>
+    <field name="group_id">5</field>
+    <field name="action_id">37</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">104</field>
+    <field name="group_id">6</field>
+    <field name="action_id">1</field>
+    <field name="c">0</field>
+    <field name="r">1</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">105</field>
+    <field name="group_id">6</field>
+    <field name="action_id">4</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">106</field>
+    <field name="group_id">6</field>
+    <field name="action_id">5</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">107</field>
+    <field name="group_id">6</field>
+    <field name="action_id">6</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">108</field>
+    <field name="group_id">6</field>
+    <field name="action_id">7</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">109</field>
+    <field name="group_id">6</field>
+    <field name="action_id">8</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">110</field>
+    <field name="group_id">6</field>
+    <field name="action_id">9</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">111</field>
+    <field name="group_id">6</field>
+    <field name="action_id">10</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">112</field>
+    <field name="group_id">6</field>
+    <field name="action_id">11</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">113</field>
+    <field name="group_id">6</field>
+    <field name="action_id">12</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">114</field>
+    <field name="group_id">6</field>
+    <field name="action_id">13</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">115</field>
+    <field name="group_id">6</field>
+    <field name="action_id">14</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">116</field>
+    <field name="group_id">6</field>
+    <field name="action_id">15</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">117</field>
+    <field name="group_id">6</field>
+    <field name="action_id">16</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">118</field>
+    <field name="group_id">6</field>
+    <field name="action_id">18</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">119</field>
+    <field name="group_id">6</field>
+    <field name="action_id">19</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">120</field>
+    <field name="group_id">6</field>
+    <field name="action_id">27</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">121</field>
+    <field name="group_id">6</field>
+    <field name="action_id">28</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">122</field>
+    <field name="group_id">6</field>
+    <field name="action_id">29</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">123</field>
+    <field name="group_id">6</field>
+    <field name="action_id">31</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">124</field>
+    <field name="group_id">6</field>
+    <field name="action_id">32</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">125</field>
+    <field name="group_id">6</field>
+    <field name="action_id">34</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">126</field>
+    <field name="group_id">6</field>
+    <field name="action_id">35</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">127</field>
+    <field name="group_id">6</field>
+    <field name="action_id">36</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
+   <row>
+    <field name="id">128</field>
+    <field name="group_id">6</field>
+    <field name="action_id">37</field>
+    <field name="c">0</field>
+    <field name="r">0</field>
+    <field name="u">0</field>
+    <field name="d">0</field>
+    <field name="time_date">2023-10-05 09:30:40</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

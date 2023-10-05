@@ -12,6 +12,8 @@
    <field Field="published" Type="tinyint(1)" Null="NO" Key="" Default="1" Extra="" />
    <field Field="bank_needed" Type="tinyint(1)" Null="YES" Key="" Extra="" />
    <field Field="duplicate" Type="int" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="has_sample" Type="tinyint(1)" Null="YES" Key="" Extra="" />
+   <field Field="sample_filepath" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_setup_attachment_profiles" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_attachment_profiles" Non_unique="0" Key_name="attachment_campaign" Seq_in_index="1" Column_name="campaign_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_attachment_profiles" Non_unique="0" Key_name="attachment_campaign" Seq_in_index="2" Column_name="attachment_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
@@ -32,6 +34,8 @@
     <field name="published">1</field>
     <field name="bank_needed"></field>
     <field name="duplicate">0</field>
+    <field name="has_sample"></field>
+    <field name="sample_filepath"></field>
    </row>
    <row>
     <field name="id">2</field>
@@ -44,6 +48,8 @@
     <field name="published">1</field>
     <field name="bank_needed"></field>
     <field name="duplicate">0</field>
+    <field name="has_sample"></field>
+    <field name="sample_filepath"></field>
    </row>
    <row>
     <field name="id">3</field>
@@ -56,6 +62,8 @@
     <field name="published">1</field>
     <field name="bank_needed"></field>
     <field name="duplicate">0</field>
+    <field name="has_sample"></field>
+    <field name="sample_filepath"></field>
    </row>
   </table_data>
  </database>

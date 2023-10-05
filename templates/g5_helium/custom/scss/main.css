@@ -110,5 +110,10 @@ small {
         line-height: normal;
         letter-spacing: normal;
         font-size: var(--em-applicant-font-size);
+        margin-bottom: 0;
+    }
+
+    button.btn.goback-btn:hover {
+        background-color: var(--neutral-300);
     }
 }

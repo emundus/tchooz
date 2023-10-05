@@ -15,7 +15,7 @@ jimport( 'joomla.application.component.model' );
 use Joomla\CMS\Factory;
 
 class EmundusModelProfile extends JModelList {
-    var $_db = null;
+    private $_db;
     /**
      * Constructor
      *

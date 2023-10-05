@@ -557,34 +557,6 @@ if(cid !== &amp;quot;&amp;quot;) {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group175&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4409</field>
-    <field name="element_id">7754</field>
-    <field name="action">load</field>
-    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
-var fab = this.form.elements;
-other_input=fab.get(&amp;#039;jos_emundus_9_00___e_360_7755&amp;#039;);
-value.includes(&amp;#039;Autre&amp;#039;) ? other_input.show() :other_input.hide();
-</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group763&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">4410</field>
-    <field name="element_id">7754</field>
-    <field name="action">change</field>
-    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
-var fab = this.form.elements;
-
-other_input=fab.get(&amp;#039;jos_emundus_9_00___e_360_7755&amp;#039;);
-if(value.includes(&amp;#039;Autre&amp;#039;)){ 
-    other_input.show();
-  }
-  else{
-    other_input.hide();
-    other_input.clear();
-  }</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group763&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
     <field name="id">4411</field>
     <field name="element_id">1961</field>
     <field name="action">load</field>
@@ -741,6 +713,41 @@ showFabrikGroupByElt(jos_emundus_qualifications_689_repeat___id_0);
     <field name="action">change</field>
     <field name="code">const value=this.get(&amp;#039;value&amp;#039;);const fab=this.form.elements;let{jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!= &amp;#039;0&amp;#039;){showFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0)}else{hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0, true)}</field>
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4423</field>
+    <field name="element_id">6479</field>
+    <field name="action">blur</field>
+    <field name="code">birthDateValidation(this);</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group683&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4426</field>
+    <field name="element_id">7754</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+other_input=fab.get(&amp;#039;jos_emundus_9_00___e_360_7755&amp;#039;);
+value.includes(&amp;#039;4&amp;#039;) ? other_input.show() :other_input.hide();
+</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group763&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4427</field>
+    <field name="element_id">7754</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+
+other_input=fab.get(&amp;#039;jos_emundus_9_00___e_360_7755&amp;#039;);
+if(value.includes(&amp;#039;4&amp;#039;)){ 
+    other_input.show();
+  }
+  else{
+    other_input.hide();
+    other_input.clear();
+  }</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group763&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
   </table_data>
  </database>

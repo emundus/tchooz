@@ -18,6 +18,7 @@
    <field Field="modified_by" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="pdf_pages_count" Type="int" Null="YES" Key="" Extra="" />
    <field Field="local_filename" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="size" Type="int" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_uploads" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_uploads" Non_unique="1" Key_name="user_id" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_uploads" Non_unique="1" Key_name="attachment_id" Seq_in_index="1" Column_name="attachment_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />

@@ -25,10 +25,10 @@
   <table_data name="#__languages">
    <row>
     <field name="lang_id">1</field>
-    <field name="asset_id">0</field>
+    <field name="asset_id">136</field>
     <field name="lang_code">en-GB</field>
     <field name="title">English (en-GB)</field>
-    <field name="title_native">English (United Kingdom)</field>
+    <field name="title_native">English</field>
     <field name="sef">en</field>
     <field name="image">en_gb</field>
     <field name="description"></field>
@@ -44,7 +44,7 @@
     <field name="asset_id">91</field>
     <field name="lang_code">fr-FR</field>
     <field name="title">French (fr-FR)</field>
-    <field name="title_native">Français (France)</field>
+    <field name="title_native">Français</field>
     <field name="sef">fr</field>
     <field name="image">fr_fr</field>
     <field name="description"></field>

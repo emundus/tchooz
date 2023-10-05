@@ -1085,6 +1085,9 @@ form.fabrikForm select {
 form.fabrikForm select.input-small {
         background-position-x: 92%;
       }
+form.fabrikForm select[size] {
+      height: var(--em-form-height) !important;
+    }
 /** RADIO **/
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer {
         width: -moz-fit-content;
@@ -1285,6 +1288,17 @@ form.fabrikForm .currencyElement input:focus + select,form.fabrikForm .currencyE
         border-top-left-radius: unset;
         border-bottom-left-radius: unset;
       }
+/** BIRTHDAY **/
+form.fabrikForm .plg-birthday .fabrikElement .fabrikSubElementContainer table {
+            border: unset;
+            width: auto;
+          }
+form.fabrikForm .plg-birthday .fabrikElement .fabrikSubElementContainer table tbody td {
+              width: auto;
+            }
+form.fabrikForm .plg-birthday .fabrikElement .fabrikSubElementContainer table tbody td select {
+                min-width: 85px;
+              }
 /** ERRORS **/
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
@@ -1575,6 +1589,16 @@ input[type="text"],
 .chzn-container-multi:not(.chzn-container-active) .chzn-drop {
     display: none;
   }
+/** ATTAHCMENTS **/
+.em-attachmentList .em-fieldset-attachment-table {
+      border: unset;
+    }
+.em-attachmentList .em-fieldset-attachment-table .em-attachment-dropzone .row > * {
+          padding: 0;
+        }
+.em-attachmentList .em-fieldset-attachment-table .em-attachment-dropzone .dz-default.dz-message {
+          margin-top: var(--em-spacing-3);
+        }
 .visible {
   visibility: visible;
 }
@@ -2787,6 +2811,10 @@ small {
         line-height: normal;
         letter-spacing: normal;
         font-size: var(--em-applicant-font-size);
+        margin-bottom: 0;
+    }
+.em-goback-btn button.btn.goback-btn:hover {
+        background-color: var(--neutral-300);
     }
 .after\:bg-neutral-500::after {
   content: var(--tw-content);

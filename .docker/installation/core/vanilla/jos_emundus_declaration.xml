@@ -11,6 +11,7 @@
    <field Field="type_mail" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="address" Type="text" Null="YES" Key="" Extra="" />
    <field Field="gdpr_text_details" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_258_7749" Type="text" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_declaration" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_declaration" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_declaration" Non_unique="1" Key_name="fb_tableorder_time_date_INDEX" Seq_in_index="1" Column_name="time_date" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />

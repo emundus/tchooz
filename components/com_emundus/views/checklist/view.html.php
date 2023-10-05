@@ -132,7 +132,7 @@ class EmundusViewChecklist extends JViewLegacy {
 	            {
 		            $document = $this->app->getDocument();
 					$wa = $document->getWebAssetManager();
-					$wa->usePreset('jquery');
+					$wa->useScript('jquery');
 					$wa->registerAndUseStyle('com_emundus.dropzone', 'media/com_emundus/lib/dropzone/css/dropzone.min.css');
 					$wa->registerAndUseScript('com_emundus.dropzone', 'media/com_emundus/lib/dropzone/js/dropzone.min.js', ['defer' => true]);
 					$wa->registerAndUseStyle('com_emundus', 'media/com_emundus/css/emundus.css');
