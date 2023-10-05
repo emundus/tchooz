@@ -12,7 +12,7 @@
  * details.
  */
 defined( '_JEXEC' ) or die( 'Restricted access' );
-JHTML::_('behavior.tooltip');
+
 JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 ?>
 

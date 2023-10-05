@@ -1,0 +1,149 @@
+#jform_name,#jform_name-lbl, #jform_username,#jform_username-lbl,#jform_username-desc,#jform_params_editor-lbl,#jform_params_editor,#jform_params_language,#jform_params_language-lbl,#jform_params_admin_style,#jform_params_admin_style-lbl,#jform_params_admin_language,#jform_params_admin_language-lbl {
+    display: none;
+}
+
+.password-group .input-group .input-password-toggle {
+    position: absolute;
+    right: 16px;
+    padding: 0;
+    margin-bottom: 0;
+    background: transparent;
+    color: black;
+}
+
+.password-group .input-group .input-password-toggle:hover {
+    background: transparent;
+    color: black;
+}
+
+.password-group .input-group {
+    align-items: center;
+}
+
+.com-users-profile__edit-form#member-profile fieldset:nth-child(2) {
+    display: none;
+}
+
+.com-users-profile__edit-form#member-profile {
+    background: #fff;
+    margin: 0px auto 50px auto;
+    padding: 32px 32px 24px 32px;
+    border-radius: var(--em-form-br-block) !important;
+    width: 84%;
+    border: 1px solid #EDEDED;
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+}
+
+#member-profile > .control-group .controls {
+    margin-left: 0;
+    text-align: center;
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+form#member-profile .control-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 24px 0 0 0;
+}
+
+form#member-profile .control-group .controls {
+    margin-left: 0 !important;
+    width: 100%;
+}
+
+#member-profile .control-group.hidden {
+    display: none;
+}
+
+form#member-profile.well legend {
+    color: var(--neutral-800);
+    font-weight: 600;
+    margin: 0 !important;
+    font-family: var(--em-applicant-font-title);
+}
+
+form#member-profile.form-validate.form-horizontal.well input {
+    width: 100%;
+    color: var(--neutral-600);
+    font-family: var(--em-applicant-font);
+    height: 48px;
+    border-radius: 8px;
+    padding: 0 12px 0 12px;
+    border: 1px solid var(--neutral-400);
+    box-shadow: none;
+    margin-top: 6px;
+    margin-bottom: 0;
+    background-color: #fff;
+}
+
+form#member-profile.form-validate.form-horizontal.well input:hover {
+    border: 1px solid var(--neutral-600);
+    box-shadow: none;
+}
+
+form#member-profile.form-validate.form-horizontal.well input:focus {
+    border: 1px solid var(--blue-500);
+    box-shadow: none;
+    color: var(--neutral-800) !important;
+}
+
+form#member-profile .control-group .control-label label {
+    font-family: var(--em-applicant-font);
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 17px;
+    letter-spacing: 0.0025em;
+    text-align: left;
+    color: var(--neutral-800);
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+}
+form#member-profile.form-validate.form-horizontal.well button.btn {
+    text-transform: capitalize;
+    border-radius: var(--em-applicant-br);
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+    height: 38px;
+}
+form#member-profile.form-validate.form-horizontal.well a.btn {
+    font-weight: 300;
+    margin-right: 16px !important;
+    margin-bottom: 0;
+    display: flex;
+    border-radius: var(--em-applicant-br);
+    align-items: center;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
+    height: 38px;
+}
+form#member-profile.form-validate.form-horizontal.well fieldset:nth-child(2) {
+    margin-top: 20px;
+}
+form#member-profile.form-validate.form-horizontal.well label {
+    font-size: 14px;
+    color: var(--neutral-800);
+    font-family: var(--em-applicant-font);
+}
+
+form#member-profile.form-validate.form-horizontal.well span.star {
+    display: none;
+}
+
+@media all and (max-width: 767px) {
+    form#member-profile {
+        padding: 2rem 3rem 1rem 3rem;
+        width: 100% !important;
+        margin: 0 0 50px 0 !important;
+    }
+
+    .view-profile form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {
+        margin-right: 0 !important;
+    }
+
+}

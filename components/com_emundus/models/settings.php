@@ -950,7 +950,7 @@ class EmundusModelsettings extends JModelList {
             value_fr varchar(255) NOT NULL,
             value_en varchar(255) NOT NULL,
             PRIMARY KEY (id)
-            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
             $db->setQuery($table_query);
             $db->execute();
             //
@@ -1019,7 +1019,7 @@ class EmundusModelsettings extends JModelList {
             $table_query = "CREATE TABLE IF NOT EXISTS " . $table_name . " (
             id int(11) NOT NULL AUTO_INCREMENT,
             PRIMARY KEY (id)
-            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
             $db->setQuery($table_query);
             $db->execute();
 

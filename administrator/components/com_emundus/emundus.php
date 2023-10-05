@@ -15,10 +15,11 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Factory;
 
 $app = Factory::getApplication();
-$input = $app->input;
+$input = $app->getInput();
+$user = $app->getIdentity();
 
 // Access check.
-if (!JFactory::getUser()->authorise('core.manage', 'com_emundus'))
+if (!$user->authorise('core.manage', 'com_emundus'))
 {
 	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'), 404);
 }
@@ -34,10 +35,29 @@ $layout = $app->input->get('layout', '');
 jimport('joomla.application.component.controller');
 jimport('joomla.filesystem.file');
 
-$controller	= BaseController::getInstance('EmundusAdmin');
+// Require specific controller if requested
+if ($controller = $input->get('controller', '', 'WORD')) {
+	$path = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.$controller.'.php';
+	if (file_exists($path)) {
+		require_once $path;
+	} else {
+		$controller = '';
+	}
+}
+
+// Create the controller
+if(!empty($controller)) {
+	$classname  = 'EmundusAdminController' . $controller;
+	$controller = new $classname();
+} else {
+	$controller	= BaseController::getInstance('EmundusAdmin');
+}
+
+$name = $app->input->get('view', '', 'CMD');
+$task = $app->input->get('task', '', 'CMD');
 
 // Execute the task.
-$controller->execute($input->get('task', 'panel.display'));
+$controller->execute($task);
 
 $controller->redirect();
 

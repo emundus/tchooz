@@ -549,7 +549,7 @@ class EmundusModelFormbuilder extends JModelList {
             $query = "CREATE TABLE IF NOT EXISTS jos_emundus_" . $prid . "_" . $increment . " (
             id int(11) NOT NULL AUTO_INCREMENT,
             time_date datetime NULL DEFAULT current_timestamp(),
-            fnum varchar(28) CHARSET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+            fnum varchar(28) CHARSET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
             user int(11) NULL,
             PRIMARY KEY (id),
             UNIQUE KEY fnum (fnum)
@@ -3109,7 +3109,7 @@ class EmundusModelFormbuilder extends JModelList {
             $query = "CREATE TABLE IF NOT EXISTS " . $newtablename . " (
             id int(11) NOT NULL AUTO_INCREMENT,
             PRIMARY KEY (id)
-            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
             $this->db->setQuery($query);
             $this->db->execute();
 

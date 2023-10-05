@@ -4,7 +4,7 @@ defined('_JEXEC') or die('Restricted access');
 $document = JFactory::getDocument();
 
 JHTML::_('behavior.modal');
-JHTML::_('behavior.tooltip');
+
 JHTML::stylesheet( 'media/com_emundus/cssemundus.css/' );
 JHTML::stylesheet( 'templates/system/css/general.css' );
 JHTML::stylesheet( 'templates/system/csssystem.css/' );

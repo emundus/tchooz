@@ -11,31 +11,27 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 
 require_once (JPATH_SITE.'/components/com_emundus/helpers/access.php');
 
-class EmundusControllerSamples extends JControllerLegacy
+class EmundusAdminControllerSamples extends JControllerLegacy
 {
+	protected $app;
+
     private JUser|null $user = null;
 
-	function display($cachable = false, $urlparams = false) {
-        $input = Factory::getApplication()->input;
+	public function __construct($config = [], MVCFactoryInterface $factory = null, $app = null, $input = null)
+	{
+		parent::__construct($config, $factory, $app, $input);
 
-        // Set a default view if none exists
-        if (!$input->getCmd( 'view')) {
-            $default = 'samples';
-            $input->set('view', $default);
-        }
-
-        $this->user = Factory::getUser();
-
-        parent::display();
+        $this->user = $this->app->getIdentity();
 	}
 
     function generate(){
+
         if(EmundusHelperAccess::asAdministratorAccessLevel($this->user->id)) {
-            $app = Factory::getApplication();
-            $datas = $app->input->getArray();
+            $datas = $this->input->getArray();
 
             include_once(JPATH_SITE.'/administrator/components/com_emundus/models/samples.php');
             $mSamples = new EmundusAdminModelSamples();
@@ -75,7 +71,7 @@ class EmundusControllerSamples extends JControllerLegacy
                 }
 
                 if ($datas['samples_files']) {
-                    $app->enqueueMessage($nb_files_created . ' dossiers ont été créés.');
+                    $this->app->enqueueMessage($nb_files_created . ' dossiers ont été créés.');
                 }
             } elseif ($datas['samples_files']){
                 $nb_files_created = 0;
@@ -86,10 +82,10 @@ class EmundusControllerSamples extends JControllerLegacy
                     $j++;
                 }
 
-                $app->enqueueMessage($nb_files_created . ' dossiers ont été créés.');
+                $this->app->enqueueMessage($nb_files_created . ' dossiers ont été créés.');
             }
 
-            $app->redirect(JURI::base() . 'index.php?option=com_emundus&controller=samples');
+            $this->app->redirect(JURI::base() . 'index.php?option=com_emundus&view=samples');
         }
     }
 }

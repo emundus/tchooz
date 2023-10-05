@@ -8,7 +8,7 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-JHTML::_('behavior.tooltip');
+
 JHTML::_('behavior.modal');
 
 if ($this->applicant_can_renew) {

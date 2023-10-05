@@ -1,6 +1,6 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
-JHTML::_('behavior.tooltip');
+
 JHTML::_('behavior.modal');
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/css/emundus_export_select_columns.css" );

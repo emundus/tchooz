@@ -1,6 +1,6 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
-JHTML::_('behavior.tooltip');
+
 JHTML::_('behavior.modal');
 //JHTML::stylesheet('media/com_emundus/css/emundus.css' );
 $document = JFactory::getDocument();

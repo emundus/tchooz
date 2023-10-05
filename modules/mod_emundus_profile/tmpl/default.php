@@ -34,7 +34,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                 <?php endif; ?>
 
                 <?php if ($show_account_edit_button == 1 && !$external) : ?>
-                    <a class="em-w-auto btn manage-account-icon" href="/index.php?option=com_users&view=profile&layout=edit" title="<?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE') ?>">
+                    <a class="em-w-auto btn manage-account-icon" href="<?php echo JRoute::_('index.php?option=com_users&view=profile&layout=edit') ?>" title="<?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE') ?>">
                         <span class="material-icons-outlined">manage_accounts</span>
                     </a>
                 <?php endif; ?>

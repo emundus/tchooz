@@ -100,7 +100,7 @@ class EmundusHelperFabrik {
             'process-jplugins' => '1',
             'cloak_emails' => '0',
             'enable_single_sorting' => 'default',
-            'collation' => 'utf8mb4_general_ci',
+            'collation' => 'utf8mb4_0900_ai_ci',
             'force_collate' => '',
             'list_disable_caching' => '0',
             'distinct' => '1',
@@ -809,7 +809,8 @@ die("<script>
             $params['validations']['must_validate'][] = '0';
             $params['validations']['show_icon'][] = '1';
 
-            $query->update($db->quoteName('#__fabrik_elements'))
+            $query->clear()
+	            ->update($db->quoteName('#__fabrik_elements'))
                 ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($eid));
             $db->setQuery($query);
