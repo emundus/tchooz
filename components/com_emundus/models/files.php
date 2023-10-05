@@ -4437,8 +4437,10 @@ class EmundusModelFiles extends JModelLegacy
                             ];
 
                             $mailer->setSender($sender);
-                            $mailer->addReplyTo($from, $fromname);
                             $mailer->addRecipient($to);
+	                        if(!empty($from)) {
+		                        $mailer->addReplyTo($from, $fromname);
+	                        }
                             $mailer->setSubject($subject);
                             $mailer->isHTML(true);
                             $mailer->Encoding = 'base64';

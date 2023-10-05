@@ -1738,7 +1738,7 @@ $(document).ready(function() {
                 swal_popup_class = 'em-w-auto'
                 swal_actions_class = 'em-actions-none'
 
-                html = '<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>';
+                html = '<iframe src="'+url+'" style="width:'+$(window).width()*0.8+'px; height:'+$(window).height()*0.8+'px; border:none"></iframe>';
 
                 removeLoader();
                 break;
@@ -4747,7 +4747,7 @@ $(document).ready(function() {
                 swal_popup_class = 'em-w-auto';
                 swal_confirm_button = 'COM_EMUNDUS_TROMBI_GENERATE';
                 title = 'COM_EMUNDUS_TROMBINOSCOPE';
-                html = '<iframe id="iframe-trombinoscope" src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>';
+                html = '<iframe id="iframe-trombinoscope" src="'+url+'" style="width:'+$(window).width()*0.8+'px;height:'+$(window).height()*0.8+'px;border:none;"></iframe>';
                 break;
 
             // TODO: Synthesis (fast pdf generation from a model)
@@ -5602,7 +5602,7 @@ $(document).ready(function() {
         $('.modal-dialog').addClass('modal-lg');
         $(".modal-body").empty();
 
-        $(".modal-body").append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>');
+        $(".modal-body").append('<iframe src="'+url+'" style="width:'+$(window).width()*0.8+'px; height:'+$(window).height()*0.8+'px; border:none"></iframe>');
     });
 
 

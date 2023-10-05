@@ -265,8 +265,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 
 <script>
-    const selectDropdownContainer = document.querySelector('.selectAll');
-    const countFiles = document.querySelector('#countCheckedCheckbox');
+    var selectDropdownContainer = document.querySelector('.selectAll');
+    var countFiles = document.querySelector('#countCheckedCheckbox');
 
     if(selectDropdownContainer) {
         selectDropdownContainer.style.display = 'none';
