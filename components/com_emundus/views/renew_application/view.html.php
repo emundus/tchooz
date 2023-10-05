@@ -21,8 +21,11 @@ jimport( 'joomla.application.component.view');
  */ 
 class EmundusViewRenew_application extends JViewLegacy
 {
-	var $_user = null;
-	var $_db = null;
+	private $_user;
+
+	protected $applicant_can_renew;
+	protected $current_user;
+	protected $statut;
 	
 	function __construct($config = array()){
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'javascript.php');
@@ -33,29 +36,25 @@ class EmundusViewRenew_application extends JViewLegacy
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
 		
 		$this->_user = JFactory::getUser();
-		$this->_db = JFactory::getDBO();
-		
+
 		parent::__construct($config);
 	}
 
     function display($tpl = null)
     {
 
-		if ($this->_user->guest) 
+		if ($this->_user->guest) {
 			die(JText::_('ACCESS_DENIED'));
+		}
 		
 		$document = JFactory::getDocument();
 		$document->addStyleSheet("media/com_emundus/css/emundus.css" );
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
-		$applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
-		$this->assignRef('applicant_can_renew', $applicant_can_renew);
+		$this->applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
 
-		$current_user = JFactory::getUser();
-		$statut = $this->get('statut');
-		
-		$this->assignRef('current_user', $current_user);
-		$this->assignRef('statut', $statut);
+		$this->current_user = $this->_user;
+		$this->statut = $this->get('statut');
 
 		parent::display($tpl);
     }

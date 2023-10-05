@@ -5,46 +5,42 @@
  *             components/com_emundus/emundus.php
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
-*/
+ */
 
 /**
  * HTML View class for the Emundus Component
  *
  * @package    Emundus
  */
-jimport( 'joomla.application.component.view');
+jimport('joomla.application.component.view');
 
-class EmundusViewEmailalert extends JViewLegacy{
+class EmundusViewEmailalert extends JViewLegacy
+{
 
-	var $_user = null;
-	var $_db = null;
-	
-	function __construct($config = array()){
-		//require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'javascript.php');
-		//require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
-		//require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-		//require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'emails.php');
-		//require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
-		
+	private $_user;
+
+	protected $users;
+
+	function __construct($config = array())
+	{
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+
 		$this->_user = JFactory::getUser();
-		$this->_db = JFactory::getDBO();
-		
+
 		parent::__construct($config);
 	}
-	
+
 	function display($tpl = null)
-	{	
-		$menu=JFactory::getApplication()->getMenu()->getActive();
-		$access=!empty($menu)?$menu->access : 0;
-		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id,$access)) 
+	{
+		$menu   = JFactory::getApplication()->getMenu()->getActive();
+		$access = !empty($menu) ? $menu->access : 0;
+		if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, $access))
 			die("You are not allowed to access to this page.");
-		//if (!$this->get('Key')) die("You are not allowed to access to this page.");
-		
-		$users = $this->get('mailtosend');
-		$this->assignRef('users', $users);
-		
+
+		$this->users = $this->get('mailtosend');
+
 		parent::display($tpl);
 	}
 }
+
 ?>

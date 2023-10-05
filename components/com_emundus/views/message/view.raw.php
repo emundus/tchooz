@@ -20,7 +20,10 @@ jimport('joomla.application.component.view');
  */
 
 class EmundusViewMessage extends JViewLegacy {
-
+	protected $users;
+	protected $fnums;
+	protected $body;
+	protected $data;
 
 	public function __construct($config = array()) {
 
@@ -42,7 +45,7 @@ class EmundusViewMessage extends JViewLegacy {
 	    }
 
 		// List of fnum is sent via GET in JSON format.
-	    $jinput = JFactory::getApplication()->input;
+	    $jinput = JFactory::getApplication()->getInput();
 	    $layout = $jinput->getString('layout', null);
 
 	    $document = JFactory::getDocument();
@@ -54,36 +57,35 @@ class EmundusViewMessage extends JViewLegacy {
 		    case 'user_message':
 			    $m_users = new EmundusModelUsers();
 
-		    	$users = $jinput->getString('users', null);
-			    if ($users === 'all') {
+		    	$this->users = $jinput->getString('users', null);
+			    if ($this->users === 'all') {
 				    $us = $m_users->getUsers(0,0);
-				    $users = array();
+				    $this->users = array();
 				    foreach ($us as $u) {
-					    $users[] = $u->id;
+					    $this->users[] = $u->id;
 				    }
 
 			    } else {
-			    	$users = (array) json_decode(stripslashes($users));
+				    $this->users = (array) json_decode(stripslashes($this->users));
 
-					foreach ($users as $key => $value) {
+					foreach ($this->users as $key => $value) {
 						if (!is_numeric($value)) {
-							unset($users[$key]);
+							unset($this->users[$key]);
 						}
 					}
 			    }
 
-			    $users = $m_users->getUsersByIds($users);
-			    $this->assignRef('users', $users);
+			    $this->users = $m_users->getUsersByIds($this->users);
 	        break;
 
 
 	        // Default = sending an email to an FNUM.
 		    default:
 			    $fnums = $jinput->getString('fnums', null);
-				$data = $jinput->getArray()['data'];
-			    $body = $jinput->getRaw('body','');
-                if(empty($body)){
-                    $body = JText::_('COM_EMUNDUS_EMAILS_DEAR') . ' [NAME], ';
+				$this->data = $jinput->getArray()['data'];
+			    $this->body = $jinput->getRaw('body','');
+                if(empty($this->body)){
+                    $this->body = JText::_('COM_EMUNDUS_EMAILS_DEAR') . ' [NAME], ';
                 }
 			    $fnums = ($fnums =='all') ? 'all' : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
@@ -112,14 +114,11 @@ class EmundusViewMessage extends JViewLegacy {
 					    $user = $m_application->getApplicantInfos($fnum->sid, $tables);
 					    $user['campaign_id'] = $fnum->cid;
 					    $fnum_array[] = $fnum->fnum;
-					    $users[] = $user;
+					    $this->users[] = $user;
 				    }
 			    }
 
-			    $this->assignRef('users', $users);
-			    $this->assignRef('fnums', $fnum_array);
-			    $this->assignRef('body', $body);
-			    $this->assignRef('data', $data);
+				$this->fnums = $fnum_array;
 	        break;
 
 	    }

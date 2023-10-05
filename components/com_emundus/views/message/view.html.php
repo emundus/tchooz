@@ -20,7 +20,8 @@ jimport('joomla.application.component.view');
  */
 
 class EmundusViewMessage extends JViewLegacy {
-
+	protected $users;
+	protected $fnums;
 
 	public function __construct($config = array()) {
 
@@ -42,7 +43,7 @@ class EmundusViewMessage extends JViewLegacy {
 		}
 
 		// List of fnum is sent via GET in JSON format.
-	    $jinput = JFactory::getApplication()->input;
+	    $jinput = JFactory::getApplication()->getInput();
 
 		$fnums_post = $jinput->getString('fnums', null);
 		$fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
@@ -66,7 +67,7 @@ class EmundusViewMessage extends JViewLegacy {
             }
         }
 
-		$fnum_array = [];
+		$this->fnums = [];
 
 		$tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
 
@@ -74,16 +75,12 @@ class EmundusViewMessage extends JViewLegacy {
 			if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
 				$user = $m_application->getApplicantInfos($fnum->sid, $tables);
 				$user['campaign_id'] = $fnum->cid;
-				$fnum_array[] = $fnum->fnum;
-				$users[] = $user;
+				$this->fnums[] = $fnum->fnum;
+				$this->users[] = $user;
 			}
 		}
 
-		$this->assignRef('users', $users);
-		$this->assignRef('fnums', $fnum_array);
-
 		parent::display($tpl);
-
     }
 }
 ?>
