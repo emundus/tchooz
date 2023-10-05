@@ -15,7 +15,7 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
-				<field name="context" type="text" default="site_quickicon" description="QUICKICON_GROUP" label="GROUP" />
+				<field name="context" type="text" default="mod_quickicon" description="QUICKICON_GROUP" label="GROUP" />
 			</fieldset>
 		</fields>
 	</config>

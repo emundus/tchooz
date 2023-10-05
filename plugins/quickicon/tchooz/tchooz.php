@@ -53,8 +53,11 @@ class plgQuickiconTchooz extends CMSPlugin
 	 */
 	public function onGetIcons($context)
 	{
-		if(!JFactory::getUser()->authorise('core.manage', 'com_emundus')) {
-			return;
+		$user = $this->app->getIdentity();
+
+		if($context !== $this->params->get('context', 'mod_quickicon')
+			|| !$user || !$user->authorise('core.manage', 'com_emundus')) {
+			return null;
 		}
 
 		$quickicons = array(
