@@ -2357,7 +2357,11 @@ class EmundusHelperFiles
     }
 
     // getEvaluation
-    public static function getEvaluation($format='html', $fnums = []) {
+    public static function getEvaluation($format='html', $fnums = [])
+    {
+	    $db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
+
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
@@ -2377,12 +2381,11 @@ class EmundusHelperFiles
 
         $element_id = $m_evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
         $elements = $h_files->getElementsName(implode(',',$element_id));
-        $evaluations = $m_files->getFnumArray($fnums, $elements,0,0,0,1);
+		$evaluations = $m_files->getFnumArray($fnums, $elements, 0, 0, 0, 0);
 
         $data = array();
         foreach ($evaluations as $eval) {
 
-            if ($eval['jos_emundus_evaluations___user'] > 0 && ($eval['jos_emundus_evaluations___user'] == JFactory::getUser()->id || EmundusHelperAccess::asAccessAction(5,'r'))) {
                 $str = '<br><hr>';
                 $str .= '<p><em style="font-size: 14px">'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em></p>';
                 $str .= '<h2>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h2>';
@@ -2416,9 +2419,34 @@ class EmundusHelperFiles
                             $str .= '<tr>';
                             if (strpos($element->element_name, 'comment') !== false) {
                                 $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
+						}
+						else
+						{
+							if($element->element_plugin == 'emundus_fileupload' && EmundusHelperAccess::asAccessAction(4,'r',JFactory::getUser()->id,$eval['fnum'])) {
+								$filepath = '';
+								$params = json_decode($element->element_attribs,true);
+
+								if(!empty($params['attachmentId'])) {
+									$query->clear()
+										->select('filename')
+										->from($db->quoteName('#__emundus_uploads'))
+										->where($db->quoteName('attachment_id') . ' = ' . $db->quote($params['attachmentId']));
+									$db->setQuery($query);
+									$filename = $db->loadResult();
+
+									if(!empty($filename)) {
+										$filepath = EMUNDUS_PATH_REL.$eval['jos_emundus_evaluations___student_id'].'/'.$filename;
+									}
+								}
+
+								if(!empty($filepath))
+								{
+									$str .= '<td width="30%"><b>' . JText::_(trim($element->element_label)) . '</b> </td><td width="70%"><a href="/' . $filepath . '" target="_blank">' . JText::_($eval[$k]) . '</a></td>';
+								}
                             } else {
                                 $str .= '<td width="30%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="70%">'.JText::_($eval[$k]).'</td>';
                             }
+						}
                             $str .= '</tr>';
                         }
                     }
@@ -2444,7 +2472,7 @@ class EmundusHelperFiles
 
                 $data[$eval['fnum']][$eval['jos_emundus_evaluations___user']] = $str;
             }
-        }
+
         return $data;
     }
 
@@ -3780,9 +3808,7 @@ class EmundusHelperFiles
                                             $parent_table_alias = '';
                                             $parent_table = $join_informations['join_from_table'];
 
-                                            if (!in_array($parent_table, $already_joined) && !$this->isTableLinkedToCampaignCandidature($parent_table)) {
-                                                // todo: what if column fnum is not in the join table?
-                                            } else {
+                                            if (in_array($parent_table, $already_joined) || !$this->isTableLinkedToCampaignCandidature($parent_table)) {
                                                 if (!in_array($parent_table, $already_joined)) {
                                                     $already_joined[] = $parent_table;
                                                     $where['join'] .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ';

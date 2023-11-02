@@ -722,10 +722,6 @@ class FabrikFEModelForm extends FabModelForm
 		{
 			$scripts[$scriptsKey] = 'components/com_fabrik/js/' . $view . '_' . $this->getId() . '.js';
 		}
-		elseif (File::exists(COM_FABRIK_FRONTEND . '/js/custom_' . $view . '.js'))
-		{
-			$scripts[$scriptsKey] = 'components/com_fabrik/js/custom_' . $view . '.js';
-		}
 	}
 
 	/**
@@ -5181,6 +5177,9 @@ class FabrikFEModelForm extends FabModelForm
 			{
 				$url = 'index.php?option=com_fabrik&view=form&formid=' . $input->getInt('formid') . '&rowid=' . $input->getString('rowid', '', 'string')
 					. '&listid=' . $input->getInt('listid');
+				$itemId = (int) FabrikWorker::itemId();
+				if ($itemId !== 0)
+					$url = $url . '&Itemid=' . $itemId;
 			}
 			else
 			{

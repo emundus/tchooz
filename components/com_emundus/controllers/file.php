@@ -9,6 +9,7 @@ use \classes\files\files;
 
 class EmundusControllerFile extends JControllerLegacy
 {
+	private $_user;
 	private $type;
 	private $files;
 
@@ -16,12 +17,13 @@ class EmundusControllerFile extends JControllerLegacy
     {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'files'.DS.'Files.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'files'.DS.'Evaluations.php');
-		
+
+		$this->_user = $this->app->getIdentity();
 		$this->type = $this->input->getString('type','default');
 		$refresh = $this->input->getString('refresh',false);
 
 
-		$files_session = unserialize(JFactory::getSession()->get('files'));
+		$files_session = unserialize($this->app->getSession()->get('files'));
 		if($files_session instanceof Files){
 			$this->files = $files_session;
 		}
@@ -36,10 +38,17 @@ class EmundusControllerFile extends JControllerLegacy
 		}
 
 		if(empty($this->files->getTotal()) || $refresh == true) {
-			$this->files->setFiles();
+			try {
+				$this->files->setFiles();
+			} catch (Exception $e) {
+				if ($e->getMessage() === 'COM_EMUNDUS_ERROR_NO_EVALUATION_GROUP') {
+					echo json_encode(['status' => false, 'msg' => JText::_($e->getMessage())]);
+					exit;
+				}
+			}
 		}
 
-	    JFactory::getSession()->set('files', serialize($this->files));
+	    $this->app->getSession()->set('files', serialize($this->files));
 
         parent::__construct($config);
     }
@@ -285,15 +294,12 @@ class EmundusControllerFile extends JControllerLegacy
 	}
 
 	public function deletecomment(){
-		$results = ['status' => 1, 'msg' => ''];
+		$results = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED')];
 		
 		$cid = $this->input->getString('cid','');
 
 		if(!empty($cid) && EmundusHelperAccess::asAccessAction(10,'c',JFactory::getUser()->id)){
 			$results['status'] = $this->files->deleteComment($cid);
-		} else {
-			$results['status'] = 0;
-			$results['msg'] = JText::_('ACCESS_DENIED');
 		}
 
 		echo json_encode((object)$results);

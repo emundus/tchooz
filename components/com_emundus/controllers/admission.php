@@ -40,18 +40,9 @@ class EmundusControllerAdmission extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 
 		$this->app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$this->user = $this->app->getIdentity();
-			$this->session   = $this->app->getSession();
-			$this->_db = Factory::getContainer()->get('DatabaseDriver');
-		}
-		else
-		{
-			$this->user = Factory::getUser();
-			$this->session   = Factory::getSession();
-			$this->_db = Factory::getDBO();
-		}
+		$this->user = $this->app->getIdentity();
+		$this->session   = $this->app->getSession();
+		$this->_db = Factory::getContainer()->get('DatabaseDriver');
 
 		parent::__construct($config);
 	}
@@ -138,28 +129,32 @@ class EmundusControllerAdmission extends JControllerLegacy
 
 	public function loadfilters()
 	{
-		$id = $this->input->getInt('id', null);
+		try {
+			$id = $this->input->getInt('id', null);
 
-		$filter                  = EmundusHelperFiles::getEmundusFilters($id);
-		$params                  = (array) json_decode($filter->constraints);
-		$params['select_filter'] = $id;
-		$params                  = json_decode($filter->constraints, true);
+			$filter                  = EmundusHelperFiles::getEmundusFilters($id);
+			$params                  = (array) json_decode($filter->constraints);
+			$params['select_filter'] = $id;
+			$params                  = json_decode($filter->constraints, true);
 
-		$this->session->set('select_filter', $id);
-		if (isset($params['filter_order']))
-		{
-			$this->session->set('filter_order', $params['filter_order']);
-			$this->session->set('filter_order_Dir', $params['filter_order_Dir']);
+			$this->session->set('select_filter', $id);
+			if (isset($params['filter_order']))
+			{
+				$this->session->set('filter_order', $params['filter_order']);
+				$this->session->set('filter_order_Dir', $params['filter_order_Dir']);
+			}
+
+			$this->session->set('filt_params', $params['filter']);
+			if (!empty($params['col']))
+			{
+				$this->session->set('adv_cols', $params['col']);
+			}
+
+			echo json_encode((object) (array('status' => true)));
+			exit();
+		} catch (Exception $e) {
+			throw new Exception;
 		}
-
-		$this->session->set('filt_params', $params['filter']);
-		if (!empty($params['col']))
-		{
-			$this->session->set('adv_cols', $params['col']);
-		}
-
-		echo json_encode((object) (array('status' => true)));
-		exit();
 	}
 
 	public function order()
@@ -865,7 +860,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 
 	public function getfnums_csv()
 	{
-		$fnums_post  = $this->input->getVar('fnums', null);
+		$fnums_post  = $this->input->get('fnums', null);
 		$fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 		$m_files     = $this->getModel('Files');
 
@@ -890,7 +885,6 @@ class EmundusControllerAdmission extends JControllerLegacy
 		}
 		$totalfile = sizeof($validFnums);
 
-		$this->session = $this->session;
 		$this->session->set('fnums_export', $validFnums);
 
 		$result = array('status' => true, 'totalfile' => $totalfile);
@@ -906,7 +900,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 	public function generate_array()
 	{
 
-		if (!@EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 

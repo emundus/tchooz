@@ -437,10 +437,15 @@ class hikashopUserClass extends hikashopClass {
 		} elseif(is_object($user) && isset($user->user_cms_id)) {
 			$my = JFactory::getUser( (int)$user->user_cms_id );
 		}
-
-		jimport('joomla.access.access');
-		$config =& hikashop_config();
-		$userGroups = JAccess::getGroupsByUser($my->id, (bool)$config->get('inherit_parent_group_access')); //$my->authorisedLevels();
+		if(empty($my->id)) {
+			jimport('joomla.application.component.helper');
+			$params = JComponentHelper::getParams('com_users');
+			$user_groups = array((int)$params->get('guest_usergroup', 1));
+		} else {
+			jimport('joomla.access.access');
+			$config =& hikashop_config();
+			$userGroups = JAccess::getGroupsByUser($my->id, (bool)$config->get('inherit_parent_group_access')); //$my->authorisedLevels();
+		}
 		return $userGroups;
 	}
 

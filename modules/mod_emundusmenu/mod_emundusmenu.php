@@ -12,18 +12,11 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 
 $app = Factory::getApplication();
-if(version_compare(JVERSION, '4.0', '>')) {
-	$document = $app->getDocument();
-	$wa = $document->getWebAssetManager();
-	$wa->registerAndUseStyle('mod_emundusmenu', 'modules/mod_emundusmenu/style/mod_emundusmenu.css');
+$document = $app->getDocument();
+$wa = $document->getWebAssetManager();
+$wa->registerAndUseStyle('mod_emundusmenu', 'modules/mod_emundusmenu/style/mod_emundusmenu.css');
 
-	$user = $app->getSession()->get('emundusUser');
-} else {
-	$document 	= Factory::getDocument();
-	$document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu.css" );
-
-	$user = Factory::getSession()->get('emundusUser');
-}
+$user = $app->getSession()->get('emundusUser');
 
 // Include the syndicate functions only once
 require_once dirname(__FILE__).'/helper.php';
@@ -73,11 +66,7 @@ elseif (!empty($applicant_menu))
     $list = modEmundusMenuHelper::getList($params,$applicant_menu);
     $layout = 'default';
 
-	if(version_compare(JVERSION, '4.0', '>')) {
-		$wa->registerAndUseStyle('mod_emundusmenu_applicant', 'modules/mod_emundusmenu/style/mod_emundusmenu_applicant.css');
-	} else {
-		$document->addStyleSheet("modules/mod_emundusmenu/style/mod_emundusmenu_applicant.css" );
-	}
+	$wa->registerAndUseStyle('mod_emundusmenu_applicant', 'modules/mod_emundusmenu/style/mod_emundusmenu_applicant.css');
 }
 $menu = $app->getMenu();
 $active	= $menu->getActive();

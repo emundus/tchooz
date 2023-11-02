@@ -41,15 +41,8 @@ class EmundusControllerUsers extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/logs.php');
 
 		$this->app = Factory::getApplication();
-
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->user = $this->app->getIdentity();
-			$session    = $this->app->getSession();
-		}
-		else {
-			$this->user = Factory::getUser();
-			$session    = Factory::getSession();
-		}
+		$this->user = $this->app->getIdentity();
+		$session    = $this->app->getSession();
 
 		$this->euser = $session->get('emundusUser');
 
@@ -95,12 +88,7 @@ class EmundusControllerUsers extends JControllerLegacy
 		$news      = $this->input->post->get('newsletter', null, 'string');
 		$ldap      = $this->input->post->get('ldap', 0, null);
 
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$user = clone(Factory::getContainer()->get(\Joomla\CMS\User\UserFactoryInterface::class)->loadUserById(0));
-		}
-		else {
-			$user = clone(Factory::getUser(0));
-		}
+		$user = clone(Factory::getContainer()->get(\Joomla\CMS\User\UserFactoryInterface::class)->loadUserById(0));
 
 		if (preg_match('/^[0-9a-zA-Z\_\@\+\-\.]+$/', $username) !== 1) {
 			echo json_encode((object) array('status' => false, 'msg' => JText::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD')));
@@ -197,12 +185,7 @@ class EmundusControllerUsers extends JControllerLegacy
 		$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 		$body = $m_emails->setTagsFabrik($body);
 
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$config = $this->app->getConfig();
-		}
-		else {
-			$config = Factory::getConfig();
-		}
+		$config = $this->app->getConfig();
 
 		$mail_from_sys      = $config->get('mailfrom');
 		$mail_from_sys_name = $config->get('fromname');

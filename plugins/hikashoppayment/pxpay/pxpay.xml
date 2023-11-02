@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashoppayment">
 	<name>Hikashop PaymentExpress (PxPay) Plugin</name>
-	<creationDate>29 septembre 2023</creationDate>
+	<creationDate>30 octobre 2023</creationDate>
 	<version>5.0.0</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

@@ -22,9 +22,9 @@ function onFabrikReadyBlock(e) {
 function onFabrikReady() {
     if (window.jQuery) {
         if (typeof Fabrik === "undefined") {
-            if (onFabrikReadyBody === false && typeof document.getElementsByTagName("BODY")[0] !== "undefined") {
-                onFabrikReadyBody = document.getElementsByTagName("BODY")[0];
-                onFabrikReadyBody.insertAdjacentHTML('afterbegin', blockDiv);
+            if (onFabrikReadyBody === false && jQuery('.fabrikActions').length && jQuery("#blockDiv").length === 0) {
+                jQuery('.fabrikActions').before(blockDiv);
+                
                 jQuery("#blockDiv").click(function(e) {
                     return onFabrikReadyBlock(e);
                 });

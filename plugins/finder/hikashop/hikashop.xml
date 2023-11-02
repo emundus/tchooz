@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="finder" method="upgrade">
 	<name>Smart Search - HikaShop Products</name>
-	<creationDate>29 septembre 2023</creationDate>
+	<creationDate>30 octobre 2023</creationDate>
 	<version>5.0.0</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

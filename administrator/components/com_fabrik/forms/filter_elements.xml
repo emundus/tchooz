@@ -62,7 +62,6 @@
 	</fields>
 
 	<fields name="list">
-<!--
 
 		<field
 			name="fullordering"
@@ -74,24 +73,22 @@
 			<option value="">JGLOBAL_SORT_BY</option>
 			<option value="e.id ASC">JGRID_HEADING_ID_ASC</option>
 			<option value="e.id DESC">JGRID_HEADING_ID_DESC</option>
-			<option value="e.name ASC">JGLOBAL_TITLE_ASC</option>
-			<option value="e.name DESC">JGLOBAL_TITLE_DESC</option>
-			<option value="e.label ASC">JGLOBAL_TITLE_ASC</option>
-			<option value="e.label DESC">JGLOBAL_TITLE_DESC</option>
+			<option value="e.name ASC">COM_FABRIK_NAME_ASC</option>
+			<option value="e.name DESC">COM_FABRIK_NAME_DESC</option>
+			<option value="e.label ASC">COM_FABRIK_LABEL_ASC</option>
+			<option value="e.label DESC">COM_FABRIK_LABEL_DESC</option>
 			<option value="e.how_in_list_summary ASC">JGLOBAL_TITLE_ASC</option>
 			<option value="e.how_in_list_summary DESC">JGLOBAL_TITLE_DESC</option>
 			<option value="e.published ASC">JSTATUS_ASC</option>
 			<option value="e.published DESC">JSTATUS_DESC</option>
-			<option value="e.ordering ASC">JSTATUS_ASC</option>
-			<option value="e.ordering DESC">JSTATUS_DESC</option>
-			<option value="g.label ASC">JSTATUS_ASC</option>
-			<option value="g.label DESC">JSTATUS_DESC</option>
-			<option value="e.plugin ASC">JSTATUS_ASC</option>
-			<option value="e.plugin DESC">JSTATUS_DESC</option>
-			<option value="g.name ASC">JSTATUS_ASC</option>
-			<option value="g.name DESC">JSTATUS_DESC</option>
+			<option value="e.ordering ASC">COM_FABRIK_ORDER_ASC</option>
+			<option value="e.ordering DESC">COM_FABRIK_ORDER_DESC</option>
+			<option value="g.name ASC">COM_FABRIK_GROUP_ASC</option>
+			<option value="g.name DESC">COM_FABRIK_GROUP_DESC</option>
+			<option value="e.plugin ASC">COM_FABRIK_PLUGIN_ASC</option>
+			<option value="e.plugin DESC">COM_FABRIK_PLUGIN_DESC</option>
 		</field>
--->
+
 		<field
 			name="limit"
 			type="limitbox"

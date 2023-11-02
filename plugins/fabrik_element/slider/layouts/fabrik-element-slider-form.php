@@ -35,5 +35,5 @@ $d = $displayData;
 		?>
 		<input type="hidden" class="fabrikinput" name="<?php echo $d->name; ?>" value="<?php echo $d->value; ?>" />
 		</div>
-		<span class="slider_output badge badge-info"><?php echo $d->value;?></span>
+		<span class="slider_output badge bg-info"><?php echo $d->value;?></span>
 	</div>

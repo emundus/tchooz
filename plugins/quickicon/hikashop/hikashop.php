@@ -24,7 +24,7 @@ class plgQuickiconHikaShop  extends hikashopJoomlaPlugin {
 			$paramContext = $this->params->get('context', 'site_quickicon');
 		else
 			$paramContext = $this->params->get('context', 'mod_quickicon');
-		if(is_string($context)) {
+		if(is_string($context) || is_null($context)) {
 			$functionContext = $context;
 		} else {
 			$functionContext = $context->getContext();
@@ -52,11 +52,11 @@ class plgQuickiconHikaShop  extends hikashopJoomlaPlugin {
 				'image' => $img,
 				'text' => $this->params->get('displayedtext', JText::_('HIKASHOP')),
 				'access' => array('core.manage', 'com_hikashop'),
-				'id' => 'plg_quickicon_hikashop'
+				'id' => 'plg_quickicon_hikashop',
+				'group' => 'MOD_QUICKICON_EXTENSIONS',
 			)
 		);
-		$jversion = preg_replace('#[^0-9\.]#i','',JVERSION);
-		if(version_compare($jversion,'4.0.0','>=')) {
+		if(!is_null($context) && !is_string($context)) {
 			$resultArray = $context->getArgument('result', []);
 			$resultArray[] = $result;
 			$context->setArgument('result', $resultArray);

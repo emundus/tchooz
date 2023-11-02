@@ -579,6 +579,9 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			$js = $callback.'();';
 			$selector = '#sanbox input';
 		}
+
+		$doc = JFactory::getDocument();
+		$doc->addScript('https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js');
 		$html = '
 		<a
 			id="paypal_connect"

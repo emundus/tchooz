@@ -22,8 +22,6 @@ use Joomla\CMS\Factory;
  */
 class EmundusControllerEmail extends JControllerLegacy
 {
-	protected $app;
-
 	private $_em_user;
 	private $_user;
 	private $m_emails;
@@ -36,10 +34,8 @@ class EmundusControllerEmail extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 
-		$this->app = Factory::getApplication();
-
-		$this->_em_user = JFactory::getSession()->get('emundusUser');
-		$this->_user    = JFactory::getUser();
+		$this->_em_user = $this->app->getSession()->get('emundusUser');
+		$this->_user    = $this->app->getIdentity();
 		$this->m_emails = $this->getModel('emails');
 	}
 
@@ -118,8 +114,9 @@ class EmundusControllerEmail extends JControllerLegacy
 			$recherche = $this->input->getString('recherche', '');
 			$lim       = $this->input->getInt('lim', 25);
 			$page      = $this->input->getInt('page', 0);
+			$category  = $this->input->getString('category', '');
 
-			$emails = $this->m_emails->getAllEmails($lim, $page, $filter, $sort, $recherche);
+			$emails = $this->m_emails->getAllEmails($lim, $page, $filter, $sort, $recherche, $category);
 
 			if (count($emails) > 0) {
 				$tab = array('status' => true, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $emails);

@@ -527,6 +527,7 @@ class EmundusModelsettings extends JModelList {
             $db->setQuery($query);
             $article = $db->loadObject();
 
+            if (!empty($article)) {
             $query->clear()
                 ->select('value')
                 ->from($db->quoteName('#__falang_content'))
@@ -560,6 +561,7 @@ class EmundusModelsettings extends JModelList {
             }
 
             return $article;
+            }
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/settings | Cannot get article ' . $article_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;

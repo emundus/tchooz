@@ -23,10 +23,19 @@ $user = $this->userid;
 
 <style type="text/css">
     .group-result { color: #16afe1 !important; }
+
+     .profile_tab p {
+         overflow: hidden;
+         white-space: nowrap;
+         text-overflow: ellipsis;
+         max-width: 200px;
+     }
+
 </style>
 
 <div class="row">
     <div class="panel panel-default widget em-container-form">
+	    <?php if ($this->header == 1) : ?>
         <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
                 <span class="material-icons">list_alt</span>
@@ -42,7 +51,8 @@ $user = $this->userid;
                 <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
             </div>
         </div>
-	    <?php if (!EmundusHelperAccess::isDataAnonymized($this->_user->id)) : ?>
+	    <?php endif; ?>
+	    <?php if (!EmundusHelperAccess::isDataAnonymized($this->_user->id) && $this->header == 1) : ?>
             <div class="em-flex-row em-mt-16">
                 <div class="em-flex-row em-small-flex-column em-small-align-items-start">
                     <div class="em-profile-picture-big no-hover"
@@ -68,29 +78,39 @@ $user = $this->userid;
 
             <div id="em-switch-profiles" <?php if(sizeof($pids) < 1): ?>style="display: none"<?php endif; ?>>
                 <div class="em_label">
-                    <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
+                    <label class="control-label em-filter-label em-font-size-14" style="margin-left: 0 !important;"><?= JText::_('PROFILE_FORM'); ?></label>
                 </div>
 
-                <select class="chzn-select em-chosen-select" id="select_profile" onchange="updateProfileForm()">
-                    <option value="<?= $defaultpid->pid; ?>" selected style=""> <?= $defaultpid->label; ?></option>
+                <div class="em-flex-row em-border-bottom-neutral-300" style="overflow:hidden; overflow-x: auto;">
+
+                    <div id="tab_link_<?php echo $defaultpid->pid; ?>" onclick="updateProfileForm(<?php echo $defaultpid->pid ?>)" class="em-mr-16 em-flex-row em-light-tabs profile_tab em-pointer em-light-selected-tab mb-2">
+                        <p class="em-font-size-14 em-neutral-900-color" title="<?= $defaultpid->label; ?>" style="white-space: nowrap"> <?= $defaultpid->label; ?></p>
+                    </div>
+
                     <?php foreach($pids as $pid) : ?>
-                        <optgroup class="step_group_profile" label ="<?= strtoupper($pid->lbl) ?>" style="">
                             <?php if(is_array($pid->data)) : ?>
                                 <?php foreach($pid->data as $data) : ?>
                                     <?php if($data->pid != $defaultpid->pid): ?>
                                         <?php if($data->step !== null) : ?>
-                                            <option style="" value="<?= $data->pid; ?>"> <?= $data->label; ?></option>
+                                <div id="tab_link_<?php echo $data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 em-flex-row profile_tab em-light-tabs em-pointer mb-2">
+                                    <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $data->label; ?>" style="white-space: nowrap"><?php echo $data->label; ?></p>
+                                </div>
                                         <?php else: ?>
-                                            <option style="" value="<?= $data->pid; ?>"><?= $data->label; ?></option>
+                                   <div id="tab_link_<?php echo $data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer mb-2">
+                                       <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $data->label; ?>" style="white-space: nowrap"><?php echo $data->label; ?></p>
+                                   </div>
                                         <?php endif ?>
                                     <?php endif ?>
                                 <?php endforeach; ?>
                             <?php else : ?>
-                                <option style="" value="<?= $pid->data->pid; ?>"> <?= $pid->data->label; ?></option>
+                                <div id="tab_link_<?php echo $pid->data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer mb-2">
+                                    <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $pid->data->label; ?>" style="white-space: nowrap"> <?php echo $pid->data->label; ?></p>
+                                </div>
                             <?php endif;?>
                         </optgroup>
                     <?php endforeach; ?>
-                </select>
+                </div>
+
             </div>
 
             <div class="active content" id="show_profile">

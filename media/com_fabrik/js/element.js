@@ -1068,8 +1068,8 @@ define(['jquery'], function (jQuery) {
         getTab: function(tab_div) {
             var tab_dl;
 	        if (Fabrik.bootstrapped) {
-		        var a = jQuery('a[href$=#' + tab_div.id + ']');
-		        tab_dl = a.closest('[data-role=fabrik_tab]');
+		        var a = jQuery("[data-bs-target='#" + tab_div.id + "']");
+		        tab_dl = a.closest('.nav-item');
 	        } else {
 		        tab_dl = tab_div.getPrevious('.tabs');
 	        }
@@ -1098,7 +1098,7 @@ define(['jquery'], function (jQuery) {
             var tab_div = this.element.getParent(c);
             if (tab_div) {
                 if (Fabrik.bootstrapped) {
-                    a = document.getElement('a[href$=#' + tab_div.id + ']');
+                    a = document.getElement("[data-bs-target='#" + tab_div.id + "']");
                     tab_dl = a.getParent('ul.nav');
                     tab_dl.addEvent('click:relay(a)', function (event, target) {
                         this.doTab(event);

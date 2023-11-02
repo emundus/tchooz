@@ -1,4 +1,4 @@
-FROM joomla:4.3.4-php8.2-apache
+FROM joomla:5.0.0-php8.2-apache
 
 RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && rm -rf /var/lib/apt/lists/*
 RUN printf "\n" | pecl install imagick

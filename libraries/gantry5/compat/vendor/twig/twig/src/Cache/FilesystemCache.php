@@ -35,7 +35,7 @@ class FilesystemCache implements CacheInterface
 
     public function generateKey($name, $className)
     {
-        $hash = hash(\PHP_VERSION_ID < 80100 ? 'sha256' : 'xxh128', $className);
+        $hash = hash('sha256', $className);
 
         return $this->directory.$hash[0].$hash[1].'/'.$hash.'.php';
     }

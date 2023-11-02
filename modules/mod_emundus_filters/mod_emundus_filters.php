@@ -4,11 +4,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 
 $app = Factory::getApplication();
-if(version_compare(JVERSION, '4.0', '>')) {
-	$user = $app->getSession()->get('emundusUser');
-} else {
-	$user = JFactory::getSession()->get('emundusUser');
-}
+$user = $app->getSession()->get('emundusUser');
 
 if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 	if (!empty($params)) {

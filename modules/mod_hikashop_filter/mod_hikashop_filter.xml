@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5" method="upgrade" client="site">
 	<name>Hikashop Filtering Module</name>
-	<creationDate>29 septembre 2023</creationDate>
+	<creationDate>30 octobre 2023</creationDate>
 	<version>5.0.0</version>
 	<author>Hikari Software</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

@@ -25,7 +25,4 @@
 			</fieldset>
 		</fields>
 	</config>
-	<updateservers>
-		<server type="collection">https://www.hikashop.com/update/paypalcheckout_update.xml</server>
-	</updateservers>
 </extension>

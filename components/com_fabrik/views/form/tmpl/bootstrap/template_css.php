@@ -16,6 +16,8 @@ echo "
 .fabrikGroup {
 clear: left;
 }
+/*Repeat group order icon*/
+.icon-menu-2 {cursor:move;}
 
 /*BS5 ajax validation: icons overriding dropdown caret*/
 .fabrikinput.form-select.is-invalid,.fabrikinput.form-select.is-valid {

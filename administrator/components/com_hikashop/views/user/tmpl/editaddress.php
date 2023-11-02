@@ -25,7 +25,7 @@ defined('_JEXEC') or die('Restricted access');
 						$this->address->$fieldName,
 						'data[address]['.$fieldName.']',
 						false,
-						' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'address\',0);"',
+						' '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'address\',0);"',
 						false,
 						$this->extraFields['address'],
 						$this->address

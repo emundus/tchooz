@@ -244,7 +244,7 @@ if(is_array($url))
 <script>
     addEventListener("resize", (event) => {
         let content = document.getElementById('mod_emundus_checklist___content');
-        if(innerWidth <= 753){
+        if(innerWidth <= 767){
             content.classList.add('mod_emundus_checklist___content_closed');
         }
         else{
@@ -253,7 +253,7 @@ if(is_array($url))
     });
 
     document.addEventListener('click', function(e) {
-        if (window.innerWidth < 480 && e.target.closest('.mod_emundus_checklist_expand')) {
+        if (window.innerWidth < 767 && e.target.closest('.mod_emundus_checklist_expand')) {
             expandForms(e);
         }
     });

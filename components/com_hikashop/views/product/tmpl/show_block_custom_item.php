@@ -24,7 +24,7 @@ foreach ($this->itemFields as $fieldName => $oneExtraField) {
 		$itemData,
 		'data[item]['.$oneExtraField->field_namekey.']',
 		false,
-		' class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'item\',0);"',
+		' class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'item\',0);"',
 		false,
 		$this->itemFields
 	);

@@ -480,6 +480,7 @@ class checkoutController extends checkoutLegacyController {
 	}
 
 	private function checkWorkflowSteps($step) {
+		$final = count($this->workflow['steps']) == $step+1;
 		for($i = 0; $i < $step; $i++) {
 			$validated = true;
 
@@ -493,7 +494,8 @@ class checkoutController extends checkoutLegacyController {
 					'step' => $i+1,
 					'workflow_step' => $i,
 					'pos' => $k,
-					'context' => 'submitblock'
+					'context' => 'submitblock',
+					'final' => $final,
 				);
 
 				$ctrl = hikashop_get('helper.checkout-' . $task);

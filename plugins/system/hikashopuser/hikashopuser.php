@@ -685,7 +685,7 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 			$onWhat='onchange';
 			if($oneExtraField->field_type=='radio')
 				$onWhat='onclick';
-			$html = $fieldsClass->display($oneExtraField,@$user->$fieldName,'data[user]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'user\',0);"',false,$extraFields['user'],$user);
+			$html = $fieldsClass->display($oneExtraField,@$user->$fieldName,'data[user]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'user\',0);"',false,$extraFields['user'],$user);
 			if(HIKASHOP_J40) {
 				$html = str_replace('class="inputbox', 'class="form-control', $html);
 			}
@@ -708,7 +708,7 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 	}
 
 	 public function onPreprocessMenuItems($name, $items = null, $params = null, $enabled = true) {
-		if($name != 'com_menus.administrator.module' )
+		if($name != 'com_menus.administrator.module' || empty($items))
 			return;
 
 	 	$remove = array();

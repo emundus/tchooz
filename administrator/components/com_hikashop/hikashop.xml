@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="2.5" method="upgrade">
 	<name>HikaShop</name>
-	<creationDate>29 septembre 2023</creationDate>
+	<creationDate>30 octobre 2023</creationDate>
 	<version>5.0.0</version>
 	<author>hikashop.com</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
@@ -16,9 +16,9 @@
 	</languages>
 	<install>
 		<sql>
-			<file driver="mysql">tables.sql</file>
+			<file driver="mysql" charset="">tables.sql</file>
 			<file driver="mysql" charset="utf8">tables.sql</file>
-			<file driver="mysqli">tables.sql</file>
+			<file driver="mysqli" charset="">tables.sql</file>
 			<file driver="mysqli" charset="utf8">tables.sql</file>
 		</sql>
 	</install>

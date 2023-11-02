@@ -3383,10 +3383,14 @@ class hikashopCartClass extends hikashopClass {
 					if(!empty($user_id)) {
 						$userClass = hikashop_get('class.user');
 						$user_groups = $userClass->getGroups( (int)$user_id );
-						$parent_product_groups = explode(',', $product['data']->parent_product_access);
-						hikashop_toInteger($parent_product_groups);
-						$intersect = array_intersect($user_groups, $parent_product_groups);
+					} else {
+						jimport('joomla.application.component.helper');
+						$params = JComponentHelper::getParams('com_users');
+						$user_groups = array((int)$params->get('guest_usergroup', 1));
 					}
+					$parent_product_groups = explode(',', $product['data']->parent_product_access);
+					hikashop_toInteger($parent_product_groups);
+					$intersect = array_intersect($user_groups, $parent_product_groups);
 					if(empty($intersect))
 						$msg = JText::sprintf('PRODUCT_NOT_AVAILABLE', $id);
 				}

@@ -46,4 +46,30 @@ class ModEmundusFooterHelper
 
         return base64_encode($url);
     }
+
+	/**
+	 * Returns the current users type
+	 *
+	 * @return string
+	 */
+	public static function getType()
+	{
+		$user = JFactory::getUser();
+
+		return (!$user->get('guest')) ? 'logout' : 'login';
+	}
+
+	/**
+	 * Get list of available two factor methods
+	 *
+	 * @return array
+	 *
+	 * @deprecated  4.0  Use JAuthenticationHelper::getTwoFactorMethods() instead.
+	 */
+	public static function getTwoFactorMethods()
+	{
+		JLog::add(__METHOD__ . ' is deprecated, use JAuthenticationHelper::getTwoFactorMethods() instead.', JLog::WARNING, 'deprecated');
+
+		return JAuthenticationHelper::getTwoFactorMethods();
+	}
 }

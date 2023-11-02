@@ -164,11 +164,18 @@ if (!empty($this->custom_title)) :?>
                 $div .= '<span class="material-icons-outlined em-green-500-color em-mr-4">check_circle</span>';
 		}
 		$div .= '<h4 class="em-mt-0-important">'.$attachment->value .'</h4>';
-            $div .= '</div><p class="em-ml-8 em-mt-8" style="white-space: pre-line">'.$attachment->description .'</p><div>';
+
+            $div .= '</div>';
+
+	        if(!empty($attachment->description)) {
+		        $div .= '<p class="em-ml-8 em-mt-8" style="white-space: pre-line">' . $attachment->description . '</p>';
+	        }
+
+            $div .= '<div>';
 
 		if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
-			$div .= '<div class="em-ml-8 em-mb-8 em-flex-row">
-                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="em-flex-row" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span class="em-ml-4"> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
+			$div .= '<div class="em-ml-8 em-mb-8 em-flex-row attachment_model">
+                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="em-flex-row" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
                          </div>';
 		}
 
@@ -182,7 +189,7 @@ if (!empty($this->custom_title)) :?>
 				} else {
 					$div .= JText::_('COM_EMUNDUS_ONBOARD_TYPE_FILE') . ' ' . $nb;
 				}
-				$div .= ' | <span style="font-size: 13px">' . ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2")) . '</span>';
+                    $div .= ' | <span style="font-size: 13px">' . JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2")) . '</span>';
 				if ($this->show_shortdesc_input) {
 					$div .= ' | ';
 					$div .= empty($item->description)?JText::_('COM_EMUNDUS_ATTACHMENTS_NO_DESC'):$item->description;
@@ -597,12 +604,6 @@ if (!empty($this->custom_title)) :?>
 
 				$div .= '</tr>';
 			} else {
-				/*$div .= '
-			<tr class="em-no-more-files">
-				<td>
-				<span class="em-red-500-color">'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').'</span>
-				</td>
-			</tr>';*/
 
 				$div .= '</tbody>';
 			}
@@ -673,7 +674,6 @@ if (!empty($this->custom_title)) :?>
             </div>
         </div>
     </div>
-	<?php endif; ?>
 </div>
 
 <script>
@@ -717,27 +717,6 @@ if (!empty($this->custom_title)) :?>
             }
         }
     }
-    /*
-<?php foreach($this->attachments as $attachment) { ?>
-  document.getElementById('<?= $attachment->id; ?>').style.visibility='<?= ($attachment->mandatory && $attachment->nb==0)?'visible':'hidden'; ?>';
-  document.getElementById('<?= $attachment->id; ?>').style.display='<?= ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
-<?php } ?>
-
-function OnSubmitForm() {
-    var btn = document.getElementsByName(document.pressed);
-    for(i=0 ; i<btn.length ; i++) {
-        btn[i].disabled="disabled";
-        btn[i].value="<?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENDING_ATTACHMENT'); ?>";
-    }
-    switch(document.pressed) {
-        case 'sendAttachment':
-            document.checklistForm.action ="index.php?option=com_emundus&task=upload&Itemid=<?= $itemid; ?>";
-        break;
-        default: return false;
-    }
-    return true;
-}
-*/
 
     function OnSubmitForm() {
         var btn = document.getElementsByName(document.pressed);
@@ -755,13 +734,6 @@ function OnSubmitForm() {
         }
         return true;
     }
-
-
-
-    /*var hash = window.location.hash;
-	if (hash != '') {
-		$(hash).addClass("ui warning message");
-	}*/
 
     function processSelectedFiles(fileInput) {
         var files = fileInput.files;
@@ -925,3 +897,11 @@ function OnSubmitForm() {
     }
 
 </script>
+
+<?php else: ?>
+<div id="attachment_list" class="em-attachmentList em-repeat-card em-w-100">
+    <h3><?= JText::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM') ?></h3>
+    <p class="em-mt-16"><?= JText::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM_DESC') ?></p>
+</div>
+<?php endif; ?>
+

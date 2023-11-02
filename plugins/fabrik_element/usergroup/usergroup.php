@@ -135,12 +135,24 @@ class PlgFabrik_ElementUsergroup extends PlgFabrik_ElementList
 		if (!empty($data))
 			{
 				$ugroups= (array)json_decode($data);
-				$opts = $this->allOpts();
-				$groupdata = [];
-
+				$isRepeat = false;
+				
 				foreach ($ugroups as $group) {
-					if (array_key_exists($group,$opts)) $groupdata[] = $opts[$group]->title;
-					else $groupdata[] = $group;
+					if (is_array($group)) $isRepeat = true;
+				}
+				
+				$allGroups = $this->allOpts();
+				$groupdata = [];
+				
+				if ($isRepeat) {
+					//for now do nothing (returns usergroup numbers)
+					return parent::renderListData($data, $thisRow, $opts);
+				}
+				else {
+					foreach ($ugroups as $group) {
+							if (array_key_exists($group,$allGroups)) $groupdata[] = $allGroups[$group]->title;
+							else $groupdata[] = $group;
+					}
 				}
 				
 				$data = json_encode($groupdata);

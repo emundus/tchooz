@@ -67,7 +67,7 @@ if(empty($this->ajax)) {
 					$value,
 					'data[order_' . $this->step . '_' . $this->module_position.']['.$fieldName.']',
 					false,
-					' class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'order_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
+					' class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'order_' . $this->step . '_' . $this->module_position.'\',0,\'hikashop_\');"',
 					false,
 					$fields,
 					$cart->cart_fields,

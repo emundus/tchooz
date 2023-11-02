@@ -100,7 +100,7 @@ class EmundusHelperFabrik {
             'process-jplugins' => '1',
             'cloak_emails' => '0',
             'enable_single_sorting' => 'default',
-            'collation' => 'utf8mb4_0900_ai_ci',
+            'collation' => 'utf8mb4_general_ci',
             'force_collate' => '',
             'list_disable_caching' => '0',
             'distinct' => '1',

@@ -152,7 +152,7 @@ defined('_JEXEC') or die('Restricted access');
 				$onWhat='onchange';
 				if($oneExtraField->field_type=='radio')
 					$onWhat='onclick';
-				$html = $this->fieldsClass->display($oneExtraField,$this->element->$fieldName,'data[category]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'category\',0);"');
+				$html = $this->fieldsClass->display($oneExtraField,$this->element->$fieldName,'data[category]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'category\',0);"');
 				if($oneExtraField->field_type=='hidden') {
 					$after[] = $html;
 					continue;

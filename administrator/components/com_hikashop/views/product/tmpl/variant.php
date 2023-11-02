@@ -274,7 +274,7 @@ window.productMgr.closeVariantEditor = function() { <?php echo $this->editor->js
 				$onWhat = 'onchange';
 				if($oneExtraField->field_type == 'radio')
 					$onWhat = 'onclick';
-				$txt = $this->fieldsClass->display($oneExtraField, @$this->product->$fieldName, 'data[variant]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'product\',0,\''.$this->fieldsClass->prefix.'\');"');
+				$txt = $this->fieldsClass->display($oneExtraField, @$this->product->$fieldName, 'data[variant]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'product\',0,\''.$this->fieldsClass->prefix.'\');"');
 				if($oneExtraField->field_type == 'hidden') {
 					$after[] = $txt;
 					continue;

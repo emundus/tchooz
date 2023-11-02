@@ -26,12 +26,7 @@ class PostgREST extends Api
 	{
 		parent::__construct();
 
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$this->db = Factory::getContainer()->get('DatabaseDriver');
-		} else {
-			$this->db = Factory::getDbo();
-		}
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 		$this->setAuth();
 		$this->setHeaders();
@@ -95,12 +90,7 @@ class PostgREST extends Api
 		$mapping = $this->getAttributeMapping();
 
 		if(empty($uid)){
-			if (version_compare(JVERSION, '4.0', '>'))
-			{
-				$uid = Factory::getApplication()->getIdentity()->id;
-			} else {
-				$uid = Factory::getUser()->id;
-			}
+			$uid = Factory::getApplication()->getIdentity()->id;
 		}
 
 		try

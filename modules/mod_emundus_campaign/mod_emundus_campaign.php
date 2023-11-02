@@ -17,24 +17,15 @@ $m_profiles = new EmundusModelProfile();
 $now = $helper->now;
 $app = Factory::getApplication();
 
-if (version_compare(JVERSION, '4.0', '>')) {
-    $config = $app->getConfig();
-    $session = $app->getSession();
-    $db = Factory::getContainer()->get('DatabaseDriver');
-    $user = $app->getIdentity();
-    $document = $app->getDocument();
-    $wa = $document->getWebAssetManager();
-    $lang_tag = $app->getLanguage()->getTag();
+$config = $app->getConfig();
+$session = $app->getSession();
+$db = Factory::getContainer()->get('DatabaseDriver');
+$user = $app->getIdentity();
+$document = $app->getDocument();
+$wa = $document->getWebAssetManager();
+$lang_tag = $app->getLanguage()->getTag();
 
-    $wa->useScript('jquery');
-} else {
-    $config = Factory::getConfig();
-    $session = Factory::getSession();
-    $db = Factory::getDbo();
-    $user = Factory::getUser();
-    $document = Factory::getDocument();
-    $lang_tag = Factory::getLanguage()->getTag();
-}
+$wa->useScript('jquery');
 
 $offset = $config->get('offset');
 $sef = $config->get('sef');
@@ -49,20 +40,11 @@ if($user->guest || in_array($e_user->profile,$app_prof))
     if (!in_array($params->get('mod_em_campaign_layout'), ['default_tchooz', 'tchooz_single_campaign']))
     {
         JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
-
-        if (version_compare(JVERSION, '4.0', '>')) {
-            $wa->registerAndUseStyle('mod_emundus_campaign','modules/mod_emundus_campaign/css/mod_emundus_campaign.css');
-        } else {
-            $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css");
-        }
+        $wa->registerAndUseStyle('mod_emundus_campaign','modules/mod_emundus_campaign/css/mod_emundus_campaign.css');
     }
     else
     {
-        if (version_compare(JVERSION, '4.0', '>')) {
-            $wa->registerAndUseStyle('mod_emundus_campaign','modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css');
-        } else {
-            $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css");
-        }
+        $wa->registerAndUseStyle('mod_emundus_campaign','modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css');
     }
 
     // PARAMS

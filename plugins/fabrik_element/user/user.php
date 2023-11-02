@@ -900,6 +900,7 @@ class PlgFabrik_ElementUser extends PlgFabrik_ElementDatabasejoin
 			{
 				case 'range':
 				case 'dropdown':
+				case 'auto-complete':
 					$tableType = 'id';
 					break;
 				case 'field':

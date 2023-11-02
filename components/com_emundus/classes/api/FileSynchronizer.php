@@ -79,12 +79,7 @@ class FileSynchronizer
     {
         JLog::addLogger(['text_file' => 'com_emundus.sync.php'], JLog::ERROR, 'com_emundus.sync');
 
-	    if (version_compare(JVERSION, '4.0', '>'))
-	    {
-		    $this->db = Factory::getContainer()->get('DatabaseDriver');
-		} else {
-			$this->db = Factory::getDbo();
-	    }
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		
         $this->setType($type);
     }

@@ -37,6 +37,7 @@ docker-compose-*.yml
 /templates/g5_helium/custom/config/menu/
 /templates/g5_helium/custom/css-compiled/
 
+# TEMPORARY FILES
 /tmp/*
 
 # CONFIGURATION FILES

@@ -28,7 +28,7 @@ class hikashopCheckoutCouponHelper extends hikashopCheckoutHelperInterface {
 			$qty = 0;
 		}
 
-		$coupon = trim($coupon);
+		$coupon = trim((string)$coupon);
 		if(empty($coupon))
 			return true;
 

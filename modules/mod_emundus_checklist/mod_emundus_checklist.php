@@ -18,21 +18,12 @@ use Joomla\CMS\Factory;
 
 $app = Factory::getApplication();
 
-if(version_compare(JVERSION, '4.0','>'))
-{
-	$document = $app->getDocument();
-	$wa = $document->getWebAssetManager();
-	$wa->registerAndUseStyle('mod_emundus_checklist', 'modules/mod_emundus_checklist/style/emundus_checklist.css');
+$document = $app->getDocument();
+$wa = $document->getWebAssetManager();
+$wa->registerAndUseStyle('mod_emundus_checklist', 'modules/mod_emundus_checklist/style/emundus_checklist.css');
 
-	$user = $app->getSession()->get('emundusUser');
-	$db = JFactory::getContainer()->get('DatabaseDriver');
-} else {
-	$document = JFactory::getDocument();
-	$document->addStyleSheet('modules/mod_emundus_checklist/style/emundus_checklist.css');
-
-	$user = JFactory::getSession()->get('emundusUser');
-	$db = JFactory::getDBO();
-}
+$user = $app->getSession()->get('emundusUser');
+$db = JFactory::getContainer()->get('DatabaseDriver');
 
 $query = $db->getQuery(true);
 

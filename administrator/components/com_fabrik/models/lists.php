@@ -33,7 +33,12 @@ class FabrikAdminModelLists extends FabModelList
 	{
 		if (empty($config['filter_fields']))
 		{
-			$config['filter_fields'] = array('l.id', 'label', 'db_table_name', 'published');
+			$config['filter_fields'] = [
+				'id', 'l.id', 
+				'label', 'l.label',
+				'db_table_name', 'l.db_table_name',
+				'published', 'l.published'
+			];
 		}
 
 		parent::__construct($config);
@@ -48,6 +53,8 @@ class FabrikAdminModelLists extends FabModelList
 	 */
 	protected function getListQuery()
 	{
+		$classPath = get_class($this) . '->' . implode('->', class_parents($this));
+		
 		// Initialise variables.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -81,8 +88,8 @@ class FabrikAdminModelLists extends FabModelList
 		}
 
 		// Add the list ordering clause.
-		$orderCol  = $this->state->get('list.ordering');
-		$orderDirn = $this->state->get('list.direction');
+		$orderCol  = $this->state->get('list.ordering', 'l.id');
+		$orderDirn = $this->state->get('list.direction', 'asc');
 
 		if ($orderCol == 'ordering' || $orderCol == 'category_title')
 		{
@@ -170,7 +177,8 @@ class FabrikAdminModelLists extends FabModelList
 	 *
 	 * @return  void
 	 */
-	protected function populateState($ordering = null, $direction = null)
+//	protected function populateState($ordering = 'l.id', $direction = 'ASC')
+	protected function populateState($ordering = '', $direction = '')
 	{
 		// Initialise variables.
 		$app = Factory::getApplication('administrator');
@@ -188,7 +196,7 @@ class FabrikAdminModelLists extends FabModelList
 		$this->setState('params', $params);
 
 		// List state information.
-		parent::populateState('label', 'asc');
+		parent::populateState($ordering, $direction);
 	}
 
 	/**

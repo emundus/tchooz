@@ -11944,11 +11944,6 @@ class FabrikFEModelList extends FormModel
 		{
 			$scripts[$scriptKey] = 'components/com_fabrik/js/list_' . $this->getId() . '.js';
 		}
-
-		if (File::exists(COM_FABRIK_FRONTEND . '/js/custom_list_'.$this->getTmpl().'.js'))
-		{
-			$scripts[$scriptKey] = 'components/com_fabrik/js/custom_list_'.$this->getTmpl().'.js';
-		}
 	}
 
 	/**

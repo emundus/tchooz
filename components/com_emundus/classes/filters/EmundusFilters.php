@@ -15,13 +15,7 @@ class EmundusFilters
 		JLog::addLogger(['text_file' => 'com_emundus.filters.php'], JLog::ALL, 'com_emundus.filters');
 
 		$app = Factory::getApplication();
-
-		if(version_compare(JVERSION, '4.0', '>'))
-		{
-			$this->user = $app->getIdentity();
-		} else {
-			$this->user = JFactory::getUser();
-		}
+		$this->user = $app->getIdentity();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
 			throw new Exception('Access denied', 403);
@@ -83,7 +77,7 @@ class EmundusFilters
 					case 'radiobutton':
 					case 'databasejoin':
 						$filter['type'] = 'select';
-						$filter['values'] = $this->getFabrikElementValues($element);
+						$filter['values'] = [];
 						break;
 					case 'yesno':
 						$filter['type'] = 'select';

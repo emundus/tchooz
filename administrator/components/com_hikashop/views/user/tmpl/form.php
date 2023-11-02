@@ -81,7 +81,7 @@ defined('_JEXEC') or die('Restricted access');
 				$this->user->$fieldName,
 				'data[user]['.$fieldName.']',
 				false,
-				' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'user\',0);"',
+				' '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'user\',0);"',
 				false,
 				$this->fields['user'],
 				$this->user

@@ -87,7 +87,7 @@ if(!empty($this->options['display'])) {
 				@$this->edit_address->$fieldname,
 				'data[address_'.$this->step . '_' . $this->module_position.']['.$fieldname.']',
 				false,
-				' class="'.HK_FORM_CONTROL_CLASS.'" ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\'address_'.$this->step . '_'.$this->module_position.'\',0,\'hikashop_checkout_\');"',
+				' class="'.HK_FORM_CONTROL_CLASS.'" ' . $onWhat . '="window.hikashop.toggleField(this,\''.$fieldname.'\',\'address_'.$this->step . '_'.$this->module_position.'\',0,\'hikashop_checkout_\');"',
 				false,
 				$this->cart_addresses['fields'],
 				$this->edit_address,

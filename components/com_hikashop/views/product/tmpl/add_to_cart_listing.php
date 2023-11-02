@@ -79,7 +79,7 @@ if(empty($this->row->has_options) && ($this->row->product_quantity == -1 || $thi
 				$itemData,
 				'data[item]['.$oneExtraField->field_namekey.']',
 				false,
-				' '.$onWhat.'="if (\'function\' == typeof window.hikashopToggleFields) { window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'item\',0); }"'
+				' '.$onWhat.'="if (\'function\' == typeof window.hikashopToggleFields) { window.hikashop.toggleField(this,\''.$fieldName.'\',\'item\',0); }"'
 			);
 					?></span>
 				</td>

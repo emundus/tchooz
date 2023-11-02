@@ -28,12 +28,7 @@ class modEmundusMenuHelper
 	{
 		$user = JFactory::getUser();
 		$app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$config = $app->getConfig();
-		} else {
-			$config = Factory::getConfig();
-		}
+		$config = $app->getConfig();
 		$is_sef = (bool)$config->get('sef');
 		$menu = $app->getMenu();
 

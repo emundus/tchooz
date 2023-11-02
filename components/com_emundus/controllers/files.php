@@ -10,6 +10,7 @@
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 //use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
@@ -133,7 +134,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			if (!empty($filters)) {
 				$filters = json_decode($filters, true);
 				$quick_search_filters = json_decode($quick_search_filters, true);
-				$session = JFactory::getSession();
+				$session = $this->app->getSession();
 				$session->set('em-applied-filters', $filters);
 				$session->set('em-quick-search-filters', $quick_search_filters);
 				$session->set('limitstart', 0);
@@ -209,7 +210,7 @@ class EmundusControllerFiles extends JControllerLegacy
             
             $id = $this->input->getInt('id', null);
 
-            $session = JFactory::getSession();
+            $session = $this->app->getSession();
 
             $h_files = new EmundusHelperFiles;
             $filter = $h_files->getEmundusFilters($id);
@@ -243,7 +244,7 @@ class EmundusControllerFiles extends JControllerLegacy
     public function order() {
         $order = $this->input->getString('filter_order', null);
 
-        $session = JFactory::getSession();
+        $session = $this->app->getSession();
         $ancientOrder = $session->get('filter_order');
         $params = $session->get('filt_params');
         $session->set('filter_order', $order);
@@ -282,7 +283,7 @@ class EmundusControllerFiles extends JControllerLegacy
     public function setlimit() {
         $limit = $this->input->getInt('limit', null);
 
-        $session = JFactory::getSession();
+        $session = $this->app->getSession();
         $session->set('limit', $limit);
         $session->set('limitstart', 0);
 
@@ -423,7 +424,7 @@ class EmundusControllerFiles extends JControllerLegacy
     public function setlimitstart()
     {
         $limistart = $this->input->getInt('limitstart', null);
-        $session = JFactory::getSession();
+        $session = $this->app->getSession();
         $limit = intval($session->get('limit'));
         $limitstart = ($limit != 0 ? ($limistart > 1 ? (($limistart - 1) * $limit) : 0) : 0);
         $session->set('limitstart', $limitstart);
@@ -1105,10 +1106,12 @@ class EmundusControllerFiles extends JControllerLegacy
         $profile = $this->input->getVar('profile', null);
 
         $defaultElements    = $m_files->getDefaultElements();
-        $defaultElements  =  array_map(function($value) {
-            $value->element_label = JText::_($value->element_label);
-            return $value;
-        }, $defaultElements);
+		if(!empty($defaultElements)) {
+	        $defaultElements  =  array_map(function($value) {
+	            $value->element_label = JText::_($value->element_label);
+	            return $value;
+	        }, $defaultElements);
+		}
 
         $elements           = $h_files->getElements($code, $camp, [], $profile);
 
@@ -1267,7 +1270,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $m_files = $this->getModel('Files');
 
-        $fnums_post = $this->input->getVar('fnums', null);
+        $fnums_post = $this->input->get('fnums', null);
         $fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
         if ($fnums_array == 'all') {
@@ -1425,8 +1428,21 @@ class EmundusControllerFiles extends JControllerLegacy
             $ordered_elements[$c] = $elements[$c];
         }
 
-        //$fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
-	    $fnumsArray = $m_files->getFnumArray2($fnums, $ordered_elements, $start, $limit);
+		$failed_with_old_method = false;
+		if ($methode == 2) {
+			$fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);
+			if ($fnumsArray === false) {
+				$failed_with_old_method = true;
+			}
+		}
+
+		if ($methode != 2 || $failed_with_old_method) {
+			$not_already_handled_fnums = $fnums;
+			if ($start > 0) {
+				$not_already_handled_fnums = $session->get('not_already_handled_fnums');
+			}
+			$fnumsArray = $m_files->getFnumArray2($not_already_handled_fnums, $ordered_elements, 0, $limit, $methode);
+		}
 
 		if ($fnumsArray !== false) {
 			// On met a jour la liste des fnums traités
@@ -1434,6 +1450,8 @@ class EmundusControllerFiles extends JControllerLegacy
 			foreach ($fnumsArray as $fnum) {
 				$fnums[] = $fnum['fnum'];
 			}
+			$not_already_handled_fnums = array_diff($not_already_handled_fnums, $fnums);
+			$session->set('not_already_handled_fnums', $not_already_handled_fnums);
 
 			foreach ($colsup as $col) {
 				$col = explode('.', $col);
@@ -1602,7 +1620,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
 			//check if evaluator can see others evaluators evaluations
-			if (@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) {
+			if (EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) {
 				$user = $m_users->getUserById($current_user->id);
 				$evaluator = $user[0]->lastname." ".$user[0]->firstname;
 				if ($eval_can_see_eval == 0 && !empty($objclass) && in_array("emundusitem_evaluation otherForm", $objclass)) {
@@ -1923,7 +1941,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
         $eMConfig = JComponentHelper::getParams('com_emundus');
 
-        $session = JFactory::getSession();
+        $session = $this->app->getSession();
         $fnums_post = $session->get('fnums_export');
 
         if (count($fnums_post) == 0) {
@@ -2058,7 +2076,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 if (($forms != 1) && $formids[0] == "" && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
                     $files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
 
-	            EmundusModelLogs::log(JFactory::getUser()->id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
+	            EmundusModelLogs::log($this->_user->id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
             }
 
         }
@@ -2482,7 +2500,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $i++;
 
         for ($i; $i<$nbcol; $i++) {
-            $value = $objPHPExcel->getActiveSheet()->getCellByColumnAndRow($i, 1)->getValue();
+            $value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
 
             if ($value=="forms(%)" || $value=="attachment(%)") {
                 $conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i].'1')->getConditionalStyles();
@@ -2507,7 +2525,7 @@ class EmundusControllerFiles extends JControllerLegacy
             exit();
         }
 
-        $session = JFactory::getSession();
+        $session = $this->app->getSession();
         $session->clear('fnums_export');
         $result = array('status' => true, 'link' => $link);
         echo json_encode((object) $result);
@@ -2753,7 +2771,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $objWriter = new \PhpOffice\PhpSpreadsheet\Writer\Xls($objPHPSpreadsheet);
 
         $objWriter->save(JPATH_SITE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
-        return JFactory::getUser()->id.'_extraction.xls';
+        return $this->_user->id.'_extraction.xls';
     }
 
 
@@ -3001,9 +3019,12 @@ class EmundusControllerFiles extends JControllerLegacy
                         $file_ids = array();
 
                         foreach($files as $file) {
-                            $file_ids[] = $file['attachment_id'];
+	                        if (!empty($file['attachment_id'])) {
+		                        $file_ids[] = $file['attachment_id'];
+	                        }
                         }
 
+	                    // TODO: weird to use attachment_to_export here, should be $file_ids instead ? it has been like this for a long time, so I'm not sure
                         $setup_attachments = $m_files->getSetupAttachmentsById($attachment_to_export);
                         if (!empty($setup_attachments) && !empty($files)) {
                             foreach($setup_attachments as $att) {
@@ -4088,6 +4109,33 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
             }
         }
+
+        echo json_encode($response);
+        exit;
+    }
+
+	public function getfiltervalues() {
+		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$user = $this->app->getIdentity();
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$element_id = $this->input->getInt('id', 0);
+
+			if (!empty($element_id)) {
+				require_once (JPATH_SITE . '/components/com_emundus/classes/filters/EmundusFilters.php');
+				$filters = new EmundusFilters();
+
+				$response['data'] = $filters->getFabrikElementValuesFromElementId($element_id);
+				$session = $this->app->getSession();
+				$response['all'] = $session->get('em-filters-all-values');
+				$response['status'] = true;
+				$response['code'] = 200;
+				$response['msg'] = JText::_('SUCCESS');
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+				$response['code'] = 400;
+			}
+		}
 
         echo json_encode($response);
         exit;

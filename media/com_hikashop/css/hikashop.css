@@ -1135,18 +1135,16 @@ div.hikashop_checkout_loading > div.hikashop_checkout_loading_spinner.small_spin
 .hika_address_element .hika_edit input[type="radio"]{
 	float:left;
 }
-
-.hikashop_cart_step_current .hkbadge,
-.hikashop_cart_step_finished .hkbadge,
 .hikashop_accordion_default_after .hkbadge,
-.hikashop_accordion_light_after .hkbadge {
+.hikashop_accordion_default_before .hkbadge {
 	width: 35px;
 	height: 35px;
 	font-size: 1.7em;
 	border-radius: 25px;
 	margin: 10px;
 }
-span.hikashop_checkout_step_name {
+.hikashop_accordion_default_after span.hikashop_checkout_step_name,
+.hikashop_accordion_default_before span.hikashop_checkout_step_name {
     display: inline-block;
     text-decoration: none;
     vertical-align: top;
@@ -1154,7 +1152,8 @@ span.hikashop_checkout_step_name {
 	font-size: 1.7em;
     margin: 5px;
 }
-span.hikashop_checkout_step_name a {
+.hikashop_accordion_default_after span.hikashop_checkout_step_name a,
+.hikashop_accordion_default_before span.hikashop_checkout_step_name a {
 	text-decoration: none;
 }
 .hikashop_accordion_light_before span.hikashop_checkout_step_name a:hover,
