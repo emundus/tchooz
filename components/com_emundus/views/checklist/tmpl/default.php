@@ -46,10 +46,13 @@ if (!empty($this->current_phase) && !empty($this->current_phase->entry_status)) 
 		$status_for_send[] = $status;
 	}
 }
-$is_app_sent = !in_array($this->user->status, $status_for_send);
+$is_app_sent = !in_array($this->_user->status, $status_for_send);
 
 $block_upload = true;
-if ($can_edit_after_deadline || (!$is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $this->isLimitObtained !== true) || in_array($this->user->id, $applicants) || ($is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $can_edit_until_deadline && $this->isLimitObtained !== true)) {
+if ($can_edit_after_deadline ||
+    (!$is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $this->isLimitObtained !== true) || 
+    in_array($this->_user->id, $applicants) || 
+    ($is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $can_edit_until_deadline && $this->isLimitObtained !== true)) {
 	$block_upload = false;
 }
 
@@ -185,7 +188,7 @@ if (!empty($this->custom_title)) :?>
 				$div .= '<tr class="em-added-files">
                     <td class="em-flex-row">';
 				if ($item->can_be_viewed == 1) {
-		                $div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
+		                $div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="'.$chemin.$this->_user->id .'/'.$item->filename .'" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
 				} else {
 					$div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
 				}
@@ -202,7 +205,7 @@ if (!empty($this->custom_title)) :?>
 		// Disable upload UI if
 		if (!$block_upload) {
 
-			if ($attachment->nb < $attachment->nbmax || $this->user->profile <= 4) {
+			if ($attachment->nb < $attachment->nbmax || $this->_user->profile <= 4) {
 				$div .= '
                 <tr>
                     <td>';
@@ -226,7 +229,7 @@ if (!empty($this->custom_title)) :?>
                         size: '.$addpipe_size.',
                         qualityurl: "'.$addpipe_qualityurl.'", 
                         accountHash:"'.$addpipe_account_hash.'", 
-                        payload:"{\"userId\":\"'.$this->user->id.'\",\"fnum\":\"'.$this->user->fnum.'\",\"aid\":\"'.$attachment->id.'\",\"lbl\":\"'.$attachment->lbl.'\",\"jobId\":\"'.$this->user->fnum.'|'.$attachment->id.'|'.date("Y-m-d_H:i:s").'\"}", 
+                        payload:"{\"userId\":\"'.$this->_user->id.'\",\"fnum\":\"'.$this->_user->fnum.'\",\"aid\":\"'.$attachment->id.'\",\"lbl\":\"'.$attachment->lbl.'\",\"jobId\":\"'.$this->_user->fnum.'|'.$attachment->id.'|'.date("Y-m-d_H:i:s").'\"}", 
                         eid:"'.$addpipe_eid.'", 
                         showMenu:'.$addpipe_showmenu.', 
                         mrt:'.(!empty($attachment->video_max_length) ? $attachment->video_max_length : $addpipe_mrt).',
@@ -314,7 +317,7 @@ if (!empty($this->custom_title)) :?>
                 
                             //reload page
                             recorderInserted.remove();
-                            is_file_uploaded("'.$this->user->fnum.'","'.$attachment->id.'","'.$this->user->id.'");
+                            is_file_uploaded("'.$this->_user->fnum.'","'.$attachment->id.'","'.$this->_user->id.'");
                         }
             
                         //DESKTOP UPLOAD EVENTS API
@@ -334,7 +337,7 @@ if (!empty($this->custom_title)) :?>
                 
                             //reload page
                             recorderInserted.remove();
-                            is_file_uploaded('.$this->user->fnum.','.$attachment->id.','.$this->user->id.');
+                            is_file_uploaded('.$this->_user->fnum.','.$attachment->id.','.$this->_user->id.');
                         }
             
                         recorderInserted.onDesktopVideoUploadFailed = function(id, error){
@@ -354,7 +357,7 @@ if (!empty($this->custom_title)) :?>
                 
                             //reload page
                             recorderInserted.remove();
-                            is_file_uploaded("'.$this->user->fnum.'","'.$attachment->id.'","'.$this->user->id.'");
+                            is_file_uploaded("'.$this->_user->fnum.'","'.$attachment->id.'","'.$this->_user->id.'");
                         }
             
                         recorderInserted.onVideoUploadProgress = function(recorderId, percent){
@@ -664,6 +667,7 @@ if (!empty($this->custom_title)) :?>
 </div>
 
 <script>
+    var $ = jQuery.noConflict();
     $(document).on('change', '.btn-file :file', function() {
         var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,

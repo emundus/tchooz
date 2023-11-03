@@ -2144,7 +2144,7 @@ class EmundusModelUsers extends JModelList {
 		$groups = [];
 
 		$db = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$query->select($db->quoteName('sg.id'))
 			->from($db->quoteName('#__emundus_setup_groups', 'sg'))

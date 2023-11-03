@@ -142,7 +142,7 @@ class EmundusHelperFilesTest extends TestCase {
 		$this->assertEmpty($data, 'Get fabrik element data with 0 id returns empty array');
 
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 		$query->select('*')
 			->from('#__fabrik_elements')
 			->limit(1);

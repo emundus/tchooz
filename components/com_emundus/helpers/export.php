@@ -408,7 +408,7 @@ class EmundusHelperExport {
 
 		$db = JFactory::getDBO();
 
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 		$query
 			->select($db->quoteName('c.introtext'))
 			->from($db->quoteName('#__content','c'))

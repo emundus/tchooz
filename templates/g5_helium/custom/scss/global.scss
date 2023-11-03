@@ -6380,8 +6380,9 @@ fieldset[disabled] .multiselect {
   }
 
   .em-h-100 {
+    grid-template-rows: 20px 50px 12fr;
     justify-content: start;
-    min-height: 100% !important;
+    min-height: 100vh !important;
     height: auto;
 
     .swal2-content {

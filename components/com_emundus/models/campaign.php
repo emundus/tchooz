@@ -41,23 +41,15 @@ class EmundusModelCampaign extends JModelList {
 
 		$this->app = Factory::getApplication();
 
-		if(version_compare(JVERSION,'4.0','>'))
-		{
-			$this->_db = Factory::getContainer()->get('DatabaseDriver');
-			$this->_em_user = $this->app->getSession()->get('emundusUser');
-			$this->_user = $this->app->getIdentity();
-			$this->config = $this->app->getConfig();
-		} else {
-			$this->_db = Factory::getDBO();
-			$this->_em_user = Factory::getSession()->get('emundusUser');
-			$this->_user = Factory::getUser();
-			$this->config = Factory::getConfig();
-		}
+		$this->_db = Factory::getContainer()->get('DatabaseDriver');
+		$this->_em_user = $this->app->getSession()->get('emundusUser');
+		$this->_user = $this->app->getIdentity();
+		$this->config = $this->app->getConfig();
 
 		// Get pagination request variables
 		$filter_order = $this->app->getUserStateFromRequest( $option.'filter_order', 'filter_order', 'label', 'cmd' );
         $filter_order_Dir = $this->app->getUserStateFromRequest( $option.'filter_order_Dir', 'filter_order_Dir', 'desc', 'word' );
-        $limit = $this->app->getUserStateFromRequest('global.list.limit', 'limit', $this->app->getCfg('list_limit'), 'int');
+        $limit = $this->app->getUserStateFromRequest('global.list.limit', 'limit', $this->app->get('list_limit'), 'int');
 		$limitstart = $this->app->getUserStateFromRequest('global.list.limitstart', 'limitstart', 0, 'int');
         $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
@@ -2560,7 +2552,7 @@ class EmundusModelCampaign extends JModelList {
 
             if (!empty($campaign)) {
                 $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
+                $query = $db->createQuery();
 
                 try {
                     $query->clear()
@@ -2603,7 +2595,7 @@ class EmundusModelCampaign extends JModelList {
 
 		if (!empty($campaign_id)) {
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->update($db->quoteName('#__emundus_setup_campaigns'))
 				->set($db->quoteName('pinned') . ' = 0')
@@ -2639,7 +2631,7 @@ class EmundusModelCampaign extends JModelList {
                 $start_date = empty($start_date) ? date('Y-m-d H:i:s') : $start_date;
 
                 $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
+                $query = $db->createQuery();
 
                 $columns = ['profile', 'output_status', 'start_date'];
                 $values = $profile . ',' . $output_status . ', ' . $db->quote($start_date);
@@ -2716,7 +2708,7 @@ class EmundusModelCampaign extends JModelList {
 
         if (!empty($profile) && !empty($entry_status)) {
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
 
             if (!empty($params)) {
                 if (!empty($params['programs'])) {
@@ -2796,7 +2788,7 @@ class EmundusModelCampaign extends JModelList {
         $deleted = false;
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->delete('#__emundus_campaign_workflow');
 
@@ -2839,7 +2831,7 @@ class EmundusModelCampaign extends JModelList {
         $workflows = [];
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('*')
             ->from($db->quoteName('#__emundus_campaign_workflow'));
 

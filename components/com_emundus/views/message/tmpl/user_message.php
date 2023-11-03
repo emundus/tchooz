@@ -335,7 +335,7 @@ $uids = array();
     var SizeStyle = Quill.import('attributors/style/size');
     Quill.register(SizeStyle, true);
 
-    let editor = null;
+    var editor = null;
 
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(() => {

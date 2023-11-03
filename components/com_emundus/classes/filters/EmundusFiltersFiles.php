@@ -76,7 +76,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		if (!empty($campaign_ids)) {
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			// profiles from campaigns
 			$query->select('DISTINCT profile_id')
@@ -131,7 +131,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			// get all forms associated to the user's profiles
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->select('link')
 				->from('#__menu')
@@ -178,7 +178,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			if (!empty($form_ids)) {
 				$db = JFactory::getDbo();
-				$query = $db->getQuery(true);
+				$query = $db->createQuery();
 
 				$query->clear()
 					->select('jfe.id, jfe.plugin, jfe.label, jfe.params, jffg.form_id as element_form_id, jff.label as element_form_label')
@@ -239,7 +239,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 		if (!$found_from_cache) {
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$filter_menu_values = $this->menu_params->get('em_filters_values', '');
 			$filter_menu_values = explode(',', $filter_menu_values);
@@ -582,7 +582,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
             // get all forms associated to the user's profiles
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
 
             $query->select('link')
                 ->from('#__menu')

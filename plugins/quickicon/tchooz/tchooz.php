@@ -1,19 +1,15 @@
 <?php
 
 /**
- * @package   Gantry 5
- * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @package   Tchooz
+ * @author    eMundus https://www.emundus.fr
+ * @copyright Copyright (C) 2007 - 2021 eMundus, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
  */
 defined('_JEXEC') or die;
 
-use Gantry\Component\Filesystem\Streams;
-use Gantry\Framework\Gantry;
-use Gantry\Framework\Platform;
-use Gantry5\Loader;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -27,7 +23,7 @@ if (!class_exists(CMSPlugin::class)) {
 }
 
 /**
- * Class plgQuickiconGantry5
+ * Class plgQuickiconTchooz
  */
 class plgQuickiconTchooz extends CMSPlugin
 {
@@ -35,7 +31,7 @@ class plgQuickiconTchooz extends CMSPlugin
 	protected $app;
 
 	/**
-	 * plgQuickiconGantry5 constructor.
+	 * plgQuickiconTchooz constructor.
 	 * @param DispatcherInterface $subject
 	 * @param array $config
 	 */
@@ -46,7 +42,7 @@ class plgQuickiconTchooz extends CMSPlugin
 	}
 
 	/**
-	 * Display Gantry 5 backend icon
+	 * Display Tchooz backend icon
 	 *
 	 * @param string $context
 	 * @return array|null

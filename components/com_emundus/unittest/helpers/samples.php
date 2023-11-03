@@ -47,7 +47,7 @@ class EmundusUnittestHelperSamples
         $m_users = new EmundusModelUsers;
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->insert('#__users')
             ->columns('name, username, email, password')
@@ -127,7 +127,7 @@ class EmundusUnittestHelperSamples
                 $group_id = $group['group_id'];
 
                 $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
+                $query = $db->createQuery();
 
                 $query->select('params')
                     ->from('#__fabrik_groups')
@@ -162,7 +162,7 @@ class EmundusUnittestHelperSamples
         $deleted = false;
         if (!empty($group_id)) {
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
 
             $query->select('params')
                 ->from('#__fabrik_groups')
@@ -190,7 +190,7 @@ class EmundusUnittestHelperSamples
         $deleted = false;
         if (!empty($form_id)) {
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
 
             $query->delete('#__fabrik_groups')
                 ->where('id = ' . $form_id);
@@ -241,7 +241,7 @@ class EmundusUnittestHelperSamples
 		$sample_id = 0;
 
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$rand_id = rand();
 
@@ -263,7 +263,7 @@ class EmundusUnittestHelperSamples
 
 		if (!empty($attachment_id)) {
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->insert('#__emundus_setup_letters')
 				->columns(['attachment_id', 'template_type', 'header', 'body', 'footer', 'title'])
@@ -333,7 +333,7 @@ class EmundusUnittestHelperSamples
 			$localFilename = 'Unit Test file.pdf';
 
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->insert('#__emundus_uploads')
 				->columns(['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'])
@@ -355,7 +355,7 @@ class EmundusUnittestHelperSamples
 	{
 
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		// Get profile
 		$query->clear()
@@ -384,7 +384,7 @@ class EmundusUnittestHelperSamples
 
 	public function addJGroup($j_group, $user_id) {
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		try
 		{
@@ -415,7 +415,7 @@ class EmundusUnittestHelperSamples
         }
 
         if (!empty($create_table)) {
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
             $query->select('form_id')
                 ->from('#__fabrik_lists')
                 ->where('db_table_name = ' . $db->quote('jos_emundus_unit_test_form'));
@@ -433,7 +433,7 @@ class EmundusUnittestHelperSamples
         $create_form = "INSERT INTO jos_fabrik_forms (label, record_in_database, error, intro, created, created_by, created_by_alias, modified, modified_by, checked_out, checked_out_time, publish_up, publish_down, reset_button_label, submit_button_label, form_template, view_only_template, published, private, params) VALUES ('FORM_UNIT_TEST', 1, 'FORM_ERROR', '<p>FORM_UNIT_TEST_INTRO</p>', '2023-07-04 11:33:48', 95, 'coordinator', '2023-07-04 11:33:48', 95, 95, '2023-07-04 11:33:48', '2023-07-04 11:33:48', null, 'RESET', 'SAVE_CONTINUE', 'emundus', 'bootstrap', 1, 0, '{\"outro\":\"\",\"copy_button\":\"0\",\"copy_button_label\":\"Save as copy\",\"copy_button_class\":\"\",\"copy_icon\":\"\",\"copy_icon_location\":\"before\",\"reset_button\":\"0\",\"reset_button_label\":\"Remise \\\\u00e0 z\\\\u00e9ro\",\"reset_button_class\":\"btn-warning\",\"reset_icon\":\"\",\"reset_icon_location\":\"before\",\"apply_button\":\"0\",\"apply_button_label\":\"Appliquer\",\"apply_button_class\":\"\",\"apply_icon\":\"\",\"apply_icon_location\":\"before\",\"goback_button\":\"1\",\"goback_button_label\":\"GO_BACK\",\"goback_button_class\":\"goback-btn\",\"goback_icon\":\"\",\"goback_icon_location\":\"before\",\"submit_button\":\"1\",\"submit_button_label\":\"SAVE_CONTINUE\",\"save_button_class\":\"btn-primary save-btn sauvegarder\",\"save_icon\":\"\",\"save_icon_location\":\"after\",\"submit_on_enter\":\"0\",\"delete_button\":\"0\",\"delete_button_label\":\"GO_BACK\",\"delete_button_class\":\"btn-danger\",\"delete_icon\":\"\",\"delete_icon_location\":\"before\",\"ajax_validations\":\"0\",\"ajax_validations_toggle_submit\":\"0\",\"submit-success-msg\":\"\",\"suppress_msgs\":\"0\",\"show_loader_on_submit\":\"0\",\"spoof_check\":\"1\",\"multipage_save\":\"0\",\"note\":\"\",\"labels_above\":\"1\",\"labels_above_details\":\"1\",\"pdf_template\":\"\",\"pdf_orientation\":\"portrait\",\"pdf_size\":\"letter\",\"pdf_include_bootstrap\":\"1\",\"admin_form_template\":\"\",\"admin_details_template\":\"\",\"show-title\":\"1\",\"print\":\"\",\"email\":\"\",\"pdf\":\"\",\"show-referring-table-releated-data\":\"0\",\"tiplocation\":\"above\",\"process-jplugins\":\"2\",\"plugins\":[\"emundustriggers\"],\"plugin_state\":[\"1\"],\"plugin_locations\":[\"both\"],\"plugin_events\":[\"both\"],\"plugin_description\":[\"emundus_events\"]}');";
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $db->setQuery($create_form);
         $inserted = $db->execute();

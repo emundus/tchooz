@@ -1284,7 +1284,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $validFnums = array();
 		$db = JFactory::getDbo();
-	    $query = $db->getQuery(true);
+	    $query = $db->createQuery();
 
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) && $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
@@ -4078,7 +4078,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $response['msg'] = JText::_('NO_CALCULATION_FOR_THIS_MODULE');
 
                 $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
+                $query = $db->createQuery();
 
                 $query->select('params')
                     ->from('#__modules')

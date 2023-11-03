@@ -5824,7 +5824,7 @@ $(document).ready(function() {
                                 dataType: 'JSON',
                                 data: { fnum: fnum, raw: raw, tmpl: email_recap.id},
                                 success: function(result) {
-                                    var dest = '<p>' + Joomla.Text._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent" style="overflow-y: unset"><i>' + result.email + '</i></ul>';
+                                    var dest = '<p>' + Joomla.Text._('COM_EMUNDUS_MAILS_SEND_TO') + '</p><ul class="list-group" id="em-mails-sent" style="overflow-y: unset"><i>' + result.email + '</i></ul>';
                                     $.ajax({
                                         type: 'POST',
                                         url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
@@ -6758,7 +6758,7 @@ function sendMail(data)
 
             if (result.status) {
                 if (result.sent.length > 0) {
-                    var sent_to = '<p>' + Joomla.Text._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                    var sent_to = '<p>' + Joomla.Text._('COM_EMUNDUS_MAILS_SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
                     result.sent.forEach(function (element) {
                         sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
                     });

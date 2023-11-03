@@ -116,7 +116,7 @@ class EmundusModelProgramme extends JModelList {
 		$programmes = [];
 
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 		$query->select('*')
 			->from($db->quoteName('#__emundus_setup_programmes'))
 			->where('1 = 1');

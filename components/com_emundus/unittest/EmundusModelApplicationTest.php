@@ -200,7 +200,7 @@ class EmundusModelApplicationTest extends TestCase
 
 		// get module params
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 		$query->select('id, params')
 			->from('#__modules')
 			->where('module LIKE ' . $db->quote('mod_emundus_applications'))
@@ -218,7 +218,7 @@ class EmundusModelApplicationTest extends TestCase
 		];
 
 		// update module params
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 		$query->update('#__modules')
 			->set('params = ' . $db->quote(json_encode($params)))
 			->where('id = ' . $db->quote($module['id']));

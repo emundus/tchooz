@@ -1389,7 +1389,7 @@ class EmundusModelAdmission extends JModelList
             $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
             $now = $dateTime->format('Y-m-d H:i:s');
 
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
             $query->select($db->quoteName('fnum'))
                 ->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
                 ->leftJoin($db->quoteName('#__emundus_setup_status', 'ss').' ON '.$db->quoteName('ss.step').' = '.$db->quoteName('cc.status'))
@@ -1419,7 +1419,7 @@ class EmundusModelAdmission extends JModelList
         }
 
         // Getting the Item ID of the application form in order to redirect correctly.
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select($db->quoteName('m.id'))
             ->from($db->quoteName('#__menu', 'm'))
             ->leftJoin($db->quoteName('#__emundus_setup_profiles', 'sp').' ON '.$db->quoteName('m.menutype').' LIKE '.$db->quoteName('sp.menutype'))

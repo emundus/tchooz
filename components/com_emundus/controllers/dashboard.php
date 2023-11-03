@@ -55,7 +55,7 @@ class EmundusControllerDashboard extends JControllerLegacy
 	public function getpalettecolors()
 	{
 		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		try {
 			$menu   = $this->app->getMenu();

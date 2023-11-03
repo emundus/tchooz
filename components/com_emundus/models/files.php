@@ -1176,7 +1176,7 @@ class EmundusModelFiles extends JModelLegacy
 					}
 				}
 
-				$query = $db->getQuery(true);
+				$query = $db->createQuery();
 				$query->delete($db->quoteName('#__emundus_group_assoc'))
 					->where($db->quoteName('group_id').' IN ('.implode(',',$groups).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
 				$db->setQuery($query);
@@ -1236,7 +1236,7 @@ class EmundusModelFiles extends JModelLegacy
 					}
 				}
 
-				$query = $db->getQuery(true);
+				$query = $db->createQuery();
 				$query->delete($db->quoteName('#__emundus_users_assoc'))
 					->where($db->quoteName('user_id').' IN ('.implode(',',$users).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
 				$db->setQuery($query);
@@ -3497,7 +3497,7 @@ class EmundusModelFiles extends JModelLegacy
     public function addAttachment($fnum, $name, $uid, $cid, $attachment_id, $desc, $canSee = 0) {
 	    $now = EmundusHelperDate::getNow();
 	    $db = $this->getDbo();
-	    $query = $db->getQuery(true);
+	    $query = $db->createQuery();
 	    $query->insert($db->quoteName('#__emundus_uploads'))
 		    ->columns($db->quoteName(array('timedate', 'user_id', 'fnum', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id')))
 		    ->values($db->quote($now).', '.$db->quote($uid).', '.$db->quote($fnum).', '.$db->quote($attachment_id).', '.$db->quote($name).', '.$db->quote($desc).', 0, '.$db->quote($canSee).', '.$db->quote($cid));

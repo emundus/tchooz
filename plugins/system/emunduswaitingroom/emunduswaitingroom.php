@@ -16,14 +16,20 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.plugin.plugin' );
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
+
 /**
  * emunduswaitingroom candidature periode check
  *
  * @package     Joomla
  * @subpackage  System
  */
-class plgSystemEmunduswaitingroom extends JPlugin
+class plgSystemEmunduswaitingroom extends CMSPlugin
 {
+
+	private $app;
+
 	/**
 	 * Load the language file on instantiation.
 	 *
@@ -46,7 +52,8 @@ class plgSystemEmunduswaitingroom extends JPlugin
 	 */
 	function __construct(& $subject, $config)
 	{
-		$lang = JFactory::getLanguage();
+		$this->app = Factory::getApplication();
+		$lang = $this->app->getLanguage();
 		$lang->load('plg_emunduswaitingroom', dirname(__FILE__));
 
 		parent::__construct($subject, $config);
@@ -55,8 +62,7 @@ class plgSystemEmunduswaitingroom extends JPlugin
 
 	function onAfterInitialise() {
 
-		$app    =  JFactory::getApplication();
-		$user   =  JFactory::getUser();
+		$user   =  $this->app->getIdentity();
 
 		// Get plugin param which defines if we should always redirect the user or not.
 		$plugin = JPluginHelper::getPlugin('system', 'emunduswaitingroom');
@@ -95,7 +101,7 @@ class plgSystemEmunduswaitingroom extends JPlugin
 				$message_displayed = $params->get('message_displayed','PLG_EMUNDUSWAITINGROOM_MAX_SESSIONS_REACHED');
 				$max_sessions = $params->get('max_sessions', '5000');
 
-				$db = JFactory::getDBo();
+				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 				$query->select('count(userid)')
 					->from($db->quoteName('#__session'));
@@ -113,10 +119,10 @@ class plgSystemEmunduswaitingroom extends JPlugin
 						$current_path = $parsed_url['path'];
 
 						if ($current_path !== '/' . $redirection_url) {
-							$app->redirect('/' . $redirection_url);
+							$this->app->redirect('/' . $redirection_url);
 						}
 					} else {
-						$app->enqueueMessage(JText::_($message_displayed), 'warning');
+						$this->app->enqueueMessage(JText::_($message_displayed), 'warning');
 					}
 				}
 			}

@@ -96,7 +96,7 @@ class EmundusModelsettings extends JModelList {
      */
     function getStatus() {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
         $falang = new EmundusModelFalang;
@@ -142,7 +142,7 @@ class EmundusModelsettings extends JModelList {
      */
     function getTags() {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('*')
             ->from($db->quoteName('#__emundus_setup_action_tag'))
@@ -170,7 +170,7 @@ class EmundusModelsettings extends JModelList {
 
 		if (!empty($id)) {
 			$db = $this->getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->delete($db->quoteName('#__emundus_setup_action_tag'))
 				->where($db->quoteName('id') . ' = ' . $id);
@@ -196,7 +196,7 @@ class EmundusModelsettings extends JModelList {
      */
     function createTag() {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->insert('#__emundus_setup_action_tag')
             ->set($db->quoteName('label') . ' = ' . $db->quote('Nouvelle étiquette'))
@@ -230,7 +230,7 @@ class EmundusModelsettings extends JModelList {
      */
     function createStatus() {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
         $falang = new EmundusModelFalang;
@@ -302,7 +302,7 @@ class EmundusModelsettings extends JModelList {
      */
     function updateStatus($status,$label,$color) {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
         $m_translations = new EmundusModelTranslations;
@@ -343,7 +343,7 @@ class EmundusModelsettings extends JModelList {
 
     function updateStatusOrder($status){
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             foreach ($status as $order => $statu) {
@@ -373,7 +373,7 @@ class EmundusModelsettings extends JModelList {
      */
     function deleteStatus($id,$step) {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->delete($db->quoteName('#__falang_content'))
             ->where($db->quoteName('reference_id') . ' = ' . $db->quote($step))
@@ -404,7 +404,7 @@ class EmundusModelsettings extends JModelList {
      */
     function updateTags($tag, $label, $color) {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             $query->clear()
@@ -429,7 +429,7 @@ class EmundusModelsettings extends JModelList {
      */
     function getFooterArticles() {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $footers = new stdClass();
 
@@ -466,7 +466,7 @@ class EmundusModelsettings extends JModelList {
     private function getOldFooterArticles() {
 
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $footers = new stdClass();
         $query->select('id as id,content as content')
@@ -505,7 +505,7 @@ class EmundusModelsettings extends JModelList {
      */
     function getArticle($lang_code,$article_id = 0,$article_alias = '',$reference_field = 'introtext'){
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('lang_id')
             ->from($db->quoteName('#__languages'))
@@ -582,7 +582,7 @@ class EmundusModelsettings extends JModelList {
      */
     function updateArticle($content,$lang_code,$article_id = 0,$article_alias = '',$reference_field = 'introtext') {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try{
             $query->select('lang_id')
@@ -654,7 +654,7 @@ class EmundusModelsettings extends JModelList {
      */
     function updateFooter($col1,$col2) {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('params')
             ->from($db->quoteName('#__modules'))
@@ -697,7 +697,7 @@ class EmundusModelsettings extends JModelList {
      */
     private function updateOldFooter($col1,$col2) {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->update($db->quoteName('#__modules'))
             ->set($db->quoteName('content') . ' = ' . $db->quote($col1))
@@ -730,7 +730,7 @@ class EmundusModelsettings extends JModelList {
      */
     function getEditorVariables() {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $lang = JFactory::getLanguage();
         $actualLanguage = substr($lang->getTag(), 0 , 2);
@@ -767,7 +767,7 @@ class EmundusModelsettings extends JModelList {
      */
     function updateLogo($newcontent){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             $query->update($db->quoteName('#__modules'))
@@ -783,7 +783,7 @@ class EmundusModelsettings extends JModelList {
 
     function onAfterCreateCampaign($user_id) {
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('count(id)')
             ->from($db->quoteName('#__emundus_setup_campaigns'));
         $db->setQuery($query);
@@ -882,7 +882,7 @@ class EmundusModelsettings extends JModelList {
 
     function getDatasFromTable($table){
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(strpos($table, 'data_') !== false){
 
@@ -914,7 +914,7 @@ class EmundusModelsettings extends JModelList {
 
     function saveDatas($form){
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $name = strtolower($this->clean($form['label']));
 
@@ -958,7 +958,7 @@ class EmundusModelsettings extends JModelList {
             //
 
             // Insert values
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
             foreach($form['db_values'] as $values) {
                 $query->clear()
                     ->insert($db->quoteName($table_name));
@@ -978,7 +978,7 @@ class EmundusModelsettings extends JModelList {
 
     function saveImportedDatas($form,$datas){
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $name = strtolower($this->clean($form['label']));
 
@@ -1033,7 +1033,7 @@ class EmundusModelsettings extends JModelList {
             //
 
             // Insert values
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
             foreach($datas as $value) {
                 $query->clear()
                     ->insert($db->quoteName($table_name));
@@ -1070,7 +1070,7 @@ class EmundusModelsettings extends JModelList {
 
     function moveUploadedFileToDropbox($file,$name,$extension,$campaign_cat,$filesize){
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             //CHECK OREDERING BEFORE INSERT
@@ -1112,7 +1112,7 @@ class EmundusModelsettings extends JModelList {
 
 	function getBannerModule(){
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		try {
 			$query->select('params')
@@ -1130,7 +1130,7 @@ class EmundusModelsettings extends JModelList {
 
 	function updateBannerImage(){
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		try {
 			$query->select('*')
@@ -1175,7 +1175,7 @@ class EmundusModelsettings extends JModelList {
 
 		if (empty($cache_data)) {
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 			$query->select('`default`, value')
 				->from($db->quoteName('#__emundus_setup_config'))
 				->where($db->quoteName('namekey') . ' = ' . $db->quote('onboarding_lists'));
@@ -1250,7 +1250,7 @@ class EmundusModelsettings extends JModelList {
 
 	function getHomeArticle() {
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$article_id = 52;
 
@@ -1273,7 +1273,7 @@ class EmundusModelsettings extends JModelList {
 
 	function getRgpdArticles() {
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$rgpd_articles = [];
 
@@ -1376,7 +1376,7 @@ class EmundusModelsettings extends JModelList {
         $result = false;
 
         $db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		try {
 			$query->select('id,params')

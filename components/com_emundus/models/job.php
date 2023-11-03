@@ -95,7 +95,7 @@ class EmundusModelJob extends JModelItem {
             $textValue = array();
             foreach ($values as $value){
                 $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
+                $query = $db->createQuery();
                 $query
                     ->select('title')
                     ->from('`#__categories`')
@@ -180,7 +180,7 @@ class EmundusModelJob extends JModelItem {
 
     public function getCategoryName($id) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query
             ->select('title')
             ->from('#__categories')

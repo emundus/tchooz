@@ -36,7 +36,7 @@ class EmundusHelperMenu {
 			$user = Factory::getUser();
 		}
 
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$levels = [];
 		if ($checklevel) {
@@ -115,7 +115,7 @@ class EmundusHelperMenu {
 		
 		$levels = Access::getAuthorisedViewLevels($user->id);
 
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
 			->from($db->quoteName('#__menu','menu'))
@@ -148,7 +148,7 @@ class EmundusHelperMenu {
 			$db = Factory::getDBO();
 		}
 
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$query->select('fbtables.db_table_name')
 			->from($db->quoteName('#__menu','menu'))

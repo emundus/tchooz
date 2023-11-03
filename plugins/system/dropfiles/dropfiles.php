@@ -15,11 +15,12 @@
 //-- No direct access
 defined('_JEXEC') || die('=;)');
 use Joomla\CMS\Router\Router;
+use Joomla\CMS\Plugin\CMSPlugin;
 
 /**
  * Content Plugin.
  */
-class PlgSystemDropfiles extends JPlugin
+class PlgSystemDropfiles extends CMSPlugin
 {
 
     /**

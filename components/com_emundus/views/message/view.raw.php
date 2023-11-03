@@ -13,6 +13,9 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 /**
  * HTML View class for the Emundus Component
  *
@@ -20,6 +23,8 @@ jimport('joomla.application.component.view');
  */
 
 class EmundusViewMessage extends JViewLegacy {
+	private $app;
+	
 	protected $users;
 	protected $fnums;
 	protected $body;
@@ -33,26 +38,28 @@ class EmundusViewMessage extends JViewLegacy {
 		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
 		parent::__construct($config);
+		
+		$this->app = Factory::getApplication();
 
 	}
 
     public function display($tpl = null) {
 
-		$current_user = JFactory::getUser();
+		$current_user = $this->app->getIdentity();
 
     	if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-		    die (JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		    die (Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 	    }
 
 		// List of fnum is sent via GET in JSON format.
-	    $jinput = JFactory::getApplication()->getInput();
+	    $jinput = $this->app->getInput();
 	    $layout = $jinput->getString('layout', null);
 
-	    $document = JFactory::getDocument();
-	    $document->addStyleSheet('media/com_emundus/css/emundus.css');
+	    $document = $this->app->getDocument();
+		$wa = $document->getWebAssetManager();
+	    $wa->registerAndUseStyle('emundus_css','media/com_emundus/css/emundus.css');
 
 	    switch ($layout) {
-
 	    	// Sending an email directly to a user.
 		    case 'user_message':
 			    $m_users = new EmundusModelUsers();
@@ -85,7 +92,7 @@ class EmundusViewMessage extends JViewLegacy {
 				$this->data = $jinput->getArray()['data'];
 			    $this->body = $jinput->getRaw('body','');
                 if(empty($this->body)){
-                    $this->body = JText::_('COM_EMUNDUS_EMAILS_DEAR') . ' [NAME], ';
+                    $this->body = Text::_('COM_EMUNDUS_EMAILS_DEAR') . ' [NAME], ';
                 }
 			    $fnums = ($fnums =='all') ? 'all' : (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
@@ -108,7 +115,7 @@ class EmundusViewMessage extends JViewLegacy {
 
 			    $fnum_array = [];
 
-			    $tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
+			    $tables = array('u.name', 'u.username', 'u.email', 'u.id');
 			    foreach ($fnums as $fnum) {
 				    if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
 					    $user = $m_application->getApplicantInfos($fnum->sid, $tables);

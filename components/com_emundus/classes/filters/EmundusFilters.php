@@ -110,7 +110,7 @@ class EmundusFilters
 		$elements = [];
 
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$query->select('jfl.id, jfl.db_table_name, jfl.form_id')
 			->from('jos_fabrik_elements as jfe')
@@ -175,7 +175,7 @@ class EmundusFilters
 		$values = [];
 
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		switch ($element['plugin']) {
 			case 'databasejoin':

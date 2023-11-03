@@ -1300,7 +1300,7 @@ class EmundusControllerUsers extends JControllerLegacy
 
 			if (!empty($uid)) {
 				$db    = Factory::getDbo();
-				$query = $db->getQuery(true);
+				$query = $db->createQuery();
 
 				// check user is not already activated
 				$query->select('activation')

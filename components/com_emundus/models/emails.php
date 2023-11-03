@@ -601,7 +601,7 @@ class EmundusModelEmails extends JModelList {
 
         $db = JFactory::getDBO();
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('tag, request')
             ->from($db->quoteName('#__emundus_setup_tags', 't'))
             ->where($db->quoteName('t.published') . ' = 1');
@@ -2793,7 +2793,7 @@ class EmundusModelEmails extends JModelList {
 
         if (!empty($content))
         {
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
             $query->select('tag')
                 ->from($db->quoteName('#__emundus_setup_tags', 't'))
                 ->where($db->quoteName('t.published') . ' = 0');
