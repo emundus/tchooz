@@ -14,21 +14,11 @@ $app = Factory::getApplication();
 $jinput = $app->input;
 $doc_to_attach = $jinput->get->get('attach', null);
 
-if (version_compare(JVERSION, '4.0', '>'))
-{
-	$document = $app->getDocument();
-    $wa = $document->getWebAssetManager();
-    $wa->registerAndUseStyle('com_emundus.bootstrap', 'media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css');
-    $wa->registerAndUseScript('com_emundus.webtoolkit.aim', 'media/com_emundus/js/webtoolkit.aim.js');
+$document = $app->getDocument();
+$wa = $document->getWebAssetManager();
+$wa->registerAndUseScript('com_emundus.webtoolkit.aim', 'media/com_emundus/js/webtoolkit.aim.js');
 
     $current_user = $app->getIdentity();
-} else {
-	$document = Factory::getDocument();
-	$document->addStyleSheet(JURI::base()."media/com_emundus/lib/bootstrap-232/css/bootstrap.min.css" );
-	$document->addScript('media/com_emundus/js/webtoolkit.aim.js');
-
-	$current_user = Factory::getUser();
-}
 
 JHTML::stylesheet('media/com_emundus/css/emundus_files.css');
 

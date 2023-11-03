@@ -1956,7 +1956,7 @@ class EmundusHelperFiles
         }
         //Advance filter builtin
         if (@$params['adv_filter'] !== NULL) {
-            $filters .= '</fieldset><fieldset class="em_filters_adv_filter">';
+            $filters .= '</fieldset><fieldset class="em_filters_adv_filter mt-2">';
             $elements = $h_files->getElements();
 
             // the button is disabled by default. It needs a selected campaign ->> look at em_files.js at the #select_multiple_campaigns on change function

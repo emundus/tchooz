@@ -15,7 +15,8 @@ $app = Factory::getApplication();
 $lang_tag = $app->getLanguage()->getTag();
 $document = $app->getDocument();
 $wa = $document->getWebAssetManager();
-$wa->useScript('jquery');
+$wa->useScript('core')
+	->useScript('bootstrap.popover');
 $wa->registerAndUseStyle('mod_emundus_help','modules/mod_emundus_help/style/mod_emundus_help.css');
 
 

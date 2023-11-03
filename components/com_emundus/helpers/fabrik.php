@@ -239,13 +239,9 @@ class EmundusHelperFabrik {
 						1 => '$student_id=JRequest::getVar(\'student_id\', null,\'get\');
 $student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInstance(\'{jos_emundus_evaluations___student_id}\');
 echo \'<h2>\'.$student->name.\'</h2>\';
-JHtml::script(JURI::base() . \'media/com_emundus/lib/jquery-1.10.2.min.js\');
-JHtml::script(JURI::base() . \'media/jui/js/chosen.jquery.min.js\' );
 JHtml::styleSheet(JURI::base() . \'media/jui/css/chosen.css\');
 JHTML::stylesheet(JURI::Base().\'media/com_fabrik/css/fabrik.css\');',
-						2 => 'echo \'<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>\';
-echo \'<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>\';
-echo \'<script>window.parent.ScrollToTop();</script>\';
+						2 => 'echo \'<script>window.parent.ScrollToTop();</script>\';
 echo \'<style>.em-swal-title{
   margin: 8px 8px 32px 8px !important;
   font-family: "Maven Pro", sans-serif;

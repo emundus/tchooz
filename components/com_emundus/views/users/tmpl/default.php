@@ -138,6 +138,7 @@ if (version_compare(JVERSION, '4.0', '>'))
 
 
 <script type="text/javascript">
+    var $ = jQuery.noConflict();
 
     var itemId = "<?php echo $this->itemId;?>";
     var filterName = "<?php echo JText::_('COM_EMUNDUS_FILTERS_FILTER_NAME');?>";
@@ -167,4 +168,3 @@ if (version_compare(JVERSION, '4.0', '>'))
         $('[data-toggle="tooltip"]').tooltip()
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>

@@ -5,22 +5,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 
 $app = Factory::getApplication();
-if (version_compare(JVERSION, '4.0', '>'))
-{
-	$document = $app->getDocument();
-	$wa = $document->getWebAssetManager();
-	$wa->registerAndUseScript('com_emundus.checklist.swal', 'https://cdn.jsdelivr.net/npm/sweetalert2@8', [], ['version' => 'auto', 'relative' => true]);
-	$session = $app->getSession();
-	$_db = Factory::getContainer()->get('DatabaseDriver');
-	$user = $app->getIdentity();
-} else {
-	$document = Factory::getDocument();
-	$document->addScript("https://cdn.jsdelivr.net/npm/sweetalert2@8");
-    $session = Factory::getSession();
-	$_db = Factory::getDBO();
-	$user = Factory::getUser();
-}
-
+$sesdion = $app->getSession();
+$_db = Factory::getContainer()->get('DatabaseDriver');
+$user = $app->getIdentity();
 $chemin = EMUNDUS_PATH_REL;
 
 $itemid = $app->input->get('Itemid', null);

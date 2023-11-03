@@ -923,7 +923,7 @@ function generate_trombinoscope(fnums, data)
                 Swal.fire({
                     title: Joomla.JText._('COM_EMUNDUS_ERROR'),
                     text: Joomla.JText._('COM_EMUNDUS_TROMBINOSCOPE_GENERATE_FAILED'),
-                    type: 'error',
+                    icon: 'error',
                     customClass: {
                         title: 'em-swal-title',
                         confirmButton: 'em-swal-confirm-button',

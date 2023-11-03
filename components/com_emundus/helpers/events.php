@@ -842,8 +842,6 @@ class EmundusHelperEvents {
 
             EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_COORDINATOR');
 
-            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
-            echo '<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>';
             die("<script>
               $(document).ready(function () {
                 Swal.fire({

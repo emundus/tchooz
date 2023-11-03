@@ -159,8 +159,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
 		<?= $this->datas; ?>
 	<?php endif;?>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
-
 <script type="text/javascript">
     function checkurl() {
         var url = $(location).attr('href');

@@ -120,7 +120,7 @@ if (version_compare(JVERSION, '4.0', '>'))
 </div>
 
 <script type="text/javascript">
-    let offset = 100;
+    var offset = 100;
 
     $('#crud-logs').chosen({width:'100%'});
     $('#type-logs').chosen({width:'100%'});

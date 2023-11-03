@@ -15,36 +15,36 @@ use Joomla\CMS\Language\Text;
 $app = Factory::getApplication();
 
 // Require the base controller
-require_once( JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controller.php' );
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controller.php');
 
 // Helpers
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'javascript.php');
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'javascript.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 
 // LOGGER
 jimport('joomla.log.log');
 JLog::addLogger(
-    array(
-        'text_file' => 'com_emundus.error.php'
-    ),
-    JLog::ALL,
-    array('com_emundus')
+	array(
+		'text_file' => 'com_emundus.error.php'
+	),
+	JLog::ALL,
+	array('com_emundus')
 );
 JLog::addLogger(
-    array(
-        'text_file' => 'com_emundus.email.php'
-    ),
-    JLog::ALL,
-    array('com_emundus.email')
+	array(
+		'text_file' => 'com_emundus.email.php'
+	),
+	JLog::ALL,
+	array('com_emundus.email')
 );
 JLog::addLogger(
-    array(
-        'text_file' => 'com_emundus.webhook.php'
-    ),
-    JLog::ALL,
-    array('com_emundus.webhook')
+	array(
+		'text_file' => 'com_emundus.webhook.php'
+	),
+	JLog::ALL,
+	array('com_emundus.webhook')
 );
 
 // Translations for Javascript
@@ -642,155 +642,100 @@ Text::script('COM_EMUNDUS_MAIL_GB_BUTTON');
 
 // Require specific controller if requested
 if ($controller = $app->input->get('controller', '', 'WORD')) {
-    $path = JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.$controller.'.php';
-    if (file_exists($path)) {
-        require_once $path;
-    } else {
-        $controller = '';
-    }
+	$path = JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . $controller . '.php';
+	if (file_exists($path)) {
+		require_once $path;
+	}
+	else {
+		$controller = '';
+	}
 }
 
 // Create the controller
-$classname    = 'EmundusController'.$controller;
-$controller   = new $classname();
+$classname  = 'EmundusController' . $controller;
+$controller = new $classname();
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
-$cdn = $eMConfig->get('use_cdn', 1);
+$cdn      = $eMConfig->get('use_cdn', 1);
 
-$name = $app->input->get('view', '', 'CMD');
-$task = $app->input->get('task', '', 'CMD');
+$name   = $app->input->get('view', '', 'CMD');
+$task   = $app->input->get('task', '', 'CMD');
 $format = $app->input->get('format', '', 'CMD');
-$token = $app->input->get('token', '', 'ALNUM');
+$token  = $app->input->get('token', '', 'ALNUM');
 
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
-if(version_compare(JVERSION, '4.0', '>'))
-{
-    $document = $app->getDocument();
-    $wa = $document->getWebAssetManager();
-    $wa->useScript('jquery');
+$document = $app->getDocument();
+$wa       = $document->getWebAssetManager();
+$wa->useScript('jquery');
 
-    $user = $app->getIdentity();
-    $secret = $app->getConfig()->get('secret', '');
-    $webhook_token = $app->getConfig()->get('webhook_token') ?: '';
-} else {
-    $document = Factory::getDocument();
-    $user = Factory::getUser();
-    $secret = Factory::getConfig()->get('secret');
-    $webhook_token = Factory::getConfig()->get('webhook_token') ?: '';
+$user          = $app->getIdentity();
+$secret        = $app->getConfig()->get('secret', '');
+$webhook_token = $app->getConfig()->get('webhook_token') ?: '';
+
+if (!in_array($name, ['settings', 'campaigns', 'emails', 'form'])) {
+	if ($cdn == 1) {
+		$wa->registerAndUseScript('com_emundus_tinymce', '//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js');
+	}
+	else {
+		$wa->registerAndUseScript('com_emundus_tinymce', 'media/com_emundus/js/lib/tinymce.min.js');
+	}
+	$wa->registerAndUseScript('com_emundus_jquery_ui', 'media/com_emundus/lib/jquery-ui-1.12.1.min.js');
+	$wa->registerAndUseScript('com_emundus_bootstrap', 'media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
+	$wa->registerAndUseScript('com_emundus_chosen', 'media/com_emundus/js/chosen.jquery.js');
+
+	$wa->registerAndUseScript('com_emundus', 'media/com_emundus/js/em_files.js', ['version' => $hash]);
+	$wa->registerAndUseScript('com_emundus_export', 'media/com_emundus/js/mixins/exports.js', ['version' => $hash]);
+	$wa->registerAndUseScript('com_emundus_utilities', 'media/com_emundus/js/mixins/utilities.js', ['version' => $hash]);
+
+	$wa->registerAndUseScript('com_emundus_selectize', 'media/com_emundus/lib/selectize/dist/js/standalone/selectize.js');
+	$wa->registerAndUseScript('com_emundus_sumoselect', 'media/com_emundus/lib/sumoselect/jquery.sumoselect.min.js');
+
+	$wa->registerAndUseStyle('com_emundus_reset', 'media/com_emundus/css/reset.css');
+	$wa->registerAndUseStyle('com_emundus_chosen', 'media/com_emundus/css/chosen/chosen.css');
+	$wa->registerAndUseStyle('com_emundus_bootstrap', 'media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
+	$wa->registerAndUseStyle('com_emundus_files', 'media/com_emundus/css/emundus_files.css');
+	$wa->registerAndUseStyle('com_emundus_normalize', 'media/com_emundus/lib/selectize/dist/css/normalize.css');
+	$wa->registerAndUseStyle('com_emundus_selectize', 'media/com_emundus/lib/selectize/dist/css/selectize.default.css');
+	$wa->registerAndUseStyle('com_emundus_sumoselect', 'media/com_emundus/lib/sumoselect/sumoselect.css');
 }
 
-if(!in_array($name,['settings','campaigns','emails','form'])) {
-    if(version_compare(JVERSION, '4.0', '>'))
-    {
-        if($cdn == 1)
-        {
-            $wa->registerAndUseScript('com_emundus_tinymce','//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js');
-        } else {
-            $wa->registerAndUseScript('com_emundus_tinymce','media/com_emundus/js/lib/tinymce.min.js');
-        }
-        $wa->registerAndUseScript('com_emundus_jquery_ui','media/com_emundus/lib/jquery-ui-1.12.1.min.js');
-        $wa->registerAndUseScript('com_emundus_bootstrap','media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-        $wa->registerAndUseScript('com_emundus_chosen','media/com_emundus/js/chosen.jquery.js');
+$wa->registerAndUseScript('com_emundus_chunk_vendors', 'media/com_emundus_vue/chunk-vendors_emundus.js', ['version' => $hash]);
+$wa->registerAndUseStyle('com_emundus_app', 'media/com_emundus_vue/app_emundus.css', ['version' => $hash]);
 
-        $wa->registerAndUseScript('com_emundus', 'media/com_emundus/js/em_files.js', ['version' => $hash]);
-        $wa->registerAndUseScript('com_emundus_export', 'media/com_emundus/js/mixins/exports.js', ['version' => $hash]);
-        $wa->registerAndUseScript('com_emundus_utilities', 'media/com_emundus/js/mixins/utilities.js', ['version' => $hash]);
-
-        $wa->registerAndUseScript('com_emundus_selectize','media/com_emundus/lib/selectize/dist/js/standalone/selectize.js');
-        $wa->registerAndUseScript('com_emundus_sumoselect','media/com_emundus/lib/sumoselect/jquery.sumoselect.min.js');
-
-        $wa->registerAndUseStyle('com_emundus_reset','media/com_emundus/css/reset.css');
-        $wa->registerAndUseStyle('com_emundus_chosen','media/com_emundus/css/chosen/chosen.css');
-        $wa->registerAndUseStyle('com_emundus_bootstrap','media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
-        $wa->registerAndUseStyle('com_emundus_files','media/com_emundus/css/emundus_files.css');
-        $wa->registerAndUseStyle('com_emundus_normalize','media/com_emundus/lib/selectize/dist/css/normalize.css');
-        $wa->registerAndUseStyle('com_emundus_selectize','media/com_emundus/lib/selectize/dist/css/selectize.default.css');
-        $wa->registerAndUseStyle('com_emundus_sumoselect','media/com_emundus/lib/sumoselect/sumoselect.css');
-    } else {
-        if($cdn == 1)
-        {
-            JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
-        } else {
-            JHTML::script('media/com_emundus/js/lib/tinymce.min.js');
-        }
-        JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
-        JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
-        JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-
-        JHtml::script('media/com_emundus/js/chosen.jquery.js');
-
-        $document->addScript('media/com_emundus/js/em_files.js?' . $hash);
-        $document->addScript('media/com_emundus/js/mixins/exports.js?' . $hash);
-        $document->addScript('media/com_emundus/js/mixins/utilities.js?' . $hash);
-
-        JHTML::script('media/com_emundus/lib/selectize/dist/js/standalone/selectize.js' );
-        JHTML::script('media/com_emundus/lib/sumoselect/jquery.sumoselect.min.js');
-
-        JHtml::styleSheet('media/com_emundus/css/chosen/chosen.css');
-        JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
-        JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
-        JHTML::stylesheet('media/com_emundus/lib/selectize/dist/css/normalize.css' );
-        JHTML::stylesheet('media/com_emundus/lib/selectize/dist/css/selectize.default.css' );
-        JHTML::stylesheet('media/com_emundus/lib/sumoselect/sumoselect.css');
-    }
+if ($cdn == 1) {
+	$wa->registerAndUseScript('com_emundus_quill', 'https://cdn.quilljs.com/1.3.6/quill.min.js');
+}
+else {
+	$wa->registerAndUseScript('com_emundus_quill', 'media/com_emundus/js/lib/quill.min.js');
 }
 
-if(version_compare(JVERSION, '4.0', '>'))
-{
-    $wa->registerAndUseScript('com_emundus_chunk_vendors', 'media/com_emundus_vue/chunk-vendors_emundus.js', ['version' => $hash]);
-    $wa->registerAndUseStyle('com_emundus_app', 'media/com_emundus_vue/app_emundus.css', ['version' => $hash]);
-
-    if($cdn == 1)
-    {
-        $wa->registerAndUseScript('com_emundus_quill', 'https://cdn.quilljs.com/1.3.6/quill.min.js');
-    } else {
-        $wa->registerAndUseScript('com_emundus_quill', 'media/com_emundus/js/lib/quill.min.js');
-    }
-    $wa->registerAndUseScript('com_emundus_image_resize', 'media/com_emundus/js/lib/image-resize.min.js');
-    $wa->registerAndUseStyle('com_emundus_quill_mention', 'media/com_emundus/js/lib/quill/quill-mention/quill.mention.min.css');
-    $wa->registerAndUseScript('com_emundus_quill_mention', 'media/com_emundus/js/lib/quill/quill-mention/quill.mention.min.js');
-} else {
-    $document->addScript('media/com_emundus_vue/chunk-vendors_emundus.js?' . $hash);
-    JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
-
-    if($cdn == 1)
-    {
-        JHTML::script('https://cdn.quilljs.com/1.3.6/quill.min.js');
-    } else {
-        JHTML::script('media/com_emundus/js/lib/quill.min.js');
-    }
-    JHtml::script('components/com_emundus/src/assets/js/quill/image-resize.min.js');
-    JHtml::styleSheet('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.css');
-    JHtml::script('components/com_emundus/src/assets/js/quill/quill-mention/quill.mention.min.js');
-}
+$wa->registerAndUseScript('com_emundus_image_resize', 'media/com_emundus/js/lib/image-resize.min.js');
+$wa->registerAndUseStyle('com_emundus_quill_mention', 'media/com_emundus/js/lib/quill/quill-mention/quill.mention.min.css');
+$wa->registerAndUseScript('com_emundus_quill_mention', 'media/com_emundus/js/lib/quill/quill-mention/quill.mention.min.js');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf') {
-    $controller->execute($task);
+	$controller->execute($task);
 }
-if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis'))
-{
-    $controller->execute($task);
+if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name == 'job' || $name == 'thesiss' || $name == 'thesis')) {
+	$controller->execute($task);
 }
-elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token)) || $task == 'getfilereferent'))
-{
-    $controller->execute($task);
+elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token)) || $task == 'getfilereferent')) {
+	$controller->execute($task);
 }
-elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity')
-{
-    JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-    $app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
+elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity') {
+	JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+	$app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
 
-    $controller->setRedirect('index.php', Text::_("ACCESS_DENIED"), 'error');
+	$controller->setRedirect('index.php', Text::_("ACCESS_DENIED"), 'error');
 }
-else
-{
-    if ($name != 'search_engine') {
-        // Perform the Request task
-        $controller->execute($task);
-    }
+else {
+	if ($name != 'search_engine') {
+		// Perform the Request task
+		$controller->execute($task);
+	}
 }
 // Redirect if set by the controller
 $controller->redirect();

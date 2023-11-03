@@ -347,7 +347,6 @@ $searchword = $app->input->getString('searchword', null);
 </form>
 
 
-<script src="/media/com_emundus/js/jquery.cookie.js" type="text/javascript"></script>
 <script src="media/jui/js/bootstrap.min.js" type="text/javascript"></script>
 <script type="text/javascript">
     jQuery(document).ready(function() {

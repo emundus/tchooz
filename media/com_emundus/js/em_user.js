@@ -790,7 +790,7 @@ $(document).ready(function () {
 					if (result.status) {
 						Swal.fire({
 							position: 'center',
-							type: 'success',
+							icon: 'success',
 							title: result.msg,
 							showConfirmButton: false,
 							timer: 1500,
@@ -822,7 +822,7 @@ $(document).ready(function () {
 					if (result.status) {
 						Swal.fire({
 							position: 'center',
-							type: 'success',
+							icon: 'success',
 							title: result.msg,
 							showConfirmButton: false,
 							timer: 1500,
@@ -898,7 +898,7 @@ $(document).ready(function () {
 							if (result.status) {
 								Swal.fire({
 									position: 'center',
-									type: 'success',
+									icon: 'success',
 									title: result.msg,
 									showConfirmButton: false,
 									timer: 1500,
@@ -911,7 +911,7 @@ $(document).ready(function () {
 							} else {
 								Swal.fire({
 									position: 'center',
-									type: 'warning',
+									icon: 'warning',
 									title: result.msg,
 									customClass: {
 										title: 'em-swal-title',
@@ -961,7 +961,7 @@ $(document).ready(function () {
 							if (result.status) {
 								Swal.fire({
 									position: 'center',
-									type: 'success',
+									icon: 'success',
 									title: result.msg,
 									showConfirmButton: false,
 									timer: 1500,
@@ -973,7 +973,7 @@ $(document).ready(function () {
 							} else {
 								Swal.fire({
 									position: 'center',
-									type: 'error',
+									icon: 'error',
 									title: result.msg,
 									customClass: {
 										title: 'w-full justify-center',
@@ -986,7 +986,7 @@ $(document).ready(function () {
 							removeLoader();
 							Swal.fire({
 								position: 'center',
-								type: 'error',
+								icon: 'error',
 								title: Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'),
 								customClass: {
 									title: 'w-full justify-center',
@@ -1130,7 +1130,7 @@ $(document).ready(function () {
 					if (result.status) {
 						Swal.fire({
 							position: 'center',
-							type: 'success',
+							icon: 'success',
 							title: result.msg,
 							showConfirmButton: false,
 							timer: 1500
@@ -1140,7 +1140,7 @@ $(document).ready(function () {
 					} else {
 						Swal.fire({
 							position: 'center',
-							type: 'warning',
+							icon: 'warning',
 							title: result.msg,
 							customClass: {
 								title: 'em-swal-title',
@@ -1224,7 +1224,7 @@ $(document).ready(function () {
 					if (result.status) {
 						Swal.fire({
 							position: 'center',
-							type: 'success',
+							icon: 'success',
 							title: result.msg,
 							showConfirmButton: false,
 							timer: 1500,
@@ -1236,7 +1236,7 @@ $(document).ready(function () {
 					} else {
 						Swal.fire({
 							position: 'center',
-							type: 'warning',
+							icon: 'warning',
 							title: result.msg,
 							customClass: {
 								title: 'em-swal-title',
@@ -1284,7 +1284,7 @@ $(document).ready(function () {
 					if (result.status) {
 						Swal.fire({
 							position: 'center',
-							type: 'success',
+							icon: 'success',
 							title: result.msg,
 							showConfirmButton: false,
 							timer: 1500
@@ -1294,7 +1294,7 @@ $(document).ready(function () {
 					} else {
 						Swal.fire({
 							position: 'center',
-							type: 'warning',
+							icon: 'warning',
 							title: result.msg,
 							customClass: {
 								title: 'em-swal-title',
@@ -1376,7 +1376,7 @@ $(document).ready(function () {
 					if (result.status) {
 						Swal.fire({
 							position: 'center',
-							type: 'success',
+							icon: 'success',
 							title: result.msg,
 							showConfirmButton: false,
 							timer: 1500,
@@ -1386,7 +1386,7 @@ $(document).ready(function () {
 					} else {
 						Swal.fire({
 							position: 'center',
-							type: 'warning',
+							icon: 'warning',
 							title: result.msg,
 							customClass: {
 								title: 'em-swal-title',
@@ -1446,7 +1446,7 @@ $(document).ready(function () {
 
 							Swal.fire({
 								position: 'center',
-								type: 'success',
+								icon: 'success',
 								title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
 								html: sent_to + '</ul>',
 								customClass: {
@@ -1458,7 +1458,7 @@ $(document).ready(function () {
 
 						} else {
 							Swal.fire({
-								type: 'error',
+								icon: 'error',
 								title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
 								customClass: {
 									title: 'em-swal-title',
@@ -1536,7 +1536,7 @@ $(document).ready(function () {
 	function displayErrorMessage(msg)
 	{
 		Swal.fire({
-			type: 'error',
+			icon: 'error',
 			title: msg,
 			customClass: {
 				title: 'em-swal-title',

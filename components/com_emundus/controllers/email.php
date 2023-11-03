@@ -314,9 +314,8 @@ class EmundusControllerEmail extends JControllerLegacy
 			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
 		}
 		else {
-
-
-			$data                  = $this->input->getRaw('body');
+			$data                  = $this->input->getRaw('body','{}');
+			$data = json_decode($data, true);
 			$code                  = $this->input->getString('code');
 			$receivers_cc          = $this->input->getRaw('selectedReceiversCC');
 			$receivers_bcc         = $this->input->getRaw('selectedReceiversBCC');

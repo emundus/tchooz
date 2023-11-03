@@ -411,7 +411,6 @@ if ($allowed_attachments !== true) {
     <input type="hidden" name="task" value=""/>
 </form>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script type="text/javascript">
     var DirectionAttribute = Quill.import('attributors/attribute/direction');
     Quill.register(DirectionAttribute, true);
