@@ -88,7 +88,7 @@ function export_excel(fnums, letter) {
 
     $.ajax({
         type: 'post',
-        url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv',
+        url: 'index.php?option=com_emundus&controller=files&task=getfnums_csv&Itemid='+itemId,
         dataType: 'JSON',
         data: {fnums: fnums},
         success: function (result) {
@@ -637,6 +637,7 @@ function export_zip(fnums){
             actions: swal_actions_class
         },
     });
+    document.querySelector('.em-swal-confirm-button').style.opacity = '0';
 
     var url = 'index.php?option=com_emundus&controller=files&task=zip&Itemid='+itemId;
     $.ajax({
@@ -922,7 +923,7 @@ function generate_trombinoscope(fnums, data)
                 Swal.fire({
                     title: Joomla.JText._('COM_EMUNDUS_ERROR'),
                     text: Joomla.JText._('COM_EMUNDUS_TROMBINOSCOPE_GENERATE_FAILED'),
-                    type: 'error',
+                    icon: 'error',
                     customClass: {
                         title: 'em-swal-title',
                         confirmButton: 'em-swal-confirm-button',

@@ -187,15 +187,31 @@ class FabrikAutoloader
 	 */
 	private function controller($class)
 	{
-		if (!strstr(strtolower($class), 'controller'))
+		if (!str_starts_with($class, 'Fabrik') || strpos($class, '\\') !== false)
 		{
 			return;
 		}
 
-		$class = str_replace('\\', '/', $class);
-		$file  = explode('/', $class);
-		$file  = strtolower(array_pop($file));
-		$path  = JPATH_SITE . '/libraries/fabrik/fabrik/Controllers/' . \Joomla\String\StringHelper::ucfirst($file) . '.php';
+		$parts = preg_split('/(?<=\\w)(?=[A-Z])/', $class);
+		if ($parts[1] == 'Admin') {
+			if ($parts[2] != 'Controller' || array_key_exists(3, $parts) === false) {
+				return;
+			}
+			$jpath = JPATH_ADMINISTRATOR;
+			$file = strtolower($parts[3]);
+		} else {
+			if ($parts[1] != 'Controller') {
+				return;
+			}
+			$jpath = JPATH_SITE;
+			$file = strtolower($parts[2]);
+		}
+
+		if (Factory::getApplication()->input->get('format') == 'raw') {
+			$file .= '.raw';
+		}
+		
+		$path  = $jpath . '/components/com_fabrik/controllers/' . $file . '.php';
 
 		if (file_exists($path))
 		{

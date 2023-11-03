@@ -99,7 +99,7 @@ if(!empty($this->product->product_id)) {
 				$oneExtraField,$itemData,
 				'data[contact]['.$oneExtraField->field_namekey.']',
 				false,
-				' class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'contact\',0);"',
+				' class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'contact\',0);"',
 				false,
 				null,
 				null,

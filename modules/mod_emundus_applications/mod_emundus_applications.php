@@ -16,28 +16,15 @@ $m_profile = new EmundusModelProfile();
 
 $app = Factory::getApplication();
 
-if (version_compare(JVERSION, '4.0', '>')) {
-	$document = $app->getDocument();
-	$wa       = $document->getWebAssetManager();
-	$wa->registerAndUseStyle('mod_emundus_applications', 'modules/mod_emundus_applications/style/mod_emundus_applications.css');
-	$wa->useScript('jquery');
-	$user = $app->getSession()->get('emundusUser');
-}
-else {
-	$document = Factory::getDocument();
-	$document->addStyleSheet("modules/mod_emundus_applications/style/mod_emundus_applications.css");
-	$document->addScript("media/com_emundus/lib/jquery-plugin-circliful-master/js/jquery.circliful.js");
-	$user = Factory::getSession()->get('emundusUser');
-}
+$document = $app->getDocument();
+$wa       = $document->getWebAssetManager();
+$wa->registerAndUseStyle('mod_emundus_applications', 'modules/mod_emundus_applications/style/mod_emundus_applications.css');
+$wa->useScript('jquery');
+$user = $app->getSession()->get('emundusUser');
 
 if (empty($user->firstname) && empty($user->lastname)) {
 	$m_profile->initEmundusSession();
-	if (version_compare(JVERSION, '4.0', '>')) {
-		$user = $app->getSession()->get('emundusUser');
-	}
-	else {
-		$user = Factory::getSession()->get('emundusUser');
-	}
+	$user = $app->getSession()->get('emundusUser');
 }
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
@@ -167,12 +154,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
 	if (empty($user)) {
 		$user = new stdClass();
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$user->id = $app->getIdentity()->id;
-		}
-		else {
-			$user->id = Factory::getUser()->id;
-		}
+		$user->id = $app->getIdentity()->id;
 	}
 
 	$user->fnums = $applications;

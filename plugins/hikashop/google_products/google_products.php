@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopGoogle_products extends JPlugin {
+class plgHikashopGoogle_products extends \Joomla\CMS\Plugin\CMSPlugin {
 	public $error = '';
 
 	function onHikashopCronTrigger(&$messages) {

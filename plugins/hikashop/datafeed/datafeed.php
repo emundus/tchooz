@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopDatafeed extends JPlugin {
+class plgHikashopDatafeed extends \Joomla\CMS\Plugin\CMSPlugin {
 	var $message = '';
 
 	function __construct(&$subject, $config) {

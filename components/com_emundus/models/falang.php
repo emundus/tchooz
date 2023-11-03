@@ -19,7 +19,7 @@ class EmundusModelFalang extends JModelList {
 
   function insertFalang($values,$reference_id,$reference_table,$reference_field){
       $db = $this->getDbo();
-      $query = $db->getQuery(true);
+      $query = $db->createQuery();
       $languages = JLanguageHelper::getLanguages();
 
       $values = json_decode(json_encode($values), true);
@@ -67,7 +67,7 @@ class EmundusModelFalang extends JModelList {
 
   function insertFalangOnce($text,$reference_id,$reference_table,$reference_field, $language){
       $db = $this->getDbo();
-      $query = $db->getQuery(true);
+      $query = $db->createQuery();
 
       $currentDate = date('Y-m-d H:i:s');
       $user = JFactory::getUser()->id;
@@ -95,7 +95,7 @@ class EmundusModelFalang extends JModelList {
 
     function updateFalangOnce($values,$reference_id,$reference_table,$reference_field, $language){
         $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             $query->update('#__falang_content')
@@ -114,7 +114,7 @@ class EmundusModelFalang extends JModelList {
 
   function deleteFalang($reference_id,$reference_table,$reference_field){
       $db = $this->getDbo();
-      $query = $db->getQuery(true);
+      $query = $db->createQuery();
 
       try {
           $query->delete('#__falang_content')
@@ -131,7 +131,7 @@ class EmundusModelFalang extends JModelList {
 
   function updateFalang($values,$reference_id,$reference_table,$reference_field){
       $db = $this->getDbo();
-      $query = $db->getQuery(true);
+      $query = $db->createQuery();
       $languages = JLanguageHelper::getLanguages();
 
       $values = json_decode(json_encode($values), true);
@@ -174,7 +174,7 @@ class EmundusModelFalang extends JModelList {
       $labels = new stdClass();
 
       $db = $this->getDbo();
-      $query = $db->getQuery(true);
+      $query = $db->createQuery();
       $languages = JLanguageHelper::getLanguages();
 
       try {

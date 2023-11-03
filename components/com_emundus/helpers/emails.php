@@ -426,7 +426,7 @@ class EmundusHelperEmails {
             $db = Factory::getDBO();
         }
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('*')
             ->from($db->quoteName('#__emundus_setup_emails'))
@@ -822,7 +822,7 @@ class EmundusHelperEmails {
 
         if (!empty($user_id) || !empty($fnum)) {
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
 
             if (!empty($user_id)) {
                 $query->select('email, params')

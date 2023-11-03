@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopOrder_auto_cancel extends JPlugin
+class plgHikashopOrder_auto_cancel extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	var $message = '';
 	function __construct(&$subject, $config){

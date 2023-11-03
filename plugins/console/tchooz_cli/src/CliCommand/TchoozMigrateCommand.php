@@ -45,6 +45,7 @@ class TchoozMigrateCommand extends AbstractCommand
 	private $pattern = [
 		// DATABASE
 		'JFactory::getDbo()' => 'JFactory::getContainer()->get(\'DatabaseDriver\')',
+		'$query = $db->createQuery();' => '$query = $db->createQuery();',
 
 		// INPUT
 		'JFactory::getApplication()->input' => 'JFactory::getApplication()->getInput()',

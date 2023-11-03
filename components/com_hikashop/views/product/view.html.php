@@ -707,6 +707,8 @@ class ProductViewProduct extends HikaShopView {
 
 		$categoryClass = hikashop_get('class.category');
 		$element = $categoryClass->get(reset($pageInfo->filter->cid),true);
+		if(!empty($element->category_canonical))
+			$element->category_canonical = hikashop_translate($element->category_canonical);
 		$this->assignRef('element', $element);
 
 		if(empty($select)) {

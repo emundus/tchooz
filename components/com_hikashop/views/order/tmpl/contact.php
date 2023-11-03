@@ -72,7 +72,7 @@ if(!empty($this->order->order_id)) {
 						$oneExtraField,$itemData,
 						'data[contact]['.$oneExtraField->field_namekey.']',
 						false,
-						' class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'contact\',0);"',
+						' class="'.HK_FORM_CONTROL_CLASS.'" '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'contact\',0);"',
 						false,
 						null,
 						null,
@@ -93,10 +93,10 @@ if(!empty($this->order->order_id)) {
 <?php
 	if(!empty($this->extra_data['fields'])) {
 		foreach($this->extra_data['fields'] as $key => $value) {
-?>			<dt id="hikashop_contact_<?php echo $key; ?>_email" class="hikashop_contact_item_name">
+?>			<dt id="hikashop_contact_name_<?php echo $key; ?>" class="hikashop_contact_item_name">
 				<label><?php echo JText::_($value['label']); ?></label>
 			</dt>
-			<dd id="hikashop_contact_<?php echo $key; ?>_email" class="hikashop_contact_item_value">
+			<dd id="hikashop_contact_value_<?php echo $key; ?>" class="hikashop_contact_item_value">
 				<?php echo $value['content']; ?>
 			</dd>
 <?php

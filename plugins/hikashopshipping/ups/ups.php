@@ -240,7 +240,7 @@ class plgHikashopshippingUPS extends hikashopShippingPlugin
 	}
 
 	public function getShippingDefaultValues(&$element){
-		$element->shipping_name = 'UPS';
+		$element->shipping_name = 'UPS (legacy)';
 		$element->shipping_description = '';
 		$element->group_package = 0;
 		$element->shipping_images = 'ups';

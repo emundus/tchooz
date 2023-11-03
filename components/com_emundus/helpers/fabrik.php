@@ -100,7 +100,7 @@ class EmundusHelperFabrik {
             'process-jplugins' => '1',
             'cloak_emails' => '0',
             'enable_single_sorting' => 'default',
-            'collation' => 'utf8mb4_0900_ai_ci',
+            'collation' => 'utf8mb4_general_ci',
             'force_collate' => '',
             'list_disable_caching' => '0',
             'distinct' => '1',
@@ -239,13 +239,9 @@ class EmundusHelperFabrik {
 						1 => '$student_id=JRequest::getVar(\'student_id\', null,\'get\');
 $student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInstance(\'{jos_emundus_evaluations___student_id}\');
 echo \'<h2>\'.$student->name.\'</h2>\';
-JHtml::script(JURI::base() . \'media/com_emundus/lib/jquery-1.10.2.min.js\');
-JHtml::script(JURI::base() . \'media/jui/js/chosen.jquery.min.js\' );
 JHtml::styleSheet(JURI::base() . \'media/jui/css/chosen.css\');
 JHTML::stylesheet(JURI::Base().\'media/com_fabrik/css/fabrik.css\');',
-						2 => 'echo \'<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>\';
-echo \'<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>\';
-echo \'<script>window.parent.ScrollToTop();</script>\';
+						2 => 'echo \'<script>window.parent.ScrollToTop();</script>\';
 echo \'<style>.em-swal-title{
   margin: 8px 8px 32px 8px !important;
   font-family: "Maven Pro", sans-serif;
@@ -754,7 +750,7 @@ die("<script>
 
     static function addOption($eid,$label,$value){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             $query->select('params')
@@ -779,7 +775,7 @@ die("<script>
 
     static function addNotEmptyValidation($eid,$message = '',$condition = ''){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             $query->select('params')
@@ -823,7 +819,7 @@ die("<script>
 
     static function checkFabrikJoins($eid,$name,$plugin,$group_id){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             if($plugin == 'user'){
@@ -863,7 +859,7 @@ die("<script>
 
 		if (!empty($eid) && !empty($action)) {
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			try {
 				$query->select('count(id)')
@@ -910,7 +906,7 @@ die("<script>
 
     static function getTableFromFabrik($id, $object = 'list') {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             $query->select('fl.db_table_name')
@@ -934,7 +930,7 @@ die("<script>
 	{
 		if(!in_array($eid,$filters['elementid'])){
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->select('fl.db_table_name,fe.name')
 				->from($db->quoteName('#__fabrik_elements','fe'))

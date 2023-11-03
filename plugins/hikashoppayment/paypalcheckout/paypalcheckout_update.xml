@@ -1,0 +1,19 @@
+<updates>
+	<update>
+		<name>hikashoppayment - PayPal Checkout payment for HikaShop</name>
+		<description>Payment plugin for HikaShop for PayPal Checkout</description>
+		<element>paypalcheckout</element>
+		<type>plugin</type>
+		<version>5.0.0</version>
+		<folder>hikashoppayment</folder>
+		<client>site</client>
+		<infourl title="Fees">https://www.hikashop.com/marketplace/product/141-payment-paypal-checkout.html</infourl>
+		<downloads>
+			<downloadurl type="full" format="zip">https://www.hikashop.com/marketplace/product/141-payment-paypal-checkout.html</downloadurl>
+		</downloads>
+		<tags>
+			<tag>stable</tag>
+		</tags>
+		<targetplatform name="joomla" version=".*"/>
+	</update>
+</updates>

@@ -55,12 +55,7 @@ class SmartAgenda
     {
         JLog::addLogger(['text_file' => 'com_emundus.smart_agenda.php'], JLog::ALL, 'com_emundus.smart_agenda');
 
-	    if (version_compare(JVERSION, '4.0', '>'))
-	    {
-		    $this->db = Factory::getContainer()->get('DatabaseDriver');
-	    } else {
-		    $this->db = Factory::getDbo();
-		}
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		
         $this->setAuth();
 

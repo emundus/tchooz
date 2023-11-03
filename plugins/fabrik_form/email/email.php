@@ -726,7 +726,9 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		if (!empty($emailAttachEval))
 		{
 			Worker::clearEval();
-			$email_attach_array = Php::Eval(['code' => $emailAttachEval]);
+			$email_attach_array = Php::Eval(['code' => $emailAttachEval, 'vars' => ['formModel'=>$formModel], 
+										'thisVars' => ['data' => $this->data]]);
+
 			Worker::logEval($email_attach_array, 'Caught exception on eval in email email_attach_eval : %s');
 
 			if (!empty($email_attach_array))

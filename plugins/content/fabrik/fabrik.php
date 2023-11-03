@@ -52,7 +52,7 @@ class PlgContentFabrik extends CMSPlugin
 
 		// Load fabrik language
 		$lang = Factory::getApplication()->getLanguage();
-		$lang->load('com_fabrik', JPATH_BASE . '/components/com_fabrik');
+		$lang->load('com_fabrik', JPATH_ROOT . '/components/com_fabrik');
 
 		// Don't throw an exception, just don't do nuthin' if system plugin hasn't run
 		if (!defined('COM_FABRIK_FRONTEND'))

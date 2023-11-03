@@ -61,12 +61,7 @@ class EmundusViewChecklist extends JViewLegacy {
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
 		$this->app = Factory::getApplication();
-	    if (version_compare(JVERSION, '4.0', '>'))
-	    {
-		    $session = $this->app->getSession();
-		} else {
-			$session = Factory::getSession();
-	    }
+		$session = $this->app->getSession();
         $this->_user = $session->get('emundusUser');
 
         if (!EmundusHelperAccess::isApplicant($this->_user->id)) {

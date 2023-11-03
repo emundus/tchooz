@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5" type="plugin" group="quickicon" method="upgrade">
+	<name>Fabrik Quick Icon</name>
+	<creationDate>03 Novembre 2023</creationDate>
+	<version>2.0.0</version>
+	<author>eMundus</author>
+	<authorEmail>dev@emundus.io</authorEmail>
+	<authorUrl>http://www.emundus.fr</authorUrl>
+	<copyright>(C) 2019 eMundus All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
+	<description>Fabrik Quick Icon</description>
+	<files>
+		<filename plugin="fabrik">fabrik.php</filename>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="context" type="text" default="mod_quickicon" description="QUICKICON_GROUP" label="GROUP" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

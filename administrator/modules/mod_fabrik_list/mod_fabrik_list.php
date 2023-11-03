@@ -43,11 +43,11 @@ $origLayout = $input->get('layout');
 require_once COM_FABRIK_FRONTEND . '/views/list/view.html.php';
 $input->set('layout', $origLayout);
 
-require_once COM_FABRIK_FRONTEND . '/views/package/view.html.php';
+//require_once COM_FABRIK_FRONTEND . '/views/package/view.html.php';
 BaseDatabaseModel::addIncludePath(COM_FABRIK_FRONTEND . '/models');
 Table::addIncludePath(COM_FABRIK_BASE . '/administrator/components/com_fabrik/tables');
 $document = Factory::getDocument();
-require_once COM_FABRIK_FRONTEND . '/controllers/package.php';
+//require_once COM_FABRIK_FRONTEND . '/controllers/package.php';
 require_once COM_FABRIK_FRONTEND . '/views/form/view.html.php';
 $listId = (int) $params->get('list_id', 0);
 
@@ -86,7 +86,7 @@ $view->setModel($model, true);
 $view->isMambot = true;
 
 // Display the view
-$view->error = $controller->getError();
+//$view->error = $controller->getError();
 
 // Build unique cache id on url, post and user id
 $user = Factory::getUser();

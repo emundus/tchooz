@@ -7,6 +7,7 @@
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
+use Joomla\CMS\Factory;
 ?><?php
 include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
 class plgSystemHikashopuser extends hikashopJoomlaPlugin {
@@ -255,6 +256,12 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 	}
 
 	public function onAfterStoreUser($user, $isnew, $success, $msg) {
+		$app = Factory::getApplication();
+		// The method check here ensures that if running as a CLI Application we don't get any errors
+		if (method_exists($app, 'isClient') && ($app->isClient('site') || $app->isClient('cli'))) {
+			return;
+		}
+
 		if($success === false || !is_array($user))
 			return false;
 
@@ -685,7 +692,7 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 			$onWhat='onchange';
 			if($oneExtraField->field_type=='radio')
 				$onWhat='onclick';
-			$html = $fieldsClass->display($oneExtraField,@$user->$fieldName,'data[user]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'user\',0);"',false,$extraFields['user'],$user);
+			$html = $fieldsClass->display($oneExtraField,@$user->$fieldName,'data[user]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'user\',0);"',false,$extraFields['user'],$user);
 			if(HIKASHOP_J40) {
 				$html = str_replace('class="inputbox', 'class="form-control', $html);
 			}
@@ -708,7 +715,7 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 	}
 
 	 public function onPreprocessMenuItems($name, $items = null, $params = null, $enabled = true) {
-		if($name != 'com_menus.administrator.module' )
+		if($name != 'com_menus.administrator.module' || empty($items))
 			return;
 
 	 	$remove = array();

@@ -22,8 +22,10 @@ use Joomla\CMS\Factory;
 
 class EmundusModelApplication extends JModelList
 {
-    var $_user = null;
-    var $_db = null;
+	private $_mainframe;
+	
+    private $_user;
+	private $_db;
 
     /**
      * Constructor
@@ -41,15 +43,9 @@ class EmundusModelApplication extends JModelList
 
         $this->_mainframe = Factory::getApplication();
 		$this->_db = $this->getDatabase();
-
-	    if (version_compare(JVERSION, '4.0', '>'))
-	    {
-		    $session = $this->_mainframe->getSession();
-			$language = $this->_mainframe->getLanguage();
-		} else {
-			$session = Factory::getSession();
-			$language = Factory::getLanguage();
-	    }
+		
+		$session = $this->_mainframe->getSession();
+		$language = $this->_mainframe->getLanguage();
 
         $this->_user = $session->get('emundusUser');
         $this->locales = substr($language->getTag(), 0, 2);
@@ -68,7 +64,8 @@ class EmundusModelApplication extends JModelList
 				->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('eu.profile'))
 				->leftJoin($this->_db->quoteName('#__emundus_uploads', 'euu') . ' ON ' . $this->_db->quoteName('euu.user_id') . ' = ' . $this->_db->quoteName('u.id') . ' AND ' . $this->_db->quoteName('euu.attachment_id') . ' = ' . $this->_db->quote(10))
 				->where($this->_db->quoteName('u.id') . ' = ' . $this->_db->quote($aid));
-            $this->_db->setQuery($query);
+
+	        $this->_db->setQuery($query);
 
             try {
                 $applicant_infos =  $this->_db->loadAssoc();
@@ -3350,7 +3347,7 @@ class EmundusModelApplication extends JModelList
         }
     }
 
-    public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null) {
+    public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null, $profile=null) {
         try {
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -3382,9 +3379,15 @@ class EmundusModelApplication extends JModelList
                 $query .= " AND eu.id in ($ids)";
             }
 
-            $query .= " ORDER BY sap.mandatory DESC,sap.ordering";
+	        if(!empty($profile))
+	        {
+		        $query .= " ORDER BY sap.mandatory DESC,sap.ordering,sa.value ASC";
+	        } else {
+		        $query .= " ORDER BY sa.category, sa.ordering, sa.value ASC";
+	        }
 
-            $this->_db->setQuery($query);
+
+	        $this->_db->setQuery($query);
             $docs = $this->_db->loadObjectList();
         } catch(Exception $e) {
             error_log($e->getMessage(), 0);
@@ -5018,7 +5021,6 @@ class EmundusModelApplication extends JModelList
     {
         $preview = [
             'status' => true,
-            'content' => '',
             'overflowX' => false,
             'overflowY' => false,
             'style' => '',

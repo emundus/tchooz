@@ -29,8 +29,8 @@
     <field name="title">COM_WORKFLOW_BASIC_STAGE</field>
     <field name="description"></field>
     <field name="default">1</field>
-    <field name="checked_out_time"></field>
-    <field name="checked_out"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

@@ -10,7 +10,7 @@
    <field Field="r" Type="tinyint(1)" Null="NO" Key="MUL" Default="0" Extra="" />
    <field Field="u" Type="tinyint(1)" Null="NO" Key="MUL" Default="0" Extra="" />
    <field Field="d" Type="tinyint(1)" Null="NO" Key="MUL" Default="0" Extra="" />
-   <field Field="time_date" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" />
+   <field Field="time_date" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
    <key Table="#__emundus_users_assoc" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_users_assoc" Non_unique="0" Key_name="user_id_2" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_users_assoc" Non_unique="0" Key_name="user_id_2" Seq_in_index="2" Column_name="action_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />

@@ -376,7 +376,9 @@ if((int)$this->config->get('show_quantity_field') >= 2) {
 	$this->row->product_max_per_order = -1;
 	$this->row->product_sale_start = 0;
 	$this->row->product_sale_end = 0;
+	$this->row->formName = 'hikashop_product_form_'.$this->params->get('main_div_name', '');
 	$this->row->prices = array('filler');
+	$this->params->set('show_quantity_field', 2);
 	$this->setLayout('quantity');
 	echo $this->loadTemplate();
 

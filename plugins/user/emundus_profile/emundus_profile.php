@@ -7,6 +7,8 @@
 
  defined('JPATH_BASE') or die;
 
+ use Joomla\CMS\Factory;
+
   /**
    * An example custom profile plugin.
    *
@@ -14,7 +16,7 @@
    * @subpackage        user.profile
    * @version           1.6
    */
-  class plgUserEmundus_Profile extends JPlugin
+  class plgUserEmundus_Profile extends \Joomla\CMS\Plugin\CMSPlugin
   {
 		/**
 		 * Constructor
@@ -155,6 +157,12 @@
 
         function onUserAfterSave($data, $isNew, $result, $error)
         {
+            $app = Factory::getApplication();
+            // The method check here ensures that if running as a CLI Application we don't get any errors
+            if (method_exists($app, 'isClient') && ($app->isClient('site') || $app->isClient('cli'))) {
+                return;
+            }
+
             $userId = JArrayHelper::getValue($data, 'id', 0, 'int');
 
             if ($userId && $result && isset($data['emundus_profile']) && (count($data['emundus_profile'])))

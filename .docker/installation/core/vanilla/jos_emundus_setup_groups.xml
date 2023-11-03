@@ -30,45 +30,90 @@
     <field name="label">Tous les droits</field>
     <field name="description">Toutes les actions sur tous les programmes</field>
     <field name="published">1</field>
-    <field name="profile_id"></field>
-    <field name="course"></field>
+    <field name="profile_id" value_is_null="true"></field>
+    <field name="course" value_is_null="true"></field>
     <field name="fac_rattachement"></field>
-    <field name="commission"></field>
+    <field name="commission" value_is_null="true"></field>
     <field name="class">label-orange</field>
-    <field name="fabrik_group_link"></field>
-    <field name="attachment_id_link"></field>
+    <field name="fabrik_group_link" value_is_null="true"></field>
+    <field name="attachment_id_link" value_is_null="true"></field>
     <field name="anonymize"></field>
-    <field name="parent_id"></field>
+    <field name="parent_id" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">2</field>
     <field name="label">Evaluateur</field>
     <field name="description">Groupe des évaluateurs</field>
     <field name="published">1</field>
-    <field name="profile_id"></field>
-    <field name="course"></field>
+    <field name="profile_id" value_is_null="true"></field>
+    <field name="course" value_is_null="true"></field>
     <field name="fac_rattachement"></field>
-    <field name="commission"></field>
+    <field name="commission" value_is_null="true"></field>
     <field name="class">label-lightblue</field>
-    <field name="fabrik_group_link"></field>
-    <field name="attachment_id_link"></field>
+    <field name="fabrik_group_link" value_is_null="true"></field>
+    <field name="attachment_id_link" value_is_null="true"></field>
     <field name="anonymize">0</field>
-    <field name="parent_id"></field>
+    <field name="parent_id" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">3</field>
     <field name="label">Gestionnaire de programme</field>
     <field name="description">Actions sur un seul programme</field>
     <field name="published">1</field>
-    <field name="profile_id"></field>
-    <field name="course"></field>
+    <field name="profile_id" value_is_null="true"></field>
+    <field name="course" value_is_null="true"></field>
     <field name="fac_rattachement"></field>
-    <field name="commission"></field>
+    <field name="commission" value_is_null="true"></field>
     <field name="class">label-lightgreen</field>
-    <field name="fabrik_group_link"></field>
-    <field name="attachment_id_link"></field>
+    <field name="fabrik_group_link" value_is_null="true"></field>
+    <field name="attachment_id_link" value_is_null="true"></field>
     <field name="anonymize">0</field>
-    <field name="parent_id"></field>
+    <field name="parent_id" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="label">Programme 1</field>
+    <field name="description" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="profile_id" value_is_null="true"></field>
+    <field name="course" value_is_null="true"></field>
+    <field name="fac_rattachement" value_is_null="true"></field>
+    <field name="commission" value_is_null="true"></field>
+    <field name="class">label-default</field>
+    <field name="fabrik_group_link" value_is_null="true"></field>
+    <field name="attachment_id_link" value_is_null="true"></field>
+    <field name="anonymize" value_is_null="true"></field>
+    <field name="parent_id" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="label">Evaluateurs_Programme 1</field>
+    <field name="description" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="profile_id" value_is_null="true"></field>
+    <field name="course" value_is_null="true"></field>
+    <field name="fac_rattachement" value_is_null="true"></field>
+    <field name="commission" value_is_null="true"></field>
+    <field name="class">label-default</field>
+    <field name="fabrik_group_link" value_is_null="true"></field>
+    <field name="attachment_id_link" value_is_null="true"></field>
+    <field name="anonymize">0</field>
+    <field name="parent_id">2</field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="label">Gestionnaire de programme_Programme 1</field>
+    <field name="description" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="profile_id" value_is_null="true"></field>
+    <field name="course" value_is_null="true"></field>
+    <field name="fac_rattachement" value_is_null="true"></field>
+    <field name="commission" value_is_null="true"></field>
+    <field name="class">label-lightgreen</field>
+    <field name="fabrik_group_link" value_is_null="true"></field>
+    <field name="attachment_id_link" value_is_null="true"></field>
+    <field name="anonymize">0</field>
+    <field name="parent_id">3</field>
    </row>
   </table_data>
  </database>

@@ -520,7 +520,7 @@ class EmundusModelProfile extends JModelList {
     // TODO: if it is used, update
     function getProfileByStep($fnum, $step){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         try {
             $query->select('esp.id AS profile')
                 ->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
@@ -541,7 +541,7 @@ class EmundusModelProfile extends JModelList {
     /// get profile from menutype
     public function getProfileByMenu($menu) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             /// another way, if $menu has the regular expression "menu-profile" --> will see
@@ -562,7 +562,7 @@ class EmundusModelProfile extends JModelList {
     /// get fabrik list by ids
     public function getFabrikListByIds($flist) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($flist)) {
             try {
@@ -585,7 +585,7 @@ class EmundusModelProfile extends JModelList {
     // get fabrik form by list
     public function getFabrikFormByList($list) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($list)) {
             try {
@@ -609,7 +609,7 @@ class EmundusModelProfile extends JModelList {
     /// get fabrik groups by ids
     public function getFabrikGroupByList($glist) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($glist)) {
             try {
@@ -632,7 +632,7 @@ class EmundusModelProfile extends JModelList {
     /// get fabrik elements by ids
     public function getFabrikElementById($eid) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($eid)) {
             $query->clear()
@@ -650,7 +650,7 @@ class EmundusModelProfile extends JModelList {
     /// get data from element name
     public function getDataFromElementName($element, $fnum, $user) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($element) and !empty($fnum) and !empty($user)) {
             try {
@@ -1231,7 +1231,7 @@ class EmundusModelProfile extends JModelList {
 
     public function getHikashopMenu($profile) {
         $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select($db->quoteName('m.link'))
             ->from($db->quoteName('#__menu', 'm'))
@@ -1257,7 +1257,7 @@ class EmundusModelProfile extends JModelList {
 
         if (!empty($profile_id) && $profile_id) {
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
 
             $query->select('jm.path')
                 ->from('#__menu AS jm')
@@ -1282,7 +1282,7 @@ class EmundusModelProfile extends JModelList {
 
         if (!empty($user_id)) {
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
 
             $query->select('anonym_user')
                 ->from('#__emundus_users')
@@ -1304,7 +1304,7 @@ class EmundusModelProfile extends JModelList {
 
         if (!empty($user_id)) {
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
 
             $query->select('token')
                 ->from('#__emundus_users')

@@ -112,33 +112,37 @@ class EmundusModelProgramme extends JModelList {
      * @since version v6
      * get list of declared programmes
      */
-    public function getProgrammes($published = null, $codeList = array()) {
-        
+	public function getProgrammes($published = null, $codeList = array()) {
+		$programmes = [];
 
-        $query = 'select *
-                  from #__emundus_setup_programmes
-                  WHERE 1 = 1 ';
-        if (isset($published) && !empty($published)) {
-            $query .= ' AND published = '.$published;
-        }
+		$db = JFactory::getDbo();
+		$query = $db->createQuery();
+		$query->select('*')
+			->from($db->quoteName('#__emundus_setup_programmes'))
+			->where('1 = 1');
 
-        if (!empty($codeList)) {
-            if (count($codeList['IN']) > 0) {
-                $query .= ' AND code IN ('.implode(',', $this->_db->Quote($codeList['IN'])).')';
-            }
-            if (count($codeList['NOT_IN']) > 0) {
-                $query .= ' AND code NOT IN ('.implode(',', $this->_db->Quote($codeList['NOT_IN'])).')';
-            }
-        }
+		if (isset($published)) {
+			$query->andWhere('published = '.$published);
+		}
 
-        try {
-            $this->_db->setQuery($query);
-            return $this->_db->loadAssocList('code');
-        } catch(Exception $e) {
-            error_log($e->getMessage(), 0);
-            return array();
-        }
-    }
+		if (!empty($codeList)) {
+			if (!empty($codeList['IN'])) {
+				$query->andWhere('code IN ('.implode(',', $db->quote($codeList['IN'])).')');
+			}
+			if (!empty($codeList['NOT_IN'])) {
+				$query->andWhere('code NOT IN ('.implode(',', $db->quote($codeList['NOT_IN'])).')');
+			}
+		}
+
+		try {
+			$db->setQuery($query);
+			$programmes = $db->loadAssocList('code');
+		} catch(Exception $e) {
+			error_log($e->getMessage(), 0);
+		}
+
+		return $programmes;
+	}
 
     /**
      * @param $published  int     get published or unpublished programme

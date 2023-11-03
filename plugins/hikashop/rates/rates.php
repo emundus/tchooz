@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopRates extends JPlugin
+class plgHikashopRates extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	var $message = '';
 	var $urlECB = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";

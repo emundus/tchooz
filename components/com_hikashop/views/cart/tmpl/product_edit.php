@@ -771,7 +771,7 @@ if(!empty($this->itemFields)) {
 			$itemData,
 			'data[item]['.$oneExtraField->field_namekey.']',
 			false,
-			' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'item\',0);"',
+			' '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'item\',0);"',
 			false,
 			null,
 			null,

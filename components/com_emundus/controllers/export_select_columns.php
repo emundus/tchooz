@@ -28,8 +28,7 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
     }
 
     public function getformtags(){
-        $user = JFactory::getUser();
-        
+        $user = $this->app->getIdentity();
 
         $model = $this->getModel('export_select_columns');
 
@@ -66,7 +65,7 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
      * Gets all eMundus Tags from tags_table
      */
     public function getalltags(){
-        $user = JFactory::getUser();
+        $user = $this->app->getIdentity();
 
         $model = $this->getModel('export_select_columns');
 

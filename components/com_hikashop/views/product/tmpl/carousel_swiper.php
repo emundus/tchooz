@@ -32,14 +32,33 @@ $mainDivName = $this->params->get("main_div_name");
 $spaceBetween = (int) $this->params->get("margin");
 $options["spaceBetween"] = $spaceBetween;
 $navigation = (bool) $this->params->get("display_button");
-if ($navigation) {
+$pagination_type = $this->params->get("pagination_type");
+$pagination = $pagination_type != "no_pagination";
+$pagination_position = $this->params->get("pagination_position");
 ?>
 <style>
+    #<?php echo $mainDivName; ?> .hikashop_carousel {
+        position: relative;
+    }
+<?php
+if ($navigation) {
+?>
     #hikashop_carousel_<?php echo $mainDivName; ?> {
         width: 95%;
     }
+<?php
+}
+if ($pagination && $pagination_type == "rounds" && in_array($pagination_position, array('top', 'bottom'))) {
+?>
+    #hikashop_carousel_pagination_<?php echo $mainDivName; ?> {
+        height: 40px;
+    }
+<?php
+}
+?>
 </style>
 <?php
+if ($navigation) {
     $options["navigation"] =
     '{nextEl:"#hikashop_carousel_parent_div_' .
     $mainDivName .
@@ -74,9 +93,6 @@ if (empty($speed)) {
     $speed = 1500;
 }
 $options["speed"] = $speed;
-$pagination_position = $this->params->get("pagination_position");
-$pagination_type = $this->params->get("pagination_type");
-$pagination = $pagination_type != "no_pagination";
 $paginationDivClasses='';
 if ($pagination) {
     switch ($pagination_position) {

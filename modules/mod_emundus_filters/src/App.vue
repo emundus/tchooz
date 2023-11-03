@@ -150,14 +150,31 @@ export default {
 				newFilter.default = false;
 				newFilter.operator = newFilter.type === 'select' ? 'IN' : '=';
 				newFilter.andorOperator = 'OR';
+				newFilter.value = newFilter.type === 'select' ? ['all'] : '';
 
+				if (newFilter.type === 'select' && newFilter.values.length < 1) {
+					filtersService.getFilterValues(newFilter.id).then((values) => {
+						newFilter.values = values;
+
+						this.appliedFilters.push(newFilter);
+						this.openFilterOptions = false;
+						this.applyFilters();
+
+						return true;
+
+					});
+				} else {
 				this.appliedFilters.push(newFilter);
 				this.openFilterOptions = false;
 				added = true;
         this.applyFilters();
-			}
 
 			return added;
+				}
+			} else {
+				console.error('Filter not found');
+				return added;
+			}
 		},
 		applyFilters() {
 			window.dispatchEvent(this.startApplyFilters);

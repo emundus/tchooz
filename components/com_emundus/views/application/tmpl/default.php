@@ -13,7 +13,7 @@ jimport( 'joomla.utilities.date' );
 JHTML::_('behavior.modal');
 
 function age($naiss) {
-	@list($annee, $mois, $jour) = preg_split('[-.]', $naiss);
+	list($annee, $mois, $jour) = explode('-', $naiss);
 	$today['mois'] = date('n');
 	$today['jour'] = date('j');
 	$today['annee'] = date('Y');

@@ -19,13 +19,8 @@ include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
 
 $app = Factory::getApplication();
 
-if (version_compare(JVERSION, '4.0', '>')) {
-    $session = $app->getSession();
-    $document = $app->getDocument();
-} else {
-    $session = Factory::getSession();
-    $document = Factory::getDocument();
-}
+$session = $app->getSession();
+$document = $app->getDocument();
 $user = $session->get('emundusUser');
 
 // Here we get the menu which is defined in the params

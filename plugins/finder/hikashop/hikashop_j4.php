@@ -17,7 +17,6 @@ use Joomla\Component\Finder\Administrator\Indexer\Result;
 use Joomla\CMS\Plugin\PluginHelper;
 jimport('joomla.application.component.helper');
 
-
 abstract class plgFinderHikashopBridge extends Adapter {
 
 	public $resultClass = 'Joomla\Component\Finder\Administrator\Indexer\Result';
@@ -30,6 +29,26 @@ abstract class plgFinderHikashopBridge extends Adapter {
 
 		parent::__construct($subject, $config);
 	}
+
+	public function onFinderGarbageCollection() {
+		return $this->_onFinderGarbageCollection();
+	}
+	public function onFinderCategoryChangeState($extension, $pks, $value) {
+		$this->_onFinderCategoryChangeState($extension, $pks, $value);
+	}
+	public function onFinderAfterDelete($context, $table) {
+		return $this->_onFinderAfterDelete($context, $table);
+	}
+	public function onFinderAfterSave($context, $row, $isNew) {
+		return $this->_onFinderAfterSave($context, $row, $isNew);
+	}
+	public function onFinderBeforeSave($context, $row, $isNew) {
+		return $this->_onFinderBeforeSave($context, $row, $isNew);
+	}
+	public function onFinderChangeState($context, $pks, $value) {
+		$this->_onFinderChangeState($context, $pks, $value);
+	}
+
 
 	protected function index(Joomla\Component\Finder\Administrator\Indexer\Result $item)
 	{

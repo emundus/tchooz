@@ -55,7 +55,7 @@ class JFormFieldForeignKey extends JFormField
 
 		//Load all the field options
 		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$query
 			->select(

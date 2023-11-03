@@ -20,7 +20,7 @@ foreach($this->extraFields[$type] as $fieldName => $oneExtraField) {
 		@$this->$type->$fieldName,
 		'data['.$type.']['.$fieldName.']',
 		false,
-		' class="form-control" '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\''.$type.'\',0);"',
+		' class="form-control" '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\''.$type.'\',0);"',
 		false,
 		$this->extraFields[$type],
 		$this->$type

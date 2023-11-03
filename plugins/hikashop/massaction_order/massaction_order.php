@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopMassaction_order extends JPlugin
+class plgHikashopMassaction_order extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	public $message = '';
 	public $massaction = null;
@@ -669,8 +669,12 @@ class plgHikashopMassaction_order extends JPlugin
 					$action['emailAddress'] = 	$user->user_email;
 				}
 				foreach(get_object_vars($elements[0]) as $k => $v) {
-					$action['emailSubject'] = str_replace('{' . $k .'}',(string)$v, $action['emailSubject']);
-					$action['bodyData'] = str_replace('{' . $k .'}',(string)$v, $action['bodyData']);
+					if(is_object($v) || is_array($v))
+						continue;
+					if(!empty($action['emailSubject']))
+						$action['emailSubject'] = str_replace('{' . $k .'}',(string)$v, $action['emailSubject']);
+					if(!empty($action['bodyData']))
+						$action['bodyData'] = str_replace('{' . $k .'}',(string)$v, $action['bodyData']);
 				}
 			}
 

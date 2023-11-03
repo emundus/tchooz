@@ -878,7 +878,7 @@ class EmundusModelEvaluation extends JModelList {
 		    'u' => 'jos_users',
 		    'eu' => 'jos_emundus_users',
 		    'eta' => 'jos_emundus_tag_assoc',
-		    'ee' => 'jos_emundus_evaluations'
+		    'jos_emundus_evaluations' => 'jos_emundus_evaluations'
 	    ];
 
 	    $leftJoin = '';
@@ -1848,6 +1848,7 @@ class EmundusModelEvaluation extends JModelList {
 					->where($this->_db->quoteName('jeslrs.status') . ' = ' . $fnum_infos['status'])
 					->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($fnum_infos['training']) . ' OR ' . $this->_db->quoteName('jeslrc.campaign') . ' = ' . $this->_db->quote($fnum_infos['id']))
 					->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')')
+					->group($this->_db->quoteName('jesl.id'))
 					->order('id ASC');
 
 				try {

@@ -234,7 +234,7 @@ class EmundusModelStats extends JModelLegacy {
         $db = JFactory::getDbo();
         $currentTime = JFactory::getDate();
         $user = JFactory::getUser(); // get user
-        $formQuery = $db->getQuery(true);
+        $formQuery = $db->createQuery();
 
         //// Create Fabrik Form
         $columns = array('label', 'record_in_database', 'error', 'intro', 'created', 'created_by',
@@ -259,7 +259,7 @@ class EmundusModelStats extends JModelLegacy {
         }
 
 
-        $groupQuery = $db->getQuery(true);
+        $groupQuery = $db->createQuery();
 
         /// Create Fabrik Group
         $groupColumns = array('name', 'css', 'label', 'published', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'checked_out', 'checked_out_time', 'is_join', 'private', 'params');
@@ -282,7 +282,7 @@ class EmundusModelStats extends JModelLegacy {
             JLog::add('Error getting stats on account types at m/stats in query: '.$groupQuery->__toString(), JLog::ERROR, 'com_emundus');
         }
 
-        $formGroupQuery = $db->getQuery(true);
+        $formGroupQuery = $db->createQuery();
 
         /// Create Fabrik FormGroup which are linked with form id and group id
         $forGroupColumns = array('form_id', 'group_id', 'ordering');
@@ -301,7 +301,7 @@ class EmundusModelStats extends JModelLegacy {
             JLog::add('Error getting stats on account types at m/stats in query: '.$formGroupQuery->__toString(), JLog::ERROR, 'com_emundus');
         }
 
-        $listQuery = $db->getQuery(true);
+        $listQuery = $db->createQuery();
 
         /// Create Fabrik List which is linked with form id
         $listColumns = array('label', 'introduction', 'form_id', 'db_table_name', 'db_primary_key', 'auto_inc', 'connection_id', 'created', 'created_by', 'created_by_alias', 'modified', 'modified_by', 'checked_out', 'checked_out_time', 'published', 'publish_up', 'publish_down', 'access', 'hits', 'rows_per_page', 'template', 'order_by', 'order_dir', 'filter_action', 'group_by', 'private', 'params');
@@ -325,7 +325,7 @@ class EmundusModelStats extends JModelLegacy {
             JLog::add('Error getting stats on account types at m/stats in query: '.$listQuery->__toString(), JLog::ERROR, 'com_emundus');
         }
 
-        $elementQuery = $db->getQuery(true);
+        $elementQuery = $db->createQuery();
 
         /// Create Fabrik Element for each view column
         $ordering = 1;
@@ -402,7 +402,7 @@ class EmundusModelStats extends JModelLegacy {
         }
 
 
-        $updateMod = $db->getQuery(true);
+        $updateMod = $db->createQuery();
 
         // Fields to update.
         $fields = array(
@@ -448,7 +448,7 @@ class EmundusModelStats extends JModelLegacy {
 
     public function countUser($val) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query
             ->select('COUNT(*)')
@@ -467,7 +467,7 @@ class EmundusModelStats extends JModelLegacy {
 
     public function getAccountType($value, $periode) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $p = self::getPeriodeData($periode);
 
         $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_comptes'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE() AND '.$db->quoteName('profile_id').' = '.$value);
@@ -523,7 +523,7 @@ class EmundusModelStats extends JModelLegacy {
 
     public function getConnections($periode) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $p = self::getPeriodeData($periode);
 
         $query->select('*')->from($db->quoteName('#__emundus_stats_nombre_connexions'))->where($db->quoteName('_day').' >= DATE_SUB(CURDATE(), INTERVAL '.$p.') AND '.$db->quoteName('_day').' <= CURDATE()');
@@ -539,7 +539,7 @@ class EmundusModelStats extends JModelLegacy {
 
     public function getNbRelations($periode) {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query  = $db->createQuery();
         $p = self::getPeriodeData($periode);
 
         $query
@@ -558,7 +558,7 @@ class EmundusModelStats extends JModelLegacy {
 
     public function getMale() {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query  = $db->createQuery();
 
         $query
             ->select('SUM(nb) AS Male')
@@ -576,7 +576,7 @@ class EmundusModelStats extends JModelLegacy {
 
     public function getFemale() {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query  = $db->createQuery();
 
         $query
             ->select('SUM(nb) AS Female')
@@ -594,7 +594,7 @@ class EmundusModelStats extends JModelLegacy {
 
     public function getNationality() {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query  = $db->createQuery();
 
         $query
             ->select($db->quoteName(array('nb', 'nationality')))
@@ -612,7 +612,7 @@ class EmundusModelStats extends JModelLegacy {
 
     public function getAge() {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query  = $db->createQuery();
 
         $query
             ->select($db->quoteName(array('age', 'campaign')))
@@ -630,7 +630,7 @@ class EmundusModelStats extends JModelLegacy {
 
     public function getFiles() {
         $db = JFactory::getDbo();
-        $query  = $db->getQuery(true);
+        $query  = $db->createQuery();
 
         $query
             ->select('*')

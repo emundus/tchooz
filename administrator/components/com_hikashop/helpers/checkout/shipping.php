@@ -66,7 +66,7 @@ class hikashopCheckoutShippingHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	public function check(&$controller, &$params) {
-		if(!empty($params['read_only']))
+		if(empty($params['src']['final']) && !empty($params['read_only']))
 			return true;
 
 		$checkoutHelper = hikashopCheckoutHelper::get();

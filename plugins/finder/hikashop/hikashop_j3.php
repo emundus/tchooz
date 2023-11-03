@@ -23,6 +23,25 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter {
 		parent::__construct($subject, $config);
 	}
 
+	public function onFinderGarbageCollection() {
+		return $this->_onFinderGarbageCollection();
+	}
+	public function onFinderCategoryChangeState($extension, $pks, $value) {
+		$this->_onFinderCategoryChangeState($extension, $pks, $value);
+	}
+	public function onFinderAfterDelete($context, $table) {
+		return $this->_onFinderAfterDelete($context, $table);
+	}
+	public function onFinderAfterSave($context, $row, $isNew) {
+		return $this->_onFinderAfterSave($context, $row, $isNew);
+	}
+	public function onFinderBeforeSave($context, $row, $isNew) {
+		return $this->_onFinderBeforeSave($context, $row, $isNew);
+	}
+	public function onFinderChangeState($context, $pks, $value) {
+		$this->_onFinderChangeState($context, $pks, $value);
+	}
+
 	protected function index(FinderIndexerResult $item, $format = 'html')
 	{
 		if (JComponentHelper::isEnabled($this->extension) == false)

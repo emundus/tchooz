@@ -29,31 +29,53 @@ class hikashopJoomlaPlugin extends Joomla\CMS\Plugin\CMSPlugin implements Joomla
         if(substr($name,0, 2) == 'on' && substr($name,-7) == 'Handler') {
             $handler = substr($name, 0, -7);
             if(method_exists($this, $handler)) {
-                if(count($arguments) == 1 && get_class($arguments[0]) == 'Joomla\Event\Event') {
-                    $reflectedMethod = new \ReflectionMethod($this, $handler);
-                    $reflectedParameters = $reflectedMethod->getParameters();
-                    if(count($reflectedParameters)) {
-                        $params = array();
-                        foreach($reflectedParameters as $reflectedParameter) {
-                            $parameterPosition = $reflectedParameter->getPosition();
-                            if($reflectedParameter->isOptional() && !$arguments[0]->hasArgument($parameterPosition)) {
-                                $params[] = $reflectedParameter->getDefaultValue();
-                            } else {
-                                $params[] = $arguments[0]->getArgument($parameterPosition);
-                            }
-                        }
-
-                        $result = $this->$handler(...$params);
-
-                        foreach($reflectedParameters as $reflectedParameter) {
-                            if($reflectedParameter->isPassedByReference()) {
+                if(count($arguments) == 1) {
+                    $class = get_class($arguments[0]);
+                    if(substr($class, 0, 7) == 'Joomla\\') {
+                        $reflectedMethod = new \ReflectionMethod($this, $handler);
+                        $reflectedParameters = $reflectedMethod->getParameters();
+                        if(count($reflectedParameters)) {
+                            $params = array();
+                            $receivedArguments = $arguments[0]->getArguments();
+                            $positionedArguments = array_values($receivedArguments);
+                            foreach($reflectedParameters as $reflectedParameter) {
                                 $parameterPosition = $reflectedParameter->getPosition();
-                                $arguments[0]->setArgument($parameterPosition, $params[$parameterPosition]);
+                                if($reflectedParameter->isOptional() && $parameterPosition>count($arguments)) {
+                                    $params[] = $reflectedParameter->getDefaultValue();
+                                } else {
+                                    $params[] = $positionedArguments[$parameterPosition];
+                                }
                             }
+
+                            $result = $this->$handler(...$params);
+
+                            foreach($reflectedParameters as $reflectedParameter) {
+                                if($reflectedParameter->isPassedByReference()) {
+                                    $parameterPosition = $reflectedParameter->getPosition();
+                                    $cpt = 0;
+                                    $name = '';
+                                    foreach($receivedArguments as $argName => $arg) {
+                                        if($cpt == $parameterPosition) {
+                                            $name = $argName;
+                                            break;
+                                        }
+                                        $cpt++;
+                                    }
+                                    $arguments[0]->setArgument($name, $params[$parameterPosition]);
+                                }
+                            }
+                        } else {
+                            $result = $this->$handler();
                         }
+
+                        if(!empty($result)) {
+                            $results = $arguments[0]->getArgument('result', []);
+                            $results[] = $result;
+                            $arguments[0]->setArgument('result', $results);
+                        }
+
                         return $result;
                     }
-                    return $this->$handler();
                 }
                 return $this->$handler(...$arguments);
             }

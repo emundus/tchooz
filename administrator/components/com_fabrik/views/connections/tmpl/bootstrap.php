@@ -31,50 +31,50 @@ $userId	= $user->get('id');
 $listOrder	= $this->state->get('list.ordering');
 $listDirn	= $this->state->get('list.direction');
 ?>
-<form action="<?php echo Route::_('index.php?option=com_fabrik&view=connections'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?= Route::_('index.php?option=com_fabrik&view=connections'); ?>" method="post" name="adminForm" id="adminForm">
 <div class="row">
 <div class="col-sm-12">
 	<div id="j-main-container" class="j-main-container">
-		<?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
+		<?= LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<?php if (empty($this->items)) : ?>
 			<div class="alert alert-info">
-				<span class="icon-info-circle" aria-hidden="true"></span><span class="visually-hidden"><?php echo Text::_('INFO'); ?></span>
-				<?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
+				<span class="icon-info-circle" aria-hidden="true"></span><span class="visually-hidden"><?= Text::_('INFO'); ?></span>
+				<?= Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
 			</div>
 		<?php else : ?>
 	<table class="table table-striped">
 		<thead>
 			<tr>
-				<th width="2%">
-					<?php echo HTMLHelper::_( 'grid.sort', 'JGRID_HEADING_ID', 'c.id', $listDirn, $listOrder); ?>
+				<td class="w-1 text-center">
+					<?= HTMLHelper::_('grid.checkall'); ?>
+				</td>
+				<th scope="col" class="w-1 text-center d-none d-md-table-cell">
+					<?= HTMLHelper::_( 'grid.sort', 'JGRID_HEADING_ID', 'c.id', $listDirn, $listOrder); ?>
 				</th>
-				<th width="1%">
-					<?php echo HTMLHelper::_('grid.checkall'); ?>
+				<th scope="col" class="w-10 d-none d-md-table-cell">
+					<?= Text::_('COM_FABRIK_LABEL'); ?>
 				</th>
-				<th width="29%">
-					<?php echo Text::_('COM_FABRIK_LABEL'); ?>
+				<th scope="col" class="w-10 d-none d-md-table-cell">
+					<?= Text::_('COM_FABRIK_HOST'); ?>
+				</th>
+				<th scope="col" class="w-10 d-none d-md-table-cell">
+					<?= Text::_('COM_FABRIK_DATABASE'); ?>
+				</th>
+				<th scope="col" class="w-3 d-none d-md-table-cell">
+					<?= Text::_('COM_FABRIK_DEFAULT'); ?>
+				</th>
+				<th scope="col" class="w-3 d-none d-md-table-cell">
+					<?= Text::_('JPUBLISHED'); ?>
 				</th>
 				<th width="20%">
-					<?php echo Text::_('COM_FABRIK_HOST'); ?>
-				</th>
-				<th width="20%">
-					<?php echo Text::_('COM_FABRIK_DATABASE'); ?>
-				</th>
-				<th width="5%">
-					<?php echo Text::_('COM_FABRIK_DEFAULT'); ?>
-				</th>
-				<th width="5%">
-					<?php echo Text::_('JPUBLISHED'); ?>
-				</th>
-				<th width="20%">
-					<?php echo Text::_('COM_FABRIK_TEST_CONNECTION'); ?>
+					<?= Text::_('COM_FABRIK_TEST_CONNECTION'); ?>
 				</th>
 			</tr>
 		</thead>
 		<tfoot>
 			<tr>
 				<td colspan="8">
-					<?php echo $this->pagination->getListFooter(); ?>
+					<?= $this->pagination->getListFooter(); ?>
 				</td>
 			</tr>
 		</tfoot>
@@ -86,44 +86,42 @@ $listDirn	= $this->state->get('list.direction');
 			$canChange	= true;
 			?>
 
-			<tr class="row<?php echo $i % 2; ?>">
+			<tr class="row<?= $i % 2; ?>">
+				<td><?= HTMLHelper::_('grid.id', $i, $item->id); ?></td>
 				<td>
-					<?php echo $item->id; ?>
-				</td>
-				<td class="center">
-					<?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>
+					<?= $item->id; ?>
 				</td>
 				<td>
 					<?php if ($item->checked_out) : ?>
-						<?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'connections.', $canCheckin); ?>
+						<?= HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'connections.', $canCheckin); ?>
 					<?php endif; ?>
 					<?php
 					if ($item->checked_out && ( $item->checked_out != $user->get('id'))) {
 						echo $item->description;
 					} else {
 					?>
-						<a href="<?php echo $link;?>" >
-							<?php echo $item->description;?>
+						<a href="<?= $link;?>" >
+							<?= $item->description;?>
 						</a>
 					<?php
 					}
 					?>
 				</td>
 				<td>
-					<?php echo $item->host;?>
+					<?= $item->host;?>
 				</td>
 				<td>
-					<?php echo $item->database; ?>
+					<?= $item->database; ?>
 				</td>
-				<td class="center">
-					<?php echo HTMLHelper::_('jgrid.isdefault', $item->default, $i, 'connections.', $canChange);?>
-			</td>
-				<td class="center">
-					<?php echo HTMLHelper::_('jgrid.published', $item->published, $i, 'connections.', $canChange);?>
+				<td class="text-center">
+					<?= HTMLHelper::_('jgrid.isdefault', $item->default, $i, 'connections.', $canChange);?>
+				</td>
+				<td class="text-center">
+					<?= HTMLHelper::_('jgrid.published', $item->published, $i, 'connections.', $canChange);?>
 				</td>
 				<td>
-					<a href="#edit" onclick="return Joomla.listItemTask('cb<?php echo $i; ?>','connection.test')">
-						<?php echo Text::_('COM_FABRIK_TEST_CONNECTION'); ?>
+					<a href="#edit" onclick="return Joomla.listItemTask('cb<?= $i; ?>','connection.test')">
+						<?= Text::_('COM_FABRIK_TEST_CONNECTION'); ?>
 					</a>
 				</td>
 			</tr>
@@ -134,8 +132,6 @@ $listDirn	= $this->state->get('list.direction');
 
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="boxchecked" value="0" />
-	<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-	<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
-	<?php echo HTMLHelper::_('form.token'); ?>
+	<?= HTMLHelper::_('form.token'); ?>
 	</div>
 </form>

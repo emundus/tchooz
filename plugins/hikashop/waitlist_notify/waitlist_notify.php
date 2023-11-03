@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopWaitlist_notify extends JPlugin
+class plgHikashopWaitlist_notify extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	var $message = '';
 

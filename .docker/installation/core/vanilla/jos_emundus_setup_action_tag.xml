@@ -13,7 +13,7 @@
     <field name="id">1</field>
     <field name="label">Justificatif d'identité non conforme</field>
     <field name="class">label-red</field>
-    <field name="category"></field>
+    <field name="category">Cat 1</field>
    </row>
    <row>
     <field name="id">2</field>

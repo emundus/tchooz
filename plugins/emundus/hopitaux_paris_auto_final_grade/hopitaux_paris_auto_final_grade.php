@@ -18,7 +18,7 @@ defined('_JEXEC') or die('Restricted access');
  * @since       3.0
  */
 
-class PlgEmundusHopitaux_paris_auto_final_grade extends JPlugin {
+class PlgEmundusHopitaux_paris_auto_final_grade extends \Joomla\CMS\Plugin\CMSPlugin {
 
     function __construct(&$subject, $config) {
         parent::__construct($subject, $config);

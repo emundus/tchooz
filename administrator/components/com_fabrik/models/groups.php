@@ -43,7 +43,7 @@ class FabrikAdminModelGroups extends FabModelList
 				'id', 'g.id', 
 				'name', 'g.name', 
 				'label', 'g.label', 
-				'form', 'f.name', 
+				'form', 'f.label', 
 				'published', 'g.published'
 			];
 		}
@@ -73,7 +73,7 @@ class FabrikAdminModelGroups extends FabModelList
 		$query->join('LEFT', '#__fabrik_forms AS f ON fg.form_id = f.id');
 
 		// Add the list ordering clause.
-		$orderCol  = $this->state->get('list.ordering');
+		$orderCol  = $this->state->get('list.ordering','g.name');
 		$orderDirn = $this->state->get('list.direction');
 
 		if ($orderCol == 'ordering' || $orderCol == 'category_title')
@@ -216,6 +216,6 @@ class FabrikAdminModelGroups extends FabModelList
 		$this->setState('filter.form', $form);
 
 		// List state information.
-		parent::populateState('name', 'asc');
+		parent::populateState($ordering, $direction);
 	}
 }

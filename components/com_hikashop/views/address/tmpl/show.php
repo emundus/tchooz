@@ -78,7 +78,7 @@ if(isset($this->edit) && $this->edit === true) {
 			@$this->address->$fieldname,
 			'data[address]['.$fieldname.']',
 			false,
-			' class="'.HK_FORM_CONTROL_CLASS.'" ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\'address\',0);"',
+			' class="'.HK_FORM_CONTROL_CLASS.'" ' . $onWhat . '="window.hikashop.toggleField(this,\''.$fieldname.'\',\'address\',0);"',
 			false,
 			$this->fields,
 			$this->address,

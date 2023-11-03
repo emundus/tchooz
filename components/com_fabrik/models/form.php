@@ -708,6 +708,9 @@ class FabrikFEModelForm extends FabModelForm
 		// $$$ hugh - added ability to use form_XX, as am adding custom list_XX
 		$view = $this->isEditable() ? 'form' : 'details';
 
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
+		$hash = EmundusHelperCache::getCurrentGitHash();
+
 		/**
 		 * $$$ hugh - need to use an assoc key name for the scripts array, as it gets used in the requirejs
 		 * to pass in as a function arg, which then blows up with "unexpected number" if we don't use a key name
@@ -724,7 +727,7 @@ class FabrikFEModelForm extends FabModelForm
 		}
 		elseif (File::exists(COM_FABRIK_FRONTEND . '/js/custom_' . $view . '.js'))
 		{
-			$scripts[$scriptsKey] = 'components/com_fabrik/js/custom_' . $view . '.js';
+			$scripts[$scriptsKey] = 'components/com_fabrik/js/custom_' . $view . '.js?'.$hash;
 		}
 	}
 
@@ -5181,6 +5184,9 @@ class FabrikFEModelForm extends FabModelForm
 			{
 				$url = 'index.php?option=com_fabrik&view=form&formid=' . $input->getInt('formid') . '&rowid=' . $input->getString('rowid', '', 'string')
 					. '&listid=' . $input->getInt('listid');
+				$itemId = (int) FabrikWorker::itemId();
+				if ($itemId !== 0)
+					$url = $url . '&Itemid=' . $itemId;
 			}
 			else
 			{

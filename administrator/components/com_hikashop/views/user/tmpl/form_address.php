@@ -84,7 +84,7 @@ if(empty($this->edit_address)) {
 			@$this->address->$fieldname,
 			'data[user_address]['.$fieldname.']',
 			false,
-			' ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\'user_address\',0);"',
+			' ' . $onWhat . '="window.hikashop.toggleField(this,\''.$fieldname.'\',\'user_address\',0);"',
 			false,
 			$this->fields['address'],
 			$this->address

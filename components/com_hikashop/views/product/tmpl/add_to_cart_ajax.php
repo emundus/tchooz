@@ -136,7 +136,7 @@ if(($add_to_cart || $add_to_wishlist) && (($has_fields && $display_fields) || $d
 				$itemData,
 				'data[item]['.$oneExtraField->field_namekey.']',
 				false,
-				' '.$onWhat.'="if(window.hikashop.toggleField) { window.hikashop.toggleField(this.value, \''.$fieldName.'\',\'item\',0); }"'
+				' '.$onWhat.'="if(window.hikashop.toggleField) { window.hikashop.toggleField(this, \''.$fieldName.'\',\'item\',0); }"'
 			);
 			if($oneExtraField->field_type == 'hidden') {
 				$after[] = $html;

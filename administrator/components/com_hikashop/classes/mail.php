@@ -850,12 +850,11 @@ class hikashopMailClass {
 				$this->mail_success = false;
 			return false;
 		}
+		$config = hikashop_config();
 
 		$result = true;
 		try {
 			$this->preProcessMail($mail);
-
-			$config = hikashop_config();
 			if((bool)$config->get('embed_images',0)){
 				$this->embedImages();
 			}
@@ -927,7 +926,7 @@ class hikashopMailClass {
 		}
 
 		$attachData = hikashop_unserialize($attach);
-		$uploadFolder = str_replace(array('/','\\'),DS,html_entity_decode($config->get('uploadfolder')));
+		$uploadFolder = str_replace(array('/','\\'),DS,html_entity_decode($config->get('uploadsecurefolder')));
 		if(preg_match('#^([A-Z]:)?/.*#',$uploadFolder)) {
 			if(!$config->get('embed_files')) {
 				$this->_force_embed = true;
@@ -938,15 +937,34 @@ class hikashopMailClass {
 			$uploadPath = str_replace(array('/','\\'),DS,HIKASHOP_ROOT.$uploadFolder);
 		}
 		$uploadURL = HIKASHOP_LIVE.str_replace(DS,'/',$uploadFolder);
+
+		if(!$config->get('embed_files') && !$this->_force_embed) {
+			$folder = $config->get('uploadfolder');
+			if(preg_match('#^([A-Z]:)?/.*#',$folder)) {
+				$path = str_replace(array('/','\\'),DS,$folder);
+			} else {
+				$folder = trim($folder,DS.' ').DS;
+				$path = str_replace(array('/','\\'),DS,HIKASHOP_ROOT.$folder);
+			}
+			$uploadURL = HIKASHOP_LIVE.str_replace(DS,'/',$folder);
+		}
 		$attach = array();
 		foreach($attachData as $oneAttach) {
+			if(!$config->get('embed_files') && !$this->_force_embed) {
+				jimport( 'joomla.filesystem.file' );
+				try{
+					JFile::copy($uploadPath.$oneAttach->filename, $folder.$oneAttach->filename);
+				}catch(Exception $e) {
+					hikashop_writeToLog($e->getMessage());
+					continue;
+				}
+			}
 			$attachObj = new stdClass();
 			$attachObj->name = $oneAttach->filename;
 			$attachObj->filename = $uploadPath.$oneAttach->filename;
 			$attachObj->url = $uploadURL.$oneAttach->filename;
 			$attach[] = $attachObj;
 		}
-
 		return $attach;
 	}
 

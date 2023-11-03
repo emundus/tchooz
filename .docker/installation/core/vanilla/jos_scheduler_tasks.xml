@@ -34,5 +34,55 @@
    <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_cli_exclusive" Seq_in_index="1" Column_name="cli_exclusive" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_checked_out" Seq_in_index="1" Column_name="checked_out" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
+  <table_data name="#__scheduler_tasks">
+   <row>
+    <field name="id">1</field>
+    <field name="asset_id">137</field>
+    <field name="title">Rotate Logs</field>
+    <field name="type">rotation.logs</field>
+    <field name="execution_rules">{&quot;rule-type&quot;:&quot;interval-days&quot;,&quot;interval-days&quot;:30,&quot;exec-time&quot;:&quot;10:36&quot;,&quot;exec-day&quot;:&quot;02&quot;}</field>
+    <field name="cron_rules">{&quot;type&quot;:&quot;interval&quot;,&quot;exp&quot;:&quot;P30D&quot;}</field>
+    <field name="state">1</field>
+    <field name="last_exit_code">0</field>
+    <field name="last_execution" value_is_null="true"></field>
+    <field name="next_execution">2023-12-02 10:36:00</field>
+    <field name="times_executed">0</field>
+    <field name="times_failed">0</field>
+    <field name="locked" value_is_null="true"></field>
+    <field name="priority">0</field>
+    <field name="ordering">0</field>
+    <field name="cli_exclusive">0</field>
+    <field name="params">{&quot;logstokeep&quot;:1}</field>
+    <field name="note" value_is_null="true"></field>
+    <field name="created">2023-11-02 11:07:04</field>
+    <field name="created_by">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="asset_id">138</field>
+    <field name="title">Session GC</field>
+    <field name="type">session.gc</field>
+    <field name="execution_rules">{&quot;rule-type&quot;:&quot;interval-hours&quot;,&quot;interval-hours&quot;:24,&quot;exec-time&quot;:&quot;11:07&quot;,&quot;exec-day&quot;:&quot;02&quot;}</field>
+    <field name="cron_rules">{&quot;type&quot;:&quot;interval&quot;,&quot;exp&quot;:&quot;PT24H&quot;}</field>
+    <field name="state">1</field>
+    <field name="last_exit_code">0</field>
+    <field name="last_execution">2023-11-03 11:07:18</field>
+    <field name="next_execution">2023-11-04 11:07:18</field>
+    <field name="times_executed">1</field>
+    <field name="times_failed">0</field>
+    <field name="locked" value_is_null="true"></field>
+    <field name="priority">0</field>
+    <field name="ordering">0</field>
+    <field name="cli_exclusive">0</field>
+    <field name="params">{&quot;enable_session_gc&quot;:1,&quot;enable_session_metadata_gc&quot;:1}</field>
+    <field name="note" value_is_null="true"></field>
+    <field name="created">2023-11-02 11:07:04</field>
+    <field name="created_by">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+   </row>
+  </table_data>
  </database>
 </mysqldump>

@@ -129,7 +129,7 @@ class contact_requestPreviewMaker {
 				$oneExtraField,$itemData,
 				'data[contact]['.$oneExtraField->field_namekey.']',
 				false,
-				' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'contact\',0);"',
+				' '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'contact\',0);"',
 				false,
 				null,
 				null,

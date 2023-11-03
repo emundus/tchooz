@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgSearchHikashop_categories extends JPlugin{
+class plgSearchHikashop_categories extends \Joomla\CMS\Plugin\CMSPlugin{
 
 	function __construct(&$subject, $config){
 		$this->loadLanguage('plg_search_hikashop_categories');

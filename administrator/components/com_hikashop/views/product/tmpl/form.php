@@ -577,7 +577,7 @@ function descWidth(delay) {
 				$onWhat = 'onchange';
 				if($oneExtraField->field_type == 'radio')
 					$onWhat = 'onclick';
-				$txt = $this->fieldsClass->display($oneExtraField, @$this->product->$fieldName, 'data[product]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'product\',0);"');
+				$txt = $this->fieldsClass->display($oneExtraField, @$this->product->$fieldName, 'data[product]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this,\''.$fieldName.'\',\'product\',0);"');
 
 				if($oneExtraField->field_type == 'hidden') {
 					$after[] = $txt;

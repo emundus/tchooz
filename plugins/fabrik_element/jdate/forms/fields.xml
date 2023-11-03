@@ -163,7 +163,8 @@
 					<option value="1">JYES</option>
 			</field>
 
-            <field name="jdate_show_week_numbers"
+            <!--  Ignored because of J!4.4.0 calendar issue
+			<field name="jdate_show_week_numbers"
                    type="radio"
                    default="0"
                    class="btn-group"
@@ -173,6 +174,7 @@
                 <option value="0">JNO</option>
                 <option value="1">JYES</option>
             </field>
+			-->
 
 			<field name="jdate_csv_offset_tz"
 				type="list"

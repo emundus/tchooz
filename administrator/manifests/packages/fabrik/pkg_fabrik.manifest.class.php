@@ -36,8 +36,8 @@ class Pkg_FabrikInstallerScript
 			throw new RuntimeException('Fabrik can not be installed on versions of Joomla older than 4.2');
 			return false;
 		}
-		if (version_compare($jversion->getShortVersion(), '5.0', '>')) {
-			throw new RuntimeException('Fabrik can not yet be installed on Joomla 5');
+		if (version_compare($jversion->getShortVersion(), '6.0', '>')) {
+			throw new RuntimeException('Fabrik can not yet be installed on Joomla 6');
 			return false;
 		}
 

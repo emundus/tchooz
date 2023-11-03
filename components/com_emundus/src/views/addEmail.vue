@@ -599,22 +599,20 @@ export default {
       this.submitted = true;
 
       if (this.email !== "") {
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus&controller=email&task=updateemail",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({ body: this.form,
-            code: this.email,
-            selectedReceiversCC: this.selectedReceiversCC,
-            selectedReceiversBCC: this.selectedReceiversBCC,
-            selectedLetterAttachments:this.selectedLetterAttachments,
-            selectedCandidateAttachments: this.selectedCandidateAttachments,
-            selectedTags: this.selectedTags
-          })
+        let formData = new FormData();
+        formData.append("body", JSON.stringify(this.form));
+        formData.append("code", this.email);
+        formData.append("selectedReceiversCC", this.selectedReceiversCC);
+        formData.append("selectedReceiversBCC", this.selectedReceiversBCC);
+        formData.append("selectedLetterAttachments", this.selectedLetterAttachments);
+        formData.append("selectedCandidateAttachments", this.selectedCandidateAttachments);
+        formData.append("selectedTags", this.selectedTags);
+
+        fetch("/index.php?option=com_emundus&controller=email&task=updateemail", {
+          method: "POST",
+          body: formData
         }).then(() => {
-          this.redirectJRoute('index.php?option=com_emundus&view=emails');
+          history.back();
         }).catch(error => {
           console.log(error);
         });

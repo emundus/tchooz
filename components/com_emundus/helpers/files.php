@@ -480,7 +480,7 @@ class EmundusHelperFiles
         $attachments_by_profile = [];
 
         $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('attachment_id')
             ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
@@ -878,7 +878,7 @@ class EmundusHelperFiles
         if (!empty($elements_id) && !empty(ltrim($elements_id))) {
             $db = JFactory::getDBO();
 
-	        $query = $db->getQuery(true);
+	        $query = $db->createQuery();
 			$query->select('element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, element.hidden as element_hidden, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.id as table_list_id, tab.created_by_alias AS created_by_alias, joins.join_from_table, joins.table_join, joins.table_key, joins.table_join_key')
 				->from('#__fabrik_elements AS element')
 				->join('INNER', '#__fabrik_groups AS groupe ON element.group_id = groupe.id')
@@ -1956,7 +1956,7 @@ class EmundusHelperFiles
         }
         //Advance filter builtin
         if (@$params['adv_filter'] !== NULL) {
-            $filters .= '</fieldset><fieldset class="em_filters_adv_filter">';
+            $filters .= '</fieldset><fieldset class="em_filters_adv_filter mt-2">';
             $elements = $h_files->getElements();
 
             // the button is disabled by default. It needs a selected campaign ->> look at em_files.js at the #select_multiple_campaigns on change function
@@ -2357,7 +2357,11 @@ class EmundusHelperFiles
     }
 
     // getEvaluation
-    public static function getEvaluation($format='html', $fnums = []) {
+    public static function getEvaluation($format='html', $fnums = [])
+    {
+	    $db = JFactory::getDbo();
+	    $query = $db->createQuery();
+
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
@@ -2377,12 +2381,11 @@ class EmundusHelperFiles
 
         $element_id = $m_evaluation->getAllEvaluationElements(1, $fnumInfo['training']);
         $elements = $h_files->getElementsName(implode(',',$element_id));
-        $evaluations = $m_files->getFnumArray($fnums, $elements,0,0,0,1);
+		$evaluations = $m_files->getFnumArray($fnums, $elements, 0, 0, 0, 0);
 
         $data = array();
         foreach ($evaluations as $eval) {
 
-            if ($eval['jos_emundus_evaluations___user'] > 0 && ($eval['jos_emundus_evaluations___user'] == JFactory::getUser()->id || EmundusHelperAccess::asAccessAction(5,'r'))) {
                 $str = '<br><hr>';
                 $str .= '<p><em style="font-size: 14px">'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em></p>';
                 $str .= '<h2>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR').': '.JFactory::getUser($eval['jos_emundus_evaluations___user'])->name.'</h2>';
@@ -2416,9 +2419,34 @@ class EmundusHelperFiles
                             $str .= '<tr>';
                             if (strpos($element->element_name, 'comment') !== false) {
                                 $str .= '<td colspan="2"><b>'.JText::_(trim($element->element_label)).'</b> <br>'.JText::_($eval[$k]).'</td>';
+						}
+						else
+						{
+							if($element->element_plugin == 'emundus_fileupload' && EmundusHelperAccess::asAccessAction(4,'r',JFactory::getUser()->id,$eval['fnum'])) {
+								$filepath = '';
+								$params = json_decode($element->element_attribs,true);
+
+								if(!empty($params['attachmentId'])) {
+									$query->clear()
+										->select('filename')
+										->from($db->quoteName('#__emundus_uploads'))
+										->where($db->quoteName('attachment_id') . ' = ' . $db->quote($params['attachmentId']));
+									$db->setQuery($query);
+									$filename = $db->loadResult();
+
+									if(!empty($filename)) {
+										$filepath = EMUNDUS_PATH_REL.$eval['jos_emundus_evaluations___student_id'].'/'.$filename;
+									}
+								}
+
+								if(!empty($filepath))
+								{
+									$str .= '<td width="30%"><b>' . JText::_(trim($element->element_label)) . '</b> </td><td width="70%"><a href="/' . $filepath . '" target="_blank">' . JText::_($eval[$k]) . '</a></td>';
+								}
                             } else {
                                 $str .= '<td width="30%"><b>'.JText::_(trim($element->element_label)).'</b> </td><td width="70%">'.JText::_($eval[$k]).'</td>';
                             }
+						}
                             $str .= '</tr>';
                         }
                     }
@@ -2444,7 +2472,7 @@ class EmundusHelperFiles
 
                 $data[$eval['fnum']][$eval['jos_emundus_evaluations___user']] = $str;
             }
-        }
+
         return $data;
     }
 
@@ -2821,7 +2849,7 @@ class EmundusHelperFiles
 
     public function saveExcelFilter($user_id, $name, $constraints, $time_date, $itemid) {
         $db = JFactory::getDBO();
-	    $query = $db->getQuery(true);
+	    $query = $db->createQuery();
 
         try {
             /// check if the model name exists
@@ -2859,7 +2887,7 @@ class EmundusHelperFiles
     /// params :: user_id, $mode = "pdf", selected_elements = []
     public function savePdfFilter($params) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($params)) {
             try {
@@ -2897,7 +2925,7 @@ class EmundusHelperFiles
     // delete pdf filter
     public function deletePdfFilter($fid) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($fid)) {
             $query->clear()
@@ -2922,7 +2950,7 @@ class EmundusHelperFiles
 
 		if (!empty($user_id)) {
 			$db = JFactory::getDBO();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			try {
 				$query->select('*')
@@ -2944,7 +2972,7 @@ class EmundusHelperFiles
     //// get profile from elements IDs
     public function getAllExportPdfFilter($user_id) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($user_id)) {
             try {
@@ -2968,7 +2996,7 @@ class EmundusHelperFiles
 
     public function getExportPdfFilterById($model_id) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($model_id)) {
             try {
@@ -3000,7 +3028,7 @@ class EmundusHelperFiles
      */
     public function getFabrikDataByListElements($elements) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($elements)) {
             try {
@@ -3068,7 +3096,7 @@ class EmundusHelperFiles
                 $_menuList = mb_substr($_menuList, 1, -2);
 
                 /// last one --> get profile (distinct) jos_emundus_setup_profiles
-                $queryProfiles = $db->getQuery(true);
+                $queryProfiles = $db->createQuery();
                 $queryProfiles->clear()
                     ->select('distinct jesp.id')
                     ->from($db->quoteName('#__emundus_setup_profiles', 'jesp'))
@@ -3091,7 +3119,7 @@ class EmundusHelperFiles
 
     public function getExportExcelFilterById($fid) {
         $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($fid)) {
             $query->clear()
@@ -3107,7 +3135,7 @@ class EmundusHelperFiles
 
     public function getAllLetters() {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             $query->clear()
@@ -3124,7 +3152,7 @@ class EmundusHelperFiles
 
     public function getExcelLetterById($lid) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($lid)) {
             try {
@@ -3162,7 +3190,7 @@ class EmundusHelperFiles
     /// this code will be fixed in the future
     public function getSelectedElements($selectedElts) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
 
@@ -3722,7 +3750,7 @@ class EmundusHelperFiles
 
                                 // if element is not directly mapped to fnum, we try to find a join table
                                 if (!$mapped_to_fnum) {
-                                    $query = $db->getQuery(true);
+                                    $query = $db->createQuery();
 
                                     if (!in_array($fabrik_element_data['db_table_name'], $already_joined)) {
                                         foreach ($already_joined as $already_join_alias => $already_joined_table_name) {
@@ -3780,9 +3808,7 @@ class EmundusHelperFiles
                                             $parent_table_alias = '';
                                             $parent_table = $join_informations['join_from_table'];
 
-                                            if (!in_array($parent_table, $already_joined) && !$this->isTableLinkedToCampaignCandidature($parent_table)) {
-                                                // todo: what if column fnum is not in the join table?
-                                            } else {
+                                            if (in_array($parent_table, $already_joined) || !$this->isTableLinkedToCampaignCandidature($parent_table)) {
                                                 if (!in_array($parent_table, $already_joined)) {
                                                     $already_joined[] = $parent_table;
                                                     $where['join'] .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ';
@@ -3880,7 +3906,7 @@ class EmundusHelperFiles
 			 * I need, list id, form id, groupd id and group params, table name and element name
 			 */
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->select('jfe.id as element_id, jfe.name, jfe.plugin, jfe.params as element_params, jfg.id as group_id, jfg.params as group_params, jffg.form_id, jfl.id as list_id, jfl.db_table_name, jfj.table_join as fabrik_table_join')
 				->from('#__fabrik_elements AS jfe')
@@ -3919,7 +3945,7 @@ class EmundusHelperFiles
 
         if (!empty($element_id)) {
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
             if (!empty($element_id)) {
                 $query->select('*')
                     ->from('#__fabrik_joins')
@@ -3952,7 +3978,7 @@ class EmundusHelperFiles
             }
         } else if (!empty($group_id)) {
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->select('*')
 				->from('#__fabrik_joins')
@@ -3988,7 +4014,7 @@ class EmundusHelperFiles
 
 		if (!empty($searched_table) && !empty($base_table) && $searched_table != $base_table) {
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->clear()
 				->select('COLUMN_NAME as table_key, REFERENCED_COLUMN_NAME as table_join_key, TABLE_NAME as join_from_table, REFERENCED_TABLE_NAME as table_join')
@@ -4751,7 +4777,7 @@ class EmundusHelperFiles
         $table_names = [];
 
         $db = JFactory::getDBO();
-        $query= $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select($db->quoteName('fl.db_table_name'))
             ->from($db->quoteName('#__fabrik_lists', 'fl'))
@@ -4773,7 +4799,7 @@ class EmundusHelperFiles
 
 		if (!empty($aid)) {
 			$db = JFactory::getDBO();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->select('ecc.*, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id')
 				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
@@ -4810,7 +4836,7 @@ class EmundusHelperFiles
 		if (!empty($table_name)) {
 			// check if table has a column named 'fnum'
 			$db = JFactory::getDBO();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->select('column_name')
 				->from($db->quoteName('information_schema.columns'))

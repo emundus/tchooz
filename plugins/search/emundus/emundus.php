@@ -16,7 +16,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
  * @subpackage	Search.emundus
  * @since		3
  */
-class plgSearchEmundus extends JPlugin
+class plgSearchEmundus extends \Joomla\CMS\Plugin\CMSPlugin
 {
 
 	/**

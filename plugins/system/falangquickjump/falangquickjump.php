@@ -318,7 +318,7 @@ class plgSystemFalangquickjump extends CMSPlugin
         if (is_array($id)){$id = $id[0];}
 
         //Load ToolBar
-        $bar = ToolBar::getInstance('toolbar');
+	    $bar = Factory::getContainer()->get(\Joomla\CMS\Toolbar\ToolbarFactoryInterface::class)->createToolbar('toolbar');
 
         //Load Language
         $languages	= $this->getLanguages();

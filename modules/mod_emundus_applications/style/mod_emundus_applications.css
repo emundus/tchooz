@@ -261,6 +261,11 @@ a.btn.btn-success:not(.btn-xs) {
 }
 @media all and (max-width: 479px) {
 
+    .mod_emundus_applications__actions{
+        right: 10px;
+    }
+
+
     #applications_list_view div[id*="group_application_tab"] {
         overflow-x: scroll;
     }
@@ -408,7 +413,7 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_applications___content{
-    display: grid;
+    display: grid !important;
     align-items: flex-start;
     padding: 0;
     gap: var(--p-32);
@@ -461,7 +466,7 @@ a.btn.btn-success:not(.btn-xs) {
     max-height: 48px;
     display: -webkit-box;
     line-height: 140%;
-    min-height: 50px;
+    min-height: 42px;
     font-family: var(--em-applicant-font-title) !important;
 }
 
@@ -557,7 +562,6 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_application_swal_manage_tabs_popup{
-    padding: unset !important;
     min-width: 40em;
 }
 .mod_emundus_application_swal_manage_tabs_header{
@@ -598,6 +602,9 @@ a.btn.btn-success:not(.btn-xs) {
     margin-top: var(--m-16) 0 0 0;
     height: 48px;
     border-radius: var(--em-applicant-br);
+}
+.mod_emundus_application_swal_manage_tabs_popup .swal2-input {
+    margin: 0 !important;
 }
 .mod_emundus_application_swal_manage_tabs_popup .swal2-content .swal2-validation-message{
     background: var(--transparent);

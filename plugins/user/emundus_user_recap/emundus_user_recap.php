@@ -20,7 +20,7 @@ jimport('joomla.plugin.plugin');
  * @subpackage  User.emundus
  * @since       5.0.0
  */
-class plgUserEmundus_user_recap extends JPlugin {
+class plgUserEmundus_user_recap extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	public function __construct(&$subject, $config = array()) {
 		parent::__construct($subject, $config);

@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopKashflow extends JPlugin{
+class plgHikashopKashflow extends \Joomla\CMS\Plugin\CMSPlugin{
 	var $message = '';
 	var $params = null;
 

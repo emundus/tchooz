@@ -87,7 +87,7 @@ $params = $this->params;
 				}
 				else
 				{
-					echo HTMLHelper::_('select.genericlist', $results, 'list_email_to[]', 'class="fabrikinput inputbox col-sm-8" multiple="multiple" size="5"', 'email', 'name', '', 'list_email_to');
+					echo HTMLHelper::_('select.genericlist', $this->addressBook, 'list_email_to[]', 'class="fabrikinput inputbox col-sm-8" multiple="multiple" size="5"', 'email', 'name', '', 'list_email_to');
 				}
 			}
 		}

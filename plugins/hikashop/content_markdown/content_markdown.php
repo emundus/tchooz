@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopContent_markdown extends JPlugin
+class plgHikashopContent_markdown extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	protected $plugin_name = 'content_markdown';
 

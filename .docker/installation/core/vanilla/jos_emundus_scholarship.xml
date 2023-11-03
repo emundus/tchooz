@@ -13,16 +13,5 @@
    <key Table="#__emundus_scholarship" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_scholarship" Non_unique="1" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__emundus_scholarship">
-   <row>
-    <field name="id">5</field>
-    <field name="date_time">2020-03-11 10:08:57</field>
-    <field name="user">111</field>
-    <field name="fnum">2020031110550100000010000111</field>
-    <field name="no_scholarship"></field>
-    <field name="scholaship_category">none</field>
-    <field name="time_date"></field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

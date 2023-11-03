@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class plgEmundusAurion_sync_setup_campaigns_excelia extends JPlugin {
+class plgEmundusAurion_sync_setup_campaigns_excelia extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	var $db;
 	var $query;

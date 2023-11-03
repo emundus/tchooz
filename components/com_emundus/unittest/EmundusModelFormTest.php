@@ -87,7 +87,7 @@ class EmundusModelFormTest extends TestCase
 		$this->assertNotEmpty($form_id, 'Evaluation form creation succeeds');
 
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$query->select('jfe.name, jfe.published')
 			->from($db->quoteName('#__fabrik_elements', 'jfe'))

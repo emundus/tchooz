@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class plgEmundusAdd_tag extends JPlugin {
+class plgEmundusAdd_tag extends \Joomla\CMS\Plugin\CMSPlugin {
 
     function __construct(&$subject, $config) {
         parent::__construct($subject, $config);

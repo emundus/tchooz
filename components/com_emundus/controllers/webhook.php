@@ -114,7 +114,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
                     if (!empty($baseUrl) && !empty($api_key)) {
                         $db = JFactory::getDbo();
-                        $query = $db->getQuery(true);
+                        $query = $db->createQuery();
 
                         $client = new GuzzleClient();
                         foreach($signatureRequest->documents as $document) {
@@ -483,7 +483,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
             return false;
         }
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('COUNT(*) as nb_requete, is_downloaded')
             ->from($db->quoteName('#__emundus_files_request'))
@@ -521,7 +521,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 
 
-                $query = $db->getQuery(true);
+                $query = $db->createQuery();
 
                 if($ip_addess_request['nb_requete'] == 0){
                     $columns = array('time_date','fnum','keyid', 'attachment_id', 'filename','ip_address','is_downloaded');
@@ -665,7 +665,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
     /* using GET methos */
     public function update_banner($id, $fnum) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             /* check if fnum exists, if yes, update, if no, return error code */
@@ -705,7 +705,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
         if (!empty($zid)) {
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
 
             $query->select('*')
                 ->from($db->quoteName('#__emundus_jury', 'jej'))
@@ -835,7 +835,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 					$db = Factory::getDbo();
 				}
 
-				$query = $db->getQuery(true);
+				$query = $db->createQuery();
 
 				$query->select('id')
 					->from($db->quoteName('#__users'))

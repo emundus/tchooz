@@ -232,7 +232,7 @@ function submit(title = 'Dossier en cours d\'envoi...',timer = 3000) {
     }
 
     Swal.fire({
-        type: 'success',
+        icon: 'success',
         position: 'center',
         title: title,
         showCancelButton: false,
@@ -350,7 +350,7 @@ function submitNewFile() {
         Swal.fire({
                 title: Joomla.JText._('COM_EMUNDUS_FABRIK_NEW_FILE'),
                 text: Joomla.JText._('COM_EMUNDUS_FABRIK_NEW_FILE_DESC'),
-                type: 'success',
+                icon: 'success',
                 showConfirmButton: false
             }
         );
@@ -374,7 +374,7 @@ function checkPasswordSymbols(element) {
 
     if (password_value.match(regex) != null) {
         Swal.fire({
-            type: 'error',
+            icon: 'error',
             title: wrong_password_title[index],
             text: wrong_password_description[index],
             reverseButtons: true,

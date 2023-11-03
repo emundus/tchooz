@@ -354,7 +354,7 @@ class EmundusHelperFilters {
 
 		if (!empty($groups)) {
 			$db = JFactory::getDBO();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 			$query->select('jfe.name, jfe.label, jfe.plugin, jfe.id as element_id, jfg.id, jfg.label AS group_label, jfe.params, INSTR(jfg.params,\'"repeat_group_button":"1"\') AS group_repeated, jfl.id AS table_id, jfl.db_table_name AS table_name, jfl.label AS table_label, jfl.created_by_alias')
 				->from($db->qn('#__fabrik_elements', 'jfe'))
 				->join('inner', $db->qn('#__fabrik_groups', 'jfg') . ' ON jfg.id = jfe.group_id')

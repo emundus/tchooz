@@ -62,12 +62,7 @@ class Glpi extends Api
 
 	private function getSessionToken(): string
 	{
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$session = Factory::getApplication()->getSession();
-		} else {
-			$session = Factory::getSession();
-		}
+		$session = Factory::getApplication()->getSession();
 		$glpi_session_token = $session->get('glpi_session_token', '');
 
 		if(empty($glpi_session_token))
@@ -125,12 +120,7 @@ class Glpi extends Api
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$session = Factory::getApplication()->getSession();
-		} else {
-			$session = Factory::getSession();
-		}
+		$session = Factory::getApplication()->getSession();
 
 		try
 		{

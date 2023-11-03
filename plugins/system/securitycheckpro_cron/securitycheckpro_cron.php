@@ -13,7 +13,7 @@ use Joomla\CMS\Component\ComponentHelper as JComponentHelper;
 // Load library
 require_once JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'loader.php';
 
-class plgSystemSecuritycheckpro_cron extends JPlugin
+class plgSystemSecuritycheckpro_cron extends \Joomla\CMS\Plugin\CMSPlugin
 {
     private $cron_plugin = null;
 	
@@ -27,7 +27,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
 		$this->global_model = new SecuritycheckproModel();
     }
     
-    /* Acciones para chequear los permisos de los archivos automáticamente*/
+    /* Acciones para chequear los permisos de los archivos automï¿½ticamente*/
     function acciones($opcion,$launch_time)
     {
         
@@ -48,7 +48,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
         $model->scan("permissions");    
     }
 
-    /* Acciones para chequear la integridad del sistema de ficheros automáticamente */
+    /* Acciones para chequear la integridad del sistema de ficheros automï¿½ticamente */
     function acciones_integrity($opcion,$launch_time)
     {
         // Inicializamos las variables
@@ -71,7 +71,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
         $model->scan("integrity");
         $files_with_bad_integrity = $model->loadStack("fileintegrity_resume", "files_with_bad_integrity");
     
-        // ¿Hemos de analizar los ficheros con integridad modificada en busca de malware?
+        // ï¿½Hemos de analizar los ficheros con integridad modificada en busca de malware?
         $params = JComponentHelper::getParams('com_securitycheckpro');
         $look_for_malware = $params->get('look_for_malware', 0);
         if ($look_for_malware) {
@@ -89,14 +89,14 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
     
     }
 
-    /* Acciones para chequear si el sitio web no ha lanzado la(s) tarea(s) del cron en el horario especificado (esto puede pasar en sitios web con poco tráfico o tráfico principal en horas diferentes a las que se ha establecido el cron) */
+    /* Acciones para chequear si el sitio web no ha lanzado la(s) tarea(s) del cron en el horario especificado (esto puede pasar en sitios web con poco trï¿½fico o trï¿½fico principal en horas diferentes a las que se ha establecido el cron) */
     private function check_timestamp()
     {
         // Inicializamos las variables
         $last_check = null;
         $launch = false;
     
-        // Consultamos la última tarea lanzada
+        // Consultamos la ï¿½ltima tarea lanzada
         $db = JFactory::getDBO();
         $query = $db->getQuery(true)
             ->select($db->quoteName('last_task'))
@@ -140,7 +140,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
         }
 				
 		$seconds = strtotime($timestamp) - strtotime($last_check);
-		// Extraemos las horas que han pasado desde el último chequeo
+		// Extraemos las horas que han pasado desde el ï¿½ltimo chequeo
 		$interval = intval($seconds/3600);	
 					
 		if ($interval >= 24) {
@@ -220,7 +220,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
         $launch_time = $this->global_model->getValue('launch_time', 2, 'cron_plugin');
         $periodicity = $this->global_model->getValue('periodicity', 24, 'cron_plugin');
             
-        // Comprobamos si es necesario lanzar la tarea porque no se ha recibido ninguna petición en el horario establecido en el cron
+        // Comprobamos si es necesario lanzar la tarea porque no se ha recibido ninguna peticiï¿½n en el horario establecido en el cron
         $launch_task = $this->check_timestamp();    
             
         // Hora local del servidor
@@ -232,13 +232,13 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
         if ((($hour == $launch_time) || ($launch_task)) || ($periodicity < 24)) { 
             // Creamos un nuevo objeto query ...
             $db = $model->getDbo();
-            // y consultamos si se está ejecutando una tarea por el plugin
+            // y consultamos si se estï¿½ ejecutando una tarea por el plugin
             $query = "SELECT cron_tasks_launched FROM #__securitycheckpro_file_manager WHERE id=1";
             $db->setQuery($query);
             $launched = $db->loadResult();
 			
-            if ($launched == 0) {  // No hay ninguna tarea ejecutándose
-                // Actualizamos el campo 'cron_tasks_launched' de la tabla 'file_manager' para indicar que las tareas se están ejecutando
+            if ($launched == 0) {  // No hay ninguna tarea ejecutï¿½ndose
+                // Actualizamos el campo 'cron_tasks_launched' de la tabla 'file_manager' para indicar que las tareas se estï¿½n ejecutando
                 $query = 'UPDATE #__securitycheckpro_file_manager SET cron_tasks_launched=1 WHERE id=1';
                 $db->setQuery($query);
                 $db->execute();
@@ -261,11 +261,11 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
 						//Task never launched. Launching it
 						if ($last_task == "INTEGRITY") {
 							$this->acciones('normal', $launch_time);
-							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
 							$model->set_campo_filemanager("last_task", 'PERMISSIONS');
 						} else if ($last_task == "PERMISSIONS") {
 							$this->acciones_integrity('normal', $launch_time);
-							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                             $model->set_campo_filemanager("last_task", 'INTEGRITY');
 						}						
 						break;
@@ -306,7 +306,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
                             {
                                 $this->acciones_integrity('normal', $launch_time);
                             }
-                            // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                            // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                             $model->set_campo_filemanager("last_task", 'INTEGRITY');
                         } else if ($last_task == "INTEGRITY") {
                             if (($launch_task) && ($hour != $launch_time)) {
@@ -315,17 +315,17 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
                             {
                                 $this->acciones('normal', $launch_time);
                             }                            
-                            // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                            // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                             $model->set_campo_filemanager("last_task", 'PERMISSIONS');
                         }
                     } else if ($hours_matches) {
 						if ($last_task == "INTEGRITY") {
 							$this->acciones('normal', $launch_time);
-							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
 							$model->set_campo_filemanager("last_task", 'PERMISSIONS');
 						} else if ($last_task == "PERMISSIONS") {
 							$this->acciones_integrity('normal', $launch_time);
-							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+							// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                             $model->set_campo_filemanager("last_task", 'INTEGRITY');
 						}
 					}
@@ -337,7 +337,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
 					{
 						//Task never launched. Launching it
 						$this->acciones('normal', $launch_time);
-						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                         $model->set_campo_filemanager("last_task", 'PERMISSIONS');
 						break;
 					}
@@ -380,11 +380,11 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
                         {
                             $this->acciones('normal', $launch_time);
                         }
-                        // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                        // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                         $model->set_campo_filemanager("last_task", 'PERMISSIONS');
                     } else if ($hours_matches) {
 						$this->acciones('normal', $launch_time);
-						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                         $model->set_campo_filemanager("last_task", 'PERMISSIONS');
 					}
                     break;
@@ -395,7 +395,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
 					{
 						//Task never launched. Launching it
 						$this->acciones_integrity('normal', $launch_time);
-						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                         $model->set_campo_filemanager("last_task", 'INTEGRITY');
 						break;
 					}
@@ -439,11 +439,11 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
                             $this->acciones_integrity('normal', $launch_time);                            
                         }
                         
-                        // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                        // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                         $model->set_campo_filemanager("last_task", 'INTEGRITY');
                     } else if ($hours_matches) {
 						$this->acciones_integrity('normal', $launch_time);
-						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                         $model->set_campo_filemanager("last_task", 'INTEGRITY');
 					}
                     break;
@@ -456,7 +456,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
 						//Task never launched. Launching it
 						$this->acciones_integrity('normal', $launch_time);						
                         $this->acciones('normal', $launch_time);
-						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                         $model->set_campo_filemanager("last_task", 'PERMISSIONS');
 						break;
 					}
@@ -504,12 +504,12 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
                             $this->acciones('normal', $launch_time);
                         }
                         
-                        // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+                        // Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                         $model->set_campo_filemanager("last_task", 'PERMISSIONS');
                     } else if ($hours_matches) {
 						$this->acciones_integrity('normal', $launch_time);
                         $this->acciones('normal', $launch_time);
-						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la última tarea lanzada
+						// Actualizamos el campo 'last_task' de la tabla 'file_manager' para reflejar la ï¿½ltima tarea lanzada
                         $model->set_campo_filemanager("last_task", 'PERMISSIONS');
 					}
                     break;
@@ -522,7 +522,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
         }
     }
 
-    /*  Función para mandar correos electrónicos */
+    /*  Funciï¿½n para mandar correos electrï¿½nicos */
     function mandar_correo($with_bad_integrity, $with_suspicious_patterns,$look_for_malware,$subject)
     {
         
@@ -533,14 +533,14 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
             $this->pro_plugin = JModel::getInstance('Model', 'Securitycheckpro');
         }   
         
-		// Variables del correo electrónico
+		// Variables del correo electrï¿½nico
         $email_to = $this->pro_plugin->getValue('email_to', '', 'pro_plugin');
         $to = explode(',', $email_to);
         $email_from_domain = $this->pro_plugin->getValue('email_from_domain', '', 'pro_plugin');
         $email_from_name = $this->pro_plugin->getValue('email_from_name', '', 'pro_plugin');
         $from = array($email_from_domain,$email_from_name);
 		    
-        // Obtenemos el nombre del sitio, que será usado en el asunto del correo
+        // Obtenemos el nombre del sitio, que serï¿½ usado en el asunto del correo
         $config = JFactory::getConfig();
         $sitename = $config->get('sitename');
     
@@ -588,14 +588,14 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
             
     }
 
-    /* Función que devuelve el número de archivos con integridad o permisos incorrectos y con patrones sospechosos */
+    /* Funciï¿½n que devuelve el nï¿½mero de archivos con integridad o permisos incorrectos y con patrones sospechosos */
     private function consulta_resultado_scan()
     {
         
         // Inicializamos las variables
         $result = array();
     
-        // Cargamos los parámetros del componente
+        // Cargamos los parï¿½metros del componente
         // Import Securitycheckpros model
         JLoader::import('filemanager', JPATH_ADMINISTRATOR . DIRECTORY_SEPARATOR . 'components' . DIRECTORY_SEPARATOR. 'com_securitycheckpro' . DIRECTORY_SEPARATOR . 'models');
         if(interface_exists('JModel')) {
@@ -608,7 +608,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
         $files_with_bad_integrity = $model->loadStack("fileintegrity_resume", "files_with_bad_integrity");
         $files_with_suspicious_patterns = $model->loadStack("malwarescan_resume", "suspicious_files");
     
-        // Añadimos los resultados a la variable que será devuelta
+        // Aï¿½adimos los resultados a la variable que serï¿½ devuelta
         array_push($result, $files_with_bad_integrity);
         array_push($result, $files_with_suspicious_patterns);
         

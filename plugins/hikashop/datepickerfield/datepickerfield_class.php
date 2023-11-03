@@ -396,14 +396,14 @@ window.hikashopDatepicker = function(el) {
 
 		if(@$field->field_options['allow'] == 'future') {
 			if(!empty($datepicker_options['waiting']))
-				$dateOptions[] = 'minDate:'.(int)$datepicker_options['waiting'];
+				$dateOptions[] = '"minDate":'.(int)$datepicker_options['waiting'];
 			else
-				$dateOptions[] = 'minDate:0';
+				$dateOptions[] = '"minDate":0';
 		} else if(@$field->field_options['allow'] == 'past') {
 			if(!empty($datepicker_options['waiting']))
-				$dateOptions[] = 'maxDate:'.(0 - (int)($datepicker_options['waiting']));
+				$dateOptions[] = '"maxDate":'.(0 - (int)($datepicker_options['waiting']));
 			else
-				$dateOptions[] = 'maxDate:0';
+				$dateOptions[] = '"maxDate":0';
 		}
 
 		$format = @$field->field_options['format'];
@@ -411,11 +411,11 @@ window.hikashopDatepicker = function(el) {
 			$format = str_replace(array('%A','%d','%B','%m','%Y','%y','%H','%M','%S','%a'),array('l','d','F','m','Y','y','H','i','s','D'),$format);
 		}
 		if(!empty($format)) {
-			$dateOptions[] = 'dateFormat:\''.str_replace(
+			$dateOptions[] = '"dateFormat":"'.str_replace(
 					array('j','d', 'z','D','l', 'n','m', 'M','F', 'y','Y'),
 					array('d','dd','o','D','DD','m','mm','M','MM','y','yy'),
 					$format
-				).'\'';
+				).'"';
 		}
 
 		$joomlaFormat = str_replace(array('l','d','F','m','Y','y','H','i','s','D'),array('%A','%d','%B','%m','%Y','%y','%H','%M','%S','%a'),$format);
@@ -457,17 +457,17 @@ window.hikashopDatepicker = function(el) {
 			$value = $this->getDate($timestamp);
 
 		if(!empty($txtValue))
-			$dateOptions[] = 'defaultDate:\''.$txtValue.'\'';
+			$dateOptions[] = '"defaultDate":"'.$txtValue.'"';
 
 		if(!empty($datepicker_options['monday_first']))
-			$dateOptions[] = 'firstDay:1';
+			$dateOptions[] = '"firstDay":1';
 		else
-			$dateOptions[] = 'firstDay:0';
+			$dateOptions[] = '"firstDay":0';
 
 		if(!empty($datepicker_options['change_month']))
-			$dateOptions[] = 'changeMonth:true';
+			$dateOptions[] = '"changeMonth":true';
 		if(!empty($datepicker_options['change_year'])){
-			$dateOptions[] = 'changeYear:true';
+			$dateOptions[] = '"changeYear":true';
 			if(!empty($datepicker_options['year_range_start']) || !empty($datepicker_options['year_range_end'])){
 				if(empty($datepicker_options['year_range_start'])){
 					$datepicker_options['year_range_start']='c-10';
@@ -475,17 +475,17 @@ window.hikashopDatepicker = function(el) {
 				if(empty($datepicker_options['year_range_end'])){
 					$datepicker_options['year_range_end']='c+10';
 				}
-				$dateOptions[] = 'yearRange: \''.$datepicker_options['year_range_start'].':'.$datepicker_options['year_range_end'].'\'';
+				$dateOptions[] = '"yearRange": "'.$datepicker_options['year_range_start'].':'.$datepicker_options['year_range_end'].'"';
 			}
 		}
 		if(!empty($datepicker_options['show_btn_panel']))
-			$dateOptions[] = 'showButtonPanel:true';
+			$dateOptions[] = '"showButtonPanel":true';
 		if(!empty($datepicker_options['show_months']) && (int)$datepicker_options['show_months'] > 1 && (int)$datepicker_options['show_months'] <= 12)
-			$dateOptions[] = 'numberOfMonths:'.(int)$datepicker_options['show_months'];
+			$dateOptions[] = '"numberOfMonths":'.(int)$datepicker_options['show_months'];
 
 		if(!empty($datepicker_options['other_month'])) {
-			$dateOptions[] = 'showOtherMonths:true';
-			$dateOptions[] = 'selectOtherMonths:true';
+			$dateOptions[] = '"showOtherMonths":true';
+			$dateOptions[] = '"selectOtherMonths":true';
 		}
 
 		$spe_day_format = 'm/d/Y';
@@ -495,7 +495,7 @@ window.hikashopDatepicker = function(el) {
 
 		$excludeDays = array();
 		for($i = 0; $i <= 6; $i++) { if(!empty($datepicker_options['forbidden_'.$i])) { $excludeDays[] = $i; } }
-		if(!empty($excludeDays)) $dateOptions[] = 'exclude:['.implode(',',$excludeDays).']';
+		if(!empty($excludeDays)) $dateOptions[] = '"exclude":['.implode(',',$excludeDays).']';
 
 		$excludeDays = explode('|', str_replace(array("\r\n","\n","\r",' '),array('|','|','|','|'), (string)@$datepicker_options['excludes']));
 		$date_today = getdate();
@@ -525,11 +525,11 @@ window.hikashopDatepicker = function(el) {
 			}
 		}
 		if(!empty($disabled_days))
-			$dateOptions[] = 'excludeDays:['.implode(',',$disabled_days).']';
+			$dateOptions[] = '"excludeDays":['.implode(',',$disabled_days).']';
 		if(!empty($disabled_dates))
-			$dateOptions[] = 'excludeDates:['.implode(',',$disabled_dates).']';
+			$dateOptions[] = '"excludeDates":['.implode(',',$disabled_dates).']';
 		if(!empty($disabled_ranges))
-			$dateOptions[] = 'excludeRanges:['.implode(',',$disabled_ranges).']';
+			$dateOptions[] = '"excludeRanges":['.implode(',',$disabled_ranges).']';
 
 		$app = JFactory::getApplication();
 		$app->triggerEvent('onPrepareDatePickerFieldOptions', array(&$dateOptions, &$field, &$datepicker_options, &$value));
@@ -544,14 +544,14 @@ window.hikashopDatepicker = function(el) {
 		if(empty($datepicker_options['inline'])) {
 			if((hikashop_isClient('administrator') && HIKASHOP_BACK_RESPONSIVE) || (!hikashop_isClient('administrator') && HIKASHOP_RESPONSIVE)) {
 				$ret = '<div class="input-append">'.
-					'<input type="text" id="'.$datepicker_id.'" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"/>'.
+					'<input type="text" id="'.$datepicker_id.'" data-picker="'.$id.'" data-options=\''.$dateOptions.'\' class="hikashop_datepicker" value="'.$txtValue.'"/>'.
 					'<button class="btn" onclick="document.getElementById(\''.$datepicker_id.'\').focus();return false;"><i class="icon-calendar"></i></button>'.
 					'</div>';
 			} else {
-				$ret = '<input type="text" id="'.$datepicker_id.'" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"/>';
+				$ret = '<input type="text" id="'.$datepicker_id.'" data-picker="'.$id.'" data-options=\''.$dateOptions.'\' class="hikashop_datepicker" value="'.$txtValue.'"/>';
 			}
 		} else {
-			$ret = '<div id="'.$datepicker_id.'" data-picker="'.$id.'" data-options="'.$dateOptions.'" class="hikashop_datepicker" value="'.$txtValue.'"></div>';
+			$ret = '<div id="'.$datepicker_id.'" data-picker="'.$id.'" data-options=\''.$dateOptions.'\' class="hikashop_datepicker" value="'.$txtValue.'"></div>';
 		}
 
 		$ret .= '<input type="hidden" value="'.$this->serializeDate($value).'" name="'.$map.'" id="'.$id.'"/>';

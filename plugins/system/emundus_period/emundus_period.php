@@ -22,7 +22,7 @@ jimport( 'joomla.plugin.plugin' );
  * @package     Joomla
  * @subpackage  System
  */
-class plgSystemEmundus_period extends JPlugin
+class plgSystemEmundus_period extends \Joomla\CMS\Plugin\CMSPlugin
 {
     /**
      * Constructor

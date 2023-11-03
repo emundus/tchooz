@@ -18,7 +18,7 @@ defined('_JEXEC') || die;
 /**
  * Class PlgButtonDropfilesbtn
  */
-class PlgButtonDropfilesbtn extends JPlugin
+class PlgButtonDropfilesbtn extends \Joomla\CMS\Plugin\CMSPlugin
 {
 
     /**

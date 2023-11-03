@@ -34,8 +34,8 @@
     <field name="from_stage_id">-1</field>
     <field name="to_stage_id">1</field>
     <field name="options">{&quot;publishing&quot;:&quot;0&quot;}</field>
-    <field name="checked_out_time"></field>
-    <field name="checked_out"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">2</field>
@@ -48,8 +48,8 @@
     <field name="from_stage_id">-1</field>
     <field name="to_stage_id">1</field>
     <field name="options">{&quot;publishing&quot;:&quot;1&quot;}</field>
-    <field name="checked_out_time"></field>
-    <field name="checked_out"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">3</field>
@@ -62,8 +62,8 @@
     <field name="from_stage_id">-1</field>
     <field name="to_stage_id">1</field>
     <field name="options">{&quot;publishing&quot;:&quot;-2&quot;}</field>
-    <field name="checked_out_time"></field>
-    <field name="checked_out"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">4</field>
@@ -76,8 +76,8 @@
     <field name="from_stage_id">-1</field>
     <field name="to_stage_id">1</field>
     <field name="options">{&quot;publishing&quot;:&quot;2&quot;}</field>
-    <field name="checked_out_time"></field>
-    <field name="checked_out"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">5</field>
@@ -90,8 +90,8 @@
     <field name="from_stage_id">-1</field>
     <field name="to_stage_id">1</field>
     <field name="options">{&quot;featuring&quot;:&quot;1&quot;}</field>
-    <field name="checked_out_time"></field>
-    <field name="checked_out"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">6</field>
@@ -104,8 +104,8 @@
     <field name="from_stage_id">-1</field>
     <field name="to_stage_id">1</field>
     <field name="options">{&quot;featuring&quot;:&quot;0&quot;}</field>
-    <field name="checked_out_time"></field>
-    <field name="checked_out"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">7</field>
@@ -118,8 +118,8 @@
     <field name="from_stage_id">-1</field>
     <field name="to_stage_id">1</field>
     <field name="options">{&quot;publishing&quot;:&quot;1&quot;,&quot;featuring&quot;:&quot;1&quot;}</field>
-    <field name="checked_out_time"></field>
-    <field name="checked_out"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

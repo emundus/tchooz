@@ -48,7 +48,7 @@ if(HIKASHOP_J50 && !Joomla\CMS\Plugin\PluginHelper::isEnabled('behaviour', 'comp
 		'JRegistry' => 'Joomla\Registry\Registry',
 		'JFilterInput' => 'Joomla\CMS\Filter\InputFilter',
 		'JFilterOutput' => 'Joomla\CMS\Filter\OutputFilter',
-		'JLanguage' => 'Joomla\CMS\Language\Associations',
+		'JLanguage' => 'Joomla\CMS\Language\Language',
 		'JLanguageHelper' => 'Joomla\CMS\Language\LanguageHelper',
 		'JLanguageAssociations' => 'Joomla\CMS\Language\Associations',
 		'JText' => 'Joomla\CMS\Language\Text',
@@ -1450,7 +1450,7 @@ if(!function_exists('hikashop_footer')) {
 			$link.='?partner_id='.$aff;
 		}
 		$text = '<!--  HikaShop Component powered by '.$link.' -->
-		<!-- version '.$config->get('level').' : '.$config->get('version').' [2309291557] -->';
+		<!-- version '.$config->get('level').' : '.$config->get('version').' [2310301745] -->';
 		if(!$config->get('show_footer',true)) return $text;
 		$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 		$app= JFactory::getApplication();
@@ -3469,6 +3469,32 @@ define('HIKASHOP_DBPREFIX', '#__hikashop_');
 $lang = JFactory::getLanguage();
 $db = JFactory::getDBO();
 $configClass = hikashop_config();
+$admin = hikashop_isClient('administrator');
+
+define('HIKASHOP_RESSOURCE_VERSION', str_replace('.', '', $configClass->get('version')));
+
+define('HIKASHOP_NAME','HikaShop');
+define('HIKASHOP_TEMPLATE',HIKASHOP_FRONT.'templates'.DS);
+define('HIKASHOP_URL','https://www.hikashop.com/');
+define('HIKASHOP_UPDATEURL',HIKASHOP_URL.'index.php?option=com_updateme&ctrl=update&task=');
+define('HIKASHOP_HELPURL',HIKASHOP_URL.'index.php?option=com_updateme&ctrl=doc&component='.HIKASHOP_NAME.'&page=');
+define('HIKASHOP_REDIRECT',HIKASHOP_URL.'index.php?option=com_updateme&ctrl=redirect&page=');
+if(is_callable("date_default_timezone_set"))
+	date_default_timezone_set(@date_default_timezone_get());
+
+if($admin) {
+	define('HIKASHOP_CONTROLLER', HIKASHOP_BACK.'controllers'.DS);
+	define('HIKASHOP_IMAGES', '../media/'.HIKASHOP_COMPONENT.'/images/');
+	define('HIKASHOP_CSS', '../media/'.HIKASHOP_COMPONENT.'/css/');
+	define('HIKASHOP_JS', '../media/'.HIKASHOP_COMPONENT.'/js/');
+	$css_type = 'backend';
+} else {
+	define('HIKASHOP_CONTROLLER',HIKASHOP_FRONT.'controllers'.DS);
+	define('HIKASHOP_IMAGES',JURI::base(true).'/media/'.HIKASHOP_COMPONENT.'/images/');
+	define('HIKASHOP_CSS',JURI::base(true).'/media/'.HIKASHOP_COMPONENT.'/css/');
+	define('HIKASHOP_JS',JURI::base(true).'/media/'.HIKASHOP_COMPONENT.'/js/');
+	$css_type = 'frontend';
+}
 
 if(HIKASHOP_J40) {
 	$db->setQuery("SET sql_mode=(SELECT REPLACE(REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''), 'STRICT_TRANS_TABLES', ''));");
@@ -3582,7 +3608,6 @@ foreach($elements as $k => $classes) {
 	}
 }
 
-$admin = hikashop_isClient('administrator');
 if(HIKASHOP_J30 && (HIKASHOP_J50 || ($admin && HIKASHOP_BACK_RESPONSIVE) || (!$admin && HIKASHOP_RESPONSIVE && (int)$configClass->get('bootstrap_radios', 1) == 1))) {
 	include_once(dirname(__FILE__).DS.'joomla30.php');
 } else {
@@ -3592,30 +3617,7 @@ if(HIKASHOP_J30 && (HIKASHOP_J50 || ($admin && HIKASHOP_BACK_RESPONSIVE) || (!$a
 if(!function_exists('bccomp'))
 	include_once HIKASHOP_INC.'compat.php';
 
-define('HIKASHOP_RESSOURCE_VERSION', str_replace('.', '', $configClass->get('version')));
 
-define('HIKASHOP_NAME','HikaShop');
-define('HIKASHOP_TEMPLATE',HIKASHOP_FRONT.'templates'.DS);
-define('HIKASHOP_URL','https://www.hikashop.com/');
-define('HIKASHOP_UPDATEURL',HIKASHOP_URL.'index.php?option=com_updateme&ctrl=update&task=');
-define('HIKASHOP_HELPURL',HIKASHOP_URL.'index.php?option=com_updateme&ctrl=doc&component='.HIKASHOP_NAME.'&page=');
-define('HIKASHOP_REDIRECT',HIKASHOP_URL.'index.php?option=com_updateme&ctrl=redirect&page=');
-if(is_callable("date_default_timezone_set"))
-	date_default_timezone_set(@date_default_timezone_get());
-
-if($admin) {
-	define('HIKASHOP_CONTROLLER', HIKASHOP_BACK.'controllers'.DS);
-	define('HIKASHOP_IMAGES', '../media/'.HIKASHOP_COMPONENT.'/images/');
-	define('HIKASHOP_CSS', '../media/'.HIKASHOP_COMPONENT.'/css/');
-	define('HIKASHOP_JS', '../media/'.HIKASHOP_COMPONENT.'/js/');
-	$css_type = 'backend';
-} else {
-	define('HIKASHOP_CONTROLLER',HIKASHOP_FRONT.'controllers'.DS);
-	define('HIKASHOP_IMAGES',JURI::base(true).'/media/'.HIKASHOP_COMPONENT.'/images/');
-	define('HIKASHOP_CSS',JURI::base(true).'/media/'.HIKASHOP_COMPONENT.'/css/');
-	define('HIKASHOP_JS',JURI::base(true).'/media/'.HIKASHOP_COMPONENT.'/js/');
-	$css_type = 'frontend';
-}
 $js = 0;
 $css = 0;
 

@@ -460,8 +460,8 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     background: transparent;
     color: black;
     height: auto;
-    padding: 0;
-    margin: 0;
+    padding: 0 !important;
+    margin: 0 !important;
     top: 16px;
     z-index: 20;
 }

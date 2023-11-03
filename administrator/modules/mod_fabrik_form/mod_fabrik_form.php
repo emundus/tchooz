@@ -55,7 +55,7 @@ $origView = $input->get('view');
 
 $input->set('formid', $formId);
 $input->set('view', 'form');
-$controller = new FabrikControllerForm;
+$controller = new FabrikAdminControllerForm;
 
 /*
  * For table views in category blog layouts when no layout specified in {} the blog layout
@@ -68,7 +68,7 @@ if ($layout !== '')
 
 // Display the view
 $controller->isMambot = true;
-$controller->set('cacheId', 'admin_module');
+//$controller->set('cacheId', 'admin_module');
 $origFormid = $input->getInt('formid');
 $ajax = $input->get('ajax');
 $input->set('formid', $params->get('formid'));

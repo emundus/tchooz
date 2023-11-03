@@ -18,7 +18,7 @@ $group = $this->group;
 <?php
 if ($group->canOrder) :
 ?>
-    <td><?php echo FabrikHelperHTML::icon('icon-bars'); ?></td>
+    <td><?php echo FabrikHelperHTML::icon('icon-menu-2'); ?></td>
 <?php
 endif;
 foreach ($this->elements as $element) :

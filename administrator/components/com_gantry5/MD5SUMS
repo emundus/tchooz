@@ -2,7 +2,7 @@ MD5SUMS	d41d8cd98f00b204e9800998ecf8427e
 access.xml	c7260c266ff8a996a5cc093218d3f632
 blueprints/gantry/theme/admin.yaml	b0f2b75b7146342191a950e684cbb8f5
 blueprints/gantry/theme/configuration.yaml	bdca7a752f17b86e81a7d3bd65b81d21
-blueprints/gantry/theme/details.yaml	be5fcde31502880c4c768d7df7de80ad
+blueprints/gantry/theme/details.yaml	2df98086982b4c31ae1ff521d5b4a2ee
 blueprints/menu/menu.yaml	97bfc9e993a9459303397d6be3a99cda
 blueprints/menu/menuitem.yaml	ed87e1e9e82216285ce528e5f7a79640
 config.xml	c0955cc0cfc79ea0a37512592f186d8d
@@ -242,4 +242,6 @@ templates/partials/php_unsupported.html.twig	fc9f221c528c36f9357f416eba41733a
 templates/partials/updates.html.twig	e199020e3d3aa73c4dccd17b1e9ad914
 translations/en/nucleus.yaml	46bf5ea881fbbc75071e757dc0abdd6a
 translations/en/platform.yaml	13fcf4359e383c9e9e382195737348c6
+translations/es/nucleus.yaml	8d63b5c582ffa252f9e93a3e61688b6f
+translations/es/platform.yaml	6f49f4e32412e21d5bdb1ede530bf047
 yarn.lock	e553df651817f9ec84c3673f67653a2a

@@ -68,61 +68,66 @@ $states	= array(
 );
 
 ?>
-<form action="<?php echo Route::_('index.php?option=com_fabrik&view=elements'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?= Route::_('index.php?option=com_fabrik&view=elements'); ?>" method="post" name="adminForm" id="adminForm">
 <div class="row">
 <div class="col-sm-12">
 	<div id="j-main-container" class="j-main-container">
-		<?php echo LayoutHelper::render('joomla.searchtools.default', array('view' => $this, 'options' => array('orderFieldSelector' => false))); ?>
+		<?= LayoutHelper::render('joomla.searchtools.default', array('view' => $this)); ?>
 		<?php if (empty($this->items)) : ?>
 			<div class="alert alert-info">
-				<span class="icon-info-circle" aria-hidden="true"></span><span class="visually-hidden"><?php echo Text::_('INFO'); ?></span>
-				<?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
+				<span class="icon-info-circle" aria-hidden="true"></span><span class="visually-hidden"><?= Text::_('INFO'); ?></span>
+				<?= Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
 			</div>
 		<?php else : ?>
 
 	<table class="table table-striped" id="elementList">
 		<thead>
 			<tr>
-				<th width="4%">
-					<?php echo HTMLHelper::_('grid.sort', 'JGRID_HEADING_ID', 'e.id', $listDirn, $listOrder); ?>
+				<td class="w-1 text-center">
+					<?= HTMLHelper::_('grid.checkall'); ?>
+				</td>
+				<th scope="col" class="w-1 d-none d-md-table-cell">
+                    <?= HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'e.id', $listDirn, $listOrder); ?>
 				</th>
 
-				<th width="30px">
-					<?php echo HTMLHelper::_('grid.sort', '<i class="icon-menu-2"></i>', 'e.ordering', $listDirn, $listOrder, null, 'asc', 'JGRID_HEADING_ORDERING'); ?>
-				</th>
-				<th width="30px">&nbsp;&nbsp;&nbsp;</th>
-				<th width="30px"><?php echo HTMLHelper::_('grid.checkall'); ?></th>
+                <th scope="col" class="w-3 d-none d-md-table-cell">
+                    <?= HTMLHelper::_('searchtools.sort', '', 'e.ordering', $listDirn, $listOrder); ?>
+                </th>
 
-				<th width="13%" >
-					<?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_NAME', 'e.name', $listDirn, $listOrder); ?>
+                <th scope="col" class="w-3 d-none d-md-table-cell">
+					<?= Text::_('COM_FABRIK_LINK');?>
+                </th>
+
+                <th scope="col" class="w-8 d-none d-md-table-cell">
+                    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_NAME', 'e.name', $listDirn, $listOrder); ?>
 				</th>
-				<th width="15%">
-					<?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_LABEL', 'e.label', $listDirn, $listOrder); ?>
+                <th scope="col" class="w-8 d-none d-md-table-cell">
+                    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_LABEL', 'e.label', $listDirn, $listOrder); ?>
 				</th>
-				<th width="17%">
-					<?php echo Text::_('COM_FABRIK_FULL_ELEMENT_NAME');?>
+                <th scope="col" class="w-8 d-none d-md-table-cell">
+					<?= Text::_('COM_FABRIK_FULL_ELEMENT_NAME');?>
 				</th>
-				<th width="5%">
-					<?php echo Text::_('COM_FABRIK_VALIDATIONS'); ?>
+                <th scope="col" class="w-3 d-none d-md-table-cell">
+					<?= Text::_('COM_FABRIK_VALIDATIONS'); ?>
 				</th>
-				<th width="10%">
-				<?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_GROUP', 'g.name', $listDirn, $listOrder); ?>
+                <th scope="col" class="w-8 d-none d-md-table-cell">
+                    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_GROUP', 'g.name', $listDirn, $listOrder); ?>
 				</th>
-				<th width="10%">
-					<?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_PLUGIN', 'e.plugin', $listDirn, $listOrder); ?>
+                <th scope="col" class="w-8 d-none d-md-table-cell">
+                    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_PLUGIN', 'e.plugin', $listDirn, $listOrder); ?>
 				</th>
-				<th width="7%">
-					<?php echo HTMLHelper::_('grid.sort', 'COM_FABRIK_SHOW_IN_LIST', 'e.show_in_list_summary', $listDirn, $listOrder); ?>
+                <th scope="col"class="w-3 d-none d-md-table-cell">
+                    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_SHOW_IN_LIST', 'e.show_in_list_summary', $listDirn, $listOrder); ?>
 				</th>
-				<th width="5%">
-				<?php echo HTMLHelper::_('grid.sort', 'JPUBLISHED', 'e.published', $listDirn, $listOrder); ?>
+                <th scope="col"class="w-3 d-none d-md-table-cell">
+                    <?= HTMLHelper::_('searchtools.sort', 'JPUBLISHED', 'e.published', $listDirn, $listOrder); ?>
 				</th>
 			</tr>
 		</thead>
 		<tfoot>
 			<tr>
 				<td colspan="12">
-					<?php echo $this->pagination->getListFooter(); ?>
+					<?= $this->pagination->getListFooter(); ?>
 				</td>
 			</tr>
 		</tfoot>
@@ -139,9 +144,13 @@ $states	= array(
 				. '<br/><br/><strong>' . $item->numJs . ' ' . Text::_('COM_FABRIK_JAVASCRIPT') . '</strong>';
 			?>
 
-			<tr class="row<?php echo $i % 2; ?>">
+			<tr class="row<?= $i % 2; ?>">
 				<td>
-					<?php echo $item->id; ?>
+					<?= HTMLHelper::_('grid.id', $i, $item->id); ?>
+				</td>
+
+				<td>
+					<?= $item->id; ?>
 				</td>
 				<td>
 				<?php if ($canChange) :
@@ -152,10 +161,10 @@ $states	= array(
 							$disabledLabel    = Text::_('JORDERINGDISABLED');
 							$disableClassName = 'inactive tip-top';
 						endif; ?>
-						<span class="sortable-handler hasTooltip <?php echo $disableClassName?>" title="<?php echo $disabledLabel?>">
+						<span class="sortable-handler hasTooltip <?= $disableClassName?>" title="<?= $disabledLabel?>">
 							<i class="icon-menu"></i>
 						</span>
-						<input type="text" style="display:none" name="order[]" size="5" value="<?php echo $item->ordering;?>" class="width-20 text-area-order " />
+						<input type="text" style="display:none" name="order[]" size="5" value="<?= $item->ordering;?>" class="width-20 text-area-order " />
 					<?php else : ?>
 						<span class="sortable-handler inactive" >
 							<i class="icon-menu"></i>
@@ -180,51 +189,48 @@ $states	= array(
 				?>
 				</td>
 				<td>
-					<?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>
-				</td>
-				<td>
 					<?php if ($item->checked_out) : ?>
-						<?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time??'', 'elements.', $canCheckin); ?>
+						<?= HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time??'', 'elements.', $canCheckin); ?>
 					<?php endif; ?>
 					<?php
 					if ($item->checked_out && ($item->checked_out != $user->get('id'))) :
 						echo  $item->name;
 					else :
 					?>
-					<a href="<?php echo $link; ?>">
-						<?php echo $item->name; ?>
+					<a href="<?= $link; ?>">
+						<?= $item->name; ?>
 					</a>
 				<?php endif;
 				?>
 				</td>
 				<td>
-					<?php echo str_replace(' ', '&nbsp;', Text::_(FabrikString::truncate($item->label, $truncateOpts))); ?>
+					<?= str_replace(' ', '&nbsp;', Text::_(FabrikString::truncate($item->label, $truncateOpts))); ?>
 				</td>
 				<td>
-					<span class="hasTooltip" title="<?php echo '<strong>' . $item->name . "</strong><br />" . $item->tip; ?>">
-						<?php echo $item->full_element_name; ?>
+					<span class="hasTooltip" title="<?= '<strong>' . $item->name . "</strong><br />" . $item->tip; ?>">
+						<?= $item->full_element_name; ?>
 					</span>
 				</td>
 				<td class="center">
-					<span class="hasTooltip" title="<?php echo $extraTip ?>">
-						<?php echo $item->numValidations . '/' . $item->numJs; ?>
+					<span class="hasTooltip" title="<?= $extraTip ?>">
+						<?= $item->numValidations . '/' . $item->numJs; ?>
 					</span>
 				</td>
 				<td>
-					<a href="index.php?option=com_fabrik&task=group.edit&id=<?php echo $item->group_id?>">
-						<?php echo $item->group_name; ?>
+					<a href="index.php?option=com_fabrik&task=group.edit&id=<?= $item->group_id?>">
+						<?= $item->group_name; ?>
 					</a>
 				</td>
 				<td>
-					<?php echo $item->plugin; ?>
+					<?= $item->plugin; ?>
 				</td>
-				<td class="center">
+				<td class="text-center">
 					<?php
 					echo HTMLHelper::_('jgrid.state', $states, $item->show_in_list_summary, $i, 'elements.', true, true);
 					?>
 				</td>
-				<td class="center">
-					<?php echo HTMLHelper::_('jgrid.published', $item->published, $i, 'elements.', $canChange);?>
+				<td class="text-center">
+					<?= HTMLHelper::_('jgrid.published', $item->published, $i, 'elements.', $canChange);?>
 				</td>
 			</tr>
 
@@ -235,8 +241,6 @@ $states	= array(
 
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="boxchecked" value="0" />
-	<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
-	<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
-	<?php echo HTMLHelper::_('form.token'); ?>
+	<?= HTMLHelper::_('form.token'); ?>
 	</div>
 </form>

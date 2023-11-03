@@ -57,7 +57,7 @@ class EmundusModelCampaignTest extends TestCase
 		 */
 
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 		$query->select('*')
 			->from($db->quoteName('#__emundus_campaign_workflow'));
 
@@ -272,7 +272,7 @@ class EmundusModelCampaignTest extends TestCase
         $program = $this->m_programme->addProgram(['label' => 'Programme Test Unitaire']);
         $this->assertNotEmpty($program, 'La création de programme depuis un label fonctionne');
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if (!empty($program['programme_code'])) {
             $new_campaign_id = $this->createUnitTestCampaign($program);
@@ -379,7 +379,7 @@ class EmundusModelCampaignTest extends TestCase
 
 		// get the last campaign
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 		$query->select('id')
 			->from('#__emundus_setup_campaigns')
 			->order('id DESC')
@@ -411,7 +411,7 @@ class EmundusModelCampaignTest extends TestCase
 
 	function testeditDocumentDropfile() {
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$query->insert($db->quoteName('#__dropfiles_files'))
 			->columns($db->quoteName(['title', 'ext', 'file', 'state']))

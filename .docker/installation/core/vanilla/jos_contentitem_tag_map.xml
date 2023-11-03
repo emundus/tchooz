@@ -6,7 +6,7 @@
    <field Field="core_content_id" Type="int unsigned" Null="NO" Key="MUL" Extra="" />
    <field Field="content_item_id" Type="int" Null="NO" Key="PRI" Extra="" />
    <field Field="tag_id" Type="int unsigned" Null="NO" Key="PRI" Extra="" />
-   <field Field="tag_date" Type="timestamp" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP" />
+   <field Field="tag_date" Type="timestamp" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
    <field Field="type_id" Type="mediumint" Null="NO" Key="PRI" Extra="" />
    <key Table="#__contentitem_tag_map" Non_unique="0" Key_name="uc_ItemnameTagid" Seq_in_index="1" Column_name="type_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__contentitem_tag_map" Non_unique="0" Key_name="uc_ItemnameTagid" Seq_in_index="2" Column_name="content_item_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />

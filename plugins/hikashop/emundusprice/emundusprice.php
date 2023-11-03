@@ -22,7 +22,7 @@ defined('_JEXEC') or die('Restricted access');
  * @since       3.0
  */
 include_once(JPATH_BASE.'/components/com_emundus/controllers/messages.php');
-class PlgHikashopEmundusPrice extends JPlugin
+class PlgHikashopEmundusPrice extends \Joomla\CMS\Plugin\CMSPlugin
 {
 
     public function onAfterCartProductsLoad($cart)

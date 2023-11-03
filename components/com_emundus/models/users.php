@@ -2139,26 +2139,33 @@ class EmundusModelUsers extends JModelList {
 	 *
 	 * @since version
 	 */
-	public function getEffectiveGroupsForFnum($group_ids, $fnum) {
+	public function getEffectiveGroupsForFnum($group_ids, $fnum, $strict = false) {
 
-		
-		$query = $this->db->getQuery(true);
+		$groups = [];
 
-		$query->select($this->db->quoteName('sg.id'))
-			->from($this->db->quoteName('#__emundus_setup_groups', 'sg'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'grc').' ON '.$this->db->quoteName('grc.parent_id').' = '.$this->db->quoteName('sg.id'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$this->db->quoteName('sp.code').' = '.$this->db->quoteName('grc.course'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'sc').' ON '.$this->db->quoteName('sp.code').' = '.$this->db->quoteName('sc.training'))
-			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$this->db->quoteName('cc.campaign_id').' = '.$this->db->quoteName('sc.id'))
-			->where($this->db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$this->db->quoteName('cc.fnum').' LIKE '.$this->db->quote($fnum).' OR '.$this->db->quoteName('sp.code').' IS NULL)');
+		$db = $this->getDbo();
+		$query = $db->createQuery();
 
-		$this->db->setQuery($query);
-		try {
-			return $this->db->loadColumn();
-		} catch(Exception $e) {
-			error_log($e->getMessage(), 0);
-			return false;
+		$query->select($db->quoteName('sg.id'))
+			->from($db->quoteName('#__emundus_setup_groups', 'sg'))
+			->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'grc').' ON '.$db->quoteName('grc.parent_id').' = '.$db->quoteName('sg.id'))
+			->leftJoin($db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$db->quoteName('sp.code').' = '.$db->quoteName('grc.course'))
+			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc').' ON '.$db->quoteName('sp.code').' = '.$db->quoteName('sc.training'))
+			->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc').' ON '.$db->quoteName('cc.campaign_id').' = '.$db->quoteName('sc.id'))
+			->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum).' OR '.$db->quoteName('sp.code').' IS NULL)');
+
+		if ($strict) {
+			$query->where($db->quoteName('sg.id').' IN ('.implode(',', $group_ids).') AND ('.$db->quoteName('cc.fnum').' LIKE '.$db->quote($fnum) . ')');
 		}
+
+		try {
+			$db->setQuery($query);
+			$groups = $db->loadColumn();
+		} catch(Exception $e) {
+			JLog::add('Error getting effective groups for fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $groups;
 	}
 
 	/**

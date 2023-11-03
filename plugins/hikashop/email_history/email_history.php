@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 
-class plgHikashopEmail_history extends JPlugin {
+class plgHikashopEmail_history extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	public function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);

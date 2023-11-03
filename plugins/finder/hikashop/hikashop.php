@@ -9,7 +9,9 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 $jversion = preg_replace('#[^0-9\.]#i','',JVERSION);
-if(version_compare($jversion,'4.0.0','>=')) {
+if(version_compare($jversion,'5.0.0','>=')) {
+	include_once(__DIR__.'/hikashop_j5.php');
+} elseif(version_compare($jversion,'4.0.0','>=')) {
 	include_once(__DIR__.'/hikashop_j4.php');
 } else {
 	include_once(__DIR__.'/hikashop_j3.php');
@@ -26,7 +28,6 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 	protected $item = null;
 
 	protected function handleOtherLanguages(&$item) {
-		hikashop_writeToLog($item);
 		$translationHelper = hikashop_get('helper.translation');
 		if($translationHelper->isMulti() && !$translationHelper->falang) {
 			$languages = $translationHelper->loadLanguages();
@@ -101,7 +102,7 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 		}
 	}
 
-	public function onFinderGarbageCollection()
+	public function _onFinderGarbageCollection()
 	{
 		$db      = $this->db;
 		$type_id = $this->getTypeId();
@@ -125,7 +126,7 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 		return count($items);
 	}
 
-	public function onFinderCategoryChangeState($extension, $pks, $value)
+	public function _onFinderCategoryChangeState($extension, $pks, $value)
 	{
 		if ($extension == 'com_hikashop')
 		{
@@ -133,7 +134,7 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 		}
 	}
 
-	public function onFinderAfterDelete($context, $table)
+	public function _onFinderAfterDelete($context, $table)
 	{
 		if ($context == 'com_hikashop.product' && !empty($table->product_id))
 		{
@@ -151,7 +152,7 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 		return $this->remove($id);
 	}
 
-	public function onFinderAfterSave($context, $row, $isNew)
+	public function _onFinderAfterSave($context, $row, $isNew)
 	{
 		if ($context == 'com_hikashop.product' && !is_null($row))
 		{
@@ -173,9 +174,20 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 		return true;
 	}
 
-	public function onFinderBeforeSave($context, $row, $isNew)
+	public function _onFinderBeforeSave($context, $row, $isNew)
 	{
 		return true;
+	}
+	public function _onFinderChangeState($context, $pks, $value)
+	{
+		if ($context == 'com_hikashop.product')
+		{
+			$this->itemStateChange($pks, $value);
+		}
+		if ($context == 'com_plugins.plugin' && $value === 0)
+		{
+			$this->pluginDisable($pks);
+		}
 	}
 
 	protected function translateState($item, $category = null)
@@ -194,17 +206,6 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 		return parent::translatestate($item, $category);
 	}
 
-	public function onFinderChangeState($context, $pks, $value)
-	{
-		if ($context == 'com_hikashop.product')
-		{
-			$this->itemStateChange($pks, $value);
-		}
-		if ($context == 'com_plugins.plugin' && $value === 0)
-		{
-			$this->pluginDisable($pks);
-		}
-	}
 
 	protected function setup()
 	{

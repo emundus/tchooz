@@ -24,8 +24,6 @@ use Joomla\CMS\Factory;
 //error_reporting(E_ALL);
 class EmundusControllerDecision extends JControllerLegacy
 {
-	protected $app;
-
 	private $_user;
 	private $_db;
 
@@ -39,15 +37,8 @@ class EmundusControllerDecision extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 
-		$this->app   = Factory::getApplication();
-
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->_db = Factory::getContainer()->get('DatabaseDriver');
-			$this->_user = $this->app->getIdentity();
-		} else {
-			$this->_db = Factory::getDBO();
-			$this->_user = Factory::getUser();
-		}
+		$this->_db = Factory::getContainer()->get('DatabaseDriver');
+		$this->_user = $this->app->getIdentity();
 
 		parent::__construct($config);
 	}

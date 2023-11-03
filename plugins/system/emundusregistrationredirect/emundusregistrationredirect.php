@@ -8,7 +8,9 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class plgSystemEmundusregistrationredirect extends JPlugin {
+use Joomla\CMS\Plugin\CMSPlugin;
+
+class plgSystemEmundusregistrationredirect extends CMSPlugin {
 
 	function __construct(&$subject, $config) {
 

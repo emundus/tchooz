@@ -78,18 +78,24 @@ class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
-		$date = Factory::getDate();
-		$tz = new \DateTimeZone($this->config->get('offset'));
-		$date->setTimezone($tz);
 		$params = $this->getParams();
-		$gmtOrLocal = $params->get('gmt_or_local');
-		$gmtOrLocal += 0;
 
 		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
-		$layoutData->id =  $this->getHTMLId($repeatCounter);;
-		$layoutData->name = $this->getHTMLName($repeatCounter);;
-		$layoutData->value = $date->toSql($gmtOrLocal);
+		$layoutData->id =  $this->getHTMLId($repeatCounter);
+		$layoutData->name = $this->getHTMLName($repeatCounter);
+
+		if ($params->get('update_on_edit') || $this->getFormModel()->isNewRecord()) {
+			$date = Factory::getDate();
+			$tz = new \DateTimeZone($this->config->get('offset'));
+			$date->setTimezone($tz);
+			$params = $this->getParams();
+			$gmtOrLocal = $params->get('gmt_or_local');
+			$gmtOrLocal += 0;
+			$layoutData->value = $date->toSql($gmtOrLocal);
+		} else {
+			$layoutData->value = $this->getValue($repeatCounter);
+		}
 
 		return $layout->render($layoutData);
 	}

@@ -4,7 +4,7 @@
   <table_structure name="#__emundus_users">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
    <field Field="user_id" Type="int" Null="NO" Key="UNI" Extra="" />
-   <field Field="registerDate" Type="timestamp" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP" />
+   <field Field="registerDate" Type="timestamp" Null="NO" Key="MUL" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
    <field Field="firstname" Type="varchar(100)" Null="NO" Key="MUL" Extra="" />
    <field Field="lastname" Type="varchar(100)" Null="NO" Key="MUL" Extra="" />
    <field Field="profile" Type="int" Null="NO" Key="MUL" Default="1000" Extra="" />

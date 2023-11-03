@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 <?php
 
-class plgSystemHikashopproducttag extends JPlugin {
+class plgSystemHikashopproducttag extends \Joomla\CMS\Plugin\CMSPlugin {
 	function onHikashopBeforeDisplayView(&$view){
 		$option = hikaInput::get()->getString('option');
 		$ctrl = hikaInput::get()->getString('ctrl');

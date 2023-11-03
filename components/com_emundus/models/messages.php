@@ -42,7 +42,7 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('*')
             ->from($db->quoteName('#__emundus_setup_emails'))
@@ -73,7 +73,7 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('DISTINCT(category)')
             ->from($db->quoteName('#__emundus_setup_emails'))
@@ -106,7 +106,7 @@ class EmundusModelMessages extends JModelList {
 
         $filt_params = $session->get('filt_params');
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         // Get all info about the attachments in the table.
         $query->select('a.*')
@@ -163,7 +163,7 @@ class EmundusModelMessages extends JModelList {
 
         $filt_params = $session->get('filt_params');
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         // Get all info about the letters in the table.
         $query->select('l.*')
@@ -205,14 +205,15 @@ class EmundusModelMessages extends JModelList {
      */
     function getEmail($id) {
         $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
-        $query->select('e.*, et.*, GROUP_CONCAT(etr.tags) as tags, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments, GROUP_CONCAT(la.letter_attachment) AS letter_attachments')
+        $query->select('e.*, et.*, GROUP_CONCAT(etr.tags) as tags, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments, GROUP_CONCAT(la.letter_attachment) AS letter_attachments, GROUP_CONCAT(r.receivers) AS receivers')
             ->from($db->quoteName('#__emundus_setup_emails','e'))
             ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'))
             ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags','etr').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('etr.parent_id'))
             ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'))
-            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'));
+            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'))
+	        ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_receivers','r').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('r.parent_id'));
 
         // Allow the function to dynamically decide if it is getting by ID or label depending on the value submitted.
         if (is_numeric($id)) {
@@ -243,7 +244,7 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('id, subject')
             ->from($db->quoteName('#__emundus_setup_emails'))
@@ -281,7 +282,7 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select($db->quoteName('filename'))
             ->from($db->quoteName('#__emundus_uploads'))
@@ -311,7 +312,7 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select($db->quoteName('value'))
             ->from($db->quoteName('#__emundus_setup_attachments'))
             ->where($db->quoteName('id').' = '.$attachment_id);
@@ -338,7 +339,7 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select("l.*, GROUP_CONCAT( DISTINCT(lrs.status) SEPARATOR ',' ) as status, CONCAT(GROUP_CONCAT( DISTINCT(lrt.training) SEPARATOR '\",\"' )) as training")
             ->from($db->quoteName('#__emundus_setup_letters', 'l'))
@@ -369,7 +370,7 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select($db->quoteName(['id', 'value']))
             ->from($db->quoteName('#__emundus_setup_attachments'))
@@ -398,7 +399,7 @@ class EmundusModelMessages extends JModelList {
 
         $db = JFactory::getDbo();
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select($db->quoteName(['id', 'title']))
             ->from($db->quoteName('#__emundus_setup_letters'))
@@ -669,7 +670,7 @@ class EmundusModelMessages extends JModelList {
             $where .= ' AND '.$db->quoteName('user_id_from').' = '.$other_user;
         }
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('*')
             ->from($db->quoteName('#__messages'))
             ->where($where)
@@ -700,7 +701,7 @@ class EmundusModelMessages extends JModelList {
         }
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('COUNT(state)')
             ->from($db->quoteName('#__messages'))
@@ -731,7 +732,7 @@ class EmundusModelMessages extends JModelList {
         $db = JFactory::getDbo();
 
         // update message state to read
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->update($db->quoteName('#__messages'))
             ->set([$db->quoteName('state').' = 0'])
             ->where('('.$db->quoteName('user_id_to').' = '.$user2.' AND '.$db->quoteName('user_id_from').' = '.$user1.') OR ('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.')');
@@ -744,7 +745,7 @@ class EmundusModelMessages extends JModelList {
             return false;
         }
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select('*')
             ->from($db->quoteName('#__messages'))
             ->where('('.$db->quoteName('user_id_from').' = '.$user2.' AND '.$db->quoteName('user_id_to').' = '.$user1.' AND '.$db->quoteName('folder_id').' = 2) OR ('.$db->quoteName('user_id_from').' = '.$user1.' AND '.$db->quoteName('user_id_to').' = '.$user2.' AND '.$db->quoteName('folder_id').' IN (2,3))')
@@ -777,7 +778,7 @@ class EmundusModelMessages extends JModelList {
         }
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if ($system_message) {
             $folder = 3;
@@ -809,7 +810,7 @@ class EmundusModelMessages extends JModelList {
     public function deleteSystemMessages($user1, $user2) {
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
 
         $query->delete($db->quoteName('#__messages'))
@@ -852,7 +853,7 @@ class EmundusModelMessages extends JModelList {
     public function createChatroom($fnum = null, $id = null) {
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $columns = [$db->quoteName('fnum')];
         $values = [$db->quote($fnum)];
@@ -899,7 +900,7 @@ class EmundusModelMessages extends JModelList {
         }
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->insert($db->quoteName('jos_emundus_chatroom_users'))
             ->columns([$db->quoteName('chatroom_id'), $db->quoteName('user_id')]);
@@ -935,7 +936,7 @@ class EmundusModelMessages extends JModelList {
         }
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->insert($db->quoteName('#__messages'))
             ->columns($db->quoteName(['user_id_from', 'folder_id', 'date_time', 'state', 'priority', 'message', 'page']))
@@ -968,7 +969,7 @@ class EmundusModelMessages extends JModelList {
         }
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('*')
             ->from($db->quoteName('#__messages'))
@@ -993,7 +994,7 @@ class EmundusModelMessages extends JModelList {
     public function updateChatroomMessages($lastId, $chatroom) {
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select(['m.*', 'u.name as user_from'])
             ->from($db->quoteName('#__messages', 'm'))
@@ -1021,7 +1022,7 @@ class EmundusModelMessages extends JModelList {
     public function getChatroom($id) {
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('*')
             ->from($db->quoteName('jos_emundus_chatroom'))
@@ -1046,7 +1047,7 @@ class EmundusModelMessages extends JModelList {
     public function getChatroomUsersId($chatroom_id) {
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select('cu.user_id')
             ->from($db->quoteName('jos_emundus_chatroom','c'))
@@ -1073,7 +1074,7 @@ class EmundusModelMessages extends JModelList {
     public function getChatroomByUsers(...$users) {
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         // Get all chatrooms containing at least one of our three users and that contain all memebers.
         // We then will check for a chatroom having ONLY these three users using PHP.
@@ -1111,7 +1112,7 @@ class EmundusModelMessages extends JModelList {
     private function chatRoomExists($chatroom) {
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select($db->quoteName('id'))
             ->from($db->quoteName('jos_emundus_chatroom'))
@@ -1132,7 +1133,7 @@ class EmundusModelMessages extends JModelList {
     /// get message recap by fnum
     public function getMessageRecapByFnum($fnum) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -1200,7 +1201,7 @@ class EmundusModelMessages extends JModelList {
         if(!empty($eid)) {
             try {
                 $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
+                $query = $db->createQuery();
 
                 $query->clear()
                     ->select('#__emundus_setup_action_tag.*')
@@ -1249,7 +1250,7 @@ class EmundusModelMessages extends JModelList {
         if(!empty($fnum)) {
             /// from fnum --> detect the message
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
 
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -1300,7 +1301,7 @@ class EmundusModelMessages extends JModelList {
     /// get all documents being letter
     public function getAllDocumentsLetters() {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             $query->clear()
@@ -1319,7 +1320,7 @@ class EmundusModelMessages extends JModelList {
     /// get attachments by profile (jos_emundus_setup_attachment_profiles)
     public function getAttachmentsByProfiles($fnums = []) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
 		$results = [];
 
@@ -1384,7 +1385,7 @@ class EmundusModelMessages extends JModelList {
     /// get all attachments
     public function getAllAttachments() {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         try {
             $query->clear()
@@ -1405,7 +1406,7 @@ class EmundusModelMessages extends JModelList {
         $set_tag = [];
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($fnums) and !empty($tmpl)) {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');

@@ -208,7 +208,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 		$fields = $this->getFields();
 		$mode = $params->get('log_mode', '1');
 		$groupModels = $formModel->getGroupsHiarachy();
-		$date = new \Date();
+		$date = new Date();
 		$pks = [];
 		$joinsSeen = [];
 		$changes = [];
@@ -466,7 +466,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 		$mode = $params->get('log_mode', '1');
 		$groups = $formModel->getGroupsHiarachy();
 		$changes = array();
-		$date = new \Date();
+		$date = new Date();
 
 		foreach ($groups as $groupModel)
 		{
@@ -643,7 +643,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 	{
 		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
-		$date = new \Date();
+		$date = new Date();
 		$db = Factory::getDbo();
 		$query = $db->getQuery($db);
 

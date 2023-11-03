@@ -147,6 +147,7 @@ class FabModelList extends ListModel
 	 *
 	 * @return  void
 	 */
+	/*
 	protected function populateState($ordering = null, $direction = null)
 	{
 		$app = Factory::getApplication('administrator');
@@ -158,4 +159,5 @@ class FabModelList extends ListModel
 		// List state information.
 		parent::populateState($ordering, $direction);
 	}
+	*/
 }

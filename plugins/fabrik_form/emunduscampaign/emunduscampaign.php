@@ -163,8 +163,13 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                 }
                 $fnum_tmp = $jinput->get('jos_emundus_campaign_candidature___fnum');
                 $id = $jinput->get('jos_emundus_campaign_candidature___id');
+                $campaign_id = $jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw', 0);
 
-		        $campaign_id = is_array($jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw')) ? $jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw')[0] : $jinput->getInt('jos_emundus_campaign_candidature___campaign_id_raw');
+                if (empty($campaign_id)) {
+                    $campaign_id = $jinput->getInt('jos_emundus_campaign_candidature___campaign_id', 0);
+                }
+
+                $campaign_id = is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
 		        if (empty($campaign_id)) {
 			        return false;
 		        }

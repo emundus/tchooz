@@ -46,7 +46,7 @@ class EmundusModelAward extends JModelList
     }
     public function getCampaignId($fnum){
         $db = JFactory::getDBO();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->select($db->quoteName('campaign_id'))
             ->from($db->quoteName('#__emundus_campaign_candidature'))
@@ -62,7 +62,7 @@ class EmundusModelAward extends JModelList
         $date_time = new DateTime('NOW');
         $date = $date_time->format('Y-m-d h:i:s');
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $columns = array('time_date', 'fnum', 'user', 'thematique','engagement','student_id','campaign_id');
 
@@ -78,7 +78,7 @@ class EmundusModelAward extends JModelList
     }
     public function CountVote($fnum,$user){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query
             ->select('COUNT(*)')
@@ -91,7 +91,7 @@ class EmundusModelAward extends JModelList
     }
     public function CountVotes($user){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query
             ->select('COUNT(*)')
@@ -104,7 +104,7 @@ class EmundusModelAward extends JModelList
     }
     public function TotalVotes(){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query
             ->select('COUNT(*)')
@@ -118,7 +118,7 @@ class EmundusModelAward extends JModelList
     }
     public function CountThematique($user,$thematique){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query
             ->select('COUNT(*)')
@@ -132,7 +132,7 @@ class EmundusModelAward extends JModelList
 
     public function CountByThematique($thematique){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query
             ->select('COUNT(*)')
@@ -148,7 +148,7 @@ class EmundusModelAward extends JModelList
 
     public function GetThematique($user){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query
             ->select('thematique_name')
@@ -163,7 +163,7 @@ class EmundusModelAward extends JModelList
 
     public function GetProjet($user){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query
             ->select('titre_projet')
@@ -178,7 +178,7 @@ class EmundusModelAward extends JModelList
 
     public function getFavoris($fnum,$user){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query
             ->select('COUNT(*)')
@@ -194,7 +194,7 @@ class EmundusModelAward extends JModelList
         $date_time = new DateTime('NOW');
         $date = $date_time->format('Y-m-d h:i:s');
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $columns = array('date_time', 'fnum', 'user');
 
@@ -210,7 +210,7 @@ class EmundusModelAward extends JModelList
     public function deleteToFavoris($fnum,$user){
         $db = JFactory::getDbo();
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $conditions = array(
             $db->quoteName('user') . ' = ' . $user,
@@ -226,7 +226,7 @@ class EmundusModelAward extends JModelList
     }
     public function getFabrikElement($element){
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query
             ->select('params')

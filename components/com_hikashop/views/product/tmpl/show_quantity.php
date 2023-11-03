@@ -8,6 +8,8 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
+if(!isset($this->config))
+	$this->config = hikashop_config();
 $css_button = $this->config->get('css_button', 'hikabtn');
 
 $quantity_counter = $this->getQuantityCounter();
@@ -21,8 +23,6 @@ $name = 'quantity';
 if(!empty($this->row->quantityFieldName)){
 	$name = $this->row->quantityFieldName;
 }
-if(!isset($this->config))
-	$this->config = hikashop_config();
 
 if(isset($this->row) && isset($this->row->product_min_per_order)) {
 	$min_quantity = ($this->row->product_min_per_order || empty($this->element->main)) ? $this->row->product_min_per_order : @$this->element->main->product_min_per_order;

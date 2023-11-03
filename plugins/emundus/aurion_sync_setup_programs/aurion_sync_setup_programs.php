@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class plgEmundusAurion_sync_setup_programs extends JPlugin {
+class plgEmundusAurion_sync_setup_programs extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	var $db;
 	var $query;

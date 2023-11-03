@@ -33,7 +33,7 @@ class EmundusModelFormations extends JModelLegacy {
 	        }
         }
 
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
         $query->select($db->quoteName('id'))
             ->from($db->quoteName('#__emundus_user_entreprise'))
             ->where($db->quoteName('user') . ' = ' . $user . ' AND ' . $db->quoteName('profile') .' = '  . $profile . ' AND cid = ' . $cid);
@@ -48,7 +48,7 @@ class EmundusModelFormations extends JModelLegacy {
 
     public function deleteCompany($id) {
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query->delete($db->quoteName('#__emundus_entreprise'))
             ->where('id =' . $id);
@@ -79,7 +79,7 @@ class EmundusModelFormations extends JModelLegacy {
     	if (!empty($hr_user) && !empty($user_id) && !empty($cid) && !empty($this->checkHR($cid, $hr_user))) {
 
 		    $db = JFactory::getDbo();
-		    $query = $db->getQuery(true);
+		    $query = $db->createQuery();
 
 		    $query->delete($db->quoteName('#__emundus_user_entreprise'))
 			    ->where([$db->quoteName('cid').' = '.$cid, $db->quoteName('user').' = '.$user_id]);
@@ -135,7 +135,7 @@ class EmundusModelFormations extends JModelLegacy {
 	public function checkCompanyUser($user, $company) {
 
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$query->select($db->quoteName('id'))
 			->from($db->quoteName('#__emundus_user_entreprise'))
@@ -171,7 +171,7 @@ class EmundusModelFormations extends JModelLegacy {
 		$companies = $this->getCompaniesDRH($user);
 
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$query->select([$db->quoteName('e.id'), $db->quoteName('e.raison_sociale', 'company'), $db->quoteName('u.user_id'), $db->quoteName('u.birthday'), $db->quoteName('u.civility'), $db->quoteName('u.firstname'), $db->quoteName('u.lastname'), $db->quoteName('cc.fnum'), $db->quoteName('eu.position')])
 			->from($db->quoteName('#__emundus_users','u'))
@@ -207,7 +207,7 @@ class EmundusModelFormations extends JModelLegacy {
 		}
 
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
 		$query->select($db->quoteName('cid'))
 			->from($db->quoteName('#__emundus_user_entreprise'))
@@ -245,7 +245,7 @@ class EmundusModelFormations extends JModelLegacy {
         $user_companies = $this->getCompaniesDRH($user_rh);
 
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         $query
             ->select([$db->quoteName('ecc.fnum'), $db->quoteName('esp.id', 'program_id'), $db->quoteName('estu.label', 'label'), $db->quoteName('estu.price'), $db->quoteName('estu.notes'), $db->quoteName('estu.date_start'), $db->quoteName('estu.date_end'), $db->quoteName('estu.location_title'), $db->quoteName('estu.location_address'), $db->quoteName('estu.location_zip'), $db->quoteName('estu.location_city'), $db->quoteName('estu.session_code'), $db->quoteName('estu.hours'), $db->quoteName('estu.hours'), $db->quoteName('estu.code'), $db->quoteName('ess.value'), $db->quoteName('ess.class')])

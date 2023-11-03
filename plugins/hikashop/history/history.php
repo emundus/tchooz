@@ -8,6 +8,6 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopHistory extends JPlugin
+class plgHikashopHistory extends \Joomla\CMS\Plugin\CMSPlugin
 {
 }

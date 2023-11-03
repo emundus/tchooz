@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 
-class plgAcymailingHikashop extends JPlugin{
+class plgAcymailingHikashop extends \Joomla\CMS\Plugin\CMSPlugin{
 	var $cats = array();
 	var $tags = array();
 

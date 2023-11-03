@@ -21,7 +21,7 @@
     <field name="id">1</field>
     <field name="parent_id">0</field>
     <field name="lft">0</field>
-    <field name="rgt">261</field>
+    <field name="rgt">265</field>
     <field name="level">0</field>
     <field name="name">root.1</field>
     <field name="title">Root Asset</field>
@@ -664,7 +664,7 @@
     <field name="rgt">129</field>
     <field name="level">2</field>
     <field name="name">com_modules.module.104</field>
-    <field name="title">System</field>
+    <field name="title">Système</field>
     <field name="rules">{}</field>
    </row>
    <row>
@@ -1265,6 +1265,26 @@
     <field name="level">2</field>
     <field name="name">com_languages.language.1</field>
     <field name="title">English (en-GB)</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">137</field>
+    <field name="parent_id">1</field>
+    <field name="lft">261</field>
+    <field name="rgt">262</field>
+    <field name="level">1</field>
+    <field name="name">com_scheduler.task.1</field>
+    <field name="title">com_scheduler.task.1</field>
+    <field name="rules">{}</field>
+   </row>
+   <row>
+    <field name="id">138</field>
+    <field name="parent_id">1</field>
+    <field name="lft">263</field>
+    <field name="rgt">264</field>
+    <field name="level">1</field>
+    <field name="name">com_scheduler.task.2</field>
+    <field name="title">com_scheduler.task.2</field>
     <field name="rules">{}</field>
    </row>
   </table_data>

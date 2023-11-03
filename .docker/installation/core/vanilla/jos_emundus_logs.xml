@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_logs">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="timestamp" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" />
+   <field Field="timestamp" Type="timestamp" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
    <field Field="user_id_from" Type="int" Null="NO" Key="MUL" Extra="" />
    <field Field="user_id_to" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="fnum_to" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
@@ -43,6 +43,846 @@
     <field name="message">COM_EMUNDUS_ADD_USER_DELETE</field>
     <field name="params"></field>
     <field name="ip_from">92.154.69.34</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="timestamp">2023-11-03 10:51:55</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">13</field>
+    <field name="verb">u</field>
+    <field name="message">COM_EMUNDUS_ACCESS_STATUS_UPDATE</field>
+    <field name="params">{&quot;updated&quot;:[{&quot;old&quot;:&quot;Refusé&quot;,&quot;new&quot;:&quot;En cours&quot;,&quot;old_id&quot;:2,&quot;new_id&quot;:0}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="timestamp">2023-11-03 10:51:56</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="timestamp">2023-11-03 10:51:58</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">37</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_LOGS_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="timestamp">2023-11-03 10:52:24</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">37</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_LOGS_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="timestamp">2023-11-03 10:53:09</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">37</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_LOGS_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="timestamp">2023-11-03 10:53:16</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">37</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_LOGS_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="timestamp">2023-11-03 10:53:27</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="timestamp">2023-11-03 10:53:29</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">37</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_LOGS_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="timestamp">2023-11-03 10:53:55</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">28</field>
+    <field name="verb">u</field>
+    <field name="message">COM_EMUNDUS_PUBLISH_UPDATE</field>
+    <field name="params">{&quot;updated&quot;:[{&quot;old&quot;:&quot;Publié&quot;,&quot;new&quot;:&quot;Archivé&quot;}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="timestamp">2023-11-03 10:54:01</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="timestamp">2023-11-03 10:54:02</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">37</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_LOGS_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="timestamp">2023-11-03 10:54:09</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">28</field>
+    <field name="verb">u</field>
+    <field name="message">COM_EMUNDUS_PUBLISH_UPDATE</field>
+    <field name="params">{&quot;updated&quot;:[{&quot;old&quot;:&quot;Archivé&quot;,&quot;new&quot;:&quot;Dans la corbeille&quot;}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="timestamp">2023-11-03 10:54:10</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="timestamp">2023-11-03 10:54:21</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">28</field>
+    <field name="verb">u</field>
+    <field name="message">COM_EMUNDUS_PUBLISH_UPDATE</field>
+    <field name="params">{&quot;updated&quot;:[{&quot;old&quot;:&quot;Dans la corbeille&quot;,&quot;new&quot;:&quot;Publié&quot;}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">17</field>
+    <field name="timestamp">2023-11-03 10:54:25</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">18</field>
+    <field name="timestamp">2023-11-03 10:54:26</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">37</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_LOGS_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">19</field>
+    <field name="timestamp">2023-11-03 10:54:48</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">14</field>
+    <field name="verb">c</field>
+    <field name="message">COM_EMUNDUS_ACCESS_TAGS_CREATE</field>
+    <field name="params">{&quot;created&quot;:[{&quot;details&quot;:&quot;Justificatif d'identité non conforme&quot;}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">20</field>
+    <field name="timestamp">2023-11-03 10:54:49</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">21</field>
+    <field name="timestamp">2023-11-03 10:54:50</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">37</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_LOGS_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">22</field>
+    <field name="timestamp">2023-11-03 10:55:04</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">14</field>
+    <field name="verb">c</field>
+    <field name="message">COM_EMUNDUS_ACCESS_TAGS_CREATE</field>
+    <field name="params">{&quot;created&quot;:[{&quot;details&quot;:&quot;Dossier évalué&quot;}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">23</field>
+    <field name="timestamp">2023-11-03 10:55:04</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472900000010000003</field>
+    <field name="action_id">14</field>
+    <field name="verb">c</field>
+    <field name="message">COM_EMUNDUS_ACCESS_TAGS_CREATE</field>
+    <field name="params">{&quot;created&quot;:[{&quot;details&quot;:&quot;Dossier évalué&quot;}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">24</field>
+    <field name="timestamp">2023-11-03 10:55:18</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">13</field>
+    <field name="verb">u</field>
+    <field name="message">COM_EMUNDUS_ACCESS_STATUS_UPDATE</field>
+    <field name="params">{&quot;updated&quot;:[{&quot;old&quot;:&quot;En cours&quot;,&quot;new&quot;:&quot;Refusé&quot;,&quot;old_id&quot;:0,&quot;new_id&quot;:2}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">25</field>
+    <field name="timestamp">2023-11-03 10:55:18</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472900000010000003</field>
+    <field name="action_id">13</field>
+    <field name="verb">u</field>
+    <field name="message">COM_EMUNDUS_ACCESS_STATUS_UPDATE</field>
+    <field name="params">{&quot;updated&quot;:[{&quot;old&quot;:&quot;Refusé&quot;,&quot;new&quot;:&quot;Refusé&quot;,&quot;old_id&quot;:2,&quot;new_id&quot;:2}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">26</field>
+    <field name="timestamp">2023-11-03 11:32:58</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="timestamp">2023-11-03 11:33:01</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472900000010000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">28</field>
+    <field name="timestamp">2023-11-03 11:33:03</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">29</field>
+    <field name="timestamp">2023-11-03 11:33:06</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472700000020000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">30</field>
+    <field name="timestamp">2023-11-03 11:33:36</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">31</field>
+    <field name="timestamp">2023-11-03 11:33:39</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472900000010000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">32</field>
+    <field name="timestamp">2023-11-03 11:33:40</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000020000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">33</field>
+    <field name="timestamp">2023-11-03 11:33:41</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000050000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">34</field>
+    <field name="timestamp">2023-11-03 11:33:42</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472700000020000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">35</field>
+    <field name="timestamp">2023-11-03 11:33:42</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472700000010000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">36</field>
+    <field name="timestamp">2023-11-03 11:33:43</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472700000050000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">37</field>
+    <field name="timestamp">2023-11-03 11:33:44</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472600000010000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">38</field>
+    <field name="timestamp">2023-11-03 11:33:51</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472700000050000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">39</field>
+    <field name="timestamp">2023-11-03 11:33:55</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000020000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">40</field>
+    <field name="timestamp">2023-11-03 11:34:14</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">41</field>
+    <field name="timestamp">2023-11-03 11:34:22</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472900000010000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">42</field>
+    <field name="timestamp">2023-11-03 11:34:23</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000020000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">43</field>
+    <field name="timestamp">2023-11-03 11:34:26</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000020000003</field>
+    <field name="action_id">13</field>
+    <field name="verb">u</field>
+    <field name="message">COM_EMUNDUS_ACCESS_STATUS_UPDATE</field>
+    <field name="params">{&quot;updated&quot;:[{&quot;old&quot;:&quot;Accepté&quot;,&quot;new&quot;:&quot;En cours&quot;,&quot;old_id&quot;:3,&quot;new_id&quot;:0}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">44</field>
+    <field name="timestamp">2023-11-03 11:34:26</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000020000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">45</field>
+    <field name="timestamp">2023-11-03 12:33:17</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000020000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">46</field>
+    <field name="timestamp">2023-11-03 12:34:56</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000020000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">47</field>
+    <field name="timestamp">2023-11-03 12:35:36</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000020000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">48</field>
+    <field name="timestamp">2023-11-03 12:47:29</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000020000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">49</field>
+    <field name="timestamp">2023-11-03 12:47:50</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000020000003</field>
+    <field name="action_id">4</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_ATTACHMENT_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">50</field>
+    <field name="timestamp">2023-11-03 12:49:16</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FILE_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">51</field>
+    <field name="timestamp">2023-11-03 12:49:44</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FILE_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">52</field>
+    <field name="timestamp">2023-11-03 13:12:44</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">u</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FILE_UPDATE</field>
+    <field name="params">COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_APPLICANT</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">53</field>
+    <field name="timestamp">2023-11-03 13:13:06</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">13</field>
+    <field name="verb">u</field>
+    <field name="message">COM_EMUNDUS_ACCESS_STATUS_UPDATE</field>
+    <field name="params">{&quot;updated&quot;:[{&quot;old&quot;:&quot;En cours&quot;,&quot;new&quot;:&quot;Envoy\u00e9&quot;,&quot;old_id&quot;:0,&quot;new_id&quot;:1}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">54</field>
+    <field name="timestamp">2023-11-03 13:19:34</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FILE_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">55</field>
+    <field name="timestamp">2023-11-03 13:28:35</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FILE_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">56</field>
+    <field name="timestamp">2023-11-03 13:33:06</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023110313330600000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">c</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FILE_CREATE</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">57</field>
+    <field name="timestamp">2023-11-03 13:42:59</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023110313330600000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FILE_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">58</field>
+    <field name="timestamp">2023-11-03 13:43:09</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000050000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">59</field>
+    <field name="timestamp">2023-11-03 13:43:13</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000050000003</field>
+    <field name="action_id">13</field>
+    <field name="verb">u</field>
+    <field name="message">COM_EMUNDUS_ACCESS_STATUS_UPDATE</field>
+    <field name="params">{&quot;updated&quot;:[{&quot;old&quot;:&quot;Accepté&quot;,&quot;new&quot;:&quot;Envoyé&quot;,&quot;old_id&quot;:3,&quot;new_id&quot;:1}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">60</field>
+    <field name="timestamp">2023-11-03 13:43:14</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472800000050000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">61</field>
+    <field name="timestamp">2023-11-03 13:43:19</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472500000010000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">62</field>
+    <field name="timestamp">2023-11-03 13:43:22</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472700000010000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">63</field>
+    <field name="timestamp">2023-11-03 13:43:25</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472700000010000003</field>
+    <field name="action_id">37</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_LOGS_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">64</field>
+    <field name="timestamp">2023-11-03 13:43:28</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472500000010000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">65</field>
+    <field name="timestamp">2023-11-03 13:43:29</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472500000010000003</field>
+    <field name="action_id">37</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_LOGS_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">66</field>
+    <field name="timestamp">2023-11-03 13:43:31</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472900000010000003</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">67</field>
+    <field name="timestamp">2023-11-03 13:43:32</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">3</field>
+    <field name="fnum_to">2023100509472900000010000003</field>
+    <field name="action_id">37</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_LOGS_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">68</field>
+    <field name="timestamp">2023-11-03 13:47:50</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">4</field>
+    <field name="verb">c</field>
+    <field name="message">COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE</field>
+    <field name="params">{&quot;created&quot;:[{&quot;element&quot;:&quot;[Letter] &quot;,&quot;details&quot;:&quot;sample.pdf&quot;}]}</field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">69</field>
+    <field name="timestamp">2023-11-03 13:47:53</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FORM_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">70</field>
+    <field name="timestamp">2023-11-03 13:47:54</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">4</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_ATTACHMENT_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">71</field>
+    <field name="timestamp">2023-11-03 13:48:14</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023100509563800000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FILE_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
+   </row>
+   <row>
+    <field name="id">72</field>
+    <field name="timestamp">2023-11-03 13:48:21</field>
+    <field name="user_id_from">2</field>
+    <field name="user_id_to">2</field>
+    <field name="fnum_to">2023110313330600000050000002</field>
+    <field name="action_id">1</field>
+    <field name="verb">r</field>
+    <field name="message">COM_EMUNDUS_ACCESS_FILE_READ</field>
+    <field name="params"></field>
+    <field name="ip_from">192.168.65.1</field>
    </row>
   </table_data>
  </database>

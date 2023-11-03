@@ -28,14 +28,7 @@ class EmundusControllerApplication extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 
 		$this->app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$this->_user = $this->app->getIdentity();
-		}
-		else
-		{
-			$this->_user = Factory::getUser();
-		}
+		$this->_user = $this->app->getIdentity();
 
 		parent::__construct($config);
 	}
@@ -485,6 +478,19 @@ class EmundusControllerApplication extends JControllerLegacy
 				$m_application->deleteAttachment($id);
 			}
 
+            // TRACK THE LOGS
+            # get fnum                  $fnum
+            # get the logged user id    JFactory::getUser()->id
+            # get the applicant id      $applicant_id
+            # $applicant_id = $jinput->getString('student_id', null);
+
+            require_once(JPATH_SITE.'/components/com_emundus/models/logs.php');
+            $user = $this->app->getSession()->get('emundusUser');     # logged user #
+
+            require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
 			$res->status = true;
 		}
 		else {
@@ -687,27 +693,17 @@ class EmundusControllerApplication extends JControllerLegacy
 
 	public function getattachmentsbyfnum()
 	{
-		
+		$response = ['msg' => JText::_('ACCESS_DENIED'), 'status' => false, 'code' => 403];
 		$fnum   = $this->input->getString('fnum', '');
 
 		if (!empty($fnum)) {
-			$response['msg'] = JText::_('ACCESS_DENIED');
-
-			if (EmundusHelperAccess::asAccessAction(4, 'r', JFactory::getUser()->id, $fnum)) {
+			if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id, $fnum)) {
 				$m_application = $this->getModel('Application');
-				$m_files = $this->getModel('Files');
 
-				$fnumInfos = $m_files->getFnumInfos($fnum);
-
-				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum, null, $fnumInfos['profile_id']);
-
+				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum);
 				$response['msg']    = JText::_('SUCCESS');
 				$response['status'] = true;
 				$response['code']   = 200;
-			}
-			else {
-				$response['msg']  = JText::_('FAIL');
-				$response['code'] = 500;
 			}
 		}
 

@@ -3,10 +3,10 @@
 	<name>Fabrik Libs Library</name>
 	<libraryname>fabrik/libs</libraryname>
     <author>Henk van Klinken</author>
-    <creationDate>August 2023</creationDate>
+    <creationDate>October 2023</creationDate>
     <copyright>Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.</copyright>
     <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
-	<version>4.0Epsilon</version>
+	<version>4.0Zeta</version>
 	<description>Fabrik - Libs Library files</description>
 	<files>
         <folder>libs</folder>

@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikaShopTaxcloud extends JPlugin {
+class plgHikaShopTaxcloud extends \Joomla\CMS\Plugin\CMSPlugin {
 	protected $soap = null;
 	protected $debug = false;
 	protected $errors = array();

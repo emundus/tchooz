@@ -28,7 +28,7 @@ JLoader::register('ExternalloginLogger', JPATH_ADMINISTRATOR . '/components/com_
 JLoader::register('ExternalloginLogEntry', JPATH_ADMINISTRATOR . '/components/com_externallogin/log/entry.php');
 JLoader::register('ExternalloginHelper', JPATH_ADMINISTRATOR . '/components/com_externallogin/helpers/externallogin.php');
 
-class plgSystemEmundus_caslogin extends JPlugin
+class plgSystemEmundus_caslogin extends \Joomla\CMS\Plugin\CMSPlugin
 {
     /**
      * Load the language file on instantiation. Note this is only available in Joomla 3.1 and higher.

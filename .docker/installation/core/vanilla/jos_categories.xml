@@ -56,8 +56,8 @@
     <field name="note"></field>
     <field name="description"></field>
     <field name="published">1</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="access">1</field>
     <field name="params">{}</field>
     <field name="metadesc"></field>
@@ -85,8 +85,8 @@
     <field name="note"></field>
     <field name="description"></field>
     <field name="published">1</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="access">1</field>
     <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;workflow_id&quot;:&quot;use_default&quot;}</field>
     <field name="metadesc"></field>
@@ -114,8 +114,8 @@
     <field name="note"></field>
     <field name="description"></field>
     <field name="published">1</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="access">1</field>
     <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;}</field>
     <field name="metadesc"></field>
@@ -143,8 +143,8 @@
     <field name="note"></field>
     <field name="description"></field>
     <field name="published">1</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="access">1</field>
     <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;}</field>
     <field name="metadesc"></field>
@@ -172,8 +172,8 @@
     <field name="note"></field>
     <field name="description"></field>
     <field name="published">1</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="access">1</field>
     <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;}</field>
     <field name="metadesc"></field>
@@ -201,8 +201,8 @@
     <field name="note"></field>
     <field name="description"></field>
     <field name="published">1</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="access">1</field>
     <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;}</field>
     <field name="metadesc"></field>
@@ -230,8 +230,8 @@
     <field name="note"></field>
     <field name="description"></field>
     <field name="published">1</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="access">1</field>
     <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;image_alt&quot;:&quot;&quot;}</field>
     <field name="metadesc"></field>
@@ -259,8 +259,8 @@
     <field name="note"></field>
     <field name="description"></field>
     <field name="published">1</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="access">1</field>
     <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;image_alt&quot;:&quot;&quot;}</field>
     <field name="metadesc"></field>
@@ -288,8 +288,8 @@
     <field name="note"></field>
     <field name="description"></field>
     <field name="published">1</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="access">1</field>
     <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;image_alt&quot;:&quot;&quot;}</field>
     <field name="metadesc"></field>

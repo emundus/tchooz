@@ -6,9 +6,6 @@
  * Time: 09:15
  */
 
-$document = JFactory::getDocument();
-$document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
-
 require_once (JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 $config = JFactory::getConfig();
@@ -239,7 +236,6 @@ $timezone = new DateTimeZone($offset);
 <?php else :?>
 	<?php echo JText::_('COM_EMUNDUS_NO_RESULT'); ?>
 <?php endif; ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
      $(document).ready(function(){
          const dataContainer = document.querySelector('.em-data-container')

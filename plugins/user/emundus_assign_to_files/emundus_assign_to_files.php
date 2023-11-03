@@ -12,6 +12,8 @@
 defined('_JEXEC') or die( 'Restricted access' );
 
 jimport('joomla.plugin.plugin');
+
+use Joomla\CMS\Factory;
 /**
  * Joomla User plugin
  *
@@ -19,7 +21,7 @@ jimport('joomla.plugin.plugin');
  * @subpackage  User.emundus
  * @since       5.0.0
  */
-class plgUserEmundus_assign_to_files extends JPlugin {
+class plgUserEmundus_assign_to_files extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	/**
 	 * @param $user
@@ -138,7 +140,11 @@ class plgUserEmundus_assign_to_files extends JPlugin {
 	 */
     public function onUserAfterSave(array $user) {
 
-	    $app = JFactory::getApplication();
+	    $app = Factory::getApplication();
+	    // The method check here ensures that if running as a CLI Application we don't get any errors
+	    if (method_exists($app, 'isClient') && ($app->isClient('site') || $app->isClient('cli'))) {
+		    return;
+	    }
 
 	    $jinput = $app->input;
 	    $organisation = $jinput->post->get('university_id', null, null);

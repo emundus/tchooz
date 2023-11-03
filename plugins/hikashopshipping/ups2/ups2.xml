@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="2.5" method="upgrade" group="hikashopshipping">
+	<name>Hikashop UPS OAuth Shipping Plugin</name>
+	<creationDate>30 octobre 2023</creationDate>
+	<version>5.0.0</version>
+	<author>Hikashop</author>
+	<authorEmail>dev@hikashop.com</authorEmail>
+	<authorUrl>http://www.hikashop.com</authorUrl>
+	<copyright>(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>This plugin enables you to setup UPS Shipping with your HikaShop</description>
+	<files>
+		<filename plugin="ups2">ups2.php</filename>
+		<filename>cacert.pem</filename>
+	</files>
+	<params addpath="/components/com_hikashop/params">
+	</params>
+</extension>

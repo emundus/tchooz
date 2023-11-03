@@ -374,6 +374,7 @@ function hikashopVariantSelected(obj) {
 				var count = 0;
 				var lastIndexFound = 0;
 				var first = -1;
+				console.log(previouslySelected);
 				for (index = 0; index < nextEl.options.length; ++index) {
 					var found = false;
 					for (i = 0; i < validVariants.length; ++i) {
@@ -383,8 +384,12 @@ function hikashopVariantSelected(obj) {
 							lastIndexFound = index;
 							nextEl.options[index].hidden = false;
 							nextEl.options[index].disabled = false;
-							if(first== -1 || index == previouslySelected) first = index;
 						}
+						if(
+							(!nextEl.options[index].value || parseInt(nextEl.options[index].value) == currentVariant[pos])
+							&&
+							(first == -1 || index == previouslySelected)
+						) first = index;
 					}
 					if(!found && index != 0) {
 						nextEl.options[index].hidden = true;

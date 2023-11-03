@@ -10,7 +10,7 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 jimport('joomla.plugin.plugin');
 
-class plgSystemCustom_price extends JPlugin {
+class plgSystemCustom_price extends \Joomla\CMS\Plugin\CMSPlugin {
 	protected $currencyClass = null;
 	public $params = null;
 

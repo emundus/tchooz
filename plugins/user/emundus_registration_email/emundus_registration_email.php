@@ -124,10 +124,13 @@ class plgUserEmundus_registration_email extends CMSPlugin
      * @throws Exception
      */
     public function onUserAfterSave($user, $isnew, $result, $error) {
-        if(!Factory::getApplication()->isCli())
-        {
-            $this->onAfterStoreUser($user, $isnew, $result, $error);
-        }
+	    $app = Factory::getApplication();
+	    // The method check here ensures that if running as a CLI Application we don't get any errors
+	    if (method_exists($app, 'isClient') && ($app->isClient('site') || $app->isClient('cli'))) {
+		    return;
+	    }
+
+		$this->onAfterStoreUser($user, $isnew, $result, $error);
     }
 
 

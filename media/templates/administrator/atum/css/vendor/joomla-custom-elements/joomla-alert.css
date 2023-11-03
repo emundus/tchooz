@@ -169,7 +169,6 @@ html[dir=rtl] joomla-alert .joomla-alert-button--close {
   border: 1px solid var(--alert-accent-color, var(--template-bg-dark));
   border-radius: 0.25rem;
   -webkit-transition: opacity 0.15s linear;
-  -o-transition: opacity 0.15s linear;
   transition: opacity 0.15s linear;
 }
 #system-message-container joomla-alert .alert-heading {
@@ -184,6 +183,7 @@ html[dir=rtl] joomla-alert .joomla-alert-button--close {
       -ms-flex-pack: center;
           justify-content: center;
   padding: 0.8rem;
+  line-height: normal;
   color: var(--white);
   background: var(--alert-accent-color, var(--template-bg-dark));
   -ms-flex-line-pack: center;
@@ -237,7 +237,17 @@ html[dir=rtl] joomla-alert .joomla-alert-button--close {
 }
 #system-message-container joomla-alert[type=info], #system-message-container joomla-alert[type=notice] {
   --alert-accent-color: var(--template-bg-dark-70);
-  --alert-bg-color: var(--white);
+  --alert-bg-color: var(--body-bg);
+}
+@media (prefers-color-scheme: dark) {
+  #system-message-container joomla-alert[type=info] p, #system-message-container joomla-alert[type=notice] p {
+    color: var(--body-color);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  #system-message-container joomla-alert[type=info], #system-message-container joomla-alert[type=notice] {
+    --alert-accent-color: var(--template-bg-dark-50);
+  }
 }
 #system-message-container joomla-alert[type=warning] {
   color: #996900;
@@ -260,6 +270,7 @@ html[dir=rtl] joomla-alert .joomla-alert-button--close {
   font-size: 2rem;
   line-height: 1rem;
   color: var(--alert-accent-color);
+  text-shadow: none;
   background: none;
   border: 0;
   opacity: 1;

@@ -77,11 +77,11 @@
     <field name="type">1</field>
     <field name="published">1</field>
     <field name="email_tmpl">1</field>
-    <field name="letter_attachment"></field>
-    <field name="candidate_attachment"></field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
     <field name="category">Système</field>
     <field name="cci"></field>
-    <field name="tags"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">8</field>
@@ -111,11 +111,11 @@
     <field name="type">1</field>
     <field name="published">0</field>
     <field name="email_tmpl">1</field>
-    <field name="letter_attachment"></field>
-    <field name="candidate_attachment"></field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
     <field name="category">Système</field>
     <field name="cci"></field>
-    <field name="tags"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">9</field>
@@ -152,11 +152,11 @@
     <field name="type">1</field>
     <field name="published">1</field>
     <field name="email_tmpl">1</field>
-    <field name="letter_attachment"></field>
-    <field name="candidate_attachment"></field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
     <field name="category">Système</field>
     <field name="cci"></field>
-    <field name="tags"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">72</field>
@@ -228,11 +228,11 @@
     <field name="type">1</field>
     <field name="published">1</field>
     <field name="email_tmpl">1</field>
-    <field name="letter_attachment"></field>
-    <field name="candidate_attachment"></field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
     <field name="category">Système</field>
     <field name="cci"></field>
-    <field name="tags"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">74</field>
@@ -334,11 +334,11 @@
     <field name="type">1</field>
     <field name="published">0</field>
     <field name="email_tmpl">1</field>
-    <field name="letter_attachment"></field>
-    <field name="candidate_attachment"></field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
     <field name="category">Système</field>
     <field name="cci"></field>
-    <field name="tags"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">79</field>
@@ -354,11 +354,11 @@
     <field name="type">1</field>
     <field name="published">0</field>
     <field name="email_tmpl">1</field>
-    <field name="letter_attachment"></field>
-    <field name="candidate_attachment"></field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
     <field name="category">Système</field>
     <field name="cci"></field>
-    <field name="tags"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">81</field>
@@ -392,11 +392,27 @@
     <field name="type">1</field>
     <field name="published">0</field>
     <field name="email_tmpl">1</field>
-    <field name="letter_attachment"></field>
-    <field name="candidate_attachment"></field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
     <field name="category">Système</field>
     <field name="cci"></field>
-    <field name="tags"></field>
+    <field name="tags" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">83</field>
+    <field name="lbl">custom_2023110310100530</field>
+    <field name="subject">Refus</field>
+    <field name="emailfrom"></field>
+    <field name="message">&lt;p&gt;Bonjour &lt;span class=&quot;mention&quot; data-denotation-char=&quot;&quot; data-id=&quot;3&quot; data-value=&quot;[APPLICANT_NAME]&quot;&gt;﻿&lt;span contenteditable=&quot;false&quot;&gt;&lt;span class=&quot;ql-mention-denotation-char&quot;&gt;&lt;/span&gt;[APPLICANT_NAME]&lt;/span&gt;﻿&lt;/span&gt;,&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Nous avons le regret de vous informer que vous êtes refusé à &lt;span class=&quot;mention&quot; data-denotation-char=&quot;&quot; data-id=&quot;22&quot; data-value=&quot;[CAMPAIGN_LABEL]&quot;&gt;﻿&lt;span contenteditable=&quot;false&quot;&gt;&lt;span class=&quot;ql-mention-denotation-char&quot;&gt;&lt;/span&gt;[CAMPAIGN_LABEL]&lt;/span&gt;﻿&lt;/span&gt; &lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Bien à vous,&lt;/p&gt;&lt;p&gt;[NAME]&lt;/p&gt;</field>
+    <field name="name"></field>
+    <field name="type">2</field>
+    <field name="published">1</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
+    <field name="category">Système</field>
+    <field name="cci" value_is_null="true"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

@@ -192,6 +192,15 @@
     <field name="table_name">#__scheduler_tasks</field>
     <field name="text_prefix">PLG_ACTIONLOG_JOOMLA</field>
    </row>
+   <row>
+    <field name="id">21</field>
+    <field name="type_title">field</field>
+    <field name="type_alias">com_fields.field</field>
+    <field name="id_holder">id</field>
+    <field name="title_holder">title</field>
+    <field name="table_name">#__fields</field>
+    <field name="text_prefix">PLG_ACTIONLOG_JOOMLA</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

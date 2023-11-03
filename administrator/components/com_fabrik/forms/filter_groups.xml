@@ -33,6 +33,26 @@
 
 	<fields name="list">
 		<field
+			name="fullordering"
+			type="list"
+			label="JGLOBAL_SORT_BY"
+			default="g.name ASC"
+			onchange="this.form.submit();"
+			>
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="g.name ASC">COM_FABRIK_NAME_ASC</option>
+			<option value="g.name DESC">COM_FABRIK_NAME_DESC</option>
+			<option value="g.label ASC">COM_FABRIK_LABEL_ASC</option>
+			<option value="g.label DESC">COM_FABRIK_LABEL_DESC</option>
+			<option value="f.label ASC">COM_FABRIK_FORM_ASC</option>
+			<option value="f.label DESC">COM_FABRIK_FORM_DESC</option>
+			<option value="g.id ASC">JGRID_HEADING_ID_ASC</option>
+			<option value="g.id DESC">JGRID_HEADING_ID_DESC</option>
+			<option value="g.published ASC">JSTATUS_ASC</option>
+			<option value="g.published DESC">JSTATUS_DESC</option>
+		</field>
+
+		<field
 			name="limit"
 			type="limitbox"
 			label="JGLOBAL_LIST_LIMIT"

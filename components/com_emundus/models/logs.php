@@ -61,7 +61,7 @@ class EmundusModelLogs extends JModelList {
                 if (!in_array($action, explode(',', $log_actions_exclude))) {
                     if (!in_array($user_from, explode(',', $log_actions_exclude_user))) {
                         $db = JFactory::getDbo();
-                        $query = $db->getQuery(true);
+                        $query = $db->createQuery();
 
                         $ip = JFactory::getApplication()->input->server->get('REMOTE_ADDR','');
                         $user_to = empty($user_to) ? '' : $user_to;
@@ -69,7 +69,7 @@ class EmundusModelLogs extends JModelList {
                         $now = EmundusHelperDate::getNow();
 
                         $columns = ['timestamp', 'user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
-                        $values  = [$db->quote($now), $user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
+	                    $values  = [$db->quote($now), $db->quote($user_from), $db->quote($user_to), $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
 
                         $query->insert($db->quoteName('#__emundus_logs'))
                             ->columns($db->quoteName($columns))
@@ -193,7 +193,7 @@ class EmundusModelLogs extends JModelList {
 	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null, $limit = 100) {
 		$results = [];
         $db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
         $user_from = is_array($user_from) ? implode(',', $user_from) : $user_from;
         $action = is_array($action) ? implode(',', $action) : $action;
@@ -293,7 +293,7 @@ class EmundusModelLogs extends JModelList {
 	public function setActionDetails($action = null, $crud = null, $params = null) {
 		// Get the action label
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 		$query->select('label')
 			->from($db->quoteName('#__emundus_setup_actions'))
 			->where($db->quoteName('id').' = '.$db->quote($action));
@@ -451,7 +451,7 @@ class EmundusModelLogs extends JModelList {
     public function getUsersLogsByFnum($fnum) {
         $logs = [];
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $db->createQuery();
 
         if(!empty($fnum)) {
             $query->clear()

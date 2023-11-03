@@ -7,22 +7,13 @@ header('Content-Type: text/html; charset=utf-8');
 
 $app = Factory::getApplication();
 
-if (version_compare(JVERSION, '4.0', '>')) {
-	$config = $app->getConfig();
-	$session = $app->getSession();
-	$db = Factory::getContainer()->get('DatabaseDriver');
-	$user = $app->getIdentity();
-	$document = $app->getDocument();
-	$wa = $document->getWebAssetManager();
-	$lang_tag = $app->getLanguage()->getTag();
-} else {
-	$config = Factory::getConfig();
-	$session = Factory::getSession();
-	$db = Factory::getDbo();
-	$user = Factory::getUser();
-	$document = Factory::getDocument();
-	$lang_tag = Factory::getLanguage()->getTag();
-}
+$config = $app->getConfig();
+$session = $app->getSession();
+$db = Factory::getContainer()->get('DatabaseDriver');
+$user = $app->getIdentity();
+$document = $app->getDocument();
+$wa = $document->getWebAssetManager();
+$lang_tag = $app->getLanguage()->getTag();
 
 if ($lang_tag == "fr-FR") {
 	setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');

@@ -24,7 +24,7 @@ class Evaluations extends Files
 	    $files_associated = [];
 
         $db = JFactory::getDbo();
-	    $query = $db->getQuery(true);
+	    $query = $db->createQuery();
 
 		$read_access_file = $db->quoteName('action_id') . ' = ' . $db->quote(1) . ' AND ' . $db->quoteName('r') . ' = ' . $db->quote(1);
 		$read_access_evaluation = $db->quoteName('action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('r') . ' = ' . $db->quote(1);
@@ -132,6 +132,9 @@ class Evaluations extends Files
 			        return !empty($value);
 		        });
 
+				if (empty($eval_groups)) {
+					throw new ErrorException('COM_EMUNDUS_ERROR_NO_EVALUATION_GROUP');
+				} else {
 		        $query->clear()
 			        ->select('fe.id, fe.name, fe.label, fe.show_in_list_summary, fe.plugin, ffg.form_id')
 			        ->from($db->quoteName('#__fabrik_elements', 'fe'))
@@ -201,6 +204,7 @@ class Evaluations extends Files
 		        $final_evaluations          = [];
 		        $final_evaluations['fnums'] = $this->getFnums();
 		        $final_evaluations['all']   = $evaluations;
+				}
 	        } else {
 		        $final_evaluations          = [];
 		        $final_evaluations['fnums'] = $this->getFnums();
@@ -229,13 +233,18 @@ class Evaluations extends Files
 			parent::setColumns($eval_elements);
         } catch (Exception $e) {
             JLog::add('Problem to get files associated to user '.$this->current_user->id.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+
+			if ($e->getMessage() === 'COM_EMUNDUS_ERROR_NO_EVALUATION_GROUP') {
+				// throw the error, it has to be displayed to the user
+				throw $e;
+			}
         }
     }
 
     public function getEvaluationFormByFnum($fnum){
         try {
             $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+            $query = $db->createQuery();
 
             $query->clear()
                 ->select('distinct esp.fabrik_group_id')
@@ -266,7 +275,7 @@ class Evaluations extends Files
 	public function getMyEvaluation($fnum){
 		try {
 			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $db->createQuery();
 
 			$query->clear()
 				->select('id')

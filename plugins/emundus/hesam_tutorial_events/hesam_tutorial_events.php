@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class plgEmundusHesam_tutorial_events extends JPlugin {
+class plgEmundusHesam_tutorial_events extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	var $db;
 

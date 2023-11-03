@@ -382,6 +382,8 @@ class CategoryViewCategory extends HikaShopView {
 			}
 
 			$element = $categoryClass->get($pageInfo->filter->cid,true);
+			if(!empty($element->category_canonical))
+				$element->category_canonical = hikashop_translate($element->category_canonical);
 			$this->assignRef('element',$element);
 
 			$fieldsClass = hikashop_get('class.field');

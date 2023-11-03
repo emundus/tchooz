@@ -39,7 +39,13 @@ class FabrikAdminModelCrons extends FabModelList
 	{
 		if (empty($config['filter_fields']))
 		{
-			$config['filter_fields'] = array('c.id', 'c.label', 'p.published');
+			$config['filter_fields'] = [
+				'c.id', 'id', 
+				'c.label', 'label', 
+				'c.published', 'published',
+				'c.frequency', 'frequency',
+				'c.lastrun', 'lastrun',
+			];
 		}
 
 		parent::__construct($config);
@@ -63,6 +69,8 @@ class FabrikAdminModelCrons extends FabModelList
 		// Join over the users for the checked out user.
 		$query->select('u.name AS editor');
 		$query->join('LEFT', '#__users AS u ON checked_out = u.id');
+
+		// calculate the frequency in seconds
 
 		// Filter by published state
 		$published = $this->getState('filter.published');

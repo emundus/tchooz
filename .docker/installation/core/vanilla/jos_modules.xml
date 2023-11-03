@@ -36,10 +36,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">sidebar-right</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_menu</field>
     <field name="access">1</field>
@@ -56,10 +56,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">login</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_login</field>
     <field name="access">1</field>
@@ -76,11 +76,11 @@
     <field name="content"></field>
     <field name="ordering">6</field>
     <field name="position">cpanel</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
     <field name="module">mod_popular</field>
     <field name="access">3</field>
     <field name="showtitle">1</field>
@@ -96,11 +96,11 @@
     <field name="content"></field>
     <field name="ordering">4</field>
     <field name="position">cpanel</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
     <field name="module">mod_latest</field>
     <field name="access">3</field>
     <field name="showtitle">1</field>
@@ -116,10 +116,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">toolbar</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_toolbar</field>
     <field name="access">3</field>
@@ -136,10 +136,10 @@
     <field name="content"></field>
     <field name="ordering">3</field>
     <field name="position">icon</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_quickicon</field>
     <field name="access">3</field>
@@ -156,11 +156,11 @@
     <field name="content"></field>
     <field name="ordering">2</field>
     <field name="position">cpanel</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
     <field name="module">mod_logged</field>
     <field name="access">3</field>
     <field name="showtitle">1</field>
@@ -176,10 +176,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">menu</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_menu</field>
     <field name="access">3</field>
@@ -196,10 +196,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">title</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_title</field>
     <field name="access">3</field>
@@ -216,10 +216,10 @@
     <field name="content"></field>
     <field name="ordering">7</field>
     <field name="position">sidebar-right</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_login</field>
     <field name="access">1</field>
@@ -236,10 +236,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">breadcrumbs</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_breadcrumbs</field>
     <field name="access">1</field>
@@ -256,10 +256,10 @@
     <field name="content"></field>
     <field name="ordering">2</field>
     <field name="position">status</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_multilangstatus</field>
     <field name="access">3</field>
@@ -276,10 +276,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">status</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_version</field>
     <field name="access">3</field>
@@ -296,10 +296,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">cpanel</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_sampledata</field>
     <field name="access">6</field>
@@ -316,11 +316,11 @@
     <field name="content"></field>
     <field name="ordering">3</field>
     <field name="position">cpanel</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
     <field name="module">mod_latestactions</field>
     <field name="access">6</field>
     <field name="showtitle">1</field>
@@ -336,11 +336,11 @@
     <field name="content"></field>
     <field name="ordering">5</field>
     <field name="position">cpanel</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
     <field name="module">mod_privacy_dashboard</field>
     <field name="access">6</field>
     <field name="showtitle">1</field>
@@ -356,10 +356,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">sidebar</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_loginsupport</field>
     <field name="access">1</field>
@@ -376,10 +376,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">cpanel-system</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_submenu</field>
     <field name="access">1</field>
@@ -396,10 +396,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">cpanel-content</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_submenu</field>
     <field name="access">1</field>
@@ -416,10 +416,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">cpanel-menus</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_submenu</field>
     <field name="access">1</field>
@@ -436,10 +436,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">cpanel-components</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_submenu</field>
     <field name="access">1</field>
@@ -456,10 +456,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">cpanel-users</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_submenu</field>
     <field name="access">1</field>
@@ -476,10 +476,10 @@
     <field name="content"></field>
     <field name="ordering">3</field>
     <field name="position">cpanel-content</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_popular</field>
     <field name="access">3</field>
@@ -496,10 +496,10 @@
     <field name="content"></field>
     <field name="ordering">4</field>
     <field name="position">cpanel-content</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_latest</field>
     <field name="access">3</field>
@@ -516,10 +516,10 @@
     <field name="content"></field>
     <field name="ordering">2</field>
     <field name="position">cpanel-users</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_logged</field>
     <field name="access">3</field>
@@ -536,10 +536,10 @@
     <field name="content"></field>
     <field name="ordering">5</field>
     <field name="position">status</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_frontend</field>
     <field name="access">1</field>
@@ -556,10 +556,10 @@
     <field name="content"></field>
     <field name="ordering">4</field>
     <field name="position">status</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_messages</field>
     <field name="access">3</field>
@@ -576,10 +576,10 @@
     <field name="content"></field>
     <field name="ordering">3</field>
     <field name="position">status</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_post_installation_messages</field>
     <field name="access">3</field>
@@ -596,10 +596,10 @@
     <field name="content"></field>
     <field name="ordering">6</field>
     <field name="position">status</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_user</field>
     <field name="access">3</field>
@@ -616,35 +616,35 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">icon</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_quickicon</field>
     <field name="access">1</field>
     <field name="showtitle">1</field>
-    <field name="params">{&quot;context&quot;:&quot;site_quickicon&quot;,&quot;header_icon&quot;:&quot;icon-desktop&quot;,&quot;show_global&quot;:&quot;0&quot;,&quot;show_checkin&quot;:&quot;0&quot;,&quot;show_cache&quot;:&quot;0&quot;,&quot;show_users&quot;:&quot;1&quot;,&quot;show_articles&quot;:&quot;1&quot;,&quot;show_featured&quot;:&quot;0&quot;,&quot;show_menuitems&quot;:&quot;0&quot;,&quot;show_workflow&quot;:&quot;0&quot;,&quot;show_banners&quot;:&quot;0&quot;,&quot;show_finder&quot;:&quot;0&quot;,&quot;show_newsfeeds&quot;:&quot;0&quot;,&quot;show_tags&quot;:&quot;0&quot;,&quot;show_redirect&quot;:&quot;0&quot;,&quot;show_associations&quot;:&quot;0&quot;,&quot;show_languages&quot;:&quot;0&quot;,&quot;show_modules&quot;:&quot;1&quot;,&quot;show_contact&quot;:&quot;0&quot;,&quot;show_categories&quot;:&quot;1&quot;,&quot;show_media&quot;:&quot;1&quot;,&quot;show_plugins&quot;:&quot;1&quot;,&quot;show_template_styles&quot;:&quot;0&quot;,&quot;show_template_code&quot;:&quot;0&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;context&quot;:&quot;mod_quickicon&quot;,&quot;header_icon&quot;:&quot;icon-desktop&quot;,&quot;show_global&quot;:&quot;0&quot;,&quot;show_checkin&quot;:&quot;0&quot;,&quot;show_cache&quot;:&quot;0&quot;,&quot;show_users&quot;:&quot;1&quot;,&quot;show_articles&quot;:&quot;0&quot;,&quot;show_featured&quot;:&quot;0&quot;,&quot;show_menuitems&quot;:&quot;0&quot;,&quot;show_workflow&quot;:&quot;0&quot;,&quot;show_banners&quot;:&quot;0&quot;,&quot;show_finder&quot;:&quot;0&quot;,&quot;show_newsfeeds&quot;:&quot;0&quot;,&quot;show_tags&quot;:&quot;0&quot;,&quot;show_redirect&quot;:&quot;0&quot;,&quot;show_associations&quot;:&quot;0&quot;,&quot;show_languages&quot;:&quot;0&quot;,&quot;show_modules&quot;:&quot;1&quot;,&quot;show_contact&quot;:&quot;0&quot;,&quot;show_categories&quot;:&quot;0&quot;,&quot;show_media&quot;:&quot;1&quot;,&quot;show_plugins&quot;:&quot;1&quot;,&quot;show_template_styles&quot;:&quot;0&quot;,&quot;show_template_code&quot;:&quot;0&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">1</field>
     <field name="language">*</field>
    </row>
    <row>
     <field name="id">104</field>
     <field name="asset_id">71</field>
-    <field name="title">System</field>
+    <field name="title">Système</field>
     <field name="note"></field>
     <field name="content"></field>
     <field name="ordering">2</field>
     <field name="position">icon</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_quickicon</field>
     <field name="access">1</field>
     <field name="showtitle">1</field>
-    <field name="params">{&quot;context&quot;:&quot;system_quickicon&quot;,&quot;header_icon&quot;:&quot;icon-wrench&quot;,&quot;show_global&quot;:&quot;1&quot;,&quot;show_checkin&quot;:&quot;1&quot;,&quot;show_cache&quot;:&quot;1&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;style&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;}</field>
+    <field name="params">{&quot;context&quot;:&quot;system_quickicon&quot;,&quot;header_icon&quot;:&quot;icon-wrench&quot;,&quot;show_global&quot;:&quot;1&quot;,&quot;show_checkin&quot;:&quot;1&quot;,&quot;show_cache&quot;:&quot;1&quot;,&quot;show_users&quot;:&quot;0&quot;,&quot;show_articles&quot;:&quot;0&quot;,&quot;show_featured&quot;:&quot;0&quot;,&quot;show_menuitems&quot;:&quot;0&quot;,&quot;show_workflow&quot;:&quot;0&quot;,&quot;show_banners&quot;:&quot;0&quot;,&quot;show_finder&quot;:&quot;0&quot;,&quot;show_newsfeeds&quot;:&quot;0&quot;,&quot;show_tags&quot;:&quot;0&quot;,&quot;show_redirect&quot;:&quot;0&quot;,&quot;show_associations&quot;:&quot;0&quot;,&quot;show_languages&quot;:&quot;0&quot;,&quot;show_modules&quot;:&quot;0&quot;,&quot;show_contact&quot;:&quot;0&quot;,&quot;show_categories&quot;:&quot;0&quot;,&quot;show_media&quot;:&quot;0&quot;,&quot;show_plugins&quot;:&quot;0&quot;,&quot;show_template_styles&quot;:&quot;0&quot;,&quot;show_template_code&quot;:&quot;0&quot;,&quot;layout&quot;:&quot;_:default&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;cache&quot;:1,&quot;cache_time&quot;:900,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;12&quot;,&quot;header_tag&quot;:&quot;h2&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">1</field>
     <field name="language">*</field>
    </row>
@@ -656,11 +656,11 @@
     <field name="content"></field>
     <field name="ordering">4</field>
     <field name="position">icon</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
-    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
     <field name="module">mod_quickicon</field>
     <field name="access">1</field>
     <field name="showtitle">1</field>
@@ -676,10 +676,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">cpanel-help</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_submenu</field>
     <field name="access">1</field>
@@ -696,10 +696,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">cpanel-privacy</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_privacy_dashboard</field>
     <field name="access">1</field>
@@ -716,10 +716,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">cpanel-privacy</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_privacy_status</field>
     <field name="access">1</field>
@@ -736,11 +736,11 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">header-c</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-04-24 09:52:32</field>
-    <field name="publish_down"></field>
-    <field name="published">1</field>
+    <field name="publish_down">2026-11-25 14:20:24</field>
+    <field name="published">0</field>
     <field name="module">mod_falang</field>
     <field name="access">1</field>
     <field name="showtitle">0</field>
@@ -756,11 +756,11 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">bottom-c</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-04-24 09:53:04</field>
-    <field name="publish_down"></field>
-    <field name="published">1</field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">0</field>
     <field name="module">mod_emundus_help</field>
     <field name="access">7</field>
     <field name="showtitle">0</field>
@@ -776,10 +776,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">content-bottom-a</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-04-24 09:53:01</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_dashboard_vue</field>
     <field name="access">7</field>
@@ -796,10 +796,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">content-bottom-a</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-04-24 09:38:59</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_campaign</field>
     <field name="access">9</field>
@@ -816,10 +816,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">content-bottom-a</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-04-24 09:53:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_campaign</field>
     <field name="access">9</field>
@@ -836,10 +836,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">content-bottom-a</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_applications</field>
     <field name="access">11</field>
@@ -856,10 +856,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">header-c</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-04-24 09:57:26</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_user_dropdown</field>
     <field name="access">1</field>
@@ -876,10 +876,10 @@
     <field name="content">&lt;p&gt;&lt;a href=&quot;index.php&quot;&gt;&lt;img class=&quot;logo&quot; src=&quot;images/custom/logo.png&quot; alt=&quot;Logo de la plateforme&quot; width=&quot;250&quot; height=&quot;43&quot; /&gt;&lt;/a&gt;&lt;/p&gt;</field>
     <field name="ordering">1</field>
     <field name="position">header-a</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_custom</field>
     <field name="access">1</field>
@@ -896,10 +896,10 @@
     <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button em-pointer&quot; href=&quot;http://localhost:8383/&quot;&gt;&lt;span class=&quot;material-icons em-mr-4&quot;&gt;navigate_before&lt;/span&gt;Retour à la page d'accueil&lt;/a&gt;&lt;/p&gt;</field>
     <field name="ordering">1</field>
     <field name="position">header-a</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_custom</field>
     <field name="access">9</field>
@@ -916,10 +916,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">header-b</field>
-    <field name="checked_out">1</field>
-    <field name="checked_out_time">2023-09-27 12:40:46</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-04-24 13:32:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundusmenu</field>
     <field name="access">11</field>
@@ -936,10 +936,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">content-bottom-a</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_campaign</field>
     <field name="access">2</field>
@@ -956,10 +956,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">footer-a</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_footer</field>
     <field name="access">1</field>
@@ -976,10 +976,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">content-top-a</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_profile</field>
     <field name="access">2</field>
@@ -996,10 +996,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">content-bottom-a</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-04-24 09:53:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_campaign</field>
     <field name="access">2</field>
@@ -1016,10 +1016,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">drawer</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-09-28 16:03:39</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundusflow</field>
     <field name="access">2</field>
@@ -1036,10 +1036,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">sidebar-a</field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-09-28 14:42:44</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_emundus_checklist</field>
     <field name="access">2</field>
@@ -1056,10 +1056,10 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position"></field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">0</field>
     <field name="module">mod_dropfiles_search</field>
     <field name="access">1</field>
@@ -1076,10 +1076,10 @@
     <field name="content"></field>
     <field name="ordering">2</field>
     <field name="position"></field>
-    <field name="checked_out"></field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="published">0</field>
     <field name="module">mod_dropfiles_latest</field>
     <field name="access">1</field>

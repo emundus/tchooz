@@ -1591,7 +1591,13 @@ class PlgFabrik_Element extends FabrikPlugin
 			 * isn't a new form.  Probaby needs to be a global option, although not entirely sure what
 			 * we would set it to ...
 			 */
-			$values = FArrayHelper::getValue($data, $name, $default);
+			 //Fix: don't apply the default if a rowid is set and >=1 (= existing record)
+			 if (array_key_exists('rowid',$data) && !empty($data['rowid'])) {
+				 $values = FArrayHelper::getValue($data, $name);
+			 }
+			 else {
+				 $values = FArrayHelper::getValue($data, $name, $default);
+			 }
 
 			// Querystring override (seems on http://fabrikar.com/subscribe/form/22 querystring var was not being set into $data)
 			if (FArrayHelper::getValue($opts, 'use_querystring', false))

@@ -199,6 +199,12 @@ class plgUserEmundus extends CMSPlugin
 	 */
 	public function onUserAfterSave($user, $isnew, $success, $msg)
 	{
+		$app = Factory::getApplication();
+		// The method check here ensures that if running as a CLI Application we don't get any errors
+		if (method_exists($app, 'isClient') && ($app->isClient('site') || $app->isClient('cli'))) {
+			return;
+		}
+
 		$input      = $this->app->input;
 		$details    = $input->post->get('jform', null, 'none');
 		$fabrik     = $input->post->get('listid', null);

@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopMassaction_product extends JPlugin
+class plgHikashopMassaction_product extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	public $message = '';
 	public $massaction = null;
@@ -314,6 +314,7 @@ class plgHikashopMassaction_product extends JPlugin
 				$query->leftjoin['characteristic'.$num] = hikashop_table('characteristic').' AS hk_characteristic'.$num.' ON hk_characteristic'.$num.'.characteristic_id = hk_variant'.$num.'.variant_characteristic_id';
 				$query->leftjoin['characteristic_parent'.$num] = hikashop_table('characteristic').' AS hk_characteristic_parent'.$num.' ON hk_characteristic'.$num.'.characteristic_parent_id = hk_characteristic_parent'.$num.'.characteristic_id';
 				if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+					$filter['type'] = str_replace('.','', $filter['type']);
 					$rquery = str_replace('`'.$filter['type'].'`','',$this->massaction->getRequest($filter));
 					$query->where[] = 'hk_characteristic'.$num.'.characteristic_value '.$rquery.' AND hk_characteristic_parent'.$num.'.characteristic_value = '.$db->quote($filter['type']).'';
 				}

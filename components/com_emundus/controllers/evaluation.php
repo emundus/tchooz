@@ -23,7 +23,6 @@ use Joomla\CMS\Factory;
  */
 class EmundusControllerEvaluation extends JControllerLegacy
 {
-	protected $app;
     private $_user;
 	private $_db;
 	private $_session;
@@ -38,17 +37,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
-		$this->app = Factory::getApplication();
-	    if (version_compare(JVERSION, '4.0', '>')) {
-		    $this->_db = Factory::getContainer()->get('DatabaseDriver');
-			$this->_user = $this->app->getIdentity();
-			$this->_session = $this->app->getSession();
-	    }
-	    else {
-		    $this->_db = Factory::getDBO();
-			$this->_user = Factory::getUser();
-			$this->_session = Factory::getSession();
-		}
+		$this->_db = Factory::getContainer()->get('DatabaseDriver');
+		$this->_user = $this->app->getIdentity();
+		$this->_session = $this->app->getSession();
 
         parent::__construct($config);
     }
@@ -1064,7 +1055,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
     public function getfnums_csv() {
         
-        $fnums = $this->input->getVar('fnums', null);
+        $fnums = $this->input->get('fnums', null);
         $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
         $m_files = $this->getModel('Files');
 

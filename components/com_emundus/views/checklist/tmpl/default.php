@@ -5,22 +5,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 
 $app = Factory::getApplication();
-if (version_compare(JVERSION, '4.0', '>'))
-{
-	$document = $app->getDocument();
-	$wa = $document->getWebAssetManager();
-	$wa->registerAndUseScript('com_emundus.checklist.swal', 'https://cdn.jsdelivr.net/npm/sweetalert2@8', [], ['version' => 'auto', 'relative' => true]);
-	$session = $app->getSession();
-	$_db = Factory::getContainer()->get('DatabaseDriver');
-	$user = $app->getIdentity();
-} else {
-	$document = Factory::getDocument();
-	$document->addScript("https://cdn.jsdelivr.net/npm/sweetalert2@8");
-    $session = Factory::getSession();
-	$_db = Factory::getDBO();
-	$user = Factory::getUser();
-}
-
+$sesdion = $app->getSession();
+$_db = Factory::getContainer()->get('DatabaseDriver');
+$user = $app->getIdentity();
 $chemin = EMUNDUS_PATH_REL;
 
 $itemid = $app->input->get('Itemid', null);
@@ -59,10 +46,13 @@ if (!empty($this->current_phase) && !empty($this->current_phase->entry_status)) 
 		$status_for_send[] = $status;
 	}
 }
-$is_app_sent = !in_array($this->user->status, $status_for_send);
+$is_app_sent = !in_array($this->_user->status, $status_for_send);
 
 $block_upload = true;
-if ($can_edit_after_deadline || (!$is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $this->isLimitObtained !== true) || in_array($this->user->id, $applicants) || ($is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $can_edit_until_deadline && $this->isLimitObtained !== true)) {
+if ($can_edit_after_deadline ||
+    (!$is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $this->isLimitObtained !== true) || 
+    in_array($this->_user->id, $applicants) || 
+    ($is_app_sent && $this->is_campaign_started && !$this->is_dead_line_passed && $can_edit_until_deadline && $this->isLimitObtained !== true)) {
 	$block_upload = false;
 }
 
@@ -164,11 +154,18 @@ if (!empty($this->custom_title)) :?>
                 $div .= '<span class="material-icons-outlined em-green-500-color em-mr-4">check_circle</span>';
 		}
 		$div .= '<h4 class="em-mt-0-important">'.$attachment->value .'</h4>';
-            $div .= '</div><p class="em-ml-8 em-mt-8" style="white-space: pre-line">'.$attachment->description .'</p><div>';
+
+            $div .= '</div>';
+
+	        if(!empty($attachment->description)) {
+		        $div .= '<p class="em-ml-8 em-mt-8" style="white-space: pre-line">' . $attachment->description . '</p>';
+	        }
+
+            $div .= '<div>';
 
 		if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
-			$div .= '<div class="em-ml-8 em-mb-8 em-flex-row">
-                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="em-flex-row" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span class="em-ml-4"> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
+			$div .= '<div class="em-ml-8 em-mb-8 em-flex-row attachment_model">
+                            <span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="em-flex-row" href="'.JUri::root() . $attachment->sample_filepath.'" target="_blank"> <span> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
                          </div>';
 		}
 
@@ -182,7 +179,7 @@ if (!empty($this->custom_title)) :?>
 				} else {
 					$div .= JText::_('COM_EMUNDUS_ONBOARD_TYPE_FILE') . ' ' . $nb;
 				}
-				$div .= ' | <span style="font-size: 13px">' . ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2")) . '</span>';
+                    $div .= ' | <span style="font-size: 13px">' . JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2")) . '</span>';
 				if ($this->show_shortdesc_input) {
 					$div .= ' | ';
 					$div .= empty($item->description)?JText::_('COM_EMUNDUS_ATTACHMENTS_NO_DESC'):$item->description;
@@ -191,7 +188,7 @@ if (!empty($this->custom_title)) :?>
 				$div .= '<tr class="em-added-files">
                     <td class="em-flex-row">';
 				if ($item->can_be_viewed == 1) {
-		                $div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
+		                $div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="'.$chemin.$this->_user->id .'/'.$item->filename .'" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
 				} else {
 					$div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
 				}
@@ -208,7 +205,7 @@ if (!empty($this->custom_title)) :?>
 		// Disable upload UI if
 		if (!$block_upload) {
 
-			if ($attachment->nb < $attachment->nbmax || $this->user->profile <= 4) {
+			if ($attachment->nb < $attachment->nbmax || $this->_user->profile <= 4) {
 				$div .= '
                 <tr>
                     <td>';
@@ -232,7 +229,7 @@ if (!empty($this->custom_title)) :?>
                         size: '.$addpipe_size.',
                         qualityurl: "'.$addpipe_qualityurl.'", 
                         accountHash:"'.$addpipe_account_hash.'", 
-                        payload:"{\"userId\":\"'.$this->user->id.'\",\"fnum\":\"'.$this->user->fnum.'\",\"aid\":\"'.$attachment->id.'\",\"lbl\":\"'.$attachment->lbl.'\",\"jobId\":\"'.$this->user->fnum.'|'.$attachment->id.'|'.date("Y-m-d_H:i:s").'\"}", 
+                        payload:"{\"userId\":\"'.$this->_user->id.'\",\"fnum\":\"'.$this->_user->fnum.'\",\"aid\":\"'.$attachment->id.'\",\"lbl\":\"'.$attachment->lbl.'\",\"jobId\":\"'.$this->_user->fnum.'|'.$attachment->id.'|'.date("Y-m-d_H:i:s").'\"}", 
                         eid:"'.$addpipe_eid.'", 
                         showMenu:'.$addpipe_showmenu.', 
                         mrt:'.(!empty($attachment->video_max_length) ? $attachment->video_max_length : $addpipe_mrt).',
@@ -320,7 +317,7 @@ if (!empty($this->custom_title)) :?>
                 
                             //reload page
                             recorderInserted.remove();
-                            is_file_uploaded("'.$this->user->fnum.'","'.$attachment->id.'","'.$this->user->id.'");
+                            is_file_uploaded("'.$this->_user->fnum.'","'.$attachment->id.'","'.$this->_user->id.'");
                         }
             
                         //DESKTOP UPLOAD EVENTS API
@@ -340,7 +337,7 @@ if (!empty($this->custom_title)) :?>
                 
                             //reload page
                             recorderInserted.remove();
-                            is_file_uploaded('.$this->user->fnum.','.$attachment->id.','.$this->user->id.');
+                            is_file_uploaded('.$this->_user->fnum.','.$attachment->id.','.$this->_user->id.');
                         }
             
                         recorderInserted.onDesktopVideoUploadFailed = function(id, error){
@@ -360,7 +357,7 @@ if (!empty($this->custom_title)) :?>
                 
                             //reload page
                             recorderInserted.remove();
-                            is_file_uploaded("'.$this->user->fnum.'","'.$attachment->id.'","'.$this->user->id.'");
+                            is_file_uploaded("'.$this->_user->fnum.'","'.$attachment->id.'","'.$this->_user->id.'");
                         }
             
                         recorderInserted.onVideoUploadProgress = function(recorderId, percent){
@@ -597,12 +594,6 @@ if (!empty($this->custom_title)) :?>
 
 				$div .= '</tr>';
 			} else {
-				/*$div .= '
-			<tr class="em-no-more-files">
-				<td>
-				<span class="em-red-500-color">'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').'</span>
-				</td>
-			</tr>';*/
 
 				$div .= '</tbody>';
 			}
@@ -673,10 +664,10 @@ if (!empty($this->custom_title)) :?>
             </div>
         </div>
     </div>
-	<?php endif; ?>
 </div>
 
 <script>
+    var $ = jQuery.noConflict();
     $(document).on('change', '.btn-file :file', function() {
         var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
@@ -717,27 +708,6 @@ if (!empty($this->custom_title)) :?>
             }
         }
     }
-    /*
-<?php foreach($this->attachments as $attachment) { ?>
-  document.getElementById('<?= $attachment->id; ?>').style.visibility='<?= ($attachment->mandatory && $attachment->nb==0)?'visible':'hidden'; ?>';
-  document.getElementById('<?= $attachment->id; ?>').style.display='<?= ($attachment->mandatory && $attachment->nb==0)?'block':'none'; ?>';
-<?php } ?>
-
-function OnSubmitForm() {
-    var btn = document.getElementsByName(document.pressed);
-    for(i=0 ; i<btn.length ; i++) {
-        btn[i].disabled="disabled";
-        btn[i].value="<?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENDING_ATTACHMENT'); ?>";
-    }
-    switch(document.pressed) {
-        case 'sendAttachment':
-            document.checklistForm.action ="index.php?option=com_emundus&task=upload&Itemid=<?= $itemid; ?>";
-        break;
-        default: return false;
-    }
-    return true;
-}
-*/
 
     function OnSubmitForm() {
         var btn = document.getElementsByName(document.pressed);
@@ -755,13 +725,6 @@ function OnSubmitForm() {
         }
         return true;
     }
-
-
-
-    /*var hash = window.location.hash;
-	if (hash != '') {
-		$(hash).addClass("ui warning message");
-	}*/
 
     function processSelectedFiles(fileInput) {
         var files = fileInput.files;
@@ -925,3 +888,11 @@ function OnSubmitForm() {
     }
 
 </script>
+
+<?php else: ?>
+<div id="attachment_list" class="em-attachmentList em-repeat-card em-w-100">
+    <h3><?= JText::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM') ?></h3>
+    <p class="em-mt-16"><?= JText::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM_DESC') ?></p>
+</div>
+<?php endif; ?>
+

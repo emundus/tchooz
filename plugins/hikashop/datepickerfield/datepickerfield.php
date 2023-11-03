@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopDatepickerfield extends JPlugin
+class plgHikashopDatepickerfield extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	public function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
