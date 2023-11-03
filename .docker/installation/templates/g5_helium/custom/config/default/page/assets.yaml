@@ -33,7 +33,7 @@ css:
     name: Fontawesome
 javascript:
   -
-    location: 'https://cdn.jsdelivr.net/npm/sweetalert2@8'
+    location: media/com_emundus/js/lib/sweetalert/sweetalert.min.js
     inline: ''
     in_footer: '0'
     extra: {  }

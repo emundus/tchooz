@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseInterface;
 
-class plgEmundusSetup_category extends JPlugin {
+class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	private $app;
 	private $db;

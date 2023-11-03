@@ -19,7 +19,7 @@ jimport('joomla.plugin.plugin');
  * @subpackage  User.emundus
  * @since       3.8.13
  */
-class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
+class plgAuthenticationEmundus_Oauth2_cci extends \Joomla\CMS\Plugin\CMSPlugin {
 
 
 	/**

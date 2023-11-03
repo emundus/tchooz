@@ -88,7 +88,7 @@
    <row>
     <field name="id">15</field>
     <field name="form_id">374</field>
-    <field name="profile_id"></field>
+    <field name="profile_id" value_is_null="true"></field>
     <field name="created">2022-02-18 16:02:17</field>
     <field name="type">profile</field>
     <field name="published">1</field>

@@ -16,7 +16,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-class PlgHikashopEmundus_hikashop extends JPlugin {
+class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
 
     function __construct(&$subject, $config) {
         jimport('joomla.log.log');

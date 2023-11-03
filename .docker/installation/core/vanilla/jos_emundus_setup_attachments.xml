@@ -42,13 +42,13 @@
     <field name="published">1</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -65,13 +65,13 @@
     <field name="published">1</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -88,13 +88,13 @@
     <field name="published">1</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -111,13 +111,13 @@
     <field name="published">0</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -134,13 +134,13 @@
     <field name="published">0</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -157,13 +157,13 @@
     <field name="published">1</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -203,13 +203,13 @@
     <field name="published">1</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -231,8 +231,8 @@
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -249,13 +249,13 @@
     <field name="published">0</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -272,13 +272,13 @@
     <field name="published">0</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -295,13 +295,13 @@
     <field name="published">0</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -318,13 +318,13 @@
     <field name="published">0</field>
     <field name="ocr_keywords"></field>
     <field name="category"></field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -341,13 +341,13 @@
     <field name="published">1</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -364,13 +364,13 @@
     <field name="published">0</field>
     <field name="ocr_keywords"></field>
     <field name="category">1</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>
@@ -387,13 +387,13 @@
     <field name="published">0</field>
     <field name="ocr_keywords"></field>
     <field name="category">2</field>
-    <field name="video_max_length"></field>
+    <field name="video_max_length" value_is_null="true"></field>
     <field name="min_width"></field>
     <field name="max_width"></field>
     <field name="min_height"></field>
     <field name="max_height"></field>
-    <field name="min_pages_pdf"></field>
-    <field name="max_pages_pdf"></field>
+    <field name="min_pages_pdf" value_is_null="true"></field>
+    <field name="max_pages_pdf" value_is_null="true"></field>
     <field name="default_attachment">0</field>
     <field name="sync">0</field>
     <field name="sync_method"></field>

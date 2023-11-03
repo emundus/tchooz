@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 
-class plgButtonHikashopproduct extends JPlugin
+class plgButtonHikashopproduct extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	public function __construct(& $subject, $config)
 	{

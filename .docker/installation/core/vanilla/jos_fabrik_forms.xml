@@ -34,14 +34,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2010-09-19 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2010-09-27 11:33:26</field>
     <field name="modified_by">62</field>
-    <field name="checked_out">62</field>
-    <field name="checked_out_time">2023-02-09 10:18:07</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2010-09-22 23:33:45</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -57,14 +57,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2010-09-22 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2012-02-14 14:14:47</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2010-09-22 02:00:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template"></field>
@@ -80,14 +80,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2010-10-09 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2009-10-08 07:41:57</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2010-04-16 16:35:43</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -103,14 +103,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2010-10-14 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2010-10-28 13:33:28</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2010-04-16 14:35:28</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -126,14 +126,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2010-06-28 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2010-10-11 10:52:34</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2010-06-28 16:49:14</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -149,14 +149,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2010-07-13 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2010-12-08 15:35:12</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2010-09-27 19:40:47</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -172,14 +172,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2010-07-22 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2012-02-16 09:54:21</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2010-07-22 16:41:01</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SEND</field>
     <field name="form_template">emundus</field>
@@ -195,14 +195,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2010-07-23 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2012-05-22 13:00:30</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2010-07-23 20:00:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">Upload</field>
     <field name="form_template">emundus</field>
@@ -218,14 +218,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2010-09-27 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2010-10-11 10:53:11</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2010-09-29 20:02:45</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -241,14 +241,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2010-12-02 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2010-12-02 10:53:19</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2010-12-02 12:49:39</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -264,14 +264,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2011-01-21 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2011-01-28 18:08:19</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2011-01-21 18:12:32</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -287,14 +287,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2011-09-28 12:50:10</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2017-06-21 08:30:03</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -310,14 +310,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2012-01-10 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2012-07-16 10:03:31</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2012-01-12 14:53:33</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">Sauvegarder</field>
     <field name="form_template">emundus</field>
@@ -333,14 +333,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2012-06-20 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2012-06-20 12:56:40</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2012-06-20 16:56:22</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -356,14 +356,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2013-04-09 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
-    <field name="checked_out">62</field>
-    <field name="checked_out_time">2023-03-29 15:05:39</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2017-06-17 20:15:23</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -379,14 +379,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro">&lt;p&gt;SETUP_PERIODS_HEADER&lt;/p&gt;</field>
     <field name="created">2013-04-09 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2020-10-02 13:05:35</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -402,14 +402,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro">&lt;p&gt;SETUP_LETTERS_INTRO&lt;/p&gt;</field>
     <field name="created">2013-05-16 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2021-10-28 00:00:00</field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2021-10-25 08:23:08</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -425,14 +425,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2013-06-21 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -450,14 +450,14 @@
 &lt;p&gt;Vous devez, avant de pouvoir accéder au dossier complet, renvoyer l’engagement de confidentialité (en pièce jointe du mail) , que vous aurez au préalable signé et scanné.&lt;br /&gt; Vous recevrez alors un email vous attribuant &lt;strong&gt;un identifiant et un mot de passe&lt;/strong&gt; qui vous permettront de vous connecter à la plateforme à tout moment.&lt;/p&gt;
 &lt;p&gt;&lt;a href=&quot;images/emundus/letters/engagement_de_confidentialité_2014-10-20_15-49-30.docx&quot;&gt;&amp;nbsp;Télécharger le document d'accord de confidentialité&lt;/a&gt;&lt;/p&gt;</field>
     <field name="created">2010-07-23 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2012-05-22 13:00:30</field>
     <field name="modified_by">62</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2010-07-23 14:41:31</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SEND</field>
     <field name="form_template">emundus</field>
@@ -473,14 +473,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2014-06-24 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -497,14 +497,14 @@
     <field name="intro">&lt;h3&gt;Bienvenue sur la plate-forme de gestion des appels à projets. Merci d’avoir accepté de réaliser une expertise.&lt;/h3&gt;
 &lt;p&gt;Vous devez, avant de pouvoir accéder au dossier complet,valider ce formulaire qui vous engage à respecter l'accord de confidentialité.&lt;br /&gt; Vous recevrez alors un email vous attribuant &lt;strong&gt;un identifiant et un mot de passe&lt;/strong&gt; qui vous permettront de vous connecter à la plateforme à tout moment.&lt;/p&gt;</field>
     <field name="created">2014-10-20 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SUBMIT</field>
     <field name="form_template">emundus</field>
@@ -520,14 +520,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2015-03-06 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -543,14 +543,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro">&lt;p&gt;FORM_LANGUAGE_PROFICIENCY_HEADER&lt;/p&gt;</field>
     <field name="created">2016-12-01 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2019-07-18 03:20:18</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Reset</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -566,14 +566,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro">&lt;p&gt;FORM_REFERENCES_HEADER&lt;/p&gt;</field>
     <field name="created">2016-12-01 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
-    <field name="checked_out">62</field>
-    <field name="checked_out_time">2023-06-20 13:36:24</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2019-07-18 05:44:04</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Reset</field>
     <field name="submit_button_label">Send the request for individual assessment</field>
     <field name="form_template">emundus</field>
@@ -589,14 +589,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2016-12-01 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2020-05-04 13:36:12</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Reset</field>
     <field name="submit_button_label">SUBMIT</field>
     <field name="form_template">emundus</field>
@@ -612,14 +612,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2017-01-24 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Reset</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -635,14 +635,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2017-01-24 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Reset</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -658,14 +658,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro">&lt;p&gt;FORM_ADDITIONAL_QUESTIONS_INTRO&lt;/p&gt;</field>
     <field name="created">2017-06-05 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2019-07-18 02:37:45</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -681,14 +681,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2017-06-05 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2021-05-03 17:57:44</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -704,14 +704,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2017-06-27 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2021-09-06 16:27:05</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -727,14 +727,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2017-11-22 15:56:26</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2022-10-19 10:24:00</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -750,14 +750,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2017-11-28 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2021-02-02 09:05:46</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -773,14 +773,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2018-04-16 10:21:44</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
     <field name="checked_out_time">0000-00-00 00:00:00</field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -796,14 +796,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro">&lt;p&gt;FORM_PERSONAL_DETAILS_HEADER&lt;/p&gt;</field>
     <field name="created">2018-07-12 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2018-09-16 20:43:45</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -819,14 +819,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2018-07-18 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2020-06-10 13:34:55</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SUBMIT</field>
     <field name="form_template">emundus</field>
@@ -842,14 +842,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2018-10-31 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -865,14 +865,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2019-03-21 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -888,14 +888,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2019-03-27 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2020-09-17 09:37:04</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">Register</field>
     <field name="form_template">emundus</field>
@@ -911,14 +911,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2019-04-09 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">Importation</field>
     <field name="form_template">emundus</field>
@@ -934,14 +934,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro">&lt;p&gt;FORM_EDUCATION_RECORDS_INTRO&lt;/p&gt;</field>
     <field name="created">2019-07-17 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2021-12-01 15:45:17</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -957,14 +957,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro">&lt;p&gt;PROFESSIONAL_EXPERIENCE_INTRO&lt;/p&gt;</field>
     <field name="created">2019-07-17 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2021-12-01 15:46:17</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -980,14 +980,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro">&lt;p&gt;FORM_GRE_INTRO&lt;/p&gt;</field>
     <field name="created">2019-07-17 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -1004,14 +1004,14 @@
     <field name="intro">&lt;div class=&quot;mysectionpad&quot;&gt; &lt;/div&gt;
 &lt;p&gt; &lt;/p&gt;</field>
     <field name="created">2019-07-17 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -1027,14 +1027,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro">&lt;p&gt;MANDATORY_FIELDS&lt;/p&gt;</field>
     <field name="created">2019-07-17 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Réinitialiser</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -1050,14 +1050,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2019-09-12 20:52:46</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -1073,14 +1073,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2019-09-13 10:17:26</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2019-09-13 10:17:26</field>
     <field name="modified_by">95</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -1096,14 +1096,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2019-09-13 10:17:38</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2019-09-13 10:17:38</field>
     <field name="modified_by">95</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -1119,14 +1119,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2019-09-13 10:17:46</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2019-09-13 10:17:46</field>
     <field name="modified_by">95</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -1142,14 +1142,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2019-09-13 10:17:51</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2019-09-13 10:17:51</field>
     <field name="modified_by">95</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -1165,14 +1165,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2020-03-06 16:32:48</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -1188,14 +1188,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2020-06-08 09:58:55</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -1211,14 +1211,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2020-06-08 09:59:21</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
@@ -1234,12 +1234,12 @@
     <field name="error">Certaines parties de votre formulaire n'ont pas été correctement remplies</field>
     <field name="intro"></field>
     <field name="created">2021-02-15 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2021-02-15 10:52:41</field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2021-02-15 10:52:53</field>
     <field name="publish_down">2030-02-15 10:52:56</field>
     <field name="reset_button_label">Réinitialiser</field>
@@ -1257,14 +1257,14 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro">&lt;p&gt;FORM_9_INTRO_360&lt;/p&gt;</field>
     <field name="created">2018-07-12 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2018-09-16 20:43:45</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Remise à zéro</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -1280,7 +1280,7 @@
     <field name="error">Certaines parties de votre formulaire n'ont pas été correctement remplies</field>
     <field name="intro"></field>
     <field name="created">2021-03-23 13:40:19</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2021-04-09 15:19:11</field>
     <field name="modified_by">0</field>
@@ -1303,12 +1303,12 @@
     <field name="error">Certaines parties de votre formulaire n'ont pas été correctement remplies</field>
     <field name="intro"></field>
     <field name="created">2021-03-23 13:44:32</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2021-04-09 15:19:11</field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2021-03-26 16:00:25</field>
     <field name="publish_down">2099-03-26 16:00:25</field>
     <field name="reset_button_label"></field>
@@ -1326,7 +1326,7 @@
     <field name="error">Certaines parties de votre formulaire n'ont pas été correctement remplies</field>
     <field name="intro"></field>
     <field name="created">2021-03-26 16:00:25</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2021-04-09 15:19:11</field>
     <field name="modified_by">0</field>
@@ -1349,7 +1349,7 @@
     <field name="error">Certaines parties de votre formulaire n'ont pas été correctement remplies</field>
     <field name="intro"></field>
     <field name="created">2021-12-10 13:35:54</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2021-12-10 13:35:54</field>
     <field name="modified_by">0</field>
@@ -1372,14 +1372,14 @@
     <field name="error">Certaines parties de votre formulaire n'ont pas été correctement remplies</field>
     <field name="intro"></field>
     <field name="created">2021-11-25 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2021-11-25 00:00:00</field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
     <field name="checked_out_time">2099-11-25 00:00:00</field>
     <field name="publish_up">2021-11-26 08:25:21</field>
-    <field name="publish_down"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">RESET</field>
     <field name="submit_button_label">SAVE_CONTINUE</field>
     <field name="form_template">emundus</field>
@@ -1395,12 +1395,12 @@
     <field name="error">Certaines parties de votre formulaire n'ont pas été correctement remplies</field>
     <field name="intro"></field>
     <field name="created">2021-12-09 00:00:00</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2021-12-09 00:00:00</field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2021-12-09 09:55:50</field>
     <field name="publish_down">2099-12-09 00:00:00</field>
     <field name="reset_button_label">Réinitialiser</field>
@@ -1418,12 +1418,12 @@
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
     <field name="created">2022-05-10 14:37:14</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
     <field name="modified">2022-05-10 14:37:14</field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2022-05-10 14:37:14</field>
     <field name="publish_down">2099-12-31 00:00:00</field>
     <field name="reset_button_label"></field>
@@ -1441,14 +1441,14 @@
     <field name="error">Certaines parties de votre formulaire n'ont pas été correctement remplies</field>
     <field name="intro"></field>
     <field name="created">2022-10-06 11:42:45</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">Sauvegarder</field>
     <field name="form_template">emundus</field>
@@ -1464,14 +1464,14 @@
     <field name="error">Certaines parties de votre formulaire n'ont pas été correctement remplies</field>
     <field name="intro"></field>
     <field name="created">2022-10-19 10:26:07</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">Sauvegarder</field>
     <field name="form_template">emundus</field>
@@ -1487,14 +1487,14 @@
     <field name="error">Certaines parties de votre formulaire n'ont pas été correctement remplies</field>
     <field name="intro"></field>
     <field name="created">2022-12-16 16:21:10</field>
-    <field name="created_by">62</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified"></field>
+    <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
-    <field name="publish_up"></field>
-    <field name="publish_down"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label"></field>
     <field name="submit_button_label">Sauvegarder</field>
     <field name="form_template">emundus</field>

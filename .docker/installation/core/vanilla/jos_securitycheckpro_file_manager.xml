@@ -29,8 +29,8 @@
   <table_data name="#__securitycheckpro_file_manager">
    <row>
     <field name="id">1</field>
-    <field name="last_check"></field>
-    <field name="last_check_integrity"></field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="last_check_integrity" value_is_null="true"></field>
     <field name="files_scanned">0</field>
     <field name="files_scanned_integrity">0</field>
     <field name="files_with_incorrect_permissions">0</field>
@@ -42,14 +42,14 @@
     <field name="estado_clear_data">DELETING_ENTRIES</field>
     <field name="last_task">INTEGRITY</field>
     <field name="cron_tasks_launched">0</field>
-    <field name="last_check_malwarescan"></field>
+    <field name="last_check_malwarescan" value_is_null="true"></field>
     <field name="files_scanned_malwarescan">0</field>
     <field name="suspicious_files">0</field>
     <field name="estado_malwarescan">ENDED</field>
-    <field name="last_online_check_malwarescan"></field>
+    <field name="last_online_check_malwarescan" value_is_null="true"></field>
     <field name="online_checked_files">0</field>
     <field name="online_checked_hashes">0</field>
-    <field name="last_check_database"></field>
+    <field name="last_check_database" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

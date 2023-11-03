@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopValidate_free_order extends JPlugin
+class plgHikashopValidate_free_order extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	public function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);

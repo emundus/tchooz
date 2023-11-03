@@ -30,15 +30,15 @@
     <field name="description">Team member allowed to change the system's parameters.</field>
     <field name="published">0</field>
     <field name="schoolyear"></field>
-    <field name="candidature_start"></field>
-    <field name="candidature_end"></field>
+    <field name="candidature_start" value_is_null="true"></field>
+    <field name="candidature_end" value_is_null="true"></field>
     <field name="menutype">adminmenu</field>
     <field name="reference_letter"></field>
     <field name="acl_aro_groups">8</field>
     <field name="is_evaluator">0</field>
     <field name="evaluation_start">0000-00-00 00:00:00</field>
     <field name="evaluation_end">0000-00-00 00:00:00</field>
-    <field name="evaluation"></field>
+    <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
     <field name="class"></field>
    </row>
@@ -48,15 +48,15 @@
     <field name="description">Rôle de paramétrage de gestion de la plateforme avec tous les accès</field>
     <field name="published">0</field>
     <field name="schoolyear"></field>
-    <field name="candidature_start"></field>
-    <field name="candidature_end"></field>
+    <field name="candidature_start" value_is_null="true"></field>
+    <field name="candidature_end" value_is_null="true"></field>
     <field name="menutype">coordinatormenu</field>
     <field name="reference_letter"></field>
     <field name="acl_aro_groups">7</field>
     <field name="is_evaluator">0</field>
     <field name="evaluation_start">0000-00-00 00:00:00</field>
     <field name="evaluation_end">0000-00-00 00:00:00</field>
-    <field name="evaluation"></field>
+    <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
     <field name="class">label-default</field>
    </row>
@@ -66,15 +66,15 @@
     <field name="description">Rôle de gestionnaire pour un nombre limité de programmes</field>
     <field name="published">0</field>
     <field name="schoolyear"></field>
-    <field name="candidature_start"></field>
-    <field name="candidature_end"></field>
+    <field name="candidature_start" value_is_null="true"></field>
+    <field name="candidature_end" value_is_null="true"></field>
     <field name="menutype">program-manager-menu</field>
     <field name="reference_letter"></field>
     <field name="acl_aro_groups">6</field>
     <field name="is_evaluator">0</field>
     <field name="evaluation_start">0000-00-00 00:00:00</field>
     <field name="evaluation_end">0000-00-00 00:00:00</field>
-    <field name="evaluation"></field>
+    <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
     <field name="class">label-lightpurple</field>
    </row>
@@ -84,15 +84,15 @@
     <field name="description">Rôle d'évaluateur de dossier</field>
     <field name="published">0</field>
     <field name="schoolyear"></field>
-    <field name="candidature_start"></field>
-    <field name="candidature_end"></field>
+    <field name="candidature_start" value_is_null="true"></field>
+    <field name="candidature_end" value_is_null="true"></field>
     <field name="menutype">evaluator-menu</field>
     <field name="reference_letter"></field>
     <field name="acl_aro_groups">13</field>
     <field name="is_evaluator">1</field>
     <field name="evaluation_start">2010-12-01 00:00:00</field>
     <field name="evaluation_end">2011-02-28 00:00:00</field>
-    <field name="evaluation"></field>
+    <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
     <field name="class">label-lightblue</field>
    </row>
@@ -102,15 +102,15 @@
     <field name="description">Déposant</field>
     <field name="published">1</field>
     <field name="schoolyear"></field>
-    <field name="candidature_start"></field>
-    <field name="candidature_end"></field>
+    <field name="candidature_start" value_is_null="true"></field>
+    <field name="candidature_end" value_is_null="true"></field>
     <field name="menutype">menu-profile9</field>
     <field name="reference_letter"></field>
     <field name="acl_aro_groups">2</field>
     <field name="is_evaluator">0</field>
-    <field name="evaluation_start"></field>
-    <field name="evaluation_end"></field>
-    <field name="evaluation"></field>
+    <field name="evaluation_start" value_is_null="true"></field>
+    <field name="evaluation_end" value_is_null="true"></field>
+    <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
     <field name="class">label-default</field>
    </row>
@@ -120,15 +120,15 @@
     <field name="description"></field>
     <field name="published">1</field>
     <field name="schoolyear"></field>
-    <field name="candidature_start"></field>
-    <field name="candidature_end"></field>
+    <field name="candidature_start" value_is_null="true"></field>
+    <field name="candidature_end" value_is_null="true"></field>
     <field name="menutype"></field>
     <field name="reference_letter"></field>
     <field name="acl_aro_groups">2</field>
     <field name="is_evaluator"></field>
-    <field name="evaluation_start"></field>
-    <field name="evaluation_end"></field>
-    <field name="evaluation"></field>
+    <field name="evaluation_start" value_is_null="true"></field>
+    <field name="evaluation_end" value_is_null="true"></field>
+    <field name="evaluation" value_is_null="true"></field>
     <field name="status">0</field>
     <field name="class"></field>
    </row>

@@ -31,7 +31,7 @@
     <field name="parent_id">7</field>
     <field name="profile">2</field>
     <field name="default">0</field>
-    <field name="position"></field>
+    <field name="position" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">5</field>
@@ -45,21 +45,21 @@
     <field name="parent_id">8</field>
     <field name="profile">6</field>
     <field name="default">0</field>
-    <field name="position"></field>
+    <field name="position" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">8</field>
     <field name="parent_id">8</field>
     <field name="profile">2</field>
     <field name="default">0</field>
-    <field name="position"></field>
+    <field name="position" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">9</field>
     <field name="parent_id">9</field>
     <field name="profile">2</field>
     <field name="default">0</field>
-    <field name="position"></field>
+    <field name="position" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

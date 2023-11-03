@@ -25,7 +25,7 @@
     <field name="description">site database</field>
     <field name="published">1</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="default">1</field>
     <field name="params"></field>
    </row>

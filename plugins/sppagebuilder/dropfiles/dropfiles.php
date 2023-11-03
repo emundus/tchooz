@@ -17,7 +17,7 @@ defined('_JEXEC') || die('restricted aceess');
 /**
  * SP Pagebuilder Dropfiles
  */
-class PlgSppagebuilderDropfiles extends JPlugin
+class PlgSppagebuilderDropfiles extends \Joomla\CMS\Plugin\CMSPlugin
 {
     /**
      * Autoload Language

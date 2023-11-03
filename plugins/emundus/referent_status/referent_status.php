@@ -18,7 +18,7 @@ defined('_JEXEC') or die('Restricted access');
  * @since       3.0
  */
 
-class PlgEmundusReferent_status extends JPlugin {
+class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin {
 
     function __construct(&$subject, $config) {
         parent::__construct($subject, $config);

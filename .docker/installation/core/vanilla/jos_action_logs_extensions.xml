@@ -83,6 +83,10 @@
     <field name="id">19</field>
     <field name="extension">com_scheduler</field>
    </row>
+   <row>
+    <field name="id">20</field>
+    <field name="extension">com_fields</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

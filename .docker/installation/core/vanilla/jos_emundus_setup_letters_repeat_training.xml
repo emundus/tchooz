@@ -10,19 +10,5 @@
    <key Table="#__emundus_setup_letters_repeat_training" Non_unique="1" Key_name="fb_parent_fk_parent_id_INDEX" Seq_in_index="1" Column_name="parent_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_letters_repeat_training" Non_unique="1" Key_name="fb_repeat_el_training_INDEX" Seq_in_index="1" Column_name="training" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
   </table_structure>
-  <table_data name="#__emundus_setup_letters_repeat_training">
-   <row>
-    <field name="id">1</field>
-    <field name="parent_id">1</field>
-    <field name="training">prog</field>
-    <field name="params"></field>
-   </row>
-   <row>
-    <field name="id">2</field>
-    <field name="parent_id">2</field>
-    <field name="training">prog</field>
-    <field name="params"></field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

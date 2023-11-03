@@ -22,60 +22,60 @@
     <field name="id">1</field>
     <field name="name">faq</field>
     <field name="label">F.A.Q</field>
-    <field name="size"></field>
-    <field name="size_small"></field>
+    <field name="size" value_is_null="true"></field>
+    <field name="size_small" value_is_null="true"></field>
     <field name="eval"></field>
     <field name="class"></field>
-    <field name="published"></field>
+    <field name="published" value_is_null="true"></field>
     <field name="type"></field>
     <field name="chart_type"></field>
-    <field name="article_id"></field>
-    <field name="profile"></field>
+    <field name="article_id" value_is_null="true"></field>
+    <field name="profile" value_is_null="true"></field>
     <field name="params"></field>
    </row>
    <row>
     <field name="id">2</field>
     <field name="name">files_number_by_status</field>
     <field name="label">Files number</field>
-    <field name="size"></field>
-    <field name="size_small"></field>
+    <field name="size" value_is_null="true"></field>
+    <field name="size_small" value_is_null="true"></field>
     <field name="eval"></field>
     <field name="class"></field>
-    <field name="published"></field>
+    <field name="published" value_is_null="true"></field>
     <field name="type"></field>
     <field name="chart_type"></field>
-    <field name="article_id"></field>
-    <field name="profile"></field>
+    <field name="article_id" value_is_null="true"></field>
+    <field name="profile" value_is_null="true"></field>
     <field name="params"></field>
    </row>
    <row>
     <field name="id">3</field>
     <field name="name">users_by_month</field>
     <field name="label">Users by month</field>
-    <field name="size"></field>
-    <field name="size_small"></field>
+    <field name="size" value_is_null="true"></field>
+    <field name="size_small" value_is_null="true"></field>
     <field name="eval"></field>
     <field name="class"></field>
-    <field name="published"></field>
+    <field name="published" value_is_null="true"></field>
     <field name="type"></field>
     <field name="chart_type"></field>
-    <field name="article_id"></field>
-    <field name="profile"></field>
+    <field name="article_id" value_is_null="true"></field>
+    <field name="profile" value_is_null="true"></field>
     <field name="params"></field>
    </row>
    <row>
     <field name="id">4</field>
     <field name="name">tips</field>
     <field name="label">Tips</field>
-    <field name="size"></field>
-    <field name="size_small"></field>
+    <field name="size" value_is_null="true"></field>
+    <field name="size_small" value_is_null="true"></field>
     <field name="eval"></field>
     <field name="class"></field>
-    <field name="published"></field>
+    <field name="published" value_is_null="true"></field>
     <field name="type"></field>
     <field name="chart_type"></field>
-    <field name="article_id"></field>
-    <field name="profile"></field>
+    <field name="article_id" value_is_null="true"></field>
+    <field name="profile" value_is_null="true"></field>
     <field name="params"></field>
    </row>
    <row>
@@ -160,8 +160,8 @@ try {
     <field name="published">1</field>
     <field name="type">chart</field>
     <field name="chart_type">column2d</field>
-    <field name="article_id"></field>
-    <field name="profile"></field>
+    <field name="article_id" value_is_null="true"></field>
+    <field name="profile" value_is_null="true"></field>
     <field name="params"></field>
    </row>
    <row>
@@ -237,8 +237,8 @@ try {
     <field name="published">1</field>
     <field name="type">chart</field>
     <field name="chart_type">line</field>
-    <field name="article_id"></field>
-    <field name="profile"></field>
+    <field name="article_id" value_is_null="true"></field>
+    <field name="profile" value_is_null="true"></field>
     <field name="params"></field>
    </row>
    <row>
@@ -353,8 +353,8 @@ try {
     <field name="published">1</field>
     <field name="type">chart</field>
     <field name="chart_type">column2d</field>
-    <field name="article_id"></field>
-    <field name="profile"></field>
+    <field name="article_id" value_is_null="true"></field>
+    <field name="profile" value_is_null="true"></field>
     <field name="params"></field>
    </row>
    <row>
@@ -420,8 +420,8 @@ try {
     <field name="published">1</field>
     <field name="type">other</field>
     <field name="chart_type"></field>
-    <field name="article_id"></field>
-    <field name="profile"></field>
+    <field name="article_id" value_is_null="true"></field>
+    <field name="profile" value_is_null="true"></field>
     <field name="params"></field>
    </row>
    <row>
@@ -474,8 +474,8 @@ try {
     <field name="published">1</field>
     <field name="type">chart</field>
     <field name="chart_type">pie2d</field>
-    <field name="article_id"></field>
-    <field name="profile"></field>
+    <field name="article_id" value_is_null="true"></field>
+    <field name="profile" value_is_null="true"></field>
     <field name="params"></field>
    </row>
    <row>
@@ -490,7 +490,7 @@ try {
     <field name="type">article</field>
     <field name="chart_type"></field>
     <field name="article_id">1040</field>
-    <field name="profile"></field>
+    <field name="profile" value_is_null="true"></field>
     <field name="params"></field>
    </row>
    <row>
@@ -568,8 +568,8 @@ try {
     <field name="published">1</field>
     <field name="type">other</field>
     <field name="chart_type"></field>
-    <field name="article_id"></field>
-    <field name="profile"></field>
+    <field name="article_id" value_is_null="true"></field>
+    <field name="profile" value_is_null="true"></field>
     <field name="params"></field>
    </row>
   </table_data>

@@ -22,8 +22,8 @@
     <field name="value">En cours</field>
     <field name="ordering">1</field>
     <field name="class">default</field>
-    <field name="profile"></field>
-    <field name="tags"></field>
+    <field name="profile" value_is_null="true"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">2</field>
@@ -31,8 +31,8 @@
     <field name="value">Envoyé</field>
     <field name="ordering">2</field>
     <field name="class">green-2</field>
-    <field name="profile"></field>
-    <field name="tags"></field>
+    <field name="profile" value_is_null="true"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">3</field>
@@ -40,8 +40,8 @@
     <field name="value">Refusé</field>
     <field name="ordering">3</field>
     <field name="class">red-2</field>
-    <field name="profile"></field>
-    <field name="tags"></field>
+    <field name="profile" value_is_null="true"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">4</field>
@@ -49,8 +49,8 @@
     <field name="value">Accepté</field>
     <field name="ordering">3</field>
     <field name="class">green-1</field>
-    <field name="profile"></field>
-    <field name="tags"></field>
+    <field name="profile" value_is_null="true"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">5</field>
@@ -58,8 +58,8 @@
     <field name="value">Admis</field>
     <field name="ordering">5</field>
     <field name="class">green-2</field>
-    <field name="profile"></field>
-    <field name="tags"></field>
+    <field name="profile" value_is_null="true"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">7</field>
@@ -67,8 +67,8 @@
     <field name="value">Liste d'attente</field>
     <field name="ordering">6</field>
     <field name="class">orange-1</field>
-    <field name="profile"></field>
-    <field name="tags"></field>
+    <field name="profile" value_is_null="true"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">8</field>
@@ -76,8 +76,8 @@
     <field name="value">En évaluation</field>
     <field name="ordering">7</field>
     <field name="class">pink-1</field>
-    <field name="profile"></field>
-    <field name="tags"></field>
+    <field name="profile" value_is_null="true"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">9</field>
@@ -85,8 +85,8 @@
     <field name="value">A évaluer</field>
     <field name="ordering">8</field>
     <field name="class">orange-2</field>
-    <field name="profile"></field>
-    <field name="tags"></field>
+    <field name="profile" value_is_null="true"></field>
+    <field name="tags" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

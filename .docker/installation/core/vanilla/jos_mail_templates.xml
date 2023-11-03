@@ -245,16 +245,6 @@
     <field name="params">{&quot;tags&quot;:[&quot;code&quot;,&quot;sitename&quot;,&quot;siteurl&quot;,&quot;username&quot;,&quot;email&quot;,&quot;fullname&quot;]}</field>
    </row>
    <row>
-    <field name="template_id">plg_system_privacyconsent.request.reminder</field>
-    <field name="extension">plg_system_privacyconsent</field>
-    <field name="language"></field>
-    <field name="subject">PLG_SYSTEM_PRIVACYCONSENT_EMAIL_REMIND_SUBJECT</field>
-    <field name="body">PLG_SYSTEM_PRIVACYCONSENT_EMAIL_REMIND_BODY</field>
-    <field name="htmlbody"></field>
-    <field name="attachments"></field>
-    <field name="params">{&quot;tags&quot;:[&quot;sitename&quot;,&quot;url&quot;,&quot;tokenurl&quot;,&quot;formurl&quot;,&quot;token&quot;]}</field>
-   </row>
-   <row>
     <field name="template_id">plg_system_tasknotification.failure_mail</field>
     <field name="extension">plg_system_tasknotification</field>
     <field name="language"></field>
@@ -295,11 +285,21 @@
     <field name="params">{&quot;tags&quot;:[&quot;task_id&quot;, &quot;task_title&quot;, &quot;exec_data_time&quot;, &quot;task_output&quot;]}</field>
    </row>
    <row>
-    <field name="template_id">plg_system_updatenotification.mail</field>
-    <field name="extension">plg_system_updatenotification</field>
+    <field name="template_id">plg_task_privacyconsent.request.reminder</field>
+    <field name="extension">plg_task_privacyconsent</field>
     <field name="language"></field>
-    <field name="subject">PLG_SYSTEM_UPDATENOTIFICATION_EMAIL_SUBJECT</field>
-    <field name="body">PLG_SYSTEM_UPDATENOTIFICATION_EMAIL_BODY</field>
+    <field name="subject">PLG_TASK_PRIVACYCONSENT_EMAIL_REMIND_SUBJECT</field>
+    <field name="body">PLG_TASK_PRIVACYCONSENT_EMAIL_REMIND_BODY</field>
+    <field name="htmlbody"></field>
+    <field name="attachments"></field>
+    <field name="params">{&quot;tags&quot;:[&quot;sitename&quot;,&quot;url&quot;,&quot;tokenurl&quot;,&quot;formurl&quot;,&quot;token&quot;]}</field>
+   </row>
+   <row>
+    <field name="template_id">plg_task_updatenotification.mail</field>
+    <field name="extension">plg_task_updatenotification</field>
+    <field name="language"></field>
+    <field name="subject">PLG_TASK_UPDATENOTIFICATION_EMAIL_SUBJECT</field>
+    <field name="body">PLG_TASK_UPDATENOTIFICATION_EMAIL_BODY</field>
     <field name="htmlbody"></field>
     <field name="attachments"></field>
     <field name="params">{&quot;tags&quot;:[&quot;newversion&quot;,&quot;curversion&quot;,&quot;sitename&quot;,&quot;url&quot;,&quot;link&quot;,&quot;releasenews&quot;]}</field>

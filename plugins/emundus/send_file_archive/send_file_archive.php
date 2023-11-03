@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class plgEmundusSend_file_archive extends JPlugin {
+class plgEmundusSend_file_archive extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);

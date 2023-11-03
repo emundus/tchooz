@@ -149,10 +149,6 @@
         &lt;/table&gt;
     &lt;/div&gt;
 &lt;/center&gt;
-&lt;div style=&quot;display: none;&quot;&gt;&lt;img src=&quot;[SITE_URL]/images/up-arrow-sorbonne.png&quot; alt=&quot;&quot; /&gt;&lt;img src=&quot;[SITE_URL]/images/up-arrow-sorbonne_hover.png&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;
-&lt;div id=&quot;gototop&quot; style=&quot;display: none&quot;&gt;&lt;div title=&quot;&quot;&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;div style=&quot;display: none;&quot;&gt;&lt;img src=&quot;[SITE_URL]/images/up-arrow-sorbonne.png&quot; alt=&quot;&quot; /&gt;&lt;img src=&quot;[SITE_URL]/images/up-arrow-sorbonne_hover.png&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;
-&lt;div id=&quot;gototop&quot; style=&quot;display: none&quot;&gt;&lt;div title=&quot;&quot;&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;/body&gt;
 
 &lt;/html&gt;

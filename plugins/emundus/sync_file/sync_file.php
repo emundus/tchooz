@@ -13,7 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'api'.DS.'FileSynchronizer.php');
 
-class plgEmundusSync_file extends JPlugin {
+class plgEmundusSync_file extends \Joomla\CMS\Plugin\CMSPlugin {
 
     function __construct(&$subject, $config) {
         parent::__construct($subject, $config);

@@ -13,7 +13,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.plugin.plugin' );
 
 
-class plgSystemEmundus_conditional_redirect extends JPlugin {
+class plgSystemEmundus_conditional_redirect extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);

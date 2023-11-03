@@ -41,8 +41,8 @@
     <field name="created_by">247</field>
     <field name="modified">2023-06-19 11:41:35</field>
     <field name="modified_by">247</field>
-    <field name="checked_out_time"></field>
-    <field name="checked_out"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

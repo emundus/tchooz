@@ -26,44 +26,44 @@
    <row>
     <field name="id">1</field>
     <field name="profile_id">9</field>
-    <field name="campaign_id"></field>
+    <field name="campaign_id" value_is_null="true"></field>
     <field name="attachment_id">10</field>
     <field name="displayed">1</field>
     <field name="mandatory">1</field>
     <field name="ordering">1</field>
     <field name="published">1</field>
-    <field name="bank_needed"></field>
-    <field name="duplicate">0</field>
-    <field name="has_sample"></field>
-    <field name="sample_filepath"></field>
+    <field name="bank_needed" value_is_null="true"></field>
+    <field name="duplicate">1</field>
+    <field name="has_sample" value_is_null="true"></field>
+    <field name="sample_filepath" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">2</field>
     <field name="profile_id">9</field>
-    <field name="campaign_id"></field>
+    <field name="campaign_id" value_is_null="true"></field>
     <field name="attachment_id">12</field>
     <field name="displayed">1</field>
     <field name="mandatory">1</field>
     <field name="ordering">0</field>
     <field name="published">1</field>
-    <field name="bank_needed"></field>
-    <field name="duplicate">0</field>
-    <field name="has_sample"></field>
-    <field name="sample_filepath"></field>
+    <field name="bank_needed" value_is_null="true"></field>
+    <field name="duplicate">1</field>
+    <field name="has_sample" value_is_null="true"></field>
+    <field name="sample_filepath" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">3</field>
     <field name="profile_id">9</field>
-    <field name="campaign_id"></field>
+    <field name="campaign_id" value_is_null="true"></field>
     <field name="attachment_id">8</field>
     <field name="displayed">1</field>
     <field name="mandatory">0</field>
     <field name="ordering">2</field>
     <field name="published">1</field>
-    <field name="bank_needed"></field>
-    <field name="duplicate">0</field>
-    <field name="has_sample"></field>
-    <field name="sample_filepath"></field>
+    <field name="bank_needed" value_is_null="true"></field>
+    <field name="duplicate">1</field>
+    <field name="has_sample" value_is_null="true"></field>
+    <field name="sample_filepath" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

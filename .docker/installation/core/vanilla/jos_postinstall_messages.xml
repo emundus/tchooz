@@ -33,7 +33,7 @@
     <field name="condition_file"></field>
     <field name="condition_method"></field>
     <field name="version_introduced">3.2.0</field>
-    <field name="enabled">1</field>
+    <field name="enabled">0</field>
    </row>
    <row>
     <field name="postinstall_message_id">2</field>
@@ -49,23 +49,7 @@
     <field name="condition_file">admin://components/com_admin/postinstall/statscollection.php</field>
     <field name="condition_method">admin_postinstall_statscollection_condition</field>
     <field name="version_introduced">3.5.0</field>
-    <field name="enabled">1</field>
-   </row>
-   <row>
-    <field name="postinstall_message_id">3</field>
-    <field name="extension_id">227</field>
-    <field name="title_key">PLG_SYSTEM_UPDATENOTIFICATION_POSTINSTALL_UPDATECACHETIME</field>
-    <field name="description_key">PLG_SYSTEM_UPDATENOTIFICATION_POSTINSTALL_UPDATECACHETIME_BODY</field>
-    <field name="action_key">PLG_SYSTEM_UPDATENOTIFICATION_POSTINSTALL_UPDATECACHETIME_ACTION</field>
-    <field name="language_extension">plg_system_updatenotification</field>
-    <field name="language_client_id">1</field>
-    <field name="type">action</field>
-    <field name="action_file">site://plugins/system/updatenotification/postinstall/updatecachetime.php</field>
-    <field name="action">updatecachetime_postinstall_action</field>
-    <field name="condition_file">site://plugins/system/updatenotification/postinstall/updatecachetime.php</field>
-    <field name="condition_method">updatecachetime_postinstall_condition</field>
-    <field name="version_introduced">3.6.3</field>
-    <field name="enabled">1</field>
+    <field name="enabled">0</field>
    </row>
    <row>
     <field name="postinstall_message_id">4</field>
@@ -97,7 +81,7 @@
     <field name="condition_file">admin://components/com_users/postinstall/multifactorauth.php</field>
     <field name="condition_method">com_users_postinstall_mfa_condition</field>
     <field name="version_introduced">4.2.0</field>
-    <field name="enabled">1</field>
+    <field name="enabled">0</field>
    </row>
   </table_data>
  </database>

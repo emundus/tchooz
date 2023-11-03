@@ -8,7 +8,7 @@ if (!defined('DS')) {
     define('DS',DIRECTORY_SEPARATOR);
 }
 
-class plgUserEmundus_welcome_message extends JPlugin {
+class plgUserEmundus_welcome_message extends \Joomla\CMS\Plugin\CMSPlugin {
 	
 	function _construct(& $subject, $config) {
 		parent::__construct($subject, $config);

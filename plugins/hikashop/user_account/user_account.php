@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopUser_account extends JPlugin {
+class plgHikashopUser_account extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);

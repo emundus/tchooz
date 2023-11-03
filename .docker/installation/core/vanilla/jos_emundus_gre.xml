@@ -15,18 +15,5 @@
    <key Table="#__emundus_gre" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_gre" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
-  <table_data name="#__emundus_gre">
-   <row>
-    <field name="id">6978</field>
-    <field name="date_time">2020-03-11 10:04:17</field>
-    <field name="user">111</field>
-    <field name="fnum">2020031110550100000010000111</field>
-    <field name="Test_Date">2020-01-01 00:00:00</field>
-    <field name="Verbal">20.00</field>
-    <field name="Quantitative">10.00</field>
-    <field name="Analytical">10.00</field>
-    <field name="Total">50.00</field>
-   </row>
-  </table_data>
  </database>
 </mysqldump>

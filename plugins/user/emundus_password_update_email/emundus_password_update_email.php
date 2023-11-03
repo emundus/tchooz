@@ -24,7 +24,7 @@ jimport( 'joomla.plugin.plugin' );
  * @package     Joomla
  * @subpackage  System
  */
-class  plgUserEmundus_password_update_email extends JPlugin {
+class  plgUserEmundus_password_update_email extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	/**
 	 * Gets object of connections

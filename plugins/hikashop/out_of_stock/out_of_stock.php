@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopOut_of_stock extends JPlugin
+class plgHikashopOut_of_stock extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	var $message = '';
 	function __construct(&$subject, $config){

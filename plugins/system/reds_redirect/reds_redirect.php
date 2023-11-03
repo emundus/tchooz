@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 
-class plgSystemReds_redirect extends JPlugin {
+class plgSystemReds_redirect extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);

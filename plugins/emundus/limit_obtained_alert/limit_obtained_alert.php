@@ -11,7 +11,7 @@ require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campai
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 
-class plgEmundusLimit_obtained_alert extends JPlugin {
+class plgEmundusLimit_obtained_alert extends \Joomla\CMS\Plugin\CMSPlugin {
 
     function __construct(&$subject, $config) {
         parent::__construct($subject, $config);

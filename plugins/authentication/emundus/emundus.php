@@ -21,7 +21,7 @@ jimport('joomla.plugin.plugin');
  * @subpackage  User.emundus
  * @since       1.35.0
  */
-class plgAuthenticationEmundus extends JPlugin
+class plgAuthenticationEmundus extends \Joomla\CMS\Plugin\CMSPlugin
 {
     public function onUserAuthenticate(&$credentials, $options, &$response)
     {

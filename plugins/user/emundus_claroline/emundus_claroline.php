@@ -16,13 +16,15 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport( 'joomla.plugin.plugin' );
 
+use Joomla\CMS\Factory;
+
 /**
  * emundus_ametys loggin from Ametys CMS
  *
  * @package     Joomla
  * @subpackage  System
  */
-class  plgUserEmundus_claroline extends JPlugin {
+class  plgUserEmundus_claroline extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	/**
 	 * Constructor
@@ -107,6 +109,12 @@ class  plgUserEmundus_claroline extends JPlugin {
 	 * @throws Exception
 	 */
 	public function onUserAfterSave($user) {
+		$app = Factory::getApplication();
+		// The method check here ensures that if running as a CLI Application we don't get any errors
+		if (method_exists($app, 'isClient') && ($app->isClient('site') || $app->isClient('cli'))) {
+			return;
+		}
+
 		$db = JFactory::getDBO();
 		$dbClaro = $this->getClarolineDBO();
 

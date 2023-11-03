@@ -42,6 +42,8 @@ sections:
   footer: Footer
   offcanvas: Offcanvas
 particles:
+  custom:
+    custom-5609: 'Custom HTML'
   position:
     position-position-4537: 'Top B'
     position-position-5618: 'Top C'
@@ -63,8 +65,6 @@ particles:
     position-position-3802: footer-b
   messages:
     system-messages-2171: 'System Messages'
-  custom:
-    custom-5609: 'Custom HTML'
   module:
     position-module-7703: 'Mobile Menu'
     position-module-7526: 'User menu phone'
@@ -72,37 +72,37 @@ inherit:
   default:
     drawer: drawer
     top: top
+    navigation: navigation
+    showcase: showcase
+    feature: feature
+    utility: utility
+    breadcrumb: breadcrumb
+    maintop: maintop
+    sidebar: sidebar
+    mainbottom: mainbottom
+    extension: extension
+    bottom: bottom
+    footer: footer
+    copyright: copyright
+    offcanvas: offcanvas
     position-position-4537: position-position-4408
     position-position-5618: position-position-7532
-    navigation: navigation
     position-position-2758: position-position-6276
     position-position-4458: position-position-5691
     position-position-6420: position-position-5235
-    showcase: showcase
     position-position-2966: position-position-6366
-    feature: feature
     system-messages-2171: system-messages-7972
-    utility: utility
     position-position-3690: position-position-6313
     position-position-7693: position-position-3312
     position-position-5955: position-position-3137
     position-position-1889: position-position-3100
-    breadcrumb: breadcrumb
-    maintop: maintop
-    sidebar: sidebar
     position-position-2695: position-position-8186
     position-position-1010: position-position-9360
     position-position-2875: position-position-3949
-    mainbottom: mainbottom
-    extension: extension
-    bottom: bottom
     position-position-9568: position-position-3854
     position-position-1552: position-position-8649
     position-position-3410: position-position-5181
-    footer: footer
     position-position-7211: position-position-6744
     position-position-3802: position-position-8794
-    copyright: copyright
-    offcanvas: offcanvas
     position-module-7703: position-module-2455
     position-module-7526: position-module-3093

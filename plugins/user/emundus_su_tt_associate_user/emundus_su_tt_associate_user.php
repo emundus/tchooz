@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-class plgUserEmundus_su_tt_associate_user extends JPlugin
+class plgUserEmundus_su_tt_associate_user extends \Joomla\CMS\Plugin\CMSPlugin
 {
     public function onUserLogin($user, $options = array())
     {

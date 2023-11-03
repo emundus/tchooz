@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__emundus_setup_tags">
    <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="date_time" Type="datetime" Null="NO" Key="" Default="CURRENT_TIMESTAMP" />
+   <field Field="date_time" Type="datetime" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
    <field Field="tag" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="request" Type="text" Null="YES" Key="" Extra="" />
    <field Field="description" Type="text" Null="NO" Key="" Extra="" />

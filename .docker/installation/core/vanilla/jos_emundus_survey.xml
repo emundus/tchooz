@@ -23,11 +23,11 @@
   <table_data name="#__emundus_survey">
    <row>
     <field name="id">3</field>
-    <field name="date_time"></field>
+    <field name="date_time" value_is_null="true"></field>
     <field name="fnum">2020031110550100000010000111</field>
     <field name="user">111</field>
     <field name="university"></field>
-    <field name="until"></field>
+    <field name="until" value_is_null="true"></field>
     <field name="via_friend">no</field>
     <field name="via_professor">no</field>
     <field name="via_social_network_details"></field>

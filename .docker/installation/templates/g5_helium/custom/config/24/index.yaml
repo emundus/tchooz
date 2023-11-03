@@ -30,7 +30,6 @@ positions:
   bottom-c: bottom-c
   footer-a: footer-a
   footer-b: footer-b
-  footer-rgpd: footer-rgpd
 sections:
   drawer: Drawer
   top: Top
@@ -74,13 +73,10 @@ particles:
     position-position-5854: bottom-c
     position-position-3170: footer-a
     position-position-3651: footer-b
-    position-position-9221: footer-rgpd
   messages:
     system-messages-7972: 'System Messages'
   content:
     system-content-8269: 'Page Content'
-  branding:
-    branding-7865: Branding
   module:
     position-module-2211: 'Mobile Menu'
     position-module-4659: 'User menu phone'

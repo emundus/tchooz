@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopMassaction_product extends JPlugin
+class plgHikashopMassaction_product extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	public $message = '';
 	public $massaction = null;

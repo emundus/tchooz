@@ -23,7 +23,7 @@ jimport('joomla.application.categories');
 /**
  * Content Plugin.
  */
-class PlgContentdropfiles extends JPlugin
+class PlgContentdropfiles extends \Joomla\CMS\Plugin\CMSPlugin
 {
     /**
      * Google running progress

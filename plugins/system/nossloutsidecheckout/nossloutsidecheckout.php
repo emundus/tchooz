@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgSystemNossloutsidecheckout extends JPlugin
+class plgSystemNossloutsidecheckout extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);

@@ -8,7 +8,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class plgEmundusExcelia_aurion_export extends JPlugin {
+class plgEmundusExcelia_aurion_export extends \Joomla\CMS\Plugin\CMSPlugin {
 
     var $db;
 

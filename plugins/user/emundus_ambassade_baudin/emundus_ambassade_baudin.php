@@ -19,7 +19,7 @@ jimport('joomla.plugin.plugin');
  * @subpackage  User.emundus
  * @since       5.0.0
  */
-class plgUserEmundus_ambassade_baudin extends JPlugin
+class plgUserEmundus_ambassade_baudin extends \Joomla\CMS\Plugin\CMSPlugin
 {
     
     /**

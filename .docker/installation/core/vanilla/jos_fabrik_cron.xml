@@ -30,8 +30,8 @@
     <field name="created_by_alias"></field>
     <field name="modified">0000-00-00 00:00:00</field>
     <field name="modified_by"></field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time">0000-00-00 00:00:00</field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2023-11-02 14:25:40</field>
     <field name="published">0</field>
     <field name="plugin">emundusrecall</field>
     <field name="lastrun">2021-10-14 10:03:59</field>

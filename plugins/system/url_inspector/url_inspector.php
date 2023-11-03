@@ -16,7 +16,7 @@ use Joomla\Registry\Registry;
  *
  * @since 1.6
  */
-class PlgSystemurl_Inspector extends JPlugin
+class PlgSystemurl_Inspector extends \Joomla\CMS\Plugin\CMSPlugin
 {
 	private static $parameters = null;
 
