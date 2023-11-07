@@ -114,7 +114,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
                     if (!empty($baseUrl) && !empty($api_key)) {
                         $db = JFactory::getDbo();
-                        $query = $db->createQuery();
+                        $query = $db->getQuery(true);
 
                         $client = new GuzzleClient();
                         foreach($signatureRequest->documents as $document) {
@@ -447,6 +447,57 @@ class EmundusControllerWebhook extends JControllerLegacy {
 		}
 	}
 
+	/**
+	 * @param string $user_email
+	 * @param        $param
+	 * @param string $value
+	 *
+	 * @return bool
+	 * @since version
+	 */
+	private function setUserParam(string $user_email, $param, string $value) : bool {
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('id'))
+			->from($db->quoteName('jos_users'))
+			->where($db->quoteName('email').' LIKE '.$db->quote($user_email));
+		$db->setQuery($query);
+
+		try {
+			$user_id = $db->loadResult();
+		} catch (Exception $e) {
+			JLog::add('Error getting user by email when saving param : '.$e->getMessage(), JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+
+		if (empty($user_id)) {
+			JLog::add('User not found', JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+
+		$user = JFactory::getUser($user_id);
+
+		$table = JTable::getInstance('user', 'JTable');
+		$table->load($user->id);
+
+		// Store token in User's Parameters
+		$user->setParam($param, $value);
+
+		// Get the raw User Parameters
+		$params = $user->getParameters();
+
+		// Set the user table instance to include the new token.
+		$table->params = $params->toString();
+
+		// Save user data
+		if (!$table->store()) {
+			JLog::add('Error saving params : '.$table->getError(), JLog::ERROR, 'com_emundus.yousign');
+			return false;
+		}
+		return true;
+	}
+
     /**
      *
      * @return false|void
@@ -466,7 +517,13 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $url        = 'images'.DS.'emundus'.DS.'files'.DS.'archives';
         $file       = JPATH_SITE.DS.$url.DS.$filename.'.csv';
         $date = date('Y-m-d');
-        $time_date = date('Y-m-d H:i:s');
+        //$time_date = date('Y-m-d H:i:s');
+        $offset = $mainframe->get('offset', 'UTC');
+        $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+        $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+        $time_date = $dateTime->format('Y-m-d H:i:s');
+
+
 
         $db = JFactory::getDbo();
 
@@ -483,19 +540,38 @@ class EmundusControllerWebhook extends JControllerLegacy {
             return false;
         }
 
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
+
+        $query->select('filename')
+            ->from($db->quoteName('#__emundus_files_request'))
+            ->order('id DESC');
+
+        $db->setQuery($query);
+        try{
+            $last_filename = $db->loadResult();
+        }
+        catch (Exception $e){
+            JLog::add('An error occurring in sql request: '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+        }
+
+        $query = $db->getQuery(true);
 
         $query->select('COUNT(*) as nb_requete, is_downloaded')
             ->from($db->quoteName('#__emundus_files_request'))
             ->where($db->quoteName('attachment_id').' = 77 AND '. $db->quoteName('ip_address'). ' LIKE ' . $db->quote($ip).' AND '. $db->quoteName('time_date'). ' LIKE ' . $db->quote($date.'%'));
 
         $db->setQuery($query);
+        try{
+            $ip_addess_request = $db->loadAssoc();
+        }
+        catch (Exception $e){
+            JLog::add('An error occurring in sql request: '.$e->getMessage(), JLog::ERROR, 'com_emundus.webhook');
+        }
 
-        $ip_addess_request = $db->loadAssoc();
-
-
-
-        if((in_array($ip,$filtre_ip) && $ip_addess_request['nb_requete'] == 0 && ($ip_addess_request['is_downloaded'] == 1 || $ip_addess_request['is_downloaded'] == null)) || ((in_array($ip,$filtre_ip) && $ip_addess_request['nb_requete'] >= 1 && ($ip_addess_request['is_downloaded'] == 1 || $ip_addess_request['is_downloaded'] == null)))){
+        if(
+            (in_array($ip, $filtre_ip) && $ip_addess_request['nb_requete'] == 0 && ($ip_addess_request['is_downloaded'] == 1 || $ip_addess_request['is_downloaded'] == null))
+            || ((in_array($ip,$filtre_ip) && $ip_addess_request['nb_requete'] >= 1 && ($ip_addess_request['is_downloaded'] == 1 || $ip_addess_request['is_downloaded'] == null)))
+        ){
 
             header('Content-type: text/csv');
             header('Content-Disposition: attachment; filename='.$file_name);
@@ -517,16 +593,14 @@ class EmundusControllerWebhook extends JControllerLegacy {
                 $bytes = random_bytes(32);
                 $new_token = bin2hex($bytes);
 
-                JLog::add('File download with the ip address'.$ip, JLog::NOTICE, 'com_emundus.webhook');
+                JLog::add('File downloaded from ip address: '.$ip, JLog::NOTICE, 'com_emundus.webhook');
 
-
-
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 if($ip_addess_request['nb_requete'] == 0){
                     $columns = array('time_date','fnum','keyid', 'attachment_id', 'filename','ip_address','is_downloaded');
 
-                    $values = array($db->quote($time_date),$db->quote($fnum),$db->quote($new_token), 77, $db->quote($filename.$date.'.csv'),$db->quote($ip),0);
+                    $values = array($db->quote($time_date),$db->quote($fnum),$db->quote($new_token), 77, $db->quote($last_filename),$db->quote($ip),0);
 
                     $query
                         ->insert($db->quoteName('#__emundus_files_request'))
@@ -560,12 +634,13 @@ class EmundusControllerWebhook extends JControllerLegacy {
         }
         else {
             JLog::add('Your ip address is blocked', JLog::ERROR, 'com_emundus.webhook');
+            echo JText::_('ACCESS_DENIED');
         }
     }
 
     public function export_banner(){
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
-        $mFile = $this->getModel('Files');
+        $mFile = new EmundusModelFiles;
 
         $banner_limit = $this->input->get('limit', 100);
 
@@ -665,7 +740,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
     /* using GET methos */
     public function update_banner($id, $fnum) {
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             /* check if fnum exists, if yes, update, if no, return error code */
@@ -705,7 +780,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
         if (!empty($zid)) {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('*')
                 ->from($db->quoteName('#__emundus_jury', 'jej'))
@@ -835,7 +910,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 					$db = Factory::getDbo();
 				}
 
-				$query = $db->createQuery();
+				$query = $db->getQuery(true);
 
 				$query->select('id')
 					->from($db->quoteName('#__users'))

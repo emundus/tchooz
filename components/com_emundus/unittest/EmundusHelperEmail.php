@@ -67,7 +67,7 @@ class EmundusHelperEmail extends TestCase
             $this->assertSame(true, $this->h_emails->assertCanSendMailToUser($user_id), 'A new created user with valid adress can receive emails');
 
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $params = json_encode(array('send_mail' => false));
             $query->clear()

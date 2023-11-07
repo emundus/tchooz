@@ -269,7 +269,7 @@ class EmundusHelperAccess {
 			$group_ids = array_keys(array_flip(array_keys($group_ids)));
 
 			$db = JFactory::getDbo();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 			$query->select($db->quoteName('anonymize'))->from($db->quoteName('#__emundus_setup_groups'))->where($db->quoteName('id').' IN ('.implode(',', $group_ids).')');
 			$db->setQuery($query);
 
@@ -301,7 +301,7 @@ class EmundusHelperAccess {
         if (!empty($user_id) && !empty($fnum)) {
             // does user is associated to the fnum directly?
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('id')
                 ->from('#__emundus_users_assoc')

@@ -42,7 +42,7 @@ class EmundusControllerAdmission extends JControllerLegacy
 		$this->app = Factory::getApplication();
 		$this->user = $this->app->getIdentity();
 		$this->session   = $this->app->getSession();
-		$this->_db = Factory::getContainer()->get('DatabaseDriver');
+		$this->_db = Factory::getDbo();
 
 		parent::__construct($config);
 	}

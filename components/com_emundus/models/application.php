@@ -42,7 +42,7 @@ class EmundusModelApplication extends JModelList
         require_once (JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
 
         $this->_mainframe = Factory::getApplication();
-		$this->_db = $this->getDatabase();
+		$this->_db = Factory::getDbo();
 		
 		$session = $this->_mainframe->getSession();
 		$language = $this->_mainframe->getLanguage();
@@ -617,12 +617,7 @@ class EmundusModelApplication extends JModelList
 	    $current_user = $euser;
 		if(empty($current_user))
 		{
-			if (version_compare(JVERSION, '4.0', '>'))
-			{
 				$session = Factory::getApplication()->getSession();
-			} else {
-				$session = Factory::getSession();
-			}
 
 			$current_user = $session->get('emundusUser');
 		}
@@ -797,12 +792,7 @@ class EmundusModelApplication extends JModelList
 	    $current_user = $euser;
 	    if(empty($current_user))
 	    {
-		    if (version_compare(JVERSION, '4.0', '>'))
-		    {
 			    $session = Factory::getApplication()->getSession();
-		    } else {
-			    $session = Factory::getSession();
-		    }
 
 		    $current_user = $session->get('emundusUser');
 	    }
@@ -1060,12 +1050,7 @@ class EmundusModelApplication extends JModelList
     {
 		if(empty($user))
 		{
-			if (version_compare(JVERSION, '4.0', '>'))
-			{
 				$user = Factory::getApplication()->getIdentity();
-			} else {
-				$user = Factory::getUser();
-			}
 		}
 
 		$query = $this->_db->getQuery(true);
@@ -2708,11 +2693,11 @@ class EmundusModelApplication extends JModelList
 
 												if ($show_empty_fields == 1 || !empty($elt)) {
 													if ($elements[$j]->plugin == 'display') {
-														$forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
+                                                        $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
 													} elseif ($elements[$j]->plugin == 'textarea') {
-														$forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
+                                                        $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
 													} else {
-														$forms .= '<tr><td colspan="1" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
+                                                        $forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
 													}
 												}
 											}
@@ -2914,9 +2899,9 @@ class EmundusModelApplication extends JModelList
 											if ($element->plugin == 'display') {
 												$forms .= '<tr><td colspan="2"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
 											} elseif ($element->plugin == 'textarea') {
-												$forms .= '<tr><td colspan="2" style="background-color: #F3F3F3"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
+                                                $forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
 											} else {
-												$forms .= '<tr><td colspan="1" style="background-color: #F3F3F3"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
+                                                $forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
 											}
 										}
 									} elseif (empty($element->content) && $show_empty_fields == 1) {
@@ -4168,7 +4153,7 @@ class EmundusModelApplication extends JModelList
      * @param $pid Int the profile_id to get list of forms
      * @return bool
      */
-    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0, $params = array()) {
+    public function copyApplication($fnum_from, $fnum_to, $pid = null, $copy_attachment = 0, $campaign_id = null, $copy_tag = 0, $move_hikashop_command = 0, $delete_from_file = 0, $params = array(), $copyUsersAssoc = 0, $copyGroupsAssoc = 0) {
         
         $pids = [];
 
@@ -4378,6 +4363,12 @@ class EmundusModelApplication extends JModelList
                 $this->_db->setQuery($query);
                 $this->_db->execute();
             }
+	        if($copyUsersAssoc){
+		        $this->copyUsersAssoc($fnum_from,$fnum_to);
+	        }
+	        if($copyGroupsAssoc){
+		        $this->copyGroupsAssoc($fnum_from,$fnum_to);
+	        }
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$q.' :: '.$query, JLog::ERROR, 'com_emundus');
@@ -4473,6 +4464,85 @@ class EmundusModelApplication extends JModelList
 
         return true;
     }
+
+	public function copyUsersAssoc($fnum_from, $fnum_to)
+	{
+		$query = $this->_db->getQuery(true);
+
+		try {
+			$query->select('eua.*')
+				->from($this->_db->quoteName('#__emundus_users_assoc', 'eua'))
+				->where($this->_db->quoteName('eua.fnum') . ' LIKE ' . $this->_db->quote($fnum_from));
+
+			$this->_db->setQuery($query);
+			$users_assoc = $this->_db->loadAssocList();
+
+			if (count($users_assoc) > 0) {
+				// 2. copy DB définition and duplicate files in applicant directory
+				foreach ($users_assoc as $user) {
+					$user['fnum'] = $fnum_to;
+					unset($user['id']);
+
+					try {
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_users_assoc'))
+							->columns(array_keys($user))
+							->values(implode(", ", $this->_db->quote($user)));
+						$this->_db->setQuery($query);
+						$this->_db->execute();
+					} catch (Exception $e) {
+						$error = JUri::getInstance().' :: USER ID : '.$user['user_id'].' -> '.$e->getMessage();
+						JLog::add($error, JLog::ERROR, 'com_emundus');
+					}
+				}
+			}
+		} catch (Exception $e) {
+			echo $e->getMessage();
+			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+		return true;
+	}
+
+	public function copyGroupsAssoc($fnum_from, $fnum_to)
+	{
+		$query = $this->_db->getQuery(true);
+
+		try {
+			$query->select('ega.*')
+				->from($this->_db->quoteName('#__emundus_group_assoc', 'ega'))
+				->where($this->_db->quoteName('ega.fnum') . ' LIKE ' . $this->_db->quote($fnum_from));
+			$this->_db->setQuery($query);
+			$groups_assoc = $this->_db->loadAssocList();
+
+			if (count($groups_assoc) > 0) {
+				// 2. copy DB définition and duplicate files in applicant directory
+				foreach ($groups_assoc as $group) {
+					$group['fnum'] = $fnum_to;
+					unset($group['id']);
+
+					try {
+						$query->clear()
+							->insert($this->_db->quoteName('#__emundus_group_assoc'))
+							->columns(array_keys($group))
+							->values(implode(", ", $this->_db->quote($group)));
+						$this->_db->setQuery($query);
+						$this->_db->execute();
+					} catch (Exception $e) {
+						$error = JUri::getInstance().' :: fnum : '.$group['user_id'].' :: group : '.$group['group_id'].' -> '.$e->getMessage();
+						JLog::add($error, JLog::ERROR, 'com_emundus');
+					}
+				}
+			}
+		} catch (Exception $e) {
+			echo $e->getMessage();
+			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+			return false;
+		}
+
+		return true;
+	}
 
     /**
      * Duplicate all documents (files)

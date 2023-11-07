@@ -27,7 +27,7 @@ jimport('joomla.application.component.helper');
 class EmundusHelperModule {
     static function getParams($moduleid) {
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->select('params')

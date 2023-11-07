@@ -79,7 +79,7 @@ class EmundusViewForm extends FabrikViewFormBase
             $returnObject->id = $form->id;
 
             $db = FabrikWorker::getDbo(true);
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('id')
                 ->from($db->quoteName('#__menu'))
@@ -145,7 +145,7 @@ class EmundusViewForm extends FabrikViewFormBase
                 ${"group_" . $GroupProperties->id} = new stdClass();
 
                 $db = FabrikWorker::getDbo(true);
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 $query
                     ->select('fg.label,ffg.ordering,fg.params')

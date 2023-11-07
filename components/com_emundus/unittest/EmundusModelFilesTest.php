@@ -149,7 +149,7 @@ class EmundusModelFilesTest extends TestCase{
 		$form_id = $this->h_sample->getUnitTestFabrikForm();
 
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 		$query->select('jfe.id')
 			->from($db->quoteName('#__fabrik_elements', 'jfe'))
 			->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')

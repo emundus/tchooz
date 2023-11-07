@@ -1176,7 +1176,7 @@ class EmundusModelFiles extends JModelLegacy
 					}
 				}
 
-				$query = $db->createQuery();
+				$query = $db->getQuery(true);
 				$query->delete($db->quoteName('#__emundus_group_assoc'))
 					->where($db->quoteName('group_id').' IN ('.implode(',',$groups).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
 				$db->setQuery($query);
@@ -1236,7 +1236,7 @@ class EmundusModelFiles extends JModelLegacy
 					}
 				}
 
-				$query = $db->createQuery();
+				$query = $db->getQuery(true);
 				$query->delete($db->quoteName('#__emundus_users_assoc'))
 					->where($db->quoteName('user_id').' IN ('.implode(',',$users).') AND '.$db->quoteName('fnum').' IN ("'.implode('","',$fnums).'")');
 				$db->setQuery($query);
@@ -1674,13 +1674,22 @@ class EmundusModelFiles extends JModelLegacy
             // Log the update
             $logsParams = array('updated' => []);
             array_push($logsParams['updated'], ['old' => $old_publish, 'new' => $new_publish]);
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+	        $query->clear()
+		        ->select($this->_db->quoteName('applicant_id'))
+		        ->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+		        ->where($this->_db->quoteName('fnum').' LIKE '.$this->_db->quote($fnum));
+	        $this->_db->setQuery($query);
+	        $applicant_id = $this->_db->loadResult();
+            EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
             // Update publish
             JFactory::getApplication()->triggerEvent('onBeforePublishChange', [$fnum, $publish]);
             JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
-            $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$this->_db->Quote($fnum) ;
-            $this->_db->setQuery($query);
+	        $query->clear()
+		        ->update($this->_db->quoteName('#__emundus_campaign_candidature'))
+		        ->set($this->_db->quoteName('published').' = '.$this->_db->quote($publish))
+		        ->where($this->_db->quoteName('fnum').' LIKE '.$this->_db->quote($fnum));
+	        $this->_db->setQuery($query);
             try {
                 $res = $this->_db->execute();
             } catch (Exception $e) {
@@ -1806,39 +1815,28 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public function getFnumInfos($fnum) {
+		try {
+			$query = $this->_db->getQuery(true);
+			$query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->_db->quoteName('c.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
+				->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ss') . ' ON ' . $this->_db->quoteName('ss.step') . ' = ' . $this->_db->quoteName('cc.status'))
+				->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $this->_db->quote($fnum));
+			$this->_db->setQuery($query);
+			$fnumInfos = $this->_db->loadAssoc();
 
-	    $cache = new EmundusHelperCache('com_emundus','','5');
-	    $cacheId = 'fnum_infos_' . $fnum;
-
-	    $fnumInfos = $cache->get($cacheId);
-
-		if(empty($fnumInfos)) {
-			try {
-				$query = $this->_db->getQuery(true);
-				$query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
-					->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
-					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->_db->quoteName('c.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
-					->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
-					->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ss') . ' ON ' . $this->_db->quoteName('ss.step') . ' = ' . $this->_db->quoteName('cc.status'))
-					->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $this->_db->quote($fnum));
-				$this->_db->setQuery($query);
-				$fnumInfos = $this->_db->loadAssoc();
-
-				$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-				if ($anonymize_data) {
-					$fnumInfos['name']  = $fnum;
-					$fnumInfos['email'] = $fnum;
-				}
-
-				$cache->set($cacheId, $fnumInfos);
-
+			$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+			if ($anonymize_data) {
+				$fnumInfos['name']  = $fnum;
+				$fnumInfos['email'] = $fnum;
 			}
-			catch (Exception $e) {
-				echo $e->getMessage();
-				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+		catch (Exception $e) {
+			echo $e->getMessage();
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 
-				return false;
-			}
+			return false;
 		}
 
 	    return $fnumInfos;
@@ -2476,6 +2474,15 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 
+	/**
+	 * @param $fnums
+	 * @param $elements
+	 * @param $start
+	 * @param $limit
+	 * @param $method (0 : regroup all repeat elements in one row, and make values unique ; 1 : Don't regroup repeat elements, make a line for each repeat element ; 2 : regroup all repeat elements in one row, but write all values even if there are duplicates)
+	 *
+	 * @return array|false
+	 */
 	public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0, $method = 0)
 	{
 		$data = [];
@@ -3497,7 +3504,7 @@ class EmundusModelFiles extends JModelLegacy
     public function addAttachment($fnum, $name, $uid, $cid, $attachment_id, $desc, $canSee = 0) {
 	    $now = EmundusHelperDate::getNow();
 	    $db = $this->getDbo();
-	    $query = $db->createQuery();
+	    $query = $db->getQuery(true);
 	    $query->insert($db->quoteName('#__emundus_uploads'))
 		    ->columns($db->quoteName(array('timedate', 'user_id', 'fnum', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id')))
 		    ->values($db->quote($now).', '.$db->quote($uid).', '.$db->quote($fnum).', '.$db->quote($attachment_id).', '.$db->quote($name).', '.$db->quote($desc).', 0, '.$db->quote($canSee).', '.$db->quote($cid));

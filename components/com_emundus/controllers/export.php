@@ -19,6 +19,7 @@ use TheCodingMachine\Gotenberg\OfficeRequest;
 use TheCodingMachine\Gotenberg\HTMLRequest;
 use TheCodingMachine\Gotenberg\Request;
 use TheCodingMachine\Gotenberg\RequestException;
+use GuzzleHttp\Psr7\LazyOpenStream;
 
 /**
  * Custom report controller

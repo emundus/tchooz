@@ -21,6 +21,8 @@ jimport('joomla.application.component.controller');
  */
 class EmundusControllerGroups extends JControllerLegacy {
 
+	protected $app;
+
 	function display($cachable = false, $urlparams = false) {
 		// Set a default view if none exists
 		if ( ! $this->input->get( 'view' ) ) {

@@ -189,7 +189,7 @@ class EmundusHelperEvents {
 
             if (empty($fnum)) {
                 $db = JFactory::getDbo();
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 $query->select('db_table_name')
                     ->from($db->quoteName('#__fabrik_lists'))
@@ -344,7 +344,7 @@ class EmundusHelperEvents {
             }
 
 	        $db = JFactory::getDBO();
-	        $query = $db->createQuery();
+	        $query = $db->getQuery(true);
 
 			$query->select('fnum_from')
 				->from($db->quoteName('#__emundus_campaign_candidature_links'))
@@ -374,7 +374,7 @@ class EmundusHelperEvents {
 
                     // check if data stored for current user
                     try {
-						$query = $db->createQuery();
+						$query = $db->getQuery(true);
 
 	                    $query->select('count(id)')
 		                    ->from($db->quoteName($table->db_table_name))
@@ -481,7 +481,7 @@ class EmundusHelperEvents {
 
                         // sync documents uploaded
                         // 1. get list of uploaded documents for previous file defined as duplicated
-	                    $query = $db->createQuery();
+	                    $query = $db->getQuery(true);
 	                    $query->clear()
 		                    ->select('count(id)')
 		                    ->from($db->quoteName('#__emundus_uploads'))
@@ -604,7 +604,7 @@ class EmundusHelperEvents {
 
 	        if ($attachments < 100 || $forms < 100) {
 		        $db    = JFactory::getDbo();
-		        $query = $db->createQuery();
+		        $query = $db->getQuery(true);
 
 		        $profile_by_status = $mProfile->getProfileByStatus($user->fnum);
 
@@ -781,7 +781,7 @@ class EmundusHelperEvents {
                 }
 
                 if (!empty($link)) {
-                    $query = $db->createQuery();
+                    $query = $db->getQuery(true);
                     $query->select('COUNT(id)')
                         ->from('#__emundus_setup_attachment_profiles')
                         ->where('profile_id = ' . $user->profile)
@@ -942,7 +942,7 @@ class EmundusHelperEvents {
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onBeforeSubmitFile', [$student->id, $student->fnum]);
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
         $query->update($db->quoteName('#__emundus_campaign_candidature'))
             ->set($db->quoteName('submitted') . ' = 1')
             ->set($db->quoteName('date_submitted') . ' = ' . $db->quote($now))
@@ -1120,7 +1120,7 @@ class EmundusHelperEvents {
 			if(!empty($code))
 			{
 				$db    = JFactory::getDbo();
-				$query = $db->createQuery();
+				$query = $db->getQuery(true);
 
 				$eMConfig            = JComponentHelper::getParams('com_emundus');
 				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
@@ -1166,7 +1166,7 @@ class EmundusHelperEvents {
 
             if (!empty($fnum)) {
                 $db = JFactory::getDbo();
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 $query->select('applicant_id')
                     ->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
@@ -1261,7 +1261,7 @@ class EmundusHelperEvents {
             $excluded_plugins = ['display', 'internalid'];
 
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('fe.id, fe.name, fe.plugin, fe.label, fe.params, fe.group_id, fe.default, fl.db_table_name, fg.params as group_params')
                 ->from($db->quoteName('#__fabrik_elements', 'fe'))
@@ -1287,7 +1287,7 @@ class EmundusHelperEvents {
 
     private function logUpdateState($old_status, $new_status, $user_id, $applicant_id, $fnum) {
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('step, value')
             ->from('#__emundus_setup_status')
@@ -1317,7 +1317,7 @@ class EmundusHelperEvents {
 
 		try {
 			$db = JFactory::getDbo();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 
             require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
             $h_date = new EmundusHelperDate();

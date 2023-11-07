@@ -184,7 +184,7 @@ class EmundusModelThesiss extends JModelList
 
 		// Create a new query object.
 		$db    = $this->getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		// Select the required fields from the table.
 		$query
@@ -301,7 +301,7 @@ class EmundusModelThesiss extends JModelList
 				$textValue = array();
 				foreach ($values as $value) {
 					$db = JFactory::getDbo();
-					$query = $db->createQuery();
+					$query = $db->getQuery(true);
 					$query
 							->select($db->quoteName('title'))
 							->from('`#__categories`')

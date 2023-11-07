@@ -26,7 +26,7 @@ class PostgREST extends Api
 	{
 		parent::__construct();
 
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		$this->db = Factory::getDbo();
 
 		$this->setAuth();
 		$this->setHeaders();

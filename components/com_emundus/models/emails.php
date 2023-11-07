@@ -34,7 +34,7 @@ class EmundusModelEmails extends JModelList {
 
         $this->app = Factory::getApplication();
 
-        $this->_db = $this->getDatabase();
+        $this->_db = Factory::getDbo();
         $this->_em_user = $this->app->getSession()->get('emundusUser');
         $this->_user = $this->app->getIdentity();
 
@@ -371,6 +371,12 @@ class EmundusModelEmails extends JModelList {
                     $mailer->Encoding = 'base64';
                     $mailer->setBody($body);
 
+                    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                    if(!empty($custom_email_tag))
+                    {
+                        $mailer->addCustomHeader($custom_email_tag);
+                    }
+
                     try {
                         $send = $mailer->Send();
                     } catch (Exception $e) {
@@ -601,7 +607,7 @@ class EmundusModelEmails extends JModelList {
 
         $db = JFactory::getDBO();
 
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
         $query->select('tag, request')
             ->from($db->quoteName('#__emundus_setup_tags', 't'))
             ->where($db->quoteName('t.published') . ' = 1');
@@ -1121,6 +1127,13 @@ class EmundusModelEmails extends JModelList {
                     }
                 }
 
+                require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+                $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                if(!empty($custom_email_tag))
+                {
+                    $mailer->addCustomHeader($custom_email_tag);
+                }
+
                 $send = $mailer->Send();
 
                 if ($send !== true) {
@@ -1410,6 +1423,13 @@ class EmundusModelEmails extends JModelList {
                         }
                     }
 
+                    require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+                    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+                    if(!empty($custom_email_tag))
+                    {
+                        $mailer->addCustomHeader($custom_email_tag);
+                    }
+
                     $send = $mailer->Send();
                     if ($send !== true) {
                         $failed[] = $m_to;
@@ -1492,10 +1512,11 @@ class EmundusModelEmails extends JModelList {
 
         // log email to admin user if user_id_from is empty
         $row['user_id_from'] = !empty($row['user_id_from']) ? $row['user_id_from'] : 62;
+        $row['email_cc'] = !empty($row['email_cc']) ? $row['email_cc'] : '';
 
         require_once(JPATH_SITE.'/components/com_emundus/helpers/date.php');
         $h_date = new EmundusHelperDate();
-        $now = $h_date::getNow();
+        $now = $h_date->getNow();
 
         $query = $this->_db->getQuery(true);
 
@@ -2793,7 +2814,7 @@ class EmundusModelEmails extends JModelList {
 
         if (!empty($content))
         {
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
             $query->select('tag')
                 ->from($db->quoteName('#__emundus_setup_tags', 't'))
                 ->where($db->quoteName('t.published') . ' = 0');

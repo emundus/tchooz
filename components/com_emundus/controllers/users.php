@@ -212,15 +212,21 @@ class EmundusControllerUsers extends JControllerLegacy
 			$mail_from_name
 		];
 
-		try {
-			$mailer->setSender($sender);
-			$mailer->addReplyTo($email->emailfrom, $email->name);
-			$mailer->addRecipient($user->email);
-			$mailer->setSubject($subject);
-			$mailer->isHTML(true);
-			$mailer->Encoding = 'base64';
-			$mailer->setBody($body);
+		$mailer->setSender($sender);
+		$mailer->addReplyTo($email->emailfrom, $email->name);
+		$mailer->addRecipient($user->email);
+		$mailer->setSubject($subject);
+		$mailer->isHTML(true);
+		$mailer->Encoding = 'base64';
+		$mailer->setBody($body);
 
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+		if(!empty($custom_email_tag))
+		{
+			$mailer->addCustomHeader($custom_email_tag);
+		}
+
+		try {
 			$send = $mailer->Send();
 
 			if ($send === false) {
@@ -1300,7 +1306,7 @@ class EmundusControllerUsers extends JControllerLegacy
 
 			if (!empty($uid)) {
 				$db    = Factory::getDbo();
-				$query = $db->createQuery();
+				$query = $db->getQuery(true);
 
 				// check user is not already activated
 				$query->select('activation')
@@ -1377,34 +1383,6 @@ class EmundusControllerUsers extends JControllerLegacy
 		else {
 			echo json_encode((object) (array('status' => false, 'msg' => JText::_('INVALID_EMAIL'))));
 			exit();
-		}
-	}
-
-	public function activateaccount()
-	{
-		$result = false;
-
-		$emailactivation = $this->input->getInt('emailactivation', 0);
-		$uid = $this->input->getInt('u', 0);
-		$token = $this->input->getString('token', '');
-
-		if($this->user->id === $uid && !empty($token) && !empty($emailactivation)) {
-			$user_token = $this->user->getParam('emailactivation_token', '');
-
-			if(!empty($user_token) && md5($user_token) === $token) {
-				$this->user->activation = 1;
-
-				if($this->user->save()) {
-					$result = true;
-				}
-			}
-		}
-
-		if($result) {
-			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_ACCOUNT_ACTIVATED'), 'success');
-			$this->app->redirect(JUri::base());
-		} else {
-			$this->app->enqueueMessage(JText::_('ERROR_OCCURED'), 'error');
 		}
 	}
 
@@ -1530,4 +1508,24 @@ class EmundusControllerUsers extends JControllerLegacy
 		echo json_encode($currentUser);
 		exit;
 	}
+
+	function getcurrentprofile()
+	{
+		$response = ['data' => [], 'status' => true, 'msg' => ''];
+
+		$em_users = JFactory::getSession()->get('emundusUser');
+		$m_users = $this->getModel('Users');
+
+		if (!empty($em_users->profile)) {
+			$response['data'] = $m_users->getProfileDetails($em_users->profile);
+
+		} else {
+			$response['msg'] = 'No profile found';
+			$response['status'] = false;
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
 }

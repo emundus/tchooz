@@ -22,6 +22,8 @@ use Joomla\CMS\Factory;
  */
 class EmundusControllerEmail extends JControllerLegacy
 {
+	protected $app;
+
 	private $_em_user;
 	private $_user;
 	private $m_emails;
@@ -34,6 +36,7 @@ class EmundusControllerEmail extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 
+		$this->app = Factory::getApplication();
 		$this->_em_user = $this->app->getSession()->get('emundusUser');
 		$this->_user    = $this->app->getIdentity();
 		$this->m_emails = $this->getModel('emails');
@@ -529,9 +532,9 @@ class EmundusControllerEmail extends JControllerLegacy
 
 
 			$trigger      = $this->input->getRaw('trigger');
-			$this->_users = $this->input->getRaw('users');
+			$users = $this->input->getRaw('users');
 
-			$status = $this->m_emails->createTrigger($trigger, $this->_users, $this->_user);
+            $status = $this->m_emails->createTrigger($trigger, $users, $this->_user);
 
 			if ($status) {
 				$tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);
@@ -555,9 +558,9 @@ class EmundusControllerEmail extends JControllerLegacy
 
 			$tid          = $this->input->getInt('tid');
 			$trigger      = $this->input->getRaw('trigger');
-			$this->_users = $this->input->getRaw('users');
+			$users = $this->input->getRaw('users');
 
-			$status = $this->m_emails->updateTrigger($tid, $trigger, $this->_users);
+            $status = $this->m_emails->updateTrigger($tid, $trigger, $users);
 
 			if (!empty($status)) {
 				$tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);

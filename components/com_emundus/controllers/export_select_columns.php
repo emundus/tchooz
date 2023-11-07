@@ -8,7 +8,9 @@ jimport('joomla.application.component.controller');
  * @package    Joomla.Tutorials
  * @subpackage Components
  */
-class EmundusControllerExport_select_columns extends JControllerLegacy {
+class EmundusControllerExport_select_columns extends JControllerLegacy
+{
+    protected $app;
 
 	function display($cachable = false, $urlparams = false){
 		// Set a default view if none exists
@@ -25,6 +27,8 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
 
         parent::__construct($config);
+
+        $this->app = Factory::getApplication();
     }
 
     public function getformtags(){

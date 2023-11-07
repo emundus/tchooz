@@ -110,7 +110,7 @@ class EmundusFilters
 		$elements = [];
 
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		$query->select('jfl.id, jfl.db_table_name, jfl.form_id')
 			->from('jos_fabrik_elements as jfe')
@@ -170,12 +170,16 @@ class EmundusFilters
 		return $this->quick_search_filters;
 	}
 
+	/**
+	 * @param $element
+	 * @return array
+	 */
 	protected function getFabrikElementValues($element)
 	{
 		$values = [];
 
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		switch ($element['plugin']) {
 			case 'databasejoin':
@@ -255,5 +259,55 @@ class EmundusFilters
 		}
 
 		return $values;
+	}
+
+	public function getFabrikElementValuesFromElementId($element_id) {
+		$values = [];
+
+		if (!empty($element_id)) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('plugin, params')
+				->from('jos_fabrik_elements')
+				->where('id = ' . $element_id);
+
+			try {
+				$db->setQuery($query);
+				$element = $db->loadAssoc();
+			} catch (Exception $e) {
+				JLog::add('Failed to get element associated element id ' . $element_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+			}
+
+			if (!empty($element)) {
+				$values = $this->getFabrikElementValues($element);
+
+				$this->saveFiltersAllValues(['id' => $element_id, 'values' => $values]);
+			}
+		}
+
+		return $values;
+	}
+
+	protected function saveFiltersAllValues($element_values = null) {
+		$session = JFactory::getSession();
+
+		if (!empty($element_values)) {
+			$filters_all_values = $session->get('em-filters-all-values', []);
+			$filters_all_values[$element_values['id']] = $element_values['values'];
+		} else {
+			$filters_all_values = [];
+			foreach($this->filters as $filter) {
+				$filters_all_values[$filter['id']] = $filter['values'];
+			}
+
+			foreach($this->applied_filters as $filter) {
+				if (!isset($filters_all_values[$filter['id']]) && !empty($filter['values'])) {
+					$filters_all_values[$filter['id']] = $filter['values'];
+				}
+			}
+		}
+
+		$session->set('em-filters-all-values', $filters_all_values);
 	}
 }

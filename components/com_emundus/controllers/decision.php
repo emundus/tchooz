@@ -24,6 +24,8 @@ use Joomla\CMS\Factory;
 //error_reporting(E_ALL);
 class EmundusControllerDecision extends JControllerLegacy
 {
+	protected $app;
+
 	private $_user;
 	private $_db;
 
@@ -37,7 +39,8 @@ class EmundusControllerDecision extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 
-		$this->_db = Factory::getContainer()->get('DatabaseDriver');
+		$this->app = Factory::getApplication();
+		$this->_db = Factory::getDbo();
 		$this->_user = $this->app->getIdentity();
 
 		parent::__construct($config);
@@ -265,7 +268,6 @@ class EmundusControllerDecision extends JControllerLegacy
 
 	public function addcomment()
 	{
-		$this->input   = $this->input;
 		$user          = JFactory::getUser()->id;
 		$fnums         = $this->input->getString('fnums', null);
 		$title         = $this->input->getString('title', '');
@@ -1067,7 +1069,7 @@ class EmundusControllerDecision extends JControllerLegacy
 	{
 		$view         = $this->input->get('view');
 		$current_user = JFactory::getUser();
-		if ((!@EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) &&
+		if ((!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) &&
 			$view != 'renew_application'
 		)
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));

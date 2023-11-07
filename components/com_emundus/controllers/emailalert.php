@@ -31,12 +31,7 @@ class EmundusControllerEmailalert extends JControllerLegacy
 	{
 		parent::__construct($config);
 
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->_db = Factory::getContainer()->get('DatabaseDriver');
-		}
-		else {
-			$this->_db = Factory::getDBO();
-		}
+		$this->_db = Factory::getDBO();
 
 		$this->app = Factory::getApplication();
 
@@ -61,8 +56,8 @@ class EmundusControllerEmailalert extends JControllerLegacy
 		$key   = $model->getKey();
 
 		if ($key) {
-			$emailfrom = $this->app->getCfg('mailfrom');
-			$fromname  = $this->app->getCfg('fromname');
+			$emailfrom = $this->app->get('mailfrom');
+			$fromname  = $this->app->get('fromname');
 			$message   = $model->getSend();
 
 			foreach ($message as $m) {

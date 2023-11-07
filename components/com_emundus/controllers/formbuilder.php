@@ -14,6 +14,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Factory;
+
 /**
  * FormBuilder Controller
  *
@@ -23,13 +25,16 @@ jimport('joomla.application.component.controller');
  */
 class EmundusControllerFormbuilder extends JControllerLegacy {
 
-    var $m_formbuilder = null;
+	protected $app;
+    private $m_formbuilder;
 
     public function __construct($config = array()) {
         parent::__construct($config);
 
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formbuilder.php');
+
+		$this->app = Factory::getApplication();
         $this->m_formbuilder = $this->getModel('Formbuilder');
     }
 

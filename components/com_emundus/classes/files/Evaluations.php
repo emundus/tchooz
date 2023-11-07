@@ -24,7 +24,7 @@ class Evaluations extends Files
 	    $files_associated = [];
 
         $db = JFactory::getDbo();
-	    $query = $db->createQuery();
+	    $query = $db->getQuery(true);
 
 		$read_access_file = $db->quoteName('action_id') . ' = ' . $db->quote(1) . ' AND ' . $db->quoteName('r') . ' = ' . $db->quote(1);
 		$read_access_evaluation = $db->quoteName('action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('r') . ' = ' . $db->quote(1);
@@ -244,7 +244,7 @@ class Evaluations extends Files
     public function getEvaluationFormByFnum($fnum){
         try {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->clear()
                 ->select('distinct esp.fabrik_group_id')
@@ -275,7 +275,7 @@ class Evaluations extends Files
 	public function getMyEvaluation($fnum){
 		try {
 			$db = JFactory::getDbo();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 
 			$query->clear()
 				->select('id')

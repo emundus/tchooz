@@ -13,7 +13,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-//use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use Joomla\CMS\Factory;
 
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
@@ -33,14 +33,10 @@ jimport( 'joomla.user.helper' );
  */
 class EmundusControllerFiles extends JControllerLegacy
 {
-    /**
-     * @var JUser|null
-     */
-    var $_user = null;
-    /**
-     * @var JDatabase|null
-     */
-    var $_db = null;
+	protected $app;
+
+    private $_user;
+    private $_db;
 
     /**
      * @param array $config
@@ -58,9 +54,10 @@ class EmundusControllerFiles extends JControllerLegacy
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
-        $this->_user = JFactory::getSession()->get('emundusUser');
+		$this->app = Factory::getApplication();
+        $this->_user = $this->app->getSession()->get('emundusUser');
 
-        $this->_db = JFactory::getDBO();
+        $this->_db = Factory::getDBO();
 
         parent::__construct($config);
     }
@@ -876,8 +873,6 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function getExistEmailTrigger() {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-
-        $app    = $this->app;
         
         $state  = $this->input->getInt('state', null);
         $fnums  = $this->input->getString('fnums', null);
@@ -1284,7 +1279,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $validFnums = array();
 		$db = JFactory::getDbo();
-	    $query = $db->createQuery();
+	    $query = $db->getQuery(true);
 
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) && $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
@@ -4078,7 +4073,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 $response['msg'] = JText::_('NO_CALCULATION_FOR_THIS_MODULE');
 
                 $db = JFactory::getDbo();
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 $query->select('params')
                     ->from('#__modules')

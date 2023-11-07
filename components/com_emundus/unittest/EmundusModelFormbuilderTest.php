@@ -66,7 +66,7 @@ class EmundusModelFormbuilderTest extends TestCase
         $this->assertNotEmpty($new_key, 'La fonction de traduction a fonctionné');
 
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('override')
             ->from('#__emundus_setup_languages')
@@ -95,7 +95,7 @@ class EmundusModelFormbuilderTest extends TestCase
         $this->assertNotEmpty($new_key, 'La fonction formsTrad a fonctionné sans définir le type d\'élément passé.');
 
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('override')
             ->from('#__emundus_setup_languages')
@@ -122,7 +122,7 @@ class EmundusModelFormbuilderTest extends TestCase
         $this->assertGreaterThan(0, $form_id, 'le formulaire a bien été créé');
 
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
         $query->select('*')
             ->from('#__fabrik_forms')
             ->where('id = ' . $form_id);
@@ -172,7 +172,7 @@ class EmundusModelFormbuilderTest extends TestCase
             $this->m_formbuilder->updateGroupParams($group['group_id'], ['is_sample' => true, 'repeat_group_button' => 0]);
 
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('id')
                 ->from('#__fabrik_formgroup')
@@ -209,7 +209,7 @@ class EmundusModelFormbuilderTest extends TestCase
             $this->m_formbuilder->updateGroupParams($group['group_id'], ['intro' => $new_intro, 'is_sample' => true, 'repeat_group_button' => 0], 'fr');
 
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('params')
                 ->from('#__fabrik_groups')
@@ -257,7 +257,7 @@ class EmundusModelFormbuilderTest extends TestCase
         $this->assertFalse($deleted);
 
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->insert('#__emundus_template_form')
             ->columns(['form_id', 'label'])
@@ -290,7 +290,7 @@ class EmundusModelFormbuilderTest extends TestCase
         $this->assertNotEmpty($new_form_id, 'La copie de formulaire fonctionne');
 
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->clear()
             ->select('label')
@@ -319,7 +319,7 @@ class EmundusModelFormbuilderTest extends TestCase
 
 		// Création d'un document de test
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		$query->select('id')
 			->from('#__emundus_setup_attachments')
@@ -362,7 +362,7 @@ class EmundusModelFormbuilderTest extends TestCase
 		$this->assertGreaterThan(0, $new_element_id, 'createSimpleElement returns the id of the created element');
 
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		$query->select('plugin')
 			->from('#__fabrik_elements')
@@ -397,7 +397,7 @@ class EmundusModelFormbuilderTest extends TestCase
 
 
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 		$query->select('id')
 			->from('#__emundus_setup_profiles')
 			->where('published = 1')
@@ -437,7 +437,7 @@ class EmundusModelFormbuilderTest extends TestCase
 		$this->assertEmpty($new_table_name, 'createDatabaseTableFromTemplate returns empty string if no profile id given');
 
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 		$query->select('id')
 			->from('#__emundus_setup_profiles')
 			->where('published = 1')

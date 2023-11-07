@@ -6,9 +6,12 @@ jimport('joomla.application.component.controller');
 jimport( 'joomla.user.helper' );
 
 use \classes\files\files;
+use Joomla\CMS\Factory;
 
 class EmundusControllerFile extends JControllerLegacy
 {
+	protected $app;
+
 	private $_user;
 	private $type;
 	private $files;
@@ -18,6 +21,7 @@ class EmundusControllerFile extends JControllerLegacy
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'files'.DS.'Files.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'classes'.DS.'files'.DS.'Evaluations.php');
 
+		$this->app = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
 		$this->type = $this->input->getString('type','default');
 		$refresh = $this->input->getString('refresh',false);

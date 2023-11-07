@@ -38,15 +38,8 @@ class EmundusControllersettings extends JControllerLegacy {
 	    $this->m_settings = $this->getModel('settings');
 		$this->app = Factory::getApplication();
 
-	    if (version_compare(JVERSION, '4.0', '>'))
-	    {
 		    $this->user = $this->app->getIdentity();
 	    }
-	    else
-	    {
-		    $this->user = Factory::getUser();
-	    }
-    }
 
     public function getstatus() {
         $user = JFactory::getUser();
@@ -470,7 +463,7 @@ class EmundusControllersettings extends JControllerLegacy {
     public function getbackgroundoption(){
         $user = JFactory::getUser();
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -499,7 +492,7 @@ class EmundusControllersettings extends JControllerLegacy {
     public function updatebackgroundmodule() {
         $user = JFactory::getUser();
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -929,7 +922,7 @@ class EmundusControllersettings extends JControllerLegacy {
             echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
         } else {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             try {
                 $query->clear()

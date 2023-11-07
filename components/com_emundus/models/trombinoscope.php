@@ -197,7 +197,7 @@ class EmundusModelTrombinoscope extends JModelLegacy
 
     public function selectHTMLLetters() {
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
         $query->select(array($db->quoteName('title'),$db->quoteName('attachment_id'),$db->quoteName('body'),$db->quoteName('header'),$db->quoteName('footer')))
             ->from($db->quoteName('#__emundus_setup_letters'))
             ->where($db->quoteName('template_type') . ' = 2');
@@ -211,7 +211,7 @@ class EmundusModelTrombinoscope extends JModelLegacy
         $attachment = [];
 
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select($db->quoteName('lbl'))
             ->from($db->quoteName('#__emundus_setup_attachments','esa'))

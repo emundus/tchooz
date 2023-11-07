@@ -369,7 +369,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         // Tags are replaced with their corresponding values.
         if (empty($template) || empty($template->Template)) {
         	$db = JFactory::getDbo();
-        	$query = $db->createQuery();
+        	$query = $db->getQuery(true);
 
         	$query->select($db->quoteName('Template'))
 		        ->from($db->quoteName('#__emundus_email_templates'))
@@ -441,7 +441,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         // Files generated using the Letters system. Requires attachment creation and doc generation rights.
         if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c') && !empty($attachments['setup_letters'])) {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             // Get from DB and generate using the tags.
             foreach ($attachments['setup_letters'] as $setup_letter) {
@@ -519,7 +519,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			die(Text::_("ACCESS_DENIED"));
 		}
 
-	    $db = Factory::getContainer()->get('DatabaseDriver');
+	    $db = Factory::getDbo();
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
@@ -630,7 +630,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 
             if (empty($template) || empty($template->Template)) {
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 $query->select($db->quoteName('Template'))
                     ->from($db->quoteName('#__emundus_email_templates'))
@@ -653,7 +653,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	        ];
 
             // Configure email sender
-            $mailer = Factory::getContainer()->get(Mail\MailerFactoryInterface::class)->createMailer();
+            $mailer = Factory::getMailer();
             $mailer->setSender($sender);
 			if(!empty($reply_to_from))
 			{
@@ -753,6 +753,12 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             $mailer->addAttachment(array_unique($toAttach));
 
+	        $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+	        if(!empty($custom_email_tag))
+	        {
+		        $mailer->addCustomHeader($custom_email_tag);
+	        }
+
             // Send and log the email.
             $send = $mailer->Send();
             if ($send !== true) {
@@ -762,7 +768,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             } else {
                 // Assoc tags if email has been sent
                 if($tags_str != null || !empty($template->tags)){
-                    $query = $db->createQuery();
+                    $query = $db->getQuery(true);
 
                     $tags = array_filter(array_merge(explode(',',$tags_str),explode(',',$template->tags)));
 
@@ -863,7 +869,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$template = $m_messages->getEmail($template_id);
 		} else {
 			$db = JFactory::getDbo();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 
 			$query->clear()
 				->select($db->quoteName('Template'))
@@ -946,6 +952,12 @@ class EmundusControllerMessages extends JControllerLegacy {
 			}
 
 			$mailer->addAttachment($toAttach);
+
+			$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+			if(!empty($custom_email_tag))
+			{
+				$mailer->addCustomHeader($custom_email_tag);
+			}
 
 			// Send and log the email.
 			$send = $mailer->Send();
@@ -1182,6 +1194,13 @@ class EmundusControllerMessages extends JControllerLegacy {
         if (!empty($toAttach)) {
 	        $mailer->addAttachment($toAttach);
         }
+
+	    $custom_email_tag = EmundusHelperEmails::getCustomHeader();
+	    if(!empty($custom_email_tag))
+	    {
+		    $mailer->addCustomHeader($custom_email_tag);
+	    }
+
 	    // Send and log the email.
         $send = $mailer->Send();
 
@@ -1335,6 +1354,13 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$mailer->addAttachment($toAttach);
 		}
 
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
+		if(!empty($custom_email_tag))
+		{
+			$mailer->addCustomHeader($custom_email_tag);
+		}
+
 		$send = $mailer->Send();
 		if ($send !== true) {
 			if ($send === false) {
@@ -1349,7 +1375,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
             if ($user_id_to === null) {
                 $db = JFactory::getDbo();
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 $query->select('id')
                     ->from($db->quoteName('#__users'))
@@ -1517,7 +1543,7 @@ class EmundusControllerMessages extends JControllerLegacy {
     public function getTypeAttachment($id) {
         $db = JFactory::getDbo();
 
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query
             ->select('esa.*')
@@ -1532,7 +1558,7 @@ class EmundusControllerMessages extends JControllerLegacy {
     public function getTypeLetters($id) {
         $db = JFactory::getDbo();
 
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query
             ->select('esl.*')
@@ -1659,7 +1685,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         $types = $raw['types'];
 
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select($db->quoteName('Template'))
             ->from($db->quoteName('#__emundus_email_templates'))

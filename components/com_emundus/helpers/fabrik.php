@@ -750,7 +750,7 @@ die("<script>
 
     static function addOption($eid,$label,$value){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->select('params')
@@ -775,7 +775,7 @@ die("<script>
 
     static function addNotEmptyValidation($eid,$message = '',$condition = ''){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->select('params')
@@ -819,7 +819,7 @@ die("<script>
 
     static function checkFabrikJoins($eid,$name,$plugin,$group_id){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             if($plugin == 'user'){
@@ -859,7 +859,7 @@ die("<script>
 
 		if (!empty($eid) && !empty($action)) {
 			$db = JFactory::getDbo();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 
 			try {
 				$query->select('count(id)')
@@ -906,7 +906,7 @@ die("<script>
 
     static function getTableFromFabrik($id, $object = 'list') {
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->select('fl.db_table_name')
@@ -930,7 +930,7 @@ die("<script>
 	{
 		if(!in_array($eid,$filters['elementid'])){
 			$db = JFactory::getDbo();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 
 			$query->select('fl.db_table_name,fe.name')
 				->from($db->quoteName('#__fabrik_elements','fe'))

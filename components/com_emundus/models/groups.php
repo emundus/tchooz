@@ -510,7 +510,7 @@ class EmundusModelGroups extends JModelList
 		}
 
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		$result = [];
 		foreach ($group_ids as $group_id) {

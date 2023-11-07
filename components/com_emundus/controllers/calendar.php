@@ -10,6 +10,8 @@
 // ensure this file is being included by a parent file
 defined('_JEXEC') or die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
+use Joomla\CMS\Factory;
+
 
 /**
  * Custom report controller
@@ -17,13 +19,15 @@ defined('_JEXEC') or die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
  */
 class EmundusControllerCalendar extends JControllerLegacy
 {
-
+	private $_user;
+	protected $app;
 
 	public function __construct($config = array())
 	{
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 
+		$this->app = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
 
 		parent::__construct($config);

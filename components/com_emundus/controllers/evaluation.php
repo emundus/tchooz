@@ -23,6 +23,8 @@ use Joomla\CMS\Factory;
  */
 class EmundusControllerEvaluation extends JControllerLegacy
 {
+	protected $app;
+
     private $_user;
 	private $_db;
 	private $_session;
@@ -37,7 +39,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'export.php');
         require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
-		$this->_db = Factory::getContainer()->get('DatabaseDriver');
+		$this->app = Factory::getApplication();
+		$this->_db = Factory::getDbo();
 		$this->_user = $this->app->getIdentity();
 		$this->_session = $this->app->getSession();
 
@@ -525,9 +528,6 @@ class EmundusControllerEvaluation extends JControllerLegacy
     }
 
     public function updatestate() {
-
-	    $app    = $this->app;
-	    
 	    $fnums  = $this->input->getString('fnums', null);
 	    $state  = $this->input->getInt('state', null);
 

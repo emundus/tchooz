@@ -25,6 +25,8 @@ use Joomla\CMS\Factory;
  */
 class EmundusControllerDashboard extends JControllerLegacy
 {
+	protected $app;
+
 	private $_user;
 	private $m_dashboard;
 
@@ -32,6 +34,7 @@ class EmundusControllerDashboard extends JControllerLegacy
 	{
 		parent::__construct($config);
 
+		$this->app = Factory::getApplication();
 		$this->m_dashboard = $this->getModel('Dashboard');
 		$this->_user       = $this->app->getIdentity();
 	}
@@ -55,7 +58,7 @@ class EmundusControllerDashboard extends JControllerLegacy
 	public function getpalettecolors()
 	{
 		$db    = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		try {
 			$menu   = $this->app->getMenu();

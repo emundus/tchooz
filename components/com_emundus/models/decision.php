@@ -879,7 +879,7 @@ class EmundusModelDecision extends JModelList
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id
-					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum LIKE jecc.fnum
+					LEFT JOIN #__emundus_final_grade as jos_emundus_final_grade on jos_emundus_final_grade.fnum = jecc.fnum
 					LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum = jecc.fnum  ';
 
 		if (in_array('overall', $em_other_columns)) {

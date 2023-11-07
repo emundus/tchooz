@@ -80,7 +80,7 @@ class EmundusModelUser extends JModelList
         $session = JFactory::getSession();
         $current_user = $session->get('emundusUser');
 
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
         $fields = array(
             $db->quoteName('email') . ' = ' . $db->quote($email),
             $db->quoteName('username') . ' = ' . $db->quote($email)
@@ -120,7 +120,7 @@ class EmundusModelUser extends JModelList
 
     public function getUsernameByEmail($email){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $username = '';
 

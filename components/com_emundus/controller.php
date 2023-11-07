@@ -24,6 +24,8 @@ class EmundusController extends JControllerLegacy {
     private $_user;
 	private $_db;
 
+	protected $app;
+
     function __construct($config = array()){
 	    parent::__construct($config);
 
@@ -32,6 +34,7 @@ class EmundusController extends JControllerLegacy {
         include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
+		$this->app = Factory::getApplication();
         $this->_user = $this->app->getSession()->get('emundusUser');
         $this->_db = Factory::getDBO();
     }
@@ -1381,24 +1384,26 @@ class EmundusController extends JControllerLegacy {
             $this->setRedirect(JRoute::_('index.php'), JText::_('Only administrator can access this function.'), 'error');
             return;
         }
-        $attachment_id = $this->input->get('aid', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_selected = $this->input->get('as', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_displayed = $this->input->get('ad', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_required = $this->input->get('ar', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $attachment_bank_needed = $this->input->get('ab', $default=null, $hash= 'POST', $type= 'array', $mask=0);
-        $profile_id = $this->input->get('pid', $default=null, $hash= 'POST', $type= 'none', $mask=0);
-        if ($profile_id != $this->input->get('rowid', $default=null, $hash= 'GET', $type= 'none', $mask=0) || !is_numeric($profile_id) || floor($profile_id) != $profile_id || $profile_id <= 0) {
+        $attachment_id = $this->input->post->get('aid', array(), 'array');
+        $attachment_selected = $this->input->post->get('as', array(), 'array');
+        $attachment_displayed = $this->input->post->get('ad', array(), 'array');
+        $attachment_required = $this->input->post->get('ar', array(), 'array');
+        $attachment_bank_needed = $this->input->post->get('ab', array(), 'array');
+        $profile_id = $this->input->post->getInt('pid', 0);
+        if ($profile_id != $this->input->getInt('rowid', 0) || !is_numeric($profile_id) || floor($profile_id) != $profile_id || $profile_id <= 0) {
             $this->setRedirect('index.php', 'Error', 'error');
             return;
         }
+
+	    $attachments = array();
         if (!empty($attachment_selected)) {
-            $attachments = array();
-            $a = new stdClass();
+
             foreach ($attachment_id as $id) {
-                $a->selected = @in_array($id, $attachment_selected);
-                $a->displayed = @in_array($id, $attachment_displayed);
-                $a->required = @in_array($id, $attachment_required);
-                $a->bank_needed = @in_array($id, $attachment_bank_needed);
+	            $a = new stdClass();
+                $a->selected = in_array($id, $attachment_selected);
+                $a->displayed = in_array($id, $attachment_displayed);
+                $a->required = in_array($id, $attachment_required);
+                $a->bank_needed = in_array($id, $attachment_bank_needed);
                 $attachments[$id] = $a;
                 unset($a);
             }
@@ -1408,7 +1413,7 @@ class EmundusController extends JControllerLegacy {
         
 // ATTACHMENTS
         $this->_db->setQuery('DELETE FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$profile_id);
-        $this->_db->execute() or die($this->_db->getErrorMsg());
+        $this->_db->execute();
         if (isset($attachments)) {
             $query = 'INSERT INTO #__emundus_setup_attachment_profiles (`profile_id`, `attachment_id`, `displayed`, `mandatory`, `bank_needed`) VALUES';
             foreach ($attachments as $id => $attachment) {
@@ -1422,7 +1427,7 @@ class EmundusController extends JControllerLegacy {
                 $query .= '),';
             }
             $this->_db->setQuery( substr($query, 0, -1) );
-            $this->_db->execute() or die($this->_db->getErrorMsg());
+            $this->_db->execute();
         }
 // FORMS
         $Itemid = $this->input->get('Itemid', null, 'POST', 'none',0);

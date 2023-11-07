@@ -27,16 +27,10 @@ class EmundusHelperMenu {
 		$list = [];
 
 		$app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$db = Factory::getContainer()->get('DatabaseDriver');
-			$user = $app->getIdentity();
-		} else {
 			$db = Factory::getDBO();
-			$user = Factory::getUser();
-		}
+		$user = $app->getIdentity();
 
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		$levels = [];
 		if ($checklevel) {
@@ -104,18 +98,12 @@ class EmundusHelperMenu {
 
 	public static function getUserApplicationMenu($profile, $formids = null) {
 		$app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$db = Factory::getContainer()->get('DatabaseDriver');
+		$db = Factory::getDBO();
 			$user = $app->getIdentity();
-		} else {
-			$db = Factory::getDBO();
-			$user = Factory::getUser();
-		}
 		
 		$levels = Access::getAuthorisedViewLevels($user->id);
 
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
 			->from($db->quoteName('#__menu','menu'))
@@ -148,7 +136,7 @@ class EmundusHelperMenu {
 			$db = Factory::getDBO();
 		}
 
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		$query->select('fbtables.db_table_name')
 			->from($db->quoteName('#__menu','menu'))

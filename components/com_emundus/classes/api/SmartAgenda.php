@@ -55,7 +55,7 @@ class SmartAgenda
     {
         JLog::addLogger(['text_file' => 'com_emundus.smart_agenda.php'], JLog::ALL, 'com_emundus.smart_agenda');
 
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		$this->db = Factory::getDbo();
 		
         $this->setAuth();
 

@@ -50,7 +50,7 @@ class EmundusHelperTags
         $return = [];
 
         $db = JFactory::getDBO();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('*')
             ->from('#__emundus_setup_tags')

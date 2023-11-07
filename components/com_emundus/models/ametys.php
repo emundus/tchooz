@@ -164,7 +164,7 @@ class EmundusModelAmetys extends JModelLegacy
     public function getConnections($description)
     {
         $db = JFactory::getDBO();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
         $query->select('*, id AS value, description AS text')->from('#__fabrik_connections')->where('published = 1 and description like "'.$description.'"');
         $db->setQuery($query);
         $connections = $db->loadObjectList();

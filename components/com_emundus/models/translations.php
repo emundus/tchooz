@@ -913,7 +913,7 @@ class EmundusModelTranslations extends JModelList
 	public function getPlatformLanguages(): array
 	{
 		$db    = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		$query
 			->select($db->quoteName('lang_code'))
@@ -1408,7 +1408,7 @@ class EmundusModelTranslations extends JModelList
 		if (!empty($reference_table) && !empty($reference_id))
 		{
 			$db    = JFactory::getDbo();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 
 			switch ($reference_table)
 			{
@@ -1481,7 +1481,7 @@ class EmundusModelTranslations extends JModelList
 		if (!empty($tag) && !empty($reference_table) && !empty($reference_id))
 		{
 			$db    = JFactory::getDbo();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 
 			switch ($reference_table)
 			{

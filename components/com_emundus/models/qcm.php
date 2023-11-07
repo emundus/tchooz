@@ -14,7 +14,7 @@ class EmundusModelQcm extends JModelList {
 
     public function getQcm($formid){
         $db = $this->getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query
             ->select('*')
@@ -32,7 +32,7 @@ class EmundusModelQcm extends JModelList {
 
     public function getQcmApplicant($fnum,$qcm){
         $db = $this->getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query
             ->select('*')
@@ -62,7 +62,7 @@ class EmundusModelQcm extends JModelList {
 
     public function initQcmApplicant($fnum,$idqcm){
         $db = $this->getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
         $m_profile = new EmundusModelProfile;
@@ -122,7 +122,7 @@ class EmundusModelQcm extends JModelList {
 
 		if (!empty($question_ids)) {
 			$db = $this->getDbo();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 
 			$query->select('qq.*, GROUP_CONCAT(qqr.id) as proposals_id,GROUP_CONCAT(qqr.proposals SEPARATOR "|") as proposals_text')
 				->from($db->quoteName('#__emundus_qcm_questions','qq'))
@@ -149,7 +149,7 @@ class EmundusModelQcm extends JModelList {
 
     public function saveAnswer($question,$answers,$current_user,$formid,$module){
         $db = $this->getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $fnum = $current_user->fnum;
 
@@ -302,7 +302,7 @@ class EmundusModelQcm extends JModelList {
 
     public function checkPoints($answers,$module,$good_answers){
         $db = $this->getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $points = 0;
 
@@ -351,7 +351,7 @@ class EmundusModelQcm extends JModelList {
 
     public function updatePending($pending,$current_user,$formid){
         $db = $this->getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $fnum = $current_user->fnum;
 
@@ -373,7 +373,7 @@ class EmundusModelQcm extends JModelList {
 
     public function getIntro($module){
         $db = $this->getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query

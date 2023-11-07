@@ -202,7 +202,7 @@ class EmundusControllerMessenger extends JControllerLegacy
 
 					if ($applicant && !empty($attachment)) {
 						$db = JFactory::getDbo();
-						$query = $db->createQuery();
+						$query = $db->getQuery(true);
 
 						$query->select('lbl')
 							->from($db->quoteName('#__emundus_setup_attachments'))

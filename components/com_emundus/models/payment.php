@@ -65,7 +65,7 @@ class EmundusModelPayment extends JModelList
 
         if (!empty($scholarship_document_id) ) {
             $db = JFactory::getDBO();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('COUNT(id)')
                 ->from('#__emundus_uploads')
@@ -97,7 +97,7 @@ class EmundusModelPayment extends JModelList
     {
         $uniqid = $fnum . '-' . uniqid();
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('id, order_id, params')
             ->from($db->quoteName('#__emundus_hikashop'))
@@ -147,7 +147,7 @@ class EmundusModelPayment extends JModelList
         if (!empty($hikashop_user_id)) {
             $price = $this->getPrice($fnum);
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $columns = array('order_user_id', 'order_status', 'order_created', 'order_modified', 'order_type', 'order_payment_method', 'order_full_price', 'order_number');
             $values = $db->quote($hikashop_user_id) . ', ' . $db->quote('created') . ', ' . $db->quote(time()) . ', ' . $db->quote(time()) . ', ' . $db->quote('sale') . ', ' . $db->quote($type) . ', ' . $db->quote($price);
@@ -200,7 +200,7 @@ class EmundusModelPayment extends JModelList
     private function getUserIdFromFnum($fnum)
     {
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('applicant_id')
             ->from($db->quoteName('#__emundus_campaign_candidature'))
@@ -215,7 +215,7 @@ class EmundusModelPayment extends JModelList
     private function getHikashopUserId($user_id)
     {
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('jhu.user_id')
             ->from('#__hikashop_user AS jhu')
@@ -234,7 +234,7 @@ class EmundusModelPayment extends JModelList
     private function createHikashopUser($user_id)
     {
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('email')
             ->from('#__users')
@@ -285,7 +285,7 @@ class EmundusModelPayment extends JModelList
         $updated = false;
 
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('id')
             ->from('#__emundus_hikashop')
@@ -329,7 +329,7 @@ class EmundusModelPayment extends JModelList
     {
         $inserted = false;
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles;
@@ -361,7 +361,7 @@ class EmundusModelPayment extends JModelList
 
         if (!empty($fnum)) {
             $db = JFactory::getDBO();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('jespbc.*, jec.campaign_id')
                 ->from('#__emundus_setup_payments_by_campaign AS jespbc')
@@ -389,7 +389,7 @@ class EmundusModelPayment extends JModelList
 
         if (!empty($product_id)) {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('*')
                 ->from('#__hikashop_product')
@@ -503,7 +503,7 @@ class EmundusModelPayment extends JModelList
         $fnum = false;
 
         $db = JFactory::getDBO();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('fnum, params')
             ->from('#__emundus_hikashop')
@@ -538,7 +538,7 @@ class EmundusModelPayment extends JModelList
         $fnum = false;
 
         $db = JFactory::getDBO();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('fnum')
             ->from('#__emundus_hikashop')
@@ -577,7 +577,7 @@ class EmundusModelPayment extends JModelList
     {
         $updated = false;
         $db = JFactory::getDBO();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('*')
             ->from('#__emundus_hikashop')
@@ -648,7 +648,7 @@ class EmundusModelPayment extends JModelList
 
         if (!empty($profile['menutype'])) {
             $db = JFactory::getDBO();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('modu.id, modu.params')
                 ->from('#__modules as modu')
@@ -712,7 +712,7 @@ class EmundusModelPayment extends JModelList
 
         if (!empty($fnum)) {
             $db = JFactory::getDBO();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('params')
                 ->from('#__emundus_hikashop')
@@ -776,7 +776,7 @@ class EmundusModelPayment extends JModelList
                 $new_config = array_merge($config, $new_config);
 
                 $db = JFactory::getDBO();
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 $query->update('#__emundus_hikashop')
                     ->set('params = ' . $db->quote(json_encode($new_config)))
@@ -806,7 +806,7 @@ class EmundusModelPayment extends JModelList
 
         if (!empty($profile['menutype'])) {
             $db = JFactory::getDBO();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('modu.id, modu.params')
                 ->from('#__modules as modu')
@@ -909,7 +909,7 @@ class EmundusModelPayment extends JModelList
         $updated = false;
 
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->clear()
             ->update('#__hikashop_order')
@@ -1056,7 +1056,7 @@ class EmundusModelPayment extends JModelList
 
         if (!empty($fnum)) {
             $db = JFactory::getDBO();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('hu.user_id', 'hu.user_mail')
                 ->from($db->quoteName('#__hikashop_user', 'hu'))
@@ -1083,7 +1083,7 @@ class EmundusModelPayment extends JModelList
 
             if (!empty($hikashop_user->user_id)) {
                 $db = JFactory::getDBO();
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 $query->select('discount_code')
                     ->from($db->quoteName('#__hikashop_discount'))
@@ -1121,7 +1121,7 @@ class EmundusModelPayment extends JModelList
 		if (!empty($fnum)) {
 			$discount_code = $fnum . '-REDUCTION-' . uniqid();
 			$db = JFactory::getDBO();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 
 			$hikashop_user = $this->getHikashopUser($fnum);
 

@@ -33,12 +33,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
         parent::__construct($config);
 
 		$this->app = Factory::getApplication();
-	    if (version_compare(JVERSION, '4.0', '>'))
-	    {
 		    $this->_user = $this->app->getIdentity();
-		} else {
-		    $this->_user = JFactory::getUser();
-	    }
 
         $this->m_programme = $this->getModel('programme');
     }

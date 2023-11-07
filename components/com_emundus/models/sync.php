@@ -23,7 +23,7 @@ class EmundusModelSync extends JModelList {
 
     function getConfig($type){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->select('config')
@@ -39,7 +39,7 @@ class EmundusModelSync extends JModelList {
 
     function saveConfig($config,$type){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->select('id')
@@ -74,7 +74,7 @@ class EmundusModelSync extends JModelList {
     function saveParams($key, $value, $type) {
         $db = JFactory::getDbo();
 
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
         $query->select('params')
             ->from($db->quoteName('#__emundus_setup_sync'))
             ->where($db->quoteName('type') . ' LIKE ' . $db->quote($type));
@@ -169,7 +169,7 @@ class EmundusModelSync extends JModelList {
 
     function getDocuments(){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->select('id,lbl,value,sync,sync_method')
@@ -184,7 +184,7 @@ class EmundusModelSync extends JModelList {
 
     function getEmundusTags(){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->select('tag')
@@ -200,7 +200,7 @@ class EmundusModelSync extends JModelList {
 
     function updateDocumentSync($did,$sync){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->update($db->quoteName('#__emundus_setup_attachments'))
@@ -216,7 +216,7 @@ class EmundusModelSync extends JModelList {
 
     function updateDocumentSyncMethod($did,$sync_method){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->update($db->quoteName('#__emundus_setup_attachments'))
@@ -244,7 +244,7 @@ class EmundusModelSync extends JModelList {
 
     function getSyncType($upload_id) {
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('type')
             ->from('#__emundus_setup_sync')
@@ -293,7 +293,7 @@ class EmundusModelSync extends JModelList {
     function getUploadSyncState($upload_id)
     {
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('state')
             ->from('#__emundus_uploads_sync')
@@ -415,7 +415,7 @@ class EmundusModelSync extends JModelList {
         $aspectsConfig = array();
 
         $db = JFactory::getDBO();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('params')
             ->from('#__emundus_setup_attachments')
@@ -443,7 +443,7 @@ class EmundusModelSync extends JModelList {
     public function saveAttachmentAspectsConfig($attachment_id, $aspectsConfig) {
         $saved = false;
         $db = JFactory::getDBO();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('params')
             ->from('#__emundus_setup_attachments')
@@ -481,7 +481,7 @@ class EmundusModelSync extends JModelList {
 
         if (!empty($upload_id)) {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('node_id')
                 ->from($db->quoteName('#__emundus_uploads_sync'))

@@ -26,7 +26,7 @@ class EmundusModelMessenger extends JModelList
     function getFilesByUser() {
         $files = [];
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $user = JFactory::getSession()->get('emundusUser');
 
@@ -74,7 +74,7 @@ class EmundusModelMessenger extends JModelList
 					$dates[$key]->messages = explode(',', $date->messages);
 				}
 
-				$query = $db->createQuery();
+				$query = $db->getQuery(true);
 				$query->select('m.*,u.name')
 					->from($db->quoteName('#__messages','m'))
 					->leftJoin($db->quoteName('#__emundus_chatroom','c').' ON '.$db->quoteName('c.id').' = '.$db->quoteName('m.page'))
@@ -101,7 +101,7 @@ class EmundusModelMessenger extends JModelList
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $user = JFactory::getSession()->get('emundusUser');
 
@@ -161,7 +161,7 @@ class EmundusModelMessenger extends JModelList
 
     function getMessageById($id){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->select('m.*,u.name')
@@ -178,7 +178,7 @@ class EmundusModelMessenger extends JModelList
 
     function getNotifications($user){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             $query->select('count(m.message_id) as notifications,ec.fnum')
@@ -199,7 +199,7 @@ class EmundusModelMessenger extends JModelList
 
     function getNotificationsByFnum($fnum){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $user = JFactory::getUser();
 
@@ -220,7 +220,7 @@ class EmundusModelMessenger extends JModelList
 
     function markAsRead($fnum){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $user = JFactory::getUser();
 
@@ -255,7 +255,7 @@ class EmundusModelMessenger extends JModelList
 
         if (!empty($fnum)) {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             try {
                 if ($applicant == 'true') {
@@ -305,7 +305,7 @@ class EmundusModelMessenger extends JModelList
     function askAttachment($fnum, $attachment, $message){
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $m_messages = new EmundusModelMessages;
 
@@ -351,7 +351,7 @@ class EmundusModelMessenger extends JModelList
 
         if (!empty($fnumInfos['fnum'])) {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
             $user = JFactory::getUser();
 
             try{
@@ -417,7 +417,7 @@ class EmundusModelMessenger extends JModelList
 
     function notifyByMail($applicant_fnum,$notify_applicant = 0) {
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
         include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');

@@ -34,16 +34,14 @@ class EmundusHelperFilters {
 	*/
 	public static function insertValuesInQueryResult($results, $options) {
 		foreach ($results as $key => $result) {
-			if (array_key_exists('params', $result)) {
-				if (is_array($result)) {
-
+			if (is_array($result) && array_key_exists('params', $result)) {
 					$results[$key]['table_label'] = JText::_($results[$key]['table_label']);
 					$results[$key]['group_label'] = JText::_($results[$key]['group_label']);
 					$results[$key]['element_label'] = JText::_($results[$key]['element_label']);
 
 					$params = json_decode($result['params']);
 					foreach ($options as $option) {
-						if (property_exists($params, 'sub_options') && array_key_exists($option, $params->sub_options)) {
+					if (property_exists($params, 'sub_options') && property_exists($params->sub_options, $option)) {
 							$results[$key][$option] = implode('|', $params->sub_options->$option);
 						} else {
 							$results[$key][$option] = '';
@@ -65,7 +63,6 @@ class EmundusHelperFilters {
 					}
 				}
 			}
-		}
 		return $results;
 	}
 
@@ -305,12 +302,7 @@ class EmundusHelperFilters {
 	* @return   array 	list of Fabrik element ID used in evaluation form
 	**/
 	static function getElementsByGroups($groups, $show_in_list_summary=1, $hidden=0) {
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$db = Factory::getContainer()->get('DatabaseDriver');
-		} else {
 			$db = Factory::getDBO();
-		}
 
 		$elements = array();
 
@@ -354,7 +346,7 @@ class EmundusHelperFilters {
 
 		if (!empty($groups)) {
 			$db = JFactory::getDBO();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 			$query->select('jfe.name, jfe.label, jfe.plugin, jfe.id as element_id, jfg.id, jfg.label AS group_label, jfe.params, INSTR(jfg.params,\'"repeat_group_button":"1"\') AS group_repeated, jfl.id AS table_id, jfl.db_table_name AS table_name, jfl.label AS table_label, jfl.created_by_alias')
 				->from($db->qn('#__fabrik_elements', 'jfe'))
 				->join('inner', $db->qn('#__fabrik_groups', 'jfg') . ' ON jfg.id = jfe.group_id')

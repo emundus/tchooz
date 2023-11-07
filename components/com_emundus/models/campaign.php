@@ -2552,7 +2552,7 @@ class EmundusModelCampaign extends JModelList {
 
             if (!empty($campaign)) {
                 $db = JFactory::getDbo();
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 try {
                     $query->clear()
@@ -2595,7 +2595,7 @@ class EmundusModelCampaign extends JModelList {
 
 		if (!empty($campaign_id)) {
 			$db = JFactory::getDbo();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 
 			$query->update($db->quoteName('#__emundus_setup_campaigns'))
 				->set($db->quoteName('pinned') . ' = 0')
@@ -2631,7 +2631,7 @@ class EmundusModelCampaign extends JModelList {
                 $start_date = empty($start_date) ? date('Y-m-d H:i:s') : $start_date;
 
                 $db = JFactory::getDbo();
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 $columns = ['profile', 'output_status', 'start_date'];
                 $values = $profile . ',' . $output_status . ', ' . $db->quote($start_date);
@@ -2708,7 +2708,7 @@ class EmundusModelCampaign extends JModelList {
 
         if (!empty($profile) && !empty($entry_status)) {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             if (!empty($params)) {
                 if (!empty($params['programs'])) {
@@ -2788,7 +2788,7 @@ class EmundusModelCampaign extends JModelList {
         $deleted = false;
 
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->delete('#__emundus_campaign_workflow');
 
@@ -2831,7 +2831,7 @@ class EmundusModelCampaign extends JModelList {
         $workflows = [];
 
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
         $query->select('*')
             ->from($db->quoteName('#__emundus_campaign_workflow'));
 

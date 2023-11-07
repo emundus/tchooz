@@ -189,7 +189,7 @@ class Files
             if ($params->display_filter_steps) {
                 $status = [];
                 $db = JFactory::getDbo();
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 $query->select('step as value, value as label')
                     ->from($db->quoteName('#__emundus_setup_status'))
@@ -287,7 +287,7 @@ class Files
     {
         if (empty($this->campaigns)) {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             $query->select('DISTINCT esc.id as value, esc.label')
                 ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
@@ -431,7 +431,7 @@ class Files
 		}
 
 		if (!empty($params->tags_to_exclude)) {
-			$exclude_query = $db->createQuery();
+			$exclude_query = $db->getQuery(true);
 
 			$exclude_query->select('eta.fnum')
 				->from('jos_emundus_tag_assoc eta')
@@ -452,10 +452,10 @@ class Files
 		$user = JFactory::getUser();
 
 		$db = JFactory::getDbo();
-		$query_groups_allowed = $db->createQuery();
-		$query_users_associated = $db->createQuery();
-		$query_groups_associated = $db->createQuery();
-		$query_groups_program_associated = $db->createQuery();
+		$query_groups_allowed = $db->getQuery(true);
+		$query_users_associated = $db->getQuery(true);
+		$query_groups_associated = $db->getQuery(true);
+		$query_groups_program_associated = $db->getQuery(true);
 
         if (isset($params->tags) && $params->tags !== '') {
             $left_joins[] = $db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum');
@@ -549,7 +549,7 @@ class Files
 
 	public function getFilesQuery($select,$left_joins = [],$wheres = [],$access = '',$limit = 0,$offset = 0,$return = 'object'){
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		try {
             $this->addQueryFilters($left_joins, $wheres);
@@ -585,7 +585,7 @@ class Files
 
 	public function buildAssocGroups($files){
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		try {
 			foreach ($files as $file) {
@@ -644,7 +644,7 @@ class Files
 
     public function buildAssocTags($files){
         $db = JFactory::getDbo();
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         try {
             foreach ($files as $file) {
@@ -710,7 +710,7 @@ class Files
 
         if ($type === 'select') {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             switch ($element_plugin) {
                 case 'databasejoin':
@@ -812,7 +812,7 @@ class Files
 
             if (!empty($filters['applied_filters'])) {
                 $db = JFactory::getDBO();
-                $query = $db->createQuery();
+                $query = $db->getQuery(true);
 
                 $left_joins_already_used = [];
                 foreach($filters['applied_filters'] as $f_key => $filter) {
@@ -948,7 +948,7 @@ class Files
 	public function getComments($fnum): array
 	{
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		$comments = [];
 
@@ -973,7 +973,7 @@ class Files
 
 		if (!empty($cid)) {
 			$db = JFactory::getDbo();
-			$query = $db->createQuery();
+			$query = $db->getQuery(true);
 
 			$query->select('ec.id, ec.reason, ec.comment_body,ec.date,concat(eu.lastname," ",eu.firstname) as user')
 				->from($db->quoteName('#__emundus_comments','ec'))
@@ -995,7 +995,7 @@ class Files
 	public function saveComment($fnum,$reason,$comment_body): object
 	{
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		$comment = new \stdClass();
 
@@ -1033,7 +1033,7 @@ class Files
 
 	public function deleteComment($cid): bool{
 		$db = JFactory::getDbo();
-		$query = $db->createQuery();
+		$query = $db->getQuery(true);
 
 		$result = false;
 

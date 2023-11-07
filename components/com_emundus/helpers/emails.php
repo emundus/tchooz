@@ -18,6 +18,7 @@ jimport('joomla.application.component.helper');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\CMS\Component\ComponentHelper;
 
 /**
  * Content Component Query Helper
@@ -202,12 +203,7 @@ class EmundusHelperEmails {
             $student_id = $jinput->getInt('jos_emundus_evaluations___student_id');
             $campaign_id = $jinput->getInt('jos_emundus_evaluations___campaign_id');
 
-            if (version_compare(JVERSION, '4.0', '>'))
-            {
-                $applicant = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($student_id);
-            } else {
-                $applicant = Factory::getUser($student_id);
-            }
+            $applicant = Factory::getUser($student_id);
 
             $email .= '<fieldset>
 				<legend>
@@ -388,12 +384,7 @@ class EmundusHelperEmails {
 
             $email_to = $app->input->get('sid', null, 'GET', 'none',0);
 
-            if (version_compare(JVERSION, '4.0', '>'))
-            {
-                $student = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($email_to);
-            } else {
-                $student = Factory::getUser($email_to);
-            }
+            $student = Factory::getUser($email_to);
 
             $AllEmail_template = EmundusHelperEmails::getAllEmail(2);
             $email.='<select name="select_template" onChange="getTemplate(this);">
@@ -419,14 +410,9 @@ class EmundusHelperEmails {
 
     public static function getEmail($lbl)
     {
-        if (version_compare(JVERSION, '4.0', '>'))
-        {
-            $db = Factory::getContainer()->get('DatabaseDriver');
-        } else {
-            $db = Factory::getDBO();
-        }
+        $db = Factory::getDBO();
 
-        $query = $db->createQuery();
+        $query = $db->getQuery(true);
 
         $query->select('*')
             ->from($db->quoteName('#__emundus_setup_emails'))
@@ -822,7 +808,7 @@ class EmundusHelperEmails {
 
         if (!empty($user_id) || !empty($fnum)) {
             $db = JFactory::getDbo();
-            $query = $db->createQuery();
+            $query = $db->getQuery(true);
 
             if (!empty($user_id)) {
                 $query->select('email, params')
@@ -919,6 +905,22 @@ class EmundusHelperEmails {
         }
 
         return $logo;
+    }
+
+    public static function getCustomHeader(): string {
+        $result = '';
+
+        $eMConfig = ComponentHelper::getParams('com_emundus');
+        $custom_email_tag = $eMConfig->get('email_custom_tag', null);
+
+        if(!empty($custom_email_tag))
+        {
+            $custom_email_tag = explode(',', $custom_email_tag);
+
+            $result = $custom_email_tag[0].':'.$custom_email_tag[1];
+        }
+
+        return $result;
     }
 }
 ?>
