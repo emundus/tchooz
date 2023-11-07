@@ -3,10 +3,15 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\Component\Finder\Administrator\Indexer\Parser\Html;
+
 defined('_JEXEC') or die;
 
 class translationContact_details_categoryFilter extends translationFilter
@@ -26,7 +31,7 @@ class translationContact_details_categoryFilter extends translationFilter
 
         //since joomla 3.0 filter_value can be '' too not only filterNullValue
         if (isset($this->filter_value) && strlen($this->filter_value) > 0  && $this->filter_value!=$this->filterNullValue){
-			$db = JFactory::getDBO();
+			$db = Factory::getDBO();
 			$filter =  " c.".$this->filterField."=".$db->escape( $this->filter_value, true );
 		}
 		return $filter;
@@ -37,25 +42,25 @@ class translationContact_details_categoryFilter extends translationFilter
 
         $allCategoryOptions = array();
         $extension = 'com_contact';
-        $options = JHtml::_('category.options', $extension);
+        $options = HTMLHelper::_('category.options', $extension);
 
         if (!FALANG_J30) {
-            $allCategoryOptions[-1] = JHTML::_('select.option', '-1',JText::_('COM_FALANG_ALL_CATEGORIES') );
+            $allCategoryOptions[-1] = HTMLHelper::_('select.option', '-1',Text::_('COM_FALANG_ALL_CATEGORIES') );
         }
         $options = array_merge($allCategoryOptions, $options);
 
         $categoryList=array();
 
         if (FALANG_J30) {
-            $categoryList["title"]= JText::_('COM_FALANG_SELECT_CATEGORY');
+            $categoryList["title"]= Text::_('COM_FALANG_SELECT_CATEGORY');
             $categoryList["position"] = 'sidebar';
             $categoryList["name"]= 'contact_details_categoryy_filter_value';
             $categoryList["type"]= 'contact_details_category';
             $categoryList["options"] = $options;
-            $categoryList["html"] = JHTML::_('select.genericlist', $options, 'contact_details_category_filter_value', 'class="inputbox" size="1" onchange="document.adminForm.submit();"', 'value', 'text', $this->filter_value );
+            $categoryList["html"] = HTMLHelper::_('select.genericlist', $options, 'contact_details_category_filter_value', 'class="inputbox" size="1" onchange="document.adminForm.submit();"', 'value', 'text', $this->filter_value );
         } else {
-            $categoryList["title"]= JText::_('COM_FALANG_CATEGORY_FILTER');
-            $categoryList["html"] = JHTML::_('select.genericlist', $options, 'contact_details_category_filter_value', 'class="inputbox" size="1" onchange="document.adminForm.submit();"', 'value', 'text', $this->filter_value );
+            $categoryList["title"]= Text::_('COM_FALANG_CATEGORY_FILTER');
+            $categoryList["html"] = HTMLHelper::_('select.genericlist', $options, 'contact_details_category_filter_value', 'class="inputbox" size="1" onchange="document.adminForm.submit();"', 'value', 'text', $this->filter_value );
         }
 
         return $categoryList;

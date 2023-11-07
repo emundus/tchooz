@@ -1,5 +1,7 @@
 <?php
 // Check to ensure this file is included in Joomla!
+use Joomla\CMS\Component\ComponentHelper;
+
 defined('_JEXEC') or die('Restricted access');
 
 JLoader::discover('Translator', FALANG_ADMINPATH . DS . 'classes' . DS . 'translator');
@@ -14,7 +16,7 @@ class translatorFactory
 		{
 			return translatorFactory::$translator;
 		}
-		$params = JComponentHelper::getParams('com_falang');
+		$params = ComponentHelper::getParams('com_falang');
 
 		$service    = 'Translator' . $params->get('translator');
 		$translator = new $service();

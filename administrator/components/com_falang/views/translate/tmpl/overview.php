@@ -3,10 +3,14 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die;
 
 $message = $this->get('message');
@@ -18,7 +22,7 @@ $message2		= $state->get('extension.message');
 	<tbody>
 		<?php if($message1) : ?>
 		<tr>
-			<th><?php echo JText::_($message1) ?></th>
+			<th><?php echo Text::_($message1) ?></th>
 		</tr>
 		<?php endif; ?>
 		<?php if($message2) : ?>
@@ -29,11 +33,11 @@ $message2		= $state->get('extension.message');
 	</tbody>
 </table>
 <?php
-$user = JFactory::getUser();
-$db = JFactory::getDBO();
+$user = Factory::getUser();
+$db = Factory::getDBO();
 $filterOptions = '<table align="right"><tr>';
-$filterOptions .= '<td  nowrap="nowrap" align="center">' .JText::_('Languages'). ':<br/>' .$this->langlist. '</td>';
-$filterOptions .= '<td  nowrap="nowrap" align="center">' .JText::_('Content elements'). ':<br/>' .$this->clist. '</td>';
+$filterOptions .= '<td  nowrap="nowrap" align="center">' .Text::_('Languages'). ':<br/>' .$this->langlist. '</td>';
+$filterOptions .= '<td  nowrap="nowrap" align="center">' .Text::_('Content elements'). ':<br/>' .$this->clist. '</td>';
 $filterOptions .= '</tr></table>';
 
 if (isset($this->filterlist) && count($this->filterlist)>0){
@@ -50,12 +54,12 @@ if (isset($this->filterlist) && count($this->filterlist)>0){
   <thead>
     <tr>
       <th width="20"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($this->rows); ?>);" /></th>
-      <th class="title" width="20%" align="left"  nowrap="nowrap"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_TITLE');?></th>
-      <th width="10%" align="left" nowrap="nowrap"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_LANGUAGE');?></th>
-      <th width="20%" align="left" nowrap="nowrap"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_TRANSLATION');?></th>
-      <th width="15%" align="left" nowrap="nowrap"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_DATECHANGED');?></th>
-      <th width="15%" nowrap="nowrap" align="center"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_STATE');?></th>
-      <th align="center" nowrap="nowrap"><?php echo JText::_('COM_FALANG_TRANSLATE_TITLE_PUBLISHED');?></th>
+      <th class="title" width="20%" align="left"  nowrap="nowrap"><?php echo Text::_('COM_FALANG_TRANSLATE_TITLE_TITLE');?></th>
+      <th width="10%" align="left" nowrap="nowrap"><?php echo Text::_('COM_FALANG_TRANSLATE_TITLE_LANGUAGE');?></th>
+      <th width="20%" align="left" nowrap="nowrap"><?php echo Text::_('COM_FALANG_TRANSLATE_TITLE_TRANSLATION');?></th>
+      <th width="15%" align="left" nowrap="nowrap"><?php echo Text::_('COM_FALANG_TRANSLATE_TITLE_DATECHANGED');?></th>
+      <th width="15%" nowrap="nowrap" align="center"><?php echo Text::_('COM_FALANG_TRANSLATE_TITLE_STATE');?></th>
+      <th align="center" nowrap="nowrap"><?php echo Text::_('COM_FALANG_TRANSLATE_TITLE_PUBLISHED');?></th>
     </tr>
     </thead>
     <tfoot>
@@ -70,7 +74,7 @@ if (isset($this->filterlist) && count($this->filterlist)>0){
 	<?php
 	if( !isset($this->catid) || $this->catid == "" || $this->language_id==-1) {
 		?>
-	<tr><td colspan="8"><p><?php echo JText::_('COM_FALANG_NOELEMENT_SELECTED');?></p></td></tr>
+	<tr><td colspan="8"><p><?php echo Text::_('COM_FALANG_NOELEMENT_SELECTED');?></p></td></tr>
 		<?php
 	}
 	else {
@@ -91,9 +95,9 @@ if (isset($this->filterlist) && count($this->filterlist)>0){
       <td>
       	<a href="#edit" onclick="hideMainMenu(); return listItemTask('cb<?php echo $i;?>','translate.edit');"><?php echo $row->title; ?></a>
 			</td>
-      <td nowrap><?php echo $row->language ? $row->language : JText::_('COM_FALANG_NOTRANSLATIONYET') ; ?></td>
+      <td nowrap><?php echo $row->language ? $row->language : Text::_('COM_FALANG_NOTRANSLATIONYET') ; ?></td>
       <td><?php echo $row->titleTranslation ? $row->titleTranslation : '&nbsp;'; ?></td>
-	  <td><?php echo $row->lastchanged ? JHTML::_('date', $row->lastchanged, JText::_('DATE_FORMAT_LC2')):"" ;?></td>
+	  <td><?php echo $row->lastchanged ? HTMLHelper::_('date', $row->lastchanged, Text::_('DATE_FORMAT_LC2')):"" ;?></td>
 				<?php
 				switch( $row->state ) {
 					case 1:
@@ -139,41 +143,41 @@ if (isset($this->filterlist) && count($this->filterlist)>0){
 <br />
 <table cellspacing="0" cellpadding="4" border="0" align="center">
   <tr align="center">
-    <td> <img src="components/com_falang/assets/images/status_g.png" width="12" height="12" border=0 alt="<?php echo JText::_('STATE_OK');?>" />
+    <td> <img src="components/com_falang/assets/images/status_g.png" width="12" height="12" border=0 alt="<?php echo Text::_('STATE_OK');?>" />
     </td>
-    <td> <?php echo JText::_('COM_FALANG_TRANSLATION_UPTODATE');?> |</td>
-    <td> <img src="components/com_falang/assets/images/status_y.png" width="12" height="12" border=0 alt="<?php echo JText::_('STATE_CHANGED');?>" />
+    <td> <?php echo Text::_('COM_FALANG_TRANSLATION_UPTODATE');?> |</td>
+    <td> <img src="components/com_falang/assets/images/status_y.png" width="12" height="12" border=0 alt="<?php echo Text::_('STATE_CHANGED');?>" />
     </td>
-    <td> <?php echo JText::_('COM_FALANG_TRANSLATION_INCOMPLETE');?> |</td>
-    <td> <img src="components/com_falang/assets/images/status_r.png" width="12" height="12" border=0 alt="<?php echo JText::_('STATE_NOTEXISTING');?>" />
+    <td> <?php echo Text::_('COM_FALANG_TRANSLATION_INCOMPLETE');?> |</td>
+    <td> <img src="components/com_falang/assets/images/status_r.png" width="12" height="12" border=0 alt="<?php echo Text::_('STATE_NOTEXISTING');?>" />
     </td>
-    <td> <?php echo JText::_('COM_FALANG_TRANSLATION_NOT_EXISTING');?></td>
+    <td> <?php echo Text::_('COM_FALANG_TRANSLATION_NOT_EXISTING');?></td>
   </tr>
   <tr align="center">
       <td>
           <?php if (FALANG_J30) { ?>
           <i class="icon-publish"></i>
           <?php } else {
-          echo JHTML::_('image.administrator', 'admin/tick.png', NULL, NULL, NULL, JText::_('COM_FALANG_TRANSLATION_PUBLISHED'),array('style' => 'width:12px;height:12px'));
+          echo HTMLHelper::_('image.administrator', 'admin/tick.png', NULL, NULL, NULL, Text::_('COM_FALANG_TRANSLATION_PUBLISHED'),array('style' => 'width:12px;height:12px'));
       } ?>
       </td>
-      <td> <?php echo JText::_('COM_FALANG_TRANSLATION_PUBLISHED');?>  |</td>
+      <td> <?php echo Text::_('COM_FALANG_TRANSLATION_PUBLISHED');?>  |</td>
       <td>
           <?php if (FALANG_J30) { ?>
           <i class="icon-unpublish"></i>
           <?php } else {
-          echo JHTML::_('image.administrator', 'admin/publish_x.png', NULL, NULL, NULL, JText::_('COM_FALANG_TRANSLATION_NOT_PUBLISHED'),array('style' => 'width:12px;height:12px'));
+          echo HTMLHelper::_('image.administrator', 'admin/publish_x.png', NULL, NULL, NULL, Text::_('COM_FALANG_TRANSLATION_NOT_PUBLISHED'),array('style' => 'width:12px;height:12px'));
       } ?>
       </td>
-      <td> <?php echo JText::_('COM_FALANG_TRANSLATION_NOT_PUBLISHED');?></td>
+      <td> <?php echo Text::_('COM_FALANG_TRANSLATION_NOT_PUBLISHED');?></td>
       <td>
           <?php if (FALANG_J30) { ?>
           <i class="icon-unpublish disabled"></i>
           <?php } else {
-          echo JHTML::_('image.administrator', 'admin/publish_r.png', NULL, NULL, NULL, JText::_('COM_FALANG_STATE_TOGGLE'),array('style' => 'width:12px;height:12px'));
+          echo HTMLHelper::_('image.administrator', 'admin/publish_r.png', NULL, NULL, NULL, Text::_('COM_FALANG_STATE_TOGGLE'),array('style' => 'width:12px;height:12px'));
       } ?>
       </td>
-      <td> <?php echo JText::_('COM_FALANG_STATE_TOGGLE');?></td>
+      <td> <?php echo Text::_('COM_FALANG_STATE_TOGGLE');?></td>
   </tr>
 </table>
 <?php } ?>

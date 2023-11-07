@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -20,6 +20,10 @@ use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Toolbar\Button\CustomButton;
+use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\HTML\Helpers\Grid;
+
 
 //Global definitions use for front
 if( !defined('DS') ) {
@@ -207,8 +211,8 @@ class plgSystemFalangquickjump extends CMSPlugin
 	    $this->loadLanguage();
         //$this->app->getDocument();//don't work here
 
-        Factory::getDocument()->addStyleSheet(JURI::root().'administrator/components/com_falang/assets/css/falang.css', array('version' => 'auto', 'relative' => false));
-        Factory::getDocument()->addScript(JURI::root().'plugins/system/falangquickjump/assets/falangqj.js', array('version' => 'auto', 'relative' => false));
+        Factory::getDocument()->addStyleSheet(URI::root().'administrator/components/com_falang/assets/css/falang.css', array('version' => 'auto', 'relative' => false));
+        Factory::getDocument()->addScript(URI::root().'plugins/system/falangquickjump/assets/falangqj.js', array('version' => 'auto', 'relative' => false));
 
         //HTMLHELPER don't work here because $this->app->getDocument();//don't work here
         //HTMLHelper::_('script', 'plugins/system/falangquickjump/assets/falangqj.js', array('version' => 'auto', 'relative' => false));
@@ -218,13 +222,15 @@ class plgSystemFalangquickjump extends CMSPlugin
 
     public function gridIdHook() {
         //force loading of JHtmlGrid
-        if (!class_exists('JHtmlGrid')) {
-            @include_once(JPATH_LIBRARIES.'/joomla/html/html/grid.php');
-        }
+        //sbou5
+//        if (!class_exists('JHtmlGrid')) {
+//            //@include_once(JPATH_LIBRARIES.'/joomla/html/html/grid.php');
+//        }
         $row = func_get_arg(0);
         $id = func_get_arg(1);
         $vars = func_get_args();
-        $res = call_user_func_array('JHtmlGrid::id', $vars);
+        //sbou5
+        $res = call_user_func_array('Joomla\CMS\HTML\Helpers\Grid::id', $vars);
         $ext = Factory::getApplication()->input->get('option', '', 'cmd');
         //get table by component
         $component = $this->loadComponent();
@@ -318,7 +324,14 @@ class plgSystemFalangquickjump extends CMSPlugin
         if (is_array($id)){$id = $id[0];}
 
         //Load ToolBar
-	    $bar = Factory::getContainer()->get(\Joomla\CMS\Toolbar\ToolbarFactoryInterface::class)->createToolbar('toolbar');
+        //sbou5
+        //TODO le ToolbarFactory ne marche pas
+        //$bar = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar();//not working ????
+        if( version_compare(JVERSION, '5.0') >= 0 ) {
+            $bar = Factory::getDocument()->getToolbar();
+        } else {
+            $bar = ToolBar::getInstance();
+        }
 
         //Load Language
         $languages	= $this->getLanguages();
@@ -334,7 +347,7 @@ class plgSystemFalangquickjump extends CMSPlugin
 
         //Add Stylesheet for button icons
         $document = Factory::getDocument();
-        $document->addStyleSheet(JURI::root().'administrator/components/com_falang/assets/css/falang.css', array('version' => 'auto', 'relative' => false));
+        $document->addStyleSheet(URI::root().'administrator/components/com_falang/assets/css/falang.css', array('version' => 'auto', 'relative' => false));
 
         //Add button by language
         foreach ($languages as $language) {
@@ -411,8 +424,7 @@ class plgSystemFalangquickjump extends CMSPlugin
         //            if (isset($form)){$value[]= trim($form->textContent);}
         //        }
 
-        jimport('joomla.application.component.helper');
-        $params = JComponentHelper::getParams('com_falang');
+        $params = ComponentHelper::getParams('com_falang');
 
         //Add quickjump from content element to the last element , so they can be overrided.
         $component_list = $params->get('component_list');
@@ -437,7 +449,9 @@ class plgSystemFalangquickjump extends CMSPlugin
                     if (count($map)>3 && (count($map)-3)%2==0){
                         $matched=true;
                         for ($p=0;$p<(count($map)-3)/2;$p++){
-                            $testParam = JRequest::getVar( trim($map[3+$p*2]), '');
+                            //sbou5
+                            //$testParam = JRequest::getVar( trim($map[3+$p*2]), '');
+                            $testParam = $input->getString( trim($map[3+$p*2]), '');
                             if ((strpos(trim($map[4+$p*2]),"!")!==false && strpos(trim($map[4+$p*2]),"!")==0)){
                                 if ($testParam == substr(trim($map[4+$p*2]),1)){
                                     $matched=false;

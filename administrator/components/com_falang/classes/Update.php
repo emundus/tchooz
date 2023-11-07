@@ -1,5 +1,6 @@
 <?php
 namespace Falang;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Updater\Updater;
 
@@ -171,7 +172,7 @@ class Update
         }
 
         // Use the update cache timeout specified in com_installer
-        $comInstallerParams = \JComponentHelper::getParams('com_installer', false);
+        $comInstallerParams = ComponentHelper::getParams('com_installer', false);
         $timeout = 3600 * $comInstallerParams->get('cachetimeout', '6');
 
         // Load any updates from the network into the #__updates table

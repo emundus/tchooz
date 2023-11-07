@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -31,6 +31,9 @@ use Joomla\Component\Fields\Administrator\Model\FieldModel;
 use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Registry\Registry;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Router\SiteRouterAwareTrait;
 
 
 //Global definitions use for front
@@ -67,7 +70,7 @@ class plgSystemFalangdriver extends CMSPlugin
         $this->displayInfoMessage();
 
         // This plugin is only relevant for use within the frontend!
-        if (JFactory::getApplication()->isClient('administrator')) {
+        if (Factory::getApplication()->isClient('administrator')) {
             return;
         }
 
@@ -90,14 +93,16 @@ class plgSystemFalangdriver extends CMSPlugin
     function onAfterInitialise()
     {
         // This plugin is only relevant for use within the frontend!
-        if (JFactory::getApplication()->isClient('administrator')) {
+        if (Factory::getApplication()->isClient('administrator')) {
             return;
         }
 
         //fix for joomla > 3.4.0
-        $app = JFactory::getApplication();
+        $app = Factory::getApplication();
         if ($app->isClient('site')) {
-            $router = $app->getRouter();
+            //$router = $app->getRouter();
+            $router = Factory::getContainer()->get(SiteRouter::class);
+            //sbou5
 
             // attach build rules for translation on SEF
             $router->attachBuildRule(array($this, 'buildRule'), Router::PROCESS_BEFORE);
@@ -111,7 +116,7 @@ class plgSystemFalangdriver extends CMSPlugin
                 $db = Factory::getDbo();
                 $opt['db'] = $db;
                 $opt['language'] = Factory::getLanguage();
-                $app = JFactory::getApplication();
+                $app = Factory::getApplication();
                 $app->getMenu()->__construct($opt);
                 $app->getMenu()->load();
             }
@@ -128,7 +133,7 @@ class plgSystemFalangdriver extends CMSPlugin
     public function buildRule(&$router, &$uri)
     {
         $lang = $uri->getVar('lang');
-        $default_lang = JComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+        $default_lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 
         //we build the route for category list article
         if ($lang != $default_lang && $uri->getVar('id') != null && $uri->getVar('catid') != null &&
@@ -140,7 +145,7 @@ class plgSystemFalangdriver extends CMSPlugin
             // Make sure we have the id and the alias
             if (strpos($uri->getVar('id'), ':') > 0) {
                 list($tmp, $id) = explode(':', $uri->getVar('id'), 2);
-                $db = JFactory::getDbo();
+                $db = Factory::getDbo();
                 $dbQuery = $db->getQuery(true)
                     ->select('fc.value')
                     ->from('#__falang_content fc')
@@ -161,7 +166,7 @@ class plgSystemFalangdriver extends CMSPlugin
                 if (strpos($uri->getVar('catid'), ':') > 0) {
                     list($tmp2, $catid) = explode(':', $uri->getVar('catid'), 2);
 
-                    $db = JFactory::getDbo();
+                    $db = Factory::getDbo();
                     $dbQuery = $db->getQuery(true)
                         ->select('fc.value')
                         ->from('#__falang_content fc')
@@ -191,7 +196,7 @@ class plgSystemFalangdriver extends CMSPlugin
                 // Make sure we have the id and the alias
                 if (strpos($uri->getVar('id'), ':') === false) {
                     //we use id in the query to be translated.
-                    $db = JFactory::getDbo();
+                    $db = Factory::getDbo();
                     $dbQuery = $db->getQuery(true)
                         ->select('alias,id')
                         ->from('#__content')
@@ -212,7 +217,7 @@ class plgSystemFalangdriver extends CMSPlugin
                 $fManager = FalangManager::getInstance();
                 $id_lang = $fManager->getLanguageID($lang);
                 $id = $uri->getVar('cid');
-                $db = JFactory::getDbo();
+                $db = Factory::getDbo();
                 $dbQuery = $db->getQuery(true)
                     ->select('fc.value')
                     ->from('#__falang_content fc')
@@ -231,7 +236,7 @@ class plgSystemFalangdriver extends CMSPlugin
             } else {
                 // translated languague look in native table
                 $id = $uri->getVar('cid');
-                $db = JFactory::getDbo();
+                $db = Factory::getDbo();
                 $dbQuery = $db->getQuery(true)
                     ->select('product_alias')
                     ->from('#__hikashop_product')
@@ -251,7 +256,7 @@ class plgSystemFalangdriver extends CMSPlugin
                 $fManager = FalangManager::getInstance();
                 $id_lang = $fManager->getLanguageID($lang);
                 $id = $uri->getVar('cid');
-                $db = JFactory::getDbo();
+                $db = Factory::getDbo();
                 $dbQuery = $db->getQuery(true)
                     ->select('fc.value')
                     ->from('#__falang_content fc')
@@ -270,7 +275,7 @@ class plgSystemFalangdriver extends CMSPlugin
             } else {
                 // translated languague look in native table
                 $id = $uri->getVar('cid');
-                $db = JFactory::getDbo();
+                $db = Factory::getDbo();
                 $dbQuery = $db->getQuery(true)
                     ->select('category_alias')
                     ->from('#__hikashop_category')
@@ -293,7 +298,7 @@ class plgSystemFalangdriver extends CMSPlugin
                 // Make sure we have the id and the alias
                 if (strpos($uri->getVar('id'), ':') > 0) {
                     list($tmp, $id) = explode(':', $uri->getVar('id'), 2);
-                    $db = JFactory::getDbo();
+                    $db = Factory::getDbo();
                     $dbQuery = $db->getQuery(true)
                         ->select('fc.value')
                         ->from('#__falang_content fc')
@@ -317,7 +322,7 @@ class plgSystemFalangdriver extends CMSPlugin
                     list($tmp, $id) = explode(':', $tmp, 2);
                 }
 
-                $db = JFactory::getDbo();
+                $db = Factory::getDbo();
                 $dbQuery = $db->getQuery(true)
                     ->select('alias')
                     ->from('#__k2_items')
@@ -346,7 +351,7 @@ class plgSystemFalangdriver extends CMSPlugin
     public function buildRuleAlias(&$uri, $reference_table, $alias_name)
     {
         $lang = $uri->getVar('lang');
-        $default_lang = JComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+        $default_lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 
         //look in Falang Table
         if ($default_lang != $lang) {
@@ -356,7 +361,7 @@ class plgSystemFalangdriver extends CMSPlugin
             // Make sure we have the id and the alias
             if (strpos($uri->getVar('id'), ':') > 0) {
                 list($id, $tmp) = explode(':', $uri->getVar('id'), 2);
-                $db = JFactory::getDbo();
+                $db = Factory::getDbo();
                 $dbQuery = $db->getQuery(true);
                 $dbQuery->select('fc.value')
                     ->from('#__falang_content fc')
@@ -380,7 +385,7 @@ class plgSystemFalangdriver extends CMSPlugin
                 list($tmp, $id) = explode(':', $tmp, 2);
             }
 
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
             $dbQuery = $db->getQuery(true);
             $dbQuery->select($dbQuery->qn($alias_name))
                 ->from($dbQuery->qn('#__' . $reference_table))
@@ -402,21 +407,21 @@ class plgSystemFalangdriver extends CMSPlugin
         static $done = false;
         if (!$done) {
             $done = true;
-            $conf = JFactory::getConfig();
-            $lang = JFactory::getLanguage();
-            $default_lang = JComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+            $conf = Factory::getConfig();
+            $lang = Factory::getLanguage();
+            $default_lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 
             //fix for virtuemart / lang must be reset
-            if (JComponentHelper::isEnabled('com_virtuemart', true)){
+            if (ComponentHelper::isEnabled('com_virtuemart', true)){
                 if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
                 VmConfig::loadConfig();
                 vmLanguage::$jSelLangTag = false;
                 vmLanguage::initialise(true);
             }
 
-            JFactory::getApplication()->getMenu()->__construct();
+            Factory::getApplication()->getMenu()->__construct();
             //translate path when subitem not translate
-            $app = JFactory::getApplication();
+            $app = Factory::getApplication();
             $menu = $app->getMenu()->getMenu();
 
             foreach($menu as &$item) {
@@ -435,7 +440,7 @@ class plgSystemFalangdriver extends CMSPlugin
 
     public function isFalangDriverActive()
     {
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
 
         return is_a($db, 'JFalangDatabase');
     }
@@ -443,7 +448,7 @@ class plgSystemFalangdriver extends CMSPlugin
 
     function onAfterDispatch()
     {
-        if (JFactory::getApplication()->isClient('site') && $this->isFalangDriverActive()) {
+        if (Factory::getApplication()->isClient('site') && $this->isFalangDriverActive()) {
             include_once(JPATH_ADMINISTRATOR . '/components/com_falang/version.php');
             $version = new FalangVersion();
             if ($version->_versiontype == 'free') {
@@ -496,7 +501,7 @@ class plgSystemFalangdriver extends CMSPlugin
 
             $db = new JFalangDatabase($options);
 
-            Factory::$database = null;//
+            Factory::$database = null;
             Factory::$database = $db;
 
             //Joomla 4.2.0 : override the Database Driver in the MenuFactory
@@ -527,7 +532,7 @@ class plgSystemFalangdriver extends CMSPlugin
 
     private function setBuffer()
     {
-        $doc = JFactory::getDocument();
+        $doc = Factory::getDocument();
         $cacheBuf = $doc->getBuffer('component');
 
         $cacheBuf2 =
@@ -549,7 +554,7 @@ class plgSystemFalangdriver extends CMSPlugin
      */
     function onContentPrepareForm($form, $data)
     {
-        if (JFactory::getApplication()->isClient('site')){return;}
+        if (Factory::getApplication()->isClient('site')){return;}
 
 	    $this->enabledTplTranslation($form,$data);
 
@@ -568,7 +573,7 @@ class plgSystemFalangdriver extends CMSPlugin
     */
 	private function loadCustomFields($form, $data){
 
-		$input = JFactory::getApplication()->input;
+		$input = Factory::getApplication()->input;
 		$option = $input->get('option');
 		$task = $input->get('task');
 		$catid = $input->get('catid');
@@ -619,7 +624,7 @@ class plgSystemFalangdriver extends CMSPlugin
             FieldsHelper::prepareForm($parts[0] . '.' . $parts[1], $form, $data);
 
 
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
 			$fManager = FalangManager::getInstance();
 			$content_element = $fManager->getContentElement($catid);
 
@@ -637,7 +642,7 @@ class plgSystemFalangdriver extends CMSPlugin
 
 
 			if (empty($translations)) {
-				$params = JComponentHelper::getParams('com_falang');
+				$params = ComponentHelper::getParams('com_falang');
 				$copy_cusom_fields = $params->get('copy_custom_fields',false);
 
 
@@ -675,7 +680,7 @@ class plgSystemFalangdriver extends CMSPlugin
 	//use to enable template by langugage (paid version only)
 	private function enabledTplTranslation($form, $data){
 		jimport('joomla.application.component.helper');
-		$params = JComponentHelper::getParams('com_falang');
+		$params = ComponentHelper::getParams('com_falang');
 		$show_tpl_lang = $params->get('show_tpl_lang');
 
 		if (!isset($show_tpl_lang) || $show_tpl_lang == '0' ) {return;}
@@ -712,11 +717,11 @@ class plgSystemFalangdriver extends CMSPlugin
 		$fields_plugin = PluginHelper::getPlugin('system', 'fields');
 		if (empty($fields_plugin)){return true;}
 
-		$input = JFactory::getApplication()->input;
+		$input = Factory::getApplication()->input;
 		$catid = $input->get('catid');
 		$language_id = $input->get('select_language_id');
 		$reference_id = $input->get('reference_id');
-		$formData = new JRegistry($input->get('jform', '', 'array'));
+		$formData = new Registry($input->get('jform', '', 'array'));
 		$context = $catid;
 
 		//content and category supported
@@ -734,7 +739,7 @@ class plgSystemFalangdriver extends CMSPlugin
         if ( !empty($reference_id) && $catid == 'categories'){
             Factory::getApplication()->input->set('extension', 'com_content');//not necessary by default com_content is used
             $model =  new Joomla\Component\Categories\Administrator\Model\CategoryModel;
-            $contentParams = JComponentHelper::getParams('com_content');
+            $contentParams = ComponentHelper::getParams('com_content');
             $model->setState('params', $contentParams);//TODO check
             $item = $model->getItem($reference_id);
             $fields = FieldsHelper::getFields('com_content'. '.' . 'categories', $item);//load com_content
@@ -751,8 +756,8 @@ class plgSystemFalangdriver extends CMSPlugin
 		//sbou4
 		//$model = JModelLegacy::getInstance('Field', 'FieldsModel', array('ignore_request' => true));
 		//$model = FieldModel::getInstance('Field', array('ignore_request'=>true));
-		$db = JFactory::getDbo();
-		$user = JFactory::getUser();
+		$db = Factory::getDbo();
+		$user = Factory::getUser();
 
 		$values = array();
 		// Loop over the fields
@@ -792,7 +797,7 @@ class plgSystemFalangdriver extends CMSPlugin
 			$fieldContent->original_value = md5(null);
             $fieldContent->original_text = "";
 
-			$fieldContent->modified =  JFactory::getDate()->toSql();
+			$fieldContent->modified =  Factory::getDate()->toSql();
 
 			$fieldContent->modified_by = $user->id;
 			$fieldContent->published= true;
@@ -818,7 +823,7 @@ class plgSystemFalangdriver extends CMSPlugin
 	public function onCustomFieldsBeforePrepareField($context, $item, $field) {
 
 		// We only work in frontend
-		if (!JFactory::getApplication()->isClient('site')) {
+		if (!Factory::getApplication()->isClient('site')) {
 			return;
 		}
 
@@ -851,7 +856,7 @@ class plgSystemFalangdriver extends CMSPlugin
 			return;
 		}
 
-		$languageTag  = JFactory::getLanguage()->getTag();
+		$languageTag  = Factory::getLanguage()->getTag();
 		$id_lang = $fManager->getLanguageID($languageTag);
 
 		$translations = FalangManager::getInstance()->getRawFieldTranslations($content_element->getTableName(),'com_fields',$item->{$content_element->getReferenceId()},$id_lang,true);//load only published

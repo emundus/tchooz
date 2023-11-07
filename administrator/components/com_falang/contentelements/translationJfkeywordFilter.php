@@ -3,10 +3,13 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die;
 
 class translationJfkeywordFilter extends translationFilter
@@ -24,7 +27,7 @@ class translationJfkeywordFilter extends translationFilter
 		if (!$this->filterField) return "";
 		$filter="";
 		if ($this->filter_value!=""){
-			$db = JFactory::getDBO();
+			$db = Factory::getDBO();
 			$filter =  "LOWER(c.".$this->filterField." ) LIKE '%".$db->escape( $this->filter_value, true )."%'";
 		}
 		return $filter;
@@ -41,7 +44,7 @@ class translationJfkeywordFilter extends translationFilter
 
 		if (!$this->filterField) return "";
 		$Keywordlist=array();
-		$Keywordlist["title"]= JText::_($this->label);
+		$Keywordlist["title"]= Text::_($this->label);
 
         if (FALANG_J30) {
             $Keywordlist['position'] = 'top';

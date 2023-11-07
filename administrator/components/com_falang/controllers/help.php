@@ -3,17 +3,19 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\MVC\Controller\BaseController;
+
 defined('_JEXEC') or die;
 
 /**
  * The Falang Tasker manages the general tasks within the Falang admin interface
  *
  */
-class HelpController extends JControllerLegacy  {
+class HelpController extends BaseController {
 	/**
 	 * Joom!Fish Controler for the Control Panel
 	 * @param array		configuration

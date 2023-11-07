@@ -3,12 +3,14 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\Helpers\Sidebar;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Toolbar\ToolbarHelper;
 
 defined('_JEXEC') or die;
 
@@ -30,7 +32,7 @@ class ElementsViewElements extends FalangViewDefault
 		// browser title
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_TITLE_CONTENT_ELEMENTS'));
 		// set page title
-		JToolBarHelper::title( Text::_( 'COM_FALANG_TITLE_CONTENT_ELEMENTS' ), 'extension' );
+		ToolBarHelper::title( Text::_( 'COM_FALANG_TITLE_CONTENT_ELEMENTS' ), 'extension' );
 		
 		$layout = $this->getLayout();
 		if (method_exists($this,$layout)){
@@ -43,31 +45,20 @@ class ElementsViewElements extends FalangViewDefault
 
 	protected function addToolbar() {
 		// Set toolbar items for the page
-		JToolBarHelper::custom("elements.installer","archive","archive", JText::_( 'COM_FALANG_INSTALL' ),false);
-        JToolBarHelper::custom("elements.detail","eye","eye", JText::_( 'COM_FALANG_DETAIL' ),true);
+		ToolBarHelper::custom("elements.installer","archive","archive", Text::_( 'COM_FALANG_INSTALL' ),false);
+        ToolBarHelper::custom("elements.detail","eye","eye", Text::_( 'COM_FALANG_DETAIL' ),true);
 
-		JToolBarHelper::deleteList(JText::_("COM_FALANG_TRANSLATION_DELETE_MSG"), "elements.remove");
-		JToolBarHelper::help( 'screen.elements', true);
+		ToolBarHelper::deleteList(Text::_("COM_FALANG_TRANSLATION_DELETE_MSG"), "elements.remove");
+		ToolBarHelper::help( 'screen.elements', true);
 
-		JHtmlSidebar::setAction('index.php?option=com_falang&view=element');
-        /*
-                JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTROL_PANEL'), 'index.php?option=com_falang');
-                JHtmlSidebar::addEntry(JText::_('COM_FALANG_TRANSLATION'), 'index.php?option=com_falang&amp;task=translate.overview');
-                JHtmlSidebar::addEntry(JText::_('COM_FALANG_ORPHANS'), 'index.php?option=com_falang&amp;task=translate.orphans');
-                JHtmlSidebar::addEntry(JText::_('COM_FALANG_CONTENT_ELEMENTS'), 'index.php?option=com_falang&amp;task=elements.show', true);
-                JHtmlSidebar::addEntry(JText::_('COM_FALANG_HELP_AND_HOWTO'), 'index.php?option=com_falang&amp;task=help.show', false);
-
-                $this->sidebar = JHtmlSidebar::render();*/
-
-
+        Sidebar::setAction('index.php?option=com_falang&view=element');
 	}
 	
 	function edit($tpl = null)
 	{
 		// Set toolbar items for the page
-		//JToolBarHelper::back();
-        JToolBarHelper::custom( 'elements.show', 'cancel', 'cancel', JText::_( 'COM_FALANG_CONTENT_ELEMENT_CANCEL' ), false );
-		JToolBarHelper::help( 'screen.elements', true);
+        ToolBarHelper::custom( 'elements.show', 'cancel', 'cancel', Text::_( 'COM_FALANG_CONTENT_ELEMENT_CANCEL' ), false );
+		ToolBarHelper::help( 'screen.elements', true);
 
 		// hide the sub menu
 		$this->_hideSubmenu();		
@@ -76,16 +67,15 @@ class ElementsViewElements extends FalangViewDefault
 	function installer($tpl = null)
 	{
 		// browser title
-		$document = JFactory::getDocument();
-		$document->setTitle(JText::_('COM_FALANG_TITLE') . ' :: ' .JText::_('COM_FALANG_CONTENT_ELEMENT_INSTALLER'));
+		$document = Factory::getDocument();
+		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_CONTENT_ELEMENT_INSTALLER'));
 		
 		// set page title
-		JToolBarHelper::title( JText::_('COM_FALANG_TITLE') .' :: '. JText::_( 'COM_FALANG_CONTENT_ELEMENT_INSTALLER' ), 'falang' );
+		ToolBarHelper::title( Text::_('COM_FALANG_TITLE') .' :: '. Text::_( 'COM_FALANG_CONTENT_ELEMENT_INSTALLER' ), 'falang' );
 
 		// Set toolbar items for the page
-		JToolBarHelper::custom( 'elements.show', 'cancel', 'cancel', JText::_( 'COM_FALANG_CONTENT_ELEMENT_CANCEL' ), false );
-		//JToolBarHelper::deleteList(JText::_("COM_FALANG_CONTENT_ELEMENT_REMOVE"), "elements.remove_install");
-		JToolBarHelper::help( 'screen.elements', true);
+		ToolBarHelper::custom( 'elements.show', 'cancel', 'cancel', Text::_( 'COM_FALANG_CONTENT_ELEMENT_CANCEL' ), false );
+		ToolBarHelper::help( 'screen.elements', true);
 
 		// hide the sub menu
 		$this->_hideSubmenu();

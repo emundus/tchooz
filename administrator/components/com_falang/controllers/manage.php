@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 jimport('joomla.application.component.controller');
 JLoader::import( 'models.ContentObject',FALANG_ADMINPATH);
@@ -19,7 +20,7 @@ JLoader::import( 'models.ContentObject',FALANG_ADMINPATH);
  * The JoomFish Tasker manages the general tasks within the Joom!Fish admin interface
  *
  */
-class ManageController extends JControllerLegacy  {
+class ManageController extends BaseController {
 
 	/**
 	 * @var object reference to the currecnt view
@@ -74,13 +75,13 @@ class ManageController extends JControllerLegacy  {
 		switch ($type) {
 			case 'original_language':
 				$message = '';
-				$session = JFactory::getSession();
+				$session = Factory::getSession();
 				$original2languageInfo = $session->get('original2languageInfo',array());
 				$original2languageInfo = $this->_model->copyOriginalToLanguage($original2languageInfo, $phase, $state_catid, $language_id, $overwrite, $message);
 				$session->set('original2languageInfo', $original2languageInfo );
 
 				if($phase == 1) {
-					$langlist = JHTML::_('select.genericlist', $this->_model->getLanguageList(), 'select_language', 'id="select_language" class="form-select" ' );
+					$langlist = HTMLHelper::_('select.genericlist', $this->_model->getLanguageList(), 'select_language', 'id="select_language" class="form-select" ' );
 					$htmlResult = $this->_view->renderCopyInformation($original2languageInfo, $message, $langlist);
 				} elseif( $phase == 2 || $phase == 3 ) {
 					$htmlResult = $this->_view->renderCopyProcess($original2languageInfo, $message);

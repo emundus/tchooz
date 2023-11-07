@@ -3,14 +3,19 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
 
-use \Joomla\String\StringHelper;
-use \Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Filter\OutputFilter;
+use Joomla\Registry\Registry;
+use Joomla\CMS\Table\Table;
+use Joomla\String\StringHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 include_once(dirname(__FILE__) . DS . "FalangContent.php");
 
@@ -70,7 +75,7 @@ class ContentObject
 	 */
 	public function __construct($languageID, & $contentElement, $id = -1)
 	{
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
 		if ($id > 0) $this->id = $id;
 		$this->language_id = $languageID;
@@ -94,7 +99,7 @@ class ContentObject
 	 */
 	function loadFromContentID($id = null)
 	{
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		if ($id != null && isset($this->_contentElement) && $this->_contentElement !== false)
 		{
 			$db->setQuery($this->_contentElement->createContentSQL($this->language_id, $id));
@@ -132,8 +137,8 @@ class ContentObject
 	 */
 	function bind($formArray, $prefix = "", $suffix = "", $tryBind = true, $storeOriginalText = false, $skip_params = false)
 	{
-		$user   = JFactory::getUser();
-		$db     = JFactory::getDBO();
+		$user   = Factory::getUser();
+		$db     = Factory::getDBO();
 		$jinput = Factory::getApplication()->input;
 
 		if ($tryBind)
@@ -200,7 +205,7 @@ class ContentObject
 				$fieldContent->original_value = $originalValue;
 				$fieldContent->original_text  = !is_null($originalText) ? $originalText : "";
 
-				$fieldContent->modified = JFactory::getDate()->toSql();
+				$fieldContent->modified = Factory::getDate()->toSql();
 
 				$fieldContent->modified_by = $user->id;
 				$fieldContent->published   = $this->published;
@@ -235,7 +240,7 @@ class ContentObject
 				//v2.8.3 store orginal text is set in param's
 				$originalText = ($storeOriginalText) ? $formArray[$prefix . "origText_" . $fieldName . $suffix] : "";
 
-				$registry = new JRegistry();
+				$registry = new Registry();
 				$registry->loadArray($translationValue);
 				$translationValue = $registry->toString();
 
@@ -250,7 +255,7 @@ class ContentObject
 				$fieldContent->original_value  = $originalValue;
 				$fieldContent->original_text   = !is_null($originalText) ? $originalText : "";
 
-				$fieldContent->modified = JFactory::getDate()->toSql();
+				$fieldContent->modified = Factory::getDate()->toSql();
 
 				$fieldContent->modified_by = $user->id;
 				$fieldContent->published   = $this->published;
@@ -287,14 +292,14 @@ class ContentObject
 		//$path = $alias->translationContent->value;
 		//return;
 
-		$table = JTable::getInstance("Menu");
+		$table = Table::getInstance("Menu");
 		// TODO get this from the translation!
 		$pk = (intval($formArray[$prefix . "reference_id" . $suffix]) > 0) ? intval($formArray[$prefix . "reference_id" . $suffix]) : $this->id;
 
 		$table->load($pk);
 		$langid = $alias->translationContent->language_id;
 		// Get the path from the node to the root (translated)
-		$db     = JFactory::getDBO();
+		$db     = Factory::getDBO();
 		$query  = $db->getQuery(true);
 		$select = 'p.*, jfc.value as jfcvalue';
 		$query->select($select);
@@ -349,11 +354,11 @@ class ContentObject
 		$version = new FalangVersion();
 		if ($app->getCfg('unicodeslugs') == 1 && $version != 'free')
 		{
-			$alias = JFilterOutput::stringURLUnicodeSlug($alias);
+			$alias = OutputFilter::stringURLUnicodeSlug($alias);
 		}
 		else
 		{
-			$alias = JFilterOutput::stringURLSafe($alias);
+			$alias = OutputFilter::stringURLSafe($alias);
 		}
 	}
 
@@ -368,11 +373,11 @@ class ContentObject
 		$version = new FalangVersion();
 		if ($app->getCfg('unicodeslugs') == 1 && $version != 'free')
 		{
-			$alias = JFilterOutput::stringURLUnicodeSlug($alias);
+			$alias = OutputFilter::stringURLUnicodeSlug($alias);
 		}
 		else
 		{
-			$alias = JFilterOutput::stringURLSafe($alias);
+			$alias = OutputFilter::stringURLSafe($alias);
 		}
 	}
 
@@ -467,19 +472,19 @@ class ContentObject
 		}
 
 		//v2.8.3
-		$contentParms = JComponentHelper::getParams('com_content');
+		$contentParms = ComponentHelper::getParams('com_content');
 		if ($contentParms->get('show_urls_images_backend', 0))
 		{
 			if (array_key_exists("images", $translationFields))
 			{
-				$registry = new JRegistry;
+				$registry = new Registry;
 				$registry->loadString($translationFields['attribs']->value);
 				$registry->loadString($translationFields['images']->value);
 				$translationFields['attribs']->value = $registry->toString();
 			}
 			if (array_key_exists("urls", $translationFields))
 			{
-				$registry = new JRegistry;
+				$registry = new Registry;
 				$registry->loadString($translationFields['attribs']->value);
 				$registry->loadString($translationFields['urls']->value);
 				$translationFields['attribs']->value = $registry->toString();
@@ -525,7 +530,7 @@ class ContentObject
 		if (isset($formArray["jform"]['images']))
 		{
 			$imagesValue = $formArray["jform"]['images'];
-			$registry    = new JRegistry();
+			$registry    = new Registry();
 			$registry->loadArray($imagesValue);
 			$translationImagesValue = $registry->toString();
 			$jinput->post->set($prefix . "refField_images" . $suffix, $translationImagesValue);
@@ -535,7 +540,7 @@ class ContentObject
 		if (isset($formArray["jform"]['urls']))
 		{
 			$urlsValue = $formArray["jform"]['urls'];
-			$registry  = new JRegistry();
+			$registry  = new Registry();
 			$registry->loadArray($urlsValue);
 			$translationUrlsValue = $registry->toString();
 			$jinput->post->set($prefix . "refField_urls" . $suffix, $translationUrlsValue);
@@ -570,7 +575,7 @@ class ContentObject
 				}
 			}
 			//remove url
-			$registry = new JRegistry;
+			$registry = new Registry;
 			$registry->loadArray($attribsData);
 			if ($storeOriginalText)
 			{
@@ -587,7 +592,7 @@ class ContentObject
 	 */
 	function updateMLContent(&$dbObject)
 	{
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		if ($dbObject === null) return;
 
 		if ($this->published == "") $this->published = 0;
@@ -612,7 +617,7 @@ class ContentObject
 	 */
 	function copyContentToTranslation(&$dbObject, $origObject)
 	{
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
 		// Go thru all the fields of the element and try to copy the content values
 		$elementTable = $this->_contentElement->getTable();
@@ -634,7 +639,7 @@ class ContentObject
 				$fieldContent->original_value = md5($origObject->$fieldName);
 				// ToDo: Add handling of original text!
 
-				$datenow                =& JFactory::getDate();
+				$datenow                =& Factory::getDate();
 				$fieldContent->modified = $datenow->toSql();
 
 				$fieldContent->modified_by = $user->id;
@@ -656,7 +661,7 @@ class ContentObject
 	 */
 	function readFromRow($row)
 	{
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
 		$this->id               = $row->id;
 		$this->translation_id   = $row->jfc_id;
@@ -705,8 +710,8 @@ class ContentObject
 	 */
 	function _loadContent()
 	{
-		$db  = JFactory::getDBO();
-		$app = JFactory::getApplication();
+		$db  = Factory::getDBO();
+		$app = Factory::getApplication();
 
 		$elementTable = $this->getTable();
 		$sql          = "select * "
@@ -725,10 +730,10 @@ class ContentObject
 		}
 		catch (Exception $e)
 		{
-			$app->enqueueMessage(JText::_($e->getMessage()), 'error');
+			$app->enqueueMessage(Text::_($e->getMessage()), 'error');
 		}
 //		if($db->getErrorNum() != 0) {
-//			JError::raiseWarning( 400,JTEXT::_('No valid table information: ') .$db->getErrorMsg());
+//			JError::raiseWarning( 400,Text::_('No valid table information: ') .$db->getErrorMsg());
 //		}
 
 		$translationFields = null;
@@ -739,7 +744,7 @@ class ContentObject
 				$fieldContent = new falangContent($db);
 				if (!$fieldContent->bind($row))
 				{
-					JError::raiseWarning(200, JText::_('Problems binding object to fields: ' . $fieldContent->getError()));
+					JError::raiseWarning(200, Text::_('Problems binding object to fields: ' . $fieldContent->getError()));
 				}
 				$translationFields[$fieldContent->reference_field] = $fieldContent;
 			}
@@ -945,7 +950,7 @@ class ContentObject
 				if (isset($fieldContent->reference_id))
 				{
 					$fieldContent->checkout($who, $oid);
-					JError::raiseWarning(200, JText::_('Problems binding object to fields: ' . $fieldContent->getError()));
+					JError::raiseWarning(200, Text::_('Problems binding object to fields: ' . $fieldContent->getError()));
 				}
 			}
 		}
@@ -966,7 +971,7 @@ class ContentObject
 				if (isset($fieldContent->reference_id))
 				{
 					$fieldContent->checkin($oid);
-					JError::raiseWarning(200, JText::_('Problems binding object to fields: ' . $fieldContent->getError()));
+					JError::raiseWarning(200, Text::_('Problems binding object to fields: ' . $fieldContent->getError()));
 				}
 			}
 		}

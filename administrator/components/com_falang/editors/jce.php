@@ -3,11 +3,12 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
+use Joomla\CMS\Language\Text;
 
 ?>
 <script language="javascript" type="text/javascript">
@@ -29,21 +30,21 @@ defined('_JEXEC') or die;
             else {
                if (window.clipboardData){
                   window.clipboardData.setData("Text",innerHTML);
-                  alert("<?php echo preg_replace( '#<br\s*/>#', '\n', JText::_('CLIPBOARD_COPIED',true) );?>");
+                  alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('CLIPBOARD_COPIED',true) );?>");
                }
                else {
                   srcEl = document.getElementById("text_origText_"+value);
                   if (srcEl != null) {
                      srcEl.value = innerHTML;
                      srcEl.select();
-                     alert("<?php echo preg_replace( '#<br\s*/>#', '\n', JText::_('CLIPBOARD_COPY'));?>");
+                     alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('CLIPBOARD_COPY'));?>");
                   }
                }
             }
          }
       }
       catch(e){
-         alert("<?php echo preg_replace( '#<br\s*/>#', '\n', JText::_('CLIPBOARD_NOSUPPORT',true));?>");
+         alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('CLIPBOARD_NOSUPPORT',true));?>");
       }
    }
    
@@ -63,7 +64,7 @@ defined('_JEXEC') or die;
          }
       }
       catch(e){
-         alert("<?php echo preg_replace( '#<br\s*/>#', '\n', JText::_('NO_PREVIEW',true));?>");
+         alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('NO_PREVIEW',true));?>");
          return "";
       }
    }

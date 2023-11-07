@@ -3,28 +3,30 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
+
+use Joomla\CMS\Language\Text;
 
 $contentElement = $this->falangManager->getContentElement( $this->element );
 $contentTable = $contentElement->getTable();
 ?>
 
     <p >
-        <span class="font-weight-bold"><?php echo JText::_('COM_FALANG_ELEMENT_DATABASE_TABLE');?></span>
+        <span class="font-weight-bold"><?php echo Text::_('COM_FALANG_ELEMENT_DATABASE_TABLE');?></span>
         <?php echo $contentTable->Name;?>
     </p>
 
 <table class="table table-striped ">
     <thead>
     <tr>
-        <th><?php echo JText::_('COM_FALANG_DBFIELDNAME');?></th>
-        <th><?php echo JText::_('COM_FALANG_DBFIELDTYPE');?></th>
-        <th><?php echo JText::_('COM_FALANG_DBFIELDLABEL');?></th>
-        <th><?php echo JText::_('COM_FALANG_TRANSLATE');?></th>
+        <th><?php echo Text::_('COM_FALANG_DBFIELDNAME');?></th>
+        <th><?php echo Text::_('COM_FALANG_DBFIELDTYPE');?></th>
+        <th><?php echo Text::_('COM_FALANG_DBFIELDLABEL');?></th>
+        <th><?php echo Text::_('COM_FALANG_TRANSLATE');?></th>
     </tr>
     </thead>
     <tbody>
@@ -36,7 +38,7 @@ $contentTable = $contentElement->getTable();
             <td><?php echo $tableField->Name ? $tableField->Name : "&nbsp;";?></td>
             <td><?php echo $tableField->Type ? $tableField->Type : "&nbsp;";?></td>
             <td><?php echo $tableField->Lable ? $tableField->Lable : "&nbsp;";?></td>
-            <td><?php echo $tableField->Translate ? JText::_('YES') : JText::_('NO');?></td>
+            <td><?php echo $tableField->Translate ? Text::_('YES') : Text::_('NO');?></td>
         </tr>
         <?php
         $k=1-$k;

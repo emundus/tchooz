@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -13,6 +13,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\WebAsset\WebAssetManager;
 use Joomla\Component\Finder\Administrator\Indexer\Parser\Html;
 
@@ -75,7 +76,7 @@ $skip_params = false;
 $jfmanager = FalangManager::getInstance();
 $active_language = $jfmanager->getLanguageByID($select_language_id);
 
-$user = JFactory::getUser();
+$user = Factory::getUser();
 $db = Factory::getDBO();
 $elementTable = $this->actContentObject->getTable();
 $input = Factory::getApplication()->input;
@@ -255,7 +256,7 @@ else {
             </div>
             <div class="right form-horizontal ">
                 <h3><?php echo Text::_('COM_FALANG_EDIT_TARGET_TITLE').' : '.$active_language->title;?><span id="flag">
-							<?php echo JHtml::_('image', 'mod_languages/' .$active_language->image  . '.gif', $active_language->title , null, true); ?>
+							<?php echo HTMLHelper::_('image', 'mod_languages/' .$active_language->image  . '.gif', $active_language->title , null, true); ?>
 						</span>
                 </h3>
             </div>
@@ -379,7 +380,7 @@ else {
                             <span style="display:none" id="original_value_<?php echo $field->Name?>" name="original_value_<?php echo $field->Name;?>">
                                 <?php
                                       if (preg_match("/<form/i",$field->originalValue)){
-                                        $ovhref = JRoute::_("index.php?option=com_falang&task=translate.originalvalue&field=".$field->Name."&cid=".$this->actContentObject->id."&lang=".$select_language_id);
+                                        $ovhref = Route::_("index.php?option=com_falang&task=translate.originalvalue&field=".$field->Name."&cid=".$this->actContentObject->id."&lang=".$select_language_id);
                                         echo '<a class="modal" rel="{handler: \'iframe\', size: {x: 700, y: 500}}" href="'.$ovhref.'" >'.Text::_("Content contains form - click here to view in popup window").'</a>';
                                       }
                                       else {

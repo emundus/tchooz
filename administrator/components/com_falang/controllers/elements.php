@@ -10,10 +10,14 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Pagination\Pagination;
 
 JLoader::import( 'helpers.controllerHelper',FALANG_ADMINPATH);
 
-class ElementsController extends JControllerLegacy   {
+class ElementsController extends BaseController {
 
 	/** @var string		current used task */
 	var $task=null;
@@ -33,7 +37,17 @@ class ElementsController extends JControllerLegacy   {
 	 */
 	var $_falangManager=null;
 
-	/**
+
+    /** @var string Content element */
+    var $_catid;
+
+    var $_select_language_id;
+
+    var $_language_id;
+
+    var $view;
+
+    /**
 	 *
 	 */
 	function __construct( ){
@@ -94,14 +108,14 @@ class ElementsController extends JControllerLegacy   {
 			JLoader::import( 'helpers.jfinstaller',FALANG_ADMINPATH);
 			$installer = new jfInstaller();
 			if ( $installer->install( $_FILES["userfile"] )){
-				$msg = JText::_('Fileupload successful');
+				$msg = Text::_('Fileupload successful');
 			}
 			else {
-                Factory::getApplication()->enqueueMessage(JText::_('Fileupload not successful'), 'error');
+                Factory::getApplication()->enqueueMessage(Text::_('Fileupload not successful'), 'error');
 				//JError::raiseError(417, JText::_('Fileupload not successful'));
 			}
 		} else {
-            Factory::getApplication()->enqueueMessage(JText::_('Fileupload not successful'), 'error');
+            Factory::getApplication()->enqueueMessage(Text::_('Fileupload not successful'), 'error');
 			//JError::raiseError(418, JText::_('Fileupload not successful'));
 		}
 		$this->setRedirect('index.php?option=com_falang&task=elements.installer', $msg);;
@@ -115,7 +129,7 @@ class ElementsController extends JControllerLegacy   {
 		//JRequest::checkToken() or die( 'Invalid Token' );
 		
 		if( $this->_deleteContentElement($this->cid[0]) ) {
-			$msg = JText::sprintf('COM_FALANG_CONTENT_ELEMENT_FILE_DELETED', $this->cid[0]);
+			$msg = Text::sprintf('COM_FALANG_CONTENT_ELEMENT_FILE_DELETED', $this->cid[0]);
 		}
 		if($this->task == 'remove_install') {
 			$this->setRedirect('index.php?option=com_falang&task=elements.installer', $msg);;
@@ -133,8 +147,7 @@ class ElementsController extends JControllerLegacy   {
 
 		$elementfolder = FALANG_ADMINPATH .DS. 'contentelements/';
 		$filename .= '.xml';
-		jimport('joomla.filesystem.file');
-		return JFile::delete($elementfolder . $filename);
+		return File::delete($elementfolder . $filename);
 	}
 
 	/** Presentation of the content element list
@@ -148,7 +161,7 @@ class ElementsController extends JControllerLegacy   {
 		$total=count($this->_falangManager->getContentElements());
 
         jimport('joomla.html.pagination');
-		$pageNav = new JPagination( $total, $limitstart, $limit );
+		$pageNav = new Pagination( $total, $limitstart, $limit );
 
 		// get the view
 		$view =  $this->getView("elements");

@@ -3,17 +3,20 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Editor\Editor;
+use Joomla\CMS\Uri\Uri;
 
-// JURI::base() returns admin path so go up one level
-$live_site = JURI::base()."..";
+
+// URI::base() returns admin path so go up one level
+$live_site = URI::base()."..";
 $base = '<base href="'.$live_site.'/index.html" />';
 
 Factory::getApplication()->getDocument()->addCustomTag($base);
@@ -46,8 +49,8 @@ Factory::getApplication()->getDocument()->addCustomTag($base);
 	</script>
 <table align="center" width="100%" cellspacing="2" cellpadding="2" border="0">
 	<tr>
-		<th ><h2><?php echo JText::_("Original");?></h2></th>
-		<th ><h2><?php echo JText::_("Translation");?></h2></th>
+		<th ><h2><?php echo Text::_("Original");?></h2></th>
+		<th ><h2><?php echo Text::_("Translation");?></h2></th>
 	</tr>
 	<tr>
 		<td class="contentheading" style="width:50%!important"><script>document.write(title_orig);</script></td>
@@ -58,6 +61,6 @@ Factory::getApplication()->getDocument()->addCustomTag($base);
 		<script>document.write("<td valign=\"top\" >" + alltext + "</td>");</script>
 	</tr>
 	<tr>
-		<td align="center" colspan="2"><a href="javascript:;" onClick="window.print(); return false"><?php echo JText::_("Print");?></a></td>
+		<td align="center" colspan="2"><a href="javascript:;" onClick="window.print(); return false"><?php echo Text::_("Print");?></a></td>
 	</tr>
 </table>

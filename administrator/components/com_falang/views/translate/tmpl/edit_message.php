@@ -3,10 +3,13 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die;
 
 $state			= $this->get('state');
@@ -14,7 +17,7 @@ $message1		= $state->get('message');
 $message2		= $state->get('extension.message');
 
 //use for message
-JFactory::getDocument()->addScript('components/com_falang/assets/js/toast.js');
+Factory::getDocument()->addScript('components/com_falang/assets/js/toast.js');
 
 ?>
 <script type="text/javascript">
@@ -23,11 +26,11 @@ JFactory::getDocument()->addScript('components/com_falang/assets/js/toast.js');
 </script>
 <?php if($message1) { ?>
     <script type="text/javascript">
-        toastr.success('<?php echo JText::_($message1) ?>');
+        toastr.success('<?php echo Text::_($message1) ?>');
     </script>
 <?php } ?>
 <?php if($message2) { ?>
     <script type="text/javascript">
-        toastr.success('<?php echo JText::_($message2) ?>');
+        toastr.success('<?php echo Text::_($message2) ?>');
     </script>
 <?php } ?>

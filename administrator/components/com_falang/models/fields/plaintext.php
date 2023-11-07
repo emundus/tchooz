@@ -11,6 +11,9 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormField;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
+
 
 class JFormFieldPlaintext extends FormField
 {
@@ -25,7 +28,7 @@ class JFormFieldPlaintext extends FormField
     public function getInput()
     {
         $document = Factory::getDocument();
-        $document->addStyleSheet(JURI::root().'administrator/components/com_falang/assets/css/falang.css');
+        $document->addStyleSheet(URI::root().'administrator/components/com_falang/assets/css/falang.css');
 
         $text = trim($this->value);
 
@@ -34,7 +37,7 @@ class JFormFieldPlaintext extends FormField
             return '';
         }
 
-        return '<fieldset class="plaintext">' . JTEXT::_($text) . '</fieldset>';
+        return '<fieldset class="plaintext">' . Text::_($text) . '</fieldset>';
 
     }
 

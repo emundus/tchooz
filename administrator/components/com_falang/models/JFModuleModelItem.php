@@ -3,13 +3,14 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Form\FormFactoryInterface;
 use Joomla\Component\Modules\Administrator\Model\ModuleModel;
@@ -28,9 +29,9 @@ class JFTempModuleModelItem extends ModuleModel {
 	 * @param   boolean  $clear    Optional argument to force load a new form.
 	 * @param   string   $xpath    An optional xpath to search for the fields.
 	 *
-	 * @return  mixed  JForm object on success, False on error.
+	 * @return  mixed  Form object on success, False on error.
 	 *
-	 * @see     JForm
+	 * @see     Form
 	 * @since   11.1
 	 */
 	protected function loadForm($name, $source = null, $options = array(), $clear = false, $xpath = false)
@@ -55,12 +56,12 @@ class JFTempModuleModelItem extends ModuleModel {
 				$component = $name;
 			}
 			$componentpath = JPATH_BASE."/components/".$component;
-			JForm::addFormPath($componentpath.'/forms');
-			JForm::addFieldPath($componentpath.'/fields');
+			Form::addFormPath($componentpath.'/forms');
+			Form::addFieldPath($componentpath.'/fields');
 		}
 		else {
-			JForm::addFormPath(JPATH_COMPONENT.'/forms');
-			JForm::addFieldPath(JPATH_COMPONENT.'/fields');
+			Form::addFormPath(JPATH_COMPONENT.'/forms');
+			Form::addFieldPath(JPATH_COMPONENT.'/fields');
 		}
 
 		try

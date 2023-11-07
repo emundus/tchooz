@@ -3,11 +3,13 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die;
 
@@ -19,8 +21,8 @@ defined('_JEXEC') or die;
 	 */
 $rows = $this->rows;
 global  $act,  $option;
-$user = JFactory::getUser();
-$db = JFactory::getDBO();
+$user = Factory::getUser();
+$db = Factory::getDBO();
 
          ?>
 <form action="index.php" method="post" name="adminForm" id="adminForm">
@@ -29,9 +31,9 @@ $db = JFactory::getDBO();
    <input type="hidden" name="catid" value="<?php echo $catid;?>" />
    <table width="100%" border="1" cellpadding="4" cellspacing="2" class="adminForm">
 	<tr align="center" valign="middle">
-	      <th width="10%" align="left" valign="top"><?php echo JText::_('COM_FALANG_DBFIELDLABEL');?></th>
-	      <th width="12%" align="left" valign="top"><?php echo JText::_('COM_FALANG_ORIGINAL');?></th>
-	      <th width="78%" align="left" valign="top"><?php echo JText::_('COM_FALANG_TRANSLATION');?></th>
+	      <th width="10%" align="left" valign="top"><?php echo Text::_('COM_FALANG_DBFIELDLABEL');?></th>
+	      <th width="12%" align="left" valign="top"><?php echo Text::_('COM_FALANG_ORIGINAL');?></th>
+	      <th width="78%" align="left" valign="top"><?php echo Text::_('COM_FALANG_TRANSLATION');?></th>
         </tr>
         <?php
         $style1="style='background-color:rgb(241,243,245)'";

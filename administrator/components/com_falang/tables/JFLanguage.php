@@ -3,23 +3,23 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+use Joomla\CMS\Table\Table;
+
 defined('_JEXEC') or die;
 
 /**
  * Database class for handling the languages within the component
  *
- * @package joomfish
+ * @package falang
  * @subpackage administrator
- * @copyright 2003 - 2011, Think Network GmbH, Munich
- * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License
- * @version $Revision: 1580 $
  * @author Alex Kempkens <joomfish@thinknetwork.com>
  */
-class TableJFLanguage extends JTable  {
+class TableJFLanguage extends Table  {
 	/** @var int Primary key */
 	var $id=null;
 	/** @var string The full name of the language*/
@@ -74,7 +74,7 @@ class TableJFLanguage extends JTable  {
 	 *	@return object new language instance or null
 	 */
 	function createByJoomla( $code, $active=true ) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
 		$lang = new TableJFLanguage($db);
 		$jfm = FalangManager::getInstance();
@@ -105,7 +105,7 @@ class TableJFLanguage extends JTable  {
 	 * @return object	language class or null
 	 */
 	function createByShortcode( $shortcode, $active=true ) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		if ($shortcode === null || $shortcode=='') {
 			return null;
 		}
@@ -126,7 +126,7 @@ class TableJFLanguage extends JTable  {
 	 *	@return any result from the database operation
 	 */
 	function createByISO( $iso, $active=true ) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
 		if ($iso === null) {
 			return false;

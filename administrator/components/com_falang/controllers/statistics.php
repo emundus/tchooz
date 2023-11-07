@@ -3,12 +3,13 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
 
 defined('_JEXEC') or die;
 
@@ -19,7 +20,7 @@ JLoader::import( 'models.ContentObject',FALANG_ADMINPATH);
  * The JoomFish Tasker manages the general tasks within the Joom!Fish admin interface
  *
  */
-class StatisticsController extends JControllerLegacy  {
+class StatisticsController extends BaseController  {
 
 	/**
 	 * @var object reference to the currecnt view
@@ -70,7 +71,7 @@ class StatisticsController extends JControllerLegacy  {
 		switch ($type) {
 			case 'translation_status':
 				$message = '';
-				$session = JFactory::getSession();
+				$session = Factory::getSession();
 				$translationStatus = $session->get('translationState',array());
 				$translationStatus = $this->_model->testTranslationStatus($translationStatus, $phase, $statecheck_i, $message);
 				$session->set('translationState', $translationStatus );
@@ -89,7 +90,7 @@ class StatisticsController extends JControllerLegacy  {
 
 			case 'original_status':
 				$message = '';
-				$session = JFactory::getSession();
+				$session = Factory::getSession();
 				$originalStatus = $session->get('originalStatus', array());
 				$langCodes = array();
 				$jfManager = FalangManager::getInstance();

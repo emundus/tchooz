@@ -2,12 +2,12 @@
 <extension version="4.0" type="plugin" group="system" method="upgrade" >
     <name>plg_system_falangquickjump</name>
     <author>Stéphane Bouey</author>
-    <creationDate>15 June 2023</creationDate>
+    <creationDate>06 Novembre 2023</creationDate>
     <copyright>2011-2023, Faboba</copyright>
     <license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
     <authorEmail>stephane.bouey@faboba.com</authorEmail>
     <authorUrl>www.faboba.com</authorUrl>
-    <version>4.13</version>
+    <version>5.0-beta1</version>
     <description>PLG_SYSTEM_FALANGQUICKJUMP_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="falangquickjump">index.html</filename>
@@ -17,8 +17,8 @@
         <folder>toolbar</folder>
 	</files>
 	<languages>
-		<language tag="language/en-GB">en-GB.plg_system_falangquickjump.ini</language>
-		<language tag="language/en-GB">en-GB.plg_system_falangquickjump.sys.ini</language>
+		<language tag="language/en-GB">plg_system_falangquickjump.ini</language>
+		<language tag="language/en-GB">plg_system_falangquickjump.sys.ini</language>
 	</languages>
 	<config>
 	</config>

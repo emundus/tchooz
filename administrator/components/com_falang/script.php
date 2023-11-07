@@ -7,11 +7,12 @@
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\Registry\Registry;
+
 defined('_JEXEC') or die;
-
-
-jimport('joomla.filesystem.folder');
-jimport('joomla.filesystem.file');
 
 class com_falangInstallerScript
 {
@@ -89,7 +90,7 @@ class com_falangInstallerScript
             }
             //update module params for advance dropdown and show_name value version 2.2.1+
             if (version_compare($this->_previous_version, '2.2.0', 'le')) {
-                $db = JFactory::getDbo();
+                $db = Factory::getDbo();
                 $db->setQuery('SELECT params FROM #__extensions WHERE name = ' . $db->quote('mod_falang'));
                 $params = json_decode($db->loadResult(), true);
                 $params['show_name'] = '0';
@@ -170,9 +171,9 @@ class com_falangInstallerScript
         private function _installSubextensions($parent,$type) {
                 $src = $parent->getParent()->getPath('source');
 
-                $db = JFactory::getDbo();
+                $db = Factory::getDbo();
 
-                $status = new JObject();
+                $status = new stdClass();
                 $status->modules = array();
                 $status->plugins = array();
 
@@ -265,7 +266,7 @@ class com_falangInstallerScript
         private function _setDefaultParams($type){
 
 
-                $db = JFactory::getDBO();
+                $db = Factory::getDBO();
                 $updateParams = false;
 
                 if(count($this->installation_params['components'])) {
@@ -294,7 +295,7 @@ class com_falangInstallerScript
                                     if ($updateParams) {
                                         $query = $db->getQuery(true);
                                         $query->update($db->quoteName('#__extensions'));
-                                        $parameter = new JRegistry;
+                                        $parameter = new Registry;
                                         $parameter->loadArray($config_ini);
                                         $defaults = json_encode($config_ini); // JSON format for the parameters
                                         $defaults = str_replace('#10#13','\r\n',$defaults);
@@ -320,57 +321,55 @@ class com_falangInstallerScript
     private function _removeObsoleteFilesAndFolders($falangRemoveFiles)
     {
         // Remove files
-        jimport('joomla.filesystem.file');
         if(!empty($falangRemoveFiles['files'])) foreach($falangRemoveFiles['files'] as $file) {
             $f = JPATH_ROOT.'/'.$file;
-            if(!JFile::exists($f)) continue;
-            JFile::delete($f);
+            if(!File::exists($f)) continue;
+            File::delete($f);
         }
 
         // Remove folders
-        jimport('joomla.filesystem.file');
         if(!empty($falangRemoveFiles['folders'])) foreach($falangRemoveFiles['folders'] as $folder) {
             $f = JPATH_ROOT.'/'.$folder;
-            if(!JFolder::exists($f)) continue;
-            JFolder::delete($f);
+            if(!Folder::exists($f)) continue;
+            Folder::delete($f);
         }
 
         //remove joomla 2.X content element
         if (version_compare(JVERSION,'3.0.0','<')) {
             $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/tags.xml';
-            if (JFile::exists($f)) {
-                JFile::delete($f);
+            if (File::exists($f)) {
+                File::delete($f);
             }
         }
         //remove joomla 3.X content element
         if (version_compare(JVERSION,'3.4','>=')) {
             $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/weblinks.xml';
-            if (JFile::exists($f)) {
-                JFile::delete($f);
+            if (File::exists($f)) {
+                File::delete($f);
             }
         }
 
 		//version before 3.7.0 don't support custom fields
 	    if( version_compare(JVERSION, '3.7.0', '<') ) {
 		    $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields.xml';
-		    if (JFile::exists($f)) {
-			    JFile::delete($f);
+		    if (File::exists($f)) {
+			    File::delete($f);
 		    }
 		    $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields_groups.xml';
-		    if (JFile::exists($f)) {
-			    JFile::delete($f);
+		    if (File::exists($f)) {
+			    File::delete($f);
 		    }
 		    $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields_values.xml';
-		    if (JFile::exists($f)) {
-			    JFile::delete($f);
+		    if (File::exists($f)) {
+			    File::delete($f);
 		    }
 
 	    }
 
 	    //remove custom fiels value
 	    $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields_values.xml';
-	    if (JFile::exists($f)) {
-		    JFile::delete($f);
+	    if (File::exists($f)) {
+		    File::delete($f);
 	    }
 
     }
@@ -382,7 +381,7 @@ class com_falangInstallerScript
     private function _removeUpdateSite()
     {
         // Get some info on all the stuff we've gotta delete
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true)
             ->select(array(
                 $db->qn('s').'.'.$db->qn('update_site_id'),
@@ -450,7 +449,7 @@ class com_falangInstallerScript
      */
     private function _removeUpdateSiteFromOtherVersion($versionype)
     {
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true)
             ->delete($db->qn('#__update_sites'));
 
@@ -495,7 +494,7 @@ class com_falangInstallerScript
          * get a variable from the manifest file (actually, from the manifest cache).
          */
     function getParam( $name ) {
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_falang"');
         $manifest = json_decode( $db->loadResult(), true );
         return $manifest[ $name ];
@@ -507,7 +506,7 @@ class com_falangInstallerScript
     function setParams($param_array) {
         if ( count($param_array) > 0 ) {
             // read the existing component value(s)
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
             $db->setQuery('SELECT params FROM #__extensions WHERE name = "com_falang"');
             $params = json_decode( $db->loadResult(), true );
             // add the new variable(s) to the existing one(s)

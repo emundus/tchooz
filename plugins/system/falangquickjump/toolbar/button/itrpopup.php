@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -102,7 +102,7 @@ class JToolbarButtonItrPopup extends ToolbarButton {
         $html = [];
 
 
-        $html[] = "<joomla-toolbar-button id=\"toolbar-".$options['name']."\" >";
+        $html[] = "<joomla-toolbar-button id=\"toolbar-".$options['name']."\">";
         $html[] = "<button type=\"button\" class=\"btn btn-small " . $options['class'] . "\" data-bs-toggle=\"modal\" data-bs-target=\"#modal-" . $options['name'] . "\" id=\"#modal-" . $options['name'] . "-btn\" />";
         $html[] = "<span class=\"".$options['publish']." falang-status\">";
         $html[] = "</span>";
@@ -163,7 +163,7 @@ JS
 	private function _getCommand($url) {
 		if (substr($url, 0, 4) !== 'http')
 		{
-			$url = JURI::base() . $url;
+			$url = URI::base() . $url;
 		}
 
 		return $url;

@@ -3,9 +3,11 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
+
+use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die;
 
@@ -16,14 +18,14 @@ class pkg_falangInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '7.0.0';
+	protected $minimumPHPVersion = '8.0.0';
 	
 	/**
 	 * The minimum Joomla! version required to install this extension
 	 *
 	 * @var   string
 	 */
-	protected $minimumJoomlaVersion = '4.0';
+	protected $minimumJoomlaVersion = '4.3';
 
 	/**
 	 * The maximum Joomla! version required to install this extension
@@ -36,7 +38,7 @@ class pkg_falangInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $maximumJoomlaVersion = '4.4.99';
+	protected $maximumJoomlaVersion = '5.4.99';
 	
 	 
     public function install($parent) {}
@@ -73,7 +75,7 @@ class pkg_falangInstallerScript
 				$msg .= "<p>You are using PHP $version which is an extremely old version, released more than four years ago. This version contains known functional and security issues. The functional issues do not allow you to run Akeeba Backup and cannot be worked around. The security issues mean that your site <b>can be easily hacked</b> since that these security issues are well known for over four years.</p>";
 				$msg .= "<p>You have to ask your host to immediately update your site to PHP $this->minimumPHPVersion or later, ideally the latest available version of PHP 5.4. If your host won't do that you are advised to switch to a better host to ensure the security of your site. If you have to stay with your current host for reasons beyond your control you can use Akeeba Backup 4.0.5 or earlier, available from our downloads page.</p>";
 
-				JLog::add($msg, JLog::WARNING, 'jerror');
+				Log::add($msg, Log::WARNING, 'jerror');
 
 				return false;
 			}
@@ -178,7 +180,7 @@ class pkg_falangInstallerScript
             </div> 
              <div class="faboba-installation-right span8">
                 <div class="faboba-installation-texts">
-	                <h2>Falang free<span>4.13</span></h2>
+	                <h2>Falang free<span>5.0-beta1</span></h2>
 	                <p>The easiest way to build a multilanguage site on Joomla</p>
                 </div>
                 <div class="faboba-installation-footer">

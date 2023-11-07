@@ -1,26 +1,30 @@
 <?php
 // Check to ensure this file is included in Joomla!
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 class TranslatorLingvanex extends TranslatorDefault {
 	
 	function __construct()
 	{
-		$params = JComponentHelper::getParams('com_falang');
+		$params = ComponentHelper::getParams('com_falang');
 		if (strlen($params->get('translator_lingvanex')) < 60){
-			JFactory::getApplication()->enqueueMessage(JText::_('COM_FALANG_INVALID_LINGVANEX_KEY'), 'error');
+			Factory::getApplication()->enqueueMessage(Text::_('COM_FALANG_INVALID_LINGVANEX_KEY'), 'error');
 			return;
 		}
 
 		if(!function_exists('curl_init')) {
-			JFactory::getApplication()->enqueueMessage(JText::_('COM_FALANG_CURL_LINGVANEX_MESSAGE'), 'error');
+			Factory::getApplication()->enqueueMessage(Text::_('COM_FALANG_CURL_LINGVANEX_MESSAGE'), 'error');
 			return;
 		}
 
 		//region non necessary for global endpoint
 		$script = "var LingvanexKey = '".$params->get('translator_lingvanex')."';\n";
 
-		$document = JFactory::getDocument();
+		$document = Factory::getDocument();
 		$document->addScriptDeclaration($script,'text/javascript');
 		
 		$this->script = 'translatorLingvanex.js';
@@ -31,12 +35,12 @@ class TranslatorLingvanex extends TranslatorDefault {
 	public function installScripts ($from, $to) {
 		$script = "var translator = {'from' : '".$from. "','to' : '".$to. "'};\n";
 
-		$document = JFactory::getDocument();
+		$document = Factory::getDocument();
 		$document->addScriptDeclaration($script,'text/javascript');
 
 
 		if ($this->script != NULL){
-			$document = JFactory::getDocument();
+			$document = Factory::getDocument();
 			$document->addScript('components/com_falang/assets/js/'.$this->script);
 		}
 	}

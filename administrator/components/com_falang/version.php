@@ -3,16 +3,16 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
 
 class FalangVersion {
-	var $_version	= '4.13';
+	var $_version	= '5.0-beta1';
     var $_versiontype	= 'free';
-    var $_date	= '2023/06/15';
+    var $_date	= '2023/11/06';
 	var $_status	= 'Stable';
 	var $_revision	= '';
 	var $_copyyears = '';

@@ -11,9 +11,11 @@ defined( '_JEXEC' ) or die;
 JLoader::import( 'helpers.controllerHelper',FALANG_ADMINPATH);
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\AdminController;
-
+use Joomla\CMS\Pagination\Pagination;
+use Joomla\CMS\Plugin\PluginHelper;
 
 
 /**
@@ -40,9 +42,18 @@ class TranslateController extends AdminController   {
 	 */
 	var $_falangManager=null;
 
+    /** @var string		Content Element */
+    var $_catid = null;
+
+    /** @var string		Language id selected */
+    var $_select_language_id = null;
+    var $_language_id = null;//TODO check this $selected and language seem not necessary
+
+    var $view = null;//php 8.2 deprecated //sbou5
+
 	function __construct( ){
 		parent::__construct();
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 
 		$this->registerDefaultTask( 'showTranslate' );
 
@@ -74,7 +85,7 @@ class TranslateController extends AdminController   {
 
 
 		// Populate data used by controller
-        $app	= JFactory::getApplication();
+        $app	= Factory::getApplication();
 		$this->_catid = $app->getUserStateFromRequest('selected_catid', 'catid', '');
 		$this->_select_language_id = $app->getUserStateFromRequest('selected_lang','select_language_id', '-1');
         $this->_language_id =  $jinput->get('language_id', $this->_select_language_id,'INT');
@@ -101,7 +112,7 @@ class TranslateController extends AdminController   {
 	 */
 	function showTranslate() {
 
-        $input = JFactory::getApplication()->input;
+        $input = Factory::getApplication()->input;
         $direct = $input->get('direct', '0', 'int');
 
 		// If direct translation then close the modal window
@@ -122,9 +133,9 @@ class TranslateController extends AdminController   {
      * @update 4.9 add primary_key in view
 	 */
 	function showTranslationOverview( $language_id, $catid) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
-        $app = JFactory::getApplication();
+        $app = Factory::getApplication();
         $limit		= $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'), 'int');
 		$limitstart = $app->getUserStateFromRequest( "view{com_falang}limitstart", 'limitstart', 0 );
 		$search = $app->getUserStateFromRequest( "search{com_falang}", 'search', '' );
@@ -178,18 +189,17 @@ class TranslateController extends AdminController   {
 		}
 
 		// Create the pagination object
-		jimport('joomla.html.pagination');
-		$pageNav = new JPagination($total, $limitstart, $limit);
+		$pageNav = new Pagination($total, $limitstart, $limit);
 
         // get list of element names
-		$elementNames[] = JHTML::_('select.option',  '', JText::_('COM_FALANG_SELECT_CONTENT_ELEMENT') );
+		$elementNames[] = HTMLHelper::_('select.option',  '', Text::_('COM_FALANG_SELECT_CONTENT_ELEMENT') );
 		// force reload to make sure we get them all
 		$elements = $this->_falangManager->getContentElements(true);
 		foreach( $elements as $key => $element )
 		{
-			$elementNames[] = JHTML::_('select.option',  $key, $element->Name );
+			$elementNames[] = HTMLHelper::_('select.option',  $key, $element->Name );
 		}
-		$clist = JHTML::_('select.genericlist', $elementNames, 'catid', 'class="form-select" onchange="if(document.getElementById(\'select_language_id\').value>=0) document.adminForm.submit();"', 'value', 'text', $catid );
+		$clist = HTMLHelper::_('select.genericlist', $elementNames, 'catid', 'class="form-select" onchange="if(document.getElementById(\'select_language_id\').value>=0) document.adminForm.submit();"', 'value', 'text', $catid );
 
 		// get the view
         //start:1.4.2
@@ -217,7 +227,7 @@ class TranslateController extends AdminController   {
 	 */
 	// DONE
 	function editTranslation(  ) {
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 		$cid =  $jinput->get('cid', array(0),'STR');
 		$translation_id = 0;
 		if( strpos($cid[0], '|') >= 0 ) {
@@ -230,8 +240,8 @@ class TranslateController extends AdminController   {
 		$catid=$this->_catid;
 
 		global  $mainframe;
-		$user = JFactory::getUser();
-		$db = JFactory::getDBO();
+		$user = Factory::getUser();
+		$db = Factory::getDBO();
 
 		$actContentObject=null;
 
@@ -261,7 +271,7 @@ class TranslateController extends AdminController   {
 		$this->view->setLayout('edit');
 
 		// Need to load com_config language strings!
-		$lang = JFactory::getLanguage();
+		$lang = Factory::getLanguage();
 		$lang->load( 'com_config' );
 
 		// Assign data for view - should really do this as I go along
@@ -288,7 +298,7 @@ class TranslateController extends AdminController   {
 		$select_language_id = $this->_select_language_id;
 		$language_id =  $this->_language_id;
 
-        $app = JFactory::getApplication();
+        $app = Factory::getApplication();
         $jinput = $app->input;
 
 		$id =  $app->input->get('reference_id', null );
@@ -305,7 +315,7 @@ class TranslateController extends AdminController   {
 			$storeOriginalText = ($this->_falangManager->getCfg('storageOfOriginal') == 'md5') ? false : true;
 
 			// Get the dispatcher and load the users plugins.
-			\JPluginHelper::importPlugin('system');
+			PluginHelper::importPlugin('system');
 
 			Factory::getApplication()->triggerEvent('onBeforeTranslationBind');
 
@@ -313,21 +323,21 @@ class TranslateController extends AdminController   {
 			if ($actContentObject->store() == null)	{
                 //
 				Factory::getApplication()->triggerEvent('onAfterTranslationSave', array($_POST));
-                $this->view->message = JText::_('COM_FALANG_TRANSLATE_SAVED');
+                $this->view->message = Text::_('COM_FALANG_TRANSLATE_SAVED');
 			}
 			else {
-				$this->view->message = JText::_('COM_FALANG_TRANSLATE_SAVED_ERROR');
+				$this->view->message = Text::_('COM_FALANG_TRANSLATE_SAVED_ERROR');
 			}
 
 			// Clear Translation Cache
-			$db = JFactory::getDBO();
+			$db = Factory::getDBO();
 			$lang = new TableJFLanguage($db);
 			$lang->load( $language_id );
 			$cache =  $this->_falangManager->getCache($lang->code);
 			//$cache->clean();
 		}
 		else {
-			$this->view->message = JText::_('COM_FALANG_TRANSLATE_SAVED_ERROR_CATID');
+			$this->view->message = Text::_('COM_FALANG_TRANSLATE_SAVED_ERROR_CATID');
 		}
 
 		if ($this->task=="apply"){
@@ -386,7 +396,7 @@ class TranslateController extends AdminController   {
 			if( $actContentObject->state>=0 ) {
 				$actContentObject->setPublished($publish);
 				$actContentObject->store();
-				$model->setState('message', $publish ? JText::_('COM_FALANG_TRANSLATE_PUBLISHED') : JText::_('COM_FALANG_TRANSLATE_UNPUBLISHED') );
+				$model->setState('message', $publish ? Text::_('COM_FALANG_TRANSLATE_PUBLISHED') : Text::_('COM_FALANG_TRANSLATE_UNPUBLISHED') );
 			}
 		}
 
@@ -421,7 +431,7 @@ class TranslateController extends AdminController   {
 		$cid =  trim($jinput->get( 'cid', 0,'INT' ));
 		$language_id =  $jinput->get( 'lang', 0 ,'INT');
 		if ($cid=="" ){
-            Factory::getApplication()->enqueueMessage(JText::_("Invalid paramaters"), 'warning');
+            Factory::getApplication()->enqueueMessage(Text::_("Invalid paramaters"), 'warning');
 			//JError::raiseWarning(200,JText::_("Invalid paramaters") );
 			return;
 		}
@@ -430,8 +440,8 @@ class TranslateController extends AdminController   {
 		$catid=$this->_catid;
 
 		global  $mainframe;
-		$user = JFactory::getUser();
-		$db = JFactory::getDBO();
+		$user = Factory::getUser();
+		$db = Factory::getDBO();
 
 		$actContentObject=null;
 
@@ -463,8 +473,8 @@ class TranslateController extends AdminController   {
 		$language_id = $this->_language_id;
 		$catid = $this->_catid;
 
-      	$app	= JFactory::getApplication();
-		$db = JFactory::getDBO();
+      	$app	= Factory::getApplication();
+		$db = Factory::getDBO();
 
 
 		$limit		= $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'), 'int');
@@ -486,7 +496,7 @@ class TranslateController extends AdminController   {
 				$rows = $db->loadObjectList();
 			}
 			catch (Exception $e) {
-				$app->enqueueMessage(JText::_($e->getMessage()), 'error');
+				$app->enqueueMessage(Text::_($e->getMessage()), 'error');
 				//JError::raiseError( 200,JTEXT::_('No valid database connection: ') .$db->stderr());
 				return false;
 			}
@@ -500,23 +510,22 @@ class TranslateController extends AdminController   {
 				$rows[$i]->state=null;
 				$rows[$i]->title = $rows[$i]->original_text;
 				if (is_null($rows[$i]->title)){
-					$rows[$i]->title=JText::_("original missing");
+					$rows[$i]->title=Text::_("original missing");
 				}
 				$rows[$i]->checked_out=false;
 			}
 		}
 
-        jimport('joomla.html.pagination');
-		$pageNav = new JPagination( $total, $limitstart, $limit );
+		$pageNav = new Pagination( $total, $limitstart, $limit );
 
 		// get list of element names
-		$elementNames[] = JHTML::_('select.option',  '', JText::_('COM_FALANG_SELECT_CONTENT_ELEMENT') );
+		$elementNames[] = HTMLHelper::_('select.option',  '', Text::_('COM_FALANG_SELECT_CONTENT_ELEMENT') );
 		$elements = $this->_falangManager->getContentElements(true);
 		foreach( $elements as $key => $element )
 		{
-			$elementNames[] = JHTML::_('select.option',  $key, $element->Name );
+			$elementNames[] = HTMLHelper::_('select.option',  $key, $element->Name );
 		}
-		$clist = JHTML::_('select.genericlist', $elementNames, 'catid', 'class="form-select" onchange="document.adminForm.submit();"', 'value', 'text', $catid );
+		$clist = HTMLHelper::_('select.genericlist', $elementNames, 'catid', 'class="form-select" onchange="document.adminForm.submit();"', 'value', 'text', $catid );
 
 		// get the view
 		$this->view =  $this->getView('translate','html','FalangView');
@@ -553,7 +562,7 @@ class TranslateController extends AdminController   {
 		$contentElement = $this->_falangManager->getContentElement( $this->_catid );
 		$tablename = $contentElement->getTableName();
 
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
 		// read details of orphan translation
 		$sql = "SELECT * FROM #__falang_content WHERE reference_id=$contentid AND language_id='".$language_id."' AND reference_table='".$tablename."'";
@@ -587,7 +596,7 @@ class TranslateController extends AdminController   {
 		$model =  $this->view->getModel();
 		$model->_removeTranslation( $this->_catid, $this->cid );
 
-		$this->view->message = JText::_('Orphan Translation(s) deleted');
+		$this->view->message = Text::_('Orphan Translation(s) deleted');
 		// redirect to overview
 		$this->showOrphanOverview();
 	}
@@ -596,7 +605,7 @@ class TranslateController extends AdminController   {
 
         @ob_end_clean();
 
-        $input = JFactory::getApplication()->input;
+        $input = Factory::getApplication()->input;
         $language_id = $input->get('select_language_id',0,'int');
 
         die("
@@ -627,10 +636,10 @@ class TranslateController extends AdminController   {
 		$this->view->setLayout('popup_free');
 
 		// Need to load com_config language strings!
-		$lang = JFactory::getLanguage();
+		$lang = Factory::getLanguage();
 		$lang->load( 'com_config' );
 
-		$document = JFactory::getDocument();
+		$document = Factory::getDocument();
 
 		$this->view->display();
 	}

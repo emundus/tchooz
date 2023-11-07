@@ -3,10 +3,14 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.controller');
@@ -15,7 +19,7 @@ jimport('joomla.application.component.controller');
  * The Falang Tasker manages the general tasks within the Falang admin interface
  *
  */
-class PluginController extends JControllerLegacy  {
+class PluginController extends BaseController  {
 
 	function __construct($config = array())
 	{
@@ -30,7 +34,7 @@ class PluginController extends JControllerLegacy  {
     function display($cachable = false, $urlparams = array())
 	{
 		// test if any plugins are installed - if not divert to installation screen
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = 'SELECT COUNT(*)'
 			. ' FROM #__extensions AS p'
 			. ' WHERE p.folder = '.$db->Quote("falang")
@@ -46,7 +50,7 @@ class PluginController extends JControllerLegacy  {
 		}
 		else {
 			$link = 'index.php?option=com_installer';
-			$msg = JText::_("No FaLang plugins installed yet");
+			$msg = Text::_("No FaLang plugins installed yet");
 		}
 		$this->setRedirect($link, $msg);
 	}

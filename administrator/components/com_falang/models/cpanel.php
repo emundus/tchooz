@@ -3,13 +3,19 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die;
 
-class CPanelModelCPanel extends JModelLegacy
+class CPanelModelCPanel extends BaseDatabaseModel
 {
 	protected $_modelName = 'cpanel';
 
@@ -64,7 +70,7 @@ class CPanelModelCPanel extends JModelLegacy
 
 		// Validating other tabs based on extension configuration
 		// JFTODO Move all panels to their own administrator module
-		$params = JComponentHelper::getParams('com_falang');
+		$params = ComponentHelper::getParams('com_falang');
 //		if( $params->get('showPanelNews', 1) ) {
 //			$pane = new stdClass();
 //			$pane->title = 'News';
@@ -96,7 +102,7 @@ class CPanelModelCPanel extends JModelLegacy
 	 *
 	 */
 	private function _checkSystemState() {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
 		$checkResult = array();
 
@@ -134,14 +140,14 @@ class CPanelModelCPanel extends JModelLegacy
 				case 'directory':
 					$check->description = $child->textContent;
 					$check->result = is_writable(JPATH_SITE .DS. $check->description) ? true : false;
-					$check->resultText = $check->result ? JText::_('writable') : JText::_('not writable');
+					$check->resultText = $check->result ? Text::_('writable') : Text::_('not writable');
 					$check->link = '';
 					$checkResult[$type][] = $check;
 					$checkResult[$type. '_state'] = $checkResult[$type. '_state'] & $check->result;
 					break;
 
 				case 'extension':
-					$check->description = JText::_($child->getAttribute('name'));
+					$check->description = Text::_($child->getAttribute('name'));
                                         //sbou
                                         $table = 'extensions';
 					$type = $child->getAttribute('type');
@@ -159,8 +165,8 @@ class CPanelModelCPanel extends JModelLegacy
 						$resultValues = $db->loadObjectList();
 						if (array_key_exists($value,$resultValues) && $resultValues[$value]->element==$name){
 							$check->result = true ;
-							$check->resultText = JText::_($field);
-							$check->link = JURI::root().'administrator/index.php?option=com_'.$table.'&client=task=editA&hidemainmenu=1&id='.$resultValues[$value]->id;
+							$check->resultText = Text::_($field);
+							$check->link = URI::root().'administrator/index.php?option=com_'.$table.'&client=task=editA&hidemainmenu=1&id='.$resultValues[$value]->id;
 						}
 						else {
                                                         //sbou
@@ -170,8 +176,8 @@ class CPanelModelCPanel extends JModelLegacy
 							$db->setQuery($sql);
 							$resultValue = $db->loadRow();
 							$check->result = false;
-							$check->resultText = JText::_('un'.$field);
-							$check->link = JURI::root().'administrator/index.php?option=com_'.$table.'&client=task=editA&hidemainmenu=1&id='.$resultValue[1];
+							$check->resultText = Text::_('un'.$field);
+							$check->link = URI::root().'administrator/index.php?option=com_'.$table.'&client=task=editA&hidemainmenu=1&id='.$resultValue[1];
 						}
 					}
 					else {
@@ -184,12 +190,12 @@ class CPanelModelCPanel extends JModelLegacy
 
 						if( $resultValue != null ) {
 							$check->result = ($value == $resultValue[0]) ? true : false;
-							$check->resultText = $check->result ? JText::_($field) : JText::_('un'.$field);
+							$check->resultText = $check->result ? Text::_($field) : Text::_('un'.$field);
 
-							$check->link = JURI::root().'administrator/index.php?option=com_'.$table.'&client=task=editA&hidemainmenu=1&id='.$resultValue[1];
+							$check->link = URI::root().'administrator/index.php?option=com_'.$table.'&client=task=editA&hidemainmenu=1&id='.$resultValue[1];
 						} else {
 							$check->result = false;
-							$check->resultText = JText::_('not installed');
+							$check->resultText = Text::_('not installed');
 
 							$check->link = '';
 						}
@@ -202,11 +208,11 @@ class CPanelModelCPanel extends JModelLegacy
 					break;
 					
 				case 'performance':
-					$check->description = JText::_($child->getAttribute('name'));
+					$check->description = Text::_($child->getAttribute('name'));
 					$check->name = $child->getAttribute('name');
 					$check->type = $child->getAttribute('type');
 					$check->link = $child->getAttribute('link');
-					$check->link = ($check->link != '' && preg_match('/http:/i', $check->link)) ? JURI::root() .$check->link : $check->link;
+					$check->link = ($check->link != '' && preg_match('/http:/i', $check->link)) ? URI::root() .$check->link : $check->link;
 					
 					if($check->type=='database') {
 						$checkfunction = $child->getAttribute('check_function');
@@ -218,10 +224,10 @@ class CPanelModelCPanel extends JModelLegacy
 						$check->optimal = $optimal_value;
 						if($check->available==$optimal_value && $check->available != $check->current) {
 							$check->result = false;
-							$check->resultText = JText::sprintf('JF_PERFORMANCE_NOT_OPTIMAL', $check->current, $check->optimal);
+							$check->resultText = Text::sprintf('JF_PERFORMANCE_NOT_OPTIMAL', $check->current, $check->optimal);
 						} else {
 							$check->result = true;
-							$check->resultText = JText::sprintf('JF_PERFORMANCE_OPTIMAL', $check->current, $check->optimal);
+							$check->resultText = Text::sprintf('JF_PERFORMANCE_OPTIMAL', $check->current, $check->optimal);
 						}
 					} elseif ($check->type=='php') {
 						$check->required = $child->getAttribute('required');
@@ -229,13 +235,13 @@ class CPanelModelCPanel extends JModelLegacy
 						$check->current = phpversion();
 						if (version_compare($check->current,$check->required,"<")){
 							$check->result = false;
-							$check->resultText = JText::sprintf('JF_PERFORMANCE_LESS_REQUIRED', $check->current, $check->required);
+							$check->resultText = Text::sprintf('JF_PERFORMANCE_LESS_REQUIRED', $check->current, $check->required);
 						} elseif(version_compare($check->current,$check->required,">=") && version_compare($check->current,$check->optimal,"<")) {
 							$check->result = true;
-							$check->resultText = JText::sprintf('JF_PERFORMANCE_NOT_OPTIMAL', $check->current, $check->optimal);
+							$check->resultText = Text::sprintf('JF_PERFORMANCE_NOT_OPTIMAL', $check->current, $check->optimal);
 						} else {
 							$check->result = true;
-							$check->resultText = JText::sprintf('JF_PERFORMANCE_OPTIMAL', $check->current, $check->optimal);
+							$check->resultText = Text::sprintf('JF_PERFORMANCE_OPTIMAL', $check->current, $check->optimal);
 						}
 					} elseif ($check->type=='config') {
 						$check->value = $child->getAttribute('value');
@@ -244,10 +250,10 @@ class CPanelModelCPanel extends JModelLegacy
 						$check->current = $jfm->getCfg($check->value);
 						if($check->current == $check->optimal) {
 							$check->result = true;
-							$check->resultText = JText::sprintf('JF_PERFORMANCE_CONFIG_OPTIMAL', JText::_($check->value), $check->current);
+							$check->resultText = Text::sprintf('JF_PERFORMANCE_CONFIG_OPTIMAL', Text::_($check->value), $check->current);
 						} else {
 							$check->result = false;
-							$check->resultText = JText::sprintf('JF_PERFORMANCE_CONFIG_NOT_OPTIMAL', JText::_($check->value), $check->current, $check->optimal);
+							$check->resultText = Text::sprintf('JF_PERFORMANCE_CONFIG_NOT_OPTIMAL', Text::_($check->value), $check->current, $check->optimal);
 						}
 					}
 					
@@ -268,7 +274,7 @@ class CPanelModelCPanel extends JModelLegacy
 	 */
 	private function _testOldInstall()
 	{
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$oldInstall = 0;
 
 		$db->setQuery( "SHOW TABLES LIKE '%jf_%'" );
@@ -294,7 +300,7 @@ class CPanelModelCPanel extends JModelLegacy
 	 * @return array with inforation about the system
 	 */
 	private function _getSystemInfo() {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
 		$db->setQuery( 'SELECT count(DISTINCT reference_id, reference_table) FROM #__falang_content');
 		$db->execute();
@@ -312,9 +318,9 @@ class CPanelModelCPanel extends JModelLegacy
 	private function _testOrphans( ) {
 		global  $mainframe;
 
-		$config	= JFactory::getConfig();
+		$config	= Factory::getConfig();
 		$dbprefix = $config->get("dbprefix");
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
 		$orphans = array();
 		$tranFilters=array();
@@ -368,7 +374,7 @@ class CPanelModelCPanel extends JModelLegacy
 	 */
 	private function _testOriginalStatus($originalStatus, &$phase, &$statecheck_i, &$message, $languages) {
 		$dbprefix = $config->get("dbprefix");
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$tranFilters=array();
 		$filterHTML=array();
 		$sql = '';
@@ -423,11 +429,11 @@ class CPanelModelCPanel extends JModelLegacy
 						}
 					} elseif (!in_array($tablename, $tables)) {
 						$ceInfo['missing_table'] = true;
-						$ceInfo['message'] = JText::sprintf(TABLE_DOES_NOT_EXIST, $tablename );
+						$ceInfo['message'] = Text::sprintf(TABLE_DOES_NOT_EXIST, $tablename );
 					}
 					$originalStatus[] = $ceInfo;
 				}
-				$message = JText::sprintf('ORIGINAL_PHASE1_CHECK', '');
+				$message = Text::sprintf('ORIGINAL_PHASE1_CHECK', '');
 				$phase ++;
 				$statecheck_i = 0;
 				break;
@@ -452,14 +458,14 @@ class CPanelModelCPanel extends JModelLegacy
 
 					if ($statecheck_i<count($originalStatus)-1) {
 						$statecheck_i ++;
-						$message = JText::sprintf('ORIGINAL_PHASE1_CHECK', ' ('. $originalStatus[$statecheck_i]['name'] .')');
+						$message = Text::sprintf('ORIGINAL_PHASE1_CHECK', ' ('. $originalStatus[$statecheck_i]['name'] .')');
 					} else {
-						$message = JText::_('ORIGINAL_PHASE2_CHECK');
+						$message = Text::_('ORIGINAL_PHASE2_CHECK');
 						$phase = 3;	// exit
 					}
 				} else {
 					$phase = 3; // exit
-					$message = JText::_('ORIGINAL_PHASE2_CHECK');
+					$message = Text::_('ORIGINAL_PHASE2_CHECK');
 				}
 				break;
 		}
@@ -478,7 +484,7 @@ class CPanelModelCPanel extends JModelLegacy
 	 * @param string	$message	system message
 	 */
 	private function _testTranslationStatus( $translationStatus, &$phase, &$statecheck_i, &$message ) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
 		$sql = '';
 
@@ -521,10 +527,10 @@ class CPanelModelCPanel extends JModelLegacy
 						$translationStatus[] = $status;
 					}
 
-					$message = JText::_('TRANSLATION_PHASE1_GENERALCHECK');
+					$message = Text::_('TRANSLATION_PHASE1_GENERALCHECK');
 					$phase ++;
 				} else {
-					$message = JText::_('No Translation available');
+					$message = Text::_('No Translation available');
 					$phase = 4;		// exit
 				}
 				break;
@@ -550,7 +556,7 @@ class CPanelModelCPanel extends JModelLegacy
 					}
 				}
 
-				$message = JText::sprintf('TRANSLATION_PHASE2_PUBLISHEDCHECK', '');
+				$message = Text::sprintf('TRANSLATION_PHASE2_PUBLISHEDCHECK', '');
 				$phase ++;
 				break;
 
@@ -593,14 +599,14 @@ class CPanelModelCPanel extends JModelLegacy
 
 					if ($statecheck_i<count($translationStatus)-1) {
 						$statecheck_i ++;
-						$message = JText::sprintf('TRANSLATION_PHASE2_PUBLISHEDCHECK', ' ('. $translationStatus[$statecheck_i]['content'] .'/' .$translationStatus[$statecheck_i]['language'].')');
+						$message = Text::sprintf('TRANSLATION_PHASE2_PUBLISHEDCHECK', ' ('. $translationStatus[$statecheck_i]['content'] .'/' .$translationStatus[$statecheck_i]['language'].')');
 					} else {
-						$message = JText::_('TRANSLATION_PHASE3_STATECHECK');
+						$message = Text::_('TRANSLATION_PHASE3_STATECHECK');
 						$phase = 4;	// exit
 					}
 
 				} else {
-					$message = JText::_('TRANSLATION_PHASE3_STATECHECK');
+					$message = Text::_('TRANSLATION_PHASE3_STATECHECK');
 					$phase = 4; // exit
 				}
 
@@ -616,7 +622,7 @@ class CPanelModelCPanel extends JModelLegacy
 	 * @return array 	of unpublished translations or null
 	 */
 	private function _testUnpublisedTranslations() {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$unpublishedTranslations = null;
                 //sbou
 		$sql = "select jfc.reference_table, jfc.reference_id, jfc.language_id, jfl.title as language" .
@@ -657,7 +663,7 @@ class CPanelModelCPanel extends JModelLegacy
 			return;
 		}
 
-		$component = JComponentHelper::getComponent('com_falang');
+		$component = ComponentHelper::getComponent('com_falang');
 		$dlid = $component->params->get('downloadid', '');
 
 		if (empty($dlid)) return;

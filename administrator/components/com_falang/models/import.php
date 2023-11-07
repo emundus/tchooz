@@ -9,6 +9,7 @@
 // No direct access to this file
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\FormModel;
 
@@ -47,7 +48,7 @@ class ImportModelImport extends FormModel
 	 * @param   array    $data      An optional array of data for the form to interogate.
 	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
 	 *
-	 * @return  JForm  A JForm object on success, false on failure
+	 * @return  Form  A Form object on success, false on failure
 	 *
 	 * @since    1.6
 	 */
@@ -86,7 +87,7 @@ class ImportModelImport extends FormModel
         $files = new JInput($_FILES, array());
         $file = $files->get('jform', null, 'array');
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         $inputfile = $file['tmp_name']['translationFile'];
@@ -109,7 +110,7 @@ class ImportModelImport extends FormModel
         $targetlanguageId = $falangManager->getLanguageID($targetlanguage);
         $published = 1;//mark field as published
 
-        $user = JFactory::getUser();
+        $user = Factory::getUser();
 
 
 
@@ -149,7 +150,7 @@ class ImportModelImport extends FormModel
                         //$fieldContent->original_value = $originalValue;
                         //$fieldContent->original_text = !is_null($originalText)?$originalText:"";
 
-                        $fieldContent->modified = JFactory::getDate()->toSql();
+                        $fieldContent->modified = Factory::getDate()->toSql();
 
                         $fieldContent->modified_by = $user->id;
                         $fieldContent->published   = $published;
@@ -173,7 +174,7 @@ class ImportModelImport extends FormModel
                         //$fieldContent->original_value = $originalValue;
                         //$fieldContent->original_text = !is_null($originalText)?$originalText:"";
 
-                        $fieldContent->modified = JFactory::getDate()->toSql();
+                        $fieldContent->modified = Factory::getDate()->toSql();
 
                         $fieldContent->modified_by = $user->id;
                         $fieldContent->published   = $published;
@@ -185,7 +186,7 @@ class ImportModelImport extends FormModel
             }
 
             if ($actContentObject->state == -1) {
-                $actContentObject->modified =  JFactory::getDate()->toSql();
+                $actContentObject->modified =  Factory::getDate()->toSql();
                 $actContentObject->store();
                 $stats_items_stored++;
             } else {
@@ -195,7 +196,7 @@ class ImportModelImport extends FormModel
 
         }
 
-        JFactory::getApplication()->enqueueMessage(Text::sprintf('COM_FALANG_IMPORT_SUCCESS', $stats_items_stored,$stats_items_skipped));
+        Factory::getApplication()->enqueueMessage(Text::sprintf('COM_FALANG_IMPORT_SUCCESS', $stats_items_stored,$stats_items_skipped));
 
     }
 

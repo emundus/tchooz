@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 //namespace Joomla\Falang\Administrator\Model;
@@ -32,7 +32,7 @@ class JFTempContentModelItem extends ArticleModel {
      *
      * @return  mixed  JForm object on success, False on error.
      *
-     * @see     JForm
+     * @see     Form
      * @since   11.1
      */
     protected function loadForm($name, $source = null, $options = array(), $clear = false, $xpath = false)
@@ -144,7 +144,7 @@ class JFDefaultContentModelItem extends JFTempContentModelItem {
     function &getItem($pk = null)
     {
 
-	    $jinput = JFactory::getApplication()->input;
+	    $jinput = Factory::getApplication()->input;
 
         $table =  parent::getItem();
         $clone = clone($table);

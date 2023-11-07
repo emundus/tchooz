@@ -3,15 +3,17 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Object\CMSObject;
 
 function getTranslationFilters($catid, $contentElement)
 {
@@ -50,17 +52,20 @@ class translationFilter
     var $tableName = "";
     var $filterHTML="";
 
+    var $_createdField;//sbou5
+    var $_modifiedField;//sbou5
+
     // Should we use session data to remember previous selections?
     var $rememberValues = true;
 
     public function __construct($contentElement=null){
-        $jinput = JFactory::getApplication()->input;
+        $jinput = Factory::getApplication()->input;
         if (intval($jinput->get('filter_reset',0,'INT'))){
             $this->filter_value =  $this->filterNullValue;
         }
         else if ($this->rememberValues){
             // TODO consider making the filter variable name content type specific
-            $app	= JFactory::getApplication();
+            $app	= Factory::getApplication();
             $this->filter_value = $app->getUserStateFromRequest($this->filterType.'_filter_value', $this->filterType.'_filter_value', $this->filterNullValue);
         }
         else {
@@ -107,9 +112,9 @@ class translationResetFilter extends translationFilter
      *
      */
     function _createfilterHTML(){
-        $reset["title"]= JText::_('COM_FALANG_FILTER_RESET');
+        $reset["title"]= Text::_('COM_FALANG_FILTER_RESET');
         $reset['position'] = 'sidebar';
-        $reset["html"] = '<input type=\'hidden\' name=\'filter_reset\' id=\'filter_reset\' value=\'0\' /><button class="btn hasTooltip" onclick="document.getElementById(\'filter_reset\').value=1;document.adminForm.submit()" type="button" data-original-title="'.JText::_("COM_FALANG_FILTER_RESET").'"> <i class="icon-remove"></i></button>';
+        $reset["html"] = '<input type=\'hidden\' name=\'filter_reset\' id=\'filter_reset\' value=\'0\' /><button class="btn hasTooltip" onclick="document.getElementById(\'filter_reset\').value=1;document.adminForm.submit()" type="button" data-original-title="'.Text::_("COM_FALANG_FILTER_RESET").'"> <i class="icon-remove"></i></button>';
         return $reset;
 
     }
@@ -131,7 +136,7 @@ class translationFrontpageFilter extends translationFilter
 
         //since joomla 3.0 filter_value can be '' too not only filterNullValue
         if (isset($this->filter_value) && strlen($this->filter_value) > 0 && $this->filter_value!=$this->filterNullValue){
-            $db = JFactory::getDBO();
+            $db = Factory::getDBO();
             $sql = "SELECT content_id FROM #__content_frontpage order by ordering";
             $db->setQuery($sql);
             $ids = $db->loadColumn();
@@ -164,8 +169,8 @@ class translationFrontpageFilter extends translationFilter
 
         $FrontpageOptions=array();
 
-        $FrontpageOptions[] = HTMLHelper::_('select.option', 1, JText::_('JYES'));
-        $FrontpageOptions[] = HTMLHelper::_('select.option', 0, JText::_('JNO'));
+        $FrontpageOptions[] = HTMLHelper::_('select.option', 1, Text::_('JYES'));
+        $FrontpageOptions[] = HTMLHelper::_('select.option', 0, Text::_('JNO'));
         $frontpageList=array();
 
         $frontpageList["title"]= Text::_('COM_FALANG_SELECT_FRONTPAGE');
@@ -214,14 +219,14 @@ class translationArchiveFilter extends translationFilter
      * @return unknown
      */
     function _createfilterHTML(){
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
 
         if (!$this->filterField) return "";
 
         $FrontpageOptions=array();
 
-        $FrontpageOptions[] = HTMLHelper::_('select.option', 1, JText::_('JYES'));
-        $FrontpageOptions[] = HTMLHelper::_('select.option', 0, JText::_('JNO'));
+        $FrontpageOptions[] = HTMLHelper::_('select.option', 1, Text::_('JYES'));
+        $FrontpageOptions[] = HTMLHelper::_('select.option', 0, Text::_('JNO'));
         $frontpageList=array();
 
         $frontpageList["title"]= Text::_('COM_FALANG_SELECT_ARCHIVE');
@@ -417,7 +422,7 @@ class translationKeywordFilter extends translationFilter
         $Keywordlist['html'] .= '<input type="text" name="keyword_filter_value" id="keyword_filter_value" title="'.$Keywordlist["title"].'" class="form-control" placeholder="'.$Keywordlist["title"].'" value="'.$this->filter_value.'" onChange="document.adminForm.submit();" />';
         $Keywordlist['html'] .= '</div>';
         $Keywordlist['html'] .= '<span class="input-group-append">';
-        $Keywordlist['html'] .= '<button class="btn btn-primary hasTooltip" type="submit" data-original-title="'.JText::_('SEARCH').'"><span class="fa fa-search" aria-hidden="true"></span></button>';
+        $Keywordlist['html'] .= '<button class="btn btn-primary hasTooltip" type="submit" data-original-title="'.Text::_('SEARCH').'"><span class="fa fa-search" aria-hidden="true"></span></button>';
         $Keywordlist['html'] .= '</span>';
         $Keywordlist['html'] .= '</div>';
         $Keywordlist['html'] .= '<button type="button" class="btn btn-primary hasTooltip js-stools-btn-clear mr-2" onclick="document.id(\'keyword_filter_value\').value=\'\';this.form.submit();" title="'.Text::_('JSEARCH_FILTER_CLEAR').'">'.Text::_('JSEARCH_FILTER_CLEAR').'</button>';
@@ -593,8 +598,8 @@ class translationChangedFilter extends translationFilter
         if (!$this->filterField) return "";
         $ChangedOptions=array();
 
-        $ChangedOptions[] = HTMLHelper::_('select.option', 1, JText::_('COM_FALANG_FILTER_ORIGINAL_NEWER'));
-        $ChangedOptions[] = HTMLHelper::_('select.option', 0, JText::_('COM_FALANG_FILTER_TRANSLATION_NEWER'));
+        $ChangedOptions[] = HTMLHelper::_('select.option', 1, Text::_('COM_FALANG_FILTER_ORIGINAL_NEWER'));
+        $ChangedOptions[] = HTMLHelper::_('select.option', 0, Text::_('COM_FALANG_FILTER_TRANSLATION_NEWER'));
 
         $ChangedList=array();
         $ChangedList["title"] = Text::_('COM_FALANG_SELECT_TRANSLATION_AGE');
@@ -672,16 +677,16 @@ class translationPublishedFilter extends translationFilter
     }
 
     function _createfilterHTML(){
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
 
         if (!$this->filterField) return "";
 
         $PublishedOptions=array();
 
-        $PublishedOptions[] = HTMLHelper::_('select.option', 3, JText::_('COM_FALANG_FILTER_AVAILABLE'));
-        $PublishedOptions[] = HTMLHelper::_('select.option', 1, JText::_('COM_FALANG_TITLE_PUBLISHED'));
-        $PublishedOptions[] = HTMLHelper::_('select.option', 0, JText::_('COM_FALANG_TITLE_UNPUBLISHED'));
-        $PublishedOptions[] = HTMLHelper::_('select.option', 2, JText::_('COM_FALANG_FILTER_MISSING'));
+        $PublishedOptions[] = HTMLHelper::_('select.option', 3, Text::_('COM_FALANG_FILTER_AVAILABLE'));
+        $PublishedOptions[] = HTMLHelper::_('select.option', 1, Text::_('COM_FALANG_TITLE_PUBLISHED'));
+        $PublishedOptions[] = HTMLHelper::_('select.option', 0, Text::_('COM_FALANG_TITLE_UNPUBLISHED'));
+        $PublishedOptions[] = HTMLHelper::_('select.option', 2, Text::_('COM_FALANG_FILTER_MISSING'));
 
         $publishedList=array();
 
@@ -706,6 +711,9 @@ class TranslateParams
     var $transparams;
     var $fields;
     var $fieldname;
+
+    var $trans_modelItem;
+
 
     public function __construct($original, $translation, $fieldname, $fields=null){
 
@@ -847,7 +855,7 @@ SCRIPT;
     }
 }
 
-class JFMenuParams extends JObject
+class JFMenuParams extends CMSObject
 {
 
     var $form = null;
@@ -872,7 +880,7 @@ class JFMenuParams extends JObject
             {
                 $hidden_fields = '';
                 $label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_MENUS_' . $name . '_FIELDSET_LABEL';
-                echo HTMLHelper::_('uitab.addTab', 'myTab', 'collapse' . ($i++), addslashes(JText::_($label)), true);
+                echo HTMLHelper::_('uitab.addTab', 'myTab', 'collapse' . ($i++), addslashes(Text::_($label)), true);
                 ?>
                 <fieldset class="options-form" id="fieldset-<?php echo $name;?>">
                     <legend><?php echo Text::_($label)?> </legend>
@@ -903,7 +911,7 @@ class JFMenuParams extends JObject
             foreach ($paramsfieldSets as $name => $fieldSet)
             {
                 $label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_MENUS_' . $name . '_FIELDSET_LABEL';
-                echo HTMLHelper::_('uitab.addTab', 'myTab', 'collapse' . ($i++),JText::_($label), true);
+                echo HTMLHelper::_('uitab.addTab', 'myTab', 'collapse' . ($i++),Text::_($label), true);
 
                 ?>
                 <fieldset class="options-form" id="fieldset-<?php echo $name;?>">
@@ -927,7 +935,7 @@ class JFMenuParams extends JObject
 }
 
 
-class JFContentParams extends JObject
+class JFContentParams extends CMSObject
 {
 
     var $form = null;
@@ -942,11 +950,46 @@ class JFContentParams extends JObject
      * @since 4.7 new display for Options
      * @update 4.12 add CW Attachement support for custom fields display
      *              add JA Content Type support for custom fields display
+     * @update 5.0 url/image in first position
+     *             add jolly extra param's
      * */
     function render($type)
     {
 
+        $params = ComponentHelper::getParams('com_content');
+
         echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'options'));
+
+        //v2.1 add images in translation
+        if ($params->get('show_urls_images_backend') == 1) {
+            $imagesfields = $this->form->getGroup('images');
+            $urlsfields = $this->form->getGroup('urls');
+            echo HTMLHelper::_('uitab.addTab', 'myTab', 'images', Text::_('COM_CONTENT_FIELDSET_URLS_AND_IMAGES', true));
+            ?> <div class="row-fluid"> <?php
+                if ($imagesfields) {
+                    ?>
+                    <div class="span6">
+                        <?php echo $this->form->renderField('images') ?>
+                        <?php foreach ($imagesfields as $field) : ?>
+                            <?php echo $field->renderField(); ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php
+                }
+                if ($urlsfields) {
+                    ?>
+                    <div class="span6">
+                        <?php echo $this->form->renderField('urls') ?>
+                        <?php foreach ($urlsfields as $field) : ?>
+                            <?php echo $field->renderField(); ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php
+                }
+                ?> </div> <?php
+            echo HTMLHelper::_('uitab.endTab');
+        }
+
         $paramsfieldSets = $this->form->getFieldsets('attribs');
         if ($paramsfieldSets)
         {
@@ -954,12 +997,12 @@ class JFContentParams extends JObject
             foreach ($paramsfieldSets as $name => $fieldSet)
             {
 
-                $new_open_tab = ['attribs','helix_ultimate_blog_options','articletypeoptions','articleblogoptions','articleogoptions','cwattachments','general_attribs'];
+                $new_open_tab = ['attribs','helix_ultimate_blog_options','articletypeoptions','articleblogoptions','articleogoptions','cwattachments','general_attribs','jollyanycourseoptions','jollyanyeventoptions'];
 
                 $label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CONTENT_' . $name . '_FIELDSET_LABEL';
 
                 if (in_array($name,$new_open_tab) ){
-                    echo HTMLHelper::_('uitab.addTab', 'myTab', $name, JText::_($label), true);
+                    echo HTMLHelper::_('uitab.addTab', 'myTab', $name, Text::_($label), true);
                 }
 
 
@@ -985,7 +1028,7 @@ class JFContentParams extends JObject
 
                 <?php
 
-                $new_close_tab = ['editorConfig','helix_ultimate_blog_options','articletypeoptions','articleblogoptions','articleogoptions','cwattachments','general_attribs'];
+                $new_close_tab = ['editorConfig','helix_ultimate_blog_options','articletypeoptions','articleblogoptions','articleogoptions','cwattachments','general_attribs','jollyanycourseoptions','jollyanyeventoptions'];
 
                 if (in_array($name,$new_close_tab) ){
                     echo HTMLHelper::_('uitab.endTab');
@@ -994,37 +1037,6 @@ class JFContentParams extends JObject
             //echo HTMLHelper::_('uitab.endTab');
         }
 
-        //v2.1 add images in translation
-        $params = JComponentHelper::getParams('com_content');
-        if ($params->get('show_urls_images_backend') == 1) {
-            $imagesfields = $this->form->getGroup('images');
-            $urlsfields = $this->form->getGroup('urls');
-            echo HTMLHelper::_('uitab.addTab', 'myTab', 'images', JText::_('COM_CONTENT_FIELDSET_URLS_AND_IMAGES', true));
-            ?> <div class="row-fluid"> <?php
-                if ($imagesfields) {
-                    ?>
-
-                    <div class="span6">
-                        <?php echo $this->form->renderField('images') ?>
-                        <?php foreach ($imagesfields as $field) : ?>
-                            <?php echo $field->renderField(); ?>
-                        <?php endforeach; ?>
-                    </div>
-                    <?php
-                }
-                if ($urlsfields) {
-                    ?>
-                    <div class="span6">
-                        <?php echo $this->form->renderField('urls') ?>
-                        <?php foreach ($urlsfields as $field) : ?>
-                            <?php echo $field->renderField(); ?>
-                        <?php endforeach; ?>
-                    </div>
-                    <?php
-                }
-                ?> </div> <?php
-            echo HTMLHelper::_('uitab.endTab');
-        }
 
         //2.8.3 support of custom fields
         $customfieldSets = $this->form->getFieldsets('com_fields');
@@ -1039,10 +1051,10 @@ class JFContentParams extends JObject
                 }
 
                 $label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CONTENT_' . $name . '_FIELDSET_LABEL';
-                echo HTMLHelper::_('uitab.addTab', 'myTab', $name, addslashes(JText::_($label)), true);
+                echo HTMLHelper::_('uitab.addTab', 'myTab', $name, addslashes(Text::_($label)), true);
 
                 if (isset($fieldSet->description) && trim($fieldSet->description)) :
-                    echo '<p class="tip">' . htmlspecialchars(JText::_($fieldSet->description), ENT_QUOTES, 'UTF-8') . '</p>';
+                    echo '<p class="tip">' . htmlspecialchars(Text::_($fieldSet->description), ENT_QUOTES, 'UTF-8') . '</p>';
                 endif;
                 ?>
                 <div class="clr"></div>
@@ -1076,10 +1088,10 @@ class TranslateParams_menu extends TranslateParams_xml
     function __construct($original, $translation, $fieldname, $fields=null)
     {
         parent::__construct($original, $translation, $fieldname, $fields);
-        $lang = JFactory::getLanguage();
+        $lang = Factory::getLanguage();
         $lang->load("com_menus", JPATH_ADMINISTRATOR);
 
-        $jinput = JFactory::getApplication()->input;
+        $jinput = Factory::getApplication()->input;
         $cid = $jinput->get('cid', array(0),'STR');
 
         $oldcid = $cid;
@@ -1148,7 +1160,7 @@ class TranslateParams_menu extends TranslateParams_xml
 
 }
 
-class JFModuleParams extends JObject
+class JFModuleParams extends CMSObject
 {
 
     protected $form = null;
@@ -1172,7 +1184,7 @@ class JFModuleParams extends JObject
             foreach ($paramsfieldSets as $name => $fieldSet)
             {
                 $label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_MODULES_' . $name . '_FIELDSET_LABEL';
-                echo HTMLHelper::_('uitab.addTab', 'module-sliders', $name.'-options', addslashes(JText::_($label)));
+                echo HTMLHelper::_('uitab.addTab', 'module-sliders', $name.'-options', addslashes(Text::_($label)));
                 ?>
                 <fieldset class="options-form" id="fieldset-<?php echo $name;?>">
                     <legend><?php echo Text::_($label)?> </legend>
@@ -1193,7 +1205,7 @@ class JFModuleParams extends JObject
 
 }
 
-class JFFieldsParams extends JObject
+class JFFieldsParams extends CMSObject
 {
 
     protected $form = null;
@@ -1233,9 +1245,9 @@ class TranslateParams_modules extends TranslateParams_xml
             require_once JPATH_ADMINISTRATOR.'/components/com_modules/helpers/modules.php';
         }
         parent::__construct($original, $translation, $fieldname, $fields);
-        $lang = JFactory::getLanguage();
+        $lang = Factory::getLanguage();
         $lang->load("com_modules", JPATH_ADMINISTRATOR);
-        $jinput = JFactory::getApplication()->input;
+        $jinput = Factory::getApplication()->input;
 
         $cid = $jinput->get('cid', array(0),'STR');
         $oldcid = $cid;
@@ -1327,9 +1339,9 @@ class TranslateParams_fields extends TranslateParams_xml
         //require_once JPATH_ADMINISTRATOR.'/components/com_fields/helpers/fields.php';
 
         parent::__construct($original, $translation, $fieldname, $fields);
-        $lang = JFactory::getLanguage();
+        $lang = Factory::getLanguage();
         $lang->load("com_fields", JPATH_ADMINISTRATOR);
-        $jinput = JFactory::getApplication()->input;
+        $jinput = Factory::getApplication()->input;
 
         $cid = $jinput->get('cid', array(0),'STR');
         $oldcid = $cid;
@@ -1472,11 +1484,11 @@ class TranslateParams_content extends TranslateParams_xml
 
     function __construct($original, $translation, $fieldname, $fields=null)
     {
-        $jinput = JFactory::getApplication()->input;
+        $jinput = Factory::getApplication()->input;
         require_once JPATH_ADMINISTRATOR.'/components/com_content/helpers/content.php';
 
         parent::__construct($original, $translation, $fieldname, $fields);
-        $lang = JFactory::getLanguage();
+        $lang = Factory::getLanguage();
         $lang->load("com_content", JPATH_ADMINISTRATOR);
 
         $cid = $jinput->get('cid', array(0),'STR');
@@ -1563,7 +1575,7 @@ class TranslateParams_components extends TranslateParams_xml
     var $trans_menuModelItem;
 
     public function __construct($original, $translation, $fieldname, $fields=null){
-        $lang = JFactory::getLanguage();
+        $lang = Factory::getLanguage();
         $lang->load("com_config", JPATH_ADMINISTRATOR);
 
         $this->fieldname = $fieldname;
@@ -1624,7 +1636,7 @@ class TranslateParams_components extends TranslateParams_xml
 }
 
 //new Falang 2.0
-class JFCategoryParams extends JObject
+class JFCategoryParams extends CMSObject
 {
 
     protected $form = null;
@@ -1657,7 +1669,7 @@ class JFCategoryParams extends JObject
 
                 $label = !empty($fieldSet->label) ? $fieldSet->label :  strtoupper('JGLOBAL_FIELDSET_' . $name);
 
-                echo HTMLHelper::_('uitab.addTab', 'myTab', $name, addslashes(JText::_($label)), true);
+                echo HTMLHelper::_('uitab.addTab', 'myTab', $name, addslashes(Text::_($label)), true);
 
                 ?>
                 <fieldset class="options-form" id="fieldset-<?php echo $name;?>">
@@ -1688,7 +1700,7 @@ class JFCategoryParams extends JObject
                 }
 
                 $label = !empty($fieldSet->label) ? $fieldSet->label : 'COM_CONTENT_' . $name . '_FIELDSET_LABEL';
-                echo HTMLHelper::_('uitab.addTab', 'myTab', $name, addslashes(JText::_($label)), true);
+                echo HTMLHelper::_('uitab.addTab', 'myTab', $name, addslashes(Text::_($label)), true);
                 ?>
                 <fieldset class="options-form" id="fieldset-<?php echo $name;?>">
                     <ul class="adminformlist">
@@ -1716,9 +1728,9 @@ class TranslateParams_categories extends TranslateParams_xml
     {
         require_once JPATH_ADMINISTRATOR.'/components/com_categories/helpers/categories.php';
         parent::__construct($original, $translation, $fieldname, $fields);
-        $jinput = JFactory::getApplication()->input;
+        $jinput = Factory::getApplication()->input;
 
-        $lang = JFactory::getLanguage();
+        $lang = Factory::getLanguage();
         $lang->load("com_categories", JPATH_ADMINISTRATOR);
 
         $cid = $jinput->get('cid', array(0),'STR');
@@ -1744,6 +1756,7 @@ class TranslateParams_categories extends TranslateParams_xml
         // model's populate state method assumes the id is in the request object!
         $oldid = $jinput->get('id',0,'INT');
         $jinput->set('id',$contentid);
+        $jinput->set('extension','');//sbou5  //remove deprectaed  Passing null to parameter #2 ($value) of type string is deprecated in D:\Projet\falang\www5\administrator\components\com_categories\src\Model\CategoryModel.php on line 484
 
         // NOW GET THE TRANSLATION - IF AVAILABLE
         $this->trans_modelItem = new JFCategoryModelItem();

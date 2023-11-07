@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
 
 $user = Factory::getUser();
 ?>
@@ -23,13 +24,13 @@ $user = Factory::getUser();
                     <tr>
                         <th style="min-width: 150px;" nowrap>&nbsp;</th>
                         <th class="title text-left"
-                            style="min-width: 150px;"><?php echo JText::_('COM_FALANG_ELEMENTS_TITLE_NAME'); ?></th>
+                            style="min-width: 150px;"><?php echo Text::_('COM_FALANG_ELEMENTS_TITLE_NAME'); ?></th>
                         <th class="text-left"
-                            style="min-width: 150px;"><?php echo JText::_('COM_FALANG_ELEMENTS_TITLE_AUTHOR'); ?></th>
+                            style="min-width: 150px;"><?php echo Text::_('COM_FALANG_ELEMENTS_TITLE_AUTHOR'); ?></th>
                         <th class="text-left"
-                            style="min-width: 150px;"><?php echo JText::_('COM_FALANG_ELEMENTS_TITLE_VERSION'); ?></th>
+                            style="min-width: 150px;"><?php echo Text::_('COM_FALANG_ELEMENTS_TITLE_VERSION'); ?></th>
                         <th class="text-left" style="min-width: 150px;"
-                            nowrap="nowrap"><?php echo JText::_('COM_FALANG_ELEMENTS_TITLE_DESCRIPTION'); ?></th>
+                            nowrap="nowrap"><?php echo Text::_('COM_FALANG_ELEMENTS_TITLE_DESCRIPTION'); ?></th>
                     </tr>
                     </thead>
                     <tbody>

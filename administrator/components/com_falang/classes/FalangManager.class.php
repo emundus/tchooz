@@ -3,10 +3,15 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Cache\Cache;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\Folder;
+
 defined('_JEXEC') or die;
 
 class FalangManager {
@@ -48,6 +53,8 @@ class FalangManager {
 	/** @var array for all active languages listed by ID */
 	var $activeLanguagesCacheByID=array();
 
+    var $_cache = null;//sbou5
+
 	/** Standard constructor */
 	public function __construct(){
 
@@ -64,7 +71,7 @@ class FalangManager {
 		$this->_cacheLanguages($langlist);
 
 		// Must get the config here since if I do so dynamically it could be within a translation and really mess things up.
-		$this->componentConfig = JComponentHelper::getParams( 'com_falang' );
+		$this->componentConfig = ComponentHelper::getParams( 'com_falang' );
 	}
 
 	//Since Falang 2.2.2
@@ -114,7 +121,7 @@ class FalangManager {
 
 	public static function setBuffer()
 	{
-		$doc = JFactory::getDocument();
+		$doc = Factory::getDocument();
 		$cacheBuf = $doc->getBuffer('component');
 
 		$cacheBuf2 =
@@ -136,7 +143,7 @@ class FalangManager {
 	 */
 	function _loadPrimaryKeyData() {
 		if ($this->_primaryKeys==null){
-			$db = JFactory::getDBO();
+			$db = Factory::getDBO();
 			$db->setQuery( "SELECT joomlatablename,tablepkID FROM `#__falang_tableinfo`");
 			//sbou TODO pass false to skip translation
 			//TODO verify how to skip translation
@@ -177,7 +184,7 @@ class FalangManager {
 
 		// Try to find the XML file
 		jimport('joomla.filesystem.folder');
-		$filesindir = JFolder::files(FALANG_ADMINPATH ."/contentelements" ,".xml");
+		$filesindir = Folder::files(FALANG_ADMINPATH ."/contentelements" ,".xml");
 		if(count($filesindir) > 0)
 		{
 			$this->_contentElements = array();
@@ -274,7 +281,7 @@ class FalangManager {
 	 * @param mixed The value of the configuration variable
 	 */
 	function setCfg( $varname, $newValue) {
-		$config = JComponentHelper::getParams( 'com_falang' );
+		$config = ComponentHelper::getParams( 'com_falang' );
 		$config->set($varname, $newValue);
 	}
 
@@ -288,7 +295,7 @@ class FalangManager {
 			$this->_cacheLanguages($langList);
 		}
 		/* if signed in as Manager or above include inactive languages too */
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 		if ( isset($this) && $this->getCfg("frontEndPreview") && isset($user) && (strtolower($user->usertype)=="manager" || strtolower($user->usertype)=="administrator" || strtolower($user->usertype)=="super administrator")) {
 			if (isset($this) && isset($this->allLanguagesCache)) return $this->allLanguagesCache;
 		}
@@ -304,7 +311,7 @@ class FalangManager {
 	 * @return	Array of languages
 	 */
 	function getLanguages( $active=true ) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$langActive=null;
 
 		//todo : put query joomla 3 style
@@ -414,7 +421,7 @@ class FalangManager {
 	 * @return	int 	Database id of this language
 	 */
 	function getLanguageID( $codeLangName="" ) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = $db->getQuery(true);
 		$langID = -1;
 		if ($codeLangName != "" ) {
@@ -442,7 +449,7 @@ class FalangManager {
 	 * @return	int 	Database id of this language
 	 */
 	function getLanguageCode( $codeLangName="" ) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = $db->getQuery(true);
 		$langID = -1;
 		if ($codeLangName != "" ) {
@@ -462,7 +469,7 @@ class FalangManager {
 		return $langID;
 	}
 	function & getCache($lang=""){
-		$conf = JFactory::getConfig();
+		$conf = Factory::getConfig();
 		if ($lang===""){
 			$lang=$conf->get('language');
 		}
@@ -494,7 +501,7 @@ class FalangManager {
 			'storage'		=> $storage
 		);
 
-		$this->_cache[$lang] = JCache::getInstance( "callback", $options );
+		$this->_cache[$lang] = Cache::getInstance( "callback", $options );
 		return $this->_cache[$lang];
 	}
 
@@ -508,7 +515,7 @@ class FalangManager {
 		$hash = md5(json_encode([$reftable,$reffield, $refids, $language]));
 
 		if (!isset($cache[$hash])) {
-			$db      = JFactory::getDbo();
+			$db      = Factory::getDbo();
 			$dbQuery = $db->getQuery(true)
 				->select($db->quoteName('value'))
 				->from('#__falang_content fc')
@@ -538,7 +545,7 @@ class FalangManager {
 
 	public function getRawFieldOrigninal($refid)
 	{
-		$db      = JFactory::getDbo();
+		$db      = Factory::getDbo();
 		$dbQuery = $db->getQuery(true)
 			->select($db->quoteName(array('field_id', 'value')))
 			->from('#__fields_values')

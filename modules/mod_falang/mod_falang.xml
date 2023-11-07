@@ -2,23 +2,23 @@
 <extension 	type="module" version="4.0"	client="site" method="upgrade">
 	<name>mod_falang</name>
 	<author>Stéphane Bouey</author>
-	<creationDate>15 June 2023</creationDate>
+	<creationDate>06 Novembre 2023</creationDate>
 	<copyright>2011-2023, Faboba</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>stephane.bouey@faboba.com</authorEmail>
 	<authorUrl>www.faboba.com</authorUrl>
-	<version>4.13</version>
+	<version>5.0-beta1</version>
 	<description>MOD_FALANG_XML_DESCRIPTION</description>
 	<files>
 		<filename module="mod_falang">mod_falang.php</filename>
+		<folder>src</folder>
 		<folder>tmpl</folder>
-		<filename>helper.php</filename>
 		<filename>index.html</filename>
 		<filename>mod_falang.xml</filename>
 	</files>
 	<languages>
-		<language tag="en-GB">language/en-GB/en-GB.mod_falang.ini</language>
-		<language tag="en-GB">language/en-GB/en-GB.mod_falang.sys.ini</language>
+		<language tag="en-GB">language/en-GB/mod_falang.ini</language>
+		<language tag="en-GB">language/en-GB/mod_falang.sys.ini</language>
 	</languages>
 	<help key="JHELP_EXTENSIONS_MODULE_MANAGER_LANGUAGE_SWITCHER" />
 

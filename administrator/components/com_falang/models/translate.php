@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -12,6 +12,8 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
+use Joomla\CMS\Language\Text;
+
 
 require_once JPATH_ROOT.'/administrator/components/com_falang/models/JFModel.php';
 
@@ -82,7 +84,7 @@ class FalangModelTranslate extends JFModel
         $this->setState('filter.search', $search);
 
         // Populate data used by controller
-        $app	= JFactory::getApplication();
+        $app	= Factory::getApplication();
         $catid = $app->getUserStateFromRequest('selected_catid', 'catid', '');
 
         //get Translation filter from content element
@@ -130,13 +132,13 @@ class FalangModelTranslate extends JFModel
 			$translation->load($translationid);
 
 			if (!isset($translation) || $translation->id == 0)		{
-				$this->setState('message', JText::sprintf('NO_SUCH_TRANSLATION', $translationid));
+				$this->setState('message', Text::sprintf('NO_SUCH_TRANSLATION', $translationid));
 				continue;
 			}
 
 			// make sure translation matches the one we wanted
 			if ($contentid != $translation->reference_id){
-				$this->setState('message', JText::_('Something dodgy going on here'));
+				$this->setState('message', Text::_('Something dodgy going on here'));
 				continue;
 			}
 
@@ -150,11 +152,11 @@ class FalangModelTranslate extends JFModel
 			$db->setQuery($query);
 			try {
 				$db->execute();
-				$this->setState('message', JText::_('COM_FALANG_TRANSLATION_DELETED'));
+				$this->setState('message', Text::_('COM_FALANG_TRANSLATION_DELETED'));
 			} catch (Exception $e){
 				Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
-//				$this->setError(JText::_('Something dodgy going on here'));
-//				JError::raiseWarning( 400,JTEXT::_('No valid table information: ') .$db->getErrorMsg());
+//				$this->setError(Text::_('Something dodgy going on here'));
+//				JError::raiseWarning( 400,Text::_('No valid table information: ') .$db->getErrorMsg());
 				continue;
 			}
 

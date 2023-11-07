@@ -3,17 +3,18 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die;
 
 global  $act, $task, $option;
-$user = JFactory::getUser();
-$db = JFactory::getDBO();
+$user = Factory::getUser();
+$db = Factory::getDBO();
 $contentElement = $this->falangManager->getContentElement( $this->element );
 
 ?>

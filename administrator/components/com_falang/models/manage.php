@@ -3,13 +3,16 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 
 require_once JPATH_ROOT.'/administrator/components/com_falang/models/JFModel.php';
 
@@ -37,10 +40,10 @@ class ManageModelManage extends JFModel
 		$jfManager = FalangManager::getInstance();
 		$languages = $jfManager->getLanguages( false );		// all languages even non active once
 		$defaultLang = $this->get('DefaultLanguage');
-		$params = JComponentHelper::getParams( 'com_falang' );
+		$params = ComponentHelper::getParams( 'com_falang' );
 		$showDefaultLanguageAdmin = $params->get("showDefaultLanguageAdmin", false);
 		$langOptions = array();
-		$langOptions[] = array('value' => -1, 'text' => JText::_('Do not copy') );
+		$langOptions[] = array('value' => -1, 'text' => Text::_('Do not copy') );
 
 		if ( count($languages)>0 ) {
 			foreach( $languages as $language )
@@ -63,7 +66,7 @@ class ManageModelManage extends JFModel
 	 * @return array	Information result array
 	 */
 	function copyOriginalToLanguage($original2languageInfo, &$phase, &$state_catid, $language_id, $overwrite, &$message) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$jfManager = FalangManager::getInstance();
 		$sql = '';
 
@@ -106,7 +109,7 @@ class ManageModelManage extends JFModel
 					$original2languageInfo[$catid] = $ceInfo;
 				}
 				$phase = 1;		// stays with 1 as the second phase needs the bottom to be clicked
-				$message = JText::_('COPY2LANGUAGE_INFO');
+				$message = Text::_('COPY2LANGUAGE_INFO');
 				break;
 
 			case 2:
@@ -143,8 +146,8 @@ class ManageModelManage extends JFModel
 
 							$rows = $db->loadObjectList();
 							if ($db->getErrorNum()) {
-                                Factory::getApplication()->enqueueMessage(JTEXT::_('Invalid Content SQL : ') .$db->getErrorMsg(), 'error');
-								//JError::raiseError( 500,JTEXT::_('Invalid Content SQL : ') .$db->getErrorMsg());
+                                Factory::getApplication()->enqueueMessage(Text::_('Invalid Content SQL : ') .$db->getErrorMsg(), 'error');
+								//JError::raiseError( 500,Text::_('Invalid Content SQL : ') .$db->getErrorMsg());
 								return false;
 							} else {
 								for( $i=0; $i<count($rows); $i++ ) {
@@ -173,10 +176,10 @@ class ManageModelManage extends JFModel
 					}
 				}
 
-				$message = JText::_('COPY2LANGUAGE_PROCESS');
+				$message = Text::_('COPY2LANGUAGE_PROCESS');
 				if( $state_catid == '') {
 					$phase = 4;		// Successfully finished phase 3
-					$message = JText::_('COPY2LANGUAGE_COMPLETED');
+					$message = Text::_('COPY2LANGUAGE_COMPLETED');
 				}
 				break;
 		}

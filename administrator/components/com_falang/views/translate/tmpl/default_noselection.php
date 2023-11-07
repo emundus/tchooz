@@ -3,20 +3,22 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 defined('_JEXEC') or die;
 
 // No direct access to this file
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Router\Route;
 
 Factory::getApplication()->getDocument()->getWebAssetManager()
     ->useStyle('searchtools');
 
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_falang');?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo Route::_('index.php?option=com_falang');?>" method="post" name="adminForm" id="adminForm">
     <?php if(!empty( $this->sidebar)): ?>
     <div id="j-sidebar-container" class="span2">
         <?php echo $this->sidebar; ?>
@@ -39,7 +41,7 @@ Factory::getApplication()->getDocument()->getWebAssetManager()
 
     <div id="system-message-container">
         <div class="alert alert-info">
-            <?php echo JText::_('COM_FALANG_NOELEMENT_SELECTED');?>
+            <?php echo Text::_('COM_FALANG_NOELEMENT_SELECTED');?>
         </div>
     </div>
 

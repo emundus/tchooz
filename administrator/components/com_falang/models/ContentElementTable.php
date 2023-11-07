@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -14,17 +14,15 @@ include_once(dirname(__FILE__).DS."ContentElementTableField.php");
 /**
  * Description of a content element table.
  *
- * @package joomfish
+ * @package falang
  * @subpackage administrator
- * @copyright 2003 - 2011, Think Network GmbH, Munich
- * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License
- * @version $Revision: 1551 $
  * @author Alex Kempkens <joomfish@thinknetwork.com>
  */
 class ContentElementTable {
 	var $Name;
 	var $Fields;
 	var $Filter;
+    var $IndexedFields;//sbou5
 
 	/** Standard constructor
 	*/

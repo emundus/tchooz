@@ -3,10 +3,13 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2013. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\Registry\Registry;
+
 defined('_JEXEC') or die;
 
 class ContentElementTablefield {
@@ -123,7 +126,7 @@ class ContentElementTablefield {
 	// 2.8.3 copy only is param's set in backend to display image&url links
 	public function preHandlerArticleImagesAndUrls($element){
 		$falangManager =  FalangManager::getInstance();
-		$contentParms = JComponentHelper::getParams('com_content');
+		$contentParms = ComponentHelper::getParams('com_content');
 		if ($falangManager->getCfg('copy_images_and_urls',0) && $contentParms->get('show_urls_images_backend',0) ){
 			if (!is_null($element))
 			{
@@ -131,7 +134,7 @@ class ContentElementTablefield {
 				$images = $element->IndexedFields["images"];
 				$urls   = $element->IndexedFields["urls"];
 
-				$registry = new JRegistry;
+				$registry = new Registry;
 				$registry->loadString($attibs->originalValue);
 				if (!empty($images))
 				{

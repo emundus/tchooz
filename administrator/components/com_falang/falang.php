@@ -3,13 +3,14 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 //Global definitions
 if( !defined('DS') ) {
@@ -20,7 +21,7 @@ $jinput = Factory::getApplication()->input;
 
 // Access check.
 if (!Factory::getUser()->authorise('core.manage', 'com_falang')) {
-    Factory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+    Factory::getApplication()->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'warning');
     return;
     //return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }
@@ -53,7 +54,7 @@ if (strpos($cmd, '.') != false) {
 	if (file_exists($controllerPath)) {
 		require_once($controllerPath);
 	} else {
-        Factory::getApplication()->enqueueMessage(JText::_('Invalid Controller'), 'error');
+        Factory::getApplication()->enqueueMessage(Text::_('Invalid Controller'), 'error');
 	}
 } else {
 	// Base controller, just set the task 
@@ -70,7 +71,7 @@ if (class_exists($controllerClass)) {
 	//JError::raiseError(500, 'Invalid Controller Class - '.$controllerClass );
 }
 
-$config	= JFactory::getConfig();
+$config	= Factory::getConfig();
 
 // Perform the Request task
 $controller->execute($task);

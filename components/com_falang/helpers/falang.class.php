@@ -3,13 +3,15 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
   */
 
 // ensure this file is being included by a parent file
 defined( '_JEXEC' ) or die;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
 
 class Falang {
 
@@ -35,11 +37,11 @@ class Falang {
 		//sbou4
 		if (!isset($rows) || !is_array($rows)) return $rows;
 		$jfManager = FalangManager::getInstance();
-		$registry = JFactory::getConfig();
+		$registry = Factory::getConfig();
 
 		$defaultLang = $registry->get("language");
 
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
         $tempsql = $db->getQuery(false);
         //sbou TODO test null ?
         if (is_a($tempsql,'JDatabaseQueryMySQLi') || is_a($tempsql,'JDatabaseQueryMySQL') ) {
@@ -130,7 +132,7 @@ class Falang {
 	 */
 	public static function translateListWithIDs( &$rows, $ids, $reference_table, $language, & $tableArray, $querySQL, $refTablePrimaryKey="id", $allowfallback=true )
 	{
-        $params = JComponentHelper::getParams('com_falang');
+        $params = ComponentHelper::getParams('com_falang');
 
 		//v2.2.1
 		//use this to translate categories routes
@@ -149,16 +151,15 @@ class Falang {
         if ($pos !== false){return;}
 
         if (!isset($language) || $language == '') {
-            $lang = JFactory::getLanguage();
+            $lang = Factory::getLanguage();
             $language = $lang->getTag();
        }
 
 
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
 		// setup falang pluginds
-		//sbou4
-		\JPluginHelper::importPlugin('falang');
+		PluginHelper::importPlugin('falang');
 
 		if ($reference_table == "falang_content" ) {
 			return;					// I can't translate myself ;-)
@@ -222,7 +223,6 @@ class Falang {
 
 		if (isset($ids) && $reference_table!='') {
             //TODO Params for published ?
-			//$user = JFactory::getUser();
             //$published = $user->authorise('core.publish', 'com_falang') ? "\n	AND falang_content.published=1" : "";
 			//$published = ($user->get('id')<21)?"\n	AND falang_content.published=1":"";
 			$published = "\n	AND falang_content.published=1";
@@ -338,7 +338,7 @@ class Falang {
 				$jfm = FalangManager::getInstance();
 				$contentElement = $jfm->getContentElement( $reference_table );
 				// The language is not relevant for this function so just use the current language
-				$registry = JFactory::getConfig();
+				$registry = Factory::getConfig();
 				$lang = $registry->get("config.jflang");
 
 				include_once( JPATH_ADMINISTRATOR.DS."components".DS."com_falang".'/models/ContentObject.php');

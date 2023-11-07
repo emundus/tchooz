@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 //namespace Joomla\Component\Falang\Administrator\View;
@@ -14,6 +14,8 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 
 
 jimport('joomla.html.pane');
@@ -31,8 +33,8 @@ class FalangViewDefault extends BaseHtmlView {
 	public function display($tpl=null)
 	{
 	    $document = Factory::getDocument();
-		$document->addStyleSheet(JURI::base().'components/com_falang/assets/css/falang.css');
-        $document->addStyleSheet(JURI::base().'components/com_falang/assets/css/toastr.css');
+		$document->addStyleSheet(URI::base().'components/com_falang/assets/css/falang.css');
+        $document->addStyleSheet(URI::base().'components/com_falang/assets/css/toastr.css');
 
 		// Get data from the model
 		$this->state		= $this->get('State');
@@ -69,18 +71,18 @@ class FalangViewDefault extends BaseHtmlView {
 		{ ?>
 			<div class="alert alert-warning" style="padding: 15px">
 				<p>
-					<?php echo JText::_('COM_FALANG_FREE_VERSION_FOOTER_MSG'); ?>
+					<?php echo Text::_('COM_FALANG_FREE_VERSION_FOOTER_MSG'); ?>
 				</p>
 				<a class="btn btn-danger" target="_blank"
 				   href="https://www.faboba.com/composants/falang/donwload.html?utm_source=Joomla&utm_medium=upgradebutton&utm_campaign=freeversion">
-					<span class="icon-heart"></span><?php echo JText::_('COM_FALANG_FREE_VERSION_FOOTER_BTN_LABEL'); ?>
+					<span class="icon-heart"></span><?php echo Text::_('COM_FALANG_FREE_VERSION_FOOTER_BTN_LABEL'); ?>
 				</a>
 			</div>
 		<?php } ?>
 			Falang <?php echo $version->getVersionFull(); ?>
 			<br />
 			<div class="footer_review">
-				<?php echo JText::_('COM_FALANG_FOOTER_LIKE_MSG'); ?><a href="https://extensions.joomla.org/extension/falang/" target="_blank"><?php echo JText::_('COM_FALANG_FOOTER_LEAVE_MSG'); ?></a>
+				<?php echo Text::_('COM_FALANG_FOOTER_LIKE_MSG'); ?><a href="https://extensions.joomla.org/extension/falang/" target="_blank"><?php echo Text::_('COM_FALANG_FOOTER_LEAVE_MSG'); ?></a>
 				<a class="stars" href="https://extensions.joomla.org/extension/falang/" target="_blank">
 					<span class="icon-star"></span><span class="icon-star"></span><span class="icon-star"></span><span class="icon-star"></span><span class="icon-star"></span>
 				</a>
@@ -98,7 +100,7 @@ class FalangViewDefault extends BaseHtmlView {
 	 * The path is used as include statement within the view template  
 	 */
 	protected function getHelpPathL($ref) {
-		$lang = JFactory::getLanguage();
+		$lang = Factory::getLanguage();
 		if (!preg_match( '#\.html$#i', $ref )) {
 			$ref = $ref . '.html';
 		}
@@ -123,8 +125,8 @@ class FalangViewDefault extends BaseHtmlView {
 	 *
 	 */
 	protected function _hideSubmenu(){
-		$document = JFactory::getDocument();
-		$document->addStyleSheet(JURI::base().'components/com_falang/assets/css/hidesubmenu.css');
+		$document = Factory::getDocument();
+		$document->addStyleSheet(URI::base().'components/com_falang/assets/css/hidesubmenu.css');
 	}
 
 	 /**
@@ -152,7 +154,7 @@ class FalangViewDefault extends BaseHtmlView {
          ?>
         <div class="icon">
             <a href="<?php echo $link; ?>" <?php echo $target;?>  <?php echo $onclick;?>>
-                <?php echo JHTML::_('image.administrator', $image, $path, NULL, NULL, $text ); ?>
+                <?php echo HTMLHelper::_('image.administrator', $image, $path, NULL, NULL, $text ); ?>
                 <span><?php echo $text; ?></span>
             </a>
         </div>
@@ -172,11 +174,11 @@ class FalangViewDefault extends BaseHtmlView {
 	{
 		$output = '<label id="'.$control_name.$name.'-lbl" for="'.$control_name.$name.'"';
 		if ($description) {
-			$output .= ' class="hasTip" title="'.JText::_($label).'::'.JText::_($description).'">';
+			$output .= ' class="hasTip" title="'.Text::_($label).'::'.Text::_($description).'">';
 		} else {
 			$output .= '>';
 		}
-		$output .= JText::_( $label ).'</label>';
+		$output .= Text::_( $label ).'</label>';
 
 		return $output;
 	}

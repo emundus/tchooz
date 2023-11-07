@@ -3,11 +3,13 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
+
+use Joomla\CMS\Language\Text;
 
 ?>
 <script language="javascript" type="text/javascript">
@@ -28,16 +30,16 @@ defined('_JEXEC') or die;
 			<div id="cpanel">
 				<?php
 				$link = 'index.php?option=com_falang&amp;task=statistics.check&amp;type=translation_status';
-				$this->_quickiconButton( $link, 'icon-48-checktranslations.png', JText::_('Check Translation Status'), '/administrator/components/com_falang/assets/images/', 'ajaxFrame', "updateResultDiv('" .JText::_('Processing'). "', 'text');" );
+				$this->_quickiconButton( $link, 'icon-48-checktranslations.png', Text::_('Check Translation Status'), '/administrator/components/com_falang/assets/images/', 'ajaxFrame', "updateResultDiv('" .Text::_('Processing'). "', 'text');" );
 				$link = 'index.php?option=com_falang&amp;task=statistics.check&amp;type=original_status';
-				$this->_quickiconButton( $link, 'icon-48-checktranslations.png', JText::_('Check Original Status'), '/administrator/components/com_falang/assets/images/', 'ajaxFrame', "updateResultDiv('" .JText::_('Processing'). "', 'text');" );
+				$this->_quickiconButton( $link, 'icon-48-checktranslations.png', Text::_('Check Original Status'), '/administrator/components/com_falang/assets/images/', 'ajaxFrame', "updateResultDiv('" .Text::_('Processing'). "', 'text');" );
 				?>
 			</div>
 		</td>
 		<td width="45%" valign="top">
 			<div style="width: 98%; height: 100%;">
-				<h3><?php echo JText::_('Statistics info');?></h3>
-				<div id="statistic_results"><?php echo JText::_('STATISTICS_INTRO');?></div>
+				<h3><?php echo Text::_('Statistics info');?></h3>
+				<div id="statistic_results"><?php echo Text::_('STATISTICS_INTRO');?></div>
 			</div>
 			<iframe style="display: none;" id="ajaxFrame" name="ajaxFrame" ></iframe>
 		</td>

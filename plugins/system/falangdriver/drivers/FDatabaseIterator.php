@@ -115,7 +115,7 @@ class FDatabaseIterator extends DatabaseIterator implements \Countable, \Iterato
         $this->key = 0;
         $this->fetched = 1;
 
-        $this->reftable = \JFactory::getDbo()->getRefTables();
+        $this->reftable = Factory::getDbo()->getRefTables();
         $this->current_language_tag = Factory::getLanguage()->getTag();
         $this->default_language_tag = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 

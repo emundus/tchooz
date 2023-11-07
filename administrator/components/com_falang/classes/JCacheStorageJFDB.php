@@ -3,13 +3,16 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Cache\CacheStorage;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
 
 //Register class that don't follow one file per class naming conventions
 JLoader::register('JCacheStorage' , JPATH_LIBRARIES .DS. 'joomla'.DS.'cache' .DS.'storage.php');
@@ -22,7 +25,7 @@ JLoader::register('JCacheStorage' , JPATH_LIBRARIES .DS. 'joomla'.DS.'cache' .DS
  * @subpackage	Cache
  * @since		2.0
  */
-class JCacheStorageJfdb extends JCacheStorage
+class JCacheStorageJfdb extends CacheStorage
 {
 
 	var $db;
@@ -38,33 +41,33 @@ class JCacheStorageJfdb extends JCacheStorage
 	{
 		static $expiredCacheCleaned;
 
-		$this->profile_db =  JFactory::getDBO();
+		$this->profile_db =  Factory::getDBO();
 		$this->db = clone ($this->profile_db);		
 
 		$this->_language	= (isset($options['language'])) ? $options['language'] : 'en-GB';
 		$this->_lifetime	= (isset($options['lifetime'])) ? $options['lifetime'] : 60;
 		$this->_now		= (isset($options['now'])) ? $options['now'] : time();
 
-		$config			= JFactory::getConfig();
+		$config			= Factory::getConfig();
 		$this->_hash	= $config->get('config.secret');
 
 		// if its not the first instance of the joomfish db cache then check if it should be cleaned and otherwise garbage collect
 		if (!isset($expiredCacheCleaned)) {
 			// check a file in the 'file' cache to check if we should remove all our db cache entries since cache manage doesn't handle anything other than file caches
-			$conf = JFactory::getConfig();
+			$conf = Factory::getConfig();
 			$cachebase = $conf->get('cache_path',JPATH_ROOT.DS.'cache');
 			$cachepath = $cachebase.DS."falang-cache";
-			if (!JFolder::exists($cachepath)){
-				JFolder::create($cachepath);
+			if (!Folder::exists($cachepath)){
+				Folder::create($cachepath);
 			}
 			$cachefile = $cachepath.DS."cachetest.txt";
 			jimport("joomla.filesystem.file");
-			if (!JFile::exists($cachefile) || JFile::read($cachefile)!="valid"){
+			if (!File::exists($cachefile) || JFile::read($cachefile)!="valid"){
 				// clean out the whole cache
 				$this->cleanCache();
                                 //sbou TODO uncomment write and solve problem
 				$data = 'valid';
-				JFile::write($cachefile,$data);
+				File::write($cachefile,$data);
 			}
 			$this->gc();
 		}
@@ -76,7 +79,7 @@ class JCacheStorageJfdb extends JCacheStorage
 	 *
 	 */
 	function setupDB() {
-		$db =  JFactory::getDBO();
+		$db =  Factory::getDBO();
 		$charset = ($db->hasUTF()) ? 'CHARACTER SET utf8 COLLATE utf8_general_ci' : '';
 		$sql = "CREATE TABLE IF NOT EXISTS `#__dbcache` ("
 		. "\n `id` varchar ( 32 )  NOT NULL default '',"

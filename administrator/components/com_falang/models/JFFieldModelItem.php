@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -12,10 +12,8 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Form\FormFactoryInterface;
-use Joomla\CMS\Table\Table;
 use Joomla\Component\Fields\Administrator\Model\FieldModel;
 use Joomla\CMS\Language\Text;
-
 use Joomla\Utilities\ArrayHelper;
 
 class JFTempFieldModelItem extends FieldModel {
@@ -112,18 +110,10 @@ class JFTempFieldModelItem extends FieldModel {
 	 * since 4.0
 	 * TODO change the way the TableField is loaded
 	 * */
-    public function getTable($name = 'Field', $prefix = 'JTable', $options = array())
+    public function getTable($name = 'Field', $prefix = 'Table', $options = array())
     {
-        //JLoader::register('Joomla\Component\Fields\Administrator\Table\FieldTable', PATH_BASE.'/components/com_fields/src/Table/FieldTable.php, true);
-        //Todo clean here
-        JLoader::registerAlias('JTableField',                        '\\Joomla\\Component\\Fields\\Administrator\\Table\\FieldTable', '5.0');
-        //no working
-        //JLoader::register('FieldTable',PATH_BASE.'/components/com_fields/src/Table');
-        //Table::addIncludePath(JPATH_BASE."/components/com_fields/src/Table");
-        // Default to text type
-        $table       = Table::getInstance($name, $prefix, $options);;
-
-        return $table;
+        JLoader::registerAlias('TableField',                        '\\Joomla\\Component\\Fields\\Administrator\\Table\\FieldTable', '5.0');
+        return parent::getTable($name, $prefix, $options);
     }
 
 }

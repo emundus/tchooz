@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -11,7 +11,10 @@ defined('_JEXEC') or die;
 
 JLoader::import( 'views.default.view',FALANG_ADMINPATH);
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
+use Joomla\CMS\HTML\Helpers\Sidebar;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Toolbar\Toolbar;
@@ -32,7 +35,7 @@ class FalangViewTranslate extends FalangViewDefault
 	/**
 	 * Form object for search filters
 	 *
-	 * @var  \JForm
+	 * @var  Form
 	 */
 	public $filterForm;
 	/**
@@ -53,7 +56,7 @@ class FalangViewTranslate extends FalangViewDefault
 		// Get data from the model
 		$langActive = $this->get('Languages');		// all languages even non active once
 		$defaultLang = $this->get('DefaultLanguage');
-		$params = JComponentHelper::getParams('com_falang');
+		$params = ComponentHelper::getParams('com_falang');
 		$showDefaultLanguageAdmin = $params->get("showDefaultLanguageAdmin", false);
 		if ( count($langActive)>0 ) {
 			foreach( $langActive as $language )
@@ -150,7 +153,7 @@ class FalangViewTranslate extends FalangViewDefault
         if (isset($this->filterlist) && count($this->filterlist)>0){
             foreach ($this->filterlist as $fl){
                 if (is_array($fl) && !empty($fl['position']) && $fl['position'] == 'sidebar')
-                \JHtmlSidebar::addFilter(
+                Sidebar::addFilter(
                     $fl["title"],
                     $fl["type"].'_filter_value',
 	                HTMLHelper::_('select.options', $fl["options"], 'value', 'text', isset($fl['value'])?$fl['value']:null, true)
@@ -158,7 +161,7 @@ class FalangViewTranslate extends FalangViewDefault
             }
         }
 
-        $this->sidebar = \JHtmlSidebar::render();
+        $this->sidebar = Sidebar::render();
 
 
     }
@@ -166,13 +169,13 @@ class FalangViewTranslate extends FalangViewDefault
 	function edit($tpl = null)
 	{
 		// browser title
-		$document = JFactory::getDocument();
-		$jinput = JFactory::getApplication()->input;
+		$document = Factory::getDocument();
+		$jinput = Factory::getApplication()->input;
 
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_TITLE_TRANSLATE'));
 
 		// set page title
-		JToolBarHelper::title( Text::_( 'COM_FALANG_TITLE_TRANSLATE' ), 'translation' );
+		ToolBarHelper::title( Text::_( 'COM_FALANG_TITLE_TRANSLATE' ), 'translation' );
 
 		//TODO put in falng css
             $css = '
@@ -194,21 +197,21 @@ class FalangViewTranslate extends FalangViewDefault
 		// Set toolbar items for the page
 		if ($jinput->get("catid","")=="content"){
 
-            $toolbar =  JToolBar::getInstance();
+            $toolbar =  ToolBar::getInstance();
 			// Add a special preview button by hand
             $preview_url = 'index.php?option=com_falang&task=translate.preview&tmpl=component';
             $toolbar->preview($preview_url, 'JGLOBAL_PREVIEW')
                 ->bodyHeight(80)
                 ->modalWidth(90);
 		}
-		JToolBarHelper::save("translate.save");
+		ToolBarHelper::save("translate.save");
 
         $layout = $jinput->get('layout', 'default', 'string');
         if ($layout != "popup") {
-            JToolBarHelper::apply("translate.apply");
+            ToolBarHelper::apply("translate.apply");
         }
-		JToolBarHelper::cancel("translate.cancel");
-		JToolBarHelper::help( 'screen.translate.edit', true);
+		ToolBarHelper::cancel("translate.cancel");
+		ToolBarHelper::help( 'screen.translate.edit', true);
 
 		$jinput->set('hidemainmenu',1);
 	}
@@ -216,23 +219,23 @@ class FalangViewTranslate extends FalangViewDefault
 	function orphans($tpl = null)
 	{
 		// browser title
-		$document = JFactory::getDocument();
+		$document = Factory::getDocument();
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_TITLE_CLEANUP_ORPHANS'));
 
 		// set page title
-		JToolBarHelper::title( Text::_( 'COM_FALANG_TITLE_CLEANUP_ORPHANS' ), 'orphan' );
+		ToolBarHelper::title( Text::_( 'COM_FALANG_TITLE_CLEANUP_ORPHANS' ), 'orphan' );
 
 		// Set toolbar items for the page
-		JToolBarHelper::deleteList(Text::_('COM_FALANG_TRANSLATION_DELETE_MSG'), "translate.removeorphan");
-		JToolBarHelper::help( 'screen.translate.orphans', true);
+		ToolBarHelper::deleteList(Text::_('COM_FALANG_TRANSLATION_DELETE_MSG'), "translate.removeorphan");
+		ToolBarHelper::help( 'screen.translate.orphans', true);
 
-        JHtmlSidebar::setAction('index.php?option=com_falang&view=translate');
+        Sidebar::setAction('index.php?option=com_falang&view=translate');
 
         //set filter for the page
         if (isset($this->filterlist) && count($this->filterlist)>0){
             foreach ($this->filterlist as $fl){
                 if (is_array($fl) && $fl['position'] == 'sidebar')
-                    JHtmlSidebar::addFilter(
+                    Sidebar::addFilter(
                         $fl["title"],
                         $fl["type"].'_filter_value',
 	                    HTMLHelper::_('select.options', $fl["options"], 'value', 'text', $this->state->get('filter.'.$fl["type"]), true)
@@ -240,24 +243,22 @@ class FalangViewTranslate extends FalangViewDefault
             }
         }
 
-        $this->sidebar = JHtmlSidebar::render();
+        $this->sidebar = Sidebar::render();
 
 	}
 
 	function orphandetail($tpl = null)
 	{
 		// browser title
-		$document = JFactory::getDocument();
+		$document = Factory::getDocument();
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_TITLE_CLEANUP_ORPHANS'));
 
 		// set page title
-		JToolBarHelper::title( Text::_( 'COM_FALANG_TITLE_CLEANUP_ORPHANS' ), 'orphan' );
+		ToolBarHelper::title( Text::_( 'COM_FALANG_TITLE_CLEANUP_ORPHANS' ), 'orphan' );
 
 		// Set toolbar items for the page
-		//JToolBarHelper::deleteList(JText::_("ARE YOU SURE YOU WANT TO DELETE THIS TRANSLATION"), "translate.removeorphan");
-		JToolBarHelper::back();
-		//JToolBarHelper::custom( 'cpanel.show', 'joomfish', 'joomfish', 'CONTROL PANEL', false );
-		JToolBarHelper::help( 'screen.translate.orphans', true);
+		ToolBarHelper::back();
+		ToolBarHelper::help( 'screen.translate.orphans', true);
 
 		// hide the sub menu
 		// This won't work

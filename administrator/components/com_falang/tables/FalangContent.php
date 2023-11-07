@@ -3,23 +3,24 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Table\Table;
+use Joomla\CMS\Language\Text;
+
+
 defined('_JEXEC') or die;
 
 /**
  * Database class for handling the mambe fish contents
  *
- * @package joomfish
+ * @package falang
  * @subpackage administrator
- * @copyright 2003 - 2011, Think Network GmbH, Munich
- * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License
- * @version $Revision: 1580 $
  * @author Alex Kempkens <joomfish@thinknetwork.com>
  */
-class FalangContent extends JTable  {
+class FalangContent extends Table  {
 	/** @var int Primary ke */
 	var $id=null;
 	/** @var int Reference id for the language */
@@ -74,7 +75,7 @@ class FalangContent extends JTable  {
 	 */
 	function check() {
 		if (trim( $this->language_id ) == '') {
-			$this->_error = JText::_('NO_LANGUAGE_DBERROR');
+			$this->_error = Text::_('NO_LANGUAGE_DBERROR');
 			return false;
 		}
 

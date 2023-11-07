@@ -3,16 +3,20 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.modelform');
 
 /**
- * Amamplace model.
  *
  * @since  1.6
  */
@@ -29,7 +33,7 @@ class ExportModelExport extends JModelForm
 	 * returns all languages
 	 */
 	public function getSourceLanguages() {
-		$sourcelanguage = JComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+		$sourcelanguage = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 		return $sourcelanguage;
 	}
 
@@ -52,14 +56,14 @@ class ExportModelExport extends JModelForm
 	 * @param   array    $data      An optional array of data for the form to interogate.
 	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
 	 *
-	 * @return  JForm  A JForm object on success, false on failure
+	 * @return  Form  A JForm object on success, false on failure
 	 *
 	 * @since    1.6
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
 		// Initialise variables.
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		// Get the form.
 		$form = $this->loadForm(
@@ -78,10 +82,10 @@ class ExportModelExport extends JModelForm
 		$falangManager = FalangManager::getInstance();
 		//need to reload content element due to quickjump side effect
 		$contentElements = $falangManager->getContentElements(true);
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 
 		// Prepare variables
-		$jform = JFactory::getApplication()->input->get('jform', null, 'array');
+		$jform = Factory::getApplication()->input->get('jform', null, 'array');
 
 		if (isset($jform['deduplicate'])) {
 			$deduplicate = $jform['deduplicate'];
@@ -107,7 +111,7 @@ class ExportModelExport extends JModelForm
 		if (isset($jform['sourcelanguage'])) {
 			$sourcelanguage = $jform['sourcelanguage'];
 		} else {
-			$sourcelanguage = JComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+			$sourcelanguage = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 		}
 
 		if (isset($jform['destinationlanguage'])) {
@@ -122,7 +126,7 @@ class ExportModelExport extends JModelForm
 		}
 
 		// Do we export the native Language?
-		$native = ($sourcelanguage == JComponentHelper::getParams('com_languages')->get('site', 'en-GB'));
+		$native = ($sourcelanguage == ComponentHelper::getParams('com_languages')->get('site', 'en-GB'));
 
 		$header = array();
 		$data = array();
@@ -180,7 +184,7 @@ class ExportModelExport extends JModelForm
 		//$header not use yet , it's for params or attribs
 		$this->exportXML($data, $header,$exporttables, $deduplicate, $sourcelanguage, $targetlanguage);
 
-		JFactory::getApplication()->enqueueMessage(JText::_('COM_FALANG_EXPORT_SUCCESS'));
+		Factory::getApplication()->enqueueMessage(Text::_('COM_FALANG_EXPORT_SUCCESS'));
 
 	}
 

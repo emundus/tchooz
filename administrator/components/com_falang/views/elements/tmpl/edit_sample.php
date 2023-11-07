@@ -3,14 +3,16 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die;
 
 $contentElement = $this->falangManager->getContentElement($this->element);
-$db = JFactory::getDBO();
+$db = Factory::getDBO();
 $contentTable = $contentElement->getTable();
 ?>
 
@@ -47,7 +49,7 @@ $contentTable = $contentElement->getTable();
                     $fieldName = $tableField->Name;
                     $fieldValue = $row->$fieldName;
                     if ($tableField->Type = 'htmltext') {
-                        $fieldValue = htmlspecialchars($fieldValue);
+                        $fieldValue = htmlspecialchars($fieldValue ?? '');
                     }
 
                     if ($fieldValue == '') $fieldValue = "&nbsp;";

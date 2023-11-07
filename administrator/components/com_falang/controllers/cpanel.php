@@ -3,15 +3,20 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die;
 
-class CpanelController extends JControllerLegacy  {
+class CpanelController extends BaseController  {
+
+    protected $default_view = 'cpanel';
 
     /**
      * @update 4.11 add PDO check message
@@ -46,7 +51,6 @@ class CpanelController extends JControllerLegacy  {
 	 */
 	function display($cachable = false, $urlparams = array())
 	{
-		$this->view =  $this->getView('cpanel');
 		parent::display();
 	}
 	
@@ -63,14 +67,14 @@ class CpanelController extends JControllerLegacy  {
 
         $updateInfo = FalangManager::getUpdateInfo(true);
         //send json response
-        $document = JFactory::getDocument();
+        $document = Factory::getDocument();
         $document->setMimeEncoding('application/json');
 
         if ($updateInfo->hasUpdate) {
-            $msg = JText::_('COM_FALANG_CPANEL_OLD_VERSION').'<a href="index.php?option=com_installer&view=update&filter[search]=falang&filter[type]=package"/> '.JText::_('COM_FALANG_CPANEL_UPDATE_LINK').'</a>';
+            $msg = Text::_('COM_FALANG_CPANEL_OLD_VERSION').'<a href="index.php?option=com_installer&view=update&filter[search]=falang&filter[type]=package"/> '.Text::_('COM_FALANG_CPANEL_UPDATE_LINK').'</a>';
             echo json_encode(array('update' => "true",'version' => $updateInfo->version, 'message' => $msg));
         } else {
-            $msg = JText::_('COM_FALANG_CPANEL_LATEST_VERSION');
+            $msg = Text::_('COM_FALANG_CPANEL_LATEST_VERSION');
             echo json_encode(array('update' => "false",'version' => $updateInfo->version, 'message' => $msg));
         }
         return true;

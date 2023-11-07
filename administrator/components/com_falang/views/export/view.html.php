@@ -3,11 +3,14 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
 defined('_JEXEC') or die;
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 jimport('joomla.application.component.view');
 JLoader::import( 'views.default.view',FALANG_ADMINPATH);
@@ -19,8 +22,8 @@ class ExportViewExport extends FalangViewDefault
 
     function display($tpl = null)
     {
-        $document = JFactory::getDocument();
-        $document->setTitle(JText::_('COM_FALANG_TITLE') . ' :: ' . JText::_('COM_FALANG_TITLE_EXPORT'));
+        $document = Factory::getDocument();
+        $document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' . Text::_('COM_FALANG_TITLE_EXPORT'));
 
         $this->addToolbar();
 
@@ -32,14 +35,14 @@ class ExportViewExport extends FalangViewDefault
 
     protected function addToolbar()
     {
-        JFactory::getApplication()->input->set('hidemainmenu', true);
+        Factory::getApplication()->input->set('hidemainmenu', true);
 
         // set page title
-        JToolBarHelper::title( JText::_( 'COM_FALANG_TITLE_EXPORT' ), 'falang-export');
+        ToolBarHelper::title( Text::_( 'COM_FALANG_TITLE_EXPORT' ), 'falang-export');
 
 
         //add toolbar actions
-        JToolBarHelper::cancel('export.cancel','JTOOLBAR_CANCEL');
+        ToolBarHelper::cancel('export.cancel','TOOLBAR_CANCEL');
 
     }
 }

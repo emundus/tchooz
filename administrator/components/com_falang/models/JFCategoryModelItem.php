@@ -13,6 +13,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Form\FormFactoryInterface;
+use Joomla\CMS\Table\Table;
 use Joomla\Component\Categories\Administrator\Model\CategoryModel;
 use Joomla\Utilities\ArrayHelper;
 
@@ -30,7 +31,7 @@ class JFTempCategoryModelItem extends CategoryModel {
 	 * @param   boolean  $clear    Optional argument to force load a new form.
 	 * @param   string   $xpath    An optional xpath to search for the fields.
 	 *
-	 * @return  mixed  JForm object on success, False on error.
+	 * @return  mixed  Form object on success, False on error.
 	 *
 	 * @see     JForm
 	 * @since   11.1
@@ -124,7 +125,7 @@ class JFTempCategoryModelItem extends CategoryModel {
 	//overrides necessary for joomla 2.5 due to prefix change
 	public function getTable($type = 'Category', $prefix = 'JTable', $config = array())
 	{
-		return JTable::getInstance($type, $prefix, $config);
+        return parent::getTable($type, $prefix, $config);
 	}
 
 }

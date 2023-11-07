@@ -3,10 +3,14 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
+
 defined('_JEXEC') or die;
 
 require_once JPATH_ROOT.'/administrator/components/com_falang/models/JFModel.php';
@@ -40,7 +44,7 @@ class StatisticsModelStatistics extends JFModel
 	 * @param string	$message	system message
 	 */
 	function testTranslationStatus( $translationStatus, &$phase, &$statecheck_i, &$message ) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$jfManager = FalangManager::getInstance();
 
 		$sql = '';
@@ -84,10 +88,10 @@ class StatisticsModelStatistics extends JFModel
 						$translationStatus[] = $status;
 					}
 
-					$message = JText::_('TRANSLATION_PHASE1_GENERALCHECK');
+					$message = Text::_('TRANSLATION_PHASE1_GENERALCHECK');
 					$phase ++;
 				} else {
-					$message = JText::_('No Translation available');
+					$message = Text::_('No Translation available');
 					$phase = 4;		// exit
 				}
 				break;
@@ -113,7 +117,7 @@ class StatisticsModelStatistics extends JFModel
 					}
 				}
 
-				$message = JText::sprintf('TRANSLATION_PHASE2_PUBLISHEDCHECK', '');
+				$message = Text::sprintf('TRANSLATION_PHASE2_PUBLISHEDCHECK', '');
 				$phase ++;
 				break;
 
@@ -127,7 +131,7 @@ class StatisticsModelStatistics extends JFModel
 
 						// trap missing content element files
 						if (is_null($contentElement)){
-							$message = JText::_('TRANSLATION_PHASE3_STATECHECK');
+							$message = Text::_('TRANSLATION_PHASE3_STATECHECK');
 							$stateRow['state_valid'] = 0;
 							$stateRow['state_unvalid'] = 0;
 							$stateRow['state_missing'] = 0;
@@ -166,14 +170,14 @@ class StatisticsModelStatistics extends JFModel
 
 					if ($statecheck_i<count($translationStatus)-1) {
 						$statecheck_i ++;
-						$message = JText::sprintf('TRANSLATION_PHASE2_PUBLISHEDCHECK', ' ('. $translationStatus[$statecheck_i]['content'] .'/' .$translationStatus[$statecheck_i]['language'].')');
+						$message = Text::sprintf('TRANSLATION_PHASE2_PUBLISHEDCHECK', ' ('. $translationStatus[$statecheck_i]['content'] .'/' .$translationStatus[$statecheck_i]['language'].')');
 					} else {
-						$message = JText::_('TRANSLATION_PHASE3_STATECHECK');
+						$message = Text::_('TRANSLATION_PHASE3_STATECHECK');
 						$phase = 4;	// exit
 					}
 
 				} else {
-					$message = JText::_('TRANSLATION_PHASE3_STATECHECK');
+					$message = Text::_('TRANSLATION_PHASE3_STATECHECK');
 					$phase = 4; // exit
 				}
 
@@ -196,7 +200,7 @@ class StatisticsModelStatistics extends JFModel
 	 * @return array	with resulting rows
 	 */
 	function testOriginalStatus($originalStatus, &$phase, &$statecheck_i, &$message, $languages) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$jfManager = FalangManager::getInstance();
 		$tranFilters=array();
 		$filterHTML=array();
@@ -252,11 +256,11 @@ class StatisticsModelStatistics extends JFModel
 						}
 					} elseif (!in_array($tablename, $tables)) {
 						$ceInfo['missing_table'] = true;
-						$ceInfo['message'] = JText::sprintf(TABLE_DOES_NOT_EXIST, $tablename );
+						$ceInfo['message'] = Text::sprintf(TABLE_DOES_NOT_EXIST, $tablename );
 					}
 					$originalStatus[] = $ceInfo;
 				}
-				$message = JText::sprintf('ORIGINAL_PHASE1_CHECK', '');
+				$message = Text::sprintf('ORIGINAL_PHASE1_CHECK', '');
 				$phase ++;
 				$statecheck_i = 0;
 				break;
@@ -281,14 +285,14 @@ class StatisticsModelStatistics extends JFModel
 
 					if ($statecheck_i<count($originalStatus)-1) {
 						$statecheck_i ++;
-						$message = JText::sprintf('ORIGINAL_PHASE1_CHECK', ' ('. $originalStatus[$statecheck_i]['name'] .')');
+						$message = Text::sprintf('ORIGINAL_PHASE1_CHECK', ' ('. $originalStatus[$statecheck_i]['name'] .')');
 					} else {
-						$message = JText::_('ORIGINAL_PHASE2_CHECK');
+						$message = Text::_('ORIGINAL_PHASE2_CHECK');
 						$phase = 3;	// exit
 					}
 				} else {
 					$phase = 3; // exit
-					$message = JText::_('ORIGINAL_PHASE2_CHECK');
+					$message = Text::_('ORIGINAL_PHASE2_CHECK');
 				}
 				break;
 		}

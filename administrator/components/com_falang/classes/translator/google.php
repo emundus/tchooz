@@ -2,6 +2,7 @@
 // Check to ensure this file is included in Joomla!
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
@@ -9,7 +10,7 @@ class TranslatorGoogle extends TranslatorDefault {
 
     function __construct()
     {
-        $params = JComponentHelper::getParams('com_falang');
+        $params = ComponentHelper::getParams('com_falang');
         if (strlen($params->get('translator_googlekey')) < 20){
             Factory::getApplication()->enqueueMessage(Text::_('COM_FALANG_INVALID_GOOGLE_KEY'), 'error');
             return;

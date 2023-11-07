@@ -3,10 +3,11 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -537,7 +538,7 @@ class JFalangDatabase extends JOverrideDatabase {
      */
     function updateObject( $table, &$object, $keyName, $updateNulls=true, $passthru=false ) {
 
-        $params = JComponentHelper::getParams('com_falang');
+        $params = ComponentHelper::getParams('com_falang');
         //1.4.5 if fronEdition is set to off , keep previous system
         if ($params->get('frontEndEdition',0) == 0){
             return parent::updateObject( $table, $object, $keyName, $updateNulls );
@@ -547,10 +548,10 @@ class JFalangDatabase extends JOverrideDatabase {
 
         $falangManager = FalangManager::getInstance();
 
-        $current_lang = JFactory::getLanguage()->getTag();
+        $current_lang = Factory::getLanguage()->getTag();
 
         //default site language
-        $default_lang	= JComponentHelper::getParams('com_languages')->get('site');
+        $default_lang	= ComponentHelper::getParams('com_languages')->get('site');
 
         //we update if content language is set to all language or if content language is current_langauge
         // check if marked langage of content is the detaul language:

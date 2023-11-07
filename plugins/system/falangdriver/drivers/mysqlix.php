@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 use Joomla\Database\Mysqli\MysqliDriver;
 use \Joomla\Database\StatementInterface;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Falang\Database;
 use Falang\Database\FMysqliStatement;
 
@@ -47,8 +48,6 @@ class JOverrideDatabase extends MysqliDriver
         }
 
 		// connect to the server
-	    //sbou4
-		//$this->connection = $db->get("connection");
 		$this->connection = $db->getConnection();
         // finalize initialization
         parent::__construct($options);
@@ -62,6 +61,21 @@ class JOverrideDatabase extends MysqliDriver
 		//Sbou4
         require_once (JPATH_PLUGINS . '/system/falangdriver/drivers/FMysqliStatement.php');
 
+    }
+    //Sbou5 fix this disconnect problem
+//    public function disconnect__()
+//    {
+//        if (isset($this->connection)){
+//        //    $this->connection->close();
+//        }
+//        parent::disconnect();
+//    }
+
+   //sbou5 desctruct already done
+    //can  test host_info
+    public function __destruct()
+    {
+        //$this->disconnect();
     }
 
     //sbou4
@@ -117,7 +131,10 @@ class JOverrideDatabase extends MysqliDriver
 
 
 		// only needed for selects at present - possibly add for inserts/updates later
-        if (is_a($this->sql,'JDatabaseQueryMySQLi')) {
+        //sbou5
+        //if (is_a($this->sql,'JDatabaseQueryMySQLi')) {
+
+        if (is_a($this->sql,'Joomla\Database\Mysqli\MysqliQuery')) {
            $tempsql = $this->sql->__toString();
         } else {
            $tempsql = $this->sql;
@@ -128,7 +145,7 @@ class JOverrideDatabase extends MysqliDriver
 			return;
 		}
 
-		$config = JFactory::getConfig();
+		$config = Factory::getConfig();
 
 		// get column metadata
 		$fields = $this->_getFieldCount();
@@ -151,7 +168,7 @@ class JOverrideDatabase extends MysqliDriver
 		for ($i = 0; $i < $fields; ++$i) {
 			$meta = $this->_getFieldMetaData($i);
 			if (!$meta) {
-				echo JText::_('PLG_SYSTEM_FALANGDRIVER_META_NO_INFO');
+				echo Text::_('PLG_SYSTEM_FALANGDRIVER_META_NO_INFO');
 			}
 			else {
 				$tempTable =  $meta->table;

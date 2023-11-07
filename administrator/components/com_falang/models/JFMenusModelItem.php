@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -14,10 +14,10 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Form\FormFactoryInterface;
-use Joomla\CMS\Table\Table;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Menus\Administrator\Model\ItemModel;
 use Joomla\Utilities\ArrayHelper;
-
+use Joomla\CMS\Language\Text;
 
 class JFTempMenusModelItem extends ItemModel {
 
@@ -31,9 +31,9 @@ class JFTempMenusModelItem extends ItemModel {
 	 * @param   boolean  $clear    Optional argument to force load a new form.
 	 * @param   string   $xpath    An optional xpath to search for the fields.
 	 *
-	 * @return  mixed  JForm object on success, False on error.
+	 * @return  mixed  Form object on success, False on error.
 	 *
-	 * @see     JForm
+	 * @see     Form
 	 * @since   11.1
 	 */
 	protected function loadForm($name, $source = null, $options = array(), $clear = false, $xpath = false)
@@ -120,8 +120,8 @@ class JFTempMenusModelItem extends ItemModel {
 			$form->bind($data);
 
 		} catch (Exception $e) {
-			$app = JFactory::getApplication();
-			$app->enqueueMessage(JText::_($e->getMessage()), 'error');
+			$app = Factory::getApplication();
+			$app->enqueueMessage(Text::_($e->getMessage()), 'error');
 			return false;
 		}
 
@@ -131,9 +131,11 @@ class JFTempMenusModelItem extends ItemModel {
 		return $form;
 	}
 
-    public function getTable($type = 'Menu', $prefix = '\JTable', $config = array())
+    public function getTable($type = 'Menu', $prefix = 'JTable', $config = array())
     {
-        return Table::getInstance($type, $prefix, $config);
+        //sbou5
+        //return Table::getInstance($type, $prefix, $config);
+        return parent::getTable($type, $prefix, $config);
     }
 
 }
@@ -149,11 +151,11 @@ class JFMenusModelItem extends JFTempMenusModelItem {
 		if ($table->type == 'component'){
 
 			// Note that to populate the initial value of the urlparams
-			$conf = JFactory::getConfig();
+			$conf = Factory::getConfig();
 			$elementTable = $conf->get('falang.elementTable',false);
 			foreach ($elementTable->Fields as $efield) {
 				if ($efield->Name=="link" && isset($efield->translationContent->value) && $efield->translationContent->value!==""){
-					$uri = new JURI($efield->translationContent->value);
+					$uri = new URI($efield->translationContent->value);
 					if ($uri->getVar("option",false)){
 						$table->link = $efield->translationContent->value;
 					}

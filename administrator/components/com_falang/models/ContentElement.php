@@ -3,10 +3,12 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die;
 
 include_once(dirname(__FILE__).DS."ContentElementTable.php");
@@ -14,12 +16,10 @@ include_once(dirname(__FILE__).DS."ContentElementTable.php");
 /**
  * Content element class based on the xml file
  *
- * @package joomfish
+ * @package falang
  * @subpackage administrator
- * @copyright 2003 - 2011, Think Network GmbH, Munich
- * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License
- * @version $Revision: 1580 $
- * @author Alex Kempkens <joomfish@thinknetwork.com>
+ * @copyright JoomFish Project
+ * @author Alex Kempkens
  */
 class ContentElement {
 	var $_xmlFile;
@@ -32,10 +32,20 @@ class ContentElement {
 
 	var $referenceInformation;
 
-	/**	field (if any) that keyword	filters apply to*/
+	/**	field (if any) that keyword	filters apply to
+     * need to be declared for php 8.2
+     */
 	var $_keywordFilter=null;
 	var $_categoryFilter=null;
 	var $_authorFilter=null;
+    var $_frontpageFilter =null;//sbou5 et aprés
+    var $_publishedFilter  = null;
+    var $_changedFilter = null;
+    var $_trashFilter = null;
+    var $_archiveFilter = null;
+    var $_idFilter = null;
+    var $_menutypeFilter = null;
+    var $_extensionFilter = null;
 
 
 	/** Standard constructor, which loads already standard information
@@ -102,6 +112,7 @@ class ContentElement {
 
 	/**
 	 * Public function to return array of filters included in contentelement file
+     * @since 5.0 skip #text filter (not used and make deprecate
 	 */
 	function getAllFilters(){
 		$allFilters = array();
@@ -112,6 +123,7 @@ class ContentElement {
 			}
 			foreach ($fElement->childNodes as $child){
 				$type = $child->nodeName;
+                if ($type == '#text'){continue;}
 				$filter = "_$type"."Filter";
 				$this->$filter=$child->textContent;
 				$allFilters[$type]=trim($this->$filter);
@@ -215,7 +227,7 @@ class ContentElement {
      * @since 4.0.1 add order parameer string like asc
 	 */
 	function createContentSQL( $idLanguage=-1, $contentid=null, $limitStart=-1, $maxRows=-1 , $filters=array(),$order="",$direction = "asc") {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$sqlFields=null;
 		$where=array();
 		$join=null;
@@ -451,10 +463,10 @@ class ContentElement {
 
 	/**
 	 * Returing the number of elements corresponding with the information of the class
-	 * @return total number of elements
+	 * @return number of elements
 	 */
 	function countReferences( $idLanguage=-1, $filters=array() ) {
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$db->setQuery( $this->countContentSQL( $idLanguage, $filters ) );
 		$count=$db->loadResult();
 		return $count;

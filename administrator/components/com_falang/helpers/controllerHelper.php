@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Plugin\PluginHelper;
 
 class  FalangControllerHelper  {
@@ -22,7 +23,7 @@ class  FalangControllerHelper  {
 	 */
 	static function _setupContentElementCache()
 	{
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		// Make usre table exists otherwise create it.
 		$db->setQuery( "CREATE TABLE IF NOT EXISTS `#__falang_tableinfo` ( `id` int(11) NOT NULL auto_increment, `joomlatablename` varchar(100) NOT NULL default '',  `tablepkID`  varchar(100) NOT NULL default '', PRIMARY KEY (`id`)) ENGINE=MyISAM");
 		$db->execute();
@@ -69,7 +70,7 @@ class  FalangControllerHelper  {
 	}
 
 	public static function _checkDBStructure (){
-		$db =  JFactory::getDBO();
+		$db =  Factory::getDBO();
 		$sql = "SHOW INDEX FROM #__falang_content";// where key_name = 'jfContent'";
 		$db->setQuery($sql);
 		$data = $db->loadObjectList("Key_name");
@@ -178,13 +179,13 @@ class  FalangControllerHelper  {
                 //set order to 1 and 2 - other plugin set to -1 stay at -1
     //				$order = array(1,2);
 
-                $pluginsModel = JModelLegacy::getInstance('Plugin', 'PluginsModel');
+                $pluginsModel = BaseDatabaseModel::getInstance('Plugin', 'PluginsModel');
 
                 // Save the ordering
                 //sbou4 descatived the saveorder
                 $return = $pluginsModel->saveorder($pks, $order);
 
-                $application = JFactory::getApplication();
+                $application = Factory::getApplication();
                 if ($return === false) {
                     Factory::getApplication()->enqueueMessage(Text::_('COM_FALANG_PLUGINS_SYSTEM_ORDER_FAILED'), 'error');
                 } else {
