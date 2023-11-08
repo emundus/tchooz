@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import '../../mocks/matchMedia.mock';
 import evaluationBuilder from '../../../src/views/evaluationBuilder';
 import translate from '../../mocks/mixins/translate';
@@ -40,7 +40,7 @@ describe('evaluationBuilder.vue', () => {
         store
     });
 
-    it ('evaluationBuilder should exist', () => {
+    it('evaluationBuilder should exist', () => {
         expect(wrapper.find('#evaluation-builder').exists()).toBeTruthy();
     });
 });

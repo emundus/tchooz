@@ -40,7 +40,7 @@ class EmundusControllerUsers extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/users.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/logs.php');
 
-		$this->app = Factory::getApplication();
+		$this->app  = Factory::getApplication();
 		$this->user = $this->app->getIdentity();
 		$session    = $this->app->getSession();
 
@@ -73,6 +73,7 @@ class EmundusControllerUsers extends JControllerLegacy
 			echo json_encode((object) array('status' => false, 'uid' => $this->user->id, 'msg' => JText::_('ACCESS_DENIED')));
 			exit;
 		}
+
 
 		$firstname = $this->input->post->get('firstname', null, null);
 		$lastname  = $this->input->post->get('lastname', null, null);
@@ -221,8 +222,7 @@ class EmundusControllerUsers extends JControllerLegacy
 		$mailer->setBody($body);
 
 		$custom_email_tag = EmundusHelperEmails::getCustomHeader();
-		if(!empty($custom_email_tag))
-		{
+		if (!empty($custom_email_tag)) {
 			$mailer->addCustomHeader($custom_email_tag);
 		}
 
@@ -1468,10 +1468,10 @@ class EmundusControllerUsers extends JControllerLegacy
 
 	public function activation_anonym_user()
 	{
-		$app         = $this->app;
-		
-		$user_id     = $this->input->getInt('user_id', 0);
-		$token       = $this->input->getString('token', '');
+		$app = $this->app;
+
+		$user_id = $this->input->getInt('user_id', 0);
+		$token   = $this->input->getString('token', '');
 
 		if (!empty($token) && !empty($user_id)) {
 			$m_users = $this->getModel('Users');
@@ -1514,17 +1514,18 @@ class EmundusControllerUsers extends JControllerLegacy
 		$response = ['data' => [], 'status' => true, 'msg' => ''];
 
 		$em_users = JFactory::getSession()->get('emundusUser');
-		$m_users = $this->getModel('Users');
+		$m_users  = $this->getModel('Users');
 
 		if (!empty($em_users->profile)) {
 			$response['data'] = $m_users->getProfileDetails($em_users->profile);
 
-		} else {
-			$response['msg'] = 'No profile found';
+		}
+		else {
+			$response['msg']    = 'No profile found';
 			$response['status'] = false;
 		}
 
-		echo json_encode((object)$response);
+		echo json_encode((object) $response);
 		exit;
 	}
 

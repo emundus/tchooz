@@ -34,7 +34,7 @@ class EmundusControllerDashboard extends JControllerLegacy
 	{
 		parent::__construct($config);
 
-		$this->app = Factory::getApplication();
+		$this->app         = Factory::getApplication();
 		$this->m_dashboard = $this->getModel('Dashboard');
 		$this->_user       = $this->app->getIdentity();
 	}
@@ -208,7 +208,7 @@ class EmundusControllerDashboard extends JControllerLegacy
 			try {
 				$widget = $this->input->getInt('widget');
 
-				$results = $this->m_dashboard->renderchartbytag($widget);
+				$results  = $this->m_dashboard->renderchartbytag($widget);
 				$response = array('msg' => 'success', 'data' => $results, 'status' => 1);
 			}
 			catch (Exception $e) {

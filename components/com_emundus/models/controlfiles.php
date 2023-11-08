@@ -30,12 +30,10 @@ class EmundusModelControlfiles extends JModelList
 
 		$this->app = Factory::getApplication();
 
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
+		if (version_compare(JVERSION, '4.0', '>')) {
 			$this->db = Factory::getContainer()->get('DatabaseDriver');
 		}
-		else
-		{
+		else {
 			$this->db = JFactory::getDBO();
 		}
 
@@ -58,8 +56,7 @@ class EmundusModelControlfiles extends JModelList
 
 		$can_be_ordering = array('user', 'id', 'lastname', 'nationality', 'time_date');
 		/* Error handling is never a bad thing*/
-		if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
-		{
+		if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
 			$orderby = ' ORDER BY ' . $filter_order . ' ' . $filter_order_Dir;
 		}
 
@@ -68,8 +65,7 @@ class EmundusModelControlfiles extends JModelList
 
 	function getTotal()
 	{
-		if (empty($this->_total))
-		{
+		if (empty($this->_total)) {
 			$query        = $this->_buildQuery();
 			$this->_total = $this->_getListCount($query);
 		}
@@ -111,29 +107,23 @@ class EmundusModelControlfiles extends JModelList
 	 */
 	function dir_walk($dir, $recursive, $baseDir, $tabfile, $firstuserid)
 	{
-		if ($dh = @opendir($baseDir . $dir))
-		{
-			while (($file = readdir($dh)) !== false)
-			{
+		if ($dh = @opendir($baseDir . $dir)) {
+			while (($file = readdir($dh)) !== false) {
 				if ($file === '' || $file === '.' || $file === '..' ||
 					$file === '.' . DS || $file === 'index.html' || $file === 'tmp' ||
 					$file === 'Thumbs.db' || $file === 'application.pdf' ||
-					strpos($file, 'tn_') === 0)
-				{
+					strpos($file, 'tn_') === 0) {
 					continue;
 				}
-				if (is_file($baseDir . $dir . DS . $file) && $dir != 'files' . DS)
-				{
+				if (is_file($baseDir . $dir . DS . $file) && $dir != 'files' . DS) {
 					$tval['id']   = $dir;
 					$tval['file'] = $file;
-					if ($dir >= $firstuserid)
-					{
+					if ($dir >= $firstuserid) {
 						array_push($tabfile, $tval);
 					}
 
 				}
-				elseif ($recursive && is_dir($baseDir . $dir . $file))
-				{
+				elseif ($recursive && is_dir($baseDir . $dir . $file)) {
 					$tabfile = $this->dir_walk($file, $recursive, $baseDir . $dir, $tabfile, $firstuserid);
 				}
 			}

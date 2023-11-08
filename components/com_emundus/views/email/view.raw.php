@@ -42,12 +42,10 @@ class EmundusViewEmail extends JViewLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
 		$this->app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
+		if (version_compare(JVERSION, '4.0', '>')) {
 			$this->_user = $this->app->getIdentity();
 		}
-		else
-		{
+		else {
 			$this->_user = Factory::getUser();
 		}
 
@@ -57,7 +55,7 @@ class EmundusViewEmail extends JViewLegacy
 	function display($tpl = null)
 	{
 
-		$h_emails      = new EmundusHelperEmails();
+		$h_emails = new EmundusHelperEmails();
 
 		$jinput = $this->app->input;
 		$fnums  = $jinput->post->getString('fnums', null);
@@ -68,27 +66,23 @@ class EmundusViewEmail extends JViewLegacy
 		$eMConfig                 = ComponentHelper::getParams('com_emundus');
 		$this->default_email_tmpl = $eMConfig->get('default_email_tmpl', 'expert');
 
-		if ($dest === 3)
-		{
+		if ($dest === 3) {
 
-			if (version_compare(JVERSION, '4.0', '>'))
-			{
+			if (version_compare(JVERSION, '4.0', '>')) {
 				$document = $this->app->getDocument();
 				$wa       = $document->getWebAssetManager();
 				$wa->registerAndUseStyle('com_emundus', 'media/com_emundus/css/emundus.css');
 				$wa->registerAndUseStyle('com_emundus.chosen', 'media/jui/css/chosen.min.css');
 				$wa->registerAndUseScript('com_emundus.chosen', 'media/jui/js/chosen.jquery.min.js');
 			}
-			else
-			{
+			else {
 				$document = Factory::getDocument();
 				$document->addStyleSheet("media/com_emundus/css/emundus.css");
 				$document->addStyleSheet("media/jui/css/chosen.min.css");
 				$document->addScript("media/jui/js/chosen.jquery.min.js");
 			}
 
-			if (!is_array($fnums) || $fnums == "all")
-			{
+			if (!is_array($fnums) || $fnums == "all") {
 				$m_files     = new EmundusModelFiles;
 				$fnums       = $m_files->getAllFnums();
 				$fnums_infos = $m_files->getFnumsInfos($fnums, 'object');
@@ -104,17 +98,14 @@ class EmundusViewEmail extends JViewLegacy
 			$m_evaluation  = new EmundusModelEvaluation;
 
 
-			foreach ($fnums as $key => $fnum)
-			{
+			foreach ($fnums as $key => $fnum) {
 
-				if ($fnum->fnum === 'em-check-all')
-				{
+				if ($fnum->fnum === 'em-check-all') {
 					unset($fnums[$key]);
 					continue;
 				}
 
-				if (EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id, $fnum->fnum))
-				{
+				if (EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id, $fnum->fnum)) {
 					$fnum_array[] = $fnum->fnum;
 					$app_file     = $m_application->getApplication($fnum->fnum);
 					$fnum->status = $app_file->status;
@@ -128,8 +119,7 @@ class EmundusViewEmail extends JViewLegacy
 			$this->fnums        = $fnums;
 			$this->fnum_array   = $fnum_array;
 		}
-		else
-		{
+		else {
 			$this->mailBlock = $h_emails->createEmailBlock(['applicant_list']);
 		}
 

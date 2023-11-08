@@ -14,7 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\LanguageHelper;
 
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
 Text::script('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
@@ -70,39 +70,40 @@ Text::script('BACK');
 ## END ##
 
 $app = Factory::getApplication();
-if (version_compare(JVERSION, '4.0', '>'))
-{
+if (version_compare(JVERSION, '4.0', '>')) {
 	$lang = $app->getLanguage();
-    $user = $app->getIdentity();
-} else {
-    $lang = Factory::getLanguage();
+	$user = $app->getIdentity();
+}
+else {
+	$lang = Factory::getLanguage();
 	$user = Factory::getUser();
 }
 
-$short_lang = substr($lang->getTag(), 0 , 2);
+$short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
-$languages = LanguageHelper::getLanguages();
+$languages    = LanguageHelper::getLanguages();
 if (count($languages) > 1) {
-    $many_languages = '1';
-    require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-    $m_translations = new EmundusModelTranslations();
-    $default_lang = $m_translations->getDefaultLanguage()->lang_code;
-} else {
-    $many_languages = '0';
-    $default_lang = $current_lang;
+	$many_languages = '1';
+	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
+	$m_translations = new EmundusModelTranslations();
+	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
+}
+else {
+	$many_languages = '0';
+	$default_lang   = $current_lang;
 }
 
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
+$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
 
 <div id="em-component-vue"
      component="addcampaign"
-     campaign="<?= $this->id ;?>"
+     campaign="<?= $this->id; ?>"
      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
      defaultLang="<?= $default_lang ?>"
      manyLanguages="<?= $many_languages ?>"

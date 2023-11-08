@@ -61,7 +61,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 	public function display($tpl = null)
 	{
-		$jinput = $this->app->getInput();
+		$jinput       = $this->app->getInput();
 		$this->itemId = $jinput->getInt('Itemid', null);
 
 		$menu         = $this->app->getMenu();
@@ -77,7 +77,7 @@ class EmundusViewEvaluation extends JViewLegacy
 			case 'menuactions':
 				$this->display = $jinput->getString('display', 'none');
 
-				$items = EmundusHelperFiles::getMenuList($menu_params);
+				$items   = EmundusHelperFiles::getMenuList($menu_params);
 				$actions = $m_files->getAllActions();
 
 				$menuActions = array();
@@ -100,7 +100,7 @@ class EmundusViewEvaluation extends JViewLegacy
 				break;
 
 			default :
-				$this->cfnum  = $jinput->getString('cfnum', null);
+				$this->cfnum = $jinput->getString('cfnum', null);
 
 				$params                        = JComponentHelper::getParams('com_emundus');
 				$evaluators_can_see_other_eval = $params->get('evaluators_can_see_other_eval', 0);
@@ -117,8 +117,8 @@ class EmundusViewEvaluation extends JViewLegacy
 				$fnum_assoc_to_groups     = $m_user->getApplicationsAssocToGroups($groups);
 				$fnum_assoc               = $m_user->getApplicantsAssoc($this->_user->id);
 				$m_evaluation->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
-				$this->code = $m_evaluation->code;
-				$this->fnum_assoc = $m_evaluation->fnum_assoc;
+				$this->code               = $m_evaluation->code;
+				$this->fnum_assoc         = $m_evaluation->fnum_assoc;
 
 				// reset filter
 				$this->filters = EmundusHelperFiles::resetFilter();
@@ -149,7 +149,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 				// Columns
 				$defaultElements                    = $this->get('DefaultElements');
-				$this->datas                              = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'c.status' => JText::_('COM_EMUNDUS_STATUS')));
+				$this->datas                        = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'c.status' => JText::_('COM_EMUNDUS_STATUS')));
 				$fl                                 = array();
 				$fl['jos_emundus_evaluations.user'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
 				// Get eval crieterion
@@ -179,7 +179,7 @@ class EmundusViewEvaluation extends JViewLegacy
 								$this->colsSup['overall']  = array();
 								break;
 							case 'tags':
-								$taggedFile             = $m_evaluation->getTaggedFile();
+								$taggedFile                   = $m_evaluation->getTaggedFile();
 								$this->datas[0]['eta.id_tag'] = JText::_('COM_EMUNDUS_TAGS');
 								$this->colsSup['id_tag']      = array();
 								break;
@@ -196,8 +196,8 @@ class EmundusViewEvaluation extends JViewLegacy
 								foreach (JModuleHelper::getModules('') as $module) {
 									if ($module->module == 'mod_emundus_custom' && ($module->menuid == 0 || $module->menuid == $jinput->get('Itemid', null))) {
 										$mod_emundus_custom[$module->title] = $module->content;
-										$this->datas[0][$module->title]           = JText::_($module->title);
-										$this->colsSup[$module->title]            = array();
+										$this->datas[0][$module->title]     = JText::_($module->title);
+										$this->colsSup[$module->title]      = array();
 									}
 								}
 								break;
@@ -214,10 +214,10 @@ class EmundusViewEvaluation extends JViewLegacy
 						// get evaluation form ID
 
 						$this->formid = $m_evaluation->getEvaluationFormByProgramme($user['code']);
-						
-						$form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $this->formid . '&tmpl=component&iframe=1&rowid=';
+
+						$form_url_view       = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $this->formid . '&tmpl=component&iframe=1&rowid=';
 						$this->form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $this->formid . '&tmpl=component&iframe=1&rowid=';
-						$line          = array('check' => $usObj);
+						$line                = array('check' => $usObj);
 
 						if (array_key_exists($user['fnum'], $taggedFile)) {
 							$class        = $taggedFile[$user['fnum']]['class'];
@@ -330,7 +330,7 @@ class EmundusViewEvaluation extends JViewLegacy
 					}
 
 					if (isset($this->colsSup['id_tag'])) {
-						$tags              = $m_files->getTagsByFnum($fnumArray);
+						$tags                    = $m_files->getTagsByFnum($fnumArray);
 						$this->colsSup['id_tag'] = EmundusHelperFiles::createTagsList($tags);
 					}
 
@@ -354,8 +354,8 @@ class EmundusViewEvaluation extends JViewLegacy
 				/* Get the values from the state object that were inserted in the model's construct function */
 				$this->lists['order_dir'] = JFactory::getSession()->get('filter_order_Dir');
 				$this->lists['order']     = JFactory::getSession()->get('filter_order');
-				$this->pagination = $this->get('Pagination');
-				$this->pageNavigation = $this->get('PageNavigation');
+				$this->pagination         = $this->get('Pagination');
+				$this->pageNavigation     = $this->get('PageNavigation');
 				break;
 		}
 		parent::display($tpl);

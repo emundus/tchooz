@@ -11,7 +11,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
 ## GLOBAL ##
 JText::script('COM_EMUNDUS_ONBOARD_MODIFY');
@@ -157,24 +157,25 @@ JText::script('COM_EMUNDUS_ONBOARD_STATUS');
 JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TYPE_SYSTEM');
 JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TYPE_MODEL');
 
-$lang = JFactory::getLanguage();
-$short_lang = substr($lang->getTag(), 0 , 2);
+$lang         = JFactory::getLanguage();
+$short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();
-$languages = JLanguageHelper::getLanguages();
+$languages    = JLanguageHelper::getLanguages();
 if (count($languages) > 1) {
-    $many_languages = '1';
-} else {
-    $many_languages = '0';
+	$many_languages = '1';
+}
+else {
+	$many_languages = '0';
 }
 
-$user = JFactory::getUser();
+$user               = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
-$lang = JFactory::getLanguage();
-$short_lang = substr($lang->getTag(), 0 , 2);
-$current_lang = $lang->getTag();
+$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
+$lang               = JFactory::getLanguage();
+$short_lang         = substr($lang->getTag(), 0, 2);
+$current_lang       = $lang->getTag();
 
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 

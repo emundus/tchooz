@@ -36,7 +36,7 @@ class EmundusControllerEmail extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 
-		$this->app = Factory::getApplication();
+		$this->app      = Factory::getApplication();
 		$this->_em_user = $this->app->getSession()->get('emundusUser');
 		$this->_user    = $this->app->getIdentity();
 		$this->m_emails = $this->getModel('emails');
@@ -317,8 +317,8 @@ class EmundusControllerEmail extends JControllerLegacy
 			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
 		}
 		else {
-			$data                  = $this->input->getRaw('body','{}');
-			$data = json_decode($data, true);
+			$data                  = $this->input->getRaw('body', '{}');
+			$data                  = json_decode($data, true);
 			$code                  = $this->input->getString('code');
 			$receivers_cc          = $this->input->getRaw('selectedReceiversCC');
 			$receivers_bcc         = $this->input->getRaw('selectedReceiversBCC');
@@ -531,10 +531,10 @@ class EmundusControllerEmail extends JControllerLegacy
 		else {
 
 
-			$trigger      = $this->input->getRaw('trigger');
-			$users = $this->input->getRaw('users');
+			$trigger = $this->input->getRaw('trigger');
+			$users   = $this->input->getRaw('users');
 
-            $status = $this->m_emails->createTrigger($trigger, $users, $this->_user);
+			$status = $this->m_emails->createTrigger($trigger, $users, $this->_user);
 
 			if ($status) {
 				$tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);
@@ -556,11 +556,11 @@ class EmundusControllerEmail extends JControllerLegacy
 		else {
 
 
-			$tid          = $this->input->getInt('tid');
-			$trigger      = $this->input->getRaw('trigger');
-			$users = $this->input->getRaw('users');
+			$tid     = $this->input->getInt('tid');
+			$trigger = $this->input->getRaw('trigger');
+			$users   = $this->input->getRaw('users');
 
-            $status = $this->m_emails->updateTrigger($tid, $trigger, $users);
+			$status = $this->m_emails->updateTrigger($tid, $trigger, $users);
 
 			if (!empty($status)) {
 				$tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);

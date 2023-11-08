@@ -33,7 +33,7 @@ class EmundusControllerAmetys extends EmundusController
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 
-		$this->app = Factory::getApplication();
+		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
 
 		parent::__construct($config);

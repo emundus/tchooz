@@ -3,10 +3,10 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 
-if (version_compare(JVERSION, '4.0', '>'))
-{
+if (version_compare(JVERSION, '4.0', '>')) {
 	Factory::getApplication()->getSession()->set('application_layout', 'tag');
-} else {
+}
+else {
 	Factory::getSession()->set('application_layout', 'tag');
 }
 ?>
@@ -51,13 +51,11 @@ if (version_compare(JVERSION, '4.0', '>'))
             <div class="panel-body em-container-tags-body">
                 <ul class="list-group">
 					<?php
-					if (count($this->tags) > 0)
-					{
+					if (count($this->tags) > 0) {
 						$i = 0;
-						foreach ($this->tags as $tag)
-						{
-                            $color = str_replace('label-', '', $tag['class']);
-                            ?>
+						foreach ($this->tags as $tag) {
+							$color = str_replace('label-', '', $tag['class']);
+							?>
                             <li class="list-group-item" id="<?php echo $tag['id_tag']; ?>"
                                 fnum="<?php echo $this->fnum; ?>">
                                 <div class="row">
@@ -77,11 +75,11 @@ if (version_compare(JVERSION, '4.0', '>'))
                                             </div>
                                         </div>
                                         <div class="comment-text em-tags-action">
-                                                <div class="flex sticker label-border-<?php echo $color ?>">
-                                                    <span class="circle label-<?php echo $color ?>"></span>
-                                                    <span class="label-text-<?php echo $color; ?>"
-                                                          style="float:unset"><?php echo $tag['label']; ?></span>
-                                                </div>
+                                            <div class="flex sticker label-border-<?php echo $color ?>">
+                                                <span class="circle label-<?php echo $color ?>"></span>
+                                                <span class="label-text-<?php echo $color; ?>"
+                                                      style="float:unset"><?php echo $tag['label']; ?></span>
+                                            </div>
                                         </div>
 
                                     </div>
@@ -145,7 +143,7 @@ if (version_compare(JVERSION, '4.0', '>'))
             }).catch((error) => {
                 console.error('Error:', error);
             });
-            }
+        }
     }
 
     $(document).ready(function () {

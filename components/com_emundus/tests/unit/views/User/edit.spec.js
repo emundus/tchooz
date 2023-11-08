@@ -1,4 +1,4 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import {mount, createLocalVue} from '@vue/test-utils';
 import Edit from '../../../../src/views/Users/Edit';
 import translate from '../../../mocks/mixins/translate';
 import store from '../../../../src/store/index';
@@ -26,7 +26,7 @@ describe('Edit.vue user null', () => {
         store
     });
 
-    it ('Edit should not been displayed if user is null', () => {
+    it('Edit should not been displayed if user is null', () => {
         expect(wrapper.find('.em-container-profile-view').exists()).toBeFalsy();
     });
 });
@@ -39,7 +39,7 @@ describe('Edit.vue user not null', () => {
 
     wrapper.vm.$data.user = user;
 
-    it ('Edit should be displayed if user is not null', () => {
+    it('Edit should be displayed if user is not null', () => {
         expect(wrapper.find('.em-container-profile-view').exists()).toBeTruthy();
     });
 });

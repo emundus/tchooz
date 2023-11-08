@@ -27,12 +27,12 @@ class EmundusControllerApplication extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
 
-		$this->app = Factory::getApplication();
+		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
 
 		parent::__construct($config);
 	}
-	
+
 	public function display($cachable = false, $urlparams = false)
 	{
 		// Set a default view if none exists
@@ -40,7 +40,7 @@ class EmundusControllerApplication extends JControllerLegacy
 			$default = 'application_form';
 			$this->input->set('view', $default);
 		}
-		
+
 		parent::display();
 	}
 
@@ -49,7 +49,7 @@ class EmundusControllerApplication extends JControllerLegacy
 	 */
 	public function delete_attachments()
 	{
-		
+
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(JText::_("ACCESS_DENIED"));
 		}
@@ -61,7 +61,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
 		$url = !empty($tmpl) ? 'index.php?option=com_emundus&view=' . $view . '&sid=' . $user_id . '&tmpl=' . $tmpl . '#attachments' : 'index.php?option=com_emundus&view=' . $view . '&sid=' . $user_id . '&tmpl=component#attachments';
 		ArrayHelper::toInteger($attachments, 0);
-		
+
 		if (count($attachments) == 0) {
 			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED'), 'error');
 			exit;
@@ -146,7 +146,7 @@ class EmundusControllerApplication extends JControllerLegacy
 	 */
 	public function upload_attachment()
 	{
-		
+
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die(JText::_("ACCESS_DENIED"));
 		}
@@ -332,13 +332,13 @@ class EmundusControllerApplication extends JControllerLegacy
 	public function deletetag()
 	{
 		$response = array('status' => 0, 'msg' => JText::_('TAG_DELETE_ERROR'));
-		
+
 
 		if (empty($this->_user->id)) {
 			$response['msg'] = JText::_('ACCESS_DENIED');
 		}
 		else {
-			
+
 			$id_tag = $this->input->getInt('id_tag', 0);
 			$fnum   = $this->input->getString('fnum', '');
 
@@ -402,7 +402,7 @@ class EmundusControllerApplication extends JControllerLegacy
 			die(JText::_("ACCESS_DENIED"));
 		}
 
-		$fnum   = $this->input->get('fnum', null, 'STRING');
+		$fnum = $this->input->get('fnum', null, 'STRING');
 
 		$m_application = $this->getModel('Application');
 		$menus         = $m_application->getApplicationMenu();
@@ -430,7 +430,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
 					if ($access) {
 						if ($action_id == 36) {
-							$messenger     = $this->getModel('Messenger');
+							$messenger = $this->getModel('Messenger');
 
 							$notifications = $messenger->getNotificationsByFnum($fnum);
 							if ($notifications > 0) {
@@ -466,11 +466,11 @@ class EmundusControllerApplication extends JControllerLegacy
 
 	public function deleteattachement()
 	{
-		
-		$fnum   = $this->input->getString('fnum', null);
-		$ids    = $this->input->getString('ids', null);
-		$ids    = json_decode(stripslashes($ids));
-		$res    = new stdClass();
+
+		$fnum = $this->input->getString('fnum', null);
+		$ids  = $this->input->getString('ids', null);
+		$ids  = json_decode(stripslashes($ids));
+		$res  = new stdClass();
 
 		if (EmundusHelperAccess::asAccessAction(4, 'd', JFactory::getUser()->id, $fnum)) {
 			$m_application = $this->getModel('Application');
@@ -478,12 +478,12 @@ class EmundusControllerApplication extends JControllerLegacy
 				$m_application->deleteAttachment($id);
 			}
 
-            require_once(JPATH_SITE.'/components/com_emundus/models/logs.php');
-            $user = $this->app->getSession()->get('emundusUser');     # logged user #
+			require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
+			$user = $this->app->getSession()->get('emundusUser');     # logged user #
 
-            require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
-            $mFile = new EmundusModelFiles();
-            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+			require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+			$mFile        = new EmundusModelFiles();
+			$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
 			$res->status = true;
 		}
@@ -497,8 +497,8 @@ class EmundusControllerApplication extends JControllerLegacy
 
 	public function exportpdf()
 	{
-		
-		$fnum   = $this->input->post->getString('fnum', null);
+
+		$fnum = $this->input->post->getString('fnum', null);
 
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
 			$ids              = $this->input->post->getString('ids', null);
@@ -596,8 +596,8 @@ class EmundusControllerApplication extends JControllerLegacy
 
 	public function updateaccess()
 	{
-		
-		$fnum   = $this->input->getString('fnum', null);
+
+		$fnum = $this->input->getString('fnum', null);
 
 		if (EmundusHelperAccess::asAccessAction(11, 'u', $this->_user->id, $fnum)) {
 			$state         = $this->input->getInt('state', null);
@@ -625,8 +625,8 @@ class EmundusControllerApplication extends JControllerLegacy
 
 	public function deleteaccess()
 	{
-		
-		$fnum   = $this->input->getString('fnum', null);
+
+		$fnum = $this->input->getString('fnum', null);
 
 		if (EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $fnum)) {
 			$id            = $this->input->getString('id', null);
@@ -688,16 +688,16 @@ class EmundusControllerApplication extends JControllerLegacy
 	public function getattachmentsbyfnum()
 	{
 		$response = ['msg' => JText::_('ACCESS_DENIED'), 'status' => false, 'code' => 403];
-		$fnum   = $this->input->getString('fnum', '');
+		$fnum     = $this->input->getString('fnum', '');
 
 		if (!empty($fnum)) {
 			if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id, $fnum)) {
 				$m_application = $this->getModel('Application');
 
 				$response['attachments'] = $m_application->getUserAttachmentsByFnum($fnum);
-				$response['msg']    = JText::_('SUCCESS');
-				$response['status'] = true;
-				$response['code']   = 200;
+				$response['msg']         = JText::_('SUCCESS');
+				$response['status']      = true;
+				$response['code']        = 200;
 			}
 		}
 
@@ -711,8 +711,8 @@ class EmundusControllerApplication extends JControllerLegacy
 		$msg    = '';
 
 		// get post data
-		
-		$data   = $this->input->post->getArray();
+
+		$data = $this->input->post->getArray();
 
 		if (EmundusHelperAccess::asAccessAction(4, 'u', JFactory::getUser()->id, $data['fnum'])) {
 			$m_application = $this->getModel('Application');
@@ -764,7 +764,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
 	public function getattachmentpreview()
 	{
-		$response     = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$m_application = $this->getModel('Application');
@@ -827,7 +827,7 @@ class EmundusControllerApplication extends JControllerLegacy
 	public function gettabs()
 	{
 		$response = array('tabs' => array());
-		
+
 		if (!empty($this->_user->id)) {
 			$m_application    = $this->getModel('Application');
 			$response['tabs'] = $m_application->getTabs($this->_user->id);
@@ -842,9 +842,9 @@ class EmundusControllerApplication extends JControllerLegacy
 		$response = array('msg' => JText::_('FAILED'));
 
 		if (!empty($this->_user->id)) {
-			
-			$tabs   = $this->input->getRaw('tabs');
-			$tabs   = json_decode($tabs);
+
+			$tabs = $this->input->getRaw('tabs');
+			$tabs = json_decode($tabs);
 
 			if (!empty($tabs)) {
 				$m_application       = $this->getModel('Application');
@@ -862,8 +862,8 @@ class EmundusControllerApplication extends JControllerLegacy
 		$response = array('msg' => JText::_('FAILED'));
 
 		if (!empty($this->_user->id)) {
-			
-			$tab    = $this->input->getInt('tab');
+
+			$tab = $this->input->getInt('tab');
 
 			if (!empty($tab)) {
 				$m_application       = $this->getModel('Application');
@@ -910,8 +910,8 @@ class EmundusControllerApplication extends JControllerLegacy
 	{
 		$response = array('status' => 0, 'msg' => '');
 
-		$fnum   = $this->input->getString('fnum');
-		$tab    = $this->input->getString('tab');
+		$fnum = $this->input->getString('fnum');
+		$tab  = $this->input->getString('tab');
 
 		if (!empty($tab) && !empty($fnum)) {
 			$m_files   = $this->getModel('Files');
@@ -966,7 +966,7 @@ class EmundusControllerApplication extends JControllerLegacy
 	{
 		$response = array('status' => 0, 'msg' => '');
 
-		$fnum   = $this->input->getString('fnum');
+		$fnum = $this->input->getString('fnum');
 
 		if (!empty($fnum)) {
 			$m_files   = $this->getModel('Files');
@@ -990,9 +990,9 @@ class EmundusControllerApplication extends JControllerLegacy
 	public function filterapplications()
 	{
 		$response = array('status' => 1, 'msg' => JText::_('SUCCESS'));
-		
-		$type   = $this->input->getString('type');
-		$value  = $this->input->getString('value');
+
+		$type  = $this->input->getString('type');
+		$value = $this->input->getString('value');
 
 		if (!empty($type) && !empty($value) && in_array($type, ['applications_order_by', 'applications_filter_by'])) {
 			JFactory::getSession()->set($type, $value);

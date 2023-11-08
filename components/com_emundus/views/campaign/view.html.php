@@ -1,18 +1,18 @@
 <?php
 /**
- * @package    Joomla
- * @subpackage eMundus
- * @link       http://www.emundus.fr
- * @copyright	Copyright (C) 2016 eMundus SAS. All rights reserved.
- * @license    GNU/GPL
- * @author     eMundus SAS - Benjamin Rivalland
-*/
- 
+ * @package      Joomla
+ * @subpackage   eMundus
+ * @link         http://www.emundus.fr
+ * @copyright    Copyright (C) 2016 eMundus SAS. All rights reserved.
+ * @license      GNU/GPL
+ * @author       eMundus SAS - Benjamin Rivalland
+ */
+
 // no direct access
- 
-defined( '_JEXEC' ) or die( 'Restricted access' );
- 
-jimport( 'joomla.application.component.view');
+
+defined('_JEXEC') or die('Restricted access');
+
+jimport('joomla.application.component.view');
 
 /**
  * campaign View
@@ -28,25 +28,27 @@ class EmundusViewCampaign extends JViewLegacy
 	protected $pagination;
 	protected $lists;
 
-	function __construct($config = array()){
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
-		
+	function __construct($config = array())
+	{
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+
 		parent::__construct($config);
 	}
-	
-    function display($tpl = null)
-    {
+
+	function display($tpl = null)
+	{
 		$this->active_campaigns = $this->get('ActiveCampaign');
-		
+
 		$this->my_campaigns = $this->get('MyCampaign');
-		
+
 		$this->pagination = $this->get('Pagination');
-		
-		$state = $this->get( 'state' );
-		$this->lists['filter_order_Dir'] = $state->get( 'filter_order_Dir' );
-		$this->lists['filter_order']     = $state->get( 'filter_order' );
-		
+
+		$state                           = $this->get('state');
+		$this->lists['filter_order_Dir'] = $state->get('filter_order_Dir');
+		$this->lists['filter_order']     = $state->get('filter_order');
+
 		parent::display($tpl);
-    }
+	}
 }
+
 ?>

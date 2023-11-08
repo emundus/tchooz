@@ -17,14 +17,16 @@ use Joomla\CMS\Factory;
  *
  * @since  0.0.1
  */
-class EmundusViewCampaigns extends JViewLegacy {
+class EmundusViewCampaigns extends JViewLegacy
+{
 
-	function display($tpl = null) {
-        $jinput = Factory::getApplication()->input;
+	function display($tpl = null)
+	{
+		$jinput = Factory::getApplication()->input;
 
-        $layout = $jinput->getString('layout', null);
-        if ($layout == 'add') {
-            $this->id = $jinput->getString('cid', null);
+		$layout = $jinput->getString('layout', null);
+		if ($layout == 'add') {
+			$this->id = $jinput->getString('cid', null);
 		}
 
 		parent::display($tpl);

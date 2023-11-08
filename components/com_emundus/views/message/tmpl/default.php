@@ -12,18 +12,18 @@
 defined('_JEXEC') or die('Restricted access');
 
 $current_user = JFactory::getUser();
-$jinput = JFactory::getApplication()->input;
-$itemid = $jinput->getInt('Itemid', null);
-$view = $jinput->getString('view', null);
-$task = $jinput->getString('task', null);
-$tmpl = $jinput->getString('tmpl', null);
+$jinput       = JFactory::getApplication()->input;
+$itemid       = $jinput->getInt('Itemid', null);
+$view         = $jinput->getString('view', null);
+$task         = $jinput->getString('task', null);
+$tmpl         = $jinput->getString('tmpl', null);
 
 // load all of the available messages, categories (to sort messages),attachments, letters.
-$m_messages = new EmundusModelMessages();
+$m_messages         = new EmundusModelMessages();
 $message_categories = $m_messages->getAllCategories();
-$message_templates = $m_messages->getAllMessages();
-$setup_attachments = $m_messages->getAttachmentsByProfiles($this->fnums);
-$setup_letters = $m_messages->getAllDocumentsLetters();                 // get all attachments being letter 👻
+$message_templates  = $m_messages->getAllMessages();
+$setup_attachments  = $m_messages->getAttachmentsByProfiles($this->fnums);
+$setup_letters      = $m_messages->getAllDocumentsLetters();                 // get all attachments being letter 👻
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 $_mEval = new EmundusModelEvaluation;
@@ -31,7 +31,7 @@ $_mEval = new EmundusModelEvaluation;
 $_applicant_letters = $_mEval->getLettersByFnums(implode(',', $this->fnums), false);
 
 $email_list = array();
-$name_list = array();
+$name_list  = array();
 
 $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($current_user->id);
 if ($allowed_attachments !== true) {
@@ -53,11 +53,12 @@ if ($allowed_attachments !== true) {
         overflow: auto;
     }
 
-    .ql-editor{
+    .ql-editor {
         height: 300px !important;
         overflow-y: scroll;
     }
-    .form-group .email-input-block{
+
+    .form-group .email-input-block {
         height: var(--em-coordinator-form-height);
         display: flex;
         align-items: center;
@@ -66,50 +67,60 @@ if ($allowed_attachments !== true) {
         border-radius: var(--em-coordinator-form-br);
         background: var(--neutral-0);
     }
-    .cc-bcc-mails .items{
+
+    .cc-bcc-mails .items {
         border: 1px solid var(--em-coordinator-bc);
         border-radius: var(--em-coordinator-form-br);
     }
-    .cc-bcc-mails .items div[data-value]{
+
+    .cc-bcc-mails .items div[data-value] {
         background: #EBECF0;
         border: unset;
         border-radius: var(--em-coordinator-form-br);
         box-shadow: unset !important;
         padding: var(--p-4) var(--p-8);
     }
-    .cc-bcc-mails .items div[data-value] .remove{
+
+    .cc-bcc-mails .items div[data-value] .remove {
         font-size: 16px;
         border: unset;
         padding-right: var(--p-12);
     }
-    .ql-editor .mention{
+
+    .ql-editor .mention {
         background: unset;
     }
+
     .email-input-block::-webkit-scrollbar {
         height: 6px;
     }
-    div#mail_from_name,div#mail_subject{
+
+    div#mail_from_name, div#mail_subject {
         border-radius: var(--em-coordinator-br);
         border: solid 2px transparent;
     }
-    div#mail_from_name:focus,div#mail_subject:focus,div#reply_to_from:focus {
+
+    div#mail_from_name:focus, div#mail_subject:focus, div#reply_to_from:focus {
         outline-color: #2E90FA;
     }
-    div#mail_from_name:hover,div#mail_subject:hover{
+
+    div#mail_from_name:hover, div#mail_subject:hover {
         border-radius: var(--em-coordinator-br);
         border: solid 2px var(--em-coordinator-bc);
     }
-    #cc-box-label,#bcc-box-label,#replyto-box-label{
+
+    #cc-box-label, #bcc-box-label, #replyto-box-label {
         border-radius: var(--em-coordinator-br);
         width: fit-content;
         padding: var(--p-4) var(--p-8) 5px 0;
         margin-left: 0;
     }
-    #cc-box-label:hover,#bcc-box-label:hover {
+
+    #cc-box-label:hover, #bcc-box-label:hover {
         background: var(--neutral-300);
     }
 
-    #reply_to_from,#emailForm div#mail_subject{
+    #reply_to_from, #emailForm div#mail_subject {
         min-width: 100%;
     }
 
@@ -133,7 +144,7 @@ if ($allowed_attachments !== true) {
         margin-right: auto;
         background: white;
         padding: 24px;
-        box-shadow: 0 0 0 50vmax rgba(0,0,0,.5);
+        box-shadow: 0 0 0 50vmax rgba(0, 0, 0, .5);
         border-radius: 8px;
     }
 
@@ -159,7 +170,8 @@ if ($allowed_attachments !== true) {
             <!-- Dropdown to select the email categories used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
                 <label for="select_category"><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?></label>
-                <select name="select_category" class="em-border-radius-8 em-mb-16 email-input-block em-w-100" onChange="setCategory(this);">
+                <select name="select_category" class="em-border-radius-8 em-mb-16 email-input-block em-w-100"
+                        onChange="setCategory(this);">
 					<?php if (!$message_categories) : ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_CATEGORIES_FOUND'); ?> </option>
 					<?php else : ?>
@@ -176,13 +188,15 @@ if ($allowed_attachments !== true) {
             <!-- Dropdown to select the email template used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
                 <label for="select_template"><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?></label>
-                <select name="select_template" id="message_template" class="em-border-radius-8 em-mb-16 email-input-block em-w-100" onChange="getTemplate(this);">
+                <select name="select_template" id="message_template"
+                        class="em-border-radius-8 em-mb-16 email-input-block em-w-100" onChange="getTemplate(this);">
 					<?php if (!$message_templates) : ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_TEMPLATES_FOUND'); ?> </option>
 					<?php else : ?>
                         <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?> </option>
 						<?php foreach ($message_templates as $message_template) : ?>
-                            <option value="<?= $message_template->id; ?>" <?php if($this->data['template'] == $message_template->id) : ?>selected<?php endif;?>> <?= $message_template->subject; ?></option>
+                            <option value="<?= $message_template->id; ?>"
+							        <?php if ($this->data['template'] == $message_template->id) : ?>selected<?php endif; ?>> <?= $message_template->subject; ?></option>
 						<?php endforeach; ?>
 					<?php endif; ?>
                 </select>
@@ -203,7 +217,8 @@ if ($allowed_attachments !== true) {
                 <div class="flex items-center">
                     <label class='em-mr-8' for="mail_from"><?= JText::_('FROM'); ?> :</label>
                     <div id="mail_from_block" class="em-border-radius-8 em-mb-4 email-input-block">
-                        <div id="mail_from_name" class="em-p-4-6" contenteditable="true"><?= JFactory::getConfig()->get('fromname') ?></div>
+                        <div id="mail_from_name" class="em-p-4-6"
+                             contenteditable="true"><?= JFactory::getConfig()->get('fromname') ?></div>
                         <div id="mail_from" class="em-ml-4" contenteditable="false">
                             <em class="em-font-size-14">&lt;<?= JFactory::getConfig()->get('mailfrom') ?>&gt;</em>
                         </div>
@@ -223,26 +238,26 @@ if ($allowed_attachments !== true) {
                     </div>
 
                     <div class="flex items-center gap-2 flex-wrap" style="max-height: 150px; overflow-y: auto;">
-								<?php foreach ($this->users as $user) : ?>
+						<?php foreach ($this->users as $user) : ?>
 
-									<?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
-										<?php $email_list[] = $user['email']; ?>
-                                <?php $name_list[] = $user['name']; ?>
+							<?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
+								<?php $email_list[] = $user['email']; ?>
+								<?php $name_list[] = $user['name']; ?>
 
-                                        <span class="label label-default em-mr-8 em-email-label">
+                                <span class="label label-default em-mr-8 em-email-label">
                                     <?= $user['email'] . ' <em class="em-font-size-14">&lt;' . $user['name'] . '&gt;</em>'; ?>
                                 </span>
 
-                                        <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
-									<?php endif; ?>
+                                <input type="hidden" name="ud[]" id="ud" value="<?= $user['id']; ?>"/>
+							<?php endif; ?>
 
-								<?php endforeach; ?>
+						<?php endforeach; ?>
                     </div>
                 </div>
 
                 <!-- List of users / their emails, gotten from the fnums selected. -->
                 <div class="flex justify-between items-center">
-                                <div class="flex items-center">
+                    <div class="flex items-center">
                         <label class='em-mr-8 em-cursor-text mb-0'><?= JText::_('COM_EMUNDUS_TO'); ?> :</label>
 
                         <div class="em-border-radius-8">
@@ -251,9 +266,10 @@ if ($allowed_attachments !== true) {
                         </span>
 
 
-		                    <?php if(count($email_list) > 1) : ?>
-                                <span class="label label-default em-mr-8 em-email-label pointer" onclick="showEmailList()">
-                                    +<?= count($email_list)-1 ?>
+							<?php if (count($email_list) > 1) : ?>
+                                <span class="label label-default em-mr-8 em-email-label pointer"
+                                      onclick="showEmailList()">
+                                    +<?= count($email_list) - 1 ?>
                             </span>
 							<?php endif; ?>
                         </div>
@@ -283,14 +299,16 @@ if ($allowed_attachments !== true) {
 
         <!-- Add current user to Bcc -->
         <div id="bcc-box" class="input-group form-inline col-md-12 em-mt-12">
-            <label for="select_action_tags" class="bcc-box-label"><?= JText::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
+            <label for="select_action_tags"
+                   class="bcc-box-label"><?= JText::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
             <input type="text" id="bcc-mails" class="cc-bcc-mails">
         </div>
 
         <!-- REPLY TO -->
         <div id="replyto-box" class="form-group em-form-sender em-mt-12">
             <div id="replyto-box-label" class="em-flex-row em-pointer" onclick="openReplyTo()">
-                <label class="em-mb-0-important" for="reply_to_from"><?= JText::_('COM_EMUNDUS_EMAILS_FROM_REPLY_TO'); ?></label>
+                <label class="em-mb-0-important"
+                       for="reply_to_from"><?= JText::_('COM_EMUNDUS_EMAILS_FROM_REPLY_TO'); ?></label>
                 <span id="replyto-icon" class="material-icons-outlined">chevron_right</span>
             </div>
             <div id="reply_to_div" style="display: none">
@@ -311,8 +329,6 @@ if ($allowed_attachments !== true) {
             </div>
 
 
-
-
             <!-- Email WYSIWYG -->
             <div id="editor">
             </div>
@@ -331,7 +347,8 @@ if ($allowed_attachments !== true) {
         <div class="form-inline row em-form-attachments">
             <div class="form-group col-sm-12 col-md-5">
                 <label for="em-select_attachment_type"><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_ATTACHMENT_TYPE'); ?></label>
-                <select name="em-select_attachment_type" id="em-select_attachment_type" class="em-border-radius-8 em-mb-16 email-input-block em-w-100 download"
+                <select name="em-select_attachment_type" id="em-select_attachment_type"
+                        class="em-border-radius-8 em-mb-16 email-input-block em-w-100 download"
                         onChange="toggleAttachmentType(this);">
                     <option value=""> <?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?> </option>
                     <option value="upload"> <?= JText::_('COM_EMUNDUS_UPLOAD'); ?> </option>
@@ -461,7 +478,7 @@ if ($allowed_attachments !== true) {
                     '</div>';
             }
         },
-        onItemAdd: function(value, $item) {
+        onItemAdd: function (value, $item) {
             var email = value.substring(value.indexOf(":") + 1);
             email = email.trim();
 
@@ -488,7 +505,7 @@ if ($allowed_attachments !== true) {
                     '</div>';
             }
         },
-        onItemAdd: function(value, $item) {
+        onItemAdd: function (value, $item) {
             var email = value.substring(value.indexOf(":") + 1);
             email = email.trim();
 
@@ -564,7 +581,7 @@ if ($allowed_attachments !== true) {
     function showEmailList() {
         document.querySelector('#email-list-modal').classList.toggle('hidden');
 
-        if(document.querySelector('#email-list-modal').classList.contains('hidden')){
+        if (document.querySelector('#email-list-modal').classList.contains('hidden')) {
             document.querySelector('.ql-container.ql-snow').style.position = 'relative';
             document.querySelector('.em-form-attachments .form-group').style.position = 'relative';
         } else {
@@ -574,11 +591,10 @@ if ($allowed_attachments !== true) {
 
     }
 
-    function openCC()
-    {
+    function openCC() {
         var cc = $('#cc-box');
         var cc_input = $('#cc-box .selectize-control');
-        if(cc.css('display') === 'block') {
+        if (cc.css('display') === 'block') {
             cc.css('display', 'none');
             cc_input.css('display', 'none');
             $('#cc-icon').css('transform', 'rotate(0deg)');
@@ -589,11 +605,10 @@ if ($allowed_attachments !== true) {
         }
     }
 
-    function openBCC()
-    {
+    function openBCC() {
         var bcc = $('#bcc-box');
         var bcc_input = $('#bcc-box .selectize-control');
-        if(bcc.css('display') === 'block') {
+        if (bcc.css('display') === 'block') {
             bcc.css('display', 'none');
             bcc_input.css('display', 'none');
             $('#bcc-icon').css('transform', 'rotate(0deg)');
@@ -604,10 +619,9 @@ if ($allowed_attachments !== true) {
         }
     }
 
-    function openReplyTo()
-    {
+    function openReplyTo() {
         var replyto = $('#reply_to_div');
-        if(replyto.css('display') === 'block') {
+        if (replyto.css('display') === 'block') {
             replyto.css('display', 'none');
             $('#replyto-icon').css('transform', 'rotate(0deg)');
         } else {
@@ -690,7 +704,7 @@ if ($allowed_attachments !== true) {
 
                 editor.on('editor-change', (eventName, ...args) => {
                     if (eventName === 'text-change') {
-                        if(editor.root.innerHTML === null){
+                        if (editor.root.innerHTML === null) {
                             editor.root.innerHTML = '';
                         }
                         $('#mail_body').val(editor.root.innerHTML);
@@ -744,7 +758,7 @@ if ($allowed_attachments !== true) {
         /// reset #em-select_attachment_type
         $('#em-select_attachment_type option:selected').removeAttr('selected');
 
-        if(select.value !== '%') {
+        if (select.value !== '%') {
             $.ajax({
                 type: 'POST',
                 url: 'index.php?option=com_emundus&controller=email&task=getemailbyid',
@@ -874,8 +888,7 @@ if ($allowed_attachments !== true) {
                         $("#mail_subject").text(email.subject);
 
                         $("#reply_to_from").html(email.emailfrom);
-                        if(email.name !== '')
-                        {
+                        if (email.name !== '') {
                             $("#mail_from_name").text(email.name);
                         } else {
                             $("#mail_from_name").text("<?= JFactory::getConfig()->get('fromname'); ?>");

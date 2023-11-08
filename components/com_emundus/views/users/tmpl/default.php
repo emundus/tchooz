@@ -10,12 +10,9 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 
 $app      = Factory::getApplication();
-if (version_compare(JVERSION, '4.0', '>'))
-{
-	$document = $app->getDocument();
-	$wa       = $document->getWebAssetManager();
-	$wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
-}
+$document = $app->getDocument();
+$wa       = $document->getWebAssetManager();
+$wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
 
 ?>
 

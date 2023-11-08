@@ -15,21 +15,21 @@ use Joomla\CMS\Factory;
 
 $app = Factory::getApplication();
 
-if (version_compare(JVERSION, '4.0', '>'))
-{
+if (version_compare(JVERSION, '4.0', '>')) {
 	$offset = $app->getConfig()->get('offset');
 	Factory::getApplication()->getSession()->set('application_layout', 'attachment');
 	$lang = $app->getLanguage();
-} else {
+}
+else {
 	$offset = Factory::getConfig()->get('offset');
 	Factory::getSession()->set('application_layout', 'attachment');
 	$lang = JFactory::getLanguage();
 }
 
-$can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum);
+$can_export          = EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum);
 $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
 
-require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
@@ -39,11 +39,13 @@ $hash = EmundusHelperCache::getCurrentGitHash();
         <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
                 <span class="material-icons">file_present</span>
-                <?= JText::_('COM_EMUNDUS_ONBOARD_DOCUMENTS').' - '.$this->attachmentsProgress.' % '.JText::_('COM_EMUNDUS_APPLICATION_SENT'); ?>
+				<?= JText::_('COM_EMUNDUS_ONBOARD_DOCUMENTS') . ' - ' . $this->attachmentsProgress . ' % ' . JText::_('COM_EMUNDUS_APPLICATION_SENT'); ?>
             </h3>
             <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
+                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span>
+                </button>
+                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span>
+                </button>
             </div>
         </div>
     </div>

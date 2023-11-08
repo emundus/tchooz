@@ -671,8 +671,8 @@ $wa       = $document->getWebAssetManager();
 $wa->useScript('jquery');
 
 $user          = $app->getIdentity();
-$secret        = $app->getConfig()->get('secret', '');
-$webhook_token = $app->getConfig()->get('webhook_token') ?: '';
+$secret        = $app->get('secret', '');
+$webhook_token = $app->get('webhook_token') ?: '';
 
 if (!in_array($name, ['settings', 'campaigns', 'emails', 'form'])) {
 	if ($cdn == 1) {

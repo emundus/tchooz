@@ -613,8 +613,8 @@ class EmundusControllerCifre extends JControllerLegacy
 				$offerInformation = $this->m_cifre->getOffer($fnum['fnum']);
 
 				// We cannot use the usual mailing function in c_messages because the recipient is not an fnum.
-				require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
-				require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
+				require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+				require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
 
 				$m_emails = $this->getModel('Emails');
 
