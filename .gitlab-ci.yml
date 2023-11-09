@@ -1,0 +1,42 @@
+default:
+  retry: 2
+  tags:
+    - k8s
+
+variables:
+  GIT_SUBMODULE_STRATEGY: normal
+  DOCKER_DRIVER: overlay2
+  DOCKER_BUILDKIT: 1
+  BUILDKIT_INLINE_CACHE: 1
+  DOCKER_TLS_CERTDIR: ""
+
+stages:
+  - test
+  - deploy
+
+include:
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.php_security_checker.yml'
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.deployer.yml'
+- template: Security/Secret-Detection.gitlab-ci.yml
+
+php_security_checker:
+  variables:
+      COMPOSER_PATH: "./libraries/emundus/composer.lock"
+
+php_security_checker_gantry5:
+  extends:
+    - php_security_checker
+  variables:
+    COMPOSER_PATH: "./libraries/gantry5/composer.lock"
+
+deployer:
+  environment: 
+    name: staging
+    deployment_tier: staging
+  variables:
+    DEPLOY_OPTIONS: 'env=tchooz-v2 -vv'
+    DEPLOY_FILE: '-f tchooz.php'
