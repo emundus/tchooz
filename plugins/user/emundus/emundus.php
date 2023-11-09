@@ -70,32 +70,64 @@ class plgUserEmundus extends CMSPlugin
 			return false;
 		}
 
-		$this->db = JFactory::getDbo();
-		$this->db->setQuery(
-			'DELETE FROM ' . $this->db->quoteName('#__session') .
-			' WHERE ' . $this->db->quoteName('userid') . ' = ' . (int) $user['id']
-		);
+		$this->db = Factory::getDbo();
+		$query = $this->db->getQuery(true);
+
+		$query->delete($this->db->quoteName('#__session'))
+			->where($this->db->quoteName('userid') . ' = ' . (int) $user['id']);
+		$this->db->setQuery($query);
 		$this->db->execute();
 
 		$this->db->setQuery('SHOW TABLES');
 		$tables = $this->db->loadColumn();
+
 		foreach ($tables as $table) {
-			if (strpos($table, '_messages') > 0 && !strpos($table, '_eb_'))
-				$query = 'DELETE FROM ' . $table . ' WHERE user_id_from = ' . (int) $user['id'] . ' OR user_id_to = ' . (int) $user['id'];
-			if (strpos($table, 'emundus_') === false) continue;
-			if (strpos($table, 'emundus_group_assoc') > 0) continue;
-			if (strpos($table, 'emundus_groups_eval') > 0) continue;
-			if (strpos($table, 'emundus_tag_assoc') > 0) continue;
-			if (strpos($table, 'emundus_stats') > 0) continue;
-			if (strpos($table, '_repeat') > 0) continue;
-			if (strpos($table, 'setup_') > 0 || strpos($table, '_country') > 0 || strpos($table, '_users') > 0 || strpos($table, '_acl') > 0) continue;
-			if (strpos($table, '_files_request') > 0 || strpos($table, '_evaluations') > 0 || strpos($table, '_final_grade') > 0)
-				$query = 'DELETE FROM ' . $table . ' WHERE student_id = ' . (int) $user['id'];
-			elseif (strpos($table, '_uploads') > 0 || strpos($table, '_groups') > 0 || strpos($table, '_emundus_users') > 0 || strpos($table, '_emundus_emailalert') > 0)
-				$query = 'DELETE FROM ' . $table . ' WHERE user_id = ' . (int) $user['id'];
-			elseif (strpos($table, '_emundus_comments') > 0 || strpos($table, '_emundus_campaign_candidature') > 0)
-				$query = 'DELETE FROM ' . $table . ' WHERE applicant_id = ' . (int) $user['id'];
-			else continue;
+
+			if (strpos($table, '_messages') > 0 && !strpos($table, '_eb_')) {
+				$query->clear()
+					->delete($this->db->quoteName($table))
+					->where($this->db->quoteName('user_id_from') . ' = ' . (int) $user['id'] . ' OR ' . $this->db->quoteName('user_id_to') . ' = ' . (int) $user['id']);
+			}
+
+			if (strpos($table, 'emundus_') === false)  {
+				continue;
+			}
+			if (strpos($table, 'emundus_group_assoc') > 0) {
+				continue;
+			}
+			if (strpos($table, 'emundus_groups_eval') > 0) {
+				continue;
+			}
+			if (strpos($table, 'emundus_tag_assoc') > 0) {
+				continue;
+			}
+			if (strpos($table, 'emundus_stats') > 0) {
+				continue;
+			}
+			if (strpos($table, '_repeat') > 0) {
+				continue;
+			}
+			if (strpos($table, 'setup_') > 0 || strpos($table, '_country') > 0 || strpos($table, '_users') > 0 || strpos($table, '_acl') > 0) {
+				continue;
+			}
+
+			if (strpos($table, '_files_request') > 0 || strpos($table, '_evaluations') > 0 || strpos($table, '_final_grade') > 0) {
+				$query->clear()->delete($this->db->quoteName($table))->where($this->db->quoteName('student_id') . ' = ' . (int) $user['id']);
+			}
+			elseif (strpos($table, '_uploads') > 0 || strpos($table, '_groups') > 0 || strpos($table, '_emundus_users') > 0 || strpos($table, '_emundus_emailalert') > 0) {
+				$query->clear()
+					->delete($this->db->quoteName($table))
+					->where($this->db->quoteName('user_id') . ' = ' . (int) $user['id']);
+			}
+			elseif (strpos($table, '_emundus_comments') > 0 || strpos($table, '_emundus_campaign_candidature') > 0) {
+				$query->clear()
+					->delete($this->db->quoteName($table))
+					->where($this->db->quoteName('applicant_id') . ' = ' . (int) $user['id']);
+			}
+			else {
+				continue;
+			}
+
 			try {
 				$this->db->setQuery($query);
 				$this->db->execute();
@@ -104,18 +136,22 @@ class plgUserEmundus extends CMSPlugin
 				continue;
 			}
 		}
+
 		$dir = EMUNDUS_PATH_ABS . $user['id'] . DS;
-		if (!$dh = @opendir($dir))
+
+		if (!$dh = opendir($dir)) {
 			return false;
+		}
+
 		while (false !== ($obj = readdir($dh))) {
 			if ($obj == '.' || $obj == '..') continue;
-			if (!@unlink($dir . $obj))
-				JFactory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND") . " : " . $obj . "\n", 'error');
+			if (!unlink($dir . $obj))
+				Factory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND") . " : " . $obj . "\n", 'error');
 		}
-		closedir($dh);
-		@rmdir($dir);
 
-		// Send email to inform applicant
+		closedir($dh);
+		rmdir($dir);
+
 		if ($this->params->get('send_email_delete', 0) == 1) {
 			require_once(JPATH_SITE . '/components/com_emundus/controllers/messages.php');
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
@@ -124,7 +160,7 @@ class plgUserEmundus extends CMSPlugin
 			$post       = [
 				'NAME'      => $user['name'],
 				'LOGO'      => EmundusHelperEmails::getLogo(),
-				'SITE_NAME' => JFactory::getConfig()->get('sitename'),
+				'SITE_NAME' => Factory::getConfig()->get('sitename'),
 			];
 			$c_messages->sendEmailNoFnum($user['email'], 'delete_user', $post);
 		}

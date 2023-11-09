@@ -842,7 +842,7 @@ $(document).ready(function () {
 				var formData = new FormData();
 				formData.append('users', checkInput);
 
-				fetch(url, {
+				await fetch(url, {
 					method: 'POST',
 					body: formData,
 				}).then((response) => {
@@ -857,6 +857,8 @@ $(document).ready(function () {
 					title = 'COM_EMUNDUS_USERS_SHOW_USER_RIGHTS';
 					swal_popup_class = 'em-w-auto';
 					html = result
+
+					console.log(swalForm);
 				});
 
 				break;
@@ -947,7 +949,7 @@ $(document).ready(function () {
 						const formData = new FormData();
 						formData.append('users', checkInput);
 
-						fetch('index.php?option=com_emundus&controller=users&task=passrequest&Itemid=' + itemId, {
+						fetch('/index.php?option=com_emundus&controller=users&task=passrequest&Itemid=' + itemId, {
 							method: 'POST',
 							body: formData
 						}).then((response) => {
@@ -1135,7 +1137,7 @@ $(document).ready(function () {
 							showConfirmButton: false,
 							timer: 1500
 						}).then(function() {
-							window.location.replace('index.php?option=com_emundus&view=users&layout=showgrouprights&Itemid=1169&rowid='+result.status);
+							window.location.replace('/index.php?option=com_emundus&view=users&layout=showgrouprights&Itemid=1169&rowid='+result.status);
 						});
 					} else {
 						Swal.fire({
@@ -1420,7 +1422,7 @@ $(document).ready(function () {
 				formData.append('template', $('#message_template :selected').val());
 				formData.append('Bcc', $('#sendUserACopy').prop('checked'));
 				formData.append('mail_from_name', $('#mail_from_name').text());
-				formData.append('mail_from', $('#mail_from').text());
+				formData.append('mail_from', $('#mail_from').text().trim());
 				formData.append('mail_subject', $('#mail_subject').text());
 				formData.append('message', $('#mail_body').val());
 				formData.append('attachments', data.attachments);

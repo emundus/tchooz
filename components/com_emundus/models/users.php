@@ -18,9 +18,14 @@ jimport('joomla.application.component.model');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
 
+use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Table\Table;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Component\Users\Site\Model\ResetModel;
 
 class EmundusModelUsers extends JModelList
 {
@@ -962,12 +967,13 @@ class EmundusModelUsers extends JModelList
 			else {
 				$config = Factory::getConfig();
 			}
+			
 			$config_offset = $config->get('offset');
 			$offset        = $config_offset ?: 'Europe/Paris';
 			$timezone      = new DateTimeZone($offset);
 			$now           = Factory::getDate()->setTimezone($timezone);
 
-			JPluginHelper::importPlugin('emundus');
+			PluginHelper::importPlugin('emundus');
 
 			$firstname = $params['firstname'];
 			$lastname  = $params['lastname'];
@@ -1031,15 +1037,21 @@ class EmundusModelUsers extends JModelList
 					$this->app->triggerEvent('onBeforeCampaignCandidature', [$user_id, $this->user->id, $campaign]);
 					$this->app->triggerEvent('onCallEventHandler', ['onBeforeCampaignCandidature', ['user_id' => $user_id, 'connected' => $this->user->id, 'campaign' => $campaign]]);
 
-					$query->clear()
-						->insert($this->db->quoteName('#__emundus_campaign_candidature'))
-						->columns($this->db->quoteName(array('applicant_id', 'user_id', 'campaign_id', 'fnum')))
-						->values($user_id . ',' . $this->user->id . ',' . $campaign . ', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'), LPAD(`applicant_id`, 7, \'0\'))');
-					$this->db->setQuery($query);
-					$this->db->execute();
+					$fnum = EmundusHelperFiles::createFnum($campaign, $user_id);
 
-					$this->app->triggerEvent('onAfterCampaignCandidature', [$user_id, $this->user->id, $campaign]);
-					$this->app->triggerEvent('onCallEventHandler', ['onAfterCampaignCandidature', ['user_id' => $user_id, 'connected' => $this->user->id, 'campaign' => $campaign]]);
+					if(!empty($fnum)) {
+						$columns = array('applicant_id', 'user_id', 'campaign_id', 'fnum');
+						$values  = array($user_id, $this->user->id, $campaign, $fnum);
+						$query->clear()
+							->insert($this->db->quoteName('#__emundus_campaign_candidature'))
+							->columns($this->db->quoteName($columns))
+							->values(implode(',', $this->db->quote($values)));
+						$this->db->setQuery($query);
+						$this->db->execute();
+
+						$this->app->triggerEvent('onAfterCampaignCandidature', [$user_id, $this->user->id, $campaign]);
+						$this->app->triggerEvent('onCallEventHandler', ['onAfterCampaignCandidature', ['user_id' => $user_id, 'connected' => $this->user->id, 'campaign' => $campaign]]);
+					}
 				}
 			}
 
@@ -2026,7 +2038,6 @@ class EmundusModelUsers extends JModelList
 	public function countUserEvaluations($uid)
 	{
 		try {
-
 			$query = $this->db->getQuery(true);
 
 			$query->select('COUNT(*)')
@@ -2046,7 +2057,6 @@ class EmundusModelUsers extends JModelList
 	public function countUserDecisions($uid)
 	{
 		try {
-
 			$query = $this->db->getQuery(true);
 
 			$query->select('COUNT(*)')
@@ -2673,9 +2683,8 @@ class EmundusModelUsers extends JModelList
 		$users = [];
 
 		if (!empty($ids)) {
-			
-
 			$query = $this->db->getQuery(true);
+
 			$query->select('*')
 				->from('#__users')
 				->where('id IN (' . implode(',', $ids) . ')');
@@ -2706,14 +2715,13 @@ class EmundusModelUsers extends JModelList
 	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY')
 	{
 
-		$config = JFactory::getConfig();
+		$config = Factory::getConfig();
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
-
 		$m_emails = new EmundusModelEmails();
 
 		// Load the com_users language tags in order to call the Joomla user JText.
-		$language     = JFactory::getLanguage();
+		$language     = Factory::getLanguage();
 		$extension    = 'com_users';
 		$base_dir     = JPATH_SITE;
 		$language_tag = $language->getTag(); // loads the current language-tag
@@ -2745,7 +2753,7 @@ class EmundusModelUsers extends JModelList
 			$userId = $this->db->loadResult();
 		}
 		catch (RuntimeException $e) {
-			$return->message = JText::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage());
+			$return->message = Text::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage());
 			$return->status  = false;
 
 			return $return;
@@ -2753,20 +2761,20 @@ class EmundusModelUsers extends JModelList
 
 		// Check for a user.
 		if (empty($userId)) {
-			$return->message = JText::_('COM_USERS_INVALID_EMAIL');
+			$return->message = Text::_('COM_USERS_INVALID_EMAIL');
 			$return->status  = false;
 
 			return $return;
 		}
 
 		// Get the user object.
-		$user  = JFactory::getUser($userId);
-		$table = JTable::getInstance('user', 'JTable');
+		$user  = Factory::getUser($userId);
+		$table = Table::getInstance('user', 'JTable');
 		$table->load($user->id);
 
 		// Make sure the user isn't blocked.
 		if ($user->block) {
-			$return->message = JText::_('COM_USERS_USER_BLOCKED');
+			$return->message = Text::_('COM_USERS_USER_BLOCKED');
 			$return->status  = false;
 
 			return $return;
@@ -2774,33 +2782,32 @@ class EmundusModelUsers extends JModelList
 
 		// Make sure the user isn't a Super Admin.
 		if ($user->authorise('core.admin')) {
-			$return->message = JText::_('COM_USERS_REMIND_SUPERADMIN_ERROR');
+			$return->message = Text::_('COM_USERS_REMIND_SUPERADMIN_ERROR');
 			$return->status  = false;
 
 			return $return;
 		}
 
-		include_once(JPATH_SITE . DS . 'components' . DS . 'com_users' . DS . 'models' . DS . 'reset.php');
-		$m_juser_reset = new UsersModelReset();
+		$m_juser_reset = new ResetModel();
 
 		// Make sure the user has not exceeded the reset limit
 		if (!$m_juser_reset->checkResetLimit($user)) {
 			$resetLimit      = (int) $this->app->getParams()->get('reset_time');
-			$return->message = JText::plural('COM_USERS_REMIND_LIMIT_ERROR_N_HOURS', $resetLimit);
+			$return->message = Text::plural('COM_USERS_REMIND_LIMIT_ERROR_N_HOURS', $resetLimit);
 			$return->status  = false;
 
 			return $return;
 		}
 
 		// Set the confirmation token.
-		$token       = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
-		$hashedToken = JUserHelper::hashPassword($token);
+		$token       = ApplicationHelper::getHash(UserHelper::genRandomPassword());
+		$hashedToken = UserHelper::hashPassword($token);
 
 		$table->activation = $hashedToken;
 
 		// Save the user to the database.
 		if (!$table->store()) {
-			throw new JException(JText::sprintf('COM_USERS_USER_SAVE_FAILED', $user->getError()), 500);
+			throw new Exception(Text::sprintf('COM_USERS_USER_SAVE_FAILED', $user->getError()), 500);
 		}
 
 		// Assemble the password reset confirmation link.
@@ -2808,7 +2815,7 @@ class EmundusModelUsers extends JModelList
 		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
 		$link = str_replace('+', '%2B', $link);
 
-		$mailer = JFactory::getMailer();
+		$mailer = Factory::getMailer();
 
 		// Put together the email template data.
 		$data              = $user->getProperties();
@@ -2818,8 +2825,8 @@ class EmundusModelUsers extends JModelList
 		$data['token']     = $token;
 
 		// Build the translated email.
-		$subject = JText::sprintf($subject, $data['sitename']);
-		$body    = JText::sprintf($body, $data['sitename'], $data['token'], $data['link_html']);
+		$subject = Text::sprintf($subject, $data['sitename']);
+		$body    = Text::sprintf($body, $data['sitename'], $data['token'], $data['link_html']);
 
 		$post = [
 			'USER_NAME'  => $user->name,
@@ -2842,7 +2849,7 @@ class EmundusModelUsers extends JModelList
 			$template = $this->db->loadResult();
 		}
 		catch (RuntimeException $e) {
-			$return->message = JText::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage());
+			$return->message = Text::sprintf('COM_USERS_DATABASE_ERROR', $e->getMessage());
 			$return->status  = false;
 
 			return $return;
@@ -2877,7 +2884,7 @@ class EmundusModelUsers extends JModelList
 
 		// Check for an error.
 		if ($send !== true) {
-			throw new JException(JText::_('COM_USERS_MAIL_FAILED'), 500);
+			throw new Exception(Text::_('COM_USERS_MAIL_FAILED'), 500);
 		}
 
 		$return->status = true;

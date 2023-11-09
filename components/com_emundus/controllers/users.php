@@ -15,6 +15,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\User;
 
 
@@ -71,24 +72,24 @@ class EmundusControllerUsers extends JControllerLegacy
 	{
 
 		if (!EmundusHelperAccess::asAccessAction(12, 'c')) {
-			echo json_encode((object) array('status' => false, 'uid' => $this->user->id, 'msg' => JText::_('ACCESS_DENIED')));
+			echo json_encode((object) array('status' => false, 'uid' => $this->user->id, 'msg' => Text::_('ACCESS_DENIED')));
 			exit;
 		}
 
 
-		$firstname = $this->input->post->get('firstname', null, null);
-		$lastname  = $this->input->post->get('lastname', null, null);
-		$username  = $this->input->post->get('login', null, null);
+		$firstname = $this->input->getString('firstname');
+		$lastname  = $this->input->getString('lastname');
+		$username  = $this->input->getString('login');
 		$name      = ucfirst($firstname) . ' ' . strtoupper($lastname);
-		$email     = $this->input->post->get('email', null, null);
-		$profile   = $this->input->post->get('profile', null, null);
-		$oprofiles = $this->input->post->get('oprofiles', null, 'string');
-		$jgr       = $this->input->post->get('jgr', null, null);
-		$univ_id   = $this->input->post->get('university_id', null, null);
-		$groups    = $this->input->post->get('groups', null, 'string');
-		$campaigns = $this->input->post->get('campaigns', null, 'string');
-		$news      = $this->input->post->get('newsletter', null, 'string');
-		$ldap      = $this->input->post->get('ldap', 0, null);
+		$email     = $this->input->getString('email');
+		$profile   = $this->input->getInt('profile',0);
+		$oprofiles = $this->input->getString('oprofiles');
+		$jgr       = $this->input->getString('jgr');
+		$univ_id   = $this->input->getInt('university_id',0);
+		$groups    = $this->input->getString('groups');
+		$campaigns = $this->input->getString('campaigns');
+		$news      = $this->input->getInt('newsletter', 0);
+		$ldap      = $this->input->getInt('ldap', 0);
 
 		$user = clone(Factory::getContainer()->get(\Joomla\CMS\User\UserFactoryInterface::class)->loadUserById(0));
 
@@ -575,8 +576,6 @@ class EmundusControllerUsers extends JControllerLegacy
 
 	public function addgroup()
 	{
-
-
 		$gname   = $this->input->getString('gname', null);
 		$actions = $this->input->getString('actions', null);
 		$progs   = $this->input->getString('gprog', null);
@@ -587,10 +586,10 @@ class EmundusControllerUsers extends JControllerLegacy
 		$res     = $m_users->addGroup($gname, $gdesc, $actions, explode(',', $progs));
 
 		if ($res !== false) {
-			$msg = JText::_('COM_EMUNDUS_GROUPS_GROUP_ADDED');
+			$msg = Text::_('COM_EMUNDUS_GROUPS_GROUP_ADDED');
 		}
 		else {
-			$msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
+			$msg = Text::_('COM_EMUNDUS_ERROR_OCCURED');
 		}
 
 		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
@@ -816,11 +815,10 @@ class EmundusControllerUsers extends JControllerLegacy
 	{
 
 		if (!EmundusHelperAccess::asAccessAction(12, 'd') && !EmundusHelperAccess::asAccessAction(20, 'd')) {
-			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
 
 			return;
 		}
-
 
 		$users = $this->input->getString('users', null);
 
@@ -839,11 +837,11 @@ class EmundusControllerUsers extends JControllerLegacy
 		}
 
 		$res      = true;
-		$msg      = JText::_('COM_EMUNDUS_USERS_DELETED');
+		$msg      = Text::_('COM_EMUNDUS_USERS_DELETED');
 		$users_id = "";
 		foreach ($users as $user) {
 			if (is_numeric($user)) {
-				$u     = JUser::getInstance($user);
+				$u     = User::getInstance($user);
 				$count = $m_users->countUserEvaluations($user);
 				$count += $m_users->countUserDecisions($user);
 
@@ -861,7 +859,7 @@ class EmundusControllerUsers extends JControllerLegacy
 		}
 
 		if ($users_id != "") {
-			$msg = JText::sprintf('COM_EMUNDUS_USERS_THIS_USER_CAN_NOT_BE_DELETED', $users_id);
+			$msg = Text::sprintf('COM_EMUNDUS_USERS_THIS_USER_CAN_NOT_BE_DELETED', $users_id);
 		}
 		echo json_encode((object) array('status' => $res, 'msg' => $msg));
 
@@ -974,7 +972,7 @@ class EmundusControllerUsers extends JControllerLegacy
 		$response = array('status' => true, 'msg' => '');
 
 		// Check the request token.
-		if (JFactory::getUser()->guest) {
+		if (Factory::getUser()->guest) {
 			$this->checkToken('post');
 
 			$data = $this->input->post->get('jform', array(), 'array');
@@ -996,7 +994,7 @@ class EmundusControllerUsers extends JControllerLegacy
 			}
 		}
 		elseif (EmundusHelperAccess::asAccessAction(12, 'u') || EmundusHelperAccess::asAccessAction(20, 'u')) {
-			$response['msg'] = JText::_('COM_EMUNDUS_USERS_RESET_REQUEST_LINK_SENDED');
+			$response['msg'] = Text::_('COM_EMUNDUS_USERS_RESET_REQUEST_LINK_SENDED');
 			$users           = $this->input->post->getString('users', null);
 			if ($users === 'all') {
 				$us = $m_users->getUsers(0, 0);
@@ -1012,7 +1010,7 @@ class EmundusControllerUsers extends JControllerLegacy
 
 			foreach ($users as $user) {
 				$data          = array();
-				$data['email'] = JFactory::getUser($user)->email;
+				$data['email'] = Factory::getUser($user)->email;
 
 				$return = $m_users->passwordReset($data, 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT_FOR_OTHER', 'COM_USERS_EMAIL_PASSWORD_RESET_BODY_FOR_OTHER');
 				if ($return->status === false) {

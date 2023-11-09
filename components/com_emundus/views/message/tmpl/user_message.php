@@ -211,7 +211,7 @@ $uids       = array();
                         <div id="mail_from_name" class="em-p-4-6"
                              contenteditable="true"><?= JFactory::getConfig()->get('fromname') ?></div>
                         <div id="mail_from" class="em-ml-4" contenteditable="false">
-                            <em class="em-font-size-14">&lt;<?= JFactory::getConfig()->get('mailfrom') ?>&gt;</em>
+                            <em class="em-font-size-14"><?= JFactory::getConfig()->get('mailfrom') ?></em>
                         </div>
                     </div>
                 </div>
@@ -381,7 +381,7 @@ $uids       = array();
     function initQuill() {
         let variables = [];
 
-        fetch('index.php?option=com_emundus&controller=settings&task=geteditorvariables')
+        fetch('/index.php?option=com_emundus&controller=settings&task=geteditorvariables')
             .then(function (response) {
                 return response.json();
             })
@@ -472,14 +472,17 @@ $uids       = array();
     function getTemplate(select) {
 
         if (select.value !== '%') {
-            $.ajax({
-                type: "POST",
-                url: "index.php?option=com_emundus&controller=email&task=getemailbyid",
-                dataType: 'JSON',
-                data: {
-                    id: select.value
-                },
-                success: function (data) {
+            var formData = new FormData();
+            formData.append("id", select.value);
+
+            fetch('/index.php?option=com_emundus&controller=email&task=getemailbyid', {
+                method: 'POST',
+                body: formData
+            })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
                     if (data.status) {
                         var email_block = document.getElementById("em_email_block");
 
@@ -501,12 +504,11 @@ $uids       = array();
                             $('#em-attachment-list').append('<li class="list-group-item upload"><div class="value hidden">' + email.tmpl.attachment + '</div>' + email.tmpl.attachment.split('\\').pop().split('/').pop() + '<span class="badge em-error-button" style="padding: 0;" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span><span class="badge"><span class="glyphicon glyphicon-saved"></span></span></li>');
                         }
                     }
-                },
-                error: () => {
+                })
+                .catch(function (error) {
                     // handle error
                     $("#message_template").append('<span class="alert"> <?= JText::_('ERROR'); ?> </span>')
-                }
-            });
+                })
         } else {
             $("#mail_subject").text("<?= JFactory::getConfig()->get('sitename'); ?>");
             $("#mail_from_name").text("<?= JFactory::getConfig()->get('fromname'); ?>");

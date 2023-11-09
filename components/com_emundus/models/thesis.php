@@ -139,7 +139,7 @@ class EmundusModelThesis extends JModelItem
 
 	public function getTable($type = 'Thesis', $prefix = 'EmundusTable', $config = array())
 	{
-		$this->addTablePath(JPATH_BASE . DS . 'components' . DS . 'com_emundus'_ADMINISTRATOR . '/tables');
+		$this->addTablePath(JPATH_ADMINISTRATOR . DS . 'components' . DS . 'com_emundus' . '/tables');
         return JTable::getInstance($type, $prefix, $config);
     }
 
@@ -399,4 +399,8 @@ class EmundusModelThesis extends JModelItem
 		return $db->loadObject();
 	}
 
+	public function getItem($pk = null)
+	{
+		// TODO: Implement getItem() method.
+	}
 }
