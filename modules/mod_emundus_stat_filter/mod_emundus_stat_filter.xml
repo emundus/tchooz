@@ -7,8 +7,8 @@
     <name>eMundus - Stat Filter</name>
     <author>Anne-laure Drouard</author>
     <creationDate>May 2020</creationDate>
-	<copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorUrl>www.emundus.fr</authorUrl>
     <version>2.0.0</version>
     <description>MOD_EMUNDUS_STAT_FILTER_XML_DESCRIPTION</description>

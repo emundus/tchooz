@@ -54,7 +54,7 @@ class EmundusViewMessage extends JViewLegacy
 		}
 
 		// List of fnum is sent via GET in JSON format.
-		$jinput = $this->app->getInput();
+		$jinput = $this->app->input;
 		$layout = $jinput->getString('layout', null);
 
 		$document = $this->app->getDocument();

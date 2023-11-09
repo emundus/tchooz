@@ -16,36 +16,34 @@ defined('_JEXEC') or die;
  */
 class ModEmundusFooterHelper
 {
-    /**
-     * Retrieve the URL where the user should be returned after logging in
-     *
-     * @param   \Joomla\Registry\Registry  $params  module parameters
-     * @param   string                     $type    return type
-     *
-     * @return string
-     */
-    public static function getReturnUrl($params, $type)
-    {
-        $app  = JFactory::getApplication();
-        $item = $app->getMenu()->getItem($params->get($type));
+	/**
+	 * Retrieve the URL where the user should be returned after logging in
+	 *
+	 * @param   \Joomla\Registry\Registry  $params  module parameters
+	 * @param   string                     $type    return type
+	 *
+	 * @return string
+	 */
+	public static function getReturnUrl($params, $type)
+	{
+		$app  = JFactory::getApplication();
+		$item = $app->getMenu()->getItem($params->get($type));
 
-        // Stay on the same page
-        $url = JUri::getInstance()->toString();
+		// Stay on the same page
+		$url = JUri::getInstance()->toString();
 
-        if ($item)
-        {
-            $lang = '';
+		if ($item) {
+			$lang = '';
 
-            if ($item->language !== '*' && JLanguageMultilang::isEnabled())
-            {
-                $lang = '&lang=' . $item->language;
-            }
+			if ($item->language !== '*' && JLanguageMultilang::isEnabled()) {
+				$lang = '&lang=' . $item->language;
+			}
 
-            $url = 'index.php?Itemid=' . $item->id . $lang;
-        }
+			$url = 'index.php?Itemid=' . $item->id . $lang;
+		}
 
-        return base64_encode($url);
-    }
+		return base64_encode($url);
+	}
 
 	/**
 	 * Returns the current users type

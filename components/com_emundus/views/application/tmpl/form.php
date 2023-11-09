@@ -131,7 +131,6 @@ $user       = $this->userid;
                                    style="white-space: nowrap"> <?php echo $pid->data->label; ?></p>
                             </div>
 						<?php endif; ?>
-                        </optgroup>
 					<?php endforeach; ?>
                 </div>
 

@@ -57,7 +57,7 @@ class EmundusModelProgramme extends JModelList
 	 */
 	public function getCampaign($id = 0)
 	{
-
+		
 		$query = $this->_db->getQuery(true);
 		$query->select('pr.*,ca.*');
 		$query->from('#__emundus_setup_programmes as pr,#__emundus_setup_campaigns as ca');
@@ -69,7 +69,7 @@ class EmundusModelProgramme extends JModelList
 
 	public function getParams($id = 0)
 	{
-
+		
 		$query = $this->_db->getQuery(true);
 		$query->select('params');
 		$query->from('#__menu');
@@ -91,7 +91,7 @@ class EmundusModelProgramme extends JModelList
 		$associated_programs = [];
 
 		if (!empty($user)) {
-
+			
 			$query = $this->_db->getQuery(true);
 			$query->select('DISTINCT sc.training')
 				->from($this->_db->quoteName('#__emundus_users_assoc', 'ua'))
@@ -123,10 +123,10 @@ class EmundusModelProgramme extends JModelList
 	{
 		$programmes = [];
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		
+		$query = $this->_db->getQuery(true);
 		$query->select('*')
-			->from($db->quoteName('#__emundus_setup_programmes'))
+			->from($this->_db->quoteName('#__emundus_setup_programmes'))
 			->where('1 = 1');
 
 		if (isset($published)) {
@@ -135,16 +135,16 @@ class EmundusModelProgramme extends JModelList
 
 		if (!empty($codeList)) {
 			if (!empty($codeList['IN'])) {
-				$query->andWhere('code IN (' . implode(',', $db->quote($codeList['IN'])) . ')');
+				$query->andWhere('code IN (' . implode(',', $this->_db->quote($codeList['IN'])) . ')');
 			}
 			if (!empty($codeList['NOT_IN'])) {
-				$query->andWhere('code NOT IN (' . implode(',', $db->quote($codeList['NOT_IN'])) . ')');
+				$query->andWhere('code NOT IN (' . implode(',', $this->_db->quote($codeList['NOT_IN'])) . ')');
 			}
 		}
 
 		try {
-			$db->setQuery($query);
-			$programmes = $db->loadAssocList('code');
+			$this->_db->setQuery($query);
+			$programmes = $this->_db->loadAssocList('code');
 		}
 		catch (Exception $e) {
 			error_log($e->getMessage(), 0);
@@ -168,6 +168,7 @@ class EmundusModelProgramme extends JModelList
 			return false;
 		}
 
+		
 
 		$query = $this->_db->getQuery(true);
 
@@ -199,7 +200,7 @@ class EmundusModelProgramme extends JModelList
 	 */
 	public function addProgrammes($data)
 	{
-
+		
 
 		if (!empty($data)) {
 			unset($data[0]['organisation']);
@@ -240,7 +241,7 @@ class EmundusModelProgramme extends JModelList
 	 */
 	public function editProgrammes($data)
 	{
-
+		
 
 		if (count($data) > 0) {
 			try {
@@ -2063,8 +2064,8 @@ class EmundusModelProgramme extends JModelList
 				foreach ($elements as $element) {
 					try {
 						// Default parameters
-						$this->_dbtype = 'VARCHAR(255)';
-						$this->_dbnull = 'NULL';
+						$dbtype = 'VARCHAR(255)';
+						$dbnull = 'NULL';
 						//
 
 						$newelement = $element->copyRow($element->element->id, '%s', $newgroupid);
@@ -2130,13 +2131,13 @@ class EmundusModelProgramme extends JModelList
 						$this->_db->execute();
 
 						if ($element->element->plugin === 'birthday') {
-							$this->_dbtype = 'DATE';
+							$dbtype = 'DATE';
 						}
 						elseif ($element->element->plugin === 'textarea') {
-							$this->_dbtype = 'TEXT';
+							$dbtype = 'TEXT';
 						}
 
-						$query = "ALTER TABLE jos_emundus_evaluations" . " ADD criteria_" . $formid . "_" . $newelementid . " " . $this->_dbtype . " " . $this->_dbnull;
+						$query = "ALTER TABLE jos_emundus_evaluations" . " ADD criteria_" . $formid . "_" . $newelementid . " " . $dbtype . " " . $dbnull;
 						$this->_db->setQuery($query);
 						$this->_db->execute();
 						$query = $this->_db->getQuery(true);
@@ -2184,7 +2185,7 @@ class EmundusModelProgramme extends JModelList
 	 */
 	function getGridsModel()
 	{
-
+		
 		$query = $this->_db->getQuery(true);
 
 		$query->select('*')
@@ -2221,7 +2222,7 @@ class EmundusModelProgramme extends JModelList
 	 */
 	function createGrid($label, $intro, $pid, $template)
 	{
-
+		
 		$query = $this->_db->getQuery(true);
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'formbuilder.php');
@@ -2332,7 +2333,7 @@ class EmundusModelProgramme extends JModelList
 	 */
 	function deleteGrid($grid, $pid)
 	{
-
+		
 		$query = $this->_db->getQuery(true);
 
 		$query->update($this->_db->quoteName('#__emundus_setup_programmes'))
@@ -2371,7 +2372,7 @@ class EmundusModelProgramme extends JModelList
 		$user_programs = [];
 
 		if (!empty($user_id)) {
-
+			
 			$query = $this->_db->getQuery(true);
 
 			$query->select('distinct sp.code')
@@ -2411,7 +2412,7 @@ class EmundusModelProgramme extends JModelList
 	 */
 	function getGroupsByPrograms($programs)
 	{
-
+		
 		$query = $this->_db->getQuery(true);
 
 		$groups = array();
@@ -2460,7 +2461,7 @@ class EmundusModelProgramme extends JModelList
 	 */
 	function addGroupToProgram($label, $code, $parent)
 	{
-
+		
 		$query = $this->_db->getQuery(true);
 
 		$date   = date('Y-m-d H:i:s');
@@ -2540,7 +2541,7 @@ class EmundusModelProgramme extends JModelList
 	 */
 	function getGroupByParent($code, $parent)
 	{
-
+		
 		$query = $this->_db->getQuery(true);
 
 		try {
@@ -2569,7 +2570,7 @@ class EmundusModelProgramme extends JModelList
 	 */
 	function getCampaignsByProgram($program)
 	{
-
+		
 		$query = $this->_db->getQuery(true);
 
 		try {
@@ -2590,7 +2591,7 @@ class EmundusModelProgramme extends JModelList
 
 	function getAllSessions()
 	{
-
+		
 		$query = $this->_db->getQuery(true);
 
 		try {

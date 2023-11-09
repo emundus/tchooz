@@ -1008,16 +1008,10 @@ fieldset {
 	border-top-style: solid;
 	border-top-width: 1px;
 	font-weight: bold;
-	margin-bottom: 9px;
-	margin-left: 10px;
-	margin-right: 10px;
-	margin-top: 0;
+	margin: 0 10px 9px 10px;
 	max-width: 448px;
 	overflow-y: hidden;
-	padding-bottom: 4px;
-	padding-left: 8px;
-	padding-right: 4px;
-	padding-top: 4px;
+	padding: 4px 4px 4px 8px;
 }
 
 .em_email_icon {
@@ -1038,10 +1032,7 @@ fieldset {
 	max-width: 315px;
 	overflow-x: hidden;
 	overflow-y: hidden;
-	padding-bottom: 3px;
-	padding-left: 0;
-	padding-right: 0;
-	padding-top: 3px;
+	padding: 3px 0 3px 0;
 	text-overflow: ellipsis;
 	vertical-align: bottom;
 	white-space: nowrap;
@@ -1050,10 +1041,7 @@ fieldset {
 .vJ {
 	color: #777777;
 	display: inline-block;
-	padding-bottom: 3px;
-	padding-left: 0;
-	padding-right: 0;
-	padding-top: 3px;
+	padding: 3px 0 3px 0;
 }
 
 /* helper list : affect to evaluator(s) */
@@ -1115,7 +1103,7 @@ fieldset {
 }
 
 .em_list_email {
-	color: #666666
+	color: #666666;
 }
 
 /* SWITCH PROFILE SELECT BOX*/
@@ -1145,7 +1133,7 @@ fieldset {
 	margin-bottom: 15px;
 	width: 100%;
 }    .select select {
-		 font-family: 'Arial';
+		 font-family: 'Arial', sans-serif;
 		 display: inline-block;
 		 width: 100%;
 		 height:45px;
@@ -1176,8 +1164,8 @@ fieldset {
 	position: absolute;
 	top: 16px;
 	right: 15px;
-	width: 0px;
-	height: 0px;
+	width: 0;
+	height: 0;
 	border: solid #7B7B7B;
 	border-width: 0 3px 3px 0;
 	display: inline-block;
@@ -1215,9 +1203,6 @@ footer#g-footer {
 	#attachment_list .attachment_model.em-flex-row {
 		flex-direction: column;
 		align-items: flex-start;
-		.em-ml-4 {
-			margin-left: 0;
-		}
 	}
 }
 

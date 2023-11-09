@@ -8,30 +8,40 @@
 // no direct access
 defined('_JEXEC') or die;
 
-if($just_logged && !$only_applicant) {
+if ($just_logged && !$only_applicant) {
 	$user = JFactory::getSession()->get('emundusUser');
 	?>
     <style>
-        .em-switch-profile-img{
+        .em-switch-profile-img {
             text-align: center;
             justify-content: center;
         }
-        .em-switch-profile-img img{
+
+        .em-switch-profile-img img {
             width: 10vw;
         }
-        .em-switch-profile-swal-container.swal2-shown{
+
+        .em-switch-profile-swal-container.swal2-shown {
             background-color: rgba(60, 60, 60, 0.98);
         }
-        .em-switch-profile-swal-container .swal2-actions{
+
+        .em-switch-profile-swal-container .swal2-actions {
             justify-content: center !important;
         }
-        .em-switch-profile-swal-container .em-switch-profile-swal-content{
+
+        .em-switch-profile-swal-container .em-switch-profile-swal-content {
             text-align: left;
         }
-        .em-switch-profile-swal-container li{
+
+        .em-switch-profile-swal-container li {
             margin-bottom: 8px;
             margin-top: 8px;
         }
+
+        .em-switch-profile-swal-container h1, .em-switch-profile-swal-container h2 {
+            font-family: var(--em-coordinator-font-title);
+        }
+
         .em-switch-profile-swal-container .swal2-modal {
             width: 40vw;
         }
@@ -41,7 +51,7 @@ if($just_logged && !$only_applicant) {
         }
 
         .swal2-content p.em-text-align-center.em-font-size-24 {
-            color: var(--em-coordinator-primary-color);
+            color: var(--em-profile-color);
         }
 
         @media (max-width: 1368px) {
@@ -49,34 +59,39 @@ if($just_logged && !$only_applicant) {
                 width: 50vw;
             }
         }
+
         @media (max-width: 768px) {
             .em-switch-profile-swal-container .swal2-modal {
                 width: 95%;
             }
         }
-        .em-switch-profile-card{
+
+        .em-switch-profile-card {
             text-align: center;
-            border: solid 1px var(--em-coordinator-primary-color);
+            border: solid 1px var(--em-profile-color);
             display: flex;
             justify-content: center;
             align-items: center;
             border-radius: var(--em-coordinator-br);
             flex-direction: column;
             cursor: pointer;
-            color: var(--em-coordinator-primary-color);
+            color: var(--em-profile-color);
             transition: all 0.3s ease-in-out;
             width: auto;
             margin: 10px;
             padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
             font-size: var(--em-coordinator-font-size);
         }
+
         .em-switch-profile-card:hover {
-            background: var(--em-coordinator-primary-color);
+            background: var(--em-profile-color);
             color: var(--neutral-0);
         }
-        .em-switch-profile-card .material-icons-outlined{
+
+        .em-switch-profile-card .material-icons-outlined {
             font-size: 64px;
         }
+
         .em-switch-profile-card:last-child:nth-child(3n - 1) {
             grid-column-end: -2;
         }
@@ -99,7 +114,7 @@ if($just_logged && !$only_applicant) {
             showModal();
         });
 
-        function showModal(){
+        function showModal() {
             Swal.fire({
                 position: 'center',
                 iconHtml: '',
@@ -141,7 +156,7 @@ if($just_logged && !$only_applicant) {
                     window.location.href = url;
                     //location.reload(true);
                 },
-                error : function (jqXHR, status, err) {
+                error: function (jqXHR, status, err) {
                     alert("Error switching profiles.");
                 }
             });

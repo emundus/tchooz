@@ -1,19 +1,26 @@
 /* USER MENU */
 @keyframes increase-width {
-    from {width: 0;}
-    to {width: 300px;}
+    from {
+        width: 0;
+    }
+    to {
+        width: 300px;
+    }
 }
 
 @keyframes increase-opacity {
-    from {opacity: 0;}
-    to {opacity: 1;}
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 #g-navigation .header-c .open > .dropdown-menu {
     display: flex;
     flex-direction: column;
     align-items: start;
-    top: 0;
     position: fixed;
     right: 0 !important;
     width: 300px;
@@ -21,20 +28,23 @@
     margin-top: 0;
     height: 100%;
     border: unset;
+    border-radius: 0;
     box-shadow: unset;
     animation: increase-width 0.3s;
     animation-fill-mode: forwards;
     transition: all 0.3s ease-in-out;
-    padding: var(--p-72) var(--p-32) var(--p-32) var(--p-32);
+    padding: var(--p-32) var(--p-32) var(--p-32) var(--p-32);
 }
+
 #g-navigation:not(.g-flushed) .header-c .open > .dropdown-menu {
     right: 0;
 }
+
 #g-navigation.g-flushed .header-c .open > .dropdown-menu {
     right: 0;
 }
 
-#g-navigation .header-c .open > #userDropdownMenu *{
+#g-navigation .header-c .open > #userDropdownMenu * {
     opacity: 0;
     animation: increase-opacity 0.3s;
     animation-fill-mode: forwards;
@@ -42,37 +52,31 @@
     transition: all 0.3s ease-in-out;
 }
 
-#userDropdownMenu h5  {
+#userDropdownMenu h5 {
     color: var(--neutral-900);
     font-family: var(--em-default-font-title);
 }
 
 
 #userDropdownMenu li {
-    text-align: left;
     width: 100%;
     height: auto !important;
     margin: 0 !important;
-}
-
-#userDropdownMenu li  a.logout-button-user,
-#userDropdownMenu li  a.edit-button-user {
-    width: 100%;
-    display: block;
 }
 
 #userDropdownIcon {
     background-color: var(--blue-500);
     border: 2px solid var(--blue-500);
     color: var(--neutral-0);
-    margin:0;
+    margin: 0;
     box-shadow: none !important;
     cursor: pointer;
 }
+
 #userDropdownIcon:hover,
 #userDropdownIcon.active,
 #userDropdownIcon:hover:active {
-    background-color:transparent;
+    background-color: transparent;
     color: var(--blue-700);
 }
 
@@ -82,7 +86,6 @@
 
 
 #userDropdownMenu li.dropdown-header {
-    width: 190px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
@@ -91,17 +94,13 @@
     white-space: break-spaces;
 }
 
-#userDropdownMenu li.dropdown-header {
-    color: var(--neutral-600) !important;
-}
-
-#userDropdownMenu li>a:hover,
-#userDropdownMenu .active>a {
+#userDropdownMenu li > a:hover,
+#userDropdownMenu .active > a {
     background: #29d4ff;
     color: var(--neutral-0);
 }
 
-li>a:hover {
+li > a:hover {
     text-decoration: underline;
 }
 
@@ -120,11 +119,13 @@ li>a:hover {
 
 .em-user-dropdown-button {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     align-items: center;
     z-index: 9999;
     position: relative;
-    width: 30px;
+    width: 45px;
+    height: 45px;
+    min-width: 30px;
 }
 
 #g-navigation #header-c .header-right {
@@ -158,7 +159,7 @@ li>a:hover {
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte:active,
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:hover,
 #g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:focus,
-#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:active{
+#g-navigation #header-c .header-right a.btn.btn-danger.btn-creer-compte.inscription:active {
     color: var(--em-primary-color);
     background: var(--neutral-0);
     border: 1px solid var(--em-primary-color);
@@ -212,7 +213,7 @@ a.btn.btn-danger .btn-creer-compte:active,
 a.btn.btn-danger .btn-creer-compte:focus,
 a.btn.btn-danger .inscription:hover,
 a.btn.btn-danger .inscription:focus,
-a.btn.btn-danger .inscription:active{
+a.btn.btn-danger .inscription:active {
     background: var(--transparent);
     color: var(--em-primary-color);
     border-color: var(--em-primary-color) !important;
@@ -253,29 +254,48 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     margin: var(--m-16) 0;
 }
 
+.em-profile-container {
+    padding: 8px;
+}
+
+#userDropdown:hover .em-profile-container {
+    background: var(--neutral-200);
+    border-radius: var(--em-default-br);
+}
+
 /* CORRECTION  */
 .login .btn, .logout .btn, .registration .btn, .profile-edit .btn, .remind .btn, .reset .btn {
     margin-right: 0 !important;
 }
 
-.logout-button-user{
-    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal)!important;
+.logout-button-user {
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
     border-radius: var(--em-applicant-br);
     text-align: center;
     background-color: var(--red-500);
     color: var(--neutral-0) !important;
-    margin-top: var(--m-8);
     letter-spacing: normal;
     line-height: normal !important;
     font-size: var(--em-applicant-font-size);
+    border: 1px solid var(--red-500) !important;
 }
-.logout-button-user:hover{
-    background: var(--red-700) !important;
-    text-decoration: none;
+
+.logout-button-user span {
+    color: var(--neutral-0) !important;
 }
-.logout-button-user:focus{
-    background: var(--red-700) !important;
+
+.logout-button-user:hover,
+.logout-button-user:focus {
+    border: 1px solid var(--red-500) !important;
+    background-color: var(--neutral-0) !important;
+    color: var(--red-500) !important;
 }
+
+.logout-button-user:hover span,
+.logout-button-user:focus span {
+    color: var(--red-500) !important;
+}
+
 #header-c #userDropdownMenu a.edit-button-user {
     text-shadow: none;
     text-transform: initial;
@@ -292,10 +312,10 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 #header-c #userDropdownMenu a.edit-button-user:focus,
 #header-c #userDropdownMenu a.edit-button-user:active {
     background: transparent !important;
-    text-decoration: none;
 }
 
-@media all and (max-width: 767px) {
+@media all and (min-width: 480px) and (max-width: 767px) {
+
     .header-right {
         text-align: center !important;
         margin-top: var(--m-8);
@@ -334,7 +354,60 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     }
 }
 
+.dropdown #userDropdownLabel {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.dropdown #userDropdownLabel div {
+    cursor: pointer;
+    position: relative;
+}
+
+#g-navigation .g-content .platform-content:nth-child(1) {
+    z-index: 2;
+}
+
+#g-navigation .g-content .platform-content:nth-child(2) {
+    z-index: 1;
+}
+
+/* Gestionnaire plateforme et programme */
+.dropdown #background-shapes {
+    position: absolute;
+    height: 100%;
+    width: 250px;
+    top: 0;
+    right: 53px;
+    transform: scale(1.8);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Déconnecté */
+#background-shapes {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: -1;
+}
 
 div#userDropdown {
     float: initial !important;
+}
+
+@media screen and (min-width: 768px) and (max-width: 959px) {
+    #background-shapes {
+        top: 0;
+        right: -4px;
+    }
+
+}
+
+@media (max-width: 768px) {
+    #background-shapes {
+        display: none;
+    }
 }

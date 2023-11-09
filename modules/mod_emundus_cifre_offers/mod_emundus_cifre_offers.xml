@@ -21,12 +21,12 @@
         <filename>index.html</filename>
         <filename>mod_emundus_cifre_offers.xml</filename>
     </files>
-	<languages>
-		<language tag="en-GB">en-GB.mod_emundus_cifre_offers.ini</language>
-		<language tag="en-GB">en-GB.mod_emundus_cifre_offers.sys.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_cifre_offers.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_cifre_offers.sys.ini</language>
-	</languages>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_cifre_offers.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_cifre_offers.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_cifre_offers.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_cifre_offers.sys.ini</language>
+    </languages>
     <config>
         <fields name="params">
         </fields>

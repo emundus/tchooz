@@ -7,10 +7,10 @@
     <name>MOD_EMUNDUS_CAS_LOGIN_XML</name>
     <author>eMundus</author>
     <creationDate>July 2020</creationDate>
-	<copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
-	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>dev@emundus.fr</authorEmail>
-	<authorUrl>www.emundus.fr</authorUrl>
+    <copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
     <version>2.0.0</version>
     <description>MOD_EMUNDUS_CAS_LOGIN_XML_DESCRIPTION</description>
     <files>
@@ -22,12 +22,12 @@
         <folder>language</folder>
         <folder>css</folder>
     </files>
-	<languages>
-		<language tag="en-GB">en-GB.mod_emundus_cas.ini</language>
-		<language tag="en-GB">en-GB.mod_emundus_cas.sys.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_cas.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_cas.sys.ini</language>
-	</languages>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_cas.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_cas.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_cas.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_cas.sys.ini</language>
+    </languages>
     <help key="JHELP_EXTENSIONS_MODULE_MANAGER_LOGIN"/>
     <config>
         <fields name="params">
@@ -149,29 +149,36 @@
                 <field class="text" label="TAB1" name="spacer1" type="spacer" hr="true"/>
                 <field type="spacer" name="TAB1_TITLE" label="Onglet 1"/>
 
-				<field type="text" name="mod_emundus_cas_url1_desc" default="" label="MOD_EM_CAS_SUBMENU1_URL1_DESC" description="MOD_EM_CAS_SUBMENU1_URL1_DESC"/>
-				<field type="text" name="mod_emundus_cas_btn1" default="" label="MOD_EM_CAS_SUBMENU1_URL1_BTN" description="MOD_EM_CAS_SUBMENU1_URL1_BTN"/>
-				<field type="text" name="mod_emundus_cas_url1" default="" label="MOD_EM_CAS_SUBMENU1_URL1" description="MOD_EM_CAS_SUBMENU1_URL1"/>
-				<field type="text" name="mod_emundus_cas_logo" default="" label="MOD_EM_CAS_SUBMENU1_LOGO" description="MOD_EM_CAS_SUBMENU1_LOGO"/>
+                <field type="text" name="mod_emundus_cas_url1_desc" default="" label="MOD_EM_CAS_SUBMENU1_URL1_DESC"
+                       description="MOD_EM_CAS_SUBMENU1_URL1_DESC"/>
+                <field type="text" name="mod_emundus_cas_btn1" default="" label="MOD_EM_CAS_SUBMENU1_URL1_BTN"
+                       description="MOD_EM_CAS_SUBMENU1_URL1_BTN"/>
+                <field type="text" name="mod_emundus_cas_url1" default="" label="MOD_EM_CAS_SUBMENU1_URL1"
+                       description="MOD_EM_CAS_SUBMENU1_URL1"/>
+                <field type="text" name="mod_emundus_cas_logo" default="" label="MOD_EM_CAS_SUBMENU1_LOGO"
+                       description="MOD_EM_CAS_SUBMENU1_LOGO"/>
 
                 <field class="text" label="TAB2" name="spacer2" type="spacer" hr="true"/>
                 <field type="spacer" name="TAB2_TITLE" label="Onglet 2"/>
 
-				<field
-						name="mod_emundus_cas_tab2_display"
-						type="radio"
-						label="MOD_EM_CAS_SUBMENU2_DISPLAY"
-						description=""
-						class="btn-group btn-group-yesno"
-						default="1"
-						filter="integer"
-				>
-					<option value="1">JYES</option>
-					<option value="0">JNO</option>
-				</field>
-				<field type="text" name="mod_emundus_cas_url2_desc" default="" label="MOD_EM_CAS_SUBMENU2_URL2_DESC" description="MOD_EM_CAS_SUBMENU1_URL2_DESC"/>
-				<field type="text" name="mod_emundus_cas_btn2" default="" label="MOD_EM_CAS_SUBMENU2_URL2_BTN" description="MOD_EM_CAS_SUBMENU2_URL2_BTN"/>
-				<field type="text" name="mod_emundus_cas_url2" default="" label="MOD_EM_CAS_SUBMENU2_URL2" description="MOD_EM_CAS_SUBMENU2_URL2"/>
+                <field
+                        name="mod_emundus_cas_tab2_display"
+                        type="radio"
+                        label="MOD_EM_CAS_SUBMENU2_DISPLAY"
+                        description=""
+                        class="btn-group btn-group-yesno"
+                        default="1"
+                        filter="integer"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field type="text" name="mod_emundus_cas_url2_desc" default="" label="MOD_EM_CAS_SUBMENU2_URL2_DESC"
+                       description="MOD_EM_CAS_SUBMENU1_URL2_DESC"/>
+                <field type="text" name="mod_emundus_cas_btn2" default="" label="MOD_EM_CAS_SUBMENU2_URL2_BTN"
+                       description="MOD_EM_CAS_SUBMENU2_URL2_BTN"/>
+                <field type="text" name="mod_emundus_cas_url2" default="" label="MOD_EM_CAS_SUBMENU2_URL2"
+                       description="MOD_EM_CAS_SUBMENU2_URL2"/>
 
 
             </fieldset>

@@ -19,7 +19,7 @@ class EmundusAdminControllerSamples extends JControllerLegacy
 {
 	protected $app;
 
-    private JUser|null $user = null;
+    private $user;
 
 	public function __construct($config = [], MVCFactoryInterface $factory = null, $app = null, $input = null)
 	{

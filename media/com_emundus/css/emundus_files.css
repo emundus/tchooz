@@ -561,7 +561,7 @@ div#em-appli-block a#download-pdf{
 }
 
 .em-personalInfo > a.em-link  {
-    color: var(--em-coordinator-primary-color);
+    color: var(--em-profile-color);
 }
 
 .em-personalInfo > a {
@@ -1053,11 +1053,24 @@ label[for='clear-search']{
     margin-bottom: 10px;
 }
 
-.g-back-office-emundus-tableau div#filters .selectize-control.input-tags.demo-default.multi.plugin-remove_button .selectize-input.items.not-full {
-    padding: 0;
-    height: 29px !important;
+.g-back-office-emundus-tableau .panel-body div#filters .selectize-control.input-tags.demo-default.multi.plugin-remove_button .selectize-input.items.not-full {
+    padding-left: 8px !important;
+    height: 37px !important;
+    align-items: center;
+    display: flex;
+    overflow-y: auto;
+    flex-wrap: wrap;
 }
 
+.g-back-office-emundus-tableau .panel-body div#filters .selectize-control.input-tags.demo-default.multi.plugin-remove_button .selectize-input.items.not-full > div {
+    word-break: break-all;
+}
+
+.g-back-office-emundus-tableau .panel-body.em-containerFilter-body .em-filter .SumoSelect > .CaptionCont {
+    min-height: 37px !important;
+    display: flex;
+    align-items: center;
+}
 
 .g-back-office-emundus-tableau div#em_filters .chosen-container.chosen-with-drop .chosen-drop {
     background: #ffffff;
@@ -2303,7 +2316,7 @@ label[for="em-file_to_upload"]:hover {
 }
 
 .countCheckedCheckbox a.em-pointer{
-    color: var(--em-coordinator-primary-color);
+    color: var(--em-profile-color);
 }
 
 .countCheckedCheckbox a.em-pointer:hover {

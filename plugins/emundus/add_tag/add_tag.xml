@@ -12,7 +12,8 @@
     <authorUrl>https://www.emundus.fr</authorUrl>
     <copyright>(C) 2019 eMundus All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-    <description>This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.</description>
+    <description>This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.
+    </description>
     <files>
         <filename>index.html</filename>
         <filename>add_tag.xml</filename>

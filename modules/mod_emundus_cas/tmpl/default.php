@@ -19,7 +19,8 @@ JHtml::_('bootstrap.tooltip');
 		<?php if ($mod_emundus_cas_tab2_display == 1): ?>
             <ul>
                 <li id="onglet-connexion" onclick="Connexion()"><?= JText::_('MOD_EM_CAS_SUBMENU1') ?></li>
-                <li id="onglet-inscription" class="couleurFoncee" onclick="Inscription()"><?= JText::_('MOD_EM_CAS_SUBMENU2') ?></li>
+                <li id="onglet-inscription" class="couleurFoncee"
+                    onclick="Inscription()"><?= JText::_('MOD_EM_CAS_SUBMENU2') ?></li>
             </ul>
 		<?php endif; ?>
 
@@ -29,33 +30,34 @@ JHtml::_('bootstrap.tooltip');
                 <p><?= $mod_emundus_cas_url1_desc; ?></p>
                 <br/>
 
-				<?php if (empty($mod_emundus_cas_logo)) :?>
+				<?php if (empty($mod_emundus_cas_logo)) : ?>
                     <div class="btn-cas">
 
                         <a href="<?= $mod_emundus_cas_url1; ?>" target="_blank" class="btn btn-primary rounded">
 							<?= $mod_emundus_cas_btn1; ?>
                         </a>
                     </div>
-				<?php else:?>
+				<?php else: ?>
                     <div class="btn-cas">
                         <a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary logo">
 
                             <img src="<?= $mod_emundus_cas_logo; ?>" alt="Icône du système de connexion"/>
                         </a>
-                        <a href="<?= $mod_emundus_cas_url1; ?>"  class="btn btn-primary">
+                        <a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary">
 							<?= $mod_emundus_cas_btn1; ?>
                         </a>
                     </div>
-				<?php endif;?>
+				<?php endif; ?>
 
             </div>
         </div>
 
         <div id="inscription" class="invisible">
-			<?php if(!empty($mod_emundus_cas_url2_desc) || !empty($mod_emundus_cas_url2)) :?>
+			<?php if (!empty($mod_emundus_cas_url2_desc) || !empty($mod_emundus_cas_url2)) : ?>
                 <div class="container em-grid-2">
                     <p><?= $mod_emundus_cas_url2_desc; ?></p>
-                    <p><a href="<?= $mod_emundus_cas_url2; ?>" class="btn btn-primary"><?= $mod_emundus_cas_btn2; ?></a></p>
+                    <p><a href="<?= $mod_emundus_cas_url2; ?>" class="btn btn-primary"><?= $mod_emundus_cas_btn2; ?></a>
+                    </p>
                 </div>
 			<?php endif; ?>
 

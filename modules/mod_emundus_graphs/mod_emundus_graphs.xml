@@ -22,12 +22,12 @@
         <folder>language</folder>
         <folder>style</folder>
     </files>
-	<languages>
-		<language tag="en-GB">en-GB.mod_emundus_graphs.ini</language>
-		<language tag="en-GB">en-GB.mod_emundus_graphs.sys.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_graphs.ini</language>
-		<language tag="fr-FR">fr-FR.mod_emundus_graphs.sys.ini</language>
-	</languages>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_graphs.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_graphs.sys.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_graphs.ini</language>
+        <language tag="fr-FR">fr-FR.mod_emundus_graphs.sys.ini</language>
+    </languages>
     <config>
         <fields name="params">
             <fieldset name="basic" addfieldpath="/modules/mod_emundus_graphs/tmpl">

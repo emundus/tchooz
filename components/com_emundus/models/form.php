@@ -28,12 +28,7 @@ class EmundusModelForm extends JModelList
 		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->db = Factory::getContainer()->get('DatabaseDriver');
-		}
-		else {
-			$this->db = Factory::getDbo();
-		}
+		$this->db = Factory::getDbo();
 
 		JLog::addLogger(['text_file' => 'com_emundus.form.php'], JLog::ALL, array('com_emundus.form'));
 	}
@@ -52,7 +47,7 @@ class EmundusModelForm extends JModelList
 		$data = ['datas' => [], 'count' => 0];
 		require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
 
-		$this->db = $this->getDbo();
+		
 		$query    = $this->db->getQuery(true);
 
 		// Build filter / limit / pagination part of the query
@@ -169,7 +164,7 @@ class EmundusModelForm extends JModelList
 	function getAllGrilleEval($filter, $sort, $recherche, $lim, $page): array
 	{
 		$data     = ['datas' => [], 'count' => 0];
-		$this->db = $this->getDbo();
+		
 		$query    = $this->db->getQuery(true);
 
 		try {
@@ -218,8 +213,8 @@ class EmundusModelForm extends JModelList
 
 	function getAllFormsPublished()
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		$filterId = $this->db->quoteName('sp.published') . ' = 1';
 
@@ -245,8 +240,8 @@ class EmundusModelForm extends JModelList
 
 	public function deleteForm($data)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'formbuilder.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
@@ -323,19 +318,19 @@ class EmundusModelForm extends JModelList
 					->where($fl_conditions);
 
 				$this->db->setQuery($query);
-				$results            = $this->db->loadObjectList();
-				$ffids_arr          = array();
-				$this->dbtables_arr = array();
-				$ffgids_arr         = array();
-				$fgids_arr          = array();
-				$feids_arr          = array();
-				$ffintros_arr       = array();
+				$results      = $this->db->loadObjectList();
+				$ffids_arr    = array();
+				$dbtables_arr = array();
+				$ffgids_arr   = array();
+				$fgids_arr    = array();
+				$feids_arr    = array();
+				$ffintros_arr = array();
 				foreach (array_values($results) as $result) {
 					if (!in_array($result->ffid, $ffids_arr)) {
 						$ffids_arr[] = $result->ffid;
 					}
-					if (!in_array($result->dbtable, $this->dbtables_arr)) {
-						$this->dbtables_arr[] = $result->dbtable;
+					if (!in_array($result->dbtable, $dbtables_arr)) {
+						$dbtables_arr[] = $result->dbtable;
 					}
 					if (!in_array($result->ffgid, $ffgids_arr)) {
 						$ffgids_arr[] = $result->ffgid;
@@ -438,8 +433,8 @@ class EmundusModelForm extends JModelList
 					$this->db->execute();
 
 					// DELETE FABRIK LISTS
-					foreach ($this->dbtables_arr as $this->dbtablearr) {
-						$query = "DROP TABLE " . $this->dbtablearr;
+					foreach ($dbtables_arr as $dbtablearr) {
+						$query = "DROP TABLE " . $dbtablearr;
 						$this->db->setQuery($query);
 						$this->db->execute();
 					}
@@ -543,8 +538,8 @@ class EmundusModelForm extends JModelList
 			'msg'    => ''
 		];
 
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		if (!empty($data)) {
 			foreach ($data as $key => $val) {
@@ -591,8 +586,8 @@ class EmundusModelForm extends JModelList
 
 	public function publishForm($data)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		if (!empty($data)) {
 			foreach ($data as $key => $val) {
@@ -631,8 +626,8 @@ class EmundusModelForm extends JModelList
 		}
 
 		if (!empty($data)) {
-			$this->db = $this->getDbo();
-			$query    = $this->db->getQuery(true);
+			
+			$query = $this->db->getQuery(true);
 
 			// Prepare languages
 			$path_to_file   = basename(__FILE__) . '/../language/overrides/';
@@ -836,6 +831,7 @@ class EmundusModelForm extends JModelList
 	public function copyAttachmentsToNewProfile($oldprofile, $newprofile)
 	{
 		$copied = false;
+		$db = $this->db;
 
 		if (!empty($oldprofile) && !empty($newprofile)) {
 
@@ -887,9 +883,8 @@ class EmundusModelForm extends JModelList
 						}
 
 						// do not use db->quote() every time, only if the value is not an integer and not null
-						$dbo      = $this->db;
-						$values[] = implode(',', array_map(function ($value) use ($dbo) {
-							return is_null($value) ? 'NULL' : $dbo->quote($value);
+						$values[] = implode(',', array_map(function ($value) use ($db) {
+							return is_null($value) ? 'NULL' : $db->quote($value);
 						}, $attachment));
 					}
 
@@ -1096,7 +1091,6 @@ class EmundusModelForm extends JModelList
 
 			// Create checklist menu
 			$this->addChecklistMenu($newprofile);
-
 			//
 
 			return $newprofile;
@@ -1200,8 +1194,8 @@ class EmundusModelForm extends JModelList
 
 	public function createMenu($menu, $menutype)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		// Insert columns.
 		$columns = array(
@@ -1276,7 +1270,6 @@ class EmundusModelForm extends JModelList
 
 	public function updateForm($id, $data)
 	{
-		$this->db  = $this->getDbo();
 		$query_pid = $this->db->getQuery(true);
 
 		if (!empty($data)) {
@@ -1475,8 +1468,6 @@ class EmundusModelForm extends JModelList
 			->group($this->db->quoteName('a.id'))
 			->order($this->db->quoteName('a.value'));
 
-		$this->db->setQuery($query);
-
 		try {
 			$this->db->setQuery($query);
 			$undocuments = $this->db->loadObjectList();
@@ -1589,7 +1580,7 @@ class EmundusModelForm extends JModelList
 
 	public function deleteRemainingDocuments($prid, $allDocumentsIds)
 	{
-		$this->db = $this->getDbo();
+		
 
 		$values = [];
 
@@ -1625,8 +1616,8 @@ class EmundusModelForm extends JModelList
 
 	public function removeDocument($did, $prid, $cid)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		$query->delete($this->db->quoteName('#__emundus_setup_attachment_profiles'))
 			->where($this->db->quoteName('attachment_id') . ' = ' . $this->db->quote($did))
@@ -1653,8 +1644,8 @@ class EmundusModelForm extends JModelList
 
 	public function updateMandatory($did, $prid, $cid)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		try {
 			$query->select('id,mandatory')
@@ -1691,8 +1682,8 @@ class EmundusModelForm extends JModelList
 
 	public function addDocument($did, $profile, $campaign)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		try {
 			// Create checklist menu if documents are asked
@@ -1736,8 +1727,8 @@ class EmundusModelForm extends JModelList
 
 	public function deleteDocument($did)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
 
@@ -1771,8 +1762,8 @@ class EmundusModelForm extends JModelList
 
 	public function addChecklistMenu($prid)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$modules  = $eMConfig->get('form_builder_page_creation_modules', [93, 102, 103, 104, 168, 170]);
@@ -1881,8 +1872,8 @@ class EmundusModelForm extends JModelList
 
 	public function removeChecklistMenu($prid)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$modules  = $eMConfig->get('form_builder_page_creation_modules', [93, 102, 103, 104, 168, 170]);
@@ -2218,8 +2209,8 @@ class EmundusModelForm extends JModelList
 	function affectCampaignsToForm($prid, $campaigns)
 	{
 		foreach ($campaigns as $campaign) {
-			$this->db = $this->getDbo();
-			$query    = $this->db->getQuery(true);
+			
+			$query = $this->db->getQuery(true);
 
 			$query->select('year')
 				->from($this->db->quoteName('#__emundus_setup_campaigns'))
@@ -2260,8 +2251,8 @@ class EmundusModelForm extends JModelList
 		$attachments_by_profile = [];
 
 		if (!empty($prid)) {
-			$this->db = $this->getDbo();
-			$query    = $this->db->getQuery(true);
+			
+			$query = $this->db->getQuery(true);
 
 			$query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types')
 				->from($this->db->quoteName('#__emundus_setup_attachment_profiles', 'sap'))
@@ -2283,8 +2274,8 @@ class EmundusModelForm extends JModelList
 
 	function reorderDocuments($documents)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		$results = array();
 
@@ -2312,8 +2303,8 @@ class EmundusModelForm extends JModelList
 
 	function removeDocumentFromProfile($did)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		try {
 			$query->delete($this->db->quoteName('#__emundus_setup_attachment_profiles'))
@@ -2331,8 +2322,8 @@ class EmundusModelForm extends JModelList
 
 	function deleteModelDocument($did)
 	{
-		$this->db = $this->getDbo();
-		$query    = $this->db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 
 		try {
 			$query->select('count(id)')

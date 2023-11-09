@@ -16,7 +16,7 @@ use Joomla\CMS\Factory;
 
 class EmundusModelProfile extends JModelList
 {
-	private $_db;
+	protected $_db;
 
 	/**
 	 * Constructor
@@ -26,13 +26,8 @@ class EmundusModelProfile extends JModelList
 	function __construct()
 	{
 		parent::__construct();
-
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->_db = Factory::getContainer()->get('DatabaseDriver');
-		}
-		else {
-			$this->_db = Factory::getDBO();
-		}
+		$this->_db = Factory::getDBO();
+	
 	}
 
 	/**
@@ -209,7 +204,7 @@ class EmundusModelProfile extends JModelList
 
 	function getProfileById($id)
 	{
-		$query = 'SELECT label, menutype, acl_aro_groups from jos_emundus_setup_profiles
+		$query = 'SELECT label, menutype, acl_aro_groups, id from jos_emundus_setup_profiles
 						WHERE id =' . $id;
 
 		try {
