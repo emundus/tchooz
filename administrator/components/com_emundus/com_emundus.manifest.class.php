@@ -87,7 +87,6 @@ class Com_EmundusInstallerScript
     {
         $succeed = true;
 
-        require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
         $cache_version = $this->manifest_cache->version;
 
         $firstrun = false;
@@ -100,7 +99,10 @@ class Com_EmundusInstallerScript
 
         if ($this->manifest_cache) {
             if (version_compare($cache_version, '2.0.0', '<=') || $firstrun) {
-				// ...
+				$disabled = EmundusHelperUpdate::disableEmundusPlugins('webauthn');
+				if($disabled) {
+					EmundusHelperUpdate::displayMessage('Le plugin WebAuthn a été désactivé.', 'success');
+				}
             }
         }
 

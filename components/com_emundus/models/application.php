@@ -17,6 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models'); // call com_emundus model
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Factory;
 
@@ -1633,7 +1634,7 @@ class EmundusModelApplication extends JModelList
 		$h_access  = new EmundusHelperAccess;
 		$tableuser = $h_menu->buildMenuQuery($pid);
 
-		$eMConfig          = JComponentHelper::getParams('com_emundus');
+		$eMConfig          = ComponentHelper::getParams('com_emundus');
 		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
 
 		$forms = '';
@@ -2034,7 +2035,7 @@ class EmundusModelApplication extends JModelList
 											$this->_db->setQuery($query);
 											$res = $this->_db->loadRow();
 
-											if (count($res) > 1) {
+											if (is_array($res) && count($res) > 1) {
 												$element->content    = $res[1];
 												$element->content_id = $res[0];
 											}
@@ -2043,7 +2044,7 @@ class EmundusModelApplication extends JModelList
 												$element->content_id = -1;
 											}
 
-											if (count($res) > 1) {
+											if (is_array($res) && count($res) > 1) {
 												if ($element->plugin == 'display') {
 													$element->content = empty($element->eval) ? $element->default : $res[1];
 												}

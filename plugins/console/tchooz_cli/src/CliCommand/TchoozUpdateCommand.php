@@ -10,6 +10,7 @@ use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -97,18 +98,22 @@ class TchoozUpdateCommand extends AbstractCommand
 		$this->configureIO($input, $output);
 		$this->ioStyle->title('Update Tchooz');
 
-		$availableComponents = array('all', 'com_emundus', 'com_fabrik', 'com_hikashop', 'com_hikamarket', 'com_falang', 'com_dpcalendar', 'com_dropfiles', 'com_loginguard', 'com_admintools',
-			'com_jumi', 'com_gantry5', 'com_securitycheckpro');
-		$choice              = new ChoiceQuestion(
-			'Please select components to update (separate multiple profiles with a comma)',
-			$availableComponents
-		);
-		$choice->setMultiselect(true);
+		$this->components = explode(',',$this->getApplication()->getConsoleInput()->getOption('component'));
 
-		$answer = (array) $this->ioStyle->askQuestion($choice);
+		if(empty($components)) {
+			$availableComponents = array('all', 'com_emundus', 'com_fabrik', 'com_hikashop', 'com_hikamarket', 'com_falang', 'com_dpcalendar', 'com_dropfiles', 'com_loginguard', 'com_admintools',
+				'com_jumi', 'com_gantry5', 'com_securitycheckpro');
+			$choice              = new ChoiceQuestion(
+				'Please select components to update (separate multiple profiles with a comma)',
+				$availableComponents
+			);
+			$choice->setMultiselect(true);
 
-		foreach ($answer as $component) {
-			$this->components[] = $component;
+			$answer = (array) $this->ioStyle->askQuestion($choice);
+
+			foreach ($answer as $component) {
+				$this->components[] = $component;
+			}
 		}
 
 		$this->components = $this->getComponentsElement('extensions', $this->components);
@@ -284,6 +289,7 @@ class TchoozUpdateCommand extends AbstractCommand
 									if (method_exists($scriptClass, 'preflight')) {
 										$script->preflight('update', $adapter);
 									}
+
 									if (method_exists($scriptClass, 'update')) {
 										$update = $script->update($adapter);
 
@@ -291,6 +297,7 @@ class TchoozUpdateCommand extends AbstractCommand
 											$success = false;
 										}
 									}
+
 									if (method_exists($scriptClass, 'postflight')) {
 										$script->postflight('update', $adapter);
 									}
@@ -334,7 +341,7 @@ class TchoozUpdateCommand extends AbstractCommand
 
 			$schema_version = $this->getSchemaVersion($elementArr['extension_id']);
 		}
-
+		
 		return $success;
 	}
 
@@ -459,6 +466,8 @@ class TchoozUpdateCommand extends AbstractCommand
 	{
 		$help = "<info>%command.name%</info> will update Tchooz product
 		\nUsage: <info>php %command.full_name%</info>";
+
+		$this->addOption('component', null, InputOption::VALUE_OPTIONAL, 'Component(s) to update');
 
 		$this->setDescription('Update Tchooz core product');
 		$this->setHelp($help);

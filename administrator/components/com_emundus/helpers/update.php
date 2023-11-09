@@ -9,14 +9,35 @@
 // No direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Language;
 use Joomla\CMS\Table\Table;
 use Joomla\Component\Cache\Administrator\Model\CacheModel;
+use Joomla\CMS\Language\LanguageHelper;
 
 /**
  * Emundus helper.
  */
 class EmundusHelperUpdate
 {
+
+	public static function displayMessage($message, $type = 'info'): void
+	{
+		switch ($type) {
+			case 'info':
+				echo "\033[36m" . $message . "\033[0m\n";
+				break;
+			case 'success':
+				echo "\033[32m" . $message . "\033[0m\n";
+				break;
+			case 'warning':
+				echo "\033[33m" . $message . "\033[0m\n";
+				break;
+			case 'error':
+				echo "\033[31m" . $message . "\033[0m\n";
+				break;
+		}
+	}
 
 	public static function clearJoomlaCache(){
 		require_once (JPATH_BASE . '/administrator/components/com_cache/src/Model/CacheModel.php');
@@ -61,7 +82,7 @@ class EmundusHelperUpdate
      */
     public static function getEmundusPlugins() {
         $plugins = [];
-        $db    = JFactory::getDbo();
+        $db    = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -92,7 +113,7 @@ class EmundusHelperUpdate
         $enabled = false;
 
         if (!empty($name)) {
-            $db    = JFactory::getDbo();
+            $db    = Factory::getDbo();
             $query = $db->getQuery(true);
 
             try {
@@ -128,7 +149,7 @@ class EmundusHelperUpdate
         $disabled = false;
 
         if (!empty($name)) {
-            $db    = JFactory::getDbo();
+            $db    = Factory::getDbo();
             $query = $db->getQuery(true);
 
             try {
@@ -160,7 +181,7 @@ class EmundusHelperUpdate
         $updated = false;
 
         if (!empty($name)) {
-            $db    = JFactory::getDbo();
+            $db    = Factory::getDbo();
             $query = $db->getQuery(true);
 
             try {
@@ -220,7 +241,7 @@ class EmundusHelperUpdate
         $installed = false;
 
         if (!empty($element)) {
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
             $query = $db->getQuery(true);
 
             try {
@@ -280,7 +301,7 @@ class EmundusHelperUpdate
         $updated = false;
 
         if (!empty($table) && !empty($where) && !empty($name)) {
-            $db    = JFactory::getDbo();
+            $db    = Factory::getDbo();
             $query = $db->getQuery(true);
 
             if (empty($updateParams[0])) {
@@ -337,7 +358,7 @@ class EmundusHelperUpdate
         $updated = false;
 
         if (!empty($name)) {
-            $db    = JFactory::getDbo();
+            $db    = Factory::getDbo();
             $query = $db->getQuery(true);
 
             try {
@@ -379,7 +400,7 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateSCPParams($name, $param, $values) {
-        $db    = JFactory::getDbo();
+        $db    = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -548,7 +569,7 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function insertTranslationsTag($tag,$value,$type = 'override', $reference_id = null, $reference_table = null, $reference_field = null, $lang = 'fr-FR'){
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -592,7 +613,7 @@ class EmundusHelperUpdate
     }
 
 	public static function insertFalangTranslation($lang_id, $reference_id, $reference_table, $reference_field, $value, $update = false) {
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
 
 		try {
@@ -656,7 +677,7 @@ class EmundusHelperUpdate
 	}
 
     public static function languageFileToBase() {
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         $query
@@ -889,7 +910,7 @@ class EmundusHelperUpdate
     public static function languageBaseToFile(){
         $updated = ['status' => true, 'message' => "Language translations successfully inserted into files"];
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         $query->select($db->quoteName('lang_code'))
@@ -925,19 +946,19 @@ class EmundusHelperUpdate
                     $db->setQuery($query);
                     $modified_overrides = $db->loadObjectList();
 
-                    $parsed_file = JLanguageHelper::parseIniFile($file);
+                    $parsed_file = LanguageHelper::parseIniFile($file);
                     if (empty($parsed_file)) {
                         foreach ($modified_overrides as $modified_override) {
                             $parsed_file[$modified_override->tag] = $modified_override->override;
                         }
-                        JLanguageHelper::saveToIniFile($file, $parsed_file);
+	                    LanguageHelper::saveToIniFile($file, $parsed_file);
                     } else {
                         foreach ($modified_overrides as $modified_override) {
                             if(empty($parsed_file[$modified_override->tag])) {
                                 $parsed_file[$modified_override->tag] = $modified_override->override;
                             }
                         }
-                        JLanguageHelper::saveToIniFile($file, $parsed_file);
+	                    LanguageHelper::saveToIniFile($file, $parsed_file);
                     }
                 }
             } catch(Exception $e){
@@ -953,7 +974,7 @@ class EmundusHelperUpdate
 	public static function updateOverrideTag($tag,$old_values,$new_values) {
 		$updated = ['status' => true, 'message' => "Override tag successfully updated"];
 
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName('lang_code'))
@@ -1016,7 +1037,7 @@ class EmundusHelperUpdate
      */
     public static function convertEventHandlers() {
         $updated = ['status' => true, 'message' => ''];
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -1088,7 +1109,7 @@ class EmundusHelperUpdate
         $error = false;
         $old_workflows = [];
 
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
         $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'output_status'");
         $output_status_column = $db->loadObject();
 
@@ -1427,7 +1448,7 @@ class EmundusHelperUpdate
     {
         $update = ['status' => false, 'message' => ''];
 
-        $db = JFactory::getDBO();
+        $db = Factory::getDBO();
         $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'programs'");
 
         $programs = $db->loadObject();
@@ -1561,9 +1582,9 @@ class EmundusHelperUpdate
 
         try {
             // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
-            JFactory::$database = null;
+            Factory::$database = null;
 
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
             $query = $db->getQuery(true);
 
 			if(empty($params['alias']))
@@ -1695,8 +1716,8 @@ class EmundusHelperUpdate
 
         try {
             // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
-            JFactory::$database = null;
-            $db = JFactory::getDbo();
+            Factory::$database = null;
+            $db = Factory::getDbo();
 
             $module_data = array(
                 'title' => $data['title'],
@@ -1746,7 +1767,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -1823,7 +1844,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         $query->select('id')
@@ -1900,7 +1921,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         $query->select('id')
@@ -1963,7 +1984,7 @@ class EmundusHelperUpdate
     public static function joinFormGroup($form_id,$groups_id) {
         $result = ['status' => false, 'message' => ''];
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -2002,7 +2023,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -2046,7 +2067,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $column_existing = $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name))->loadResult();
 
         if (empty($column_existing)) {
@@ -2086,7 +2107,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name));
         $column_existing = $db->loadResult();
 
@@ -2129,7 +2150,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $index_existing = $db->setQuery('SHOW INDEX FROM ' . $table . ' WHERE ' . $db->quoteName('Column_name') . ' LIKE ' . $db->quote($column))->loadResult();
 
         if (empty($index_existing)) {
@@ -2162,7 +2183,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         $query->select('id')
@@ -2251,7 +2272,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -2294,7 +2315,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -2339,7 +2360,7 @@ class EmundusHelperUpdate
         ];
 
         if (!empty($events)) {
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
             $query = $db->getQuery(true);
 
             $rows = [];
@@ -2418,7 +2439,7 @@ class EmundusHelperUpdate
     {
         $created = false;
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -2482,7 +2503,7 @@ class EmundusHelperUpdate
         $module = [];
 
         if (!empty($id) || !empty($title)) {
-            $db = JFactory::getDbo();
+            $db = Factory::getDbo();
             $query = $db->getQuery(true);
             $query->select('*')
                 ->from('#__modules');
@@ -2519,7 +2540,7 @@ class EmundusHelperUpdate
 		}
 
 		$componentid = JComponentHelper::getComponent($component)->id;
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = $db->getQuery(true);
 
 		try {
@@ -2549,7 +2570,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -2584,7 +2605,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
         try {
@@ -2624,7 +2645,7 @@ class EmundusHelperUpdate
 		}
 
 		try {
-			$db = JFactory::getDbo();
+			$db = Factory::getDbo();
 			$table_existing = $db->setQuery('SHOW TABLE STATUS WHERE Name LIKE ' . $db->quote($table))->loadResult();
 
 			if (empty($table_existing)) {
@@ -2684,7 +2705,7 @@ class EmundusHelperUpdate
 
 	public static function executeSQlFile($file){
 		$result = ['status' => false, 'message' => ''];
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 
 		try
 		{
@@ -2710,7 +2731,7 @@ class EmundusHelperUpdate
 
 	public static function createJoomlaArticle($data, $category_alias = null){
 		$result = ['status' => false, 'message' => '', 'article_id' => 0];
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 
 		try
 		{
@@ -2790,7 +2811,7 @@ class EmundusHelperUpdate
 	public static function updateProfileMenu()
 	{
 		$result = ['status' => false, 'message' => ''];
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
 
 		try
@@ -3006,7 +3027,7 @@ class EmundusHelperUpdate
     }
 
 	public static function updateNewColors() {
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
 
 		$colors = [
@@ -3275,7 +3296,7 @@ class EmundusHelperUpdate
 
 	public static function checkHealth()
 	{
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
 
 		// Check back button
@@ -3504,7 +3525,7 @@ class EmundusHelperUpdate
 
 	public static function checkPageClass()
 	{
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
 
 		$query->clear()

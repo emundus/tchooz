@@ -502,18 +502,20 @@ if ($user != null) {
 
             var url = window.location.origin.toString() + '/' + redirect_url;
 
-            jQuery.ajax({
-                type: 'POST',
-                url: 'index.php?option=com_emundus&task=switchprofile',
-                data: ({
-                    profnum: current_fnum
-                }),
-                success: function (result) {
+            var formData = new FormData();
+            formData.append('profnum', current_fnum);
+
+            fetch('/index.php?option=com_emundus&task=switchprofile', {
+                method: 'POST',
+                body: formData,
+            }).then((response) => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+            }).then((result) => {
+                if (result.status) {
                     window.location.href = url;
-                    //location.reload(true);
-                },
-                error: function (jqXHR, status, err) {
-                    alert("Error switching porfiles.");
                 }
             });
         }
