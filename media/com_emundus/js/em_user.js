@@ -1357,7 +1357,7 @@ $(document).ready(function () {
 				formData.append('newsletter', $('#news').is(':checked') ? 1 : 0);
 				formData.append('university_id', $('#univ').val());
 				formData.append('sameLoginEmail', sameLoginEmail);
-				action = window.location.origin + document.getElementById('em-add-user').getAttribute('action');
+				action = window.location.origin + '/' + document.getElementById('em-add-user').getAttribute('action');
 				if(action.indexOf('edituser') !== -1) {
 					formData.append('id', $('.em-check:checked').attr('id').split('_')[0]);
 				}

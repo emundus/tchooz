@@ -15,6 +15,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\User\User;
 
 
 /**
@@ -29,7 +30,7 @@ class EmundusControllerUsers extends JControllerLegacy
 
 	protected $app;
 	private $euser;
-	private $user;
+	private ?User $user;
 
 	public function __construct($config = array())
 	{
@@ -752,27 +753,27 @@ class EmundusControllerUsers extends JControllerLegacy
 
 	public function edituser()
 	{
-		$current_user = JFactory::getUser();
+		$current_user = $this->app->getIdentity();
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::asAccessAction(12, 'u') && !EmundusHelperAccess::asAccessAction(20, 'u')) {
 			$this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
 
 			return;
 		}
 
-		$newuser['id']               = $this->input->get('id', null, 'POST', '', 0);
-		$newuser['firstname']        = $this->input->get('firstname', null, 'POST', '', 0);
-		$newuser['lastname']         = $this->input->get('lastname', null, 'POST', '', 0);
-		$newuser['username']         = $this->input->get('login', null, 'POST', '', 0);
+		$newuser['id']               = $this->input->getInt('id', 0);
+		$newuser['firstname']        = $this->input->getString('firstname');
+		$newuser['lastname']         = $this->input->getString('lastname');
+		$newuser['username']         = $this->input->getString('login');
 		$newuser['name']             = $newuser['firstname'] . ' ' . $newuser['lastname'];
-		$newuser['email']            = $this->input->get('email', null, 'POST', '', 0);
-		$newuser['same_login_email'] = $this->input->post->getInt('sameLoginEmail', null);
-		$newuser['profile']          = $this->input->get('profile', null, 'POST', '', 0);
-		$newuser['em_oprofiles']     = $this->input->get('oprofiles', null, 'POST', 'string', 0);
-		$newuser['groups']           = array($this->input->get('jgr', null, 'POST', '', 0));
-		$newuser['university_id']    = $this->input->get('university_id', null, 'POST', '', 0);
-		$newuser['em_campaigns']     = $this->input->get('campaigns', null, 'POST', '', 0);
-		$newuser['em_groups']        = $this->input->get('groups', null, 'POST', '', 0);
-		$newuser['news']             = $this->input->get('newsletter', null, 'POST', 'string', 0);
+		$newuser['email']            = $this->input->getString('email');
+		$newuser['same_login_email'] = $this->input->getInt('sameLoginEmail', 1);
+		$newuser['profile']          = $this->input->getInt('profile',0);
+		$newuser['em_oprofiles']     = $this->input->getString('oprofiles');
+		$newuser['groups']           = array($this->input->get('jgr'));
+		$newuser['university_id']    = $this->input->getInt('university_id',0);
+		$newuser['em_campaigns']     = $this->input->get('campaigns', null);
+		$newuser['em_groups']        = $this->input->getString('groups');
+		$newuser['news']             = $this->input->getInt('newsletter');
 
 		if (preg_match('/^[0-9a-zA-Z\_\@\-\.\+]+$/', $newuser['username']) !== 1) {
 			echo json_encode((object) array('status' => false, 'msg' => 'LOGIN_NOT_GOOD'));
