@@ -40,3 +40,5 @@ deployer:
   variables:
     DEPLOY_OPTIONS: 'env=tchooz-v2 -vv'
     DEPLOY_FILE: '-f tchooz.php'
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
