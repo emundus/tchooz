@@ -1,7 +1,7 @@
 preset: emundus
 base:
   background: '#f8f8f8'
-  text-color: '#000000'
+  text-color: '#000001'
   title-color: '#000000'
   primary-color: '#1b1f3c'
   secondary-color: '#de6339'
@@ -43,7 +43,6 @@ font:
 coordinator:
   background: '#f8f8f8'
   interface: '#353544'
-  primary-color: '#238c69'
   secondary-color: '#353544'
   tertiary-color: '#5a5a72'
   text-color: '#4b4b4b'
@@ -110,6 +109,7 @@ em-form:
   border-radius-block: 16px
   label-color: '#000000'
   label-margin-bottom: 6px
+  field-margin-bottom: 24px
   label-size: 16px
   label-weight: '500'
   height: 40px
@@ -172,8 +172,6 @@ em-form:
   checkbox-border-color-error: '#c62222'
   fileupload-padding: '12px 8px'
   fileupload-background-color: '#f0f0f0'
-  field-margin-bottom: 24px
-  em-form-field-margin-bottom: 24px
 em-spacing:
   1: 4px
   2: 6px
@@ -190,8 +188,21 @@ em-spacing:
   vertical: 8px
   horizontal: 12px
 link:
-  regular: '#de6339'
-  hover: '#c62222'
+  regular: '#5aa6dc'
+  hover: '#5aa6dc'
+tchoozy:
+  wide-background: 'url("/media/com_emundus/images/tchoozy/backgrounds/wide-background.svg")'
+  demonstration: 'url("/media/com_emundus/images/tchoozy/complex-illustrations/demonstration.svg")'
+  corner-bottom-left-background: block
+  corner-top-right-background: block
+  candidate-button: 'url("/media/com_emundus/images/tchoozy/complex-illustrations/candidate-button.svg")'
+  digital-testing: 'url("/media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg")'
+  corner-bottom-right-background: 'url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-right-background.svg")'
+  setting-tools: 'url("/media/com_emundus/images/tchoozy/complex-illustrations/setting-tools.svg")'
+  email-history: 'url("/media/com_emundus/images/tchoozy/objects-illustrations/email-history.svg")'
+  groups: 'url("/media/com_emundus/images/tchoozy/objects-illustrations/groups.svg")'
+  profiles: block
+  hiding: 'url("/media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg")'
 navigation:
   background: '#ffffff'
   text-color: '#2a363b'

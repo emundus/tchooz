@@ -8,6 +8,7 @@ article:
       limit: ''
       formatting: text
       prepare: '0'
+    edit: '0'
     title:
       enabled: show
       limit: ''

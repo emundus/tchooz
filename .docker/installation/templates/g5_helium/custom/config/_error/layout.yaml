@@ -14,12 +14,8 @@ layout:
   maintop: {  }
   /container-main/:
     -
-      -
-        'main-mainbody 75':
-          -
-            - custom-5609
-      -
-        'sidebar 25': {  }
+      - { 'main-mainbody 75': [[error-4677]] }
+      - { 'sidebar 25': {  } }
   mainbottom: {  }
   extension: {  }
   bottom: {  }
@@ -31,66 +27,42 @@ structure:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   top:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   navigation:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   showcase:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   feature:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   utility:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   breadcrumb:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   maintop:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   main-mainbody:
     title: Mainbody
     attributes:
@@ -100,10 +72,7 @@ structure:
     subtype: aside
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
     block:
       fixed: 1
   container-main:
@@ -113,50 +82,27 @@ structure:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   extension:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   bottom:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   footer:
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   copyright:
     type: section
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
+      include: [attributes, block, children]
   offcanvas:
     inherit:
       outline: default
-      include:
-        - attributes
-        - block
-        - children
-content:
-  custom-5609:
-    title: 'Custom HTML'
-    attributes:
-      html: "<div class=\"container-404\">\n    <div class=\"right-side-404\"><img src=\"/images/emundus/404/404.png\" alt=\"Erreur 404\" /></div>\n    <div class=\"left-side-404\">\n        <h2>Oups !\n        </h2>\n        <p>La page que vous cherchez semble introuvable...</p>\n        <p><a href=\"index.php\">Retour à la page d'accueil</a></p>\n    </div>\n</div>"
+      include: [attributes, block, children]
