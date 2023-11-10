@@ -130,6 +130,9 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     cp -r /templates/g5_helium/custom/config templates/g5_helium/custom/
   fi
 
+  # Ensure the MySQL Database is created
+  php /makedb.php "$JOOMLA_DB_HOST" "$JOOMLA_DB_USER" "$JOOMLA_DB_PASSWORD" "$JOOMLA_DB_NAME" "${JOOMLA_DB_TYPE:-mysqli}"
+
   if [ ! -e configuration.php ] && [ -d ".docker/installation/" ]; then
 
     echo >&2 "========================================================================"
@@ -177,8 +180,15 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2 "========================================================================"
   fi
 
-  # Ensure the MySQL Database is created
-  php /makedb.php "$JOOMLA_DB_HOST" "$JOOMLA_DB_USER" "$JOOMLA_DB_PASSWORD" "$JOOMLA_DB_NAME" "${JOOMLA_DB_TYPE:-mysqli}"
+  if [ ! -e language/overrides/fr-FR.override.ini ]; then
+    echo >&2 "Create fr-FR override language file..."
+    cp /language/fr-FR.override.ini language/overrides/fr-FR.override.ini
+  fi
+
+  if [ ! -e language/overrides/en-GB.override.ini ]; then
+    echo >&2 "Create en-GB override language file..."
+    cp /language/en-GB.override.ini language/overrides/en-GB.override.ini
+  fi
 
   echo >&2 "========================================================================"
   echo >&2

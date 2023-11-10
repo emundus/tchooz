@@ -21,6 +21,8 @@ RUN curl -o /tmp/sed_4.9-1_$(dpkg --print-architecture).deb http://ftp.fr.debian
 COPY ["./scripts/entrypoint.sh","/entrypoint.sh"]
 COPY ["./installation/templates","/templates"]
 COPY ["./installation/core/logo.png","/core/logo.png"]
+COPY ["./installation/language/fr-FR.override.ini","/language/fr-FR.override.ini"]
+COPY ["./installation/language/en-GB.override.ini","/language/en-GB.override.ini"]
 ENTRYPOINT [ "/entrypoint.sh"]
 
 CMD ["apache2-foreground"]
