@@ -121,6 +121,7 @@ libraries/emundus/custom/*
 /tmp/*
 
 # CONFIGURATION FILES
+/configuration*.php
 /configuration.php
 /.htaccess
 
