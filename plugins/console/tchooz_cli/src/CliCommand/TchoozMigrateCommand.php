@@ -3,11 +3,15 @@ namespace Emundus\Plugin\Console\Tchooz\CliCommand;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Database\DatabaseAwareTrait;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseFactory;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Filter\InputFilter;
+use Joomla\Registry\Registry;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -41,6 +45,12 @@ class TchoozMigrateCommand extends AbstractCommand
      * @since 4.0.0
      */
     private $cliInput;
+
+	/**
+	 * @var
+	 * @since 5.0.0
+	 */
+	private $project_to_migrate;
 
 	private $pattern = [
 		// DATABASE
@@ -91,51 +101,53 @@ class TchoozMigrateCommand extends AbstractCommand
     protected function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $this->configureIO($input, $output);
-        $this->ioStyle->title('Migrate to Joomla 4!');
+        $this->ioStyle->title('Migrate to Joomla 5!');
+	    //$this->project_to_migrate       = $this->getStringFromOption('project_to_migrate', 'Enter the path to the project to migrate: ');
 
-		$types = [
+	    $this->project_to_migrate = '/mnt/data/web/core_j3';
+		if(!is_dir($this->project_to_migrate)) {
+		    throw new InvalidOptionException('The path to the project to migrate is not valid!');
+	    }
+
+		if(!file_exists($this->project_to_migrate . '/configuration.php')) {
+			throw new InvalidOptionException('We did not find the configuration.php file in the path you provided!');
+		}
+
+		$configuration_file = $this->project_to_migrate . '/configuration.php';
+		if(is_file($configuration_file)) {
+			$copied = copy($configuration_file, JPATH_ROOT.'/configuration_old.php');
+			if($copied) {
+				$old_config = $this->getConfigFromFile(JPATH_ROOT.'/configuration_old.php', 'PHP', 'Old');
+
+				if(!empty($old_config)) {
+					$options = array();
+					$options['driver']   = isset($old_config->dbtype) ? preg_replace('/[^A-Z0-9_\.-]/i', '', $old_config->dbtype) : 'mysqli';
+					$options['database'] = $old_config->db;
+					$options['user'] = $old_config->user;
+					$options['password'] = $old_config->password;
+					$options['select']   = true;
+					$options['monitor']  = null;
+					$options['host']  = $old_config->host;
+
+					$db_factory = new DatabaseFactory();
+
+					$db = $this->getDatabase();
+					$old_db = $db_factory->getDriver('mysqli',$options);
+				}
+			}
+		}
+		
+		/*$types = [
 			'fabrik_elements',
 			'fabrik_forms',
 		];
 		foreach ($types as $type) {
 			$this->getCode($type);
-		}
+		}*/
 
         $this->ioStyle->success("Migration completed successfully!");
 
         return Command::SUCCESS;
-    }
-
-    /**
-     * Configure the IO.
-     *
-     * @param   InputInterface   $input   The input to inject into the command.
-     * @param   OutputInterface  $output  The output to inject into the command.
-     *
-     * @return  void
-     *
-     * @since   4.0.0
-     */
-    private function configureIO(InputInterface $input, OutputInterface $output)
-    {
-        $this->cliInput = $input;
-        $this->ioStyle  = new SymfonyStyle($input, $output);
-    }
-
-    /**
-     * Configure the command.
-     *
-     * @return  void
-     *
-     * @since   4.0.0
-     */
-    protected function configure(): void
-    {
-        $help = "<info>%command.name%</info> will migrate your Joomla 3.x site to Joomla 4.x.\n
-		\nUsage: <info>php %command.full_name%</info>";
-
-        $this->setDescription('Migrate your Joomla 3.x site to Joomla 4.x.');
-        $this->setHelp($help);
     }
 
 	protected function getCode($type): array
@@ -257,5 +269,88 @@ class TchoozMigrateCommand extends AbstractCommand
 		} else {
 			return $result;
 		}
+	}
+
+	/**
+	 * Configure the IO.
+	 *
+	 * @param   InputInterface   $input   The input to inject into the command.
+	 * @param   OutputInterface  $output  The output to inject into the command.
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	private function configureIO(InputInterface $input, OutputInterface $output)
+	{
+		$this->cliInput = $input;
+		$this->ioStyle  = new SymfonyStyle($input, $output);
+	}
+
+	/**
+	 * Configure the command.
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	protected function configure(): void
+	{
+		$help = "<info>%command.name%</info> will migrate your Joomla 3.x site to Joomla 5.x.\n
+		\nUsage: <info>php %command.full_name%</info>";
+
+		$this->addOption('project_to_migrate', null, InputOption::VALUE_OPTIONAL, 'Path to the project to migrate');
+
+		$this->setDescription('Migrate your Joomla 3.x site to Joomla 5.x.');
+		$this->setHelp($help);
+	}
+
+	/**
+	 * Method to get a value from option
+	 *
+	 * @param   string  $option    set the option name
+	 * @param   string  $question  set the question if user enters no value to option
+	 *
+	 * @return  string
+	 *
+	 * @since   4.0.0
+	 */
+	public function getStringFromOption($option, $question): string
+	{
+		$answer = (string) $this->cliInput->getOption($option);
+
+		while (!$answer) {
+			if ($option === 'password') {
+				$answer = (string) $this->ioStyle->askHidden($question);
+			} else {
+				$answer = (string) $this->ioStyle->ask($question);
+			}
+		}
+
+		return $answer;
+	}
+
+	public function getConfigFromFile($file, $type = 'PHP', $namespace = '') {
+		$file_content = file_get_contents($file);
+		$file_content = str_replace('JConfig', 'JConfigOld', $file_content);
+		file_put_contents($file, $file_content);
+		if (is_file($file)) {
+			include_once $file;
+		}
+
+		// Sanitize the namespace.
+		$namespace = ucfirst((string) preg_replace('/[^A-Z_]/i', '', $namespace));
+
+		// Build the config name.
+		$name = 'JConfig' . $namespace;
+
+		$config = null;
+		// Handle the PHP configuration type.
+		if ($type === 'PHP' && class_exists($name)) {
+			// Create the JConfig object
+			$config = new $name();
+		}
+		
+		return $config;
 	}
 }
