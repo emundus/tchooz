@@ -52,6 +52,22 @@ class TchoozMigrateCommand extends AbstractCommand
 	 */
 	private $project_to_migrate;
 
+	/**
+	 * @var object
+	 * @since version 5.0.0
+	 */
+	private $db;
+	
+	/**
+	 * @var object
+	 * @since version 5.0.0
+	 */
+	private $db_source;
+
+	/**
+	 * @var array
+	 * @since version 5.0.0
+	 */
 	private $pattern = [
 		// DATABASE
 		'JFactory::getDbo()' => 'JFactory::getContainer()->get(\'DatabaseDriver\')',
@@ -117,22 +133,85 @@ class TchoozMigrateCommand extends AbstractCommand
 		if(is_file($configuration_file)) {
 			$copied = copy($configuration_file, JPATH_ROOT.'/configuration_old.php');
 			if($copied) {
-				$old_config = $this->getConfigFromFile(JPATH_ROOT.'/configuration_old.php', 'PHP', 'Old');
+				$source_config = $this->getConfigFromFile(JPATH_ROOT.'/configuration_old.php', 'PHP', 'Old');
 
-				if(!empty($old_config)) {
+				if(!empty($source_config)) {
 					$options = array();
-					$options['driver']   = isset($old_config->dbtype) ? preg_replace('/[^A-Z0-9_\.-]/i', '', $old_config->dbtype) : 'mysqli';
-					$options['database'] = $old_config->db;
-					$options['user'] = $old_config->user;
-					$options['password'] = $old_config->password;
+					$options['driver']   = isset($source_config->dbtype) ? preg_replace('/[^A-Z0-9_\.-]/i', '', $source_config->dbtype) : 'mysqli';
+					$options['database'] = $source_config->db;
+					$options['user'] = $source_config->user;
+					$options['password'] = $source_config->password;
 					$options['select']   = true;
 					$options['monitor']  = null;
-					$options['host']  = $old_config->host;
+					$options['host']  = $source_config->host;
 
 					$db_factory = new DatabaseFactory();
 
-					$db = $this->getDatabase();
-					$old_db = $db_factory->getDriver('mysqli',$options);
+					$this->db = $this->getDatabase();
+					$this->db_source = $db_factory->getDriver('mysqli',$options);
+
+					$db_tables = $this->db->getTableList();
+					$db_source_tables = $this->db_source->getTableList();
+					if(empty($db_tables) || empty($db_source_tables)) {
+						$this->ioStyle->error('Error while getting tables from database!');
+						return Command::FAILURE;
+					}
+
+					$this->db->setQuery('SET sql_mode = ""')->execute();
+					$this->db->setQuery('SET FOREIGN_KEY_CHECKS = 0')->execute();
+					$this->db_source->setQuery('SET sql_mode = ""')->execute();
+					$this->db_source->setQuery('SET FOREIGN_KEY_CHECKS = 0')->execute();
+
+					//TODO: convert fnum to varchar(28)
+
+					foreach ($db_tables as $table) {
+						if(!$this->convertToInnodb($table, $this->db)) {
+							$this->ioStyle->error('Error while converting table ' . $table);
+							return Command::FAILURE;
+						}
+						if(!$this->convertToUtf8mb4($table, $this->db)) {
+							$this->ioStyle->error('Error while converting table ' . $table);
+							return Command::FAILURE;
+						}
+					}
+
+					foreach ($db_source_tables as $table) {
+						if(!$this->convertToInnodb($table, $this->db_source)) {
+							$this->ioStyle->error('Error while converting table ' . $table);
+							return Command::FAILURE;
+						}
+						if(!$this->convertToUtf8mb4($table, $this->db_source)) {
+							$this->ioStyle->error('Error while converting table ' . $table);
+							return Command::FAILURE;
+						}
+					}
+
+					// Migrate tables that does not need merge
+					$data_tables = array_filter($db_source_tables, function($table) {
+						return strpos($table, 'data_') !== false;
+					});
+					$emundus_tables = array_filter($db_source_tables, function($table) {
+						return strpos($table, 'jos_emundus_') !== false;
+					});
+					$tables_to_migrate = array_merge($data_tables,$emundus_tables);
+					foreach ($tables_to_migrate as $table) {
+						if(in_array($table,$db_tables)) {
+							if(!$this->dropTable($table)) {
+								$this->ioStyle->error('Error while dropping table ' . $table);
+								return Command::FAILURE;
+							}
+						}
+
+						if(!$this->createTable($table)) {
+							$this->ioStyle->error('Error while creating table ' . $table);
+							return Command::FAILURE;
+						}
+
+						if(!$this->insertDatas($table)) {
+							$this->ioStyle->error('Error while inserting datas in table ' . $table);
+							return Command::FAILURE;
+						}
+					}
 				}
 			}
 		}
@@ -269,6 +348,94 @@ class TchoozMigrateCommand extends AbstractCommand
 		} else {
 			return $result;
 		}
+	}
+
+	protected function dropTable($table,$db = null) {
+		if(empty($db)) {
+			$db = $this->db;
+		}
+
+		$db->setQuery('DROP TABLE IF EXISTS ' . $db->quoteName($table));
+		return $db->execute();
+	}
+
+	protected function createTable($table) {
+		$created = false;
+		$dump = $this->db_source->getTableCreate($table);
+
+		if(!empty($dump[$table])) {
+			try {
+				$this->db->setQuery($dump[$table]);
+				$created = $this->db->execute();
+			}
+			catch (\Exception $e) {
+				$this->ioStyle->error($e->getMessage());
+			}
+
+		}
+
+		return $created;
+	}
+
+	protected function convertToUtf8mb4($table, $db) {
+		$converted = false;
+		try {
+			$converted = $db->setQuery('ALTER TABLE ' . $db->quoteName($table) . ' CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci')->execute();
+		}
+		catch (\Exception $e) {
+			$this->ioStyle->error('ALTER TABLE ' . $db->quoteName($table) . ' CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci');
+			$this->ioStyle->error($e->getMessage());
+		}
+
+		return $converted;
+	}
+
+	protected function convertToInnodb($table, $db) {
+		$converted = false;
+		try {
+			$converted = $db->setQuery('ALTER TABLE ' . $db->quoteName($table) . ' ENGINE=INNODB')->execute();
+		}
+		catch (\Exception $e) {
+			$this->ioStyle->error($e->getMessage());
+		}
+
+		return $converted;
+	}
+
+	protected function insertDatas($table) {
+		$inserted = true;
+		$query = $this->db_source->getQuery(true);
+
+		$query->select('*')
+			->from($this->db_source->quoteName($table));
+		$this->db_source->setQuery($query);
+		$datas = $this->db_source->loadAssocList();
+
+		if(!empty($datas)) {
+			$query = $this->db->getQuery(true);
+			foreach ($datas as $data) {
+				$query->clear();
+
+				try {
+					$query->insert($this->db->quoteName($table))
+						->columns($this->db->quoteName(array_keys($data)))
+						->values(implode(',', $this->db->quote($data)));
+					$this->db->setQuery($query);
+
+					if(!$this->db->execute()) {
+						$inserted = false;
+					}
+				}
+				catch (\Exception $e) {
+					$this->ioStyle->error($e->getMessage());
+					$inserted = false;
+					break;
+				}
+
+			}
+		}
+
+		return $inserted;
 	}
 
 	/**
