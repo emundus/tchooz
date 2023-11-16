@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\AdminController;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Router\Route;
 
 
 /**
@@ -66,8 +67,8 @@ class TranslateController extends AdminController   {
 		$this->fileCode =   $jinput->get('fileCode','');
 		$this->_falangManager = FalangManager::getInstance();
 
-		$this->registerTask( 'overview', 'showTranslate' );
-        $this->registerTask( 'cancel', 'showTranslate' );
+		$this->registerTask( 'overview', 'showTranslationOverview' );
+        $this->registerTask( 'cancel', 'cancelTranslate' );
 		$this->registerTask( 'edit', 'editTranslation' );
 		$this->registerTask( 'apply', 'saveTranslation' );
 		$this->registerTask( 'save', 'saveTranslation' );
@@ -109,11 +110,13 @@ class TranslateController extends AdminController   {
 	/**
 	 * presenting the translation dialog
 	 *
+     * @update 5.0
 	 */
 	function showTranslate() {
 
         $input = Factory::getApplication()->input;
         $direct = $input->get('direct', '0', 'int');
+        $task = $input->get('task', '');
 
 		// If direct translation then close the modal window
 		if ($direct > 0 ){
@@ -121,10 +124,47 @@ class TranslateController extends AdminController   {
 			return;
 		}
 
-        //TODO : check if the next method is still necessary
-		FalangControllerHelper::_setupContentElementCache();
-		$this->showTranslationOverview( $this->_select_language_id, $this->_catid );
+        if ($task == 'translate.show'){
+            //TODO : check if the next method is still necessary
+            //FalangControllerHelper::_setupContentElementCache();
+            $this->showTranslationOverview( $this->_select_language_id, $this->_catid );
+        } else {
+            //translate.save
+            $this->setRedirect(
+                Route::_(
+                    'index.php?option=com_falang&task=translate.overview'
+                    . $this->getRedirectToListAppend(),
+                    false
+                )
+            );
+        }
+
 	}
+
+    /*
+     * @since 5.0 redirect on cancel to the translate list
+     * close modal in case of popup
+     * */
+    function cancelTranslate(){
+
+        $input = Factory::getApplication()->input;
+        $direct = $input->get('direct', '0', 'int');
+
+        // If direct translation then close the modal window
+        if ($direct > 0 ){
+            $this->modalClose($direct);
+            return;
+        }
+
+        // redirect to translate overview
+        $this->setRedirect(
+            Route::_(
+                'index.php?option=com_falang&task=translate.overview'
+                . $this->getRedirectToListAppend(),
+                false
+            )
+        );
+    }
 
 	/**
      * Presentation of the content's that must be translated
@@ -132,7 +172,9 @@ class TranslateController extends AdminController   {
      * @from 1.0
      * @update 4.9 add primary_key in view
 	 */
-	function showTranslationOverview( $language_id, $catid) {
+	function showTranslationOverview() {
+        $language_id = $this->_select_language_id;
+        $catid = $this->_catid;
 		$db = Factory::getDBO();
 
         $app = Factory::getApplication();
@@ -219,7 +261,6 @@ class TranslateController extends AdminController   {
 		$this->view->language_id = $language_id;
 		$this->view->filterlist = $filterHTML;
         $this->view->primaryKey = isset($contentElement)?$contentElement->getReferenceId():'id';
-
         $this->view->display();
 	}
 
@@ -346,8 +387,8 @@ class TranslateController extends AdminController   {
 			$this->editTranslation();
 		}
 		else {
-			// redirect to overview
-			$this->showTranslate();
+			// redirect to translate overview
+          $this->showTranslate();
 		}
 	}
 
@@ -544,11 +585,6 @@ class TranslateController extends AdminController   {
 
 	/**
 	 * method to show orphan translation details
-	 *
-	 * @param unknown_type $jfc_id
-	 * @param unknown_type $contentid
-	 * @param unknown_type $tablename
-	 * @param unknown_type $lang
 	 */
 	function showOrphanDetail(  ){
 		$app     = Factory::getApplication();

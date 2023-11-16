@@ -82,8 +82,8 @@ class TchoozMigrateCommand extends AbstractCommand
 		'jos_menu_types',
 		'jos_messages',
 		'jos_messages_cfg',
-		'jos_modules',
-		'jos_modules_menu',
+		//'jos_modules',
+		//'jos_modules_menu',
 		'jos_user_profiles',
 		'jos_user_usergroup_map',
 		'jos_usergroups',
@@ -228,7 +228,7 @@ class TchoozMigrateCommand extends AbstractCommand
 						}
 					}
 
-					foreach ($tables_to_migrate as $table) {
+					/*foreach ($tables_to_migrate as $table) {
 						if(in_array($table, $tables_to_ignore)) {
 							continue;
 						}
@@ -267,6 +267,7 @@ class TchoozMigrateCommand extends AbstractCommand
 						}
 					}
 					//
+					*/
 
 					// Merge datas from Joomla table
 					$joomla_tables = array_filter($db_source_tables, function ($table) {
@@ -283,6 +284,8 @@ class TchoozMigrateCommand extends AbstractCommand
 									break;
 								case 'jos_menu':
 									$this->mergeMenus();
+									break;
+								case 'jos_modules':
 									break;
 								default:
 									if (!$this->truncateTable($table, $this->db)) {
@@ -308,7 +311,7 @@ class TchoozMigrateCommand extends AbstractCommand
 					//
 
 					// Merge datas from Fabrik table
-					$fabrik_tables = array_filter($db_source_tables, function ($table) {
+					/*$fabrik_tables = array_filter($db_source_tables, function ($table) {
 						if(in_array($table, $this->fabrik_tables)) {
 							return true;
 						}
@@ -360,6 +363,7 @@ class TchoozMigrateCommand extends AbstractCommand
 						}
 					}
 					//
+					*/
 
 					$this->db->setQuery('SET FOREIGN_KEY_CHECKS = 1')->execute();
 					$this->db_source->setQuery('SET FOREIGN_KEY_CHECKS = 1')->execute();
@@ -710,6 +714,7 @@ class TchoozMigrateCommand extends AbstractCommand
 								->where($this->db_source->quoteName('extension_id') . ' = ' . $this->db_source->quote($menu['component']));
 							$this->db_source->setQuery($query_source);
 							$extension = $this->db_source->loadAssoc();
+							echo '<pre>'; var_dump($extension); echo '</pre>'; die;
 
 							if(!empty($extension)) {
 								$query->clear()

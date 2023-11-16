@@ -90,23 +90,22 @@ class CPanelViewCpanel extends FalangViewDefault
 	}
 
 
+    /*
+     * @update 5.0 remove joomla content search (only smart search exist now)
+     *             comment falangextraparams's
+     *             comment k2contentsearch
+     *             comment k2extrafield
+     * */
     protected function getPluginsInfos(){
 	    $plugins = array(
 		    //key use in the display table row and ajax
-		    'joomlacontentsearch'     => array(
-			    'name' => 'falangContent', //name is used to look in extension filter with folter too
-			    'folder' => 'search',
-			    'title'  => 'Joomla Content search',
-			    'ars_id' => 41,
-			    'type'   => 'free',
-		    ),
-		    'k2contentsearch'          => array(
-			    'name' => 'falangK2',
-			    'folder' => 'search',
-			    'title'  => 'K2 Content search',
-			    'ars_id' => 42,
-			    'type'   => 'free',
-		    ),
+//		    'k2contentsearch'          => array(
+//			    'name' => 'falangK2',
+//			    'folder' => 'search',
+//			    'title'  => 'K2 Content search',
+//			    'ars_id' => 42,
+//			    'type'   => 'free',
+//		    ),
 		    'falangmissingtranslation'     => array(
 			    'name' => 'falangmissing',
 			    'folder' => 'system',
@@ -114,20 +113,20 @@ class CPanelViewCpanel extends FalangViewDefault
 			    'ars_id' => 46,
 			    'type'   => 'free',
 		    ),
-		    'falangextraparams' => array(
-			    'name' => 'falangextraparams',
-			    'folder' => 'system',
-			    'title'  => 'Falang Extra Params',
-			    'ars_id' => 47,
-			    'type'   => 'paid',
-		    ),
-		    'k2extrafield'          => array(
-			    'name' => 'falangk2',
-			    'folder' => 'system',
-			    'title'  => 'K2 extra field',
-			    'ars_id' => 43,
-			    'type'   => 'paid',
-		    ),
+//		    'falangextraparams' => array(
+//			    'name' => 'falangextraparams',
+//			    'folder' => 'system',
+//			    'title'  => 'Falang Extra Params',
+//			    'ars_id' => 47,
+//			    'type'   => 'paid',
+//		    ),
+//		    'k2extrafield'          => array(
+//			    'name' => 'falangk2',
+//			    'folder' => 'system',
+//			    'title'  => 'K2 extra field',
+//			    'ars_id' => 43,
+//			    'type'   => 'paid',
+//		    ),
 		    'smartsearchcontent'     => array(
 			    'name' => 'falangcontent',
 			    'folder' => 'finder',

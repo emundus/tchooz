@@ -123,14 +123,15 @@ class  FalangControllerHelper  {
 
 	/**
 	 * Check Plugin Order since Joomla 3.6.2, language filter need to be set before FalangDatabaseDriver plgin
+     * set order to 1 and 2 - other plugin set to -1 stay at -1
 	 *
 	 * @since 2.7.0
      * @since 4.5   add message to have admintools (if installed) ,fields , language filter , falangdriver order
      *              Check Plugin System Fields (need to be ordered befor Falang Driver plugin
      *              Necessary for Categories field translation
+     * @update 5.0 add debug to the order list
      *
 	 */
-
 	public static function _reorderPlugin(){
 
 		$db     = Factory::getDbo();
@@ -142,7 +143,7 @@ class  FalangControllerHelper  {
 
 		$query->where($query->quoteName('type') . '=' . $query->quote('plugin'));
 		$query->where($query->quoteName('folder') . '=' . $query->quote('system'));
-		$query->where($query->quoteName('element') . 'IN ("admintools","languagefilter","fields","falangdriver")');
+		$query->where($query->quoteName('element') . 'IN ("admintools","languagefilter","fields","falangdriver","debug")');
 		$query->order('ordering ASC');
 
 		$db->setQuery($query);
@@ -172,26 +173,22 @@ class  FalangControllerHelper  {
                     $order[] = $idx;
                     $idx = $idx + 1;
                 }
-
-    //			if ((int)$list['languagefilter']->ordering >=  (int)$list['falangdriver']->ordering){
-                //we have to fix the order
-    //				$pks = array((int)$list['languagefilter']->extension_id,(int)$list['falangdriver']->extension_id);
-                //set order to 1 and 2 - other plugin set to -1 stay at -1
-    //				$order = array(1,2);
+                if (isset($list['debug'])) {
+                    $pks[] = (int)$list['debug']->extension_id;
+                    $order[] = $idx;
+                    $idx = $idx + 1;
+                }
 
                 $pluginsModel = BaseDatabaseModel::getInstance('Plugin', 'PluginsModel');
 
                 // Save the ordering
-                //sbou4 descatived the saveorder
                 $return = $pluginsModel->saveorder($pks, $order);
 
-                $application = Factory::getApplication();
                 if ($return === false) {
                     Factory::getApplication()->enqueueMessage(Text::_('COM_FALANG_PLUGINS_SYSTEM_ORDER_FAILED'), 'error');
                 } else {
                     Factory::getApplication()->enqueueMessage(Text::_('COM_FALANG_PLUGINS_SYSTEM_ORDER_FIXED'), 'notice');
 
-                    // Reset the Joomla! plugins cache ?
                 }
             }
 		}
