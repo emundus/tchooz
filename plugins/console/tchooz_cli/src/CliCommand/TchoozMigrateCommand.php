@@ -390,6 +390,12 @@ class TchoozMigrateCommand extends AbstractCommand
 					$this->ioStyle->newLine();
 					//
 
+					//TODO: Migration of files
+
+					//TODO: Migration of images
+
+					//TODO: Migration of g5_helium configuration
+
 					$this->db->setQuery('SET FOREIGN_KEY_CHECKS = 1')->execute();
 					$this->db_source->setQuery('SET FOREIGN_KEY_CHECKS = 1')->execute();
 				}
