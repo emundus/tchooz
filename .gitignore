@@ -1,5 +1,7 @@
 # DOCKER AND CI
 .docker/data/*
+.docker/installation/databases/*
+!.docker/installation/databases/core.sql
 docker-compose-*.yml
 ## UNIT TESTS
 /components/com_emundus/unittest/logs/

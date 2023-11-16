@@ -107,4 +107,4 @@ services:
       # Uncomment this line to use a custom my.cnf file
       - ./.docker/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf
       # Uncomment this line to use a custom sql file to init database
-      - ./.docker/installation/core.sql:/docker-entrypoint-initdb.d/mysql.sql
+      - ./.docker/installation/databases:/docker-entrypoint-initdb.d
