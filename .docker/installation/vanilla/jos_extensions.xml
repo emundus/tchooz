@@ -7373,7 +7373,7 @@
     <field name="access">0</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;mod_falang&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;15 June 2023&quot;,&quot;author&quot;:&quot;St\u00e9phane Bouey&quot;,&quot;copyright&quot;:&quot;2011-2023, Faboba&quot;,&quot;authorEmail&quot;:&quot;stephane.bouey@faboba.com&quot;,&quot;authorUrl&quot;:&quot;www.faboba.com&quot;,&quot;version&quot;:&quot;4.13&quot;,&quot;description&quot;:&quot;MOD_FALANG_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_falang&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;mod_falang&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;15 Novembre 2023&quot;,&quot;author&quot;:&quot;St\u00e9phane Bouey&quot;,&quot;copyright&quot;:&quot;2011-2023, Faboba&quot;,&quot;authorEmail&quot;:&quot;stephane.bouey@faboba.com&quot;,&quot;authorUrl&quot;:&quot;www.faboba.com&quot;,&quot;version&quot;:&quot;5.0&quot;,&quot;description&quot;:&quot;MOD_FALANG_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_falang&quot;}</field>
     <field name="params">{&quot;dropdown&quot;:&quot;0&quot;,&quot;advanced_dropdown&quot;:&quot;0&quot;,&quot;inline&quot;:&quot;1&quot;,&quot;show_active&quot;:&quot;1&quot;,&quot;image&quot;:&quot;1&quot;,&quot;show_name&quot;:&quot;0&quot;,&quot;full_name&quot;:&quot;1&quot;,&quot;@notice_imagespath&quot;:&quot;MOD_FALANG_ONLY_PAID&quot;,&quot;@notice_imagestype&quot;:&quot;MOD_FALANG_ONLY_PAID&quot;,&quot;cache&quot;:&quot;1&quot;,&quot;cache_time&quot;:&quot;900&quot;,&quot;cachemode&quot;:&quot;itemid&quot;}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7391,11 +7391,11 @@
     <field name="changelogurl"></field>
     <field name="folder">system</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_system_falangdriver&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;15 June 2023&quot;,&quot;author&quot;:&quot;St\u00e9phane Bouey&quot;,&quot;copyright&quot;:&quot;2011-2023, Faboba&quot;,&quot;authorEmail&quot;:&quot;stephane.bouey@faboba.com&quot;,&quot;authorUrl&quot;:&quot;www.faboba.com&quot;,&quot;version&quot;:&quot;4.13&quot;,&quot;description&quot;:&quot;PLG_SYSTEM_FALANGDRIVER_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;falangdriver&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_system_falangdriver&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;15 Novembre 2023&quot;,&quot;author&quot;:&quot;St\u00e9phane Bouey&quot;,&quot;copyright&quot;:&quot;2011-2023, Faboba&quot;,&quot;authorEmail&quot;:&quot;stephane.bouey@faboba.com&quot;,&quot;authorUrl&quot;:&quot;www.faboba.com&quot;,&quot;version&quot;:&quot;5.0&quot;,&quot;description&quot;:&quot;PLG_SYSTEM_FALANGDRIVER_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;falangdriver&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7417,7 +7417,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_system_falangquickjump&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;15 June 2023&quot;,&quot;author&quot;:&quot;St\u00e9phane Bouey&quot;,&quot;copyright&quot;:&quot;2011-2023, Faboba&quot;,&quot;authorEmail&quot;:&quot;stephane.bouey@faboba.com&quot;,&quot;authorUrl&quot;:&quot;www.faboba.com&quot;,&quot;version&quot;:&quot;4.13&quot;,&quot;description&quot;:&quot;PLG_SYSTEM_FALANGQUICKJUMP_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;falangquickjump&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_system_falangquickjump&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;15 Novembre 2023&quot;,&quot;author&quot;:&quot;St\u00e9phane Bouey&quot;,&quot;copyright&quot;:&quot;2011-2023, Faboba&quot;,&quot;authorEmail&quot;:&quot;stephane.bouey@faboba.com&quot;,&quot;authorUrl&quot;:&quot;www.faboba.com&quot;,&quot;version&quot;:&quot;5.0&quot;,&quot;description&quot;:&quot;PLG_SYSTEM_FALANGQUICKJUMP_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;falangquickjump&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7439,7 +7439,7 @@
     <field name="access">0</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;com_falang&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;15 June 2023&quot;,&quot;author&quot;:&quot;St\u00e9phane Bouey&quot;,&quot;copyright&quot;:&quot;2011-2023, Faboba&quot;,&quot;authorEmail&quot;:&quot;stephane.bouey@faboba.com&quot;,&quot;authorUrl&quot;:&quot;www.faboba.com&quot;,&quot;version&quot;:&quot;4.13&quot;,&quot;description&quot;:&quot;COM_FALANG_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;falang&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;com_falang&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;15 Novembre 2023&quot;,&quot;author&quot;:&quot;St\u00e9phane Bouey&quot;,&quot;copyright&quot;:&quot;2011-2023, Faboba&quot;,&quot;authorEmail&quot;:&quot;stephane.bouey@faboba.com&quot;,&quot;authorUrl&quot;:&quot;www.faboba.com&quot;,&quot;version&quot;:&quot;5.0&quot;,&quot;description&quot;:&quot;COM_FALANG_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;falang&quot;}</field>
     <field name="params">{&quot;frontEndEdition&quot;:0,&quot;show_tpl_lang&quot;:0,&quot;show_list&quot;:1,&quot;show_form&quot;:1,&quot;component_list&quot;:&quot;com_menus#menu#id#items,item\r\ncom_content#content#id#default,articles,article,featured\r\ncom_categories#categories#id#default,categories,category\r\ncom_modules#modules#id#default,modules,module\r\ncom_newsfeeds#newsfeeds#id#default,newsfeeds,newsfeed\r\ncom_fields#fields#id#default,fields,field\r\ncom_fields#fields_groups#id#default,groups,group&quot;,&quot;copy_images_and_urls&quot;:0,&quot;advanced_menu_show&quot;:0,&quot;update_caching&quot;:1,&quot;copy_custom_fields&quot;:0,&quot;ie_list&quot;:&quot;content,Articles\r\nmenu,Menu\r\nmodules,Modules&quot;}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7461,7 +7461,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;FaLang Package&quot;,&quot;type&quot;:&quot;package&quot;,&quot;creationDate&quot;:&quot;March 2023&quot;,&quot;author&quot;:&quot;St\u00e9phane Bouey&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;authorEmail&quot;:&quot;&quot;,&quot;authorUrl&quot;:&quot;&quot;,&quot;version&quot;:&quot;4.13&quot;,&quot;description&quot;:&quot;Falang Package&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pkg_falang&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;FaLang Package&quot;,&quot;type&quot;:&quot;package&quot;,&quot;creationDate&quot;:&quot;November 2023&quot;,&quot;author&quot;:&quot;St\u00e9phane Bouey&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;authorEmail&quot;:&quot;&quot;,&quot;authorUrl&quot;:&quot;&quot;,&quot;version&quot;:&quot;5.0&quot;,&quot;description&quot;:&quot;Falang Package&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pkg_falang&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -13049,7 +13049,7 @@
     <field name="access">0</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Securitycheck Pro&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;12-06-2023&quot;,&quot;author&quot;:&quot;Jose A. Luque&quot;,&quot;copyright&quot;:&quot;Copyright www.protegetuordenador.com&quot;,&quot;authorEmail&quot;:&quot;contacto@protegetuordenador.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.protegetuordenador.com&quot;,&quot;version&quot;:&quot;3.6.2&quot;,&quot;description&quot;:&quot;COM_SECURITYCHECKPRO_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;securitycheckpro&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Securitycheck Pro&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;12-06-2023&quot;,&quot;author&quot;:&quot;Jose A. Luque&quot;,&quot;copyright&quot;:&quot;Copyright www.protegetuordenador.com&quot;,&quot;authorEmail&quot;:&quot;contacto@protegetuordenador.com&quot;,&quot;authorUrl&quot;:&quot;securitycheck.protegetuordenador.com&quot;,&quot;version&quot;:&quot;4.0&quot;,&quot;description&quot;:&quot;COM_SECURITYCHECKPRO_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;SecuritycheckExtensions\\Component\\SecuritycheckPro&quot;,&quot;filename&quot;:&quot;securitycheckpro&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -13797,7 +13797,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Securitycheck Pro Info Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;12-06-2023&quot;,&quot;author&quot;:&quot;Jos\u00e9 A. Luque &quot;,&quot;copyright&quot;:&quot;Copyright www.protegetuordenador.com&quot;,&quot;authorEmail&quot;:&quot;contacto@protegetuordenador.com&quot;,&quot;authorUrl&quot;:&quot;www.protegetuordenador.com&quot;,&quot;version&quot;:&quot;3.6.2&quot;,&quot;description&quot;:&quot;MOD_SECURITYCHECKPRO_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_scpadmin_quickicons&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Securitycheck Pro Info Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;12-06-2023&quot;,&quot;author&quot;:&quot;Jos\u00e9 A. Luque &quot;,&quot;copyright&quot;:&quot;Copyright www.protegetuordenador.com&quot;,&quot;authorEmail&quot;:&quot;contacto@protegetuordenador.com&quot;,&quot;authorUrl&quot;:&quot;www.protegetuordenador.com&quot;,&quot;version&quot;:&quot;4.0&quot;,&quot;description&quot;:&quot;MOD_SECURITYCHECKPRO_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Joomla\\Module\\Scpadmin_quickicons&quot;,&quot;filename&quot;:&quot;mod_scpadmin_quickicons&quot;}</field>
     <field name="params">{&quot;check_vulnerable_extensions&quot;:&quot;1&quot;,&quot;check_not_readed_logs&quot;:&quot;1&quot;,&quot;check_file_permissions&quot;:&quot;1&quot;,&quot;check_file_integrity&quot;:&quot;1&quot;,&quot;check_malwarescan&quot;:&quot;1&quot;}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -13837,11 +13837,11 @@
     <field name="changelogurl"></field>
     <field name="folder">system</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;System - Securitycheck Pro&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12-06-2023&quot;,&quot;author&quot;:&quot;Jos\u00e9 A. Luque &quot;,&quot;copyright&quot;:&quot;Copyright www.protegetuordenador.com&quot;,&quot;authorEmail&quot;:&quot;contacto@protegetuordenador.com&quot;,&quot;authorUrl&quot;:&quot;www.protegetuordenador.com&quot;,&quot;version&quot;:&quot;3.6.2&quot;,&quot;description&quot;:&quot;PLG_SECURITYCHECKPRO_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;securitycheckpro&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;System - Securitycheck Pro&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12-06-2023&quot;,&quot;author&quot;:&quot;Jos\u00e9 A. Luque &quot;,&quot;copyright&quot;:&quot;Copyright www.protegetuordenador.com&quot;,&quot;authorEmail&quot;:&quot;contacto@protegetuordenador.com&quot;,&quot;authorUrl&quot;:&quot;www.protegetuordenador.com&quot;,&quot;version&quot;:&quot;4.0&quot;,&quot;description&quot;:&quot;PLG_SECURITYCHECKPRO_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Joomla\\Plugin\\System\\Securitycheckpro&quot;,&quot;filename&quot;:&quot;securitycheckpro&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -13863,7 +13863,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;System - Securitycheck Pro Cron&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12-06-2023&quot;,&quot;author&quot;:&quot;Jos\u00e9 A. Luque &quot;,&quot;copyright&quot;:&quot;Copyright www.protegetuordenador.com&quot;,&quot;authorEmail&quot;:&quot;contacto@protegetuordenador.com&quot;,&quot;authorUrl&quot;:&quot;www.protegetuordenador.com&quot;,&quot;version&quot;:&quot;3.6.2&quot;,&quot;description&quot;:&quot;PLG_SECURITYCHECKPRO_CRON_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;securitycheckpro_cron&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;System - Securitycheck Pro Cron&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12-06-2023&quot;,&quot;author&quot;:&quot;Jos\u00e9 A. Luque &quot;,&quot;copyright&quot;:&quot;Copyright www.protegetuordenador.com&quot;,&quot;authorEmail&quot;:&quot;contacto@protegetuordenador.com&quot;,&quot;authorUrl&quot;:&quot;www.protegetuordenador.com&quot;,&quot;version&quot;:&quot;4.0&quot;,&quot;description&quot;:&quot;PLG_SECURITYCHECKPRO_CRON_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Joomla\\Plugin\\System\\Securitycheckpro_cron&quot;,&quot;filename&quot;:&quot;securitycheckpro_cron&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -13885,12 +13885,12 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;System - url Inspector&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12-06-2023&quot;,&quot;author&quot;:&quot;Jos\u00e9 A. Luque &quot;,&quot;copyright&quot;:&quot;Copyright www.protegetuordenador.com&quot;,&quot;authorEmail&quot;:&quot;contacto@protegetuordenador.com&quot;,&quot;authorUrl&quot;:&quot;www.protegetuordenador.com&quot;,&quot;version&quot;:&quot;3.6.2&quot;,&quot;description&quot;:&quot;PLG_SYSTEM_URL_INSPECTOR_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;url_inspector&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;System - url Inspector&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12-06-2023&quot;,&quot;author&quot;:&quot;Jos\u00e9 A. Luque &quot;,&quot;copyright&quot;:&quot;Copyright www.protegetuordenador.com&quot;,&quot;authorEmail&quot;:&quot;contacto@protegetuordenador.com&quot;,&quot;authorUrl&quot;:&quot;www.protegetuordenador.com&quot;,&quot;version&quot;:&quot;4.0&quot;,&quot;description&quot;:&quot;PLG_SYSTEM_URL_INSPECTOR_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Joomla\\Plugin\\System\\Url_inspector&quot;,&quot;filename&quot;:&quot;url_inspector&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
-    <field name="ordering">0</field>
+    <field name="ordering">-100</field>
     <field name="state">0</field>
     <field name="note" value_is_null="true"></field>
    </row>

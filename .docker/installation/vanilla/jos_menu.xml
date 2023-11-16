@@ -2986,398 +2986,6 @@
     <field name="publish_down" value_is_null="true"></field>
    </row>
    <row>
-    <field name="id">226</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_MENU</field>
-    <field name="alias">com-falang-menu</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu</field>
-    <field name="link">index.php?option=com_falang</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">1</field>
-    <field name="level">1</field>
-    <field name="component_id">490</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">components/com_falang/assets/images/icon-16-falang.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">217</field>
-    <field name="rgt">228</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">227</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_SUBMENU_CONTROL_PANEL</field>
-    <field name="alias">com-falang-submenu-control-panel</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu/com-falang-submenu-control-panel</field>
-    <field name="link">index.php?option=com_falang</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">226</field>
-    <field name="level">2</field>
-    <field name="component_id">490</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">218</field>
-    <field name="rgt">219</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">228</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_SUBMENU_TRANSLATE</field>
-    <field name="alias">com-falang-submenu-translate</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu/com-falang-submenu-translate</field>
-    <field name="link">index.php?option=com_falang&amp;task=translate.overview</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">226</field>
-    <field name="level">2</field>
-    <field name="component_id">490</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">220</field>
-    <field name="rgt">221</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">229</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_SUBMENU_ORPHANS</field>
-    <field name="alias">com-falang-submenu-orphans</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu/com-falang-submenu-orphans</field>
-    <field name="link">index.php?option=com_falang&amp;task=translate.orphans</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">226</field>
-    <field name="level">2</field>
-    <field name="component_id">490</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">222</field>
-    <field name="rgt">223</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">230</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_SUBMENU_CONTENT_ELEMENT</field>
-    <field name="alias">com-falang-submenu-content-element</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu/com-falang-submenu-content-element</field>
-    <field name="link">index.php?option=com_falang&amp;task=elements.show</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">226</field>
-    <field name="level">2</field>
-    <field name="component_id">490</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">224</field>
-    <field name="rgt">225</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">231</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_SUBMENU_HELP_AND_HOWTO</field>
-    <field name="alias">com-falang-submenu-help-and-howto</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu/com-falang-submenu-help-and-howto</field>
-    <field name="link">index.php?option=com_falang&amp;task=help.show</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">226</field>
-    <field name="level">2</field>
-    <field name="component_id">490</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">226</field>
-    <field name="rgt">227</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">235</field>
-    <field name="menutype">main</field>
-    <field name="title">Securitycheck Pro</field>
-    <field name="alias">securitycheck-pro</field>
-    <field name="note"></field>
-    <field name="path">securitycheck-pro</field>
-    <field name="link">index.php?option=com_securitycheckpro&amp;view=cpanel</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">1</field>
-    <field name="level">1</field>
-    <field name="component_id">492</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../media/com_securitycheckpro/images/tick_16x16.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">229</field>
-    <field name="rgt">244</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">236</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_SECURITYCHECKPRO_CPANEL_MAIN_MENU</field>
-    <field name="alias">com-securitycheckpro-cpanel-main-menu</field>
-    <field name="note"></field>
-    <field name="path">securitycheck-pro/com-securitycheckpro-cpanel-main-menu</field>
-    <field name="link">index.php?option=com_securitycheckpro</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">235</field>
-    <field name="level">2</field>
-    <field name="component_id">492</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">230</field>
-    <field name="rgt">231</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">237</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_SECURITYCHECKPRO_VULNERABILITIES</field>
-    <field name="alias">com-securitycheckpro-vulnerabilities</field>
-    <field name="note"></field>
-    <field name="path">securitycheck-pro/com-securitycheckpro-vulnerabilities</field>
-    <field name="link">index.php?option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_vulnerabilities()</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">235</field>
-    <field name="level">2</field>
-    <field name="component_id">492</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">232</field>
-    <field name="rgt">233</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">238</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_TEXT</field>
-    <field name="alias">com-securitycheckpro-cpanel-file-manager-text</field>
-    <field name="note"></field>
-    <field name="path">securitycheck-pro/com-securitycheckpro-cpanel-file-manager-text</field>
-    <field name="link">index.php?option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_filemanager()</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">235</field>
-    <field name="level">2</field>
-    <field name="component_id">492</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">234</field>
-    <field name="rgt">235</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">239</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_TEXT</field>
-    <field name="alias">com-securitycheckpro-cpanel-file-integrity-text</field>
-    <field name="note"></field>
-    <field name="path">securitycheck-pro/com-securitycheckpro-cpanel-file-integrity-text</field>
-    <field name="link">index.php?option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_fileintegrity()</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">235</field>
-    <field name="level">2</field>
-    <field name="component_id">492</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">236</field>
-    <field name="rgt">237</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">240</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS</field>
-    <field name="alias">com-securitycheckpro-cpanel-view-firewall-logs</field>
-    <field name="note"></field>
-    <field name="path">securitycheck-pro/com-securitycheckpro-cpanel-view-firewall-logs</field>
-    <field name="link">index.php?option=com_securitycheckpro&amp;controller=securitycheckpro&amp;view=logs</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">235</field>
-    <field name="level">2</field>
-    <field name="component_id">492</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">238</field>
-    <field name="rgt">239</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">241</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT</field>
-    <field name="alias">com-securitycheckpro-cpanel-htaccess-protection-text</field>
-    <field name="note"></field>
-    <field name="path">securitycheck-pro/com-securitycheckpro-cpanel-htaccess-protection-text</field>
-    <field name="link">index.php?option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_htaccess()</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">235</field>
-    <field name="level">2</field>
-    <field name="component_id">492</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">240</field>
-    <field name="rgt">241</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">242</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_SECURITYCHECKPRO_MALWARESCAN</field>
-    <field name="alias">com-securitycheckpro-malwarescan</field>
-    <field name="note"></field>
-    <field name="path">securitycheck-pro/com-securitycheckpro-malwarescan</field>
-    <field name="link">index.php?option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_malware()</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">235</field>
-    <field name="level">2</field>
-    <field name="component_id">492</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">242</field>
-    <field name="rgt">243</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
     <field name="id">243</field>
     <field name="menutype">topmenu</field>
     <field name="title">Home</field>
@@ -3397,8 +3005,8 @@
     <field name="img"> </field>
     <field name="template_style_id">22</field>
     <field name="params">{&quot;featured_categories&quot;:[&quot;&quot;],&quot;layout_type&quot;:&quot;blog&quot;,&quot;num_leading_articles&quot;:&quot;&quot;,&quot;blog_class_leading&quot;:&quot;&quot;,&quot;num_intro_articles&quot;:&quot;&quot;,&quot;blog_class&quot;:&quot;&quot;,&quot;num_columns&quot;:&quot;&quot;,&quot;multi_column_order&quot;:&quot;&quot;,&quot;num_links&quot;:&quot;&quot;,&quot;link_intro_image&quot;:&quot;&quot;,&quot;orderby_pri&quot;:&quot;&quot;,&quot;orderby_sec&quot;:&quot;&quot;,&quot;order_date&quot;:&quot;&quot;,&quot;show_pagination&quot;:&quot;&quot;,&quot;show_pagination_results&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_readmore&quot;:&quot;&quot;,&quot;show_readmore_title&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;show_feed_link&quot;:&quot;&quot;,&quot;feed_summary&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
-    <field name="lft">245</field>
-    <field name="rgt">246</field>
+    <field name="lft">217</field>
+    <field name="rgt">218</field>
     <field name="home">1</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3425,8 +3033,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;dashboard&quot;,&quot;menu_text&quot;:0,&quot;menu_show&quot;:0,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">247</field>
-    <field name="rgt">248</field>
+    <field name="lft">219</field>
+    <field name="rgt">220</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3453,8 +3061,8 @@
     <field name="img"> </field>
     <field name="template_style_id">24</field>
     <field name="params">{&quot;em_tables_id&quot;:&quot;&quot;,&quot;em_elements_id&quot;:&quot;1904,2535,3913&quot;,&quot;em_elements_values&quot;:&quot;&quot;,&quot;em_filters_names&quot;:&quot;tag,published,schoolyear,programme,status,campaign,other,adv_filter&quot;,&quot;em_filters_values&quot;:&quot;&quot;,&quot;em_filters_options&quot;:&quot;&quot;,&quot;em_other_columns&quot;:&quot;access,tags,form_progress,attachment_progress&quot;,&quot;em_actions&quot;:&quot;actions&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;inventory_2&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;files-page files-board&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">249</field>
-    <field name="rgt">250</field>
+    <field name="lft">221</field>
+    <field name="rgt">222</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3481,8 +3089,8 @@
     <field name="img"> </field>
     <field name="template_style_id">24</field>
     <field name="params">{&quot;em_tables_id&quot;:&quot;&quot;,&quot;em_elements_id&quot;:&quot;2535&quot;,&quot;em_elements_values&quot;:&quot;&quot;,&quot;em_filters_names&quot;:&quot;status,tag,schoolyear,programme,campaign,other,adv_filter&quot;,&quot;em_filters_values&quot;:&quot;&quot;,&quot;em_filters_options&quot;:&quot;&quot;,&quot;em_other_columns&quot;:&quot;tags&quot;,&quot;em_actions&quot;:&quot;actions&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;filter_none&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;evaluations-page files-board&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">251</field>
-    <field name="rgt">252</field>
+    <field name="lft">223</field>
+    <field name="rgt">224</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3509,8 +3117,8 @@
     <field name="img"> </field>
     <field name="template_style_id">24</field>
     <field name="params">{&quot;em_tables_id&quot;:&quot;&quot;,&quot;em_elements_id&quot;:&quot;&quot;,&quot;em_elements_values&quot;:&quot;&quot;,&quot;em_filters_names&quot;:&quot;tag,published,schoolyear,programme,campaign,other,status,adv_filter&quot;,&quot;em_filters_values&quot;:&quot;&quot;,&quot;em_filters_options&quot;:&quot;&quot;,&quot;em_other_columns&quot;:&quot;&quot;,&quot;em_actions&quot;:&quot;actions&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;task&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;files-board decision-page&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">253</field>
-    <field name="rgt">254</field>
+    <field name="lft">225</field>
+    <field name="rgt">226</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3537,8 +3145,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;analytics&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">255</field>
-    <field name="rgt">260</field>
+    <field name="lft">227</field>
+    <field name="rgt">232</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3565,8 +3173,8 @@
     <field name="img"> </field>
     <field name="template_style_id">24</field>
     <field name="params">{&quot;show_title&quot;:&quot;0&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">256</field>
-    <field name="rgt">257</field>
+    <field name="lft">228</field>
+    <field name="rgt">229</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3593,8 +3201,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">258</field>
-    <field name="rgt">259</field>
+    <field name="lft">230</field>
+    <field name="rgt">231</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3621,8 +3229,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;group&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">261</field>
-    <field name="rgt">266</field>
+    <field name="lft">233</field>
+    <field name="rgt">238</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3649,8 +3257,8 @@
     <field name="img"> </field>
     <field name="template_style_id">24</field>
     <field name="params">{&quot;em_tables_id&quot;:&quot;&quot;,&quot;em_elements_id&quot;:&quot;&quot;,&quot;em_elements_values&quot;:&quot;&quot;,&quot;em_filters_names&quot;:&quot;profile,programme,not_adv_filter,group,spam_suspect&quot;,&quot;em_filters_values&quot;:&quot;&quot;,&quot;em_filters_options&quot;:&quot;&quot;,&quot;em_other_columns&quot;:&quot;&quot;,&quot;em_actions&quot;:&quot;actions-users&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;users-page files-board&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">262</field>
-    <field name="rgt">263</field>
+    <field name="lft">234</field>
+    <field name="rgt">235</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3677,8 +3285,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">264</field>
-    <field name="rgt">265</field>
+    <field name="lft">236</field>
+    <field name="rgt">237</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3705,8 +3313,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;settings&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">289</field>
-    <field name="rgt">294</field>
+    <field name="lft">261</field>
+    <field name="rgt">266</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3733,8 +3341,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">290</field>
-    <field name="rgt">291</field>
+    <field name="lft">262</field>
+    <field name="rgt">263</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3761,8 +3369,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">292</field>
-    <field name="rgt">293</field>
+    <field name="lft">264</field>
+    <field name="rgt">265</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3789,8 +3397,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
-    <field name="lft">295</field>
-    <field name="rgt">296</field>
+    <field name="lft">267</field>
+    <field name="rgt">268</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3817,8 +3425,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_vote&quot;:&quot;&quot;,&quot;show_icons&quot;:&quot;&quot;,&quot;show_print_icon&quot;:&quot;&quot;,&quot;show_email_icon&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">297</field>
-    <field name="rgt">298</field>
+    <field name="lft">269</field>
+    <field name="rgt">270</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3845,8 +3453,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_vote&quot;:&quot;&quot;,&quot;show_icons&quot;:&quot;&quot;,&quot;show_print_icon&quot;:&quot;&quot;,&quot;show_email_icon&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">299</field>
-    <field name="rgt">300</field>
+    <field name="lft">271</field>
+    <field name="rgt">272</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3873,8 +3481,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_vote&quot;:&quot;&quot;,&quot;show_icons&quot;:&quot;&quot;,&quot;show_print_icon&quot;:&quot;&quot;,&quot;show_email_icon&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">301</field>
-    <field name="rgt">302</field>
+    <field name="lft">273</field>
+    <field name="rgt">274</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3901,8 +3509,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_vote&quot;:&quot;&quot;,&quot;show_icons&quot;:&quot;&quot;,&quot;show_print_icon&quot;:&quot;&quot;,&quot;show_email_icon&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-options&quot;:&quot;[]&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true}</field>
-    <field name="lft">303</field>
-    <field name="rgt">304</field>
+    <field name="lft">275</field>
+    <field name="rgt">276</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3929,8 +3537,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
-    <field name="lft">311</field>
-    <field name="rgt">312</field>
+    <field name="lft">283</field>
+    <field name="rgt">284</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3957,8 +3565,8 @@
     <field name="img"> </field>
     <field name="template_style_id">22</field>
     <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1}</field>
-    <field name="lft">267</field>
-    <field name="rgt">288</field>
+    <field name="lft">239</field>
+    <field name="rgt">260</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3985,8 +3593,8 @@
     <field name="img"> </field>
     <field name="template_style_id">22</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;huge circular inverted blue user outline icon&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;Personal Details&quot;,&quot;show_page_heading&quot;:&quot;0&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">268</field>
-    <field name="rgt">269</field>
+    <field name="lft">240</field>
+    <field name="rgt">241</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4013,8 +3621,8 @@
     <field name="img"> </field>
     <field name="template_style_id">22</field>
     <field name="params">{&quot;custom_title&quot;:&quot;&quot;,&quot;show_info_panel&quot;:&quot;0&quot;,&quot;show_info_legend&quot;:&quot;1&quot;,&quot;show_browse_button&quot;:&quot;0&quot;,&quot;show_shortdesc_input&quot;:&quot;1&quot;,&quot;required_desc&quot;:&quot;0&quot;,&quot;show_nb_column&quot;:&quot;1&quot;,&quot;is_admission&quot;:&quot;0&quot;,&quot;notify_complete_file&quot;:&quot;0&quot;,&quot;menu-anchor_title&quot;:&quot;Documents&quot;,&quot;menu-anchor_css&quot;:&quot;huge circular inverted blue upload outline icon&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;Documents&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">305</field>
-    <field name="rgt">306</field>
+    <field name="lft">277</field>
+    <field name="rgt">278</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4041,8 +3649,8 @@
     <field name="img"> </field>
     <field name="template_style_id">22</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;0&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">309</field>
-    <field name="rgt">310</field>
+    <field name="lft">281</field>
+    <field name="rgt">282</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4069,8 +3677,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">270</field>
-    <field name="rgt">271</field>
+    <field name="lft">242</field>
+    <field name="rgt">243</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4097,8 +3705,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">272</field>
-    <field name="rgt">273</field>
+    <field name="lft">244</field>
+    <field name="rgt">245</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4125,8 +3733,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">274</field>
-    <field name="rgt">275</field>
+    <field name="lft">246</field>
+    <field name="rgt">247</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4153,8 +3761,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">278</field>
-    <field name="rgt">279</field>
+    <field name="lft">250</field>
+    <field name="rgt">251</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4181,8 +3789,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">280</field>
-    <field name="rgt">281</field>
+    <field name="lft">252</field>
+    <field name="rgt">253</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4209,8 +3817,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">284</field>
-    <field name="rgt">285</field>
+    <field name="lft">256</field>
+    <field name="rgt">257</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4237,8 +3845,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">286</field>
-    <field name="rgt">287</field>
+    <field name="lft">258</field>
+    <field name="rgt">259</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4265,8 +3873,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">282</field>
-    <field name="rgt">283</field>
+    <field name="lft">254</field>
+    <field name="rgt">255</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4293,8 +3901,8 @@
     <field name="img"> </field>
     <field name="template_style_id">22</field>
     <field name="params">{&quot;custom_title&quot;:&quot;&quot;,&quot;show_info_panel&quot;:&quot;0&quot;,&quot;show_info_legend&quot;:&quot;1&quot;,&quot;show_browse_button&quot;:&quot;0&quot;,&quot;show_shortdesc_input&quot;:&quot;1&quot;,&quot;show_nb_column&quot;:&quot;1&quot;,&quot;is_admission&quot;:&quot;0&quot;,&quot;menu-anchor_title&quot;:&quot;Documents&quot;,&quot;menu-anchor_css&quot;:&quot;huge circular inverted blue upload outline icon&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;Documents&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
-    <field name="lft">307</field>
-    <field name="rgt">308</field>
+    <field name="lft">279</field>
+    <field name="rgt">280</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4321,8 +3929,8 @@
     <field name="img"></field>
     <field name="template_style_id">22</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:&quot;1&quot;,&quot;menu_show&quot;:&quot;1&quot;,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;0&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:&quot;0&quot;}</field>
-    <field name="lft">276</field>
-    <field name="rgt">277</field>
+    <field name="lft">248</field>
+    <field name="rgt">249</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4461,8 +4069,8 @@
     <field name="img">components/com_dropfiles/assets/images/com_dropfiles-16.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">313</field>
-    <field name="rgt">320</field>
+    <field name="lft">285</field>
+    <field name="rgt">292</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4489,8 +4097,8 @@
     <field name="img">class:dropfiles</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">314</field>
-    <field name="rgt">315</field>
+    <field name="lft">286</field>
+    <field name="rgt">287</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4517,8 +4125,8 @@
     <field name="img">class:dropfiles</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">316</field>
-    <field name="rgt">317</field>
+    <field name="lft">288</field>
+    <field name="rgt">289</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4545,8 +4153,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">318</field>
-    <field name="rgt">319</field>
+    <field name="lft">290</field>
+    <field name="rgt">291</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4573,8 +4181,8 @@
     <field name="img"> </field>
     <field name="template_style_id">25</field>
     <field name="params">{}</field>
-    <field name="lft">321</field>
-    <field name="rgt">322</field>
+    <field name="lft">293</field>
+    <field name="rgt">294</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4601,8 +4209,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">323</field>
-    <field name="rgt">328</field>
+    <field name="lft">295</field>
+    <field name="rgt">300</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4629,8 +4237,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">324</field>
-    <field name="rgt">325</field>
+    <field name="lft">296</field>
+    <field name="rgt">297</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4657,8 +4265,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">326</field>
-    <field name="rgt">327</field>
+    <field name="lft">298</field>
+    <field name="rgt">299</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4685,8 +4293,8 @@
     <field name="img">../administrator/components/com_fabrik/images/fabrik.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">329</field>
-    <field name="rgt">346</field>
+    <field name="lft">301</field>
+    <field name="rgt">318</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4713,8 +4321,8 @@
     <field name="img">../administrator/components/com_fabrik/images/fabrik.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">330</field>
-    <field name="rgt">331</field>
+    <field name="lft">302</field>
+    <field name="rgt">303</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4741,8 +4349,8 @@
     <field name="img">../administrator/components/com_fabrik/images/lists.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">332</field>
-    <field name="rgt">333</field>
+    <field name="lft">304</field>
+    <field name="rgt">305</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4769,8 +4377,8 @@
     <field name="img">../administrator/components/com_fabrik/images/forms.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">334</field>
-    <field name="rgt">335</field>
+    <field name="lft">306</field>
+    <field name="rgt">307</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4797,8 +4405,8 @@
     <field name="img">../administrator/components/com_fabrik/images/groups.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">336</field>
-    <field name="rgt">337</field>
+    <field name="lft">308</field>
+    <field name="rgt">309</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4825,8 +4433,8 @@
     <field name="img">../administrator/components/com_fabrik/images/elements.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">338</field>
-    <field name="rgt">339</field>
+    <field name="lft">310</field>
+    <field name="rgt">311</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4853,8 +4461,8 @@
     <field name="img">../administrator/components/com_fabrik/images/visualizations.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">340</field>
-    <field name="rgt">341</field>
+    <field name="lft">312</field>
+    <field name="rgt">313</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4881,8 +4489,8 @@
     <field name="img">../administrator/components/com_fabrik/images/connections.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">342</field>
-    <field name="rgt">343</field>
+    <field name="lft">314</field>
+    <field name="rgt">315</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4909,8 +4517,8 @@
     <field name="img">../administrator/components/com_fabrik/images/schedules.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">344</field>
-    <field name="rgt">345</field>
+    <field name="lft">316</field>
+    <field name="rgt">317</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4937,8 +4545,8 @@
     <field name="img">../media/com_hikashop/images/icons/icon-16-hikashop.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">347</field>
-    <field name="rgt">364</field>
+    <field name="lft">319</field>
+    <field name="rgt">336</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4951,7 +4559,7 @@
     <field name="title">Products</field>
     <field name="alias">Products</field>
     <field name="note"></field>
-    <field name="path"></field>
+    <field name="path">hikashop/Products</field>
     <field name="link">index.php?option=com_hikashop&amp;ctrl=product</field>
     <field name="type">component</field>
     <field name="published">1</field>
@@ -4965,8 +4573,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-article.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">348</field>
-    <field name="rgt">349</field>
+    <field name="lft">320</field>
+    <field name="rgt">321</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -4979,7 +4587,7 @@
     <field name="title">Categories</field>
     <field name="alias">Categories</field>
     <field name="note"></field>
-    <field name="path"></field>
+    <field name="path">hikashop/Categories</field>
     <field name="link">index.php?option=com_hikashop&amp;ctrl=category&amp;filter_id=product</field>
     <field name="type">component</field>
     <field name="published">1</field>
@@ -4993,8 +4601,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-category.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">350</field>
-    <field name="rgt">351</field>
+    <field name="lft">322</field>
+    <field name="rgt">323</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -5007,7 +4615,7 @@
     <field name="title">Users</field>
     <field name="alias">Users</field>
     <field name="note"></field>
-    <field name="path"></field>
+    <field name="path">hikashop/Users</field>
     <field name="link">index.php?option=com_hikashop&amp;ctrl=user&amp;filter_partner=0</field>
     <field name="type">component</field>
     <field name="published">1</field>
@@ -5021,8 +4629,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-user.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">352</field>
-    <field name="rgt">353</field>
+    <field name="lft">324</field>
+    <field name="rgt">325</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -5035,7 +4643,7 @@
     <field name="title">Orders</field>
     <field name="alias">Orders</field>
     <field name="note"></field>
-    <field name="path"></field>
+    <field name="path">hikashop/Orders</field>
     <field name="link">index.php?option=com_hikashop&amp;ctrl=order&amp;order_type=sale&amp;filter_partner=0</field>
     <field name="type">component</field>
     <field name="published">1</field>
@@ -5049,8 +4657,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-content.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">354</field>
-    <field name="rgt">355</field>
+    <field name="lft">326</field>
+    <field name="rgt">327</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -5063,7 +4671,7 @@
     <field name="title">Configuration</field>
     <field name="alias">Configuration</field>
     <field name="note"></field>
-    <field name="path"></field>
+    <field name="path">hikashop/Configuration</field>
     <field name="link">index.php?option=com_hikashop&amp;ctrl=config</field>
     <field name="type">component</field>
     <field name="published">1</field>
@@ -5077,8 +4685,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-config.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">356</field>
-    <field name="rgt">357</field>
+    <field name="lft">328</field>
+    <field name="rgt">329</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -5091,7 +4699,7 @@
     <field name="title">Discounts</field>
     <field name="alias">Discounts</field>
     <field name="note"></field>
-    <field name="path"></field>
+    <field name="path">hikashop/Discounts</field>
     <field name="link">index.php?option=com_hikashop&amp;ctrl=discount</field>
     <field name="type">component</field>
     <field name="published">1</field>
@@ -5105,8 +4713,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-default.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">358</field>
-    <field name="rgt">359</field>
+    <field name="lft">330</field>
+    <field name="rgt">331</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -5119,7 +4727,7 @@
     <field name="title">Help</field>
     <field name="alias">Help</field>
     <field name="note"></field>
-    <field name="path"></field>
+    <field name="path">hikashop/Help</field>
     <field name="link">index.php?option=com_hikashop&amp;ctrl=documentation</field>
     <field name="type">component</field>
     <field name="published">1</field>
@@ -5133,8 +4741,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-help.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">360</field>
-    <field name="rgt">361</field>
+    <field name="lft">332</field>
+    <field name="rgt">333</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -5147,7 +4755,7 @@
     <field name="title">Update_About</field>
     <field name="alias">Update / About</field>
     <field name="note"></field>
-    <field name="path"></field>
+    <field name="path">hikashop/Update / About</field>
     <field name="link">index.php?option=com_hikashop&amp;ctrl=update</field>
     <field name="type">component</field>
     <field name="published">1</field>
@@ -5161,10 +4769,402 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-help-jrd.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
+    <field name="lft">334</field>
+    <field name="rgt">335</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">326</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_MENU</field>
+    <field name="alias">com-falang-menu</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu</field>
+    <field name="link">index.php?option=com_falang</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">346</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">components/com_falang/assets/images/icon-16-falang.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">337</field>
+    <field name="rgt">348</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">327</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_SUBMENU_CONTROL_PANEL</field>
+    <field name="alias">com-falang-submenu-control-panel</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu/com-falang-submenu-control-panel</field>
+    <field name="link">index.php?option=com_falang</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">326</field>
+    <field name="level">2</field>
+    <field name="component_id">346</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">338</field>
+    <field name="rgt">339</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">328</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_SUBMENU_TRANSLATE</field>
+    <field name="alias">com-falang-submenu-translate</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu/com-falang-submenu-translate</field>
+    <field name="link">index.php?option=com_falang&amp;task=translate.overview</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">326</field>
+    <field name="level">2</field>
+    <field name="component_id">346</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">340</field>
+    <field name="rgt">341</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">329</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_SUBMENU_ORPHANS</field>
+    <field name="alias">com-falang-submenu-orphans</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu/com-falang-submenu-orphans</field>
+    <field name="link">index.php?option=com_falang&amp;task=translate.orphans</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">326</field>
+    <field name="level">2</field>
+    <field name="component_id">346</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">342</field>
+    <field name="rgt">343</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">330</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_SUBMENU_CONTENT_ELEMENT</field>
+    <field name="alias">com-falang-submenu-content-element</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu/com-falang-submenu-content-element</field>
+    <field name="link">index.php?option=com_falang&amp;task=elements.show</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">326</field>
+    <field name="level">2</field>
+    <field name="component_id">346</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">344</field>
+    <field name="rgt">345</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">331</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_SUBMENU_HELP_AND_HOWTO</field>
+    <field name="alias">com-falang-submenu-help-and-howto</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu/com-falang-submenu-help-and-howto</field>
+    <field name="link">index.php?option=com_falang&amp;task=help.show</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">326</field>
+    <field name="level">2</field>
+    <field name="component_id">346</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">346</field>
+    <field name="rgt">347</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">332</field>
+    <field name="menutype">main</field>
+    <field name="title">Securitycheck Pro</field>
+    <field name="alias">securitycheck-pro</field>
+    <field name="note"></field>
+    <field name="path">securitycheck-pro</field>
+    <field name="link">index.php?option=com_securitycheckpro&amp;view=cpanel</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">601</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">349</field>
+    <field name="rgt">364</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">333</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_SECURITYCHECKPRO_CPANEL_MAIN_MENU</field>
+    <field name="alias">com-securitycheckpro-cpanel-main-menu</field>
+    <field name="note"></field>
+    <field name="path">securitycheck-pro/com-securitycheckpro-cpanel-main-menu</field>
+    <field name="link">index.php?option=com_securitycheckpro</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">332</field>
+    <field name="level">2</field>
+    <field name="component_id">601</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">350</field>
+    <field name="rgt">351</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">334</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_SECURITYCHECKPRO_VULNERABILITIES</field>
+    <field name="alias">com-securitycheckpro-vulnerabilities</field>
+    <field name="note"></field>
+    <field name="path">securitycheck-pro/com-securitycheckpro-vulnerabilities</field>
+    <field name="link">index.php?option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_vulnerabilities()</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">332</field>
+    <field name="level">2</field>
+    <field name="component_id">601</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">352</field>
+    <field name="rgt">353</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">335</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_TEXT</field>
+    <field name="alias">com-securitycheckpro-cpanel-file-manager-text</field>
+    <field name="note"></field>
+    <field name="path">securitycheck-pro/com-securitycheckpro-cpanel-file-manager-text</field>
+    <field name="link">index.php?option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_filemanager()</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">332</field>
+    <field name="level">2</field>
+    <field name="component_id">601</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">354</field>
+    <field name="rgt">355</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">336</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_TEXT</field>
+    <field name="alias">com-securitycheckpro-cpanel-file-integrity-text</field>
+    <field name="note"></field>
+    <field name="path">securitycheck-pro/com-securitycheckpro-cpanel-file-integrity-text</field>
+    <field name="link">index.php?option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_fileintegrity()</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">332</field>
+    <field name="level">2</field>
+    <field name="component_id">601</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">356</field>
+    <field name="rgt">357</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">337</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS</field>
+    <field name="alias">com-securitycheckpro-cpanel-view-firewall-logs</field>
+    <field name="note"></field>
+    <field name="path">securitycheck-pro/com-securitycheckpro-cpanel-view-firewall-logs</field>
+    <field name="link">index.php?option=com_securitycheckpro&amp;controller=securitycheckpro&amp;view=logs</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">332</field>
+    <field name="level">2</field>
+    <field name="component_id">601</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">358</field>
+    <field name="rgt">359</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">338</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT</field>
+    <field name="alias">com-securitycheckpro-cpanel-htaccess-protection-text</field>
+    <field name="note"></field>
+    <field name="path">securitycheck-pro/com-securitycheckpro-cpanel-htaccess-protection-text</field>
+    <field name="link">index.php?option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_htaccess()</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">332</field>
+    <field name="level">2</field>
+    <field name="component_id">601</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">360</field>
+    <field name="rgt">361</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">339</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_SECURITYCHECKPRO_MALWARESCAN</field>
+    <field name="alias">com-securitycheckpro-malwarescan</field>
+    <field name="note"></field>
+    <field name="path">securitycheck-pro/com-securitycheckpro-malwarescan</field>
+    <field name="link">index.php?option=com_securitycheckpro&amp;controller=cpanel&amp;task=go_to_malware()</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">332</field>
+    <field name="level">2</field>
+    <field name="component_id">601</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
     <field name="lft">362</field>
     <field name="rgt">363</field>
     <field name="home">0</field>
-    <field name="language">*</field>
+    <field name="language"></field>
     <field name="client_id">1</field>
     <field name="publish_up" value_is_null="true"></field>
     <field name="publish_down" value_is_null="true"></field>

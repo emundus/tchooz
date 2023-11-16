@@ -124,6 +124,17 @@
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
    </row>
+   <row>
+    <field name="update_site_id">11</field>
+    <field name="name">Securitycheck Pro Update Site</field>
+    <field name="type">extension</field>
+    <field name="location">https://securitycheck.protegetuordenador.com/update/updates_securitycheckpro.xml</field>
+    <field name="enabled">1</field>
+    <field name="last_check_timestamp">0</field>
+    <field name="extra_query"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

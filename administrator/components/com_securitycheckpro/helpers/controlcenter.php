@@ -1,7 +1,5 @@
 <?php
 defined('_JEXEC') or die();
-
-echo '<link href="' . JURI::root() .'media/com_securitycheckpro/new/vendor/chosen/chosen.css" rel="stylesheet" type="text/css">';
 ?>
 
 <script type="text/javascript" language="javascript">

@@ -1,13 +1,13 @@
 <?php
 defined('_JEXEC') or die();
 
-use Joomla\CMS\Component\ComponentHelper as JComponentHelper;
+use Joomla\CMS\Component\ComponentHelper;
 ?>
 
 <script type="text/javascript" language="javascript">
     jQuery(document).ready(function() {    
         
-        jQuery('#redirect_to_non_www').on('change', function(e) {
+		jQuery('#redirect_to_non_www').on('change', function(e) {
             // triggers when whole value changed
             var end = jQuery('#redirect_to_non_www option:selected').val();
             if (end == 1)
@@ -122,7 +122,7 @@ use Joomla\CMS\Component\ComponentHelper as JComponentHelper;
     };
 
     var ActiveTabHtaccess = "autoprotection";
-
+	
     function SetActiveTabHtaccess($value) {
         ActiveTabHtaccess = $value;
         storeValue('active_htaccess', ActiveTabHtaccess);

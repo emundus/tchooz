@@ -1,7 +1,7 @@
 <?php
 defined('_JEXEC') or die();
 
-use Joomla\CMS\Factory as JFactory;
+use Joomla\CMS\Factory;
 ?>
 
 <script type="text/javascript" language="javascript">
@@ -20,7 +20,7 @@ use Joomla\CMS\Factory as JFactory;
         });        
         
         contenido = '<?php 
-        $mainframe = JFactory::getApplication();
+        $mainframe = Factory::getApplication();
         $contenido = $mainframe->getUserState('contenido', "vacio");            
         if ($contenido != "vacio") {
             echo "no vacio";

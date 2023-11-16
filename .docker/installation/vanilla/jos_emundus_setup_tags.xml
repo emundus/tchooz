@@ -16,7 +16,7 @@
     <field name="date_time">2013-05-22 13:24:00</field>
     <field name="tag">APPLICANT_ID</field>
     <field name="request">[APPLICANT_ID]</field>
-    <field name="description">COM_EMUNDUS_TAG_APPLICANT_ID</field>
+    <field name="description">Applicant's identifier</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -24,7 +24,7 @@
     <field name="date_time">2013-05-22 13:32:00</field>
     <field name="tag">USER_ID</field>
     <field name="request">[USER_ID]</field>
-    <field name="description">COM_EMUNDUS_TAG_USER_ID</field>
+    <field name="description">User's identifier</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -32,7 +32,7 @@
     <field name="date_time">2013-05-22 13:37:00</field>
     <field name="tag">APPLICANT_NAME</field>
     <field name="request">[APPLICANT_NAME]</field>
-    <field name="description">COM_EMUNDUS_TAG_APPLICANT_NAME</field>
+    <field name="description">Applicant's name</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -40,7 +40,7 @@
     <field name="date_time">2013-05-22 16:00:00</field>
     <field name="tag">CURRENT_DATE</field>
     <field name="request">[CURRENT_DATE]</field>
-    <field name="description">COM_EMUNDUS_TAG_CURRENT_DATE</field>
+    <field name="description">Current date at mail sending</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -88,7 +88,7 @@
     <field name="date_time">2013-05-23 00:00:00</field>
     <field name="tag">APPLICANT_BIRTH_DATE</field>
     <field name="request">DATE_FORMAT(birth_date,'%D %M %Y')|#__emundus_personal_detail|user=[APPLICANT_ID] AND fnum like &quot;[FNUM]&quot;</field>
-    <field name="description">COM_EMUNDUS_TAG_APPLICANT_BIRTH_DATE</field>
+    <field name="description">Birthday's applicant</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -136,7 +136,7 @@
     <field name="date_time">2013-06-04 00:00:00</field>
     <field name="tag">SITE_URL</field>
     <field name="request">[SITE_URL]</field>
-    <field name="description">COM_EMUNDUS_TAG_APPLICANT_SITE_URL</field>
+    <field name="description">Tchooz application url</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -176,7 +176,7 @@
     <field name="date_time">2013-09-19 19:56:45</field>
     <field name="tag">CAMPAIGN_LABEL</field>
     <field name="request">[CAMPAIGN_LABEL]</field>
-    <field name="description">COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_LABEL</field>
+    <field name="description">Campaign's name</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -248,7 +248,7 @@
     <field name="date_time">2014-06-19 16:18:23</field>
     <field name="tag">APPLICATION_STATUS</field>
     <field name="request">[APPLICATION_STATUS]</field>
-    <field name="description">COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS</field>
+    <field name="description">File's status</field>
     <field name="published">1</field>
    </row>
    <row>

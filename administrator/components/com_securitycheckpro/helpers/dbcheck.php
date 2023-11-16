@@ -7,7 +7,8 @@ defined('_JEXEC') or die();
     jQuery(document).ready(function() {            
         //Tooltips
         jQuery("#show_tables").tooltip();
-        
+		jQuery("#last_optimization_tooltip").tooltip();
+		        
         jQuery( "#start_db_check" ).click(function() {
             StartDbCheck();
         });
