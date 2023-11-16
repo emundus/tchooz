@@ -20,6 +20,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class TchoozMigrateCommand extends AbstractCommand
 {
@@ -82,7 +83,7 @@ class TchoozMigrateCommand extends AbstractCommand
 		'jos_menu_types',
 		'jos_messages',
 		'jos_messages_cfg',
-		//'jos_modules',
+		'jos_modules',
 		//'jos_modules_menu',
 		'jos_user_profiles',
 		'jos_user_usergroup_map',
@@ -173,6 +174,9 @@ class TchoozMigrateCommand extends AbstractCommand
 			throw new InvalidOptionException('We did not find the configuration.php file in the path you provided!');
 		}
 
+		$progressBar = new ProgressBar($output, 10);
+		$progressBar->start();
+
 		$configuration_file = $this->project_to_migrate . '/configuration.php';
 		if (is_file($configuration_file)) {
 			$copied = copy($configuration_file, JPATH_ROOT . '/configuration_old.php');
@@ -202,6 +206,9 @@ class TchoozMigrateCommand extends AbstractCommand
 						return Command::FAILURE;
 					}
 
+					$this->ioStyle->info('Databases connected start datas migration...');
+					$progressBar->advance();
+
 					$this->db->setQuery('SET sql_mode = ""')->execute();
 					$this->db->setQuery('SET FOREIGN_KEY_CHECKS = 0')->execute();
 					$this->db_source->setQuery('SET sql_mode = ""')->execute();
@@ -227,8 +234,10 @@ class TchoozMigrateCommand extends AbstractCommand
 							return Command::FAILURE;
 						}
 					}
+					$this->ioStyle->info('Emundus and datas table dropped from destination database');
+					$progressBar->advance();
 
-					/*foreach ($tables_to_migrate as $table) {
+					foreach ($tables_to_migrate as $table) {
 						if(in_array($table, $tables_to_ignore)) {
 							continue;
 						}
@@ -258,6 +267,8 @@ class TchoozMigrateCommand extends AbstractCommand
 							return Command::FAILURE;
 						}
 					}
+					$this->ioStyle->info('Emundus and datas table migrated to destination database');
+					$progressBar->advance();
 
 					foreach ($views as $view) {
 						if (!$this->createView($view)) {
@@ -266,8 +277,9 @@ class TchoozMigrateCommand extends AbstractCommand
 							return Command::FAILURE;
 						}
 					}
+					$this->ioStyle->info('Views migrated to destination database');
+					$progressBar->advance();
 					//
-					*/
 
 					// Merge datas from Joomla table
 					$joomla_tables = array_filter($db_source_tables, function ($table) {
@@ -281,11 +293,18 @@ class TchoozMigrateCommand extends AbstractCommand
 							switch($table) {
 								case 'jos_extensions':
 									$this->mergeExtensions();
+									$this->ioStyle->info('Extensions migrated to destination database');
+									$progressBar->advance();
 									break;
 								case 'jos_menu':
 									$this->mergeMenus();
+									$this->ioStyle->info('Menus migrated to destination database');
+									$progressBar->advance();
 									break;
 								case 'jos_modules':
+									$this->mergeModules();
+									$this->ioStyle->info('Modules migrated to destination database');
+									$progressBar->advance();
 									break;
 								default:
 									if (!$this->truncateTable($table, $this->db)) {
@@ -308,10 +327,12 @@ class TchoozMigrateCommand extends AbstractCommand
 							}
 						}
 					}
+					$this->ioStyle->info('Joomla tables migrated to destination database');
+					$progressBar->advance();
 					//
 
 					// Merge datas from Fabrik table
-					/*$fabrik_tables = array_filter($db_source_tables, function ($table) {
+					$fabrik_tables = array_filter($db_source_tables, function ($table) {
 						if(in_array($table, $this->fabrik_tables)) {
 							return true;
 						}
@@ -332,6 +353,8 @@ class TchoozMigrateCommand extends AbstractCommand
 							}
 						}
 					}
+					$this->ioStyle->info('Fabrik tables migrated to destination database');
+					$progressBar->advance();
 					//
 
 					// Other tables (Hikashop, Dropfiles, DpCalendar, Falang)
@@ -362,14 +385,18 @@ class TchoozMigrateCommand extends AbstractCommand
 							}
 						}
 					}
+					$this->ioStyle->info('Other tables migrated to destination database');
+					$progressBar->advance();
+					$this->ioStyle->newLine();
 					//
-					*/
 
 					$this->db->setQuery('SET FOREIGN_KEY_CHECKS = 1')->execute();
 					$this->db_source->setQuery('SET FOREIGN_KEY_CHECKS = 1')->execute();
 				}
 			}
 		}
+
+		$progressBar->finish();
 
 		/*$types = [
 			'fabrik_elements',
@@ -711,10 +738,9 @@ class TchoozMigrateCommand extends AbstractCommand
 							$query_source->clear()
 								->select('type,element,folder,client_id')
 								->from($this->db_source->quoteName('jos_extensions'))
-								->where($this->db_source->quoteName('extension_id') . ' = ' . $this->db_source->quote($menu['component']));
+								->where($this->db_source->quoteName('extension_id') . ' = ' . $this->db_source->quote($menu['component_id']));
 							$this->db_source->setQuery($query_source);
 							$extension = $this->db_source->loadAssoc();
-							echo '<pre>'; var_dump($extension); echo '</pre>'; die;
 
 							if(!empty($extension)) {
 								$query->clear()
@@ -743,14 +769,43 @@ class TchoozMigrateCommand extends AbstractCommand
 				}
 
 				foreach ($main_menus as $menu) {
-					unset($menu['id']);
+					$query->clear()
+						->select('moduleid')
+						->from($this->db->quoteName('jos_modules_menu'))
+						->where($this->db->quoteName('menuid') . ' = ' . $this->db->quote($menu['id']));
+					$this->db->setQuery($query);
+					$modules = $this->db->loadColumn();
 
 					$query->clear()
-						->insert($this->db->quoteName('jos_menu'))
-						->columns($this->db->quoteName(array_keys($menu)))
-						->values(implode(',', $this->db->quote($menu)));
+						->delete($this->db->quoteName('jos_modules_menu'))
+						->where($this->db->quoteName('menuid') . ' = ' . $this->db->quote($menu['id']));
 					$this->db->setQuery($query);
-					$merged = $this->db->execute();
+
+					if($this->db->execute()) {
+						unset($menu['id']);
+
+						$query->clear()
+							->insert($this->db->quoteName('jos_menu'))
+							->columns($this->db->quoteName(array_keys($menu)))
+							->values(implode(',', $this->db->quote($menu)));
+						$this->db->setQuery($query);
+						$merged = $this->db->execute();
+
+						if($merged) {
+							$menuid = $this->db->insertid();
+
+							if(!empty($modules)) {
+								foreach ($modules as $module) {
+									$query->clear()
+										->insert($this->db->quoteName('jos_modules_menu'))
+										->columns($this->db->quoteName(['moduleid', 'menuid']))
+										->values($this->db->quote($module) . ',' . $this->db->quote($menuid));
+									$this->db->setQuery($query);
+									$merged = $this->db->execute();
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -811,6 +866,77 @@ class TchoozMigrateCommand extends AbstractCommand
 		catch (\Exception $e) {
 			$this->ioStyle->error($e->getMessage());
 			$merged = false;
+		}
+
+		return $merged;
+	}
+
+	protected function mergeModules(): bool
+	{
+		$merged = true;
+
+		$query_source = $this->db_source->getQuery(true);
+		$query = $this->db->getQuery(true);
+
+		try {
+			$query->clear()
+				->delete($this->db->quoteName('jos_modules'))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus%'))
+				->orWhere($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_custom%'))
+				->orWhere($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_jumi%'));
+			$this->db->setQuery($query);
+
+			if($this->db->execute()) {
+				$query_source->clear()
+					->select('*')
+					->from($this->db_source->quoteName('jos_modules'))
+					->where($this->db_source->quoteName('module') . ' LIKE ' . $this->db_source->quote('mod_emundus%'))
+					->orWhere($this->db_source->quoteName('module') . ' LIKE ' . $this->db_source->quote('mod_custom%'))
+					->orWhere($this->db_source->quoteName('module') . ' LIKE ' . $this->db_source->quote('mod_jumi%'));
+				$this->db_source->setQuery($query_source);
+				$modules = $this->db_source->loadAssocList();
+
+				if(!empty($modules)) {
+					foreach ($modules as $module) {
+						$query_source->clear()
+							->select('menuid')
+							->from($this->db_source->quoteName('jos_modules_menu'))
+							->where($this->db_source->quoteName('moduleid') . ' = ' . $this->db_source->quote($module['id']));
+						$this->db_source->setQuery($query_source);
+						$menus = $this->db_source->loadColumn();
+
+						unset($module['id']);
+						unset($module['checked_out']);
+						unset($module['checked_out_time']);
+						unset($module['publish_up']);
+						unset($module['publish_down']);
+						$query->clear()
+							->insert($this->db->quoteName('jos_modules'))
+							->columns($this->db->quoteName(array_keys($module)))
+							->values(implode(',', $this->db->quote($module)));
+						$this->db->setQuery($query);
+
+						if($this->db->execute()) {
+							$moduleid = $this->db->insertid();
+
+							if(!empty($menus)) {
+								foreach ($menus as $menu) {
+									$query->clear()
+										->insert($this->db->quoteName('jos_modules_menu'))
+										->columns($this->db->quoteName(['moduleid', 'menuid']))
+										->values($this->db->quote($moduleid) . ',' . $this->db->quote($menu));
+									$this->db->setQuery($query);
+									$merged = $this->db->execute();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (\Exception $e) {
+			$merged = false;
+			$this->ioStyle->error($e->getMessage());
 		}
 
 		return $merged;
