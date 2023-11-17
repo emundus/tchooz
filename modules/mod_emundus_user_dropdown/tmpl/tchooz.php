@@ -190,7 +190,7 @@ if ($user != null) {
 	<?= $intro; ?>
 
     <!-- Button which opens up the dropdown menu. -->
-    <div class='dropdown <?php if ($first_logged) : ?>userDropdown-tip<?php endif; ?>' tabindex="0" id="userDropdown"
+    <div class='dropdown' tabindex="0" id="userDropdown"
          style="float: right;">
 		<?php if ($display_svg == 1) : ?>
             <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg"
@@ -224,16 +224,9 @@ if ($user != null) {
                             <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
 						<?php endif; ?>
                     </div>
-                    <div class="em-user-dropdown-button <?php if ($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>"
+                    <div class="em-user-dropdown-button"
                          id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-						<?php if ($first_logged) : ?>
-                            <div class="em-user-dropdown-tip" id="userDropdownTip">
-                                <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
-                                <p class="em-user-dropdown-tip-link"
-                                   onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
-                            </div>
-						<?php endif; ?>
-                        <span class="material-icons-outlined em-user-dropdown-icon <?php if ($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>"
+                        <span class="material-icons-outlined em-user-dropdown-icon"
                               alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>">account_circle</span>
                     </div>
 
@@ -256,7 +249,7 @@ if ($user != null) {
                              style="background-image:url('<?php echo $profile_picture ?>');">
                         </div>
 					<?php else : ?>
-                        <span class="material-icons-outlined em-profile-picture-modal-icon <?php if ($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>"
+                        <span class="material-icons-outlined em-profile-picture-modal-icon"
                               alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>">account_circle</span>
 					<?php endif; ?>
                     <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
@@ -448,9 +441,6 @@ if ($user != null) {
             }
         });
 
-		<?php if($first_logged) : ?>
-        displayUserOptions();
-		<?php endif ?>
         document.addEventListener('DOMContentLoaded', function () {
             if (document.getElementById('profile_chzn') != null) {
                 document.getElementById('profile_chzn').style.display = 'none';
@@ -516,29 +506,6 @@ if ($user != null) {
             }).then((result) => {
                 if (result.status) {
                     window.location.href = url;
-                }
-            });
-        }
-
-        function closeTip() {
-            jQuery.ajax({
-                type: 'POST',
-                url: 'index.php?option=com_emundus&controller=users&task=updateemundussession',
-                data: ({
-                    param: 'first_logged',
-                    value: 0,
-                }),
-                success: function (result) {
-                    document.getElementById('userDropdown').classList.remove('userDropdown-tip');
-                    document.getElementById('userDropdownLabel').classList.remove('userDropdownLabel-tip');
-                    document.getElementById('userDropdownIcon').classList.remove('userDropdownIcon-tip');
-                    document.getElementById('userDropdownTip').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('userDropdownTip').style.display = 'none';
-                    }, 300)
-                },
-                error: function (jqXHR, status, err) {
-                    alert("Error switching porfiles.");
                 }
             });
         }
