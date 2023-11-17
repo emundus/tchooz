@@ -740,7 +740,7 @@
     <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-04-24 09:52:32</field>
     <field name="publish_down">2026-11-25 14:20:24</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="module">mod_falang</field>
     <field name="access">1</field>
     <field name="showtitle">0</field>
