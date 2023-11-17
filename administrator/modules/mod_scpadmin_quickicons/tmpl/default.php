@@ -1,16 +1,16 @@
 <?php
 /**
- * @ author Jose A. Luque
- * @ Copyright (c) 2011 - Jose A. Luque
- *
- * @license GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html
+ * @Scpadmin_quickicions module
+ * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
+ * @license   GNU General Public License version 3, or later
  */
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Uri\Uri as JUri;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\HTML\HTMLHelper;
 
-$html = JHtml::_('icons.buttons', $buttons);
+$html = HTMLHelper::_('icons.buttons', $buttons);
 ?>
 <?php 
 if (version_compare(JVERSION, '3.20', 'lt')) {
@@ -24,9 +24,9 @@ if (version_compare(JVERSION, '3.20', 'lt')) {
         </div>
     <?php endif;?>
 <?php } else { ?>
-    <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
-    <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
-    <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/stylesheets/cpanelui.css" rel="stylesheet" type="text/css">
+    <link href="<?php echo Uri::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fontawesome.css" rel="stylesheet" type="text/css">
+    <link href="<?php echo Uri::root(); ?>media/com_securitycheckpro/new/vendor/font-awesome/css/fa-solid.css" rel="stylesheet" type="text/css">
+    <link href="<?php echo Uri::root(); ?>media/com_securitycheckpro/stylesheets/cpanelui.css" rel="stylesheet" type="text/css">
     
     <?php if (!empty($html)) : ?>
     <div class="card-body">

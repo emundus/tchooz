@@ -1,8 +1,10 @@
 <?php
 defined('_JEXEC') or die();
 
-use Joomla\CMS\Language\Text as JText;
-
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 ?>
 
 <script type="text/javascript" language="javascript">
@@ -17,7 +19,7 @@ use Joomla\CMS\Language\Text as JText;
                     document.getElementById('current_task').innerHTML = in_progress_string;
                     document.getElementById('warning_message2').innerHTML = '';
                     document.getElementById('error_message').className = 'alert alert-info';
-                    document.getElementById('error_message').innerHTML = '<?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_ACTIVE_TASK'); ?>';                    
+                    document.getElementById('error_message').innerHTML = '<?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ACTIVE_TASK'); ?>';                    
                     hideElement('button_start_scan');
                     cont = 3;                    
                     runButton();
@@ -44,7 +46,7 @@ use Joomla\CMS\Language\Text as JText;
                     hideElement('task_status');
                     document.getElementById('task_error').style.display = "block";                    
                     document.getElementById('error_message').className = 'alert alert-danger';
-                    document.getElementById('error_message').innerHTML = '<?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_TASK_FAILURE'); ?>';            
+                    document.getElementById('error_message').innerHTML = '<?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_TASK_FAILURE'); ?>';            
                 }                        
             },
             error: function(xhr, status) {                
@@ -143,6 +145,8 @@ use Joomla\CMS\Language\Text as JText;
     
 	jQuery(document).ready(function() {
     
+		jQuery("#extensions_updated_tooltip").tooltip();
+		 
         jQuery( "#filter_fileintegrity_search_clear" ).click(function() {
             document.getElementById('filter_fileintegrity_search').value=''; 
             jQuery("#adminForm").submit();
@@ -185,9 +189,9 @@ use Joomla\CMS\Language\Text as JText;
     var etiqueta = '';
     var url = '';
     var percent = 0;
-    var ended_string2 = '<span class="badge badge-success"><?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_ENDED'); ?></span>';
-    var in_progress_string = '<span class="badge badge-info"><?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS'); ?></span>';
-    var error_string = '<span class="badge badge-danger"><?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'); ?>';
+    var ended_string2 = '<span class="badge badge-success"><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ENDED'); ?></span>';
+    var in_progress_string = '<span class="badge badge-info"><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS'); ?></span>';
+    var error_string = '<span class="badge badge-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'); ?>';
     var now = '';
     var respuesta_reparar = '';
         
@@ -208,7 +212,7 @@ use Joomla\CMS\Language\Text as JText;
     
     function runButton() {
         if ( cont == 0 ){
-            document.getElementById('backup-progress').style.display = "block";			
+            document.getElementById('backup-progress').style.display = "flex";			
             document.getElementById('warning_message2').innerHTML = '';           
             date_time('start_time');                                
             percent = 0;
@@ -234,10 +238,10 @@ use Joomla\CMS\Language\Text as JText;
                         hideElement('error_message');
                         document.getElementById('task_status').innerHTML = ended_string2;
                         document.getElementById('bar').style.width = 100 + "%";
-                        document.getElementById('completed_message2').innerHTML = '<?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_PROCESS_COMPLETED'); ?>';
-                        document.getElementById('warning_message2').innerHTML = "<?php echo JText::_('COM_SECURITYCHECKPRO_UPDATING_STATS'); ?><br/><br/><img src=\"<?php echo JURI::root(); ?>media/com_securitycheckpro/images/loading.gif\" width=\"30\" height=\"30\" />";                                                
+                        document.getElementById('completed_message2').innerHTML = '<?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_PROCESS_COMPLETED'); ?>';
+                        document.getElementById('warning_message2').innerHTML = "<?php echo Text::_('COM_SECURITYCHECKPRO_UPDATING_STATS'); ?><br/><br/><img src=\"<?php echo Uri::root(); ?>media/com_securitycheckpro/images/loading.gif\" width=\"30\" height=\"30\" />";                                                
                         //setTimeout(function () {window.location.reload()},2000);                            
-                        var url_to_redirect = '<?php echo JRoute::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. JSession::getFormToken() .'=1', false);?>';
+                        var url_to_redirect = '<?php echo Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. Session::getFormToken() .'=1', false);?>';
                         window.location.href = url_to_redirect;						
                     }
                 },
@@ -247,8 +251,8 @@ use Joomla\CMS\Language\Text as JText;
                     hideElement('task_status');    
                     document.getElementById('warning_message2').innerHTML = '';
                     document.getElementById('error_message').className = 'alert alert-danger';
-                    document.getElementById('error_message').innerHTML = '<?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_FAILURE'); ?>';
-                    document.getElementById('error_button').innerHTML = '<?php echo ('<button class="btn btn-primary" type="button" onclick="window.location.reload();">' . JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_REFRESH_BUTTON') . '</button>');?>';
+                    document.getElementById('error_message').innerHTML = '<?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_FAILURE'); ?>';
+                    document.getElementById('error_button').innerHTML = '<?php echo ('<button class="btn btn-primary" type="button" onclick="window.location.reload();">' . Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_REFRESH_BUTTON') . '</button>');?>';
                 }
             });
         }

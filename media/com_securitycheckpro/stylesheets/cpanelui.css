@@ -7,43 +7,6 @@
 
 
 /*
- * Icons 
- */
-.sc-icon-check_vuln { display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/check_vulnerabilities.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-file_manager{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/file_manager.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-configuration{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/configuration.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-firewall_config{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/firewall_config.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-view_logs{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/logs.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-file_integrity{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/file_integrity.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-initialize_data{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/initialize_data.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-cron_config{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/cron.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-htaccess_protection{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/htaccess_protection.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-sysinfo{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/sysinfo.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-acl{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/acl.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-rules_logs{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/rules_logs.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-waf_lists{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/waf_lists.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-methods{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/methods.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-mode{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/mode.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-logs{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/firewall_logs.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-redirection{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/redirection.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-second{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/second.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-email{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/email.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-user_session_protection{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/user_session_protection.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-exceptions{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/exceptions.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-geoblock{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/geoblock.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-controlcenter{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/controlcenter.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-malwarescan{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/malwarescan.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-import_config{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/import_config.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-export_config{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/export_config.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-dbcheck{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/dbcheck.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-uploadscanner{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/upload_scanner_panel.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-purgesessions{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/purge_sessions.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-spamprotection{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/spamprotection.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-url_inspector{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/url_inspector_panel.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-firewalltrackactions{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/trackactions.png) top left no-repeat; margin: 4px auto 6px; }
-.sc-icon-view_trackactions_logs{ display: block; width: 32px; height: 32px; text-indent: -99999px; overflow: hidden;  background: transparent url(../images/view_trackactions_logs.png) top left no-repeat; margin: 4px auto 6px; }
-
-/*
  * Control Panel
  */
 .securitycheck-bootstrap .cpanel div.icon,
@@ -867,12 +830,6 @@ text-align: center;
     float: left;
 }
 
-.btn-dark {
-    color: #fff !important;
-    background-color: #343a40 !important;
-    border-color: #343a40 !important;
-}
-
 .none {
     display: none !important;
 }
@@ -958,7 +915,7 @@ text-align: center;
 }
 
 .margin-bottom-10 {
-    margin-bottom: 10px;
+    margin-bottom: 10px !important;
 }
 
 .margin-right-5 {

@@ -130,6 +130,12 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     cp -r /templates/g5_helium/custom/config templates/g5_helium/custom/
   fi
 
+  if [ ! -e language/overrides/fr-FR.override.ini ]; then
+    echo >&2 "Copy of language files in progress..."
+
+    cp -r /language/overrides language/
+  fi
+
   # Ensure the MySQL Database is created
   php /makedb.php "$JOOMLA_DB_HOST" "$JOOMLA_DB_USER" "$JOOMLA_DB_PASSWORD" "$JOOMLA_DB_NAME" "${JOOMLA_DB_TYPE:-mysqli}"
 
@@ -158,17 +164,21 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 
     echo >&2 "Init database..."
 
-    php cli/joomla.php database:import --folder=".docker/installation/core/vanilla" -n
+    php cli/joomla.php database:import --folder=".docker/installation/vanilla" -n
 
 
     echo >&2 "Create super administrator user..."
 
+    #php cli/joomla.php tchooz:user:add --username="sysadmin" --name="ADMINISTRATOR Emundus" --password="password" --email="dev@emundus.io" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Tous les droits" -n
     php cli/joomla.php tchooz:user:add --username="$TCHOOZ_SYSADMIN_USERNAME" --name="$TCHOOZ_SYSADMIN_LAST_NAME $TCHOOZ_SYSADMIN_FIRST_NAME" --password="$TCHOOZ_SYSADMIN_PASSWORD" --email="$TCHOOZ_SYSADMIN_MAIL" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Tous les droits" -n
 
     echo >&2 "Create coordinator user..."
 
     php cli/joomla.php tchooz:user:add --username="$TCHOOZ_COORD_USERNAME" --name="$TCHOOZ_COORD_LAST_NAME $TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" --userprofiles="Gestionnaire de plateforme,Formulaire de base candidat" --useremundusgroups="Tous les droits" -n
 
+    echo >&2 "Set Fabrik connection..."
+
+    php cli/joomla.php tchooz:fabrik_connection_reset -n
 
     chown www-data: configuration.php
     chown www-data: .htaccess
@@ -178,16 +188,6 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2 "Awesome ! Your Tchooz website is ready !"
     echo >&2
     echo >&2 "========================================================================"
-  fi
-
-  if [ ! -e language/overrides/fr-FR.override.ini ]; then
-    echo >&2 "Create fr-FR override language file..."
-    cp /language/fr-FR.override.ini language/overrides/fr-FR.override.ini
-  fi
-
-  if [ ! -e language/overrides/en-GB.override.ini ]; then
-    echo >&2 "Create en-GB override language file..."
-    cp /language/en-GB.override.ini language/overrides/en-GB.override.ini
   fi
 
   echo >&2 "========================================================================"

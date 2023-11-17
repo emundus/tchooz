@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__scheduler_tasks">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="asset_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="title" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="type" Type="varchar(128)" Null="NO" Key="MUL" Extra="" />
+   <field Field="execution_rules" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="cron_rules" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="state" Type="tinyint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="last_exit_code" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="last_execution" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="next_execution" Type="datetime" Null="YES" Key="MUL" Extra="" />
+   <field Field="times_executed" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="times_failed" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="locked" Type="datetime" Null="YES" Key="MUL" Extra="" />
+   <field Field="priority" Type="smallint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="cli_exclusive" Type="smallint" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="params" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="note" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="created" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="created_by" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="checked_out" Type="int unsigned" Null="YES" Key="MUL" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <key Table="#__scheduler_tasks" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_type" Seq_in_index="1" Column_name="type" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_state" Seq_in_index="1" Column_name="state" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_last_exit" Seq_in_index="1" Column_name="last_exit_code" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_next_exec" Seq_in_index="1" Column_name="next_execution" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_locked" Seq_in_index="1" Column_name="locked" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_priority" Seq_in_index="1" Column_name="priority" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_cli_exclusive" Seq_in_index="1" Column_name="cli_exclusive" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__scheduler_tasks" Non_unique="1" Key_name="idx_checked_out" Seq_in_index="1" Column_name="checked_out" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__scheduler_tasks">
+   <row>
+    <field name="id">1</field>
+    <field name="asset_id">137</field>
+    <field name="title">Rotate Logs</field>
+    <field name="type">rotation.logs</field>
+    <field name="execution_rules">{&quot;rule-type&quot;:&quot;interval-days&quot;,&quot;interval-days&quot;:30,&quot;exec-time&quot;:&quot;10:36&quot;,&quot;exec-day&quot;:&quot;02&quot;}</field>
+    <field name="cron_rules">{&quot;type&quot;:&quot;interval&quot;,&quot;exp&quot;:&quot;P30D&quot;}</field>
+    <field name="state">1</field>
+    <field name="last_exit_code">0</field>
+    <field name="last_execution" value_is_null="true"></field>
+    <field name="next_execution">2023-12-02 10:36:00</field>
+    <field name="times_executed">0</field>
+    <field name="times_failed">0</field>
+    <field name="locked" value_is_null="true"></field>
+    <field name="priority">0</field>
+    <field name="ordering">0</field>
+    <field name="cli_exclusive">0</field>
+    <field name="params">{&quot;logstokeep&quot;:1}</field>
+    <field name="note" value_is_null="true"></field>
+    <field name="created">2023-11-02 11:07:04</field>
+    <field name="created_by">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="asset_id">138</field>
+    <field name="title">Session GC</field>
+    <field name="type">session.gc</field>
+    <field name="execution_rules">{&quot;rule-type&quot;:&quot;interval-hours&quot;,&quot;interval-hours&quot;:24,&quot;exec-time&quot;:&quot;11:07&quot;,&quot;exec-day&quot;:&quot;02&quot;}</field>
+    <field name="cron_rules">{&quot;type&quot;:&quot;interval&quot;,&quot;exp&quot;:&quot;PT24H&quot;}</field>
+    <field name="state">1</field>
+    <field name="last_exit_code">0</field>
+    <field name="last_execution">2023-11-16 14:52:25</field>
+    <field name="next_execution">2023-11-17 14:52:25</field>
+    <field name="times_executed">2</field>
+    <field name="times_failed">0</field>
+    <field name="locked" value_is_null="true"></field>
+    <field name="priority">0</field>
+    <field name="ordering">0</field>
+    <field name="cli_exclusive">0</field>
+    <field name="params">{&quot;enable_session_gc&quot;:1,&quot;enable_session_metadata_gc&quot;:1}</field>
+    <field name="note" value_is_null="true"></field>
+    <field name="created">2023-11-02 11:07:04</field>
+    <field name="created_by">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

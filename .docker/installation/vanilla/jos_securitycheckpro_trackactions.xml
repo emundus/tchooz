@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__securitycheckpro_trackactions">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="message" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="log_date" Type="datetime" Null="NO" Key="" Default="1970-01-01 00:00:00" Extra="" />
+   <field Field="extension" Type="varchar(50)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="user_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="ip_address" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <key Table="#__securitycheckpro_trackactions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

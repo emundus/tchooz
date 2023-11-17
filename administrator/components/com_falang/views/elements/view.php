@@ -57,9 +57,8 @@ class ElementsViewElements extends FalangViewDefault
 	function edit($tpl = null)
 	{
 		// Set toolbar items for the page
-        ToolBarHelper::custom( 'elements.show', 'cancel', 'cancel', Text::_( 'COM_FALANG_CONTENT_ELEMENT_CANCEL' ), false );
+        ToolBarHelper::cancel("elements.cancel");
 		ToolBarHelper::help( 'screen.elements', true);
-
 		// hide the sub menu
 		$this->_hideSubmenu();		
 	}	
@@ -74,7 +73,7 @@ class ElementsViewElements extends FalangViewDefault
 		ToolBarHelper::title( Text::_('COM_FALANG_TITLE') .' :: '. Text::_( 'COM_FALANG_CONTENT_ELEMENT_INSTALLER' ), 'falang' );
 
 		// Set toolbar items for the page
-		ToolBarHelper::custom( 'elements.show', 'cancel', 'cancel', Text::_( 'COM_FALANG_CONTENT_ELEMENT_CANCEL' ), false );
+        ToolBarHelper::cancel("elements.cancel");
 		ToolBarHelper::help( 'screen.elements', true);
 
 		// hide the sub menu

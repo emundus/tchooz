@@ -1,0 +1,754 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__fabrik_jsactions">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="element_id" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="action" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="code" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="params" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <key Table="#__fabrik_jsactions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__fabrik_jsactions" Non_unique="1" Key_name="element_id_INDEX" Seq_in_index="1" Column_name="element_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__fabrik_jsactions">
+   <row>
+    <field name="id">3025</field>
+    <field name="element_id">1918</field>
+    <field name="action">change</field>
+    <field name="code">var s = document.getElementById(&amp;#039;jos_emundus_setup_letters___attachment_id&amp;#039;);
+$(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).value = s.options[s.selectedIndex].text</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">3026</field>
+    <field name="element_id">1936</field>
+    <field name="action">keyup</field>
+    <field name="code">code=document.getElementById(&amp;#039;jos_emundus_setup_programmes___code&amp;#039;); var str=code.value;
+code.value=str.replace(/[^A-Z0-9]+/ig, &amp;#039;-&amp;#039;).toLowerCase();</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group182&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">3205</field>
+    <field name="element_id">6402</field>
+    <field name="action">load</field>
+    <field name="code">if($(this).is(&amp;quot;select&amp;quot;)) {
+  $(document).ready(function() {$(&amp;quot;#jos_emundus_evaluations___user&amp;quot;).chosen({width: &amp;quot;75%&amp;quot;});})
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group595&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4275</field>
+    <field name="element_id">6052</field>
+    <field name="action">keyup</field>
+    <field name="code">var name = Fabrik.getBlock(&amp;#039;form_270&amp;#039;).elements.get(&amp;#039;jos_emundus_evaluations___criteria06&amp;#039;);
+name.set(this.element.get(&amp;#039;value&amp;#039;).replace(&amp;quot;,&amp;quot;, &amp;quot;.&amp;quot;));
+</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group551&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4276</field>
+    <field name="element_id">6881</field>
+    <field name="action">keyup</field>
+    <field name="code">var name = Fabrik.getBlock(&amp;#039;form_270&amp;#039;).elements.get(&amp;#039;jos_emundus_evaluations___criteria07&amp;#039;);
+name.set(this.element.get(&amp;#039;value&amp;#039;).replace(&amp;quot;,&amp;quot;, &amp;quot;.&amp;quot;));
+</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group551&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4283</field>
+    <field name="element_id">6107</field>
+    <field name="action">load</field>
+    <field name="code">if($(this).is(&amp;quot;select&amp;quot;)) {
+  $(document).ready(function() {$(&amp;quot;#jos_emundus_final_grade___user&amp;quot;).chosen({width: &amp;quot;75%&amp;quot;});})
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group552&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;0&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4298</field>
+    <field name="element_id">7065</field>
+    <field name="action">keyup</field>
+    <field name="code">var email = document.getElementById(&amp;#039;jos_emundus_users___email&amp;#039;);
+email.value = email.value.trim();</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group640&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4299</field>
+    <field name="element_id">7065</field>
+    <field name="action">change</field>
+    <field name="code">var email = document.getElementById(&amp;#039;jos_emundus_users___email&amp;#039;);
+email.value = email.value.trim();</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group640&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4309</field>
+    <field name="element_id">7607</field>
+    <field name="action">load</field>
+    <field name="code">this.element.min = 0;</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group176&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4310</field>
+    <field name="element_id">7606</field>
+    <field name="action">load</field>
+    <field name="code">if (this.get(&amp;#039;value&amp;#039;) != 1) {
+ this.form.elements.get(&amp;#039;jos_emundus_setup_campaigns___limit&amp;#039;).getContainer().classList.add(&amp;#039;fabrikHide&amp;#039;);
+ this.form.elements.get(&amp;#039;jos_emundus_setup_campaigns___limit_status&amp;#039;).getContainer().classList.add(&amp;#039;fabrikHide&amp;#039;);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group176&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4311</field>
+    <field name="element_id">7606</field>
+    <field name="action">change</field>
+    <field name="code">this.form.elements.get(&amp;#039;jos_emundus_setup_campaigns___limit&amp;#039;).clear();
+this.form.elements.get(&amp;#039;jos_emundus_setup_campaigns___limit_status&amp;#039;).clear();
+
+if (this.get(&amp;#039;value&amp;#039;) != 1) {
+ this.form.elements.get(&amp;#039;jos_emundus_setup_campaigns___limit&amp;#039;).getContainer().classList.add(&amp;#039;fabrikHide&amp;#039;);
+ this.form.elements.get(&amp;#039;jos_emundus_setup_campaigns___limit_status&amp;#039;).getContainer().classList.add(&amp;#039;fabrikHide&amp;#039;);
+} else {
+  this.form.elements.get(&amp;#039;jos_emundus_setup_campaigns___limit&amp;#039;).getContainer().classList.remove(&amp;#039;fabrikHide&amp;#039;);
+  this.form.elements.get(&amp;#039;jos_emundus_setup_campaigns___limit_status&amp;#039;).getContainer().classList.remove(&amp;#039;fabrikHide&amp;#039;);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group176&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4315</field>
+    <field name="element_id">7067</field>
+    <field name="action">load</field>
+    <field name="code">document.getElementById(&amp;#039;jos_emundus_users___firstname&amp;#039;).addEventListener(&amp;#039;change&amp;#039;, function(e) {
+    document.getElementById(&amp;#039;jos_emundus_users___name&amp;#039;).value = this.value+&amp;#039; &amp;#039;+document.getElementById(&amp;#039;jos_emundus_users___lastname&amp;#039;).value.toUpperCase();
+});
+
+document.getElementById(&amp;#039;jos_emundus_users___lastname&amp;#039;).addEventListener(&amp;#039;change&amp;#039;, function(e) {
+    document.getElementById(&amp;#039;jos_emundus_users___name&amp;#039;).value = document.getElementById(&amp;#039;jos_emundus_users___firstname&amp;#039;).value+&amp;#039; &amp;#039;+this.value.toUpperCase();
+});</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group640&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4327</field>
+    <field name="element_id">7742</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+
+var grp1 = document.getElementById(&amp;#039;group690&amp;#039;);
+
+if(value != &amp;#039;Oui&amp;#039;){
+  grp1.classList.add(&amp;#039;fabrikHide&amp;#039;);
+} else {
+  grp1.classList.remove(&amp;#039;fabrikHide&amp;#039;);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group691&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4328</field>
+    <field name="element_id">7742</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+
+var grp1 = document.getElementById(&amp;#039;group690&amp;#039;);
+
+if(value != &amp;#039;Oui&amp;#039;){
+  grp1.classList.add(&amp;#039;fabrikHide&amp;#039;);
+} else {
+  grp1.classList.remove(&amp;#039;fabrikHide&amp;#039;);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group691&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4330</field>
+    <field name="element_id">6045</field>
+    <field name="action">load</field>
+    <field name="code">if($(this).is(&amp;quot;select&amp;quot;)) {
+  $(document).ready(function() {$(&amp;quot;#jos_emundus_evaluations___user&amp;quot;).chosen({width: &amp;quot;75%&amp;quot;});})
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group551&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4331</field>
+    <field name="element_id">600</field>
+    <field name="action">keyup</field>
+    <field name="code">this.set(this.get(&amp;#039;value&amp;#039;).replace(/[^0-9a-z_A-Z-]+/g,&amp;#039;&amp;#039;));
+this.set(this.get(&amp;#039;value&amp;#039;).slice(1).replace(/[_\s]+/g, &amp;#039;-&amp;#039;));
+
+if (this.get(&amp;#039;value&amp;#039;).charAt(0) != &amp;#039;_&amp;#039;) {
+ this.set(&amp;#039;_&amp;#039;+this.get(&amp;#039;value&amp;#039;));
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group47&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4340</field>
+    <field name="element_id">5971</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+other_input=fab.get(&amp;#039;jos_emundus_languages___e_254_7756&amp;#039;);
+if(value==7){ 
+    other_input.show();
+  }
+  else{
+    other_input.hide();
+    other_input.clear();
+  }</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group541&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4341</field>
+    <field name="element_id">5971</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+other_input=fab.get(&amp;#039;jos_emundus_languages___e_254_7756&amp;#039;);
+value==7 ? other_input.show() :other_input.hide();</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group541&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4344</field>
+    <field name="element_id">7444</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+
+other_input=fab.get(&amp;#039;jos_emundus_languages_692_repeat___e_254_7757_&amp;#039;+ this.getRepeatNum());
+value==&amp;quot;Autre&amp;quot; ? other_input.show() :other_input.hide();</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group541&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4345</field>
+    <field name="element_id">7444</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+other_input=fab.get(&amp;#039;jos_emundus_languages_692_repeat___e_254_7757_&amp;#039;+ this.getRepeatNum());
+if(value==&amp;quot;Autre&amp;quot;){ 
+    other_input.show();
+  }
+  else{
+    other_input.hide();
+    other_input.clear();
+  }</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group541&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4346</field>
+    <field name="element_id">1918</field>
+    <field name="action">load</field>
+    <field name="code">var fab = this.form.elements;
+
+if (this.get(&amp;#039;value&amp;#039;) == -1) {
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).show();
+} else {
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).hide();
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4347</field>
+    <field name="element_id">1918</field>
+    <field name="action">change</field>
+    <field name="code">var fab = this.form.elements;
+
+if (this.get(&amp;#039;value&amp;#039;) == -1) {
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).clear();
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).show();
+} else {
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).set(this.element.options[this.element.selectedIndex].text);
+  fab.get(&amp;#039;jos_emundus_setup_letters___title&amp;#039;).hide();
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4353</field>
+    <field name="element_id">6476</field>
+    <field name="action">keyup</field>
+    <field name="code">document.getElementById(&amp;#039;jos_emundus_personal_detail___first_name&amp;#039;).value = document.getElementById(&amp;#039;jos_emundus_personal_detail___first_name&amp;#039;).value.toUpperCase();</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group683&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;0&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4354</field>
+    <field name="element_id">6477</field>
+    <field name="action">keyup</field>
+    <field name="code">document.getElementById(&amp;#039;jos_emundus_personal_detail___last_name&amp;#039;).value = document.getElementById(&amp;#039;jos_emundus_personal_detail___last_name&amp;#039;).value.toUpperCase();</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group683&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;0&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4355</field>
+    <field name="element_id">6477</field>
+    <field name="action">keyup</field>
+    <field name="code">document.getElementById(&amp;#039;jos_emundus_personal_detail___last_name&amp;#039;).value = document.getElementById(&amp;#039;jos_emundus_personal_detail___last_name&amp;#039;).value.toUpperCase();</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group683&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;0&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4356</field>
+    <field name="element_id">7583</field>
+    <field name="action">load</field>
+    <field name="code"></field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;hide&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_element_jos_emundus_setup_groups___attachment_id_link&quot;,&quot;js_e_condition&quot;:&quot;==&quot;,&quot;js_e_value&quot;:&quot;0&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4357</field>
+    <field name="element_id">7583</field>
+    <field name="action">load</field>
+    <field name="code"></field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;hide&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_element_jos_emundus_setup_groups___fabrik_group_link&quot;,&quot;js_e_condition&quot;:&quot;==&quot;,&quot;js_e_value&quot;:&quot;0&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4358</field>
+    <field name="element_id">7583</field>
+    <field name="action">change</field>
+    <field name="code"></field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;hide&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_element_jos_emundus_setup_groups___attachment_id_link&quot;,&quot;js_e_condition&quot;:&quot;==&quot;,&quot;js_e_value&quot;:&quot;0&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4359</field>
+    <field name="element_id">7583</field>
+    <field name="action">change</field>
+    <field name="code"></field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;hide&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_element_jos_emundus_setup_groups___fabrik_group_link&quot;,&quot;js_e_condition&quot;:&quot;==&quot;,&quot;js_e_value&quot;:&quot;0&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4360</field>
+    <field name="element_id">7583</field>
+    <field name="action">change</field>
+    <field name="code"></field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;show&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_element_jos_emundus_setup_groups___attachment_id_link&quot;,&quot;js_e_condition&quot;:&quot;==&quot;,&quot;js_e_value&quot;:&quot;1&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4361</field>
+    <field name="element_id">7583</field>
+    <field name="action">change</field>
+    <field name="code"></field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;show&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_element_jos_emundus_setup_groups___fabrik_group_link&quot;,&quot;js_e_condition&quot;:&quot;==&quot;,&quot;js_e_value&quot;:&quot;1&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4362</field>
+    <field name="element_id">4841</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+
+var elt1 = fab.get(&amp;#039;jos_emundus_campaign_candidature___copy_attachment&amp;#039;);
+var elt2 = fab.get(&amp;#039;jos_emundus_campaign_candidature___copy_tag&amp;#039;);
+var elt3 = fab.get(&amp;#039;jos_emundus_campaign_candidature___move_hikashop_command&amp;#039;);
+var elt4 = fab.get(&amp;#039;jos_emundus_campaign_candidature___delete_from_file&amp;#039;);
+
+if(value == 1){
+  elt1.show();
+  elt2.show();
+  elt3.show();
+  elt4.show();
+} else {
+  elt1.hide();
+  elt2.hide();
+  elt3.hide();
+  elt4.hide();
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group254&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4363</field>
+    <field name="element_id">4841</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+
+var elt1 = fab.get(&amp;#039;jos_emundus_campaign_candidature___copy_attachment&amp;#039;);
+var elt2 = fab.get(&amp;#039;jos_emundus_campaign_candidature___copy_tag&amp;#039;);
+var elt3 = fab.get(&amp;#039;jos_emundus_campaign_candidature___move_hikashop_command&amp;#039;);
+var elt4 = fab.get(&amp;#039;jos_emundus_campaign_candidature___delete_from_file&amp;#039;);
+
+if(value == 1){
+  elt1.show();
+  elt2.show();
+  elt3.show();
+  elt4.show();
+} else {
+  elt1.hide();
+  elt2.hide();
+  elt3.hide();
+  elt4.hide();
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group254&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4364</field>
+    <field name="element_id">7789</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+
+var elt1 = fab.get(&amp;#039;jos_emundus_widgets___chart_type&amp;#039;);
+var elt2 = fab.get(&amp;#039;jos_emundus_widgets___article_id&amp;#039;);
+var elt3 = fab.get(&amp;#039;jos_emundus_widgets___eval&amp;#039;);
+elt1.hide();
+elt2.hide();
+elt3.hide();
+
+
+if(value == &amp;#039;chart&amp;#039;){
+  elt1.show();
+  elt3.show();
+  elt2.hide();
+} else if(value == &amp;#039;article&amp;#039;) {
+  elt2.show();
+  elt1.hide();
+  elt3.hide();
+} else {
+  elt1.hide();
+  elt2.hide();
+  elt3.hide();
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group778&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4365</field>
+    <field name="element_id">7789</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+
+var elt1 = fab.get(&amp;#039;jos_emundus_widgets___chart_type&amp;#039;);
+var elt2 = fab.get(&amp;#039;jos_emundus_widgets___article_id&amp;#039;);
+var elt3 = fab.get(&amp;#039;jos_emundus_widgets___eval&amp;#039;);
+
+if(value == &amp;#039;chart&amp;#039;){
+  elt1.show();
+  elt3.show();
+  elt2.hide();
+  elt2.clear();
+} else if(value == &amp;#039;article&amp;#039;) {
+  elt2.show();
+  elt1.hide();
+  elt1.clear();
+  elt3.hide();
+  elt3.clear();
+} else {
+  elt1.hide();
+  elt1.clear();
+  elt2.hide();
+  elt2.clear();
+  elt3.hide();
+  elt3.clear();
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group778&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4390</field>
+    <field name="element_id">1277</field>
+    <field name="action">change</field>
+    <field name="code"></field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;show&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_element_jos_emundus_setup_profiles___reference_letter&quot;,&quot;js_e_condition&quot;:&quot;==&quot;,&quot;js_e_value&quot;:&quot;1&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4391</field>
+    <field name="element_id">1277</field>
+    <field name="action">change</field>
+    <field name="code"></field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;hide&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_element_jos_emundus_setup_profiles___reference_letter&quot;,&quot;js_e_condition&quot;:&quot;!=&quot;,&quot;js_e_value&quot;:&quot;1&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4392</field>
+    <field name="element_id">1277</field>
+    <field name="action">load</field>
+    <field name="code"></field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;hide&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_element_jos_emundus_setup_profiles___reference_letter&quot;,&quot;js_e_condition&quot;:&quot;!=&quot;,&quot;js_e_value&quot;:&quot;1&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4394</field>
+    <field name="element_id">4296</field>
+    <field name="action">load</field>
+    <field name="code">this.hide();</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group117&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4395</field>
+    <field name="element_id">1356</field>
+    <field name="action">load</field>
+    <field name="code">this.hide();</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group117&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4396</field>
+    <field name="element_id">1212</field>
+    <field name="action">load</field>
+    <field name="code">this.hide();</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group117&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4401</field>
+    <field name="element_id">6162</field>
+    <field name="action">load</field>
+    <field name="code">jQuery(&amp;#039;button[type=&amp;quot;submit&amp;quot;]&amp;#039;).click(function(e) {
+  e.preventDefault();
+  Swal.fire({
+    type: &amp;#039;success&amp;#039;,
+    title: Joomla.JText._(&amp;#039;CONGRATULATIONS&amp;#039;),
+    text: Joomla.JText._(&amp;#039;YOUR_FILE_HAS_BEEN_SENT&amp;#039;),
+    showConfirmButton: false,
+  });
+});</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group509&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4406</field>
+    <field name="element_id">7066</field>
+    <field name="action">change</field>
+    <field name="code">checkPasswordSymbols(this.form.formElements.get(&amp;#039;jos_emundus_users___password&amp;#039;));</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4407</field>
+    <field name="element_id">7066</field>
+    <field name="action">load</field>
+    <field name="code">var passwordInput = document.querySelector(&amp;#039;#jos_emundus_users___password&amp;#039;);
+
+var spanShowPassword = document.createElement(&amp;#039;span&amp;#039;);
+spanShowPassword.classList.add(&amp;#039;material-icons-outlined&amp;#039;);
+spanShowPassword.classList.add(&amp;#039;em-pointer&amp;#039;);
+spanShowPassword.innerText = &amp;quot;visibility_off&amp;quot;;
+spanShowPassword.style.position = &amp;quot;absolute&amp;quot;;
+spanShowPassword.style.top = &amp;quot;12px&amp;quot;;
+spanShowPassword.style.right = &amp;quot;10px&amp;quot;;
+spanShowPassword.style.opacity = &amp;quot;0.3&amp;quot;;
+
+passwordInput.parentNode.style.position = &amp;quot;relative&amp;quot;;
+
+passwordInput.parentNode.insertBefore(spanShowPassword, passwordInput.nextSibling);
+
+spanShowPassword.addEventListener(&amp;#039;click&amp;#039;, function () {
+  if (spanShowPassword.innerText == &amp;quot;visibility&amp;quot;) {
+    spanShowPassword.innerText = &amp;quot;visibility_off&amp;quot;;
+    passwordInput.type = &amp;quot;password&amp;quot;;
+  } else {
+    spanShowPassword.innerText = &amp;quot;visibility&amp;quot;;
+    passwordInput.type = &amp;quot;text&amp;quot;;
+  }
+});</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group640&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:1}</field>
+   </row>
+   <row>
+    <field name="id">4408</field>
+    <field name="element_id">1906</field>
+    <field name="action">load</field>
+    <field name="code">var campaign = document.getElementById(&amp;#039;jos_emundus_campaign_candidature___campaign_id&amp;#039;);
+for (var i = 0; i &amp;lt; campaign.length; i++){
+  if (campaign.options[i].value == -1) {
+    campaign.options[i].disabled = true;
+    campaign.options[i].style.backgroundColor = &amp;quot;#efefef&amp;quot;;
+    campaign.options[i].style.fontStyle = &amp;quot;italic&amp;quot;;
+  }
+  
+}
+
+var cid = document.querySelector(&amp;#039;#jos_emundus_campaign_candidature___campaign_id option:checked&amp;#039;).value;
+if(cid !== &amp;quot;&amp;quot;) {
+  document.querySelector(&amp;#039;#form_102&amp;#039;).style.visibility = &amp;#039;hidden&amp;#039;;
+  Swal.fire({
+    title: &amp;#039;Nouveau dossier&amp;#039;,
+    text: &amp;#039;Votre dossier est en cours de création, merci de patienter...&amp;#039;,
+    type: &amp;#039;success&amp;#039;,
+    showConfirmButton: false
+    }
+  );
+  document.querySelector(&amp;#039;#form_102&amp;#039;).submit();
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group175&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4411</field>
+    <field name="element_id">1961</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+
+let {
+  jos_emundus_setup_letters___pdf,
+  jos_emundus_setup_letters___file,
+  jos_emundus_setup_letters___body
+} = fab;
+
+if(value == 3){
+  showFabrikElt(jos_emundus_setup_letters___pdf);
+} else {
+  hideFabrikElt(jos_emundus_setup_letters___pdf);
+}
+
+if(value == 1){
+  showFabrikGroupByElt(jos_emundus_setup_letters___file);
+  hideFabrikGroupByElt(jos_emundus_setup_letters___body);
+} else if(value == 2) {
+  hideFabrikGroupByElt(jos_emundus_setup_letters___file);
+  showFabrikGroupByElt(jos_emundus_setup_letters___body);
+} else {
+  showFabrikGroupByElt(jos_emundus_setup_letters___file);
+  hideFabrikGroupByElt(jos_emundus_setup_letters___body);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4412</field>
+    <field name="element_id">1961</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+
+let {
+  jos_emundus_setup_letters___pdf,
+  jos_emundus_setup_letters___file,
+  jos_emundus_setup_letters___body
+} = fab;
+
+if(value == 3){
+  showFabrikElt(jos_emundus_setup_letters___pdf);
+} else {
+  hideFabrikElt(jos_emundus_setup_letters___pdf, true);
+}
+
+if(value == 1){
+  showFabrikGroupByElt(jos_emundus_setup_letters___file);
+  hideFabrikGroupByElt(jos_emundus_setup_letters___body);
+} else if(value == 2) {
+  hideFabrikGroupByElt(jos_emundus_setup_letters___file);
+  showFabrikGroupByElt(jos_emundus_setup_letters___body);
+} else {
+  showFabrikGroupByElt(jos_emundus_setup_letters___file);
+  hideFabrikGroupByElt(jos_emundus_setup_letters___body);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4415</field>
+    <field name="element_id">7736</field>
+    <field name="action">load</field>
+    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_qualifications_686_repeat___id_0,
+} = fab;
+
+if(value != &amp;#039;Oui&amp;#039;){
+hideFabrikGroupByElt(jos_emundus_qualifications_686_repeat___id_0);  
+} else {
+showFabrikGroupByElt(jos_emundus_qualifications_686_repeat___id_0);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group761&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4416</field>
+    <field name="element_id">7736</field>
+    <field name="action">change</field>
+    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_qualifications_686_repeat___id_0,
+} = fab;
+
+if(value != &amp;#039;Oui&amp;#039;){
+hideFabrikGroupByElt(jos_emundus_qualifications_686_repeat___id_0,true);  
+} else {
+showFabrikGroupByElt(jos_emundus_qualifications_686_repeat___id_0);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group761&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4417</field>
+    <field name="element_id">7737</field>
+    <field name="action">load</field>
+    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_qualifications_689_repeat___id_0,
+} = fab;
+
+if(value != &amp;#039;Oui&amp;#039;){
+hideFabrikGroupByElt(jos_emundus_qualifications_689_repeat___id_0);  
+} else {
+showFabrikGroupByElt(jos_emundus_qualifications_689_repeat___id_0);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group761&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4418</field>
+    <field name="element_id">7737</field>
+    <field name="action">change</field>
+    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_qualifications_689_repeat___id_0,
+} = fab;
+
+if(value != &amp;#039;Oui&amp;#039;){
+hideFabrikGroupByElt(jos_emundus_qualifications_689_repeat___id_0, true);  
+} else {
+showFabrikGroupByElt(jos_emundus_qualifications_689_repeat___id_0);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group761&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4419</field>
+    <field name="element_id">7955</field>
+    <field name="action">load</field>
+    <field name="code">const value=this.get(&amp;#039;value&amp;#039;);const fab=this.form.elements;let {jos_emundus_campaign_workflow___specific_documents,jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!=&amp;#039;0&amp;#039;){showFabrikElt(jos_emundus_campaign_workflow___specific_documents);}else{document.querySelector(&amp;#039;#jos_emundus_campaign_workflow___specific_documents_input_0&amp;#039;).click();hideFabrikElt(jos_emundus_campaign_workflow___specific_documents);  hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0, true);}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4420</field>
+    <field name="element_id">7955</field>
+    <field name="action">change</field>
+    <field name="code">const value=this.get(&amp;#039;value&amp;#039;);const fab=this.form.elements;let{jos_emundus_campaign_workflow___specific_documents,jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!=&amp;#039;0&amp;#039;){showFabrikElt(jos_emundus_campaign_workflow___specific_documents)}else{document.querySelector(&amp;#039;#jos_emundus_campaign_workflow___specific_documents_input_0&amp;#039;).click();hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0);hideFabrikElt(jos_emundus_campaign_workflow___specific_documents,true)}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4421</field>
+    <field name="element_id">7956</field>
+    <field name="action">load</field>
+    <field name="code">const value=this.get(&amp;#039;value&amp;#039;);const fab=this.form.elements;let{jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!= &amp;#039;0&amp;#039;){showFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0)}else{hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0, true)}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4422</field>
+    <field name="element_id">7956</field>
+    <field name="action">change</field>
+    <field name="code">const value=this.get(&amp;#039;value&amp;#039;);const fab=this.form.elements;let{jos_emundus_campaign_workflow_repeat_documents___id_0}=fab;if(value!= &amp;#039;0&amp;#039;){showFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0)}else{hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0, true)}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4426</field>
+    <field name="element_id">7754</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+other_input=fab.get(&amp;#039;jos_emundus_9_00___e_360_7755&amp;#039;);
+value.includes(&amp;#039;4&amp;#039;) ? other_input.show() :other_input.hide();
+</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group763&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4427</field>
+    <field name="element_id">7754</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+var fab = this.form.elements;
+
+other_input=fab.get(&amp;#039;jos_emundus_9_00___e_360_7755&amp;#039;);
+if(value.includes(&amp;#039;4&amp;#039;)){ 
+    other_input.show();
+  }
+  else{
+    other_input.hide();
+    other_input.clear();
+  }</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group763&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4428</field>
+    <field name="element_id">6479</field>
+    <field name="action">blur</field>
+    <field name="code">birthDateValidation(this);</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group683&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

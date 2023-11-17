@@ -368,6 +368,9 @@ class EmundusControllersettings extends JControllerLegacy
 			$image = $this->input->files->get('file');
 			// get old logo
 			$logo_module = JModuleHelper::getModuleById('90');
+			if(empty($logo_module->id)) {
+				$logo_module = JModuleHelper::getModuleById('116');
+			}
 			$regex       = '/logo_custom.{3,4}[png+|jpeg+|jpg+|svg+|gif+]/m';
 			preg_match($regex, $logo_module->content, $matches, PREG_OFFSET_CAPTURE, 0);
 			$old_logo = $matches[0][0];
@@ -383,13 +386,16 @@ class EmundusControllersettings extends JControllerLegacy
 					$target_file = $target_dir . basename('logo_custom.' . $ext);
 
 					$logo_module = JModuleHelper::getModuleById('90');
-
+					if(empty($logo_module->id)) {
+						$logo_module = JModuleHelper::getModuleById('116');
+					}
+					
 					if (move_uploaded_file($image["tmp_name"], $target_file)) {
 						$regex = '/(logo.(png+|jpeg+|jpg+|svg+|gif+|webp+))|(logo_custom.(png+|jpeg+|jpg+|svg+|gif+|webp+))/m';
 
 						$new_content = preg_replace($regex, 'logo_custom.' . $ext, $logo_module->content);
 
-						$this->m_settings->updateLogo($new_content);
+						$this->m_settings->updateLogo($new_content, $logo_module->id);
 
 						$cache = JCache::getInstance('callback');
 						$cache->clean(null, 'notgroup');

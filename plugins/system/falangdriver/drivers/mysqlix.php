@@ -13,9 +13,7 @@ use Joomla\Database\Mysqli\MysqliDriver;
 use \Joomla\Database\StatementInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Falang\Database;
 use Falang\Database\FMysqliStatement;
-
 
 /**
  * MySQLi FaLang database driver
@@ -25,8 +23,6 @@ use Falang\Database\FMysqliStatement;
  * @see         http://php.net/manual/en/book.mysqli.php
  * @since       11.1
  */
-
-
 class JOverrideDatabase extends MysqliDriver
 {
 
@@ -62,23 +58,17 @@ class JOverrideDatabase extends MysqliDriver
         require_once (JPATH_PLUGINS . '/system/falangdriver/drivers/FMysqliStatement.php');
 
     }
+
     //Sbou5 fix this disconnect problem
-//    public function disconnect__()
-//    {
-//        if (isset($this->connection)){
-//        //    $this->connection->close();
-//        }
-//        parent::disconnect();
-//    }
-
-   //sbou5 desctruct already done
-    //can  test host_info
-    public function __destruct()
+    //the disconnect is already done in the mysqlidirver but need to be seet to null
+    //with Joomla 5 the is \is_callable([$this->connection, 'close' is true not with Joomla 4
+    public function disconnect()
     {
-        //$this->disconnect();
-    }
+        $this->connection = null;
 
-    //sbou4
+        // here to trigger the onAfterDisconnect() event
+        parent::disconnect();
+    }
 
 	protected function prepareStatement(string $query): StatementInterface
 	{
@@ -86,6 +76,10 @@ class JOverrideDatabase extends MysqliDriver
 	}
 
 
+    /*
+     * J4 numFields dosen't exit
+     * @update 5.0 clean code
+     * */
     function _getFieldCount(){
     	//sbou4 numFiels n'existe pas
         if ($this->statement instanceof FMysqliStatement) {
@@ -93,22 +87,13 @@ class JOverrideDatabase extends MysqliDriver
         } else {
 		    return 0;
 	    }
-//	    if (is_object($this->cursor) && get_class($this->cursor)=="mysqli_result"){
-//		    $fields = mysqli_num_fields($this->cursor);
-//		    return $fields;
-//	    }
-	    //&& ($this->statement instanceof MysqliStatement)
-        // This is either a broken db connection or a bad query
     }
 
+    /*
+     * @update 5.0 clean code
+     * */
     function _getFieldMetaData($i){
-    	//sbou4
-	    //ATTENTION on a fait des churgage pour que meta marche
-       // $meta = mysqli_fetch_field($this->cursor);
-	    //$tmpMeta2 = mysqli_stmt_result_metadata($this->statement->statement);
 	    $meta = $this->statement->getMeta($i);
-	    //$meta =  mysqli_fetch_field($tmpMeta2);
-	    //$meta = $this->statement->result_metadata();
         return $meta;
     }
 
