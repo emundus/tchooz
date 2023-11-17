@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   joomla:
-    container_name: joomla4
+    container_name: joomla5
     build:
       context: ./.docker/
       dockerfile: Dockerfile
@@ -14,7 +14,7 @@ services:
       JOOMLA_DB_HOST: joomladb
       JOOMLA_DB_USER: user
       JOOMLA_DB_PASSWORD: password
-      JOOMLA_DB_NAME: joomla4
+      JOOMLA_DB_NAME: joomla5
 
       TCHOOZ_OFFLINE: 0
       TCHOOZ_OFFLINE_MESSAGE: Offline
@@ -86,11 +86,11 @@ services:
       - "host.docker.internal:host-gateway"
 
   joomladb:
-    container_name: joomla4_db
+    container_name: joomla5_db
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: joomla4
+      MYSQL_DATABASE: joomla5
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     healthcheck:

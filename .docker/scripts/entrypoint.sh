@@ -130,6 +130,12 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     cp -r /templates/g5_helium/custom/config templates/g5_helium/custom/
   fi
 
+    if [ ! -e language/overrides/fr-FR.override.ini ]; then
+      echo >&2 "Copy of language files in progress..."
+
+      cp -r /language/overrides language/
+    fi
+
   if [ ! -e configuration.php ] && [ -d ".docker/installation/" ]; then
 
     echo >&2 "========================================================================"
@@ -167,6 +173,9 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 
     php cli/joomla.php tchooz:user:add --username="$TCHOOZ_COORD_USERNAME" --name="$TCHOOZ_COORD_LAST_NAME $TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" --userprofiles="Gestionnaire de plateforme,Formulaire de base candidat" --useremundusgroups="Tous les droits" -n
 
+    echo >&2 "Set Fabrik connection..."
+
+    php cli/joomla.php tchooz:fabrik_connection_reset -n
 
     chown www-data: configuration.php
     chown www-data: .htaccess

@@ -844,18 +844,17 @@ class EmundusModelsettings extends JModelList
 	 *
 	 * @since 1.0
 	 */
-	function updateLogo($newcontent)
+	function updateLogo($newcontent,$module_id = 90)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		try {
-			$query->update($db->quoteName('#__modules'))
-				->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
-				->where($db->quoteName('id') . ' = 90');
-			$db->setQuery($query);
+			$query->update($this->db->quoteName('#__modules'))
+				->set($this->db->quoteName('content') . ' = ' . $this->db->quote($newcontent))
+				->where($this->db->quoteName('id') . ' = ' . $module_id);
+			$this->db->setQuery($query);
 
-			return $db->execute();
+			return $this->db->execute();
 		}
 		catch (Exception $e) {
 			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
