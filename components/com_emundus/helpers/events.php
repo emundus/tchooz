@@ -42,7 +42,7 @@ class EmundusHelperEvents
 		JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));
 
 		try {
-			$this->isApplicationSent($params);
+			//$this->isApplicationSent($params);
 
 			$user = JFactory::getSession()->get('emundusUser');
 

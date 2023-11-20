@@ -396,6 +396,8 @@ class TchoozMigrateCommand extends AbstractCommand
 
 					//TODO: Migration of g5_helium configuration
 
+					//TODO: Rebuild fnum elements to use fnum query parameter and if we not found it fnum of session
+
 					$this->db->setQuery('SET FOREIGN_KEY_CHECKS = 1')->execute();
 					$this->db_source->setQuery('SET FOREIGN_KEY_CHECKS = 1')->execute();
 				}

@@ -192,9 +192,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 		}
 	}
 
-	$forms          = @EmundusHelperMenu::buildMenuQuery($user->profile);
+	$forms          = EmundusHelperMenu::buildMenuQuery($user->profile);
 	$keys_to_remove = array();
 	foreach ($forms as $key => $form) {
+		$form->rowid = modEmundusChecklistHelper::getRowId($form->db_table_name,$user->fnum);
+		$form->link .= !empty($rowid) ? '&rowid='.$rowid : '';
+		$form->link .= '&fnum='.$user->fnum;
 		$m_params = json_decode($form->menu_params, true);
 		if (isset($m_params['menu_show']) && $m_params['menu_show'] == 0) {
 			$keys_to_remove[] = $key;
