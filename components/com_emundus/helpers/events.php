@@ -13,6 +13,12 @@
  */
 
 // no direct access
+use Joomla\CMS\Access\Access;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
@@ -42,7 +48,7 @@ class EmundusHelperEvents
 		JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));
 
 		try {
-			//$this->isApplicationSent($params);
+			$this->isApplicationSent($params);
 
 			$user = JFactory::getSession()->get('emundusUser');
 
@@ -147,7 +153,7 @@ class EmundusHelperEvents
 
 	function isApplicationSent($params): bool
 	{
-		$mainframe = JFactory::getApplication();
+		$mainframe = Factory::getApplication();
 
 		if (!$mainframe->isClient('administrator')) {
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
@@ -163,14 +169,14 @@ class EmundusHelperEvents
 			$listModel = $params['formModel']->getListModel();
 			$form_id   = $formModel->id;
 
-			$emundusUser = JFactory::getSession()->get('emundusUser');
+			$emundusUser = $mainframe->getSession()->get('emundusUser');
 			$user        = $emundusUser;
 
 			if (empty($user)) {
-				$user = JFactory::getUser();
+				$user = Factory::getUser();
 			}
 
-			$eMConfig                   = JComponentHelper::getParams('com_emundus');
+			$eMConfig                   = ComponentHelper::getParams('com_emundus');
 			$copy_application_form      = $eMConfig->get('copy_application_form', 0);
 			$copy_application_form_type = $eMConfig->get('copy_application_form_type', 0);
 			$copy_exclude_forms         = $eMConfig->get('copy_exclude_forms', []);
@@ -183,52 +189,62 @@ class EmundusHelperEvents
 
 			$offset = $mainframe->get('offset', 'UTC');
 
-			try {
-				$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
-				$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
-				$now      = $dateTime->format('Y-m-d H:i:s');
-			}
-			catch (Exception $e) {
-				echo $e->getMessage() . '<br />';
-			}
+			$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+			$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+			$now      = $dateTime->format('Y-m-d H:i:s');
 
 			$jinput = $mainframe->input;
 			$view   = $jinput->get('view');
-			$fnum   = $jinput->get->get('rowid', null);
+			$fnum   = $jinput->getString('fnum', $user->fnum);
+			$rowid  = $jinput->getInt('rowid', 0);
 			$itemid = $jinput->get('Itemid');
 			$reload = $jinput->get('r', 0);
 			$reload++;
 
-			if (empty($fnum)) {
-				$db    = JFactory::getDbo();
-				$query = $db->getQuery(true);
-
-				$query->select('db_table_name')
-					->from($db->quoteName('#__fabrik_lists'))
-					->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
-				$db->setQuery($query);
-				$db_table_name = $db->loadResult();
-
-				if (!empty($db_table_name)) {
-					$fnum = $jinput->get->get($db_table_name . '___fnum', null);
-				}
+			if(empty($fnum)) {
+				$mainframe->enqueueMessage('Vous n\'avez pas les droits');
+				$mainframe->redirect('index.php');
 			}
 
-			$current_fnum  = !empty($fnum) ? $fnum : $user->fnum;
-			$current_phase = $m_campaign->getCurrentCampaignWorkflow($current_fnum);
+			$db    = Factory::getDbo();
+			$query = $db->getQuery(true);
+
+			$query->select('db_table_name')
+				->from($db->quoteName('#__fabrik_lists'))
+				->where($db->quoteName('form_id') . ' = ' . $db->quote($form_id));
+			$db->setQuery($query);
+			$db_table_name = $db->loadResult();
+
+			if(!empty($rowid)) {
+				$query->clear()
+					->select('fnum')
+					->from($db->quoteName($db_table_name))
+					->where($db->quoteName('id') . ' = ' . $rowid);
+				$db->setQuery($query);
+				$fnum_associated = $db->loadResult();
+
+				if($fnum_associated != $fnum && !EmundusHelperAccess::asAccessAction(1,'r',$user->id,$fnum)) {
+					$mainframe->enqueueMessage('Vous n\'avez pas les droits');
+					$mainframe->redirect('index.php');
+				}
+			} else {
+				$formModel->data[$db_table_name.'___fnum'] = $fnum;
+			}
+
+			$current_phase = $m_campaign->getCurrentCampaignWorkflow($fnum);
 			if (!empty($current_phase) && !empty($current_phase->end_date)) {
 				$current_end_date   = $current_phase->end_date;
 				$current_start_date = $current_phase->start_date;
 			}
 			else {
-				$current_end_date   = !empty(@$user->fnums[$current_fnum]->end_date) ? @$user->fnums[$current_fnum]->end_date : @$user->end_date;
-				$current_start_date = @$user->fnums[$current_fnum]->start_date;
+				$current_end_date   = !empty($user->fnums[$fnum]->end_date) ? $user->fnums[$fnum]->end_date : $user->end_date;
+				$current_start_date = $user->fnums[$fnum]->start_date;
 			}
 
 			$is_campaign_started = strtotime(date($now)) >= strtotime($current_start_date);
 			if (!$is_campaign_started && !in_array($user->id, $applicants)) {
 				// STOP HERE, the campaign or step is not started yet. Redirect to main page
-				$mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_NOT_STARTED'), 'warning');
+				$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_NOT_STARTED'), 'warning');
 				$mainframe->redirect('/');
 			}
 
@@ -242,7 +258,7 @@ class EmundusHelperEvents
 				$edit_status[] = 0;
 			}
 
-			$is_app_sent = !in_array(@$user->status, $edit_status);
+			$is_app_sent = !in_array($user->status, $edit_status);
 			$can_edit    = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
 			$can_read    = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
 
@@ -289,7 +305,7 @@ class EmundusHelperEvents
 							$reload_url = false;
 							if ($reload < 3) {
 								$reload++;
-								$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&usekey=fnum&rowid=" . $fnum . "&r=" . $reload);
+								$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . "&fnum=" . $fnum);
 							}
 						}
 					}
@@ -307,7 +323,7 @@ class EmundusHelperEvents
 				if (in_array($user->id, $applicants)) {
 
 					if ($reload_url) {
-						$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&usekey=fnum&rowid=" . $user->fnum . "&r=" . $reload);
+						$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . "&fnum=" . $fnum);
 					}
 
 				}
@@ -321,7 +337,7 @@ class EmundusHelperEvents
 							else {
 								$mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
 							}
-							$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&usekey=fnum&rowid=" . $user->fnum . "&r=" . $reload);
+							$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid. "&r=" . $reload . '&fnum=' . $fnum);
 						}
 
 					}
@@ -330,18 +346,18 @@ class EmundusHelperEvents
 						if ($is_app_sent) {
 							if ($can_edit_until_deadline != 0 || $can_edit_after_deadline != 0) {
 								if ($reload_url) {
-									$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&usekey=fnum&rowid=" . $user->fnum . "&r=" . $reload);
+									$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . '&fnum=' . $fnum);
 								}
 							}
 							else {
 								if ($reload_url) {
-									$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&usekey=fnum&rowid=" . $user->fnum . "&r=" . $reload);
+									$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . '&fnum=' . $fnum);
 								}
 							}
 						}
 						else {
 							if ($reload_url) {
-								$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&usekey=fnum&rowid=" . $user->fnum . "&r=" . $reload);
+								$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . '&fnum=' . $fnum);
 							}
 						}
 
@@ -358,7 +374,7 @@ class EmundusHelperEvents
 					if ($can_read == 1) {
 						if ($reload < 3) {
 							$reload++;
-							$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&usekey=fnum&rowid=" . $fnum . "&r=" . $reload);
+							$mainframe->redirect("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . '&fnum=' . $fnum);
 						}
 					}
 					else {
@@ -368,16 +384,14 @@ class EmundusHelperEvents
 				}
 			}
 
-			$db    = JFactory::getDBO();
-			$query = $db->getQuery(true);
-
-			$query->select('fnum_from')
+			$query->clear()
+				->select('fnum_from')
 				->from($db->quoteName('#__emundus_campaign_candidature_links'))
 				->where($db->quoteName('fnum_to') . ' LIKE ' . $db->quote($fnum));
 			$db->setQuery($query);
 			$fnum_linked = $db->loadResult();
 
-			$profile_details = $m_users->getUserById(JFactory::getUser()->id)[0];
+			$profile_details = $m_users->getUserById(Factory::getUser()->id)[0];
 
 			$check_forms = !in_array($formModel->getId(), $copy_exclude_forms);
 			if ($copy_application_form_type == 1) {
@@ -588,7 +602,7 @@ class EmundusHelperEvents
 
 						$reload++;
 						if ($reload_url) {
-							$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&usekey=fnum&rowid=" . $fnum . "&r=" . $reload);
+							$mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . '&fnum=' . $fnum);
 						}
 					}
 					catch (Exception $e) {
@@ -756,10 +770,11 @@ class EmundusHelperEvents
 
 	function redirect($params): bool
 	{
-		$db   = JFactory::getDBO();
-		$user = JFactory::getSession()->get('emundusUser');
+		$mainframe = Factory::getApplication();
+		$db   = Factory::getDBO();
+		$user = $mainframe->getSession()->get('emundusUser');
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = $mainframe->input;
 		$formid = $jinput->get('formid');
 
 		require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
@@ -777,11 +792,12 @@ class EmundusHelperEvents
 		$link = 'index.php';
 
 		if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
-			$levels = JAccess::getAuthorisedViewLevels($user->id);
+			$levels = Access::getAuthorisedViewLevels($user->id);
 
 			if (isset($user->fnum)) {
 				$mApplication->getFormsProgress($user->fnum);
 				$mApplication->getAttachmentsProgress($user->fnum);
+				$fnum = $user->fnum;
 			}
 
 			try {
@@ -854,15 +870,7 @@ class EmundusHelperEvents
 			EmundusModelLogs::log($user->id, $applicant_id, $user->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_APPLICANT');
 		}
 		else {
-			try {
-				$query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` =' . $formid;
-				$db->setQuery($query);
-				$db_table_name = $db->loadResult();
-			}
-			catch (Exception $e) {
-				$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
-				JLog::add($error, JLog::ERROR, 'com_emundus');
-			}
+			$db_table_name = $this->getDbTableName($formid);
 
 			$fnum       = $jinput->get($db_table_name . '___fnum');
 			$s1         = $jinput->get($db_table_name . '___user', null, 'POST');
@@ -899,8 +907,15 @@ class EmundusHelperEvents
             </script>");
 		}
 
-		header('Location: ' . $link);
-		exit();
+		parse_str(parse_url($link)['query'], $output);
+		$db_table_name = $this->getDbTableName($output['formid']);
+
+		$rowid = $this->getRowId($db_table_name,$fnum);
+		$link .= !empty($rowid) ? '&rowid='.$rowid : '';
+		$link .= '&fnum=' . $fnum;
+		$mainframe->redirect(Route::_($link));
+
+		return true;
 	}
 
 	function confirmpost($params): bool
@@ -1391,5 +1406,45 @@ class EmundusHelperEvents
 		}
 
 		return $result;
+	}
+
+	private function getRowId($db_table_name,$fnum): int
+	{
+		$rowid = 0;
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->select('id')
+				->from($db->quoteName($db_table_name))
+				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+			$db->setQuery($query);
+			$rowid = (int)$db->loadResult();
+		}
+		catch (Exception $e)
+		{
+		}
+
+		return $rowid;
+	}
+
+	private function getDbTableName($formid)
+	{
+		$db_table_name = '';
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		try {
+			$query->select('db_table_name')
+				->from($db->quoteName('#__fabrik_lists'))
+				->where($db->quoteName('form_id') . ' = ' . $formid);
+			$db->setQuery($query);
+			$db_table_name = $db->loadResult();
+		}
+		catch (Exception $e) {
+		}
+
+		return $db_table_name;
 	}
 }
