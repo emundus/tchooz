@@ -20,25 +20,4 @@ class modEmundusChecklistHelper
 
 		return $db->loadObject();
 	}
-
-	static function getRowId($db_table_name,$fnum): int
-	{
-		$rowid = 0;
-		$db = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
-
-		try
-		{
-			$query->select('id')
-				->from($db->quoteName($db_table_name))
-				->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
-			$db->setQuery($query);
-			$rowid = (int)$db->loadResult();
-		}
-		catch (Exception $e)
-		{
-		}
-
-		return $rowid;
-	}
 }

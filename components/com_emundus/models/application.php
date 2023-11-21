@@ -4878,9 +4878,7 @@ class EmundusModelApplication extends JModelList
 	 */
 	function getFirstPage($redirect = 'index.php', $fnums = null)
 	{
-
-		$user = JFactory::getSession()->get('emundusUser');
-
+		$user = $this->_mainframe->getSession()->get('emundusUser');
 		$query = $this->_db->getQuery(true);
 
 		if (!empty($fnums)) {
@@ -4897,38 +4895,37 @@ class EmundusModelApplication extends JModelList
 			$this->_db->setQuery($query);
 
 			try {
-				return $this->_db->loadAssocList('fnum');
+				$redirect = $this->_db->loadAssocList('fnum');
 			}
 			catch (Exception $e) {
 				JLog::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
-
-				return $redirect;
 			}
 
 		}
 		else {
-			if (empty($user->menutype)) {
-				return $redirect;
+			if (!empty($user->menutype)) {
+
+				$query->select(['id', 'link'])
+					->from($this->_db->quoteName('#__menu'))
+					->where($this->_db->quoteName('published') . '=1 AND ' . $this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote($user->menutype) . ' AND ' . $this->_db->quoteName('link') . ' <> "" AND ' . $this->_db->quoteName('link') . ' <> "#"')
+					->order($this->_db->quoteName('lft') . ' ASC');
+
+				try {
+					$this->_db->setQuery($query);
+					$res = $this->_db->loadObject();
+
+					if(!empty($res->link)) {
+						$redirect = EmundusHelperAccess::buildFormUrl($res->link, $user->fnum);
+						$redirect = $redirect . '&Itemid=' . $res->id;
+					}
+				}
+				catch (Exception $e) {
+					JLog::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+				}
 			}
-
-			$query->select(['id', 'link'])
-				->from($this->_db->quoteName('#__menu'))
-				->where($this->_db->quoteName('published') . '=1 AND ' . $this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote($user->menutype) . ' AND ' . $this->_db->quoteName('link') . ' <> "" AND ' . $this->_db->quoteName('link') . ' <> "#"')
-				->order($this->_db->quoteName('lft') . ' ASC');
-
-			try {
-				$this->_db->setQuery($query);
-				$res = $this->_db->loadObject();
-
-				return $res->link . '&Itemid=' . $res->id;
-			}
-			catch (Exception $e) {
-				JLog::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
-
-				return $redirect;
-			}
-
 		}
+
+		return $redirect;
 	}
 
 	public function attachment_validation($attachment_id, $state)

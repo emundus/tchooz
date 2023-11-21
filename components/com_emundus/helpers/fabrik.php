@@ -18,6 +18,8 @@ jimport('joomla.application.component.helper');
 
 require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 
@@ -1041,5 +1043,28 @@ die("<script>
 		}
 
 		return $formattedValue;
+	}
+
+
+	public static function getDbTableName($formid)
+	{
+		$db_table_name = '';
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		if(!empty($formid)) {
+			try {
+				$query->select('db_table_name')
+					->from($db->quoteName('#__fabrik_lists'))
+					->where($db->quoteName('form_id') . ' = ' . $formid);
+				$db->setQuery($query);
+				$db_table_name = $db->loadResult();
+			}
+			catch (Exception $e) {
+				Log::add('EmundusHelperFabrik::getDbTableName Cannot get table name for form ' . $formid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $db_table_name;
 	}
 }

@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Access\Access;
+use Joomla\CMS\Log\Log;
 
 class EmundusHelperMenu
 {
@@ -110,6 +111,16 @@ class EmundusHelperMenu
 
 	public static function getUserApplicationMenu($profile, $formids = null)
 	{
+		if (empty($profile)) {
+			return false;
+		}
+
+		if(!class_exists('EmundusHelperCache')) {
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+		}
+		$h_cache = new EmundusHelperCache();
+		$list = $h_cache->get('menus_'.$profile);
+
 		$app  = Factory::getApplication();
 		$db   = Factory::getDBO();
 		$user = $app->getIdentity();
@@ -134,11 +145,15 @@ class EmundusHelperMenu
 		try {
 			$db->setQuery($query);
 
-			return $db->loadObjectList();
+			$lists = $db->loadObjectList();
+
+			$h_cache->set('menus_' . $profile, $list);
 		}
 		catch (Exception $e) {
-			throw new $e->getMessage();
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
+
+		return $lists;
 	}
 
 	function buildMenuListQuery($profile)

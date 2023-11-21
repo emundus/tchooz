@@ -188,7 +188,7 @@ define(['jquery', 'fab/elementlist'], function (jQuery, FbElementList) {
             }
             this._getSubElements().each(function (sub, i) {
                 sub.id = this.options.element + '_input_' + i;
-                var label = sub.getParent('label');
+                var label = sub.nextSibling;
                 if (label) {
                     label.htmlFor = sub.id;
                 }

@@ -195,7 +195,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$forms          = EmundusHelperMenu::buildMenuQuery($user->profile);
 	$keys_to_remove = array();
 	foreach ($forms as $key => $form) {
-		$form->rowid = modEmundusChecklistHelper::getRowId($form->db_table_name,$user->fnum);
+		$form->rowid = EmundusHelperAccess::getRowIdByFnum($form->db_table_name,$user->fnum);
 		$form->link .= !empty($form->rowid) ? '&rowid='.$form->rowid : '';
 		$form->link .= '&fnum='.$user->fnum;
 		$m_params = json_decode($form->menu_params, true);
@@ -209,10 +209,11 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$forms = array_values($forms);
 
 	// Prepare display of send button
-	$application     = @modEmundusChecklistHelper::getApplication($user->fnum);
+	$application     = modEmundusChecklistHelper::getApplication($user->fnum);
 	$status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
 
-	$confirm_form_url = $m_checklist->getConfirmUrl() . '&usekey=fnum&rowid=' . $user->fnum;
+	$confirm_form_url = $m_checklist->getConfirmUrl();
+	$confirm_form_url = EmundusHelperAccess::buildFormUrl($confirm_form_url, $user->fnum);
 	$uri              = JUri::getInstance();
 	$is_confirm_url   = false;
 
