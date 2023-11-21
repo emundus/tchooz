@@ -1664,18 +1664,18 @@ class EmundusModelApplication extends JModelList
 					if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != '#__emundus_training') {
 
 						$query = $this->_db->getQuery(true);
-						$query->select('count(id)')
+						$query->select('id')
 							->from($this->_db->quoteName($itemt->db_table_name))
 							->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 						$this->_db->setQuery($query);
-						$cpt = $this->_db->loadResult();
+						$rowid = $this->_db->loadResult();
 
-						if ($cpt > 0) {
+						if (!empty($rowid)) {
 							if ($allowEmbed) {
-								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&usekey=fnum&rowid=' . $fnum . '&tmpl=component" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><i> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</i></button>';
+								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&rowid=' . $rowid . '&fnum='.$fnum.'&tmpl=component" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><i> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</i></button>';
 							}
 							else {
-								$forms .= ' <a id="' . $itemt->form_id . '" class="em-link" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&usekey=fnum&rowid=' . $fnum . '" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</span></a>';
+								$forms .= ' <a id="' . $itemt->form_id . '" class="em-link" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&rowid=' . $rowid . '&fnum=' . $fnum . '" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</span></a>';
 							}
 						}
 						else {
