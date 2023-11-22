@@ -1088,6 +1088,46 @@
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
+   <row>
+    <field name="id">127</field>
+    <field name="asset_id">139</field>
+    <field name="title">[STATS] Query Builder</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">1</field>
+    <field name="position">content-bottom-a</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_query_builder</field>
+    <field name="access">6</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
+   <row>
+    <field name="id">128</field>
+    <field name="asset_id">140</field>
+    <field name="title">[STATS] - Files created</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">1</field>
+    <field name="position">content-bottom-a</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_stat</field>
+    <field name="access">6</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;list_id&quot;:&quot;350&quot;,&quot;view&quot;:&quot;jos_emundus_stats_candidature_create&quot;,&quot;type_graph&quot;:&quot;timeseries&quot;,&quot;nb_value&quot;:&quot;&quot;,&quot;nb_column&quot;:&quot;&quot;,&quot;y_name_db_0&quot;:&quot;countCandidature&quot;,&quot;serie_name_0&quot;:&quot;&quot;,&quot;column_choice_0&quot;:&quot;&quot;,&quot;y_name_db_1&quot;:&quot;&quot;,&quot;serie_name_1&quot;:&quot;&quot;,&quot;column_choice_1&quot;:&quot;&quot;,&quot;y_name_db_2&quot;:&quot;&quot;,&quot;serie_name_2&quot;:&quot;&quot;,&quot;column_choice_2&quot;:&quot;&quot;,&quot;y_name_db_3&quot;:&quot;&quot;,&quot;serie_name_3&quot;:&quot;&quot;,&quot;column_choice_3&quot;:&quot;&quot;,&quot;y_name_db_4&quot;:&quot;&quot;,&quot;serie_name_4&quot;:&quot;&quot;,&quot;column_choice_4&quot;:&quot;&quot;,&quot;x_name&quot;:&quot;DATE_LABEL&quot;,&quot;x_name_db&quot;:&quot;date&quot;,&quot;y_name_0&quot;:&quot;COUNT_CANDIDATURE&quot;,&quot;y_name_1&quot;:&quot;&quot;,&quot;program&quot;:&quot;&quot;,&quot;year&quot;:&quot;&quot;,&quot;campaign&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

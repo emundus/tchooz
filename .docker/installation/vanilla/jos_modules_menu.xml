@@ -276,6 +276,22 @@
     <field name="moduleid">124</field>
     <field name="menuid">285</field>
    </row>
+   <row>
+    <field name="moduleid">127</field>
+    <field name="menuid">145</field>
+   </row>
+   <row>
+    <field name="moduleid">127</field>
+    <field name="menuid">249</field>
+   </row>
+   <row>
+    <field name="moduleid">128</field>
+    <field name="menuid">145</field>
+   </row>
+   <row>
+    <field name="moduleid">128</field>
+    <field name="menuid">249</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

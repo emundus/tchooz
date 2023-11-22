@@ -100,7 +100,7 @@ class FabrikAdminModelElements extends FabModelList
 		if (!empty($search))
 		{
 			$search = $db->quote('%' . $db->escape($search, true) . '%');
-			$query->where('(e.name LIKE ' . $search . ' OR e.label LIKE ' . $search . ')');
+			$query->where('(e.name LIKE ' . $search . ' OR e.label LIKE ' . $search . 'OR e.id LIKE ' . $search . ')');
 		}
 
 		$group = $this->getState('filter.group');
@@ -428,5 +428,30 @@ class FabrikAdminModelElements extends FabModelList
 		}
 
 		return array_diff($ids, $blocked);
+	}
+
+	/**
+	 * Get the filter form
+	 *
+	 * @param   array    $data      data
+	 * @param   boolean  $loadData  load current data
+	 *
+	 * @return  \Joomla\CMS\Form\Form|boolean The Form object or false on error
+	 *
+	 * @since   4.0.0
+	 */
+	public function getFilterForm($data = [], $loadData = true)
+	{
+		$form = parent::getFilterForm($data, $loadData);
+
+		$id = (int) $this->getState('filter.form');
+
+		if ($form && $id) {
+			$where = $this->getDatabase()->quoteName('fg.form_id') . ' = ' . $id;
+
+			$form->setFieldAttribute('group', 'sql_where', $where, 'filter');
+		}
+
+		return $form;
 	}
 }

@@ -80,7 +80,7 @@ class modEmundusCampaignDropfilesHelper
 					->andWhere('json_valid(`cat`.`params`)')
 					->andWhere('json_extract(`cat`.`params`, "$.idCampaign") LIKE ' . $db->quote('"' . $id . '"'))
 					->andWhere($db->quoteName('cat.access') . ' IN (' . implode(' , ', $groupUser) . ')')
-					->group('df.ordering');
+					->order('df.ordering');
 
 				try {
 					$db->setQuery($query);

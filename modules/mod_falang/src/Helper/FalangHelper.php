@@ -332,7 +332,7 @@ class FalangHelper
                         //fix for virtuemart url with showall, limitstart, limit on productsdetail page
                         if (isset($vars['option']) && $vars['option'] == 'com_virtuemart'){
                             if (isset($vars['view']) && $vars['view'] == 'productdetails'){
-	                            vmLanguage::setLanguageByTag($language->lang_code);
+	                            \vmLanguage::setLanguageByTag($language->lang_code);
 	                            unset($vars['showall']);
                                 unset($vars['limitstart']);
                                 unset($vars['limit']);
@@ -614,7 +614,7 @@ class FalangHelper
             //fix case for item linked to a blog menu and display submenu (the itemId is releated to the blog menu
             //not item
             if (($originalPath == $translatedPath) || empty($translatedPath)){
-                return JUri::getInstance()->toString(array('scheme', 'host', 'port', 'path', 'query'));
+                return Uri::getInstance()->toString(array('scheme', 'host', 'port', 'path', 'query'));
             }
 
 		    //si language de boucle et language site

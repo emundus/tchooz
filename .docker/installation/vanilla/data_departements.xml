@@ -39,20 +39,20 @@
     <field name="departement_nom_soundex">A460</field>
    </row>
    <row>
-    <field name="departement_id">5</field>
-    <field name="departement_code">05</field>
-    <field name="departement_nom">Hautes-Alpes</field>
-    <field name="departement_nom_uppercase">HAUTES-ALPES</field>
-    <field name="departement_slug">hautes-alpes</field>
-    <field name="departement_nom_soundex">H32412</field>
-   </row>
-   <row>
     <field name="departement_id">4</field>
     <field name="departement_code">04</field>
     <field name="departement_nom">Alpes-de-Haute-Provence</field>
     <field name="departement_nom_uppercase">ALPES-DE-HAUTE-PROVENCE</field>
     <field name="departement_slug">alpes-de-haute-provence</field>
     <field name="departement_nom_soundex">A412316152</field>
+   </row>
+   <row>
+    <field name="departement_id">5</field>
+    <field name="departement_code">05</field>
+    <field name="departement_nom">Hautes-Alpes</field>
+    <field name="departement_nom_uppercase">HAUTES-ALPES</field>
+    <field name="departement_slug">hautes-alpes</field>
+    <field name="departement_nom_soundex">H32412</field>
    </row>
    <row>
     <field name="departement_id">6</field>

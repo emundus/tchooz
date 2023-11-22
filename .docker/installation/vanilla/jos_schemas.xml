@@ -22,7 +22,7 @@
    </row>
    <row>
     <field name="extension_id">458</field>
-    <field name="version_id">update_flags</field>
+    <field name="version_id">2.0.0</field>
    </row>
    <row>
     <field name="extension_id">601</field>

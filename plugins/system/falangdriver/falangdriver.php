@@ -408,8 +408,8 @@ class plgSystemFalangdriver extends CMSPlugin
             if (ComponentHelper::isEnabled('com_virtuemart', true)){
                 if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
                 VmConfig::loadConfig();
-                vmLanguage::$jSelLangTag = false;
-                vmLanguage::initialise(true);
+                \vmLanguage::$jSelLangTag = false;
+                \vmLanguage::initialise(true);
             }
 
             Factory::getApplication()->getMenu()->__construct();
