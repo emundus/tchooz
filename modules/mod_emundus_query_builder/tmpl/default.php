@@ -76,7 +76,7 @@ header('Content-Type: text/html; charset=utf-8');
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
     jQuery(document).ready(function () {

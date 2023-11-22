@@ -4778,174 +4778,6 @@
     <field name="publish_down" value_is_null="true"></field>
    </row>
    <row>
-    <field name="id">326</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_MENU</field>
-    <field name="alias">com-falang-menu</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu</field>
-    <field name="link">index.php?option=com_falang</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">1</field>
-    <field name="level">1</field>
-    <field name="component_id">346</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">components/com_falang/assets/images/icon-16-falang.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">337</field>
-    <field name="rgt">348</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">327</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_SUBMENU_CONTROL_PANEL</field>
-    <field name="alias">com-falang-submenu-control-panel</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu/com-falang-submenu-control-panel</field>
-    <field name="link">index.php?option=com_falang</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">326</field>
-    <field name="level">2</field>
-    <field name="component_id">346</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">338</field>
-    <field name="rgt">339</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">328</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_SUBMENU_TRANSLATE</field>
-    <field name="alias">com-falang-submenu-translate</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu/com-falang-submenu-translate</field>
-    <field name="link">index.php?option=com_falang&amp;task=translate.overview</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">326</field>
-    <field name="level">2</field>
-    <field name="component_id">346</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">340</field>
-    <field name="rgt">341</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">329</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_SUBMENU_ORPHANS</field>
-    <field name="alias">com-falang-submenu-orphans</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu/com-falang-submenu-orphans</field>
-    <field name="link">index.php?option=com_falang&amp;task=translate.orphans</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">326</field>
-    <field name="level">2</field>
-    <field name="component_id">346</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">342</field>
-    <field name="rgt">343</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">330</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_SUBMENU_CONTENT_ELEMENT</field>
-    <field name="alias">com-falang-submenu-content-element</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu/com-falang-submenu-content-element</field>
-    <field name="link">index.php?option=com_falang&amp;task=elements.show</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">326</field>
-    <field name="level">2</field>
-    <field name="component_id">346</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">344</field>
-    <field name="rgt">345</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">331</field>
-    <field name="menutype">main</field>
-    <field name="title">COM_FALANG_SUBMENU_HELP_AND_HOWTO</field>
-    <field name="alias">com-falang-submenu-help-and-howto</field>
-    <field name="note"></field>
-    <field name="path">com-falang-menu/com-falang-submenu-help-and-howto</field>
-    <field name="link">index.php?option=com_falang&amp;task=help.show</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">326</field>
-    <field name="level">2</field>
-    <field name="component_id">346</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">class:component</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">346</field>
-    <field name="rgt">347</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
     <field name="id">332</field>
     <field name="menutype">main</field>
     <field name="title">Securitycheck Pro</field>
@@ -4965,8 +4797,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">349</field>
-    <field name="rgt">364</field>
+    <field name="lft">337</field>
+    <field name="rgt">352</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4993,8 +4825,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">350</field>
-    <field name="rgt">351</field>
+    <field name="lft">338</field>
+    <field name="rgt">339</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5021,8 +4853,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">352</field>
-    <field name="rgt">353</field>
+    <field name="lft">340</field>
+    <field name="rgt">341</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5049,8 +4881,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">354</field>
-    <field name="rgt">355</field>
+    <field name="lft">342</field>
+    <field name="rgt">343</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5077,8 +4909,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">356</field>
-    <field name="rgt">357</field>
+    <field name="lft">344</field>
+    <field name="rgt">345</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5105,8 +4937,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">358</field>
-    <field name="rgt">359</field>
+    <field name="lft">346</field>
+    <field name="rgt">347</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5133,8 +4965,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">360</field>
-    <field name="rgt">361</field>
+    <field name="lft">348</field>
+    <field name="rgt">349</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5154,6 +4986,174 @@
     <field name="parent_id">332</field>
     <field name="level">2</field>
     <field name="component_id">601</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">350</field>
+    <field name="rgt">351</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">340</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_MENU</field>
+    <field name="alias">com-falang-menu</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu</field>
+    <field name="link">index.php?option=com_falang</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">346</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">components/com_falang/assets/images/icon-16-falang.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">353</field>
+    <field name="rgt">364</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">341</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_SUBMENU_CONTROL_PANEL</field>
+    <field name="alias">com-falang-submenu-control-panel</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu/com-falang-submenu-control-panel</field>
+    <field name="link">index.php?option=com_falang</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">340</field>
+    <field name="level">2</field>
+    <field name="component_id">346</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">354</field>
+    <field name="rgt">355</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">342</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_SUBMENU_TRANSLATE</field>
+    <field name="alias">com-falang-submenu-translate</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu/com-falang-submenu-translate</field>
+    <field name="link">index.php?option=com_falang&amp;task=translate.overview</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">340</field>
+    <field name="level">2</field>
+    <field name="component_id">346</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">356</field>
+    <field name="rgt">357</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">343</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_SUBMENU_ORPHANS</field>
+    <field name="alias">com-falang-submenu-orphans</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu/com-falang-submenu-orphans</field>
+    <field name="link">index.php?option=com_falang&amp;task=translate.orphans</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">340</field>
+    <field name="level">2</field>
+    <field name="component_id">346</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">358</field>
+    <field name="rgt">359</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">344</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_SUBMENU_CONTENT_ELEMENT</field>
+    <field name="alias">com-falang-submenu-content-element</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu/com-falang-submenu-content-element</field>
+    <field name="link">index.php?option=com_falang&amp;task=elements.show</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">340</field>
+    <field name="level">2</field>
+    <field name="component_id">346</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">class:component</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">360</field>
+    <field name="rgt">361</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">345</field>
+    <field name="menutype">main</field>
+    <field name="title">COM_FALANG_SUBMENU_HELP_AND_HOWTO</field>
+    <field name="alias">com-falang-submenu-help-and-howto</field>
+    <field name="note"></field>
+    <field name="path">com-falang-menu/com-falang-submenu-help-and-howto</field>
+    <field name="link">index.php?option=com_falang&amp;task=help.show</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">340</field>
+    <field name="level">2</field>
+    <field name="component_id">346</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
     <field name="browserNav">0</field>

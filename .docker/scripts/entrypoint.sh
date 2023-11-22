@@ -165,6 +165,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2 "Init database..."
 
     php cli/joomla.php database:import --folder=".docker/installation/vanilla" -n
+    php cli/joomla.php tchooz:vanilla --action="import" --folder=".docker/installation/vanilla" -n
 
 
     echo >&2 "Create super administrator user..."

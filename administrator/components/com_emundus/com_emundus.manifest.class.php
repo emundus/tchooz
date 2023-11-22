@@ -15,6 +15,8 @@ use Joomla\CMS\Factory;
 
 class Com_EmundusInstallerScript
 {
+	private $db;
+
 	protected $manifest_cache;
 	protected $schema_version;
 	protected EmundusHelperUpdate $h_update;
@@ -22,22 +24,22 @@ class Com_EmundusInstallerScript
 	public function __construct()
 	{
 		// Get component manifest cache
-		$db    = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
+		$this->db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $this->db->getQuery(true);
 
 		$query->select('extension_id, manifest_cache')
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('element') . ' = ' . $db->quote('com_emundus'));
-		$db->setQuery($query);
-		$extension = $db->loadObject();
+			->from($this->db->quoteName('#__extensions'))
+			->where($this->db->quoteName('element') . ' = ' . $this->db->quote('com_emundus'));
+		$this->db->setQuery($query);
+		$extension = $this->db->loadObject();
 		$this->manifest_cache = json_decode($extension->manifest_cache);
 
 		$query->clear()
 			->select('version_id')
-			->from($db->quoteName('#__schemas'))
-			->where($db->quoteName('extension_id') . ' = ' . $db->quote($extension->extension_id));
-		$db->setQuery($query);
-		$this->schema_version = $db->loadResult();
+			->from($this->db->quoteName('#__schemas'))
+			->where($this->db->quoteName('extension_id') . ' = ' . $this->db->quote($extension->extension_id));
+		$this->db->setQuery($query);
+		$this->schema_version = $this->db->loadResult();
 
 		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
 		$this->h_update = new EmundusHelperUpdate();
@@ -97,11 +99,27 @@ class Com_EmundusInstallerScript
             $firstrun      = true;
         }
 
+		$query = $this->db->getQuery(true);
+
         if ($this->manifest_cache) {
             if (version_compare($cache_version, '2.0.0', '<=') || $firstrun) {
 				$disabled = EmundusHelperUpdate::disableEmundusPlugins('webauthn');
 				if($disabled) {
 					EmundusHelperUpdate::displayMessage('Le plugin WebAuthn a été désactivé.', 'success');
+				}
+
+				$query->update($this->db->quoteName('#__fabrik_elements'))
+					->set($this->db->quoteName('eval') . ' = 0')
+					->set($this->db->quoteName('default') . ' = ' . $this->db->quote(''))
+					->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('fnum'))
+					->where($this->db->quoteName('eval') . ' = 1');
+				$this->db->setQuery($query);
+				if($this->db->execute()) {
+					EmundusHelperUpdate::displayMessage('Les valeurs par défaut des champs fnums ont été retirées, ces valeurs sont désormais pré-remplis via le plugin emundus_events', 'success');
+				}
+				else {
+					EmundusHelperUpdate::displayMessage('Erreur lors de la modification des champs fnums', 'error');
+					$succeed = false;
 				}
             }
         }

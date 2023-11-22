@@ -68,9 +68,9 @@
     <field name="cron_rules">{&quot;type&quot;:&quot;interval&quot;,&quot;exp&quot;:&quot;PT24H&quot;}</field>
     <field name="state">1</field>
     <field name="last_exit_code">0</field>
-    <field name="last_execution">2023-11-16 14:52:25</field>
-    <field name="next_execution">2023-11-17 14:52:25</field>
-    <field name="times_executed">2</field>
+    <field name="last_execution">2023-11-21 08:05:36</field>
+    <field name="next_execution">2023-11-22 08:05:36</field>
+    <field name="times_executed">4</field>
     <field name="times_failed">0</field>
     <field name="locked" value_is_null="true"></field>
     <field name="priority">0</field>
