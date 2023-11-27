@@ -152,6 +152,9 @@ require_once JPATH_BASE . '/tests/Unit/UnitTestCase.php';
 // Get the framework.
 require_once JPATH_BASE . '/includes/framework.php';
 
+// Enable compatibility mode
+require_once JPATH_PLUGINS . '/behaviour/compat/src/classmap/classmap.php';
+
 // Boot the DI container
 $container = Factory::getContainer();
 
