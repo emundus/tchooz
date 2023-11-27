@@ -155,6 +155,8 @@ require_once JPATH_BASE . '/includes/framework.php';
 // Enable compatibility mode
 require_once JPATH_PLUGINS . '/behaviour/compat/src/classmap/classmap.php';
 
+//
+
 // Boot the DI container
 $container = Factory::getContainer();
 
@@ -166,3 +168,5 @@ $container->alias('session', 'session.cli')
 
 $app                              = Factory::getContainer()->get(Application::class);
 Factory::$application = $app;
+
+session_start();

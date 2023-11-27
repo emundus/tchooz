@@ -14,6 +14,7 @@
 
     <testsuite name="Unit">
         <directory suffix="Test.php">./Unit</directory>
+        <exclude>./Unit/Helper/</exclude>
     </testsuite>
 <!--    <testsuite name="Integration">
         <directory suffix="Test.php">./Integration</directory>

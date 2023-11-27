@@ -14,6 +14,9 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\QueryInterface;
 use PHPUnit\Framework\TestCase;
+use Unit\Helper\Dataset;
+
+//require_once __DIR__ . '/Helper/Dataset.php';
 
 /**
  * Base Unit Test case for common behaviour across unit tests
@@ -22,7 +25,41 @@ use PHPUnit\Framework\TestCase;
  */
 abstract class UnitTestCase extends TestCase
 {
-    /**
+	/**
+	 * @var    DatabaseInterface
+	 * @since  4.0.0
+	 */
+	protected $db;
+
+	/**
+	 * @var    Dataset
+	 * @since  4.0.0
+	 */
+	protected $h_dataset;
+
+	/**
+	 * @since  4.0.0
+	 */
+	protected $model;
+
+	public function __construct(?string $name = null, array $data = [], $dataName = '', $className = null)
+	{
+		parent::__construct($name, $data, $dataName);
+
+		if(!empty($name)) {
+			require_once JPATH_BASE . '/components/com_emundus/models/' . $name . '.php';
+			$this->model = new $className();
+		}
+
+		$config = new \stdClass();
+		$this->db     = $this->createStub(DatabaseInterface::class);
+		$this->db->method('loadObject')->willReturn($config);
+
+		require_once __DIR__ . '/Helper/Dataset.php';
+		$this->h_dataset = new Dataset();
+	}
+
+	/**
      * Returns a database query instance.
      *
      * @param   DatabaseInterface  $db  The database
