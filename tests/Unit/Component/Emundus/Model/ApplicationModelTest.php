@@ -22,7 +22,7 @@ class ApplicationModelTest extends UnitTestCase
 	}
 
 	/**
-	 * @testdox  Test that getLogContentTypeParams returns the correct params
+	 * @group application
 	 *
 	 * @return  void
 	 *
