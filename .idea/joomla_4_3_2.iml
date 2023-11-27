@@ -9,6 +9,12 @@
       <sourceFolder url="file://$MODULE_DIR$/libraries/gantry5/src" isTestSource="false" packagePrefix="Gantry5" />
       <sourceFolder url="file://$MODULE_DIR$/libraries/gantry5/src/classes" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/plugins/hikashoppayment/payplug2/lib" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/.backup" />
+      <excludeFolder url="file://$MODULE_DIR$/.docker/data" />
+      <excludeFolder url="file://$MODULE_DIR$/administrator/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/administrator/logs" />
+      <excludeFolder url="file://$MODULE_DIR$/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/tmp" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
