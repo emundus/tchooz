@@ -863,28 +863,46 @@ class EmundusModelsettings extends JModelList
 		}
 	}
 
-	function onAfterCreateCampaign($user_id)
+	function onAfterCreateCampaign($user_id = null)
 	{
+		$event_runned = false;
+
+		if (empty($user_id)) {
+			if (!empty($this->_user->id)) {
+				$user_id = $this->_user->id;
+			} else {
+				$user = Factory::getApplication()->getIdentity();
+
+				if (!empty($user->id)) {
+					$user_id = $user->id;
+				} else {
+					return false;
+				}
+			}
+		}
+
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
 		$query->select('count(id)')
 			->from($db->quoteName('#__emundus_setup_campaigns'));
-		$db->setQuery($query);
 
 		try {
+			$db->setQuery($query);
+
 			if ($db->loadResult() === '1') {
 				$this->removeParam('first_login', $user_id);
 
-				return $this->createParam('first_form', $user_id);
+				$event_runned = $this->createParam('first_form', $user_id);
+			} else {
+				$event_runned = true;
 			}
-
-			return true;
 		}
 		catch (Exception $e) {
 			JLog::add('component/com_emundus/models/settings | Error at set tutorial param after create a campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-
-			return false;
+			$event_runned =  false;
 		}
+
+		return $event_runned;
 	}
 
 	function onAfterCreateForm($user_id)

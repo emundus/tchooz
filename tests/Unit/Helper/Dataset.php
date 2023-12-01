@@ -51,19 +51,18 @@ class Dataset
 	{
 		$user_id = 0;
 		$m_users = new EmundusModelUsers;
-
-		
 		$query = $this->db->getQuery(true);
 
 		$query->insert('#__users')
-			->columns('name, username, email, password')
-			->values($this->db->quote('Test USER') . ', ' . $this->db->quote($username) .  ', ' . $this->db->quote($username) . ',' .  $this->db->quote(md5($password)));
+			->columns('name, username, email, password, registerDate, lastvisitDate, params')
+			->values($this->db->quote('Test USER') . ', ' . $this->db->quote($username) .  ', ' . $this->db->quote($username) . ',' .  $this->db->quote(md5($password)) . ',' . $this->db->quote(date('Y-m-d H:i:s')) . ',' . $this->db->quote(date('Y-m-d H:i:s')) . ',' . $this->db->quote('{}'));
 
 		try {
 			$this->db->setQuery($query);
 			$this->db->execute();
 			$user_id = $this->db->insertid();
 		} catch (Exception $e) {
+			error_log("Failed to insert jos_users" . $e->getMessage());
 			JLog::add("Failed to insert jos_users" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 		}
 
@@ -92,6 +91,8 @@ class Dataset
 			$other_param['em_campaigns'] 	= [];
 			$other_param['news'] 			= '';
 			$m_users->addEmundusUser($user_id, $other_param);
+		} else {
+			error_log('Failed to create sample user');
 		}
 
 		return $user_id;
@@ -114,10 +115,21 @@ class Dataset
 		return $deleted;
 	}
 
-	public function createSampleFile($cid,$uid){
+	public function createSampleFile($cid, $uid){
 		$m_formbuilder = new EmundusModelFormbuilder;
 
-		return $m_formbuilder->createTestingFile($cid,$uid);
+		$fnum = $m_formbuilder->createTestingFile($cid, $uid);
+		if (empty($fnum)) {
+			// wait for 1 second to avoid duplicate file name
+			sleep(1);
+			$fnum = $m_formbuilder->createTestingFile($cid,$uid);
+
+			if (empty($fnum)) {
+				error_log('Failed to create sample file');
+			}
+		}
+
+		return $fnum;
 	}
 
 	public function createSampleTag(){

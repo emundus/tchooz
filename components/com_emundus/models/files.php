@@ -88,9 +88,16 @@ class EmundusModelFiles extends JModelLegacy
 
 		JPluginHelper::importPlugin('emundus');
 
+		if (!method_exists($this->app, 'getMenu')) {
+			return false;
+		}
+
 		// Get current menu parameters
 		$menu         = $this->app->getMenu();
 		$current_menu = $menu->getActive();
+		if (empty($current_menu)) {
+			return false;
+		}
 
 		$Itemid                   = $this->app->input->getInt('Itemid', $current_menu->id);
 		$menu_params              = $menu->getParams($Itemid);
@@ -99,9 +106,6 @@ class EmundusModelFiles extends JModelLegacy
 		$h_files = new EmundusHelperFiles;
 		$m_users = new EmundusModelUsers;
 
-		if (empty($current_menu)) {
-			return false;
-		}
 
 		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 

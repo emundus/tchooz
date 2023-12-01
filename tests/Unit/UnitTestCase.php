@@ -10,6 +10,7 @@
 
 namespace Joomla\Tests\Unit;
 
+use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\DatabaseQuery;
 use Joomla\Database\QueryInterface;
@@ -52,8 +53,7 @@ abstract class UnitTestCase extends TestCase
 		}
 
 		$config = new \stdClass();
-		$this->db     = $this->createStub(DatabaseInterface::class);
-		$this->db->method('loadObject')->willReturn($config);
+		$this->db     = Factory::getContainer()->get('DatabaseDriver');
 
 		require_once __DIR__ . '/Helper/Dataset.php';
 		$this->h_dataset = new Dataset();

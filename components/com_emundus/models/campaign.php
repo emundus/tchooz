@@ -1381,60 +1381,63 @@ class EmundusModelCampaign extends JModelList
 
 				try {
 					$this->_db->setQuery($query);
-					$this->_db->execute();
-					$campaign_id = $this->_db->insertid();
+					$inserted = $this->_db->execute();
 
-					if (!empty($campaign_id)) {
-						if ($data['is_limited'] == 1) {
-							foreach ($limit_status as $key => $limit_statu) {
-								if ($limit_statu == 'true') {
-									$query->clear()
-										->insert($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'));
-									$query->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($campaign_id))
-										->set($this->_db->quoteName('limit_status') . ' = ' . $this->_db->quote($key));
-									$this->_db->setQuery($query);
-									$this->_db->execute();
+					if ($inserted) {
+						$campaign_id = $this->_db->insertid();
+						if (!empty($campaign_id)) {
+							if ($data['is_limited'] == 1) {
+								foreach ($limit_status as $key => $limit_statu) {
+									if ($limit_statu == 'true') {
+										$query->clear()
+											->insert($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'));
+										$query->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($campaign_id))
+											->set($this->_db->quoteName('limit_status') . ' = ' . $this->_db->quote($key));
+										$this->_db->setQuery($query);
+										$this->_db->execute();
+									}
 								}
 							}
-						}
 
-						$m_settings->onAfterCreateCampaign($this->_user->id);
+							$m_settings->onAfterCreateCampaign();
 
-						// Create a default trigger
-						if (!empty($data['training'])) {
-							$query->clear()
-								->select('id')
-								->from($this->_db->quoteName('#__emundus_setup_programmes'))
-								->where($this->_db->quoteName('code') . ' LIKE ' . $this->_db->quote($data['training']));
-							$this->_db->setQuery($query);
-							$pid = $this->_db->loadResult();
+							// Create a default trigger
+							if (!empty($data['training'])) {
+								$query->clear()
+									->select('id')
+									->from($this->_db->quoteName('#__emundus_setup_programmes'))
+									->where($this->_db->quoteName('code') . ' LIKE ' . $this->_db->quote($data['training']));
+								$this->_db->setQuery($query);
+								$pid = $this->_db->loadResult();
 
-							if (!empty($pid)) {
-								$emails = $m_emails->getTriggersByProgramId($pid);
+								if (!empty($pid)) {
+									$emails = $m_emails->getTriggersByProgramId($pid);
 
-								if (empty($emails)) {
-									$trigger = array(
-										'status'        => 1,
-										'model'         => 1,
-										'action_status' => 'to_current_user',
-										'target'        => -1,
-										'program'       => $pid,
-									);
-									$m_emails->createTrigger($trigger, array(), $this->_user);
+									if (empty($emails)) {
+										$trigger = array(
+											'status'        => 1,
+											'model'         => 1,
+											'action_status' => 'to_current_user',
+											'target'        => -1,
+											'program'       => $pid,
+										);
+										$m_emails->createTrigger($trigger, array(), $this->_user);
+									}
 								}
 							}
+
+							// Create teaching unity
+							$this->createYear($data);
+
+							JFactory::getApplication()->triggerEvent('onAfterCampaignCreate', ['campaign_id' => $campaign_id]);
+							JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterCampaignCreate', ['campaign' => $campaign_id]]);
 						}
-
-						// Create teaching unity
-						$this->createYear($data);
-
-						JFactory::getApplication()->triggerEvent('onAfterCampaignCreate', ['campaign_id' => $campaign_id]);
-						JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterCampaignCreate', ['campaign' => $campaign_id]]);
 					}
 				}
 				catch (Exception $e) {
 					JLog::add('component/com_emundus/models/campaign | Error when create the campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
 
+					error_log($query->__toString() . ' -> ' . $e->getMessage());
 					return $e->getMessage();
 				}
 			}

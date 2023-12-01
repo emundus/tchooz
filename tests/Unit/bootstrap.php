@@ -30,7 +30,12 @@ ini_set('precision', 14);
  * Ensure that required path constants are defined.  These can be overridden within the phpunit.xml file
  * if you chose to create a custom version of that file.
  */
-$rootDirectory = getcwd();
+$rootDirectory = \getcwd();
+
+// if var/www/html is in the root directory, we are in a docker container
+if (strpos($rootDirectory, 'var/www/html') !== false) {
+	$rootDirectory = '/var/www/html';
+}
 
 if (!\defined('DS')) {
 	\define('DS', DIRECTORY_SEPARATOR);

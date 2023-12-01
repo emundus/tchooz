@@ -54,7 +54,7 @@ class ApplicationModelTest extends UnitTestCase
 		$second_attachment_id = $this->h_dataset->createSampleAttachment();
 		$this->h_dataset->createSampleUpload($fnum, $campaign_id, $user_id, $first_attachment_id);
 		$this->h_dataset->createSampleUpload($fnum, $campaign_id, $user_id, $second_attachment_id);
-		$attachments = $this->model->getUserAttachmentsByFnum($fnum);
+		$attachments = $this->model->getUserAttachmentsByFnum($fnum, '', 0, $user_id);
 		$this->assertNotEmpty($attachments);
 		$this->assertSame(count($attachments), 2);
 
@@ -68,7 +68,7 @@ class ApplicationModelTest extends UnitTestCase
 
 		// if i use search parameter, only pertinent attachments should be returned
 		$search      = $attachments[0]->value;
-		$attachments = $this->model->getUserAttachmentsByFnum($fnum, $search);
+		$attachments = $this->model->getUserAttachmentsByFnum($fnum, $search, 0, $user_id);
 		$this->assertNotEmpty($attachments);
 		$this->assertSame($attachments[0]->value, $search);
 		$this->assertSame(count($attachments), 1);
@@ -187,7 +187,7 @@ class ApplicationModelTest extends UnitTestCase
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action is empty');
 
 		// get module params
-		$query = $this->db->getQuery(true);
+		$query = $this->db->createQuery();
 		$query->select('id, params')
 			->from('#__modules')
 			->where('module LIKE ' . $this->db->quote('mod_emundus_applications'))
@@ -197,10 +197,10 @@ class ApplicationModelTest extends UnitTestCase
 		$module = $this->db->loadAssoc();
 		$params = json_decode($module['params'], true);
 
-		$params['mod_emodel_custom_actions'] = [
-			'mod_emodel_custom_action1' => [
-				'mod_emodel_custom_action_new_status' => 1,
-				'mod_emodel_custom_action_status'     => [0]
+		$params['mod_em_application_custom_actions'] = [
+			'mod_em_application_custom_actions1' => [
+				'mod_em_application_custom_action_new_status' => 1,
+				'mod_em_application_custom_action_status'     => [0]
 			]
 		];
 
@@ -216,11 +216,11 @@ class ApplicationModelTest extends UnitTestCase
 		$done = $this->model->applicantCustomAction(0, $fnum);
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action is not found in module params');
 
-		$done = $this->model->applicantCustomAction('mod_emodel_custom_action1', $fnum);
-		$this->assertSame($done, true, 'Custom action should be done because file is in correct status');
+		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $fnum);
+		$this->assertTrue($done, 'Custom action should be done because file is in correct status');
 
-		$done = $this->model->applicantCustomAction('mod_emodel_custom_action1', $fnum);
-		$this->assertSame($done, false, 'Action should no longer work because file status has changed');
+		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $fnum);
+		$this->assertFalse($done, 'Action should no longer work because file status has changed');
 	}
 
 	public function testgetApplicationMenu()
