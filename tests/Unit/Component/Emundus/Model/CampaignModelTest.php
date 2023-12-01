@@ -407,12 +407,11 @@ class CampaignModelTest extends UnitTestCase
 
 	function testeditDocumentDropfile()
 	{
-		
 		$query = $this->db->getQuery(true);
 
 		$query->insert($this->db->quoteName('#__dropfiles_files'))
-			->columns($this->db->quoteName(['title', 'ext', 'file', 'state']))
-			->values(" 'test', 'pdf', 'test.pdf', 1");
+			->columns($this->db->quoteName(['title', 'ext', 'file', 'state', 'catid']))
+			->values(" 'test', 'pdf', 'test.pdf', 1, 0");
 
 		$this->db->setQuery($query);
 		$this->db->execute();

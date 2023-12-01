@@ -2527,9 +2527,8 @@ class EmundusModelCampaign extends JModelList
 				->andWhere('ecw_status.entry_status = ' . $this->_db->quote($fnumInfos['status']))
 				->group($this->_db->quoteName('ecw.id'));
 
-			$this->_db->setQuery($query);
-
 			try {
+				$this->_db->setQuery($query);
 				$current_phase = $this->_db->loadObject();
 			}
 			catch (Exception $e) {
@@ -2550,6 +2549,7 @@ class EmundusModelCampaign extends JModelList
 					->group($this->_db->quoteName('ecw.id'));
 
 				try {
+					$this->_db->setQuery($query);
 					$current_phase = $this->_db->loadObject();
 				}
 				catch (Exception $e) {
@@ -2570,9 +2570,9 @@ class EmundusModelCampaign extends JModelList
                             SELECT parent_id
                             FROM jos_emundus_campaign_workflow_repeat_campaign)')
 						->group($this->_db->quoteName('ecw.id'));
-					$this->_db->setQuery($query);
 
 					try {
+						$this->_db->setQuery($query);
 						$current_phase = $this->_db->loadObject();
 					}
 					catch (Exception $e) {
