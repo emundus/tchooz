@@ -4242,7 +4242,7 @@ class EmundusHelperFiles
 		$joins = [];
 
 		if (!empty($searched_table) && !empty($base_table) && $searched_table != $base_table) {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->clear()
@@ -4275,9 +4275,11 @@ class EmundusHelperFiles
 					JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 				}
 
-				$next_index = $i + 1;
-				$joins[]    = $leftJoin;
-				$joins      = array_merge($joins, $this->findJoinsBetweenTablesRecursively($searched_table, $leftJoin['join_from_table'], $next_index));
+				if (!empty($leftJoin)) {
+					$next_index = $i + 1;
+					$joins[]    = $leftJoin;
+					$joins      = array_merge($joins, $this->findJoinsBetweenTablesRecursively($searched_table, $leftJoin['join_from_table'], $next_index));
+				}
 			}
 			else {
 				$joins[] = $join;

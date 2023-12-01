@@ -83,6 +83,7 @@ class FilesHelperTest extends UnitTestCase
 
 		$joins = $this->helper->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_users');
 		$this->assertNotEmpty($joins, 'Find joins between tables recursively with different tables returns not empty array');
+		// TODO: add foreign keys to vanilla xml tables, change joomla exporter behavior to export foreign keys
 		$this->assertSame(1, sizeof($joins), 'Join between jos_emundus_campaign_candidature and jos_emundus_users returns 1 join');
 		$this->assertSame('jos_emundus_campaign_candidature.applicant_id = jos_emundus_users.user_id', $joins[0]['join_from_table'] . '.' . $joins[0]['table_key'] . ' = ' . $joins[0]['table_join'] . '.' . $joins[0]['table_join_key'], 'Join between jos_emundus_campaign_candidature and jos_emundus_users returns correct join');
 
