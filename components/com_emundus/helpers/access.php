@@ -13,6 +13,9 @@
  */
 
 // no direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
@@ -428,5 +431,47 @@ class EmundusHelperAccess
 		$key = new JCryptKey('simple', $secret, $secret);
 
 		return new JCrypt(new JCryptCipherSimple, $key);
+	}
+
+	public static function buildFormUrl($link,$fnum): string
+	{
+		parse_str(parse_url($link)['query'], $output);
+
+		if(!empty($output['formid'])) {
+			$db_table_name = EmundusHelperFabrik::getDbTableName($output['formid']);
+
+			$rowid = EmundusHelperAccess::getRowIdByFnum($db_table_name, $fnum);
+
+			if (!empty($fnum)) {
+				$link .= '&fnum=' . $fnum;
+			}
+			if (!empty($rowid)) {
+				$link .= '&rowid=' . $rowid;
+			}
+		}
+
+		return $link;
+	}
+
+	public static function getRowIdByFnum($db_table_name,$fnum): int
+	{
+		$rowid = 0;
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		if(!empty($fnum)) {
+			try {
+				$query->select('id')
+					->from($db->quoteName($db_table_name))
+					->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+				$db->setQuery($query);
+				$rowid = (int) $db->loadResult();
+			}
+			catch (Exception $e) {
+				Log::add('Error getting row id by fnum. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $rowid;
 	}
 }

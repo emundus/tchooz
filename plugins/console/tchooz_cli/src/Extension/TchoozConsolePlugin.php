@@ -4,7 +4,9 @@ namespace Emundus\Plugin\Console\Tchooz\Extension;
 \defined('_JEXEC') or die;
 
 use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozMigrateCommand;
+use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozResetFabrikConnectionCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozUpdateCommand;
+use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozVanillaCommand;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Application\ApplicationEvents;
@@ -28,5 +30,7 @@ class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
         $app->addCommand(new TchoozUserAddCommand($db));
         $app->addCommand(new TchoozUpdateCommand($db));
         $app->addCommand(new TchoozMigrateCommand($db));
+		$app->addCommand(new TchoozResetFabrikConnectionCommand($db));
+		$app->addCommand(new TchoozVanillaCommand($db));
     }
 }

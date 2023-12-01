@@ -2333,6 +2333,8 @@ class EmundusModelUsers extends JModelList
 						$this->db->setQuery($query);
 						try {
 							$this->db->execute();
+
+							//TODO: Add log to know who created the application for this user
 						}
 						catch (Exception $e) {
 							error_log($e->getMessage(), 0);

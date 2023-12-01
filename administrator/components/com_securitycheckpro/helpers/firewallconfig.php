@@ -8,6 +8,11 @@ defined('_JEXEC') or die();
     jQuery(document).ready(function() {        
         Disable();
 		
+		jQuery( "#filter_lists_search_clear" ).click(function() {
+            document.getElementById('filter_lists_search').value=''; 
+            jQuery("#adminForm").submit();
+        });
+		
 		jQuery( "#enable_url_inspector_button" ).click(function() {
             Joomla.submitbutton('enable_url_inspector');
         });

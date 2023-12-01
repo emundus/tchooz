@@ -1,0 +1,254 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__securitycheckpro_update_database">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="version" Type="varchar(10)" Null="YES" Key="" Extra="" />
+   <field Field="last_check" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="message" Type="varchar(300)" Null="YES" Key="" Extra="" />
+   <key Table="#__securitycheckpro_update_database" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__securitycheckpro_update_database">
+   <row>
+    <field name="id">1</field>
+    <field name="version">1.3.18</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="version">1.0.81</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="version">1.0.87</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="version">1.0.92</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="version">1.0.92</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="version">1.0.101</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="version">1.0.107</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="version">1.0.107</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="version">1.1.12</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="version">1.1.16</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="version">1.1.23</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="version">1.1.27</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="version">1.1.34</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="version">1.1.38</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message"></field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="version">1.1.38</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="version">1.1.38</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">17</field>
+    <field name="version">1.1.43</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">18</field>
+    <field name="version">1.1.43</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">19</field>
+    <field name="version">1.1.66</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">20</field>
+    <field name="version">1.1.68</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">21</field>
+    <field name="version">1.1.68</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">22</field>
+    <field name="version">1.1.70</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">23</field>
+    <field name="version">1.1.76</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">24</field>
+    <field name="version">1.2.1</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">25</field>
+    <field name="version">1.2.2</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">26</field>
+    <field name="version">1.2.2</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="version">1.2.4</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">28</field>
+    <field name="version">1.2.4</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">29</field>
+    <field name="version">1.2.4</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">30</field>
+    <field name="version">1.3.1</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">31</field>
+    <field name="version">1.3.3</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">32</field>
+    <field name="version">1.3.4</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">33</field>
+    <field name="version">1.3.4</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">34</field>
+    <field name="version">1.3.8</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">35</field>
+    <field name="version">1.3.9</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">36</field>
+    <field name="version">1.3.13</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">37</field>
+    <field name="version">1.3.14</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">38</field>
+    <field name="version">1.3.14</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">39</field>
+    <field name="version">1.3.18</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">40</field>
+    <field name="version">1.3.20</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

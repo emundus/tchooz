@@ -5,7 +5,7 @@ defined('_JEXEC') or die();
 
 <script type="text/javascript" language="javascript">
     function filter_vulnerable_extension(product) {
-        url = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&format=raw&task=filter_vulnerable_extension&product=';
+        url = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&view=securitycheckpro&format=raw&task=filter_vulnerable_extension&product=';
 		url = url.concat(product);		
         jQuery.ajax({
             url: url,                            

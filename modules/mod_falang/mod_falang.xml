@@ -2,12 +2,12 @@
 <extension 	type="module" version="4.0"	client="site" method="upgrade">
 	<name>mod_falang</name>
 	<author>Stéphane Bouey</author>
-	<creationDate>06 Novembre 2023</creationDate>
+	<creationDate>20 Novembre 2023</creationDate>
 	<copyright>2011-2023, Faboba</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>stephane.bouey@faboba.com</authorEmail>
 	<authorUrl>www.faboba.com</authorUrl>
-	<version>5.0-beta1</version>
+	<version>5.1</version>
 	<description>MOD_FALANG_XML_DESCRIPTION</description>
 	<files>
 		<filename module="mod_falang">mod_falang.php</filename>

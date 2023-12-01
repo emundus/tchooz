@@ -6,6 +6,7 @@
  * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
+
 // No direct access to this file
 use Joomla\CMS\Factory;
 
@@ -18,9 +19,9 @@ include_once(dirname(__FILE__).DS."ContentElementTable.php");
  *
  * @package falang
  * @subpackage administrator
- * @copyright JoomFish Project
  * @author Alex Kempkens
  */
+#[AllowDynamicProperties]
 class ContentElement {
 	var $_xmlFile;
 	var $checked_out=false;
@@ -32,7 +33,7 @@ class ContentElement {
 
 	var $referenceInformation;
 
-	/**	field (if any) that keyword	filters apply to
+	/**	All dynamic filter are allowed without delacation
      * need to be declared for php 8.2
      */
 	var $_keywordFilter=null;
@@ -46,6 +47,9 @@ class ContentElement {
     var $_idFilter = null;
     var $_menutypeFilter = null;
     var $_extensionFilter = null;
+    var $_contact_details_categoryFilter = null;
+    var $_moduletypeFilter = null;
+    var $_moduleFilter = null;
 
 
 	/** Standard constructor, which loads already standard information

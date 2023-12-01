@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
 use \setasign\Fpdi\Fpdi;
 use \setasign\Fpdi\PdfReader;
 
@@ -737,13 +738,12 @@ class EmundusController extends JControllerLegacy
 		$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
-		EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
-
+		EmundusModelLogs::log(Factory::getUser()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
 
 		$this->app->triggerEvent('onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]);
 		$this->app->triggerEvent('onCallEventHandler', ['onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]]);
 
-		$this->app->redirect($redirect);
+		$this->app->redirect(Route::_($redirect));
 	}
 
 	// *****************switch profile controller************

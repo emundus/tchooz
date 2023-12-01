@@ -13,6 +13,11 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\User\UserHelper;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -73,7 +78,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
     }
 
 	public function onBeforeLoad() {
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 		$current_url = JUri::getInstance()->toString();
 		$parse = parse_url($current_url);
 
@@ -96,23 +101,21 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 
         include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
         $m_profile = new EmundusModelProfile;
-        $app = JFactory::getApplication();
-        $db = JFactory::getDBO();
-        $session = JFactory::getSession();
-        $jinput = $app->input;
+        $app = Factory::getApplication();
+        $db = Factory::getContainer()->get('DatabaseDriver');
+        $session = $app->getSession();
+        $jinput = $app->getInput();
         $form_type = $this->getParam('form_type', 'cc');
 
-        $config = JFactory::getConfig();
-
-        $timezone = new DateTimeZone( $config->get('offset') );
-        $now = JFactory::getDate()->setTimezone($timezone);
+        $timezone = new DateTimeZone( $app->get('offset') );
+        $now = Factory::getDate()->setTimezone($timezone);
 
         // This allows the plugin to be run from a different context while retaining the same functionality.
         switch ($form_type) {
 
             case 'user':
-
                 $query = $db->getQuery(true);
+
                 $query->select($db->quoteName('id'))
                     ->from($db->quoteName('#__users'))
                     ->where($db->quoteName('email').' LIKE '.$db->quote($jinput->getString('jos_emundus_users___email_raw')));
@@ -126,7 +129,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                     return false;
                 }
 
-                $user = JFactory::getUser($user);
+                $user = Factory::getUser($user);
 
                 $campaign_id = is_array($jinput->getInt('jos_emundus_users___campaign_id_raw')) ? $jinput->getInt('jos_emundus_users___campaign_id_raw')[0] : $jinput->getInt('jos_emundus_users___campaign_id_raw');
                 if (empty($campaign_id)) {
@@ -159,7 +162,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
             default:
                 $user = $session->get('emundusUser');
                 if (empty($user)) {
-                    $user = JFactory::getUser();
+                    $user = Factory::getUser();
                 }
                 $fnum_tmp = $jinput->get('jos_emundus_campaign_candidature___fnum');
                 $id = $jinput->get('jos_emundus_campaign_candidature___id');
@@ -190,14 +193,13 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
             $db->setQuery($query);
             $db->execute();
 
-            JPluginHelper::importPlugin('emundus');
+            PluginHelper::importPlugin('emundus');
 
-            JFactory::getApplication()->triggerEvent('onCreateNewFile', [$user->id, $fnum, $campaign_id]);
-            JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onCreateNewFile', ['user_id' => $user->id, 'fnum' => $fnum, 'cid' => $campaign_id]]);
+            $app->triggerEvent('onCreateNewFile', [$user->id, $fnum, $campaign_id]);
+	        $app->triggerEvent('onCallEventHandler', ['onCreateNewFile', ['user_id' => $user->id, 'fnum' => $fnum, 'cid' => $campaign_id]]);
 
         } catch (Exception $e) {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            JError::raiseError(500, $query->__toString());
+            JLog::add(JUri::getInstance().' :: USER ID : '.Factory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
         }
 
         $query = 'SELECT esc.*,  esp.label as plabel, esp.menutype
@@ -206,17 +208,14 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
 				WHERE esc.id='.$campaign_id;
 
         try {
-
             $db->setQuery($query);
             $campaign = $db->loadAssoc();
-
         } catch (Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-            JError::raiseError(500, $query);
         }
 
         jimport( 'joomla.user.helper' );
-        $user_profile = JUserHelper::getProfile($user->id)->emundus_profile;
+        $user_profile = UserHelper::getProfile($user->id)->emundus_profile;
 
         $schoolyear = $campaign['year'];
         $profile = $campaign['profile_id'];
@@ -235,7 +234,6 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                 $db->execute();
             } catch (Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-                JError::raiseError(500, $query);
             }
         }
 
@@ -253,25 +251,25 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                     $db->execute();
                 } catch (Exception $e) {
                     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-                    JError::raiseError(500, $query);
                 }
             }
         } catch(Exception $e) {
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
-            JError::raiseError(500, $query);
         }
 
         // track the LOGS (1 | c | COM_EMUNDUS_ACCESS_FILE_CREATE)
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-        $user = JFactory::getSession()->get('emundusUser');
+        $user = $app->getSession()->get('emundusUser');
         // if user_id is null -> there is no session data because the account is not activated yet, so don't log
         if ($user->id) {
             EmundusModelLogs::log($user->id, $user->id, $fnum, 1, 'c', 'COM_EMUNDUS_ACCESS_FILE_CREATE');
         }
 
         if ($form_type == 'cc') {
-            $app->redirect($this->getParam('emunduscampaign_redirect_url', null) ?: 'index.php?option=com_emundus&task=openfile&fnum='.$fnum, JText::_('FILE_OK'));
+			$app->enqueueMessage(JText::_('FILE_OK'));
+            $app->redirect($this->getParam('emunduscampaign_redirect_url', null) ?: 'index.php?option=com_emundus&task=openfile&fnum='.$fnum);
         }
+
         return true;
     }
 
@@ -286,8 +284,8 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
         $m_campaign     = new EmundusModelCampaign;
 
-        $app = JFactory::getApplication();
-        $jinput = $app->input;
+        $app = Factory::getApplication();
+        $jinput = $app->getInput();
 
         $form_type = $this->getParam('form_type', 'cc');
 
@@ -300,7 +298,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                 // Check if the campaign limit has been obtained
                 if ($m_campaign->isLimitObtained($campaign_id) === true) {
                     $this->getModel()->formErrorMsg = '';
-                    $this->getModel()->getForm()->error= JText::_('LIMIT_OBTAINED');
+                    $this->getModel()->getForm()->error= Text::_('LIMIT_OBTAINED');
                     return;
                 }
                 break;
@@ -311,29 +309,10 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                 // Check if the campaign limit has been obtained
                 if ($m_campaign->isLimitObtained($campaign_id) === true) {
                     $this->getModel()->formErrorMsg = '';
-                    $this->getModel()->getForm()->error= JText::_('LIMIT_OBTAINED');
+                    $this->getModel()->getForm()->error= Text::_('LIMIT_OBTAINED');
                     return false;
                 }
                 break;
-        }
-    }
-    /**
-     * Raise an error - depends on whether you are in admin or not as to what to do
-     *
-     * @param array   &$err   Form models error array
-     * @param string   $field Name
-     * @param string   $msg   Message
-     *
-     * @return  void
-     * @throws Exception
-     */
-    protected function raiseError(&$err, $field, $msg) {
-        $app = JFactory::getApplication();
-
-        if ($app->isClient('administrator')) {
-            $app->enqueueMessage($msg, 'notice');
-        } else {
-            $err[$field][0][] = $msg;
         }
     }
 }

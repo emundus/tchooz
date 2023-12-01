@@ -17,24 +17,17 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Router;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
-use Joomla\CMS\Cache\CacheControllerFactoryInterface;
-use Joomla\CMS\Categories\CategoryFactoryInterface;
-use Joomla\CMS\Component\Router\RouterFactory;
 use Joomla\CMS\Component\Router\RouterFactoryInterface;
 use Joomla\CMS\Component\Router\RouterInterface;
-use Joomla\CMS\Component\Router\RouterServiceInterface;
-use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Menu\AbstractMenu;
 use Joomla\CMS\Menu\MenuFactoryInterface;
 use Joomla\CMS\Router\SiteRouter;
-use Joomla\Component\Fields\Administrator\Model\FieldModel;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Database\Event\ConnectionEvent;
 use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
+use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
-use Joomla\CMS\Router\Route;
-use Joomla\CMS\Router\SiteRouterAwareTrait;
-
 
 //Global definitions use for front
 if( !defined('DS') ) {
@@ -415,8 +408,8 @@ class plgSystemFalangdriver extends CMSPlugin
             if (ComponentHelper::isEnabled('com_virtuemart', true)){
                 if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
                 VmConfig::loadConfig();
-                vmLanguage::$jSelLangTag = false;
-                vmLanguage::initialise(true);
+                \vmLanguage::$jSelLangTag = false;
+                \vmLanguage::initialise(true);
             }
 
             Factory::getApplication()->getMenu()->__construct();
@@ -704,6 +697,7 @@ class plgSystemFalangdriver extends CMSPlugin
      *
      * @since 4.0.5 add cateogry custom fields support
      * @update 4.12 save original text (null not accepted)
+     * @update 5.0 original value is empty
      *
      * @param $post
      * @return bool|void
@@ -752,10 +746,6 @@ class plgSystemFalangdriver extends CMSPlugin
 		// Get the translated fields data
 		$fieldsData = !empty($formData) ? (array)$formData['com_fields'] : array();
 
-		// Loading the model
-		//sbou4
-		//$model = JModelLegacy::getInstance('Field', 'FieldsModel', array('ignore_request' => true));
-		//$model = FieldModel::getInstance('Field', array('ignore_request'=>true));
 		$db = Factory::getDbo();
 		$user = Factory::getUser();
 
@@ -794,7 +784,7 @@ class plgSystemFalangdriver extends CMSPlugin
 			$fieldContent->reference_field= 'com_fields';
 			$fieldContent->value = $jsonValues;
 			// the original value don't exist for custom_fields.
-			$fieldContent->original_value = md5(null);
+			$fieldContent->original_value = '';
             $fieldContent->original_text = "";
 
 			$fieldContent->modified =  Factory::getDate()->toSql();

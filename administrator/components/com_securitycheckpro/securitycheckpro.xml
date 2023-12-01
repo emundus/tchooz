@@ -4,19 +4,17 @@
 <creationDate>12-06-2023</creationDate>
 <author>Jose A. Luque</author>
 <authorEmail>contacto@protegetuordenador.com</authorEmail>
-<authorUrl>http://www.protegetuordenador.com</authorUrl>
+<authorUrl>securitycheck.protegetuordenador.com</authorUrl>
 <copyright>Copyright www.protegetuordenador.com</copyright>
 <license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
-<version>3.6.2</version>
+<version>4.0</version>
 <description>COM_SECURITYCHECKPRO_DESCRIPTION</description>
+<namespace path="src">SecuritycheckExtensions\Component\SecuritycheckPro</namespace>
 <dlid prefix="dlid=" suffix=""/>
 
 <!-- Public front end files  -->
-<files folder="frontend">
-	<filename>index.html</filename>
-	<filename>securitycheckpro.php</filename>
-	<folder>controllers</folder>
-	<folder>models</folder>
+<files folder="frontend">	
+	<folder>src</folder>
 </files>
 
 <media destination="com_securitycheckpro" folder="media">
@@ -29,7 +27,7 @@
 
 <administration>
 <!-- Administration Menu Section -->
-<menu view="cpanel"	img="../media/com_securitycheckpro/images/tick_16x16.png">Securitycheck Pro</menu>
+<menu view="cpanel">Securitycheck Pro</menu>
 
 <submenu>
     <menu link="option=com_securitycheckpro">COM_SECURITYCHECKPRO_CPANEL_MAIN_MENU</menu>
@@ -43,20 +41,19 @@
 	
 <!-- Administration Main File Copy Section -->
 <files folder="backend">
-<filename>securitycheckpro.php</filename>
-<filename>index.html</filename>
 <filename>config.xml</filename>
 <filename>access.xml</filename>
-<folder>controllers</folder>
 <folder>includes</folder>
 <folder>language</folder>
-<folder>library</folder>
 <folder>models</folder>
 <folder>scans</folder>
 <folder>sql</folder>
 <folder>tables</folder>
-<folder>views</folder>
 <folder>helpers</folder>
+<folder>services</folder>
+<folder>src</folder>
+<folder>tmpl</folder>
+<folder>forms</folder>
 </files>
 
 <!-- Languages Section -->

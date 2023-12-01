@@ -11,13 +11,14 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
-use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\MVC\Controller\AdminController;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Pagination\Pagination;
+use Joomla\CMS\Router\Route;
 
 JLoader::import( 'helpers.controllerHelper',FALANG_ADMINPATH);
 
-class ElementsController extends BaseController {
+class ElementsController extends AdminController {
 
 	/** @var string		current used task */
 	var $task=null;
@@ -66,6 +67,7 @@ class ElementsController extends BaseController {
 		$this->_falangManager = FalangManager::getInstance();
 
 		$this->registerTask( 'show', 'showCElementConfig' );
+        $this->registerTask( 'cancel', 'cancelContentElements' );
 		$this->registerTask( 'detail', 'showElementConfiguration' );
 		$this->registerTask( 'remove', 'removeContentElement' );
 		$this->registerTask( 'remove_install', 'removeContentElement' );
@@ -216,9 +218,20 @@ class ElementsController extends BaseController {
 		// Assign data for view - should really do this as I go along
 		$view->cElements = $cElements;
 		$view->display();
-		//HTML_joomfish::showContentElementInstaller( $cElements, $this->view->message );
 	}
 
-	
+    /*
+     * @since 5.0 redirect on cancel to the translate list
+     * */
+    function cancelContentElements(){
+        // redirect to translate overview
+        $this->setRedirect(
+            Route::_(
+                'index.php?option=com_falang&task=elements.show'
+                . $this->getRedirectToListAppend(),
+                false
+            )
+        );
+    }
 	
 }
