@@ -19,7 +19,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Emundus\Plugin\Console\Tchooz\CliCommand\Services\EmundusDatabaseExporter;
 
 class TchoozVanillaCommand extends AbstractCommand
 {
@@ -209,85 +208,65 @@ class TchoozVanillaCommand extends AbstractCommand
 			}
 		}
 
-		if($action == 'export') {
-			$symfonyStyle = new SymfonyStyle($input, $output);
+		// php cli/joomla.php tchooz:vanilla --action="export_foreign_keys"
+		if($action == 'export_foreign_keys') {
+			$this->ioStyle->title('Exporting foreign keys');
 
-			$symfonyStyle->title('Exporting Database');
+			$this->ioStyle->warning('This command will export your foreign keys.');
+			$confirm = $this->ioStyle->confirm('Are you sure you want to continue?');
 
-			$totalTime = microtime(true);
+			if($confirm) {
+				$totalTime = microtime(true);
 
-			if (!class_exists(File::class)) {
-				$symfonyStyle->error('The "joomla/filesystem" Composer package is not installed, cannot create an export.');
+				$destinationFile = '.docker/installation/vanilla/foreign_keys/foreign_keys.xml';
+				$tables = $this->db->getTableList();
 
-				return 1;
-			}
-
-			// Make sure the database supports exports before we get going
-			try {
-				$exporter = EmundusDatabaseExporter::withStructure();
-			} catch (UnsupportedAdapterException $e) {
-				$symfonyStyle->error(sprintf('The "%s" database driver does not support exporting data.', 'EmundusDatabaseExporter mysqli'));
-
-				return 1;
-			}
-
-			$folderPath = $input->getOption('folder');
-			$tableName  = $input->getOption('table');
-			$zip        = $input->getOption('zip');
-
-			$zipFile = $folderPath . '/data_exported_' . date("Y-m-d\TH-i-s") . '.zip';
-			$tables  = $this->db->getTableList();
-			$prefix  = $this->db->getPrefix();
-
-			if ($tableName) {
-				if (!\in_array($tableName, $tables)) {
-					$symfonyStyle->error(sprintf('The %s table does not exist in the database.', $tableName));
-
-					return 1;
+				// erase $destinationFile content
+				if (file_exists($destinationFile)) {
+					File::delete($destinationFile);
 				}
 
-				$tables = [$tableName];
-			}
+				File::write($destinationFile, '');
 
-			if ($zip) {
-				if (!class_exists(Archive::class)) {
-					$symfonyStyle->error('The "joomla/archive" Composer package is not installed, cannot create ZIP files.');
+				// add xml header
+				$dom = new \DOMDocument('1.0', 'utf-8');
+				$dom->formatOutput = true;
 
-					return 1;
-				}
-
-				/** @var Zip $zipArchive */
-				$zipArchive = (new Archive())->getAdapter('zip');
-			}
-
-			foreach ($tables as $table) {
-				// If an empty prefix is in use then we will dump all tables, otherwise the prefix must match
-				if (strlen($prefix) === 0 || strpos(substr($table, 0, strlen($prefix)), $prefix) !== false) {
+				$xml = $dom->createElement('tables');
+				foreach ($tables as $table) {
 					$taskTime = microtime(true);
-					$filename = $folderPath . '/' . $table . '.xml';
 
-					$symfonyStyle->text(sprintf('Processing the %s table', $table));
+					$this->ioStyle->text(sprintf('Processing the %s table', $table));
 
-					$data = (string) $exporter->from($table)->withData(true);
+					$query = 'SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_NAME = "' . $table . '" AND REFERENCED_TABLE_NAME IS NOT NULL';
+					$this->db->setQuery($query);
+					$foreign_keys = $this->db->loadAssocList();
 
-					if (file_exists($filename)) {
-						File::delete($filename);
+					if (!empty($foreign_keys)) {
+						$xml_table = $dom->createElement('table');
+						$xml_table->setAttribute('name', $table);
+
+						foreach ($foreign_keys as $foreign_key) {
+							$xml_row = $dom->createElement('row');
+							$xml_row->setAttribute('constraint_name', $foreign_key['CONSTRAINT_NAME']);
+							$xml_row->setAttribute('column_name', $foreign_key['COLUMN_NAME']);
+							$xml_row->setAttribute('referenced_table_name', $foreign_key['REFERENCED_TABLE_NAME']);
+							$xml_row->setAttribute('referenced_column_name', $foreign_key['REFERENCED_COLUMN_NAME']);
+
+							$xml_table->appendChild($xml_row);
+						}
+
+						$xml->appendChild($xml_table);
 					}
 
-					File::write($filename, $data);
-
-					if ($zip) {
-						$zipFilesArray = [['name' => $table . '.xml', 'data' => $data]];
-						$zipArchive->create($zipFile, $zipFilesArray);
-						File::delete($filename);
-					}
-
-					$symfonyStyle->text(sprintf('Exported data for %s in %d seconds', $table, round(microtime(true) - $taskTime, 3)));
+					$this->ioStyle->text(sprintf('Exported data for %s in %d seconds', $table, round(microtime(true) - $taskTime, 3)));
 				}
+
+				$dom->appendChild($xml);
+				$dom->save($destinationFile);
+
+				$this->ioStyle->success(sprintf('Export completed in %d seconds', round(microtime(true) - $totalTime, 3)));
 			}
-
-			$symfonyStyle->success(sprintf('Export completed in %d seconds', round(microtime(true) - $totalTime, 3)));
-
 		}
 
 	    return Command::SUCCESS;
