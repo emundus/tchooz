@@ -304,14 +304,17 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 										if (empty($redirect_url)) {
 											$redirect_url = 'index.php?option=com_users&view=registration';
 										}
-										$register_url = $redirect_url . '&course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id . '&Itemid=' . $mod_em_campaign_itemid;
+										$register_url = $redirect_url . '&course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id;
 									}
 									else {
-										$register_url = $redirect_url . '?course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id . '&Itemid=' . $mod_em_campaign_itemid;
+										$register_url = JUri::base() . $redirect_url . '?course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id;
 									}
 
-									if (!$user->guest) {
-										$register_url .= '&redirect=' . $formUrl;
+									if(!empty($mod_em_campaign_itemid)) {
+										$register_url .= "&Itemid=" . $mod_em_campaign_itemid;
+									}
+									if (!$user->guest && !empty($formUrl)) {
+										$register_url .= "&redirect=" . $formUrl;
 									}
 									?>
                                     <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"

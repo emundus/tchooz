@@ -213,12 +213,15 @@ if ($currentCampaign->apply_online == 0) {
 						if (!isset($redirect_url) || empty($redirect_url)) {
 							$redirect_url = "index.php?option=com_users&view=registration";
 						}
-						$register_url = $redirect_url . "&course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id . "&Itemid=" . $mod_em_campaign_itemid;
+						$register_url = $redirect_url . "&course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id;
 					}
 					else {
-						$register_url = JUri::root() . $redirect_url . "?course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id . "&Itemid=" . $mod_em_campaign_itemid;
+						$register_url = JUri::base() . $redirect_url . "?course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id;
 					}
-					if (!$user->guest) {
+                    if(!empty($mod_em_campaign_itemid)) {
+                        $register_url .= "&Itemid=" . $mod_em_campaign_itemid;
+                    }
+					if (!$user->guest && !empty($formUrl)) {
 						$register_url .= "&redirect=" . $formUrl;
 					}
 					?>
