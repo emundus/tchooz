@@ -175,7 +175,7 @@ ul.nav.nav-tabs.nav-stacked {
 
 .background-shaped-top {
     position: absolute;
-    top: 163px;
+    top: 91px;
     right: 4.1vw;
     z-index: 0;
     transform: scale(2.5);
@@ -414,7 +414,6 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
     .background-shaped-top {
-        top: 174px;
         right: 106px;
     }
 
@@ -466,7 +465,6 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     }
 
     .background-shaped-top {
-        top: 163px;
         right: 106px;
     }
 
@@ -488,7 +486,6 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 @media all and (min-width: 1200px) and (max-width: 1650px) {
 
     .background-shaped-top {
-        top: 164px;
         left: 75.5vw;
     }
 }
