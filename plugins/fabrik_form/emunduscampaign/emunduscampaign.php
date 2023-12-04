@@ -173,9 +173,9 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form {
                 }
 
                 $campaign_id = is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
-		        if (empty($campaign_id)) {
-			        return false;
-		        }
+                if (empty($campaign_id)) {
+                    return false;
+                }
 
                 // create new fnum
                 $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);

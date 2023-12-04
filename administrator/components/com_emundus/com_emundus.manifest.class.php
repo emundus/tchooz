@@ -121,6 +121,15 @@ class Com_EmundusInstallerScript
 					EmundusHelperUpdate::displayMessage('Erreur lors de la modification des champs fnums', 'error');
 					$succeed = false;
 				}
+
+	            $column_added = EmundusHelperUpdate::addColumn('jos_emundus_setup_attachments', 'max_filesize', 'DOUBLE(6,2)');
+				if($column_added['status']) {
+					EmundusHelperUpdate::displayMessage('La colonne max_filesize a été ajoutée à la table jos_emundus_setup_attachments', 'success');
+				}
+				else {
+					EmundusHelperUpdate::displayMessage('Erreur lors de l\'ajout de la colonne max_filesize à la table jos_emundus_setup_attachments', 'error');
+					$succeed = false;
+				}
             }
         }
 

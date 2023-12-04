@@ -653,6 +653,11 @@ Text::script('COM_EMUNDUS_DELETE_ADVANCED_FILTERS');
 
 Text::script('COM_EMUNDUS_MAIL_GB_BUTTON');
 
+Text::script('COM_EMUNDUS_EMAIL_CURRENT_FILE');
+Text::script('COM_EMUNDUS_EMAIL_ALL_FILES');
+Text::script('COM_EMUNDUS_EMAIL_ON_FILE');
+
+
 // Require specific controller if requested
 if ($controller = $app->input->get('controller', '', 'WORD')) {
 	$path = JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . $controller . '.php';

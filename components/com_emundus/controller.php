@@ -998,7 +998,7 @@ class EmundusController extends JControllerLegacy
 				}
 
 				try {
-					$query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax, min_pages_pdf, max_pages_pdf FROM #__emundus_setup_attachments WHERE id = ' . (int) $attachments;
+					$query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax, min_pages_pdf, max_pages_pdf, max_filesize FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
 					$this->_db->setQuery($query_ext);
 					$attachment = $this->_db->loadAssoc();
 
@@ -1018,6 +1018,23 @@ class EmundusController extends JControllerLegacy
 							}
 
 							continue;
+						}
+
+						if (!empty($attachment['max_filesize'])) {
+							$bytes = $attachment['max_filesize'] * 1024 * 1024;
+
+							if ($file['size'] > $bytes) {
+								$error = JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG');
+
+								if ($format == "raw") {
+									echo '{"aid":"0","status":false,"message":"'.$error.'" }';
+								} else {
+									JFactory::getApplication()->enqueueMessage($error, 'error');
+									$this->setRedirect($url);
+								}
+
+								return false;
+							}
 						}
 					}
 					catch (Exception $e) {
@@ -1727,8 +1744,8 @@ class EmundusController extends JControllerLegacy
 
 		$current_user = $this->app->getSession()->get('emundusUser');
 
-		$fnum = "";
-		if ($current_user->id == $uid) {
+		$fnum = '';
+		if($current_user->id == $uid && !empty($current_user->fnum)) {
 			$fnum = $current_user->fnum;
 		}
 		$fnums = [];

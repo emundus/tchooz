@@ -170,7 +170,7 @@ class EmundusControllerProgramme extends JControllerLegacy
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$programs = $this->m_programme->getAllPrograms(9999, 0, '', 'DESC', '');
+			$programs = $this->m_programme->getAllPrograms();
 
 			if (count((array) $programs) > 0) {
 				$values = [];
@@ -201,7 +201,7 @@ class EmundusControllerProgramme extends JControllerLegacy
 			$filter    = $this->input->getString('filter');
 			$sort      = $this->input->getString('sort');
 			$recherche = $this->input->getString('recherche');
-			$lim       = $this->input->getInt('lim');
+			$lim       = $this->input->getInt('lim', 0);
 			$page      = $this->input->getInt('page');
 
 			$programs = $this->m_programme->getAllPrograms($lim, $page, $filter, $sort, $recherche);

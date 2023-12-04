@@ -51,14 +51,14 @@ class EmundusModelForm extends JModelList
 		$query    = $this->db->getQuery(true);
 
 		// Build filter / limit / pagination part of the query
-		if (empty($lim)) {
-			$limit = 25;
+		if (empty($lim) || $lim == 'all') {
+			$limit = '';
 		}
 		else {
 			$limit = $lim;
 		}
 
-		if (empty($page)) {
+		if (empty($page) || empty($limit)) {
 			$offset = 0;
 		}
 		else {
@@ -1767,6 +1767,8 @@ class EmundusModelForm extends JModelList
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$modules  = $eMConfig->get('form_builder_page_creation_modules', [93, 102, 103, 104, 168, 170]);
+
+		require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'update.php');
 
 		try {
 			// Create the menu

@@ -152,6 +152,24 @@ class EmundusHelperEvents
 				else {
 					$this->confirmpost($params);
 				}
+			}  else {
+				$fnum = '';
+				$keys = array_keys(Factory::getApplication()->input->getArray());
+				foreach ($keys as $key) {
+					if (strpos($key, '___fnum')) {
+						$fnum = Factory::getApplication()->input->getString($key, '');
+						break;
+					}
+				}
+
+				if (!empty($fnum)) {
+					require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+					$mFile        = new EmundusModelFiles();
+					$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+					EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_COORDINATOR');
+					$this->applicationUpdating($fnum);
+				}
 			}
 
 			return true;

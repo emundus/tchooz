@@ -154,7 +154,14 @@ class EmundusViewApplication extends JViewLegacy
 					$show_related_files = $params->get('show_related_files', 0);
 
 					if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asManagerAccessLevel($this->user->id)) {
-						$campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id']);
+						$campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], null, false);
+
+						$published_campaigns = array_filter($campaignInfo, function($campaign) {
+							return $campaign->published == 1;
+						});
+						$unpublished_campaigns = array_filter($campaignInfo, function($campaign) {
+							return $campaign->published != 1;
+						});
 
 						foreach ($campaignInfo as $key => $campaign) {
 							if (!EmundusHelperAccess::isUserAllowedToAccessFnum($this->_user->id, $campaign->fnum)) {
@@ -164,11 +171,13 @@ class EmundusViewApplication extends JViewLegacy
 
 					}
 					else {
-						$campaignInfo = $m_application->getCampaignByFnum($fnum);
-					}
+	                    $published_campaigns = $m_application->getCampaignByFnum($fnum);
+	                    $unpublished_campaigns = [];
+                    }
 
 					$this->assoc_files            = new stdClass();
-					$this->assoc_files->camps     = $campaignInfo;
+					$this->assoc_files->published_campaigns     = $published_campaigns;
+					$this->assoc_files->unpublished_campaigns     = $unpublished_campaigns;
 					$this->assoc_files->fnumInfos = $fnumInfos;
 					$this->assoc_files->fnum      = $fnum;
 
@@ -423,10 +432,21 @@ class EmundusViewApplication extends JViewLegacy
 						/* get all profiles (order by step) by campaign */
 						$pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id], 'object');
 
+                        $pidsStep = [];
+                        if (isset($step) && is_numeric($step)) {
+                            $pidsStep = $m_profiles->getProfileByStep($step);
+                        }
+
 						$noPhasePids  = array();
 						$hasPhasePids = array();
 
 						foreach ($pidsRaw as $pidRaw) {
+                            if (!empty($pidsStep)) {
+                                if (!in_array($pidRaw->pid, $pidsStep)) {
+                                    continue;
+                                }
+                            }
+
 							if ($pidRaw->pid === $pid) {
 								$this->defaultpid = $pidRaw;
 							}
@@ -439,6 +459,9 @@ class EmundusViewApplication extends JViewLegacy
 							}
 							else {
 								$hasPhasePids[] = $pidRaw;
+                                if (empty($this->defaultpid)) {
+                                    $this->defaultpid = $pidRaw;
+                                }
 							}
 						}
 
@@ -446,13 +469,13 @@ class EmundusViewApplication extends JViewLegacy
 
 						/* group profiles by phase */
 						foreach ($hasPhasePids as $ppid) {
-							$profiles_by_phase['step_' . $ppid->phase]['lbl']    = $ppid->lbl;
+                            $profiles_by_phase['step_' . $ppid->phase]['lbl'] = $ppid->label;
 							$profiles_by_phase['step_' . $ppid->phase]['data'][] = $ppid;
 						}
 
-						$this->pids          = json_encode(array_merge($profiles_by_phase, $noPhasePids));
+						$this->pids          = array_merge($profiles_by_phase, $noPhasePids);
 						$this->formsProgress = $m_application->getFormsProgress($fnum);
-						$this->forms         = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $pid);
+						$this->forms         = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $this->defaultpid->pid);
 						$this->applicant     = $applicant[0];
 					}
 					else {

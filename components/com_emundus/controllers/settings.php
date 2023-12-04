@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 
 /**
@@ -962,52 +963,45 @@ class EmundusControllersettings extends JControllerLegacy
 		}
 	}
 
-	public function getemundusparams()
-	{
+    public function getemundusparams(){
+		$params = ['emundus' => [], 'joomla' => [], 'msg' => JText::_('ACCESS_DENIED')];
 		$user = JFactory::getUser();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+	        $params = $this->m_settings->getEmundusParams();
+			$params['msg'] = JText::_('SUCCESS');
 		}
-		else {
-			$eMConfig = JComponentHelper::getParams('com_emundus');
 
-			echo json_encode(array('config' => $eMConfig));
-		}
+	    echo json_encode($params);
 		exit;
 	}
 
-	public function updateemundusparam()
-	{
-		$user = JFactory::getUser();
+    public function updateemundusparam(){
+        $user = Factory::getApplication()->getIdentity();
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
-		}
-		else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+	        $response['msg'] = JText::_('MISSING_PARAMS');
+            $jinput = Factory::getApplication()->input;
+            $component = $jinput->getString('component');
+            $param = $jinput->getString('param');
+            $value = $jinput->getString('value', null);
 
-			$param = $this->input->getString('param');
-			$value = $this->input->getInt('value');
+			if (!empty($param) && isset($value)) {
+				if ($this->m_settings->updateEmundusParam($component, $param, $value)) {
+					$response['msg'] = JText::_('SUCCESS');
+					$response['status'] = true;
 
-			$eMConfig = JComponentHelper::getParams('com_emundus');
-			$eMConfig->set($param, $value);
-
-			$componentid = JComponentHelper::getComponent('com_emundus')->id;
-			$db          = JFactory::getDBO();
-
-			$query = "UPDATE #__extensions SET params = " . $db->Quote($eMConfig->toString()) . " WHERE extension_id = " . $componentid;
-
-			try {
-				$db->setQuery($query);
-				$status = $db->execute();
+					if ($param === 'list_limit') {
+						JFactory::getSession()->set('limit', $value);
+					}
+				} else {
+					$response['msg'] = JText::_('PARAM_NOT_UPDATED');
 			}
-			catch (Exception $e) {
-				JLog::add('Error set param ' . $param, JLog::ERROR, 'com_emundus');
 			}
-			echo json_encode(array('status' => $status));
 		}
+
+	    echo json_encode($response);
 		exit;
 	}
 

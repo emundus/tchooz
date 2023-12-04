@@ -15,7 +15,7 @@
   </component>
   <component name="PhpInterpreters">
     <interpreters>
-      <interpreter id="a11aee6a-c5f1-49e0-835d-f00240451351" name="joomla" home="docker-compose://DATA" false="false" debugger_id="php.debugger.XDebug">
+      <interpreter id="a11aee6a-c5f1-49e0-835d-f00240451351" name="joomla" home="docker-compose://DATA" auto="false" debugger_id="php.debugger.XDebug">
         <remote_data INTERPRETER_PATH="php" HELPERS_PATH="/opt/.phpstorm_helpers" VALID="true" RUN_AS_ROOT_VIA_SUDO="false" DOCKER_ACCOUNT_NAME="Docker" DOCKER_COMPOSE_SERVICE_NAME="joomla" DOCKER_REMOTE_PROJECT_PATH="/opt/project">
           <type_data command="RUN" />
           <dockerComposeConfigurationPaths>
@@ -98,7 +98,7 @@
   </component>
   <component name="PhpUnit">
     <phpunit_settings>
-      <phpunit_by_interpreter interpreter_id="a11aee6a-c5f1-49e0-835d-f00240451351" load_method="PHPUNIT_PHAR" configuration_file_path="phpunit.xml" custom_loader_path="" phpunit_phar_path="libraries/emundus/phpunit.phar" use_configuration_file="true" />
+      <phpunit_by_interpreter interpreter_id="a11aee6a-c5f1-49e0-835d-f00240451351" load_method="PHPUNIT_PHAR" configuration_file_path="tests/phpunit.xml" custom_loader_path="" phpunit_phar_path="/var/www/html/libraries/emundus/phpunit.phar" use_configuration_file="true" />
     </phpunit_settings>
   </component>
   <component name="PsalmOptionsConfiguration">
