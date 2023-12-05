@@ -483,6 +483,7 @@ div#frame.outline {
     width: 100%;
     position: sticky;
     margin: auto !important;
+    overflow: hidden;
   }
 
   #header-a {
@@ -1151,11 +1152,25 @@ footer#g-footer > .g-container {
 }
 
 .view-list .form-search {
+  overflow: visible !important;
   .nav {
     .dropdown-menu {
       a {
         padding: 4px;
       }
+    }
+  }
+  .fabrikFilterContainer .filtertable {
+    border: none;
+
+    > *,  .fabrik___heading th, tfoot tr td {
+      border: none;
+    }
+  }
+
+  .fabrikDataContainer {
+    .table-striped, tfoot tr td {
+      border: none;
     }
   }
 }
@@ -1610,6 +1625,7 @@ footer#g-footer > .g-container {
 
   select {
     color: var(--neutral-800);
+    background-color: transparent;
   }
 }
 
@@ -6248,6 +6264,11 @@ fieldset[disabled] .multiselect {
   }
 }
 
+.popover .tooltip-inner.popover-inner{
+  background: var(--neutral-0);
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+}
+
 .tooltip[aria-hidden='true'] {
   visibility: hidden;
   opacity: 0;
@@ -6801,5 +6822,12 @@ tbody .el-table__row:nth-child(odd){
   }
   .swal2-header {
     display: none;
+  }
+}
+
+.view-login {
+  #g-navigation {
+    background: none;
+    border: none;
   }
 }

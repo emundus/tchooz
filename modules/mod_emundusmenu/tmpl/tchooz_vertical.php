@@ -142,6 +142,11 @@ defined('_JEXEC') or die;
         position: relative;
         z-index: 2;
         transition: all 0.3s ease-in-out;
+        color: var(--neutral-900);
+    }
+
+    .tchooz-vertical-item a:hover {
+        text-decoration: none;
     }
 
     .tchooz-vertical-item a img,
@@ -349,7 +354,7 @@ defined('_JEXEC') or die;
 			endforeach;
 
 			if (sizeof($tchooz_list) > 0) :
-				echo '<hr id="menu_separator" class="mb-4 mt-4">';
+				echo '<hr id="menu_separator">';
 			endif;
 		endif;
 
