@@ -111,7 +111,7 @@ defined('_JEXEC') or die;
 
     /*** List style ***/
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li {
-        margin-inline: 10px;
+        margin: 6px 10px;
         font-family: var(--em-default-font);
     }
 
@@ -269,7 +269,7 @@ defined('_JEXEC') or die;
 
         <li class="g-menu-item g-standard tchooz-vertical-item">
             <a class="item" onclick="enableTitles()">
-                <img src="http://localhost/images/emundus/menus/menu.png" style="width: 30px">
+                <img src="./images/emundus/menus/menu.png" style="width: 30px">
                 <span class="image-title"
                       style="display: block; opacity: 1;"><?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?></span>
             </a>
