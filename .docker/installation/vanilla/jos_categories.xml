@@ -47,7 +47,7 @@
     <field name="asset_id">0</field>
     <field name="parent_id">0</field>
     <field name="lft">0</field>
-    <field name="rgt">35</field>
+    <field name="rgt">39</field>
     <field name="level">0</field>
     <field name="path"></field>
     <field name="extension">system</field>
@@ -299,6 +299,35 @@
     <field name="created_time">2023-05-10 09:07:14</field>
     <field name="modified_user_id">650</field>
     <field name="modified_time">2023-05-10 09:07:14</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="asset_id">143</field>
+    <field name="parent_id">1</field>
+    <field name="lft">37</field>
+    <field name="rgt">38</field>
+    <field name="level">1</field>
+    <field name="path"></field>
+    <field name="extension">com_content</field>
+    <field name="title">Referents</field>
+    <field name="alias">referents</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;image_alt&quot;:&quot;&quot;}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="created_user_id">1</field>
+    <field name="created_time">2023-12-05 15:26:20</field>
+    <field name="modified_user_id">1</field>
+    <field name="modified_time">2023-12-05 15:26:20</field>
     <field name="hits">0</field>
     <field name="language">*</field>
     <field name="version">1</field>

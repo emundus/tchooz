@@ -66,7 +66,7 @@
     <field name="template_style_id">0</field>
     <field name="params"></field>
     <field name="lft">0</field>
-    <field name="rgt">365</field>
+    <field name="rgt">371</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -3778,7 +3778,7 @@
     <field name="path">formulaire-de-base-candidat-9/references</field>
     <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=256</field>
     <field name="type">component</field>
-    <field name="published">-2</field>
+    <field name="published">1</field>
     <field name="parent_id">272</field>
     <field name="level">2</field>
     <field name="component_id">332</field>
@@ -5166,6 +5166,90 @@
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">346</field>
+    <field name="menutype">mainmenu</field>
+    <field name="title">Fiche déjà envoyée</field>
+    <field name="alias">fiche-deja-envoyee</field>
+    <field name="note"></field>
+    <field name="path">fiche-deja-envoyee</field>
+    <field name="link">index.php?option=com_content&amp;view=article&amp;id=60</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">19</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:0,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="lft">365</field>
+    <field name="rgt">366</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">347</field>
+    <field name="menutype">mainmenu</field>
+    <field name="title">Déposer une lettre de recommendation</field>
+    <field name="alias">depot-lettre</field>
+    <field name="note"></field>
+    <field name="path">depot-lettre</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=68</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">332</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:0,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="lft">367</field>
+    <field name="rgt">368</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">348</field>
+    <field name="menutype">mainmenu</field>
+    <field name="title">Fiche envoyée</field>
+    <field name="alias">fiche-envoyee</field>
+    <field name="note"></field>
+    <field name="path">fiche-envoyee</field>
+    <field name="link">index.php?option=com_content&amp;view=article&amp;id=61</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">19</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">0</field>
+    <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:0,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="lft">369</field>
+    <field name="rgt">370</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
     <field name="publish_up" value_is_null="true"></field>
     <field name="publish_down" value_is_null="true"></field>
    </row>

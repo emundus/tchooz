@@ -1031,7 +1031,7 @@
    <row>
     <field name="id">124</field>
     <field name="asset_id">117</field>
-    <field name="title">[FORMULAIRE] Étapes</field>
+    <field name="title">[APPLICANT_FORM] Forms</field>
     <field name="note"></field>
     <field name="content"></field>
     <field name="ordering">1</field>
