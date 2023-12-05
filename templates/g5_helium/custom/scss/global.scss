@@ -1627,6 +1627,11 @@ footer#g-footer > .g-container {
     color: var(--neutral-800);
     background-color: transparent;
   }
+
+  select:focus {
+    outline: none;
+    background-color: transparent;
+  }
 }
 
 .pagination > .disabled > span {
@@ -6829,5 +6834,21 @@ tbody .el-table__row:nth-child(odd){
   #g-navigation {
     background: none;
     border: none;
+  }
+}
+
+.view-files .SumoSelect .select-all {
+  height: fit-content;
+}
+
+#g-feature .g-container  {
+  margin-inline: 201px 126px;
+  margin-top: 40px;
+  width: auto;
+}
+
+@media screen and (max-width: 960px) {
+  #g-feature .g-container {
+    margin-inline: 85px 10px;
   }
 }
