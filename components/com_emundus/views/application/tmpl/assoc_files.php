@@ -18,7 +18,7 @@ if (!empty((array) $this->assoc_files)) :
                             <h6 title="<?php echo $camp->label ?>">
 								<?php echo $camp->label ?>
                             </h6>
-                                <span id="<?php echo $camp->fnum ?>-icon" class="material-icons-outlined">expand_less</span>
+                                <span id="<?php echo $camp->fnum ?>-icon" class="material-icons-outlined" style="transform: rotate(-180deg)">expand_less</span>
                         </div>
                         <div class="em-flex-row em-flex-space-between em-mb-8">
                             <span class="label label-<?php echo $camp->class ?>"> <?php echo $camp->step_value ?></span>
@@ -94,7 +94,7 @@ if (!empty((array) $this->assoc_files)) :
                                 <h6 title="<?php echo $camp->label ?>">
                                     <?php echo $camp->label ?>
                                 </h6>
-                                <span id="<?php echo $camp->fnum ?>-icon" class="material-icons-outlined">expand_less</span>
+                                <span id="<?php echo $camp->fnum ?>-icon" class="material-icons-outlined" style="transform: rotate(-180deg)">expand_less</span>
                             </div>
                             <div class="em-flex-row em-flex-space-between em-mb-8">
                                 <span class="label label-<?php echo $camp->class ?>"> <?php echo $camp->step_value ?></span>
@@ -156,7 +156,6 @@ if (!empty((array) $this->assoc_files)) :
     headings.forEach((heading) => {
         let clickElement = heading.querySelector('.em-container-assocFiles-heading');
         clickElement.addEventListener('click', function () {
-            console.log('cliqué sur le header !');
             if (heading.classList.contains('closed-tab')) {
                 heading.classList.remove('closed-tab');
             } else {
@@ -169,11 +168,11 @@ if (!empty((array) $this->assoc_files)) :
         let block = document.getElementById(fnum + '-collapse-item');
         let icon = document.getElementById(fnum + '-icon');
 
-        block.toggle(200);
-
         if (block.style.display === 'none') {
+            block.style.display = 'block';
             icon.style.transform = 'rotate(0deg)';
         } else {
+            block.style.display = 'none';
             icon.style.transform = 'rotate(-180deg)';
         }
     }
