@@ -367,13 +367,11 @@ class EmundusController extends JControllerLegacy
 	function deletefile()
 	{
 		//@TODO ADD COMMENT ON DELETE
-
-
 		$m_profile = $this->getModel('Profile');
 
-		$student_id = $this->input->get->get('sid', null);
-		$fnum       = $this->input->get->get('fnum', null);
-		$redirect   = $this->input->get->getBase64('redirect', null);
+		$student_id = $this->input->getInt('sid', null);
+		$fnum       = $this->input->getString('fnum', null);
+		$redirect   = $this->input->getBase64('redirect', null);
 		// Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
 
 		if (empty($redirect)) {
@@ -388,7 +386,7 @@ class EmundusController extends JControllerLegacy
 		}
 
 		$current_user = $this->app->getSession()->get('emundusUser');
-		$m_files      = $this->getModel('files');
+		$m_files      = $this->getModel('Files');
 
 		if (in_array($fnum, array_keys($current_user->fnums))) {
 			$user = $current_user;

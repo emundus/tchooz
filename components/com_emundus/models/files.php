@@ -4064,12 +4064,10 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function deleteFile($fnum)
 	{
+		$deleted = false;
 
-
-		JFactory::getApplication()->triggerEvent('onBeforeDeleteFile', $fnum);
-		JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
-
-		$this->_db = JFactory::getDbo();
+		$this->app->triggerEvent('onBeforeDeleteFile', ['fnum' => $fnum]);
+		$this->app->triggerEvent('onCallEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
 
 		$query = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('filename'))
@@ -4088,7 +4086,7 @@ class EmundusModelFiles extends JModelLegacy
 		// Remove all files linked to the fnum.
 		$user_id = (int) substr($fnum, -7);
 		$dir     = EMUNDUS_PATH_ABS . $user_id . DS;
-		if ($dh = @opendir($dir)) {
+		if ($dh = opendir($dir)) {
 
 			while (false !== ($obj = readdir($dh))) {
 				if (in_array($obj, $files)) {
@@ -4101,25 +4099,22 @@ class EmundusModelFiles extends JModelLegacy
 			closedir($dh);
 		}
 
-
-		$query = 'DELETE FROM #__emundus_campaign_candidature
-                    WHERE fnum like ' . $this->_db->Quote($fnum);
+		$query->clear()
+			->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
+			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 
 		try {
-
 			$this->_db->setQuery($query);
-			$res = $this->_db->execute();
-			JFactory::getApplication()->triggerEvent('onAfterDeleteFile', $fnum);
-			JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
+			$deleted = $this->_db->execute();
 
-			return $res;
+			$this->app->triggerEvent('onAfterDeleteFile', ['fnum' => $fnum]);
+			$this->app->triggerEvent('onCallEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
 		}
 		catch (Exception $e) {
-			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-			return false;
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
+
+		return $deleted;
 	}
 
 

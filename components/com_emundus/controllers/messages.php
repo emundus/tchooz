@@ -1002,9 +1002,6 @@ class EmundusControllerMessages extends JControllerLegacy
 	 * @param   bool   $bcc
 	 *
 	 * @return bool
-	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
-	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
-	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
 	function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false, $sender_id = null)
 	{
@@ -1032,8 +1029,7 @@ class EmundusControllerMessages extends JControllerLegacy
 		$m_campaign = $this->getModel('Campaign');
 		$m_users    = $this->getModel('Users');
 
-		$user   = JFactory::getUser();
-		$config = JFactory::getConfig();
+		$user   = $this->app->getIdentity();
 
 		// Get additional info for the fnums such as the user email.
 		$fnum      = $m_files->getFnumInfos($fnum);
@@ -1050,8 +1046,8 @@ class EmundusControllerMessages extends JControllerLegacy
 		$tags                   = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $template->emailfrom . $template->name . $template->subject . $template->message);
 
 		// Get default mail sender info
-		$mail_from_sys      = $config->get('mailfrom');
-		$mail_from_sys_name = $config->get('fromname');
+		$mail_from_sys      = $this->app->get('mailfrom');
+		$mail_from_sys_name = $this->app->get('fromname');
 
 		// If no mail sender info is provided, we use the system global config.
 		if (!empty($template->emailfrom)) {
@@ -1066,14 +1062,7 @@ class EmundusControllerMessages extends JControllerLegacy
 		else {
 			$mail_from_name = $mail_from_sys_name;
 		}
-
-		/* DEPRECATED */
-		// If the email sender has the same domain as the system sender address
-		/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
-			$mail_from_address = $mail_from;
-		} else {
-			$mail_from_address = $mail_from_sys;
-		}*/
+		
 		$mail_from_address = $mail_from_sys;
 
 		// Set sender
@@ -1114,7 +1103,7 @@ class EmundusControllerMessages extends JControllerLegacy
 		}
 
 		// Configure email sender
-		$mailer = JFactory::getMailer();
+		$mailer = Factory::getContainer()->get(Mail\MailerFactoryInterface::class)->createMailer();
 		if (!empty($cc)) {
 			$mailer->addCc($cc);
 		}
