@@ -965,9 +965,8 @@ class EmundusControllersettings extends JControllerLegacy
 
     public function getemundusparams(){
 		$params = ['emundus' => [], 'joomla' => [], 'msg' => JText::_('ACCESS_DENIED')];
-		$user = JFactory::getUser();
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
 	        $params = $this->m_settings->getEmundusParams();
 			$params['msg'] = JText::_('SUCCESS');
 		}
