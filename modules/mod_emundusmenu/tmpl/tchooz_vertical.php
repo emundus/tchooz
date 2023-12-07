@@ -577,7 +577,7 @@ defined('_JEXEC') or die;
             if (document.querySelector(".sidebar-formbuilder")) {
                 document.querySelector(".sidebar-formbuilder").style.opacity = "0";
             }
-            if (window.innerWidth >= 1280) {
+            if (window.innerWidth >= 0) {
                 jQuery("#g-footer").css("padding-left", "280px");
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "280px");
@@ -615,7 +615,7 @@ defined('_JEXEC') or die;
             if (document.querySelector(".sidebar-formbuilder")) {
                 document.querySelector(".sidebar-formbuilder").style.opacity = "0";
             }
-            if (window.innerWidth >= 1280) {
+            if (window.innerWidth >= 0) {
                 if (document.querySelector("#g-footer")) {
                     document.querySelector("#g-footer").style.paddingLeft = "280px";
                     if (document.querySelector("#footer-rgpd")) {
@@ -656,7 +656,7 @@ defined('_JEXEC') or die;
                 document.querySelector(".sidebar-formbuilder").style.opacity = "1";
             }
 
-            if (window.innerWidth >= 1280) {
+            if (window.innerWidth >= 0) {
                 document.querySelector("#g-container-main").style.paddingLeft = "76px";
                 if (document.querySelector("#g-footer")) {
                     document.querySelector("#g-footer").style.paddingLeft = "76px";
@@ -668,6 +668,7 @@ defined('_JEXEC') or die;
             }
 
             setTimeout(function () {
+                document.querySelector(".tchooz-vertical-logo").style.opacity = "1";
                 document.querySelectorAll(".image-title").forEach(function (elem) {
                     elem.style.display = "none";
                 });
