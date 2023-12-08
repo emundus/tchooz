@@ -1923,6 +1923,8 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getFnumInfos($fnum)
 	{
+		$fnumInfos = [];
+
 		try {
 			$query = $this->_db->getQuery(true);
 			$query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
@@ -1934,7 +1936,7 @@ class EmundusModelFiles extends JModelLegacy
 			$this->_db->setQuery($query);
 			$fnumInfos = $this->_db->loadAssoc();
 
-			$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+			$anonymize_data = EmundusHelperAccess::isDataAnonymized($this->app->getIdentity()->id);
 			if ($anonymize_data) {
 				$fnumInfos['name']  = $fnum;
 				$fnumInfos['email'] = $fnum;
@@ -1942,9 +1944,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-			return false;
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 
 		return $fnumInfos;
@@ -2631,6 +2631,8 @@ class EmundusModelFiles extends JModelLegacy
 		$data = [];
 
 		if (!empty($fnums) && !empty($elements)) {
+			$fnums = !is_array($fnums) ? [$fnums] : $fnums;
+			$fnums = array_unique($fnums);
 			$method = (int) $method;
 
 			$h_files      = new EmundusHelperFiles;
@@ -3053,16 +3055,37 @@ class EmundusModelFiles extends JModelLegacy
 						}
 
 						if (is_array($value)) {
-							$data[$d_key][$r_key] = implode(', ', $value);
+                            $data[$d_key][$r_key] = '"' . implode(', ', $value) . '"';
+                        } else if (!empty($value) && is_string($value)) {
+							$data[$d_key][$r_key] = str_replace('-', '\-', $value);
 						}
 					}
 				}
 
-				if (!empty($limit) && count($data) < $limit && count($rows) == $limit) {
+		        /**
+		         * I made that in order to handle repeat lines that are not complete, because of the limit
+		         * If we have a limit of 10, and we have 10 rows, but the last row is not complete, we need to retrieve the last row
+		         * in order to have all the data
+		         */
+				if (!empty($limit) && count($rows) == $limit && (count($data) < $limit || $method === 1)) {
 					// it means that we have repeated rows, so we need to retrieve last row all entries, because it may be incomplete (chunked by the limit)
 					$last_row                = array_pop($rows);
-					$last_row_data           = $this->getFnumArray2($last_row['fnum'], $elements, $start, 0, $method);
+					$last_row_data = $this->getFnumArray2([$last_row['fnum']], $elements, $start, 0, $method);
+
+					if ($method !== 1) {
 					$data[$last_row['fnum']] = $last_row_data[$last_row['fnum']];
+					} else {
+						// in methode 1, data is not an associative array, so we need to do some stuff
+						// remove from $data all rows with the same fnum
+						foreach($data as $d_key => $row) {
+							if ($row['fnum'] === $last_row['fnum']) {
+								unset($data[$d_key]);
+							}
+						}
+
+						// add the last row array to the data
+						$data = array_merge($data, $last_row_data);
+					}
 				}
 			}
 		}
@@ -4045,12 +4068,10 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function deleteFile($fnum)
 	{
+		$deleted = false;
 
-
-		JFactory::getApplication()->triggerEvent('onBeforeDeleteFile', $fnum);
-		JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
-
-		$this->_db = JFactory::getDbo();
+		$this->app->triggerEvent('onBeforeDeleteFile', ['fnum' => $fnum]);
+		$this->app->triggerEvent('onCallEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
 
 		$query = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('filename'))
@@ -4069,7 +4090,7 @@ class EmundusModelFiles extends JModelLegacy
 		// Remove all files linked to the fnum.
 		$user_id = (int) substr($fnum, -7);
 		$dir     = EMUNDUS_PATH_ABS . $user_id . DS;
-		if ($dh = @opendir($dir)) {
+		if ($dh = opendir($dir)) {
 
 			while (false !== ($obj = readdir($dh))) {
 				if (in_array($obj, $files)) {
@@ -4082,25 +4103,22 @@ class EmundusModelFiles extends JModelLegacy
 			closedir($dh);
 		}
 
-
-		$query = 'DELETE FROM #__emundus_campaign_candidature
-                    WHERE fnum like ' . $this->_db->Quote($fnum);
+		$query->clear()
+			->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
+			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 
 		try {
-
 			$this->_db->setQuery($query);
-			$res = $this->_db->execute();
-			JFactory::getApplication()->triggerEvent('onAfterDeleteFile', $fnum);
-			JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
+			$deleted = $this->_db->execute();
 
-			return $res;
+			$this->app->triggerEvent('onAfterDeleteFile', ['fnum' => $fnum]);
+			$this->app->triggerEvent('onCallEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
 		}
 		catch (Exception $e) {
-			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-			return false;
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
+
+		return $deleted;
 	}
 
 

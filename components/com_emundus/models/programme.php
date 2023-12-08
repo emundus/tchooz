@@ -500,7 +500,7 @@ class EmundusModelProgramme extends JModelList
 	 *
 	 * @since version 1.0
 	 */
-	function getAllPrograms($lim, $page, $filter, $sort, $recherche)
+	function getAllPrograms($lim = 'all', $page = 0, $filter = null, $sort = 'DESC', $recherche = null)
 	{
 		$all_programs = [];
 
@@ -510,9 +510,13 @@ class EmundusModelProgramme extends JModelList
 		//
 
 		if (!empty($programs)) {
-			$limit = empty($lim) ? 25 : $lim;
+			if (empty($lim) || $lim == 'all') {
+				$limit = '';
+			} else {
+				$limit = $lim;
+			}
 
-			if (empty($page)) {
+			if (empty($page) || empty($limit)) {
 				$offset = 0;
 			}
 			else {
@@ -561,12 +565,7 @@ class EmundusModelProgramme extends JModelList
 				$this->_db->setQuery($query);
 				$all_programs['count'] = count($this->_db->loadObjectList());
 
-				if (empty($lim)) {
-					$this->_db->setQuery($query, $offset);
-				}
-				else {
-					$this->_db->setQuery($query, $offset, $limit);
-				}
+				$db->setQuery($query, $offset, $limit);
 
 				$programs = $this->_db->loadObjectList();
 

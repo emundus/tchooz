@@ -37,8 +37,8 @@ if (sizeof($tmp_campaigns) > 0) {
 		});
 
 		foreach ($tmp_campaigns as $campaign) {
-			$campaigns[$campaign->code][]        = $campaign;
-			$campaigns[$campaign->code]['label'] = $campaign->programme;
+			$campaigns[$campaign->training][]        = $campaign;
+			$campaigns[$campaign->training]['label'] = $campaign->programme;
 		}
 
 	}
@@ -282,7 +282,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                                 <hr>
 
-                                <div class="mod_emundus_campaign__list_content_resume em-text-neutral-600">
 									<?php
 									$text     = '';
 									$textprog = '';
@@ -290,8 +289,10 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 									if ($showcampaign) {
 										$textcamp = $campaign_pinned->short_description;
 									}
-									echo $textcamp;
 									?>
+
+                        <div title="<?php echo strip_tags($textcamp); ?>" class="mod_emundus_campaign__list_content_resume em-text-neutral-600">
+                            <?php echo $textcamp; ?>
                                 </div>
                             </div>
 
@@ -304,14 +305,17 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 										if (empty($redirect_url)) {
 											$redirect_url = 'index.php?option=com_users&view=registration';
 										}
-										$register_url = $redirect_url . '&course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id . '&Itemid=' . $mod_em_campaign_itemid;
+										$register_url = $redirect_url . '&course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id;
 									}
 									else {
-										$register_url = $redirect_url . '?course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id . '&Itemid=' . $mod_em_campaign_itemid;
+										$register_url = JUri::base() . $redirect_url . '?course=' . $campaign_pinned->code . '&cid=' . $campaign_pinned->id;
 									}
 
-									if (!$user->guest) {
-										$register_url .= '&redirect=' . $formUrl;
+									if(!empty($mod_em_campaign_itemid)) {
+										$register_url .= "&Itemid=" . $mod_em_campaign_itemid;
+									}
+									if (!$user->guest && !empty($formUrl)) {
+										$register_url .= "&redirect=" . $formUrl;
 									}
 									?>
                                     <a class="btn btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
@@ -729,10 +733,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             </div>
 
                                             <hr>
-
-                                            <div class="mod_emundus_campaign__list_content_resume em-text-neutral-600"
-												<?php if (empty($mod_em_campaign_show_timezone) || (strtotime($now) > strtotime($result->end_date))) : ?> style="-webkit-line-clamp: 4;" <?php endif; ?>
-                                            >
 												<?php
 												$text     = '';
 												$textprog = '';
@@ -740,8 +740,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 												if ($showcampaign) {
 													$textcamp = $result->short_description;
 												}
-												echo $textcamp;
 												?>
+
+                                <div title="<?php echo strip_tags($textcamp); ?>" class="mod_emundus_campaign__list_content_resume em-text-neutral-600"
+                                    <?php if (empty($mod_em_campaign_show_timezone) || (strtotime($now) > strtotime($result->end_date)) ) : ?> style="-webkit-line-clamp: 4;" <?php endif; ?>
+                                >
+	                                <?php echo $textcamp; ?>
                                             </div>
                                         </div>
 

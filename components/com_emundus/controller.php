@@ -367,13 +367,11 @@ class EmundusController extends JControllerLegacy
 	function deletefile()
 	{
 		//@TODO ADD COMMENT ON DELETE
-
-
 		$m_profile = $this->getModel('Profile');
 
-		$student_id = $this->input->get->get('sid', null);
-		$fnum       = $this->input->get->get('fnum', null);
-		$redirect   = $this->input->get->getBase64('redirect', null);
+		$student_id = $this->input->getInt('sid', null);
+		$fnum       = $this->input->getString('fnum', null);
+		$redirect   = $this->input->getBase64('redirect', null);
 		// Redirect URL is currently only used in Hesam template of mod_emundus_application, it allows for the module to be located on a page other than index.php.
 
 		if (empty($redirect)) {
@@ -388,7 +386,7 @@ class EmundusController extends JControllerLegacy
 		}
 
 		$current_user = $this->app->getSession()->get('emundusUser');
-		$m_files      = $this->getModel('files');
+		$m_files      = $this->getModel('Files');
 
 		if (in_array($fnum, array_keys($current_user->fnums))) {
 			$user = $current_user;
@@ -998,7 +996,7 @@ class EmundusController extends JControllerLegacy
 				}
 
 				try {
-					$query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax, min_pages_pdf, max_pages_pdf FROM #__emundus_setup_attachments WHERE id = ' . (int) $attachments;
+					$query_ext = 'SELECT UPPER(allowed_types) as allowed_types, nbmax, min_pages_pdf, max_pages_pdf, max_filesize FROM #__emundus_setup_attachments WHERE id = '.(int)$attachments;
 					$this->_db->setQuery($query_ext);
 					$attachment = $this->_db->loadAssoc();
 
@@ -1018,6 +1016,23 @@ class EmundusController extends JControllerLegacy
 							}
 
 							continue;
+						}
+
+						if (!empty($attachment['max_filesize'])) {
+							$bytes = $attachment['max_filesize'] * 1024 * 1024;
+
+							if ($file['size'] > $bytes) {
+								$error = JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG');
+
+								if ($format == "raw") {
+									echo '{"aid":"0","status":false,"message":"'.$error.'" }';
+								} else {
+									JFactory::getApplication()->enqueueMessage($error, 'error');
+									$this->setRedirect($url);
+								}
+
+								return false;
+							}
 						}
 					}
 					catch (Exception $e) {
@@ -1727,8 +1742,8 @@ class EmundusController extends JControllerLegacy
 
 		$current_user = $this->app->getSession()->get('emundusUser');
 
-		$fnum = "";
-		if ($current_user->id == $uid) {
+		$fnum = '';
+		if($current_user->id == $uid && !empty($current_user->fnum)) {
 			$fnum = $current_user->fnum;
 		}
 		$fnums = [];

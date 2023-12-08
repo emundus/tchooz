@@ -55,6 +55,16 @@
     <field name="stage_id">1</field>
     <field name="extension">com_content.article</field>
    </row>
+   <row>
+    <field name="item_id">60</field>
+    <field name="stage_id">1</field>
+    <field name="extension">com_content.article</field>
+   </row>
+   <row>
+    <field name="item_id">61</field>
+    <field name="stage_id">1</field>
+    <field name="extension">com_content.article</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

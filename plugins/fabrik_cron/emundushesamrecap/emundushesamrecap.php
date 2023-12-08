@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -63,7 +65,7 @@ class PlgFabrik_Cronemundushesamrecap extends PlgFabrik_Cron{
 		$this->log = '';
 
         // Get list of applicants to notify
-        $db = JFactory::getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
         $query->select($db->quoteName(['u.id', 'u.email', 'eu.firstname', 'eu.lastname', 'eu.profile']))
             ->from($db->quoteName('#__users', 'u'))

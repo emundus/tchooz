@@ -65,6 +65,20 @@
     <field name="has_sample" value_is_null="true"></field>
     <field name="sample_filepath" value_is_null="true"></field>
    </row>
+   <row>
+    <field name="id">4</field>
+    <field name="profile_id">9</field>
+    <field name="campaign_id" value_is_null="true"></field>
+    <field name="attachment_id">4</field>
+    <field name="displayed">1</field>
+    <field name="mandatory">1</field>
+    <field name="ordering">3</field>
+    <field name="published">1</field>
+    <field name="bank_needed" value_is_null="true"></field>
+    <field name="duplicate">0</field>
+    <field name="has_sample" value_is_null="true"></field>
+    <field name="sample_filepath" value_is_null="true"></field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

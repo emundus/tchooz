@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -73,13 +75,11 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
         $users = array_unique(array_merge($users, $group_users));
 
         if (!empty($users)) {
-            // Store the evaluators
             $evaluators = [];
 
             foreach ($users as $user) {
                 $fnums = $this->getFnumAssoc($user);
                 $gFnums = $this->getFnumGroupAssoc($user);
-                //merge both results to have one list of fnums
                 $evaluators[$user] = array_merge($fnums, $gFnums);
             }
 
@@ -96,7 +96,7 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
                     foreach ($empty_evals as $applicant) {
                         // We check if the fnum is in the list of associated fnums
                         // If it is, this means we have to notify the evaluator, meaning, adding it in the emailArray
-                        if (array_search($applicant->fnum, $val) !== false) {
+                        if (in_array($applicant->fnum, $val)) {
 
                             /**
                              * the list is built as the following :
@@ -126,7 +126,7 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
                     foreach ($emailArray as $emailUser => $emailCampaigns) {
                         foreach ($emailCampaigns as $campaign) {
                             // We send a email for each campaign for each user
-                            $user = JFactory::getUser($emailUser);
+                            $user = Factory::getUser($emailUser);
 
                             $menutype = $m_profile->getProfileByApplicant($user->id)['menutype'];
                             $items = $menu->getItems('menutype', $menutype);
@@ -140,7 +140,7 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
                                 }
                             }
 
-                            if (JFactory::getConfig()->get('sef') == 1) {
+                            if (Factory::getApplication()->get('sef') == 1) {
                                 $userLink = $items[$index]->alias;
                             } else {
                                 $userLink = $items[$index]->link.'&Itemid='.$items[0]->id;
@@ -155,7 +155,7 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
                             $post = array(
                                 'FNUMS' => $fnumList,
                                 'CAMPAIGN_LABEL' => $campaign['label'],
-                                'EVALUATION_END' => strftime("%d/%m/%Y %H:%M", strtotime($campaign['eval_end_date'])),
+                                'EVALUATION_END' => date("d/m/Y H:i", strtotime($campaign['eval_end_date'])),
                                 'NAME' => $user->name,
                             );
                             $c_messages->sendEmailNoFnum($user->email, $reminder_mail_id, $post, $user->id);
@@ -176,8 +176,9 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
      * @return mixed
      *
      */
-    public function getEmundusUsers($profile) {
-        $db = JFactory::getDBO();
+    private function getEmundusUsers($profile): array {
+		$e_users = [];
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query
@@ -189,11 +190,12 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
 
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+	        $e_users = $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $e_users;
     }
 
     /**
@@ -203,8 +205,9 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
      * @return mixed
      *
      */
-    public function getGroupsByProg($profile) {
-        $db = JFactory::getDBO();
+	private function getGroupsByProg($profile): array {
+		$groups = [];
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query
@@ -218,11 +221,12 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
 
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+	        $groups = $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $groups;
     }
 
     /**
@@ -232,8 +236,9 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
      * @return mixed
      *
      */
-    public function getFnumAssoc($user) {
-        $db = JFactory::getDBO();
+	private function getFnumAssoc($user): array {
+		$fnums = [];
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query
@@ -243,11 +248,12 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
 
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+	        $fnums = $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $fnums;
     }
 
     /**
@@ -257,8 +263,9 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
      * @return mixed
      *
      */
-    public function getFnumGroupAssoc($user) {
-        $db = JFactory::getDBO();
+	private function getFnumGroupAssoc($user): array {
+		$fnums = [];
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query
@@ -269,11 +276,12 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
 
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+            $fnums = $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $fnums;
     }
 
 
@@ -285,8 +293,9 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
      * @return mixed
      *
      */
-    public function getEmptyEvals($reminder_deadline, $status_for_send) {
-        $db = JFactory::getDBO();
+	private function getEmptyEvals($reminder_deadline, $status_for_send): array {
+		$evals = [];
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query
@@ -298,11 +307,12 @@ class PlgFabrik_Cronemundusevaluatorrecall extends PlgFabrik_Cron {
 
         try {
             $db->setQuery($query);
-            return $db->loadObjectList();
+	        $evals = $db->loadObjectList();
         } catch (Exception $e) {
             JLog::add('SQL Error -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $evals;
     }
 }
 

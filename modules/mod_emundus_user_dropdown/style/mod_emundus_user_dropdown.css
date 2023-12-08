@@ -50,6 +50,7 @@
     animation-fill-mode: forwards;
     animation-delay: 0.2s;
     transition: all 0.3s ease-in-out;
+    margin-bottom: 5px;
 }
 
 #userDropdownMenu h5 {
@@ -314,6 +315,23 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     background: transparent !important;
 }
 
+@media screen and (max-width: 479px) {
+    #header-c .platform-content div#userDropdownLabel {
+        position: fixed;
+        right: 12px;
+        top: 3px;
+        width: 208px;
+    }
+
+    #header-c .platform-content div#userDropdownLabel div {
+        width: 100%;
+    }
+
+    #header-c .platform-content div#userDropdownLabel .em-flex-row .mr-4 p {
+        text-align: left;
+    }
+}
+
 @media all and (min-width: 480px) and (max-width: 767px) {
 
     .header-right {
@@ -342,7 +360,12 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     #header-c .platform-content div#userDropdownLabel {
         position: fixed;
         right: 12px;
-        top: 22px;
+        top: 3px;
+        width: 208px;
+    }
+
+    #header-c .platform-content div#userDropdownLabel div {
+        width: 100%;
     }
 }
 
@@ -350,7 +373,12 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     #header-c .platform-content div#userDropdownLabel {
         position: fixed;
         right: 59px;
-        top: 19px;
+        top: 3px;
+        width: 208px;
+    }
+
+    #header-c .platform-content div#userDropdownLabel div {
+        width: 100%;
     }
 }
 

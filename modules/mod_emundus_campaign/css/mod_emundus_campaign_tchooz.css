@@ -236,6 +236,11 @@
     font-size: var(--em-applicant-font-size);
 }
 
+.mod_emundus_campaign__grid .mod_emundus_campaign__details_content .btn.btn-primary:hover {
+   background: var(--neutral-0);
+   color: var(--em-primary-color);
+}
+
 .mod_emundus_campaign__header_filter__values a {
     font-family: var(--em-applicant-font);
     color: var(--em-primary-color);

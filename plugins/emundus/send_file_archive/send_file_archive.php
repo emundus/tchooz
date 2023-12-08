@@ -6,9 +6,12 @@
  * @copyright (C) 2019 eMundus SOFTWARE. All rights reserved.
  * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
+
+use Joomla\CMS\Plugin\CMSPlugin;
+
 defined('_JEXEC') or die('Restricted access');
 
-class plgEmundusSend_file_archive extends \Joomla\CMS\Plugin\CMSPlugin
+class plgEmundusSend_file_archive extends CMSPlugin
 {
 
 	function __construct(&$subject, $config)
@@ -25,19 +28,11 @@ class plgEmundusSend_file_archive extends \Joomla\CMS\Plugin\CMSPlugin
 	 * @param $fnum
 	 *
 	 * @return bool
-	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
-	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
-	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
 	function onBeforeDeleteFile($fnum)
 	{
-
 		$email = $this->params->get('delete_email');
 		if (empty($email)) {
-			return false;
-		}
-
-		if (JFactory::getUser()->id != (int) substr($fnum, -7)) {
 			return false;
 		}
 
@@ -53,9 +48,6 @@ class plgEmundusSend_file_archive extends \Joomla\CMS\Plugin\CMSPlugin
 	 * @param $state
 	 *
 	 * @return bool
-	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
-	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
-	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
 	function onAfterStatusChange($fnum, $state)
 	{
@@ -78,13 +70,9 @@ class plgEmundusSend_file_archive extends \Joomla\CMS\Plugin\CMSPlugin
 	 * @param $email
 	 *
 	 * @return bool
-	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
-	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
-	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
 	private function sendEmailArchive($fnum, $email)
 	{
-
 		if (!extension_loaded('zip')) {
 			JLog::add('Error: ZIP extension not loaded.', JLog::ERROR, 'com_emundus');
 

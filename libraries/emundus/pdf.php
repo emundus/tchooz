@@ -199,7 +199,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
 
     $pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
 
-    @chdir('tmp');
+    chdir('tmp');
 
     $name = $attachment['lbl'].'_'.date('Y-m-d_H-i-s').'.pdf';
 
@@ -520,8 +520,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
             // Print text using writeHTMLCell()
             $pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
-
-            @chdir('tmp');
+			chdir('tmp');
 
             $name = $attachment['lbl'].'_'.date('Y-m-d_H-i-s').'.pdf';
             if ($output) {
@@ -768,7 +767,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
             // Print text using writeHTMLCell()
             $pdf->writeHTMLCell($w=0, $h=0, $x='', $y='', $htmldata, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
 
-            @chdir('tmp');
+            chdir('tmp');
             $pdf->Output(EMUNDUS_PATH_ABS.$user_id.DS."demo", 'I');
         }
     }
@@ -1455,9 +1454,9 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     }
 
 
-    @chdir('tmp');
+    chdir('tmp');
     if ($output) {
-        if (!isset($current_user->applicant) && @$current_user->applicant != 1) {
+	    if (!isset($current_user->applicant) || $current_user->applicant != 1) {
             //$output?'FI':'F'
             $name = 'application_header_' . date('Y-m-d_H-i-s') . '.pdf';
             $pdf->Output(EMUNDUS_PATH_ABS . $item->user_id . DS . $name, 'FI');
@@ -1562,7 +1561,7 @@ function generatePDFfromHTML($html, $path = null, $footer = '') {
 
     $pdf->writeHTMLCell($w=0, $h=30, $x='', $y=10, $html, $border=0, $ln=1, $fill=0, $reseth=true, $align='', $autopadding=true);
 
-    @chdir('tmp');
+    chdir('tmp');
 
     $pdf->Output(JPATH_BASE.$path, 'F');
 

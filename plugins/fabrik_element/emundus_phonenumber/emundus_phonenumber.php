@@ -252,11 +252,11 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 			    return in_array($country->iso2, $countries_to_display);
 		    });
 	    } else {
-        $opts->allCountries = $this->countries;
+		    $opts->allCountries = $this->countries;
 	    }
 
 	    $opts->allCountries = array_values($opts->allCountries);
-
+		
 
         return array('FbPhoneNumber', $id, $opts);
     }

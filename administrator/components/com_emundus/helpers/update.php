@@ -438,6 +438,8 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateConfigurationFile($param, $value) {
+		$updated = false;
+
 		if(!empty($param) && !empty($value) && !in_array($param,['host','user','password','db','secret','mailfrom','smtpuser','smpthost','smtppass','smtpsecure','smtpport','webhook_token'])) {
 			$formatter = new JRegistryFormatPHP();
 			$config    = new JConfig();
@@ -448,14 +450,13 @@ class EmundusHelperUpdate
 			$config_file    = JPATH_CONFIGURATION . '/configuration.php';
 
 			if (file_exists($config_file) and is_writable($config_file)) {
-				file_put_contents($config_file, $str);
+				if(file_put_contents($config_file, $str)) {
+					$updated = true;
 			}
-			else {
-				echo("Update Configuration file failed");
 			}
-		} else {
-			echo("Update Configuration file failed");
 		}
+
+		return $updated;
     }
 
     /**
@@ -3026,6 +3027,54 @@ class EmundusHelperUpdate
         return true;
     }
 
+
+	/**
+	 * @param $file string file to update
+	 * @param $linesToRemove array of lines to remove
+	 * @return bool true if success, false otherwise. If lines to remove are not found, it returns false.
+	 */
+	public static function removeFromFile($file, $linesToRemove)
+	{
+		$removed = false;
+
+		if (empty($file)) {
+			echo "ERROR: Please specify a file." . PHP_EOL;
+			return false;
+		} elseif (!file_exists($file)) {
+			echo "ERROR: The file {$file} does not exist." . PHP_EOL;
+			return false;
+		} elseif (!is_writable($file)) {
+			echo "ERROR: Please specify a writable file ({$file})" . PHP_EOL;
+			return false;
+		} elseif (empty($linesToRemove)) {
+			echo "ERROR: Please specify content to remove." . PHP_EOL;
+			return false;
+		}
+
+		$file_content = file_get_contents($file);
+		if (!empty($file_content)) {
+			$changed = false;
+
+			foreach($linesToRemove as $line) {
+				if (strpos($file_content, $line) !== false) {
+					echo " - Remove {$file} file this content: " . PHP_EOL . $line . PHP_EOL;
+					$file_content = str_replace($line, '', $file_content);
+					$changed = true;
+				}
+			}
+
+			if ($changed) {
+				if (file_put_contents($file, $file_content) !== false) {
+					$removed = true;
+				} else {
+					echo "ERROR: Failed to write content to the file." . PHP_EOL;
+				}
+			}
+		}
+
+		return $removed;
+	}
+
 	public static function updateNewColors() {
 		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
@@ -3110,7 +3159,7 @@ class EmundusHelperUpdate
 				'blue-2' => '#0073e5',
 				'blue-3' => '#0644ae',
 				'green-1' => '#98d432',
-				'green-2' => '#008a35',
+				'green-2' => '#015822',
 				'yellow-1' => '#ffe014',
 				'yellow-2' => '#ffae00',
 				'orange-1' => '#ff6900',
@@ -3263,11 +3312,10 @@ class EmundusHelperUpdate
 			'coordinator' => [
 				'background' => '#f8f8f8',
 				'interface' => '#353544',
-				'primary-color' => '#20835F',
 				'secondary-color' => '#353544',
 				'tertiary-color' => '#5A5A72',
 				'text-color' => '#4B4B4B',
-				'title-color' => '#000000',
+				'title-color' => '#0b0c0f',
 				'family-text' => 'Inter',
 				'family-title' => 'Inter',
 				'size-h1' => '24px',

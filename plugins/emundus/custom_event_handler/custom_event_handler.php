@@ -9,8 +9,9 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Joomla\CMS\Plugin\CMSPlugin;
 
-class plgEmundusCustom_event_handler extends \Joomla\CMS\Plugin\CMSPlugin
+class plgEmundusCustom_event_handler extends CMSPlugin
 {
 
 	private $hEvents = null;

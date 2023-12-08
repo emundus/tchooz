@@ -9,6 +9,9 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Mail\MailerFactoryInterface;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -53,12 +56,10 @@ class PlgFabrik_Cronemunduscampaignstartcall extends PlgFabrik_Cron {
         $allow_element = $params->get('allow_element',null);
         $email_tmpl = $params->get('email_tmpl',null);
 
-        $app        = JFactory::getApplication();
-
         $m_model = new EmundusModelEmails();
         $this->log = '';
 
-        $db = JFactory::getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
 
         if(!empty($reminderHours) && !empty($allow_element) && !empty($email_tmpl)) {
             $query = 'select jesc.id,jesc.label,jecw.start_date,jecw.end_date
@@ -109,7 +110,7 @@ class PlgFabrik_Cronemunduscampaignstartcall extends PlgFabrik_Cron {
                         $tmpl = $db->loadObject();
 
                         // setup mail
-                        $email_from_sys = $app->getCfg('mailfrom');
+                        $email_from_sys = $this->app->get('mailfrom');
 
                         $from = $obj->emailfrom;
                         $fromname = $obj->name;
@@ -117,8 +118,8 @@ class PlgFabrik_Cronemunduscampaignstartcall extends PlgFabrik_Cron {
                         $post = [
                             'APPLICANT_NAME' => $user_to_notified->name,
                             'CAMPAIGN_LABEL' => $campaign->label,
-                            'CAMPAIGN_START_DATE' => strftime("%d/%m/%Y %H:%M", strtotime($campaign->start_date)),
-                            'CAMPAIGN_END_DATE' => strftime("%d/%m/%Y %H:%M", strtotime($campaign->end_date)),
+                            'CAMPAIGN_START_DATE' => date("d/m/Y H:i", strtotime($campaign->start_date)),
+                            'CAMPAIGN_END_DATE' => date("d/m/Y H:i", strtotime($campaign->end_date)),
                             'SITE_URL' => JURI::base(),
                         ];
 
@@ -146,7 +147,7 @@ class PlgFabrik_Cronemunduscampaignstartcall extends PlgFabrik_Cron {
                             $mail_from_address,
                         ];
 
-                        $mailer = JFactory::getMailer();
+	                    $mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
                         $mailer->setSender($sender);
                         $mailer->addReplyTo($from, $fromname);
                         $mailer->addRecipient($to);
@@ -157,8 +158,7 @@ class PlgFabrik_Cronemunduscampaignstartcall extends PlgFabrik_Cron {
                         $send = $mailer->Send();
 
                         if ($send !== true) {
-                            echo 'Error sending email: ' . $send->__toString();
-                            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                            JLog::add($send, JLog::ERROR, 'com_emundus');
                         } else {
                             // Save email sended to this user
                             $query = $db->getQuery(true);

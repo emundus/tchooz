@@ -934,7 +934,7 @@ class EmundusModelEmails extends JModelList
 			$preg = array('patterns' => array(), 'replacements' => array());
 			foreach ($fnumsArray as $fnum) {
 				foreach ($idFabrik as $id) {
-					$preg['patterns'][] = '/\$\{(.*?)' . $id . '(.*?)}/i';
+					$preg['patterns'][] = '/\$\{' . $id . '\}/';
 					if (isset($fabrikValues[$id][$fnum])) {
 						$preg['replacements'][] = JText::_($fabrikValues[$id][$fnum]['val']);
 					}
@@ -1299,6 +1299,7 @@ class EmundusModelEmails extends JModelList
 		if (!empty($fnums)) {
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+			JPluginHelper::importPlugin('emundus');
 
 			$h_filters = new EmundusHelperFilters();
 			$m_files   = new EmundusModelFiles();
@@ -1306,7 +1307,7 @@ class EmundusModelEmails extends JModelList
 			JLog::addLogger(['text_file' => 'com_emundus.inviteExpert.error.php'], JLog::ALL, 'com_emundus');
 
 			$eMConfig   = JComponentHelper::getParams('com_emundus');
-			$formid     = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328}'));
+			$formid = json_decode($eMConfig->get('expert_fabrikformid', '{"accepted":169, "refused":328, "agreement": 0}'));
 			$documentid = $eMConfig->get('expert_document_id', '36');
 
 			$app            = JFactory::getApplication();
@@ -1459,6 +1460,11 @@ class EmundusModelEmails extends JModelList
 						'EXPERT_REFUSE_LINK_RELATIVE_NOFORM' => $link_refuse_noform
 					);
 
+					if (!empty($formid->agreement)) {
+						$post['EXPERT_KEY_ID'] = $key1;
+						$post['EXPERT_AGREEMENT_LINK'] = JURI::base() . 'index.php?option=com_fabrik&c=form&view=form&formid=' . $formid->agreement . '&keyid=' . $key1;
+					}
+
 					$tags = $this->setTags($example_user_id, $post, $example_fnum);
 
 					$message = $this->setTagsFabrik($mail_body, [$example_fnum]);
@@ -1542,6 +1548,12 @@ class EmundusModelEmails extends JModelList
 						$print_message .= '<hr>' . JText::_('COM_EMUNDUS_EMAILS_SUBJECT') . ' : ' . $mail_subject;
 						$print_message .= '<hr>' . $body;
 					}
+
+					Factory::getApplication()->triggerEvent('callEventHandler', ['onSendExpertRequest', [
+						'keyid' => $key1,
+						'fnums' => $fnums,
+						'mail_to' => $m_to
+					]]);
 				}
 				unset($key1);
 
@@ -1672,25 +1684,38 @@ class EmundusModelEmails extends JModelList
 	 * @return Mixed Array
 	 * @since v6
 	 */
-	public function get_messages_to_from_user($user_id)
-	{
+	public function get_messages_to_from_user($user_id) {
 		$messages = [];
 
 		if (!empty($user_id)) {
 			$query = $this->_db->getQuery(true);
-			$query->select('*')
-				->from($this->_db->quoteName('#__messages'))
-				->where($this->_db->quoteName('user_id_to') . ' = ' . $user_id . ' AND ' . $this->_db->quoteName('folder_id') . ' <> 2')
-				->order($this->_db->quoteName('date_time') . ' DESC');
 
 			try {
-				$this->_db->setquery($query);
+				$query->select('m.*,el.fnum_to')
+					->from($this->_db->quoteName('#__emundus_logs','el'))
+					->leftJoin($this->_db->quoteName('#__messages','m').' ON JSON_EXTRACT(el.params,'.$this->_db->quote('$.message_id') . ') = '.$this->_db->quoteName('m.message_id'))
+					->where($this->_db->quoteName('el.user_id_to').' = '.$user_id)
+					->andWhere($this->_db->quoteName('el.action_id').' = 9')
+					->andWhere($this->_db->quoteName('el.message').' = '.$this->_db->quote('COM_EMUNDUS_LOGS_EMAIL_SENT'))
+					->order($this->_db->quoteName('m.date_time') . ' DESC');
+				$this->_db->setQuery($query);
 				$messages = $this->_db->loadObjectList();
-			}
-			catch (Exception $e) {
-				JLog::add('Error getting messages sent to or from user: ' . $user_id . ' at query: ' . $query, JLog::ERROR, 'com_emundus.error');
 
-				return false;
+				if(empty($messages)) {
+					$query->clear()
+						->select('*')
+						->from($this->_db->quoteName('#__messages'))
+						->where($this->_db->quoteName('user_id_to') . ' = ' . $user_id . ' AND ' . $this->_db->quoteName('folder_id') . ' <> 2')
+						->order($this->_db->quoteName('date_time') . ' DESC');
+
+					$this->_db->setquery($query);
+					$messages = $this->_db->loadObjectList();
+					foreach ($messages as $message) {
+						$message->fnum_to = '';
+					}
+				}
+			} catch (Exception $e) {
+				JLog::add('Error getting messages sent to or from user: '.$user_id.' at query: '.$query, JLog::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -1841,14 +1866,14 @@ class EmundusModelEmails extends JModelList
 	{
 		$query = $this->_db->getQuery(true);
 
-		if (empty($lim)) {
-			$limit = 25;
+		if (empty($lim) || $lim == 'all') {
+			$limit = '';
 		}
 		else {
 			$limit = $lim;
 		}
 
-		if (empty($page)) {
+		if (empty($page) || empty($limit)) {
 			$offset = 0;
 		}
 		else {
@@ -1894,12 +1919,7 @@ class EmundusModelEmails extends JModelList
 		try {
 			$this->_db->setQuery($query);
 			$count_emails = sizeof($this->_db->loadObjectList());
-			if (empty($lim)) {
-				$this->_db->setQuery($query, $offset);
-			}
-			else {
-				$this->_db->setQuery($query, $offset, $limit);
-			}
+			$this->_db->setQuery($query, $offset, $limit);
 
 			$emails = $this->_db->loadObjectList();
 			if (!empty($emails)) {

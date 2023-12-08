@@ -6,18 +6,21 @@
  * @copyright (C) 2020 eMundus SOFTWARE. All rights reserved.
  * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
+
 defined('_JEXEC') or die('Restricted access');
 
-class plgEmundusHesam_tutorial_events extends \Joomla\CMS\Plugin\CMSPlugin
+class plgEmundusHesam_tutorial_events extends CMSPlugin
 {
-
-	var $db;
+	private $db;
 
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
 
-		$this->db = JFactory::getDbo();
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 		jimport('joomla.log.log');
 		JLog::addLogger(['text_file' => 'com_emundus.hesamTutorialEvents.php'], JLog::ALL, ['com_emundus.hesam']);
@@ -36,11 +39,9 @@ class plgEmundusHesam_tutorial_events extends \Joomla\CMS\Plugin\CMSPlugin
 	 */
 	function onAfterNewContactRequest($user_to, $user_from, $fnum_to, $fnum_from = null)
 	{
-
 		$query = $this->db->getQuery(true);
 
 		if (empty($fnum_from)) {
-			// Get all contact requests FROM user where NO FNUM is joined (firstReqNoOffer)
 			$query->select('count(id)')
 				->from($this->db->quoteName('#__emundus_cifre_links'))
 				->where($this->db->quoteName('user_from') . ' = ' . $user_from . ' AND ' . $this->db->quoteName('fnum_from') . ' IS NULL');
