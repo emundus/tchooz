@@ -1004,7 +1004,7 @@
     <field name="alias">email-history</field>
     <field name="note"></field>
     <field name="path">rapport-d-activite/email-history</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=list</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=list&amp;listid=66</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">144</field>
@@ -1016,7 +1016,7 @@
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;email-history-indicators-page&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">90</field>
     <field name="rgt">91</field>
     <field name="home">0</field>
@@ -1156,7 +1156,7 @@
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;groups-setup-page&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">116</field>
     <field name="rgt">117</field>
     <field name="home">0</field>
@@ -2472,7 +2472,7 @@
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">22</field>
-    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;\/images\/emundus\/menus\/parametres.svg&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;\/images\/emundus\/menus\/parametres.svg&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;view-settings&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
     <field name="lft">203</field>
     <field name="rgt">204</field>
     <field name="home">0</field>
