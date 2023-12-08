@@ -919,14 +919,10 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function uploaddropfiledoc()
 	{
+		$response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
-			$result = 0;
-			echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
-		}
-		else {
-
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			//require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
 			$m_campaign = $this->getModel('Campaign');
 
 			$file = $this->input->files->get('file');
@@ -935,39 +931,42 @@ class EmundusControllersettings extends JControllerLegacy
 			if (isset($file)) {
 				$campaign_category = $m_campaign->getCampaignCategory($cid);
 
-				$path     = $file["name"];
+				$path     = $file['name'];
 				$ext      = pathinfo($path, PATHINFO_EXTENSION);
 				$filename = pathinfo($path, PATHINFO_FILENAME);
 
-				$target_dir = "media/com_dropfiles/" . $campaign_category . "/";
+				$target_dir = "media/com_dropfiles/$campaign_category/";
 				if (!file_exists($target_dir)) {
-					mkdir($target_dir);
+					$created = mkdir($target_dir);
 				}
 
-				do {
-					$target_file = $target_dir . rand(1000, 90000) . '.' . $ext;
-				} while (file_exists($target_file));
+				if (!file_exists($target_dir)) {
+					$response['msg'] = 'Error while trying to create the dropbox folder.';
+				} else {
+					do {
+						$target_file = $target_dir . rand(1000, 90000) . '.' . $ext;
+					} while (file_exists($target_file));
 
-				if (move_uploaded_file($file["tmp_name"], $target_file)) {
-					$did = $this->m_settings->moveUploadedFileToDropbox(pathinfo($target_file, PATHINFO_BASENAME), $filename, $ext, $campaign_category, filesize($target_file));
-					echo json_encode($m_campaign->getDropfileDocument($did));
+					if (move_uploaded_file($file['tmp_name'], $target_file)) {
+						$did = $this->m_settings->moveUploadedFileToDropbox(pathinfo($target_file, PATHINFO_BASENAME), $filename, $ext, $campaign_category, filesize($target_file));
+						$response = $m_campaign->getDropfileDocument($did);
+					} else {
+						$response['msg'] = 'Error while trying to move the file to the dropbox folder. File ' . $file['name'] . ' not uploaded to ' . $target_file . '.';
+					}
 				}
-				else {
-					echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
-				}
+			} else {
+				$response['msg'] = 'Missing file';
 			}
-			else {
-				echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
-			}
-			exit;
 		}
+
+		echo json_encode($response);
+		exit;
 	}
 
     public function getemundusparams(){
 		$params = ['emundus' => [], 'joomla' => [], 'msg' => JText::_('ACCESS_DENIED')];
-		$user = JFactory::getUser();
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
 	        $params = $this->m_settings->getEmundusParams();
 			$params['msg'] = JText::_('SUCCESS');
 		}

@@ -1639,7 +1639,7 @@ class EmundusModelsettings extends JModelList
 	 */
 	public function getEmundusParams()
 	{
-		$params = ['emundus' => [], 'joomla' => []];
+		$params = ['emundus' => [], 'joomla' => [], 'config' => []];
 
 		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-applicants.json');
 		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
@@ -1647,13 +1647,13 @@ class EmundusModelsettings extends JModelList
 		$settings_applicants = json_decode($settings_applicants, true);
 		$settings_general = json_decode($settings_general, true);
 
-		$emundus_parameters = ComponentHelper::getParams('com_emundus');
+		$emundus_parameters = JComponentHelper::getParams('com_emundus');
 
 		foreach($settings_applicants as $settings_applicant) {
 			if ($settings_applicant['component'] === 'emundus') {
 				$params['emundus'][$settings_applicant['param']] = $emundus_parameters->get($settings_applicant['param']);
 			} else {
-				$params['joomla']->$settings_applicant['param'] = JFactory::getConfig()->get($settings_applicant['param']);
+				$params['joomla']->$settings_applicant['param'] = $this->app->getConfig()->get($settings_applicant['param']);
 			}
 		}
 
@@ -1661,8 +1661,13 @@ class EmundusModelsettings extends JModelList
 			if ($setting_general['component'] === 'emundus') {
 				$params['emundus'][$setting_general['param']] = $emundus_parameters->get($setting_general['param']);
 			} else {
-				$params['joomla'][$setting_general['param']] = JFactory::getConfig()->get($setting_general['param']);
+				$params['joomla'][$setting_general['param']] = $this->app->getConfig()->get($setting_general['param']);
 			}
+		}
+
+		$other_allowed_parameters = ['style', 'content', 'attachment_storage', 'translations'];
+		foreach($other_allowed_parameters as $other_allowed_parameter) {
+			$params['config'][$other_allowed_parameter] = $emundus_parameters->get($other_allowed_parameter);
 		}
 
 		return $params;
