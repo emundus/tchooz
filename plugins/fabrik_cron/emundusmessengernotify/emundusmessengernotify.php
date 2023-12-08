@@ -9,6 +9,9 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Mail\MailerFactoryInterface;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -61,7 +64,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
         $this->log = '';
 
         // Get list of fnums with a chatroom containing an unread message
-        $db = JFactory::getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query->select('DISTINCT cc.fnum, cc.applicant_id')
@@ -118,7 +121,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
 
             // Send the mail to each applicant
             foreach ($applicants_to_send as $applicant_to_send){
-                $mailer = JFactory::getMailer();
+				$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
 
                 $query->clear()
                     ->select('id, email, name')
@@ -143,8 +146,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
 
                 $body = preg_replace("/\[SITE_URL\]/",$site_url, $body);
 
-                $config = JFactory::getConfig();
-                $email_from_sys = $config->get('mailfrom');
+                $email_from_sys = Factory::getApplication()->get('mailfrom');
                 $email_from = $email->emailfrom;
 
                 // If the email sender has the same domain as the system sender address.

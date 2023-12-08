@@ -6,19 +6,22 @@
  * @copyright (C) 2019 eMundus SOFTWARE. All rights reserved.
  * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
+
 defined('_JEXEC') or die('Restricted access');
 
-class plgEmundusAurion_sync_setup_programs extends \Joomla\CMS\Plugin\CMSPlugin
+class plgEmundusAurion_sync_setup_programs extends CMSPlugin
 {
-
-	var $db;
-	var $query;
+	private $db;
+	private $query;
 
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
 
-		$this->db    = JFactory::getDbo();
+		$this->db    = Factory::getContainer()->get('DatabaseDriver');
 		$this->query = $this->db->getQuery(true);
 
 		jimport('joomla.log.log');
@@ -35,6 +38,7 @@ class plgEmundusAurion_sync_setup_programs extends \Joomla\CMS\Plugin\CMSPlugin
 	{
 
 		$au_id_programmes = $this->params->get('au_ids_programme');
+
 		if (!empty($au_id_programmes)) {
 
 			// Get all of the mapping values defined in the param.
@@ -75,13 +79,13 @@ class plgEmundusAurion_sync_setup_programs extends \Joomla\CMS\Plugin\CMSPlugin
 			foreach ($au_id_programmes as $au_id_programme) {
 
 				// SELECT from the $au_prog table in question all of the IDs.
-				$this->query
-					->clear()
+				$this->query->clear()
 					->select($this->db->quoteName($prog_data_select))
 					->from($this->db->quoteName('data_aurion_' . $au_id_programme))
 					->where($this->db->quoteName('published') . ' = 1');
-				$this->db->setQuery($this->query);
+
 				try {
+					$this->db->setQuery($this->query);
 					$db_au_prog_data = $this->db->loadAssocList($programme_id);
 				}
 				catch (Exception $e) {
@@ -92,12 +96,12 @@ class plgEmundusAurion_sync_setup_programs extends \Joomla\CMS\Plugin\CMSPlugin
 
 				// Get all of the currently inserted prog IDs in eMundus.
 				// We are running this Query in the foreach loop in case that mutiple Aurion tables are entered and the same prog ID is found in two of the tables, so we don't insert two programmes.
-				$this->query
-					->clear()
+				$this->query->clear()
 					->select($this->db->quoteName('id'))
 					->from($this->db->quoteName('#__emundus_setup_programmes'));
-				$this->db->setQuery($this->query);
+
 				try {
+					$this->db->setQuery($this->query);
 					$db_em_prog_ids = $this->db->loadColumn();
 				}
 				catch (Exception $e) {

@@ -104,6 +104,8 @@ class EmundusModelProfile extends JModelList
 
 	function getProfileByApplicant($aid)
 	{
+		$profile = [];
+
 		$query = 'SELECT eu.firstname, eu.lastname, eu.profile, eu.university_id,
 							esp.label AS profile_label, esp.menutype, esp.published, esp.status
 						FROM #__emundus_users AS eu
@@ -112,13 +114,13 @@ class EmundusModelProfile extends JModelList
 
 		try {
 			$this->_db->setQuery($query);
-
-			return $this->_db->loadAssoc();
+			$profile = $this->_db->loadAssoc();
 		}
 		catch (Exception $e) {
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $query, JLog::ERROR, 'com_emundus.error');
-
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . Factory::getApplication()->getIdentity()->id . ' -> ' . $query, JLog::ERROR, 'com_emundus.error');
 		}
+
+		return $profile;
 	}
 
 	function affectNoProfile($aid)

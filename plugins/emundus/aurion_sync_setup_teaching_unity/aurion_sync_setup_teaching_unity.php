@@ -6,19 +6,21 @@
  * @copyright (C) 2019 eMundus SOFTWARE. All rights reserved.
  * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
+
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 
 class plgEmundusAurion_sync_setup_teaching_unity extends \Joomla\CMS\Plugin\CMSPlugin
 {
-
-	var $db;
-	var $query;
+	private $db;
+	private $query;
 
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
 
-		$this->db    = JFactory::getDbo();
+		$this->db    = Factory::getContainer()->get('DatabaseDriver');
 		$this->query = $this->db->getQuery(true);
 
 		jimport('joomla.log.log');

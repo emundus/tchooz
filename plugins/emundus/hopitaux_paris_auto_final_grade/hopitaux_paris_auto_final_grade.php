@@ -8,6 +8,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 
 /**
@@ -19,10 +21,13 @@ defined('_JEXEC') or die('Restricted access');
  */
 class PlgEmundusHopitaux_paris_auto_final_grade extends \Joomla\CMS\Plugin\CMSPlugin
 {
+	private $db;
 
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
+		
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 		jimport('joomla.log.log');
 		JLog::addLogger(array('text_file' => 'com_emundus.emundushopitaux_paris_auto_final_grade.php'), JLog::ALL, array('com_emundus'));
@@ -31,20 +36,19 @@ class PlgEmundusHopitaux_paris_auto_final_grade extends \Joomla\CMS\Plugin\CMSPl
 
 	function onAfterStatusChange($fnum, $state)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$status_to_check  = explode(',', $this->params->get('final_grade_status_step', ''));
 		$elts_to_complete = explode(';', $this->params->get('final_grade_elts_to_complete', ''));
 		$elt_values       = explode(';', $this->params->get('final_grade_elts_values', ''));
 
-		$user = JFactory::getUser();
+		$user = Factory::getApplication()->getIdentity();
 
 		$query->select('applicant_id,campaign_id')
-			->from($db->quoteName('#__emundus_campaign_candidature'))
-			->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
-		$db->setQuery($query);
-		$file = $db->loadObject();
+			->from($this->db->quoteName('#__emundus_campaign_candidature'))
+			->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum));
+		$this->db->setQuery($query);
+		$file = $this->db->loadObject();
 
 		$status = array_search($state, $status_to_check);
 
@@ -62,50 +66,49 @@ class PlgEmundusHopitaux_paris_auto_final_grade extends \Joomla\CMS\Plugin\CMSPl
 
 				$query->clear()
 					->select('id')
-					->from($db->quoteName($table))
-					->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
-				$db->setQuery($query);
-				$final_grade = $db->loadResult();
+					->from($this->db->quoteName($table))
+					->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum));
+				$this->db->setQuery($query);
+				$final_grade = $this->db->loadResult();
 
 				$value_expected = $values[$key];
 
 				if (strpos($value_expected, '___')) {
 					$query->clear()
 						->select(explode('___', $value_expected)[1])
-						->from($db->quoteName(explode('___', $value_expected)[0]))
-						->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
-					$db->setQuery($query);
-					$value_expected = $db->loadResult();
+						->from($this->db->quoteName(explode('___', $value_expected)[0]))
+						->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum));
+					$this->db->setQuery($query);
+					$value_expected = $this->db->loadResult();
 				}
 
 				if (!empty($final_grade)) {
 					$query->clear()
 						->select($element)
 						->from($table)
-						->where($db->quoteName('id') . ' = ' . $db->quote($final_grade));
-					$db->setQuery($query);
-					$value_exist = $db->loadResult();
+						->where($this->db->quoteName('id') . ' = ' . $this->db->quote($final_grade));
+					$this->db->setQuery($query);
+					$value_exist = $this->db->loadResult();
 
-					if (is_null($value_exist) || $value_exist == '' || $value_exist == 0.00) {
+					if (empty($value_exist) || $value_exist == '' || $value_exist == 0.00) {
 						$query->clear()
-							->update($db->quoteName($table))
-							->set($db->quoteName($element) . ' = ' . $db->quote($value_expected))
-							->where($db->quoteName('id') . ' = ' . $db->quote($final_grade));
-						$db->setQuery($query);
-						$db->execute();
+							->update($this->db->quoteName($table))
+							->set($this->db->quoteName($element) . ' = ' . $this->db->quote($value_expected))
+							->where($this->db->quoteName('id') . ' = ' . $this->db->quote($final_grade));
+						$this->db->setQuery($query);
+						$this->db->execute();
 					}
 				}
 				else {
 					$query->clear()
-						->insert($db->quoteName($table))
-						->set($db->quoteName('time_date') . ' = ' . $db->quote(date('Y-m-d h:i:s')))
-						->set($db->quoteName('user') . ' = ' . $db->quote($user->id))
-						->set($db->quoteName('student_id') . ' = ' . $db->quote($file->applicant_id))
-						->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
-						->set($db->quoteName($element) . ' = ' . $db->quote($value_expected));
-					$db->setQuery($query);
-					$db->execute();
-					$final_grade = $db->insertid();
+						->insert($this->db->quoteName($table))
+						->set($this->db->quoteName('time_date') . ' = ' . $this->db->quote(date('Y-m-d h:i:s')))
+						->set($this->db->quoteName('user') . ' = ' . $this->db->quote($user->id))
+						->set($this->db->quoteName('student_id') . ' = ' . $this->db->quote($file->applicant_id))
+						->set($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum))
+						->set($this->db->quoteName($element) . ' = ' . $this->db->quote($value_expected));
+					$this->db->setQuery($query);
+					$this->db->execute();
 				}
 			}
 		}

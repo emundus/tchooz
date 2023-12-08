@@ -11,14 +11,21 @@
 
 // No direct access
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
 class EmundusModelGroups extends JModelList
 {
-	var $_total = null;
-	var $_pagination = null;
+	private $app;
+	private $db;
+
+	private $_total = null;
+	private $_pagination = null;
 
 	/**
 	 * Constructor
@@ -30,17 +37,18 @@ class EmundusModelGroups extends JModelList
 		parent::__construct();
 		global $option;
 
-		$mainframe = JFactory::getApplication();
+		$this->app = Factory::getApplication();
+		$this->db  = Factory::getContainer()->get('DatabaseDriver');
 
 		// Get pagination request variables
-		$limit      = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-		$limitstart = JFactory::getApplication()->input->get('limitstart', 0, '', 'int');
+		$limit      = $this->app->getUserStateFromRequest('global.list.limit', 'limit', $this->app->get('list_limit'), 'int');
+		$limitstart = $this->app->getInput()->get('limitstart', 0, '', 'int');
 
 		// In case limit has been changed, adjust it
 		$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
-		$filter_order     = $mainframe->getUserStateFromRequest($option . 'filter_order', 'filter_order', 'lastname', 'cmd');
-		$filter_order_Dir = $mainframe->getUserStateFromRequest($option . 'filter_order_Dir', 'filter_order_Dir', 'asc', 'word');
+		$filter_order     = $this->app->getUserStateFromRequest($option . 'filter_order', 'filter_order', 'lastname', 'cmd');
+		$filter_order_Dir = $this->app->getUserStateFromRequest($option . 'filter_order_Dir', 'filter_order_Dir', 'asc', 'word');
 
 		$this->setState('filter_order', $filter_order);
 		$this->setState('filter_order_Dir', $filter_order_Dir);
@@ -52,16 +60,11 @@ class EmundusModelGroups extends JModelList
 
 	function _buildContentOrderBy()
 	{
-		global $option;
-
-		$mainframe = JFactory::getApplication();
-
 		$orderby          = '';
 		$filter_order     = $this->getState('filter_order');
 		$filter_order_Dir = $this->getState('filter_order_Dir');
 
 		$can_be_ordering = array('user', 'id', 'lastname', 'nationality', 'time_date', 'profile');
-		/* Error handling is never a bad thing*/
 		if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
 			$orderby = ' ORDER BY ' . $filter_order . ' ' . $filter_order_Dir;
 		}
@@ -71,40 +74,42 @@ class EmundusModelGroups extends JModelList
 
 	function getCampaign()
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
-		$db->setQuery($query);
-		$syear = $db->loadRow();
+		$query = $this->db->getQuery(true);
+
+		$query->select('year as schoolyear')
+			->from($this->db->quoteName('#__emundus_setup_campaigns'))
+			->where($this->db->quoteName('published') . ' = 1');
+		$this->db->setQuery($query);
+		$syear = $this->db->loadRow();
 
 		return $syear[0];
 	}
 
 	function getProfileAcces($user)
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
-					LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
-					WHERE esg.published=1 AND eg.user_id=' . $user;
-		$db->setQuery($query);
-		$profiles = $db->loadAssocList();
-
-		return $profiles;
+		$query = $this->db->getQuery(true);
+		
+		$query->select('esg.profile_id')
+			->from($this->db->quoteName('#__emundus_setup_groups', 'esg'))
+			->leftJoin($this->db->quoteName('#__emundus_groups', 'eg') . ' ON esg.id=eg.group_id')
+			->where($this->db->quoteName('eg.user_id') . ' = ' . $user)
+			->where($this->db->quoteName('esg.published') . ' = 1');
+		$this->db->setQuery($query);
+		return $this->db->loadAssocList();
 	}
 
 	function _buildQuery()
 	{
-		$gid           = JFactory::getApplication()->input->get('groups', null, 'POST', 'none', 0);
-		$profile       = JFactory::getApplication()->input->get('profile', null, 'POST', 'none', 0);
-		$uid           = JFactory::getApplication()->input->get('user', null, 'POST', 'none', 0);
-		$quick_search  = JFactory::getApplication()->input->get('s', null, 'POST', 'none', 0);
-		$search        = JFactory::getApplication()->input->get('elements', null, 'POST', 'array', 0);
-		$search_values = JFactory::getApplication()->input->get('elements_values', null, 'POST', 'array', 0);
-		$schoolyears   = JFactory::getApplication()->input->get('schoolyears', null, 'POST', 'none', 0);
-
-		$db = JFactory::getDbo();
+		$gid           = $this->app->getInput()->getInt('groups', 0);
+		$profile       = $this->app->getInput()->getInt('profile', 0);
+		$uid           = $this->app->getInput()->getInt('user', 0);
+		$quick_search  = $this->app->getInput()->getString('s', '');
+		$search        = $this->app->getInput()->get('elements', []);
+		$search_values = $this->app->getInput()->get('elements_values', []);
+		$schoolyears   = $this->app->getInput()->getString('schoolyears', '');
 
 		// Starting a session.
-		$session           = JFactory::getSession();
+		$session           = $this->app->getSession();
 		$s_elements        = $session->get('s_elements');
 		$s_elements_values = $session->get('s_elements_values');
 		if (empty($schoolyears) && $session->has('schoolyears')) $schoolyears = $session->get('schoolyears');
@@ -113,101 +118,92 @@ class EmundusModelGroups extends JModelList
 			$search        = $s_elements;
 			$search_values = $s_elements_values;
 		}
-		$user  = JFactory::getUser();
-		$query = 'SELECT ed.user, ed.time_date, ed.validated,
+		$user  = Factory::getApplication()->getIdentity();
+
+		$query = $this->db->getQuery(true);
+
+		$query->select('ed.user,ed.time_date,ed.validated,
 					eu.firstname, eu.lastname, eu.profile, eu.schoolyear,
 					u.id, u.name, u.email, u.username, u.usertype, u.registerDate, u.block,
-					epd.nationality, epd.gender
-					FROM #__emundus_declaration ed
-					LEFT JOIN #__emundus_users AS eu ON ed.user = eu.user_id
-					LEFT JOIN #__emundus_personal_detail AS epd ON ed.user = epd.user
-					LEFT JOIN #__users AS u ON ed.user = u.id ';
-		if (isset($gid) && !empty($gid) || (isset($uid) && !empty($uid)))
-			$query .= 'LEFT JOIN #__emundus_groups_eval AS ege ON ege.applicant_id = epd.user ';
+					epd.nationality, epd.gender')
+			->from($this->db->quoteName('#__emundus_declaration', 'ed'))
+			->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ed.user=eu.user_id')
+			->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ed.user=u.id')
+			->leftJoin($this->db->quoteName('#__emundus_personal_detail', 'epd') . ' ON ed.user=epd.user');
+
+		if (!empty($gid) || !empty($uid)) {
+			$query->leftJoin($this->db->quoteName('#__emundus_groups_eval', 'ege') . ' ON ege.applicant_id=epd.user');
+		}
 
 		if (!empty($search)) {
 			$i = 0;
 			foreach ($search as $s) {
 				$tab = explode('.', $s);
-				//die(print_r($tab));
 				if (count($tab) > 1) {
-					$query .= 'LEFT JOIN ' . $tab[0] . ' AS j' . $i . ' ON j' . $i . '.user=ed.user ';
+					$query->leftJoin($this->db->quoteName($tab[0], 'j' . $i) . ' ON j' . $i . '.user=ed.user');
 					$i++;
 				}
 			}
 
 		}
 
-		$query .= 'WHERE ed.validated=1';
-		$and   = true;
-		if (empty($schoolyears)) $query .= ' AND schoolyear like "%' . $this->getCampaign() . '%"';
-		if (!empty($profile))
-			$query .= ' AND eu.user_id IN (' . implode(',', $this->getApplicantsByProfile($profile)) . ')';
+		$query->where($this->db->quoteName('ed.validated') . ' = 1');
+		if (empty($schoolyears)) {
+			$query->where($this->db->quoteName('eu.schoolyear') . ' LIKE ' . $this->db->quote('%'.$this->getCampaign().'%'));
+		}
+
+		if (!empty($profile)) {
+			$query->where($this->db->quoteName('eu.user_id') . ' IN (' . implode(',', $this->getApplicantsByProfile($profile)) . ')');
+		}
 
 		$no_filter = array("Super Users", "Administrator");
-		if (!in_array($user->usertype, $no_filter))
-			$query .= ' AND eu.user_id IN (select user_id from #__emundus_users_profiles where profile_id in (' . implode(',', $this->getProfileAcces($user->id)) . ')) ';
+		if (!in_array($user->usertype, $no_filter)) {
+			$query->where($this->db->quoteName('eu.user_id') . ' IN (select user_id from #__emundus_users_profiles where profile_id in (' . implode(',', $this->getProfileAcces($user->id)) . '))');
+		}
 
 		if (!empty($search)) {
 			$i = 0;
 			foreach ($search as $s) {
 				$tab = explode('.', $s);
 				if (count($tab) > 1) {
-					$query .= ' AND ';
-					$query .= 'j' . $i . '.' . $tab[1] . ' like "%' . $search_values[$i] . '%"';
+					$query->where('j' . $i . '.' . $tab[1] . ' LIKE "%' . $search_values[$i] . '%"');
 					$i++;
 				}
 			}
 
 		}
-		if (isset($quick_search) && !empty($quick_search)) {
-			if ($and) $query .= ' AND ';
-			else {
-				$and   = true;
-				$query .= 'WHERE ';
+		if (!empty($quick_search)) {
+			if (is_numeric($quick_search)) {
+				$query->where($this->db->quoteName('u.id') . ' = ' . $quick_search);
 			}
-			if (is_numeric($quick_search))
-				$query .= 'u.id = ' . $quick_search . ' ';
-			else
-				$query .= '(eu.lastname LIKE ' . $db->Quote('%' . $quick_search . '%') . '
-							OR eu.firstname LIKE ' . $db->Quote('%' . $quick_search . '%') . '
-							OR u.email LIKE ' . $db->Quote('%' . $quick_search . '%') . '
-							OR u.username LIKE ' . $db->Quote('%' . $quick_search . '%');
+			else {
+				$query->where($this->db->quoteName('eu.lastname') . ' LIKE ' . $this->db->quote('%' . $quick_search . '%') . '
+							OR ' . $this->db->quoteName('eu.firstname') . ' LIKE ' . $this->db->quote('%' . $quick_search . '%') . '
+							OR ' . $this->db->quoteName('u.email') . ' LIKE ' . $this->db->quote('%' . $quick_search . '%') . '
+							OR ' . $this->db->quoteName('u.username') . ' LIKE ' . $this->db->quote('%' . $quick_search . '%')
+				);
+			}
 		}
 
-		if (isset($gid) && !empty($gid)) {
-			if ($and) $query .= ' AND ';
-			else {
-				$and   = true;
-				$query .= 'WHERE ';
-			}
-			$query .= 'ege.group_id=' . $db->Quote($gid) . ' OR ege.user_id IN (select user_id FROM #__emundus_groups WHERE group_id=' . $db->Quote($gid) . ')';
-		}
-		if (isset($uid) && !empty($uid)) {
-			if ($and) $query .= ' AND ';
-			else {
-				$and   = true;
-				$query .= 'WHERE ';
-			}
-			$query .= '(ege.user_id=' . $db->Quote($uid) . ' OR ege.group_id IN (select e.group_id FROM #__emundus_groups e WHERE e.user_id=' . $db->Quote($uid) . '))';
-		}
-		if (isset($schoolyears) && !empty($schoolyears)) {
-			if ($and) $query .= ' AND ';
-			else {
-				$and   = true;
-				$query .= 'WHERE ';
-			}
-			$query .= 'eu.schoolyear="' . $db->Quote($schoolyears) . '"';
+		if (!empty($gid)) {
+			$query->where($this->db->quoteName('ege.group_id') . ' = ' . $gid)
+				->orWhere($this->db->quoteName('ege.user_id') . ' IN (select user_id FROM #__emundus_groups WHERE group_id=' . $this->db->quote($gid).')');
 		}
 
-		//die($query);
+		if (!empty($uid)) {
+			$query->where($this->db->quoteName('ege.user_id') . ' = ' . $uid)
+				->orWhere($this->db->quoteName('ege.group_id') . ' IN (select group_id FROM #__emundus_groups WHERE user_id=' . $this->db->quote($uid).')');
+		}
 
-		return $query;
+		if (!empty($schoolyears)) {
+			$query->where($this->db->quoteName('eu.schoolyear') . ' = ' . $this->db->quote($schoolyears));
+		}
+
+		return $query->__toString();
 	}
 
 	function getUsers()
 	{
-		// Lets load the data if it doesn't already exist
 		$query = $this->_buildQuery();
 		$query .= $this->_buildContentOrderBy();
 
@@ -217,159 +213,182 @@ class EmundusModelGroups extends JModelList
 
 	function getProfiles()
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
-		FROM #__emundus_setup_profiles esp
-		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-		ORDER BY caag.lft, esp.label';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadObjectList('id');
+		$query->select('esp.id, esp.label, esp.acl_aro_groups, caag.lft')
+			->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
+			->innerJoin($this->db->quoteName('#__usergroups', 'caag') . ' ON esp.acl_aro_groups=caag.id')
+			->order('caag.lft, esp.label');
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList('id');
 	}
 
 	function getProfilesByIDs($ids)
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
-		FROM #__emundus_setup_profiles esp
-		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-		WHERE esp.id IN (' . implode(',', $ids) . ')
-		ORDER BY caag.lft, esp.label';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadObjectList('id');
+		$query->select('esp.id, esp.label, esp.acl_aro_groups, caag.lft')
+			->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
+			->innerJoin($this->db->quoteName('#__usergroups', 'caag') . ' ON esp.acl_aro_groups=caag.id')
+			->where($this->db->quoteName('esp.id') . ' IN (' . implode(',', $ids) . ')')
+			->order('caag.lft, esp.label');
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList('id');
 	}
 
 	function getAuthorProfiles()
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, esp.evaluation_start, esp.evaluation_end, caag.lft
-		FROM #__emundus_setup_profiles esp
-		INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-		WHERE esp.acl_aro_groups=19';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadObjectList('id');
+		$query->select('esp.id,esp.label,esp.acl_aro_groups,esp.evaluation_start,esp.evaluation_end,caag.lft')
+			->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
+			->innerJoin($this->db->quoteName('#__usergroups', 'caag') . ' ON esp.acl_aro_groups=caag.id')
+			->where($this->db->quoteName('esp.acl_aro_groups') . ' = 19')
+			->order('caag.lft, esp.label');
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList('id');
 	}
 
 	function getEvaluators()
 	{
-		$db    = JFactory::getDBO();
 		$query = 'SELECT u.id, u.name
 		FROM #__users u, #__emundus_users_profiles eup , #__emundus_setup_profiles esp
 		WHERE u.id=eup.user_id AND esp.id=eup.profile_id AND esp.is_evaluator=1';
-		$db->setQuery($query);
+		$this->db->setQuery($query);
 
-		return $db->loadObjectList('id');
+		return $this->db->loadObjectList('id');
 	}
 
 	function getApplicantsProfiles()
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT esp.id, esp.label FROM #__emundus_setup_profiles esp WHERE esp.published=1 ORDER BY esp.label';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadObjectList();
+		$query->select('esp.id,esp.label')
+			->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
+			->where($this->db->quoteName('esp.published') . ' = 1')
+			->order('esp.label');
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList();
 	}
 
 	function getApplicantsByProfile($profile)
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT eup.user_id FROM #__emundus_users_profiles eup WHERE eup.profile_id=' . $profile;
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadAssocList();
+		$query->select('eup.user_id')
+			->from($this->db->quoteName('#__emundus_users_profiles', 'eup'))
+			->where($this->db->quoteName('eup.profile_id') . ' = ' . $profile);
+		$this->db->setQuery($query);
+
+		return $this->db->loadAssocList();
 	}
 
 	function getGroups()
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT esg.id, esg.label
-		FROM #__emundus_setup_groups esg
-		WHERE esg.published=1
-		ORDER BY esg.label';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadObjectList('id');
+		$query->select('esg.id,esg.label')
+			->from($this->db->quoteName('#__emundus_setup_groups', 'esg'))
+			->where($this->db->quoteName('esg.published') . ' = 1')
+			->order('esg.label');
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList('id');
 	}
 
 	function getGroupsByCourse($course)
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT esg.id, esg.label
-		FROM #__emundus_setup_groups esg
-		LEFT JOIN #__emundus_setup_groups_repeat_course esgrc ON esgrc.parent_id=esg.id
-		WHERE esg.published=1 AND esgrc.course=' . $db->Quote($course) . '
-		ORDER BY esg.label';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadObjectList('id');
+		$query->select('esg.id,esg.label')
+			->from($this->db->quoteName('#__emundus_setup_groups', 'esg'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc') . ' ON esg.id = esgrc.parent_id')
+			->where($this->db->quoteName('esg.published') . ' = 1')
+			->where($this->db->quoteName('esgrc.course') . ' = ' . $this->db->quote($course))
+			->order('esg.label');
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList('id');
 	}
 
 	function getGroupsIdByCourse($course)
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT esg.id
-		FROM #__emundus_setup_groups esg
-		LEFT JOIN #__emundus_setup_groups_repeat_course esgrc ON esgrc.parent_id=esg.id
-		WHERE esg.published=1 AND esgrc.course=' . $db->Quote($course) . '
-		ORDER BY esg.label';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadAssocList();
+		$query->select('esg.id')
+			->from($this->db->quoteName('#__emundus_setup_groups', 'esg'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc') . ' ON esg.id = esgrc.parent_id')
+			->where($this->db->quoteName('esg.published') . ' = 1')
+			->where($this->db->quoteName('esgrc.course') . ' = ' . $this->db->quote($course))
+			->order('esg.label');
+		$this->db->setQuery($query);
+
+		return $this->db->loadAssocList();
 	}
 
 	function getGroupsEval()
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT ege.id, ege.applicant_id, ege.user_id, ege.group_id
-		FROM #__emundus_groups_eval ege';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadObjectList('applicant_id');
+		$query->select('ege.id,ege.applicant_id,ege.user_id,ege.group_id')
+			->from($this->db->quoteName('#__emundus_groups_eval', 'ege'));
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList('applicant_id');
 	}
 
 	function getUsersGroups()
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT eg.user_id, eg.group_id
-		FROM #__emundus_groups eg';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadObjectList();
+		$query->slect('eg.user_id, eg.group_id')
+			->from($this->db->quoteName('#__emundus_groups', 'eg'));
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList();
 	}
 
 	function getUsersByGroup($gid)
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT eg.user_id, eg.group_id
-		FROM #__emundus_groups eg
-		WHERE eg.group_id=' . $gid;
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadAssocList();
+		$query->select('eg.user_id, eg.group_id')
+			->from($this->db->quoteName('#__emundus_groups', 'eg'))
+			->where($this->db->quoteName('eg.group_id') . ' = ' . $gid);
+		$this->db->setQuery($query);
+
+		return $this->db->loadAssocList();
 	}
 
 	function getUsersByGroups($gids)
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT eg.user_id, eg.group_id
-		FROM #__emundus_groups eg
-		WHERE eg.group_id IN (' . implode(",", $gids) . ')';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadAssocList();
+		$query->select('eg.user_id, eg.group_id')
+			->from($this->db->quoteName('#__emundus_groups', 'eg'))
+			->where($this->db->quoteName('eg.group_id') . ' IN (' . implode(',', $gids) . ')');
+		$this->db->setQuery($query);
+
+		return $this->db->loadAssocList();
 	}
 
 	function affectEvaluatorsGroups($groups, $aid)
 	{
-		$db = JFactory::getDBO();
-		foreach ($groups as $group) {
-			$query = "INSERT INTO #__emundus_groups_eval (applicant_id, group_id) VALUES (" . $aid . ", " . $group . ")";
+		$query = $this->db->getQuery(true);
 
-			$db->setQuery($query);
+		foreach ($groups as $group) {
+
+			$query->insert($this->db->quoteName('#__emundus_groups_eval'))
+				->columns($this->db->quoteName(array('applicant_id', 'group_id')))
+				->values($this->db->quote($aid) . ',' . $this->db->quote($group));
+
+			$this->db->setQuery($query);
 			try {
-				$db->execute();
+				$this->db->execute();
 			}
 			catch (Exception $e) {
 				// catch any database errors.
@@ -380,29 +399,30 @@ class EmundusModelGroups extends JModelList
 
 	function getAuthorUsers()
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT u.id, u.gid, u.name
-		FROM #__users u
-		WHERE u.gid=19';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadObjectList('id');
+		$query->select('u.id,u.gid,u.name')
+			->from($this->db->quoteName('#__users', 'u'))
+			->where($this->db->quoteName('u.gid') . ' = 19');
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList('id');
 	}
 
 	function getMobility()
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT esm.id, esm.label, esm.value
-		FROM #__emundus_setup_mobility esm
-		ORDER BY ordering';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadObjectList('id');
+		$query->select('esm.id, esm.label, esm.value')
+			->from($this->db->quoteName('#__emundus_setup_mobility', 'esm'))
+			->order('esm.ordering');
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList('id');
 	}
 
 	function getElements()
 	{
-		$db    = JFactory::getDBO();
 		$query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
 				 groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
 				 tab.db_table_name AS table_name, tab.label AS table_label
@@ -414,10 +434,10 @@ class EmundusModelGroups extends JModelList
 				 INNER JOIN jos_emundus_setup_profiles AS profile ON profile.menutype = menu.menutype
 			WHERE tab.published = 1 AND profile.id =9 AND tab.created_by_alias = "form" AND element.published=1 AND element.hidden=0 AND element.label!=" " AND element.label!=""
 			ORDER BY menu.ordering, formgroup.ordering, element.ordering';
-		$db->setQuery($query);
+		$this->db->setQuery($query);
 
 		//die(print_r($db->loadObjectList('id')));
-		return $db->loadObjectList('id');
+		return $this->db->loadObjectList('id');
 	}
 
 	function getTotal()
@@ -444,14 +464,15 @@ class EmundusModelGroups extends JModelList
 
 	function getSchoolyears()
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT DISTINCT(schoolyear) as schoolyear
-		FROM #__emundus_users
-		WHERE schoolyear is not null AND schoolyear != ""
-		ORDER BY schoolyear';
-		$db->setQuery($query);
+		$query = $this->db->getQuery(true);
 
-		return $db->loadAssocList();
+		$query->select('DISTINCT(schoolyear) as schoolyear')
+			->from($this->db->quoteName('#__emundus_users'))
+			->where($this->db->quoteName('schoolyear') . ' IS NOT NULL AND ' . $this->db->quoteName('schoolyear') . ' != ""')
+			->order('schoolyear');
+		$this->db->setQuery($query);
+
+		return $this->db->loadAssocList();
 	}
 
 	/**
@@ -465,58 +486,76 @@ class EmundusModelGroups extends JModelList
 
 		if (count($programmes) > 0) {
 
-			$db = $this->getDbo();
+			$query = $this->db->getQuery(true);
 
 			try {
 				foreach ($programmes as $v) {
-					// Check if a group is already declared for the organisation
-					$query = 'SELECT * FROM `#__emundus_setup_groups`
-	        				WHERE  label LIKE "%' . $v['organisation'] . '%"
-	        					OR label LIKE "%' . $v['organisation_code'] . '%"
-	        					OR description LIKE "%' . $v['organisation_code'] . '%"';
-					$db->setQuery($query);
-					$groups = $db->loadObjectList();
+					$query->clear()
+						->select('*')
+						->from($this->db->quoteName('#__emundus_setup_groups'))
+						->where($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('%'.$v['organisation'].'%'))
+						->orWhere($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('%'.$v['organisation_code'].'%'))
+						->orWhere($this->db->quoteName('description') . ' LIKE ' . $this->db->quote('%'.$v['organisation_code'].'%'));
+					$this->db->setQuery($query);
+					$groups = $this->db->loadObjectList();
 
 					if (count($groups) > 0) {
 						foreach ($groups as $group) {
-							$query = 'DELETE FROM `#__emundus_setup_groups_repeat_course` WHERE parent_id=' . $group->id . ' AND course LIKE ' . $db->Quote($v['code']);
-							$db->setQuery($query);
-							$db->execute();
+							$query->clear()
+								->delete($this->db->quoteName('#__emundus_setup_groups_repeat_course'))
+								->where($this->db->quoteName('parent_id') . ' = ' . $group->id)
+								->where($this->db->quoteName('course') . ' LIKE ' . $this->db->quote($v['code']));
+							$this->db->setQuery($query);
+							$this->db->execute();
 
-							$query = 'INSERT INTO `#__emundus_setup_groups_repeat_course` (`parent_id`, `course`) VALUES (' . $group->id . ', ' . $db->Quote($v['code']) . ')';
-							$db->setQuery($query);
-							$db->execute();
+							$query->clear()
+								->insert($this->db->quoteName('#__emundus_setup_groups_repeat_course'))
+								->columns($this->db->quoteName(array('parent_id', 'course')))
+								->values($this->db->quote($group->id) . ',' . $this->db->quote($v['code']));
+							$this->db->setQuery($query);
+							$this->db->execute();
 						}
 					}
 					else {
-						$query = 'INSERT INTO `#__emundus_setup_groups` (`label`, `description`, `published`) VALUES (' . $db->Quote($v['organisation'] . ' [' . $v['organisation_code'] . ']') . ', ' . $db->Quote($v['organisation_code']) . ', 1)';
-						$db->setQuery($query);
-						$db->execute();
-						$lastid = $db->insertid();
+						$query->clear()
+							->insert($this->db->quoteName('#__emundus_setup_groups'))
+							->columns($this->db->quoteName(array('label', 'description', 'published')))
+							->values($this->db->quote($v['organisation'] . ' [' . $v['organisation_code'] . ']') . ',' . $this->db->quote($v['organisation_code']) . ',1');
+						$this->db->setQuery($query);
+						$this->db->execute();
+						$lastid = $this->db->insertid();
 
-						$query = 'INSERT INTO `#__emundus_setup_groups_repeat_course` (`parent_id`, `course`) VALUES (' . $lastid . ', ' . $db->Quote($v['code']) . ')';
-						$db->setQuery($query);
-						$db->execute();
+						$query->clear()
+							->insert($this->db->quoteName('#__emundus_setup_groups_repeat_course'))
+							->columns($this->db->quoteName(array('parent_id', 'course')))
+							->values($this->db->quote($lastid) . ',' . $this->db->quote($v['code']));
+						$this->db->setQuery($query);
+						$this->db->execute();
 
 						// define default access right for group
-						$params             = JComponentHelper::getParams('com_emundus');
+						$params             = ComponentHelper::getParams('com_emundus');
 						$default_actions    = $params->get('default_actions', 0);
 						$actions_evaluators = json_decode($default_actions);
 
 						$values = array();
 						foreach ($actions_evaluators as $action) {
-							$values[] = '(' . $lastid . ', "' . implode('","', (array) $action) . '")';
+							$values[] = $lastid . ', ' . implode(',', (array) $action);
 						}
 
-						$query = 'INSERT INTO `#__emundus_acl` (`group_id`, `action_id`, `c`, `r`, `u`, `d`) VALUE ' . implode(',', $values);
-						$db->setQuery($query);
-						$db->execute();
+						$query->clear()
+							->insert($this->db->quoteName('#__emundus_acl'))
+							->columns($this->db->quoteName(array('group_id', 'action_id', 'c', 'r', 'u', 'd')))
+							->values($values);
+						$this->db->setQuery($query);
+						$this->db->execute();
 					}
 
-					// add for All access group
-					$query = 'INSERT INTO `#__emundus_setup_groups_repeat_course` (`parent_id`, `course`) VALUES (1, ' . $db->Quote($v['code']) . ')';
-					$db->setQuery($query);
-					$db->execute();
+					$query->clear()
+						->insert($this->db->quoteName('#__emundus_setup_groups_repeat_course'))
+						->columns($this->db->quoteName(array('parent_id', 'course')))
+						->values('1,' . $this->db->quote($v['code']));
+					$this->db->setQuery($query);
+					$this->db->execute();
 
 				}
 			}
@@ -528,7 +567,7 @@ class EmundusModelGroups extends JModelList
 
 		}
 		else {
-			return JText::_('NO_GROUP_TO_ADD');
+			return Text::_('NO_GROUP_TO_ADD');
 		}
 
 		return true;
@@ -549,20 +588,19 @@ class EmundusModelGroups extends JModelList
 			$group_ids = [$group_ids];
 		}
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$result = [];
 		foreach ($group_ids as $group_id) {
 			$query
 				->clear()
-				->select($db->quoteName('fabrik_group_link'))
-				->from($db->quoteName('#__emundus_setup_groups_repeat_fabrik_group_link'))
-				->where($db->quoteName('parent_id') . ' = ' . $db->quote($group_id));
-			$db->setQuery($query);
+				->select($this->db->quoteName('fabrik_group_link'))
+				->from($this->db->quoteName('#__emundus_setup_groups_repeat_fabrik_group_link'))
+				->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($group_id));
+			$this->db->setQuery($query);
 
 			try {
-				$f_groups = $db->loadColumn();
+				$f_groups = $this->db->loadColumn();
 
 				// In the case of a group having no assigned Fabrik groups, it can get them all.
 				if (empty($f_groups)) {

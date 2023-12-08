@@ -8,6 +8,9 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
+
 defined('_JEXEC') or die('Restricted access');
 
 /**
@@ -17,12 +20,15 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Fabrik.cron.emundusrecall
  * @since       3.0
  */
-class PlgEmundusHopitaux_paris_create_reference extends \Joomla\CMS\Plugin\CMSPlugin
+class PlgEmundusHopitaux_paris_create_reference extends CMSPlugin
 {
+	private $db;
 
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
+		
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 		jimport('joomla.log.log');
 		JLog::addLogger(array('text_file' => 'com_emundus.emundushopitaux_paris_create_reference.php'), JLog::ALL, array('com_emundus'));
@@ -31,31 +37,28 @@ class PlgEmundusHopitaux_paris_create_reference extends \Joomla\CMS\Plugin\CMSPl
 
 	function onAfterStatusChange($fnum, $state)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$status_to_check = explode(',', $this->params->get('reference_status_step', ''));
 
-		$status = array_search($state, $status_to_check);
-
-		if ($status === false) {
+		if (!in_array($state, $status_to_check)) {
 			return false;
 		}
 
 		try {
 			$query->select('cc.applicant_id,cc.campaign_id,sc.training,sc.year')
-				->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
-				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $db->quoteName('sc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
-				->where($db->quoteName('cc.fnum') . ' = ' . $db->quote($fnum));
-			$db->setQuery($query);
-			$file = $db->loadObject();
+				->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->db->quoteName('sc.id') . ' = ' . $this->db->quoteName('cc.campaign_id'))
+				->where($this->db->quoteName('cc.fnum') . ' = ' . $this->db->quote($fnum));
+			$this->db->setQuery($query);
+			$file = $this->db->loadObject();
 
 			$query->clear()
 				->select('id')
-				->from($db->quoteName('data_references_dossiers'))
-				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-			$db->setQuery($query);
-			$fnum_reference = $db->loadResult();
+				->from($this->db->quoteName('data_references_dossiers'))
+				->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum));
+			$this->db->setQuery($query);
+			$fnum_reference = $this->db->loadResult();
 
 			if (empty($fnum_reference)) {
 				$reference = null;
@@ -75,18 +78,16 @@ class PlgEmundusHopitaux_paris_create_reference extends \Joomla\CMS\Plugin\CMSPl
 							$reference = 'FAU/AS/' . $file->year;
 						}
 						break;
-					default:
-						$reference = null;
 				}
 
 				if (!empty($reference)) {
 					$query->clear()
 						->select('cast(substring_index(reference,' / ',-1) as signed) as reference_number')
-						->from($db->quoteName('data_references_dossiers'))
-						->where($db->quoteName('reference') . ' LIKE ' . $db->quote($reference . '%'))
+						->from($this->db->quoteName('data_references_dossiers'))
+						->where($this->db->quoteName('reference') . ' LIKE ' . $this->db->quote($reference . '%'))
 						->order('reference_number');
-					$db->setQuery($query);
-					$references = $db->loadColumn();
+					$this->db->setQuery($query);
+					$references = $this->db->loadColumn();
 
 					if (!empty($references)) {
 						$last                 = end($references);
@@ -99,11 +100,11 @@ class PlgEmundusHopitaux_paris_create_reference extends \Joomla\CMS\Plugin\CMSPl
 					$new_reference = $reference . '/' . $new_reference_number;
 
 					$query->clear()
-						->insert($db->quoteName('data_references_dossiers'))
-						->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
-						->set($db->quoteName('reference') . ' = ' . $db->quote($new_reference));
-					$db->setQuery($query);
-					$db->execute();
+						->insert($this->db->quoteName('data_references_dossiers'))
+						->set($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum))
+						->set($this->db->quoteName('reference') . ' = ' . $this->db->quote($new_reference));
+					$this->db->setQuery($query);
+					$this->db->execute();
 				}
 			}
 

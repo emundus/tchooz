@@ -9,6 +9,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\OutputFilter;
+use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseInterface;
 
 class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
@@ -23,14 +25,7 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 		parent::__construct($subject, $config);
 
 		$this->app = Factory::getApplication();
-
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->db = Factory::getContainer()->get('DatabaseDriver');
-		}
-		else {
-			$this->db = Factory::getDbo();
-		}
-
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		$this->query = $this->db->getQuery(true);
 
 		jimport('joomla.log.log');
@@ -41,7 +36,7 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 	function onAfterCampaignCreate($id)
 	{
 		try {
-			$label = $this->app->input->getString("jos_emundus_setup_campaigns___label");
+			$label = $this->app->getInput()->getString("jos_emundus_setup_campaigns___label");
 
 			if ($label == null) {
 				$this->query
@@ -53,7 +48,7 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 				$label = $this->db->loadResult();
 			}
 
-			$name = JFilterOutput::stringURLSafe($label);
+			$name = OutputFilter::stringURLSafe($label);
 
 			$this->query->clear()
 				->select($this->db->quoteName('id'))
@@ -64,18 +59,10 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 			$cat_id = $this->db->loadResult();
 
 			if (!$cat_id) {
-				if (version_compare(JVERSION, '4.0', '>')) {
-					$this->db = Factory::getContainer()->get(DatabaseInterface::class);
-
-				}
-				else {
-					Factory::$database = null;
-					$this->db          = JFactory::getDbo();
-				}
-
+				$this->db = Factory::getContainer()->get(DatabaseInterface::class);
 				$this->query = $this->db->getQuery(true);
 
-				$table = JTable::getInstance('category');
+				$table = Table::getInstance('category');
 
 				$data              = array();
 				$data['path']      = $name;
@@ -161,9 +148,7 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 		}
 
 		try {
-			$app = JFactory::getApplication();
-
-			$table = JTable::getInstance('category');
+			$table = Table::getInstance('category');
 
 			foreach ($ids as $id) {
 

@@ -48,9 +48,6 @@ class plgEmundusSend_file_archive extends CMSPlugin
 	 * @param $state
 	 *
 	 * @return bool
-	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
-	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
-	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
 	function onAfterStatusChange($fnum, $state)
 	{
@@ -73,9 +70,6 @@ class plgEmundusSend_file_archive extends CMSPlugin
 	 * @param $email
 	 *
 	 * @return bool
-	 * @throws \PhpOffice\PhpWord\Exception\CopyFileException
-	 * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
-	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
 	private function sendEmailArchive($fnum, $email)
 	{

@@ -8,6 +8,10 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Mail\MailerFactoryInterface;
+
 defined('_JEXEC') or die('Restricted access');
 
 /**
@@ -19,10 +23,13 @@ defined('_JEXEC') or die('Restricted access');
  */
 class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 {
+	private $db;
 
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
+		
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 		jimport('joomla.log.log');
 		JLog::addLogger(array('text_file' => 'com_emundus.emundusreferent_status.php'), JLog::ALL, array('com_emundus'));
@@ -46,8 +53,6 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 		$this->log = '';
 
 		// Get list of applicants to notify
-		$db = JFactory::getDbo();
-
 		$query = 'SELECT DISTINCT u.id, u.email, eu.firstname, eu.lastname, ecc.fnum, ecc.campaign_id, ecc.applicant_id, esc.start_date, esc.end_date, esc.label, DATEDIFF( esc.end_date , now()) as left_days
 					FROM #__emundus_campaign_candidature as ecc
 					LEFT JOIN #__users as u ON u.id=ecc.applicant_id
@@ -55,8 +60,8 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 					LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id=ecc.campaign_id
 					WHERE ecc.fnum = ' . $fnum . ' AND ecc.campaign_id IN (' . $campaigns . ') AND ecc.status IN(' . $status_to_check . ')';
 
-		$db->setQuery($query);
-		$applicant = $db->loadObject();
+		$this->db->setQuery($query);
+		$applicant = $this->db->loadObject();
 
 		// Generate emails from template and store it in message table
 		if (!empty($applicant)) {
@@ -75,9 +80,9 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
                 FROM #__emundus_setup_profiles as esp
                 LEFT JOIN #__emundus_setup_campaigns as esc on esc.profile_id = esp.id 
                 LEFT JOIN #__emundus_campaign_candidature as ecc on ecc.campaign_id = esc.id 
-                WHERE ecc.fnum LIKE ' . $db->quote($fnum);
-			$db->setQuery($query);
-			$obj_letter = $db->loadRowList();
+                WHERE ecc.fnum LIKE ' . $this->db->quote($fnum);
+			$this->db->setQuery($query);
+			$obj_letter = $this->db->loadRowList();
 
 			$attachment = array();
 			if (!empty($obj_letter[0][0])) {
@@ -85,7 +90,7 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 			}
 
 			if ($this->getFilesExist($applicant->fnum, $attachments_id) != sizeof(explode(',', $attachments_id))) {
-				$mailer            = JFactory::getMailer();
+				$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
 				$mailer->SMTPDebug = true;
 
 				$baseurl = JURI::root();
@@ -93,8 +98,7 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 				$referents_emails = array();
 				$elts             = explode(',', $fabrik_elts);
 
-				$db    = JFactory::getDbo();
-				$query = $db->getQuery(true);
+				$query = $this->db->getQuery(true);
 
 				foreach ($elts as $elt) {
 					$table = explode('__', $elt)[0];
@@ -102,23 +106,23 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 
 					$query->clear()
 						->select($field)
-						->from($db->quoteName('#__' . $table))
-						->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($applicant->fnum));
+						->from($this->db->quoteName('#__' . $table))
+						->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($applicant->fnum));
 
-					$db->setQuery($query);
-					$referents_emails[] = $db->loadResult();
+					$this->db->setQuery($query);
+					$referents_emails[] = $this->db->loadResult();
 				}
 
 
 				foreach ($referents_emails as $key => $referentEmail) {
 					$query->clear()
 						->select('COUNT(id)')
-						->from($db->quoteName('#__emundus_files_request'))
-						->where($db->quoteName('email') . ' LIKE ' . $db->quote($referentEmail))
-						->andWhere($db->quoteName('uploaded') . ' = 1 ')
-						->andWhere($db->quoteName('fnum') . ' LIKE ' . $db->quote($applicant->fnum));
-					$db->setQuery($query);
-					$uploaded = $db->loadResult();
+						->from($this->db->quoteName('#__emundus_files_request'))
+						->where($this->db->quoteName('email') . ' LIKE ' . $this->db->quote($referentEmail))
+						->andWhere($this->db->quoteName('uploaded') . ' = 1 ')
+						->andWhere($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($applicant->fnum));
+					$this->db->setQuery($query);
+					$uploaded = $this->db->loadResult();
 
 					if (empty($uploaded)) {
 						$referent_key = md5($this->rand_string(20) . time());
@@ -126,10 +130,10 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 
 						$post = array(
 							'FNUM'           => $applicant->fnum,
-							'DEADLINE'       => JHTML::_('date', $applicant->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+							'DEADLINE'       => JHTML::_('date', $applicant->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
 							'CAMPAIGN_LABEL' => $applicant->label,
-							'CAMPAIGN_START' => JHTML::_('date', $applicant->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
-							'CAMPAIGN_END'   => JHTML::_('date', $applicant->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+							'CAMPAIGN_START' => JHTML::_('date', $applicant->start_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+							'CAMPAIGN_END'   => JHTML::_('date', $applicant->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
 							'FIRSTNAME'      => $applicant->firstname,
 							'LASTNAME'       => strtoupper($applicant->lastname),
 							'UPLOAD_URL'     => $link_upload,
@@ -146,27 +150,18 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 						$body     = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
 						$body     = $m_emails->setTagsFabrik($body, [$applicant->fnum]);
 
-
-						$config = JFactory::getConfig();
-
-						$email_from_sys = $config->get('mailfrom');
-						$email_from     = $from;
-
-						// If the email sender has the same domain as the system sender address.
-						if (!empty($email_from) && substr(strrchr($email_from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-							$mail_from_address = $email_from;
-						}
-						else {
-							$mail_from_address = $email_from_sys;
-						}
+						$email_from_sys = Factory::getApplication()->get('mailfrom');
 
 						// Set sender
 						$sender = [
-							$mail_from_address,
+							$email_from_sys,
 							$fromname
 						];
-
 						$mailer->setSender($sender);
+
+						if(!empty($from)) {
+							$mailer->addReplyTo($from,$fromname);
+						}
 						$mailer->addRecipient($to);
 						$mailer->setSubject($subject);
 						$mailer->isHTML(true);
@@ -187,22 +182,20 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 							$this->log .= "\n Error sending email : " . $to;
 						}
 						else {
-
 							$attachments = explode(',', $attachments_id);
 							$this->setEmailSend($applicant->fnum, $attachments[$key], $applicant->id, $referentEmail, $applicant->campaign_id, $referent_key);
 							$message = array(
 								'user_id_from' => $from_id,
 								'user_id_to'   => $to_id,
 								'subject'      => $subject,
-								'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . '</i><br>' . $body
+								'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('SENT') . ' ' . Text::_('TO') . ' ' . $to . '</i><br>' . $body
 							);
 							$m_emails->logEmail($message);
-							$this->log .= '\n' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . ' :: ' . $body;
+							$this->log .= '\n' . Text::_('MESSAGE') . ' ' . Text::_('SENT') . ' ' . Text::_('TO') . ' ' . $to . ' :: ' . $body;
 						}
 
 						// to avoid being considered as a spam process or DDoS
 						sleep(5);
-
 					}
 				}
 			}
@@ -211,44 +204,18 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 		return true;
 	}
 
-
-	public function getFilesRequest($fnum, $attachment_id)
-	{
-
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		JLog::addLogger(['text_file' => 'com_emundus.cron.referentStatus.error.php'], JLog::ERROR, 'com_emundus');
-
-		$query->select('COUNT(id)')
-			->from($db->quoteName('#__emundus_files_request'))
-			->where($db->quoteName('attachment_id') . ' IN (' . $db->quote($attachment_id) . ') AND ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-
-		$db->setQuery($query);
-		try {
-			return $db->loadResult();
-		}
-		catch (Exception $e) {
-			JLog::add('Error getting emails : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-			return null;
-		}
-	}
-
-
 	private function getFilesExist($fnum, $attachments_id)
 	{
-
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 		JLog::addLogger(['text_file' => 'com_emundus.cron.referentStatus.error.php'], JLog::ERROR, 'com_emundus');
 
 		$query->select('COUNT(id)')
-			->from($db->quoteName('#__emundus_uploads'))
-			->where($db->quoteName('attachment_id') . ' IN (' . $db->quote($attachments_id) . ') AND' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+			->from($this->db->quoteName('#__emundus_uploads'))
+			->where($this->db->quoteName('attachment_id') . ' IN (' . $this->db->quote($attachments_id) . ') AND' . $this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum));
 
-		$db->setQuery($query);
 		try {
-			return $db->loadResult();
+			$this->db->setQuery($query);
+			return $this->db->loadResult();
 		}
 		catch (Exception $e) {
 			JLog::add('Error getting uploads : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -259,21 +226,21 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 
 	private function setEmailSend($fnum, $attachment_id, $applicant_id, $referent_email, $campaign_id, $referent_key)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 		JLog::addLogger(['text_file' => 'com_emundus.cron.referentStatus.error.php'], JLog::ERROR, 'com_emundus');
+
 		try {
 			$query->clear()
-				->insert($db->quoteName('#__emundus_files_request'));
-			$query->set($db->quoteName('time_date') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
-				->set($db->quoteName('student_id') . ' = ' . $db->quote($applicant_id))
-				->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
-				->set($db->quoteName('keyid') . ' = ' . $db->quote($referent_key))
-				->set($db->quoteName('attachment_id') . ' = ' . $db->quote($attachment_id))
-				->set($db->quoteName('campaign_id') . ' = ' . $db->quote($campaign_id))
-				->set($db->quoteName('email') . ' = ' . $db->quote($referent_email));
-			$db->setQuery($query);
-			$db->execute();
+				->insert($this->db->quoteName('#__emundus_files_request'))
+				->set($this->db->quoteName('time_date') . ' = ' . $this->db->quote(date('Y-m-d H:i:s')))
+				->set($this->db->quoteName('student_id') . ' = ' . $this->db->quote($applicant_id))
+				->set($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum))
+				->set($this->db->quoteName('keyid') . ' = ' . $this->db->quote($referent_key))
+				->set($this->db->quoteName('attachment_id') . ' = ' . $this->db->quote($attachment_id))
+				->set($this->db->quoteName('campaign_id') . ' = ' . $this->db->quote($campaign_id))
+				->set($this->db->quoteName('email') . ' = ' . $this->db->quote($referent_email));
+			$this->db->setQuery($query);
+			$this->db->execute();
 
 			return true;
 		}
@@ -289,7 +256,7 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 		$string = '';
 		for ($i = 0; $i < $len; $i++) {
 			$pos    = rand(0, strlen($chars) - 1);
-			$string .= $chars{$pos};
+			$string .= $chars[$pos];
 		}
 
 		return $string;

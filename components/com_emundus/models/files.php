@@ -1919,6 +1919,8 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getFnumInfos($fnum)
 	{
+		$fnumInfos = [];
+
 		try {
 			$query = $this->_db->getQuery(true);
 			$query->select('u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, cc.form_progress, cc.attachment_progress, ss.value, ss.class, c.*, cc.campaign_id')
@@ -1930,7 +1932,7 @@ class EmundusModelFiles extends JModelLegacy
 			$this->_db->setQuery($query);
 			$fnumInfos = $this->_db->loadAssoc();
 
-			$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+			$anonymize_data = EmundusHelperAccess::isDataAnonymized($this->app->getIdentity()->id);
 			if ($anonymize_data) {
 				$fnumInfos['name']  = $fnum;
 				$fnumInfos['email'] = $fnum;
@@ -1938,9 +1940,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-			return false;
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 
 		return $fnumInfos;
