@@ -491,6 +491,7 @@ div#frame.outline {
     align-items: center;
     transition: all 0.3s ease-in-out;
     max-height: 40px;
+    left: 70px;
   }
 }
 
@@ -1624,6 +1625,11 @@ footer#g-footer > .g-container {
 
   select {
     color: var(--neutral-800);
+    background-color: transparent;
+  }
+
+  select:focus {
+    outline: none;
     background-color: transparent;
   }
 }
@@ -4317,8 +4323,14 @@ screen and (max-height: 769px) {
 
   .gantry #g-navigation,
   .gantry #g-navigation .g-container {
-    height: auto !important;
+    min-height: 72px;
     max-height: 100%;
+    height: auto;
+  }
+
+  #g-navigation #header-a {
+    position: absolute;
+    left: 45px;
   }
 
   .gantry #g-navigation .g-grid {
@@ -4330,8 +4342,14 @@ screen and (max-height: 769px) {
 @media all and (min-width: 434px) and (max-width: 479px) {
   .gantry #g-navigation,
   .gantry #g-navigation .g-container {
-    height: auto !important;
+    min-height: 72px;
     max-height: 100%;
+    height: auto;
+  }
+
+  #g-navigation #header-a {
+    position: absolute;
+    left: 35px;
   }
 
   .gantry #g-navigation.em_emundus_menu_active .g-container #header-b {
@@ -4659,6 +4677,11 @@ screen and (max-height: 769px) {
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 30;
+  }
+
+  .gantry #g-navigation .g-container #header-b {
+    Z-index: 25;
   }
 
   /* HEADER C */
@@ -4758,8 +4781,9 @@ screen and (max-height: 769px) {
   }
 
   .gantry #g-navigation, .gantry #g-navigation .g-container {
-    height: auto !important;
     max-height: 100%;
+    min-height: 72px;
+    height: auto;
   }
 
   .gantry #g-navigation .g-grid {
@@ -4882,6 +4906,8 @@ screen and (max-height: 769px) {
     display: flex;
     align-items: center;
     justify-content: center;
+    position : absolute;
+    left: 20px;
   }
 
   #g-navigation #header-c, #g-navigation #header-c.without-tchooz-and-lang-switcher, #g-navigation #header-c.without-lang-switcher, #g-navigation #header-c.without-tchooz {
@@ -5246,8 +5272,9 @@ screen and (max-height: 769px) {
   }
 
   .gantry #g-navigation, .gantry #g-navigation .g-container {
-    height: auto !important;
     max-height: 100%;
+    min-height: 72px;
+    height: auto;
   }
 
   #g-navigation .g-container #header-c {
@@ -5329,7 +5356,8 @@ screen and (max-height: 769px) {
     }
 
     #header-a {
-      left: 0;
+      left: 82px;
+      position: absolute;
     }
 
     /*#header-c  .g-content {
@@ -6828,5 +6856,21 @@ tbody .el-table__row:nth-child(odd){
   #g-navigation {
     background: none;
     border: none;
+  }
+}
+
+.view-files .SumoSelect .select-all {
+  height: fit-content;
+}
+
+#g-feature .g-container  {
+  margin-inline: 201px 126px;
+  margin-top: 40px;
+  width: auto;
+}
+
+@media screen and (max-width: 960px) {
+  #g-feature .g-container {
+    margin-inline: 85px 10px;
   }
 }
