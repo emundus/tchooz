@@ -773,14 +773,16 @@ function getProgramCampaigns(code) {
     });
 }
 
-function setFiltersSumo(event){
+function setFiltersSumo(event, id){
     $.ajaxQ.abortAll();
     if (event.handle !== true) {
         event.handle = true;
 
-        var id = event.currentTarget.id;
+        if(event.target.id) {
+            id = event.target.id;
+        }
         const my_element = $('#' + id);
-        console.log(my_element);
+
         if (!id.includes('elements-')) {
             var multi = false;
             if (typeof my_element.attr('multiple') !== 'undefined') {
