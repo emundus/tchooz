@@ -542,7 +542,7 @@ class EmundusModelEmails extends JModelList
 		else {
 			$user = JFactory::getUser($user_id);
 		}
-		$config = JFactory::getConfig();
+		$config = $app->getConfig();
 
 		//get logo
 		$template = $app->getTemplate(true);
@@ -1311,7 +1311,7 @@ class EmundusModelEmails extends JModelList
 			$documentid = $eMConfig->get('expert_document_id', '36');
 
 			$app            = JFactory::getApplication();
-			$email_from_sys = $app->getCfg('mailfrom');
+			$email_from_sys = $app->getConfig()->get('mailfrom');
 			$jinput         = $app->input;
 			$mail_subject   = $jinput->post->getString('mail_subject');
 			$mail_from_name = $jinput->post->getString('mail_from_name');
@@ -1323,7 +1323,7 @@ class EmundusModelEmails extends JModelList
 			$campaign_id     = (int) substr($example_fnum, 14, 7);
 			$campaign        = $h_filters->getCampaignByID($campaign_id);
 			$example_user_id = (int) substr($example_fnum, -7);
-			$example_user    = JFactory::getUser($example_user_id);
+			$example_user    = $app->getIdentity($example_user_id);
 			$tags            = $this->setTags($this->_em_user->id);
 
 			$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
@@ -1358,7 +1358,7 @@ class EmundusModelEmails extends JModelList
 
 				// Tags from Fabrik ID
 				$element_ids = $this->getFabrikElementIDs($mail_body);
-				if (count(@$element_ids[0]) > 0) {
+				if (!empty($element_ids) && !empty($element_ids[0])) {
 					$element_values = $this->getFabrikElementValues($example_fnum, $element_ids[1]);
 				}
 
