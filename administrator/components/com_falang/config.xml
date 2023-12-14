@@ -9,28 +9,43 @@
                size="30"
                label="COM_FALANG_CONFIG_BASIC_DOWNLOADID_LABEL"
                description ="COM_FALANG_CONFIG_BASIC_DOWNLOADID_DESC" />
-        <!-- >>> [FREE_1] >>> -->
+        
+        <!-- >>> [PAID_1] >>> -->
         <field
-                name="@notice_frontEndEdition"
-                type="plaintext"
+                name="frontEndEdition"
+                type="radio"
+                class="btn-group btn-group-yesno"
+                default="0"
+                layout="joomla.form.field.radio.switcher"
                 label="COM_FALANG_FIELD_FRONTENDEDITION_LABEL"
-                description="COM_FALANG_FIELD_FRONTENDEDITION_DESC"
-                default="COM_FALANG_ONLY_PAID"/>
-        <field
-                name="@copy_images_and_urls"
-                type="plaintext"
-                label="COM_FALANG_CONFIG_COPY_IMAGES_AND_URLS_LABEL"
-                description="COM_FALANG_CONFIG_COPY_IMAGES_AND_URLS_DESC"
-                default="COM_FALANG_ONLY_PAID"/>
+                description="COM_FALANG_FIELD_FRONTENDEDITION_DESC" >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="copy_images_and_urls"
+               type="radio"
+               default="1"
+               layout="joomla.form.field.radio.switcher"
+               class="btn-group btn-group-yesno"
+               label="COM_FALANG_CONFIG_COPY_IMAGES_AND_URLS_LABEL"
+               description="COM_FALANG_CONFIG_COPY_IMAGES_AND_URLS_DESC">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
 
         <field
-                name="@show_tpl_lang"
-                type="plaintext"
+                name="show_tpl_lang"
+                type="radio"
+                default="0"
+                layout="joomla.form.field.radio.switcher"
+                class="btn-group btn-group-yesno"
                 label="COM_FALANG_FIELD_SHOW_TPLLANG_LABEL"
-                description="COM_FALANG_FIELD_SHOW_TPLLANG_DESC"
-                default="COM_FALANG_ONLY_PAID"/>
-        <!-- <<< [FREE_1] <<< -->
-        
+                description="COM_FALANG_FIELD_SHOW_TPLLANG_DESC" >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
+        <!-- <<< [PAID_1] <<< -->
         <field
                 name="show_list"
                 type="radio"
@@ -187,15 +202,19 @@
               label="COM_FALANG_CONFIG_IE"
               description="COM_FALANG_CONFIG_IE_DESC"
     >
-        <!-- >>> [FREE_2] >>> -->
+        
+        <!-- >>> [PAID_2] >>> -->
         <field
-                name="@ie_list"
-                type="plaintext"
+                name="ie_list"
+                type="textarea"
+                class="input-xxlarge"
+                rows="10"
+                cols="60"
+                default="content,Articles&#13;&#10;menu,Menu&#13;&#10;modules,Modules"
                 label="COM_FALANG_IE_TABLE_LIST_LABEL"
                 description="COM_FALANG_IE_TABLE_LIST_DESC"
-                default="COM_FALANG_ONLY_PAID"/>
-        <!-- <<< [FREE_2] <<< -->
-        
+        />
+        <!-- <<< [PAID_2] <<< -->
     </fieldset>
     <fieldset name="debug"
               label="COM_FALANG_CONFIG_DEBUG_LABEL"

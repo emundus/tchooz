@@ -49,6 +49,10 @@
         .fabrikGroupColumns.fabrikGroup {
           .row {
             column-gap: 0;
+
+            .col-sm-6:first-child {
+              padding-right: 8px;
+            }
           }
         }
       }
@@ -648,6 +652,7 @@
           }
 
           label {
+            cursor: pointer;
             @apply mb-0;
             span{
               word-wrap: break-word;

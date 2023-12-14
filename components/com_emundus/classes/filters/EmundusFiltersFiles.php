@@ -4,9 +4,13 @@ require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 
 class EmundusFiltersFiles extends EmundusFilters
 {
+	private $app;
+	
 	private $profiles = [];
 	private $user_campaigns = [];
 	private $user_programs = [];
@@ -17,10 +21,12 @@ class EmundusFiltersFiles extends EmundusFilters
 
 	public function __construct($config = array())
 	{
-		JLog::addLogger(['text_file' => 'com_emundus.filters.php'], JLog::ALL, 'com_emundus.filters');
+		parent::__construct($config);
 
-		$app        = Factory::getApplication();
-		$this->user = $app->getIdentity();
+		Log::addLogger(['text_file' => 'com_emundus.filters.php'], Log::ALL, 'com_emundus.filters');
+
+		$this->app        = Factory::getApplication();
+		$this->user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id) || !EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id)) {
 			throw new Exception('Access denied', 403);
@@ -38,13 +44,13 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->setDefaultFilters($config);
 		$this->setFilters();
 
-		$session_filters = JFactory::getSession()->get('em-applied-filters', null);
+		$session_filters = $this->app->getSession()->get('em-applied-filters', null);
 		if (!empty($session_filters)) {
 			$this->addSessionFilters($session_filters);
 			$this->checkFiltersAvailability();
 		}
 
-		$quick_search_filters = JFactory::getSession()->get('em-quick-search-filters', null);
+		$quick_search_filters = $this->app->getSession()->get('em-quick-search-filters', null);
 		if (!empty($quick_search_filters)) {
 			$this->setQuickSearchFilters($quick_search_filters);
 		}
@@ -60,7 +66,7 @@ class EmundusFiltersFiles extends EmundusFilters
 
 	private function setMenuParams()
 	{
-		$menu              = JFactory::getApplication()->getMenu();
+		$menu              = $this->app->getMenu();
 		$active            = $menu->getActive();
 		$this->menu_params = $active->getParams();
 	}
@@ -77,7 +83,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		$profile_ids = [];
 
 		if (!empty($campaign_ids)) {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			// profiles from campaigns
@@ -133,7 +139,7 @@ class EmundusFiltersFiles extends EmundusFilters
 			}
 
 			// get all forms associated to the user's profiles
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('link')
@@ -180,7 +186,7 @@ class EmundusFiltersFiles extends EmundusFilters
 			}
 
 			if (!empty($form_ids)) {
-				$db    = JFactory::getDbo();
+				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
 				$query->clear()
@@ -198,8 +204,8 @@ class EmundusFiltersFiles extends EmundusFilters
 					$elements       = array_merge($elements, $query_elements);
 
 					foreach ($elements as $key => $element) {
-						$elements[$key]['label']              = JText::_($element['label']);
-						$elements[$key]['element_form_label'] = JText::_($element['element_form_label']);
+						$elements[$key]['label']              = Text::_($element['label']);
+						$elements[$key]['element_form_label'] = Text::_($element['element_form_label']);
 					}
 
 					if ($this->h_cache->isEnabled()) {
@@ -217,7 +223,7 @@ class EmundusFiltersFiles extends EmundusFilters
 					}
 				}
 				catch (Exception $e) {
-					JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+					Log::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
 				}
 			}
 		}
@@ -230,7 +236,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		$found_from_cache = false;
 
 		if ($this->h_cache->isEnabled()) {
-			$menu        = JFactory::getApplication()->getMenu();
+			$menu        = $this->app->getMenu();
 			$active_menu = $menu->getActive();
 			if (!empty($active_menu)) {
 				$cache_default_filters = $this->h_cache->get('em_default_filters_' . $active_menu->id);
@@ -243,7 +249,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 
 		if (!$found_from_cache) {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$filter_menu_values           = $this->menu_params->get('em_filters_values', '');
@@ -280,7 +286,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				$this->applied_filters[] = [
 					'uid'       => 'status',
 					'id'        => 'status',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_STATUS'),
+					'label'     => Text::_('MOD_EMUNDUS_FILTERS_STATUS'),
 					'type'      => 'select',
 					'values'    => $values,
 					'value'     => ['all'],
@@ -292,28 +298,31 @@ class EmundusFiltersFiles extends EmundusFilters
 
 			if ($config['filter_campaign']) {
 
-				$query->clear()
-					->select('id as value, label, 0 as count')
-					->from('#__emundus_setup_campaigns')
-					->where('published = 1')
-					->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
+				$campaigns = [];
+				if(!empty($this->user_campaigns)) {
+					$query->clear()
+						->select('id as value, label, 0 as count')
+						->from('#__emundus_setup_campaigns')
+						->where('published = 1')
+						->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
 
-				if (!$filter_menu_values_are_empty) {
-					$position = array_search('campaign', $filter_names);
+					if (!$filter_menu_values_are_empty) {
+						$position = array_search('campaign', $filter_names);
 
-					if (!empty($position) && isset($filter_menu_values[$position])) {
-						$campaigns = explode('|', $filter_menu_values[$position]);
-						$query->where('id IN (' . implode(',', $campaigns) . ')');
+						if (!empty($position) && isset($filter_menu_values[$position])) {
+							$campaigns = explode('|', $filter_menu_values[$position]);
+							$query->where('id IN (' . implode(',', $campaigns) . ')');
+						}
 					}
-				}
 
-				$db->setQuery($query);
-				$campaigns = $db->loadAssocList();
+					$db->setQuery($query);
+					$campaigns = $db->loadAssocList();
+				}
 
 				$this->applied_filters[] = [
 					'uid'       => 'campaigns',
 					'id'        => 'campaigns',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
+					'label'     => Text::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
 					'type'      => 'select',
 					'values'    => $campaigns,
 					'value'     => ['all'],
@@ -324,19 +333,23 @@ class EmundusFiltersFiles extends EmundusFilters
 			}
 
 			if ($config['filter_programs']) {
-				$query->clear()
-					->select('id as value, label, 0 as count')
-					->from('#__emundus_setup_programmes')
-					->where('published = 1')
-					->andWhere('id IN (' . implode(',', $this->user_programs) . ')');
+				$programs = [];
 
-				$db->setQuery($query);
-				$programs = $db->loadAssocList();
+				if(!empty($this->user_programs)) {
+					$query->clear()
+						->select('id as value, label, 0 as count')
+						->from('#__emundus_setup_programmes')
+						->where('published = 1')
+						->andWhere('id IN (' . implode(',', $this->user_programs) . ')');
+
+					$db->setQuery($query);
+					$programs = $db->loadAssocList();
+				}
 
 				$this->applied_filters[] = [
 					'uid'       => 'programs',
 					'id'        => 'programs',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_PROGRAMS'),
+					'label'     => Text::_('MOD_EMUNDUS_FILTERS_PROGRAMS'),
 					'type'      => 'select',
 					'values'    => $programs,
 					'value'     => ['all'],
@@ -347,19 +360,23 @@ class EmundusFiltersFiles extends EmundusFilters
 			}
 
 			if ($config['filter_years']) {
-				$query->clear()
-					->select('DISTINCT year as value, year as label, 0 as count')
-					->from('#__emundus_setup_campaigns')
-					->where('published = 1')
-					->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
+				$years = [];
 
-				$db->setQuery($query);
-				$years = $db->loadAssocList();
+				if(!empty($this->user_campaigns)) {
+					$query->clear()
+						->select('DISTINCT year as value, year as label, 0 as count')
+						->from('#__emundus_setup_campaigns')
+						->where('published = 1')
+						->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
+
+					$db->setQuery($query);
+					$years = $db->loadAssocList();
+				}
 
 				$this->applied_filters[] = [
 					'uid'       => 'years',
 					'id'        => 'years',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_YEARS'),
+					'label'     => Text::_('MOD_EMUNDUS_FILTERS_YEARS'),
 					'type'      => 'select',
 					'values'    => $years,
 					'value'     => ['all'],
@@ -380,7 +397,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				$this->applied_filters[] = [
 					'uid'       => 'tags',
 					'id'        => 'tags',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_TAGS'),
+					'label'     => Text::_('MOD_EMUNDUS_FILTERS_TAGS'),
 					'type'      => 'select',
 					'values'    => $tags,
 					'value'     => ['all'],
@@ -394,12 +411,12 @@ class EmundusFiltersFiles extends EmundusFilters
 				$this->applied_filters[] = [
 					'uid'       => 'published',
 					'id'        => 'published',
-					'label'     => JText::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
+					'label'     => Text::_('MOD_EMUNDUS_FILTERS_PUBLISHED_STATE'),
 					'type'      => 'select',
 					'values'    => [
-						['value' => 1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_PUBLISHED'), 'count' => 0],
-						['value' => 0, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_ARCHIVED'), 'count' => 0],
-						['value' => -1, 'label' => JText::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED'), 'count' => 0]
+						['value' => 1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_PUBLISHED'), 'count' => 0],
+						['value' => 0, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_ARCHIVED'), 'count' => 0],
+						['value' => -1, 'label' => Text::_('MOD_EMUNDUS_FILTERS_VALUE_DELETED'), 'count' => 0]
 					],
 					'value'     => [1],
 					'default'   => true,
@@ -447,8 +464,8 @@ class EmundusFiltersFiles extends EmundusFilters
 							$element = $db->loadAssoc();
 
 							if (!empty($element)) {
-								$element['label']              = JText::_($element['label']);
-								$element['element_form_label'] = JText::_($element['element_form_label']);
+								$element['label']              = Text::_($element['label']);
+								$element['element_form_label'] = Text::_($element['element_form_label']);
 								$formatted_elements            = $this->createFiltersFromFabrikElements([$element]);
 
 								if (!empty($formatted_elements)) {
@@ -476,7 +493,7 @@ class EmundusFiltersFiles extends EmundusFilters
 							$this->applied_filters[]     = $new_default_filter;
 
 							// add filter to adv cols
-							$session                 = JFactory::getSession();
+							$session                 = $this->app->getSession();
 							$files_displayed_columns = $session->get('adv_cols');
 							if (!empty($files_displayed_columns)) {
 								$files_displayed_columns[] = $new_default_filter['id'];
@@ -589,7 +606,7 @@ class EmundusFiltersFiles extends EmundusFilters
 			}
 
 			// get all forms associated to the user's profiles
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('link')
@@ -622,7 +639,7 @@ class EmundusFiltersFiles extends EmundusFilters
 					$element_ids = $db->loadColumn();
 				}
 				catch (Exception $e) {
-					JLog::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+					Log::add('Failed to get elements associated to profiles that current user can access : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
 				}
 			}
 		}

@@ -15,6 +15,7 @@
 // No direct access
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -102,7 +103,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 	{
 
 		jimport('joomla.log.log');
-		JLog::addLogger(array('text_file' => 'com_emundus.campaign.php'), JLog::ALL, array('com_emundus'));
+		Log::addLogger(array('text_file' => 'com_emundus.campaign.php'), Log::ALL, array('com_emundus'));
 
 		include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
 		$m_profile = new EmundusModelProfile;
@@ -209,7 +210,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 		}
 		catch (Exception $e) {
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 		}
 
 		$query->clear()
@@ -223,7 +224,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 			$campaign = $this->_db->loadAssoc();
 		}
 		catch (Exception $e) {
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
 		}
 
 		if (!empty($campaign)) {
@@ -248,7 +249,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 					$this->_db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, JLog::ERROR, 'com_emundus');
+					Log::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
 				}
 			}
 
@@ -270,12 +271,12 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 						$this->_db->execute();
 					}
 					catch (Exception $e) {
-						JLog::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, JLog::ERROR, 'com_emundus');
+						Log::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
 					}
 				}
 			}
 			catch (Exception $e) {
-				JLog::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, JLog::ERROR, 'com_emundus');
+				Log::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -301,7 +302,6 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 	 */
 	public function onBeforeProcess()
 	{
-
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
 		$m_campaign = new EmundusModelCampaign;
 
@@ -310,29 +310,25 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 		switch ($form_type) {
 			case 'user':
 				$campaign_id = is_array($this->app->getInput()->get('jos_emundus_users___campaign_id_raw')) ? $this->app->getInput()->get('jos_emundus_users___campaign_id_raw')[0] : $this->app->getInput()->getInt('jos_emundus_users___campaign_id_raw');
-				if (empty($campaign_id)) {
-					return false;
-				}
 
-				if ($m_campaign->isLimitObtained($campaign_id) === true) {
-					$this->getModel()->formErrorMsg     = '';
-					$this->getModel()->getForm()->error = Text::_('LIMIT_OBTAINED');
-
-					return false;
-				}
 				break;
 
 			case 'cc':
 				$campaign_id = is_array($this->app->getInput()->get('jos_emundus_campaign_candidature___campaign_id_raw')) ? $this->app->getInput()->get('jos_emundus_campaign_candidature___campaign_id_raw')[0] : $this->app->getInput()->getInt('jos_emundus_campaign_candidature___campaign_id_raw');
 
-				// Check if the campaign limit has been obtained
-				if ($m_campaign->isLimitObtained($campaign_id) === true) {
-					$this->getModel()->formErrorMsg     = '';
-					$this->getModel()->getForm()->error = Text::_('LIMIT_OBTAINED');
-
-					return false;
-				}
 				break;
 		}
+
+		if (!empty($campaign_id)) {
+			// Check if the campaign limit has been obtained
+			if ($m_campaign->isLimitObtained($campaign_id) === true) {
+				$this->getModel()->formErrorMsg     = '';
+				$this->getModel()->getForm()->error = Text::_('LIMIT_OBTAINED');
+
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

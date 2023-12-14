@@ -1,5 +1,5 @@
 <template>
-  <div class="autocomplete">
+  <div class="autocomplete mt-2">
     <input
         type="text"
         :id="id"

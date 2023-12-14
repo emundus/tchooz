@@ -6,7 +6,7 @@
  	<packagename>falang</packagename>
 	 <version>5.2</version>
 	 <url>http://www.faboba.com</url>
-	 <variant>free</variant>
+	 <variant>standard</variant>
 	 <packager>Stéphane Bouey</packager>
 	 <packagerurl>http://www.faboba.com</packagerurl>
 	 <description>Falang Package</description>
@@ -32,6 +32,6 @@
 
 	 <!-- Update servers -->
     <updateservers>
-        <server type="extension" priority="1" name="Falang Community">https://www.faboba.com/update/falang/pkgfalangcom.xml</server>
+        <server type="extension" priority="1" name="Falang Standard">https://www.faboba.com/update/falang/pkgfalangstd.xml</server>
     </updateservers>	 
 </extension>

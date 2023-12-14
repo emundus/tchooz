@@ -17,6 +17,10 @@ form .fabrikGroupColumns.fabrikGroup .row .fabrikElementContainer {
         display: flex;
         justify-content: flex-end;
     }
+
+    form .fabrikGroupColumns.fabrikGroup .row {
+        flex-wrap: wrap;
+    }
 }
 
 @media all and (min-width: 480px) and (max-width: 767px) {

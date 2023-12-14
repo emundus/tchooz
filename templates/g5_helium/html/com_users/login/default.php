@@ -37,7 +37,7 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 
 	if (empty($this->registrationLink)) {
 		if (!empty($this->campaign) && !empty($this->course)) {
-			$this->registrationLink = 'inscription&course=' . $this->course . '&cid=' . $this->campaign;
+			$this->registrationLink = 'inscription?course=' . $this->course . '&cid=' . $this->campaign;
 		}
 		else {
 			$this->registrationLink = 'inscription';

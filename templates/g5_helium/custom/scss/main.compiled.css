@@ -884,6 +884,10 @@ video {
             -moz-column-gap: 0;
                  column-gap: 0;
           }
+
+            .view-registration.em-formRegistrationCenter .emundus-form .fabrikGroupColumns.fabrikGroup .row .col-sm-6:first-child {
+              padding-right: 8px;
+            }
       }
 .view-registration.em-formRegistrationCenter .emundus-form .row:before, .view-registration.em-formRegistrationCenter .emundus-form .row:after {
           display: none;
@@ -1479,8 +1483,9 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio in
             margin-top: 0;
           }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label {
-  margin-bottom: 0px;
-}
+            cursor: pointer;
+            margin-bottom: 0px;
+          }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label span{
               word-wrap: break-word;
             }
@@ -2003,6 +2008,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .m-1 {
   margin: var(--em-spacing-1);
 }
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+.my-0 {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
 .mb-0 {
   margin-bottom: 0px;
 }
@@ -2099,6 +2112,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .mt-5 {
   margin-top: var(--em-spacing-5);
 }
+.mt-6 {
+  margin-top: var(--em-spacing-6);
+}
 .mt-7 {
   margin-top: var(--em-spacing-7);
 }
@@ -2141,12 +2157,18 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .h-0 {
   height: 0px;
 }
+.h-64 {
+  height: 16rem;
+}
 .h-max {
   height: -moz-max-content;
   height: max-content;
 }
 .w-1 {
   width: var(--em-spacing-1);
+}
+.w-64 {
+  width: 16rem;
 }
 .w-auto {
   width: auto;
@@ -2241,6 +2263,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .border {
   border-width: 1px;
 }
+.bg-transparent {
+  background-color: transparent;
+}
+.bg-no-repeat {
+  background-repeat: no-repeat;
+}
 .p-0 {
   padding: 0px;
 }
@@ -2294,6 +2322,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .text-center {
   text-align: center;
 }
+.text-start {
+  text-align: start;
+}
 .text-end {
   text-align: end;
 }
@@ -2309,6 +2340,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .italic {
   font-style: italic;
+}
+.\!text-neutral-600 {
+  color: var(--neutral-600) !important;
 }
 .text-neutral-600 {
   color: var(--neutral-600);
@@ -2676,7 +2710,6 @@ button.swal2-cancel.goback-btn:hover,
 }
 #system-message .alert .material-icons, .fabrikMainError .material-icons {
   margin-right: var(--em-spacing-3);
-            margin-top: 4px;
 }
 #system-message .alert p, .fabrikMainError p {
             color: inherit;

@@ -518,7 +518,7 @@ button#em-close-file {
     border-left: 7px solid transparent;
     border-bottom-color: rgba(0, 0, 0, 0.2);
     content: '';
-    background-color: var(--neutral-0);
+    background-color: transparent;
 }
 
 .navbar .nav > li > .dropdown-menu:after {

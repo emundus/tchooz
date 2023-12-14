@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 
 class FalangVersion {
 	var $_version	= '5.2';
-    var $_versiontype	= 'free';
+    var $_versiontype	= 'standard';
     var $_date	= '2023/11/23';
 	var $_status	= 'Stable';
 	var $_revision	= '';
