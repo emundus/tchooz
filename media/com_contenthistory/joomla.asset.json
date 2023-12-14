@@ -27,7 +27,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "75ba63"
+      "version": "907a40"
     },
     {
       "name": "com_contenthistory.admin-history-modal",
@@ -39,7 +39,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "fbc6a9"
+      "version": "6e466b"
     }
   ]
 }

@@ -15,12 +15,6 @@
     },
     {
       "name": "plg_system_guidedtours.guidedtours",
-      "type": "style",
-      "uri": "plg_system_guidedtours/guidedtours.min.css",
-      "version": "1a5875"
-    },
-    {
-      "name": "plg_system_guidedtours.guidedtours",
       "type": "script",
       "uri": "plg_system_guidedtours/guidedtours.min.js",
       "dependencies": [
@@ -29,7 +23,13 @@
       "attributes": {
         "type": "module"
       },
-      "version": "56dbd1"
+      "version": "1219e7"
+    },
+    {
+      "name": "plg_system_guidedtours.guidedtours",
+      "type": "style",
+      "uri": "plg_system_guidedtours/guidedtours.min.css",
+      "version": "236b1a"
     }
   ]
 }

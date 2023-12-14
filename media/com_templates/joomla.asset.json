@@ -15,13 +15,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "fbfa60"
-    },
-    {
-      "name": "com_templates.admin-templates",
-      "type": "style",
-      "uri": "com_templates/admin-templates-default.min.css",
-      "version": "5356bd"
+      "version": "8402e3"
     },
     {
       "name": "com_templates.admin-template-toggle-switch",
@@ -33,7 +27,13 @@
       "attributes": {
         "type": "module"
       },
-      "version": "ccaf11"
+      "version": "8e5d80"
+    },
+    {
+      "name": "com_templates.admin-templates",
+      "type": "style",
+      "uri": "com_templates/admin-templates-default.min.css",
+      "version": "e10ac3"
     },
     {
       "name": "com_templates.admin-templates",
@@ -45,7 +45,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "19a5bf"
+      "version": "060b32"
     }
   ]
 }

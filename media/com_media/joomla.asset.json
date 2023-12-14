@@ -15,13 +15,13 @@
       "attributes": {
         "type": "module"
       },
-      "version": "e17b83"
+      "version": "e10b22"
     },
     {
       "name": "com_media.mediamanager",
       "type": "style",
       "uri": "com_media/media-manager.min.css",
-      "version": "1c8c8f"
+      "version": "2cef72"
     },
     {
       "name": "com_media.mediamanager",
@@ -34,7 +34,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "faed8e"
+      "version": "3c55e4"
     }
   ]
 }

@@ -6849,318 +6849,6 @@ const notifications = {
   ask: message => window.confirm(message)
 };
 
-var navigable = {
-  methods: {
-    navigateTo(path) {
-      this.$store.dispatch('getContents', path, false, false);
-    }
-  }
-};
-
-var script$v = {
-  name: 'MediaBrowserItemRow',
-  mixins: [navigable],
-  props: {
-    item: {
-      type: Object,
-      default: () => {},
-    },
-  },
-  computed: {
-    /* The dimension of a file */
-    dimension() {
-      if (!this.item.width) {
-        return '';
-      }
-      return `${this.item.width}px * ${this.item.height}px`;
-    },
-    isDir() {
-      return (this.item.type === 'dir');
-    },
-    /* The size of a file in KB */
-    size() {
-      if (!this.item.size) {
-        return '';
-      }
-      return `${(this.item.size / 1024).toFixed(2)}`;
-    },
-    selected() {
-      return !!this.isSelected();
-    },
-  },
-
-  methods: {
-    /* Handle the on row double click event */
-    onDblClick() {
-      if (this.isDir) {
-        this.navigateTo(this.item.path);
-        return;
-      }
-
-      // @todo remove the hardcoded extensions here
-      const extensionWithPreview = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mp3', 'pdf'];
-
-      // Show preview
-      if (this.item.extension
-        && extensionWithPreview.includes(this.item.extension.toLowerCase())) {
-        this.$store.commit(SHOW_PREVIEW_MODAL);
-        this.$store.dispatch('getFullContents', this.item);
-      }
-    },
-
-    /**
-     * Whether or not the item is currently selected
-     * @returns {boolean}
-     */
-    isSelected() {
-      return this.$store.state.selectedItems.some((selected) => selected.path === this.item.path);
-    },
-
-    /**
-     * Handle the click event
-     * @param event
-     */
-    onClick(event) {
-      const path = false;
-      const data = {
-        path,
-        thumb: false,
-        fileType: this.item.mime_type ? this.item.mime_type : false,
-        extension: this.item.extension ? this.item.extension : false,
-      };
-
-      if (this.item.type === 'file') {
-        data.path = this.item.path;
-        data.thumb = this.item.thumb ? this.item.thumb : false;
-        data.width = this.item.width ? this.item.width : 0;
-        data.height = this.item.height ? this.item.height : 0;
-
-        window.parent.document.dispatchEvent(
-          new CustomEvent(
-            'onMediaFileSelected',
-            {
-              bubbles: true,
-              cancelable: false,
-              detail: data,
-            },
-          ),
-        );
-      }
-
-      // Handle clicks when the item was not selected
-      if (!this.isSelected()) {
-        // Unselect all other selected items,
-        // if the shift key was not pressed during the click event
-        if (!(event.shiftKey || event.keyCode === 13)) {
-          this.$store.commit(UNSELECT_ALL_BROWSER_ITEMS);
-        }
-        this.$store.commit(SELECT_BROWSER_ITEM, this.item);
-        return;
-      }
-
-      // If more than one item was selected and the user clicks again on the selected item,
-      // he most probably wants to unselect all other items.
-      if (this.$store.state.selectedItems.length > 1) {
-        this.$store.commit(UNSELECT_ALL_BROWSER_ITEMS);
-        this.$store.commit(SELECT_BROWSER_ITEM, this.item);
-      }
-    },
-
-  },
-};
-
-const _hoisted_1$v = ["data-type"];
-const _hoisted_2$t = {
-  scope: "row",
-  class: "name"
-};
-const _hoisted_3$j = { class: "size" };
-const _hoisted_4$b = { key: 0 };
-const _hoisted_5$a = { class: "dimension" };
-const _hoisted_6$8 = { class: "created" };
-const _hoisted_7$6 = { class: "modified" };
-
-function render$v(_ctx, _cache, $props, $setup, $data, $options) {
-  return (openBlock(), createElementBlock("tr", {
-    class: normalizeClass(["media-browser-item", {selected: $options.selected}]),
-    onDblclick: _cache[0] || (_cache[0] = withModifiers($event => ($options.onDblClick()), ["stop","prevent"])),
-    onClick: _cache[1] || (_cache[1] = (...args) => ($options.onClick && $options.onClick(...args)))
-  }, [
-    createBaseVNode("td", {
-      class: "type",
-      "data-type": $props.item.extension
-    }, null, 8 /* PROPS */, _hoisted_1$v),
-    createBaseVNode("th", _hoisted_2$t, toDisplayString($props.item.name), 1 /* TEXT */),
-    createBaseVNode("td", _hoisted_3$j, [
-      createTextVNode(toDisplayString($options.size), 1 /* TEXT */),
-      ($options.size !== '')
-        ? (openBlock(), createElementBlock("span", _hoisted_4$b, "KB"))
-        : createCommentVNode("v-if", true)
-    ]),
-    createBaseVNode("td", _hoisted_5$a, toDisplayString($options.dimension), 1 /* TEXT */),
-    createBaseVNode("td", _hoisted_6$8, toDisplayString($props.item.create_date_formatted), 1 /* TEXT */),
-    createBaseVNode("td", _hoisted_7$6, toDisplayString($props.item.modified_date_formatted), 1 /* TEXT */)
-  ], 34 /* CLASS, HYDRATE_EVENTS */))
-}
-
-script$v.render = render$v;
-script$v.__file = "administrator/components/com_media/resources/scripts/components/browser/table/row.vue";
-
-var script$u = {
-  name: 'MediaBrowserTable',
-  components: {
-    MediaBrowserItemRow: script$v,
-  },
-  props: {
-    localItems: {
-      type: Object,
-      default: () => {},
-    },
-    currentDirectory: {
-      type: String,
-      default: '',
-    },
-  },
-  methods: {
-    changeOrder(name) {
-      this.$store.commit(UPDATE_SORT_BY, name);
-      this.$store.commit(UPDATE_SORT_DIRECTION, this.$store.state.sortDirection === 'asc' ? 'desc' : 'asc');
-    },
-  },
-};
-
-const _hoisted_1$u = { class: "table media-browser-table" };
-const _hoisted_2$s = { class: "visually-hidden" };
-const _hoisted_3$i = { class: "media-browser-table-head" };
-const _hoisted_4$a = /*#__PURE__*/createBaseVNode("th", {
-  class: "type",
-  scope: "col"
-}, null, -1 /* HOISTED */);
-const _hoisted_5$9 = {
-  class: "name",
-  scope: "col"
-};
-const _hoisted_6$7 = {
-  class: "size",
-  scope: "col"
-};
-const _hoisted_7$5 = {
-  class: "dimension",
-  scope: "col"
-};
-const _hoisted_8$5 = {
-  class: "created",
-  scope: "col"
-};
-const _hoisted_9$5 = {
-  class: "modified",
-  scope: "col"
-};
-
-function render$u(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_MediaBrowserItemRow = resolveComponent("MediaBrowserItemRow");
-
-  return (openBlock(), createElementBlock("table", _hoisted_1$u, [
-    createBaseVNode("caption", _hoisted_2$s, toDisplayString(_ctx.sprintf('COM_MEDIA_BROWSER_TABLE_CAPTION', $props.currentDirectory)), 1 /* TEXT */),
-    createBaseVNode("thead", _hoisted_3$i, [
-      createBaseVNode("tr", null, [
-        _hoisted_4$a,
-        createBaseVNode("th", _hoisted_5$9, [
-          createBaseVNode("button", {
-            class: "btn btn-link",
-            onClick: _cache[0] || (_cache[0] = $event => ($options.changeOrder('name')))
-          }, [
-            createTextVNode(toDisplayString(_ctx.translate('COM_MEDIA_MEDIA_NAME')) + " ", 1 /* TEXT */),
-            createBaseVNode("span", {
-              class: normalizeClass(["ms-1", {
-                'icon-sort': _ctx.$store.state.sortBy !== 'name',
-                'icon-caret-up': _ctx.$store.state.sortBy === 'name' && _ctx.$store.state.sortDirection === 'asc',
-                'icon-caret-down': _ctx.$store.state.sortBy === 'name' && _ctx.$store.state.sortDirection === 'desc'
-              }]),
-              "aria-hidden": "true"
-            }, null, 2 /* CLASS */)
-          ])
-        ]),
-        createBaseVNode("th", _hoisted_6$7, [
-          createBaseVNode("button", {
-            class: "btn btn-link",
-            onClick: _cache[1] || (_cache[1] = $event => ($options.changeOrder('size')))
-          }, [
-            createTextVNode(toDisplayString(_ctx.translate('COM_MEDIA_MEDIA_SIZE')) + " ", 1 /* TEXT */),
-            createBaseVNode("span", {
-              class: normalizeClass(["ms-1", {
-                'icon-sort': _ctx.$store.state.sortBy !== 'size',
-                'icon-caret-up': _ctx.$store.state.sortBy === 'size' && _ctx.$store.state.sortDirection === 'asc',
-                'icon-caret-down': _ctx.$store.state.sortBy === 'size' && _ctx.$store.state.sortDirection === 'desc'
-              }]),
-              "aria-hidden": "true"
-            }, null, 2 /* CLASS */)
-          ])
-        ]),
-        createBaseVNode("th", _hoisted_7$5, [
-          createBaseVNode("button", {
-            class: "btn btn-link",
-            onClick: _cache[2] || (_cache[2] = $event => ($options.changeOrder('dimension')))
-          }, [
-            createTextVNode(toDisplayString(_ctx.translate('COM_MEDIA_MEDIA_DIMENSION')) + " ", 1 /* TEXT */),
-            createBaseVNode("span", {
-              class: normalizeClass(["ms-1", {
-                'icon-sort': _ctx.$store.state.sortBy !== 'dimension',
-                'icon-caret-up': _ctx.$store.state.sortBy === 'dimension' && _ctx.$store.state.sortDirection === 'asc',
-                'icon-caret-down': _ctx.$store.state.sortBy === 'dimension' && _ctx.$store.state.sortDirection === 'desc'
-              }]),
-              "aria-hidden": "true"
-            }, null, 2 /* CLASS */)
-          ])
-        ]),
-        createBaseVNode("th", _hoisted_8$5, [
-          createBaseVNode("button", {
-            class: "btn btn-link",
-            onClick: _cache[3] || (_cache[3] = $event => ($options.changeOrder('date_created')))
-          }, [
-            createTextVNode(toDisplayString(_ctx.translate('COM_MEDIA_MEDIA_DATE_CREATED')) + " ", 1 /* TEXT */),
-            createBaseVNode("span", {
-              class: normalizeClass(["ms-1", {
-                'icon-sort': _ctx.$store.state.sortBy !== 'date_created',
-                'icon-caret-up': _ctx.$store.state.sortBy === 'date_created' && _ctx.$store.state.sortDirection === 'asc',
-                'icon-caret-down': _ctx.$store.state.sortBy === 'date_created' && _ctx.$store.state.sortDirection === 'desc'
-              }]),
-              "aria-hidden": "true"
-            }, null, 2 /* CLASS */)
-          ])
-        ]),
-        createBaseVNode("th", _hoisted_9$5, [
-          createBaseVNode("button", {
-            class: "btn btn-link",
-            onClick: _cache[4] || (_cache[4] = $event => ($options.changeOrder('date_modified')))
-          }, [
-            createTextVNode(toDisplayString(_ctx.translate('COM_MEDIA_MEDIA_DATE_MODIFIED')) + " ", 1 /* TEXT */),
-            createBaseVNode("span", {
-              class: normalizeClass(["ms-1", {
-                'icon-sort': _ctx.$store.state.sortBy !== 'date_modified',
-                'icon-caret-up': _ctx.$store.state.sortBy === 'date_modified' && _ctx.$store.state.sortDirection === 'asc',
-                'icon-caret-down': _ctx.$store.state.sortBy === 'date_modified' && _ctx.$store.state.sortDirection === 'desc'
-              }]),
-              "aria-hidden": "true"
-            }, null, 2 /* CLASS */)
-          ])
-        ])
-      ])
-    ]),
-    createBaseVNode("tbody", null, [
-      (openBlock(true), createElementBlock(Fragment, null, renderList($props.localItems, (item) => {
-        return (openBlock(), createBlock(_component_MediaBrowserItemRow, {
-          key: item.path,
-          item: item
-        }, null, 8 /* PROPS */, ["item"]))
-      }), 128 /* KEYED_FRAGMENT */))
-    ])
-  ]))
-}
-
-script$u.render = render$u;
-script$u.__file = "administrator/components/com_media/resources/scripts/components/browser/table/table.vue";
-
 const dirname = path => {
   if (typeof path !== 'string') {
     throw new TypeError('Path must be a string. Received ' + JSON.stringify(path));
@@ -7459,6 +7147,356 @@ class Api {
   }
 }
 const api = new Api();
+
+var navigable = {
+  methods: {
+    navigateTo(path) {
+      this.$store.dispatch('getContents', path, false, false);
+    }
+  }
+};
+
+var script$v = {
+  name: 'MediaBrowserItemRow',
+  mixins: [navigable],
+  props: {
+    item: {
+      type: Object,
+      default: () => {},
+    },
+  },
+  computed: {
+    /* The dimension of a file */
+    dimension() {
+      if (!this.item.width) {
+        return '';
+      }
+      return `${this.item.width}px * ${this.item.height}px`;
+    },
+    isDir() {
+      return (this.item.type === 'dir');
+    },
+    /* The size of a file in KB */
+    size() {
+      if (!this.item.size) {
+        return '';
+      }
+      return `${(this.item.size / 1024).toFixed(2)}`;
+    },
+    selected() {
+      return !!this.isSelected();
+    },
+  },
+
+  methods: {
+    getURL() {
+      if (!this.item.thumb_path) {
+        return '';
+      }
+
+      return this.item.thumb_path.split(Joomla.getOptions('system.paths').rootFull).length > 1
+        ? `${this.item.thumb_path}?${this.item.modified_date ? new Date(this.item.modified_date).valueOf() : api.mediaVersion}`
+        : `${this.item.thumb_path}`;
+    },
+    width() {
+      return this.item.naturalWidth ? this.item.naturalWidth : 300;
+    },
+    height() {
+      return this.item.naturalHeight ? this.item.naturalHeight : 150;
+    },
+    setSize(event) {
+      if (this.item.mime_type === 'image/svg+xml') {
+        const image = event.target;
+        // Update the item properties
+        this.$store.dispatch('updateItemProperties', { item: this.item, width: image.naturalWidth ? image.naturalWidth : 300, height: image.naturalHeight ? image.naturalHeight : 150 });
+        // @TODO Remove the fallback size (300x150) when https://bugzilla.mozilla.org/show_bug.cgi?id=1328124 is fixed
+        // Also https://github.com/whatwg/html/issues/3510
+      }
+    },
+    /* Handle the on row double click event */
+    onDblClick() {
+      if (this.isDir) {
+        this.navigateTo(this.item.path);
+        return;
+      }
+
+      // @todo remove the hardcoded extensions here
+      const extensionWithPreview = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mp3', 'pdf'];
+
+      // Show preview
+      if (this.item.extension
+        && extensionWithPreview.includes(this.item.extension.toLowerCase())) {
+        this.$store.commit(SHOW_PREVIEW_MODAL);
+        this.$store.dispatch('getFullContents', this.item);
+      }
+    },
+
+    /**
+     * Whether or not the item is currently selected
+     * @returns {boolean}
+     */
+    isSelected() {
+      return this.$store.state.selectedItems.some((selected) => selected.path === this.item.path);
+    },
+
+    /**
+     * Handle the click event
+     * @param event
+     */
+    onClick(event) {
+      const path = false;
+      const data = {
+        path,
+        thumb: false,
+        fileType: this.item.mime_type ? this.item.mime_type : false,
+        extension: this.item.extension ? this.item.extension : false,
+      };
+
+      if (this.item.type === 'file') {
+        data.path = this.item.path;
+        data.thumb = this.item.thumb ? this.item.thumb : false;
+        data.width = this.item.width ? this.item.width : 0;
+        data.height = this.item.height ? this.item.height : 0;
+
+        window.parent.document.dispatchEvent(
+          new CustomEvent(
+            'onMediaFileSelected',
+            {
+              bubbles: true,
+              cancelable: false,
+              detail: data,
+            },
+          ),
+        );
+      }
+
+      // Handle clicks when the item was not selected
+      if (!this.isSelected()) {
+        // Unselect all other selected items,
+        // if the shift key was not pressed during the click event
+        if (!(event.shiftKey || event.keyCode === 13)) {
+          this.$store.commit(UNSELECT_ALL_BROWSER_ITEMS);
+        }
+        this.$store.commit(SELECT_BROWSER_ITEM, this.item);
+        return;
+      }
+
+      // If more than one item was selected and the user clicks again on the selected item,
+      // he most probably wants to unselect all other items.
+      if (this.$store.state.selectedItems.length > 1) {
+        this.$store.commit(UNSELECT_ALL_BROWSER_ITEMS);
+        this.$store.commit(SELECT_BROWSER_ITEM, this.item);
+      }
+    },
+
+  },
+};
+
+const _hoisted_1$v = { key: 0 };
+const _hoisted_2$t = ["src", "width", "height"];
+const _hoisted_3$j = ["data-type"];
+const _hoisted_4$b = {
+  scope: "row",
+  class: "name"
+};
+const _hoisted_5$a = { class: "size" };
+const _hoisted_6$8 = { key: 0 };
+const _hoisted_7$6 = { class: "dimension" };
+const _hoisted_8$6 = { class: "created" };
+const _hoisted_9$6 = { class: "modified" };
+
+function render$v(_ctx, _cache, $props, $setup, $data, $options) {
+  return (openBlock(), createElementBlock("tr", {
+    class: normalizeClass(["media-browser-item", {selected: $options.selected}]),
+    onDblclick: _cache[1] || (_cache[1] = withModifiers($event => ($options.onDblClick()), ["stop","prevent"])),
+    onClick: _cache[2] || (_cache[2] = (...args) => ($options.onClick && $options.onClick(...args)))
+  }, [
+    ($props.item.mime_type === 'image/svg+xml' && $options.getURL())
+      ? (openBlock(), createElementBlock("td", _hoisted_1$v, [
+          createBaseVNode("img", {
+            src: $options.getURL(),
+            width: $props.item.width,
+            height: $props.item.height,
+            alt: "",
+            style: {"width":"100%","height":"auto"},
+            onLoad: _cache[0] || (_cache[0] = (...args) => ($options.setSize && $options.setSize(...args)))
+          }, null, 40 /* PROPS, HYDRATE_EVENTS */, _hoisted_2$t)
+        ]))
+      : (openBlock(), createElementBlock("td", {
+          key: 1,
+          class: "type",
+          "data-type": $props.item.extension
+        }, null, 8 /* PROPS */, _hoisted_3$j)),
+    createBaseVNode("th", _hoisted_4$b, toDisplayString($props.item.name), 1 /* TEXT */),
+    createBaseVNode("td", _hoisted_5$a, [
+      createTextVNode(toDisplayString($options.size), 1 /* TEXT */),
+      ($options.size !== '')
+        ? (openBlock(), createElementBlock("span", _hoisted_6$8, "KB"))
+        : createCommentVNode("v-if", true)
+    ]),
+    createBaseVNode("td", _hoisted_7$6, toDisplayString($options.dimension), 1 /* TEXT */),
+    createBaseVNode("td", _hoisted_8$6, toDisplayString($props.item.create_date_formatted), 1 /* TEXT */),
+    createBaseVNode("td", _hoisted_9$6, toDisplayString($props.item.modified_date_formatted), 1 /* TEXT */)
+  ], 34 /* CLASS, HYDRATE_EVENTS */))
+}
+
+script$v.render = render$v;
+script$v.__file = "administrator/components/com_media/resources/scripts/components/browser/table/row.vue";
+
+var script$u = {
+  name: 'MediaBrowserTable',
+  components: {
+    MediaBrowserItemRow: script$v,
+  },
+  props: {
+    localItems: {
+      type: Object,
+      default: () => {},
+    },
+    currentDirectory: {
+      type: String,
+      default: '',
+    },
+  },
+  methods: {
+    changeOrder(name) {
+      this.$store.commit(UPDATE_SORT_BY, name);
+      this.$store.commit(UPDATE_SORT_DIRECTION, this.$store.state.sortDirection === 'asc' ? 'desc' : 'asc');
+    },
+  },
+};
+
+const _hoisted_1$u = { class: "table media-browser-table" };
+const _hoisted_2$s = { class: "visually-hidden" };
+const _hoisted_3$i = { class: "media-browser-table-head" };
+const _hoisted_4$a = /*#__PURE__*/createBaseVNode("th", {
+  class: "type",
+  scope: "col"
+}, null, -1 /* HOISTED */);
+const _hoisted_5$9 = {
+  class: "name",
+  scope: "col"
+};
+const _hoisted_6$7 = {
+  class: "size",
+  scope: "col"
+};
+const _hoisted_7$5 = {
+  class: "dimension",
+  scope: "col"
+};
+const _hoisted_8$5 = {
+  class: "created",
+  scope: "col"
+};
+const _hoisted_9$5 = {
+  class: "modified",
+  scope: "col"
+};
+
+function render$u(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_MediaBrowserItemRow = resolveComponent("MediaBrowserItemRow");
+
+  return (openBlock(), createElementBlock("table", _hoisted_1$u, [
+    createBaseVNode("caption", _hoisted_2$s, toDisplayString(_ctx.sprintf('COM_MEDIA_BROWSER_TABLE_CAPTION', $props.currentDirectory)), 1 /* TEXT */),
+    createBaseVNode("thead", _hoisted_3$i, [
+      createBaseVNode("tr", null, [
+        _hoisted_4$a,
+        createBaseVNode("th", _hoisted_5$9, [
+          createBaseVNode("button", {
+            class: "btn btn-link",
+            onClick: _cache[0] || (_cache[0] = $event => ($options.changeOrder('name')))
+          }, [
+            createTextVNode(toDisplayString(_ctx.translate('COM_MEDIA_MEDIA_NAME')) + " ", 1 /* TEXT */),
+            createBaseVNode("span", {
+              class: normalizeClass(["ms-1", {
+                'icon-sort': _ctx.$store.state.sortBy !== 'name',
+                'icon-caret-up': _ctx.$store.state.sortBy === 'name' && _ctx.$store.state.sortDirection === 'asc',
+                'icon-caret-down': _ctx.$store.state.sortBy === 'name' && _ctx.$store.state.sortDirection === 'desc'
+              }]),
+              "aria-hidden": "true"
+            }, null, 2 /* CLASS */)
+          ])
+        ]),
+        createBaseVNode("th", _hoisted_6$7, [
+          createBaseVNode("button", {
+            class: "btn btn-link",
+            onClick: _cache[1] || (_cache[1] = $event => ($options.changeOrder('size')))
+          }, [
+            createTextVNode(toDisplayString(_ctx.translate('COM_MEDIA_MEDIA_SIZE')) + " ", 1 /* TEXT */),
+            createBaseVNode("span", {
+              class: normalizeClass(["ms-1", {
+                'icon-sort': _ctx.$store.state.sortBy !== 'size',
+                'icon-caret-up': _ctx.$store.state.sortBy === 'size' && _ctx.$store.state.sortDirection === 'asc',
+                'icon-caret-down': _ctx.$store.state.sortBy === 'size' && _ctx.$store.state.sortDirection === 'desc'
+              }]),
+              "aria-hidden": "true"
+            }, null, 2 /* CLASS */)
+          ])
+        ]),
+        createBaseVNode("th", _hoisted_7$5, [
+          createBaseVNode("button", {
+            class: "btn btn-link",
+            onClick: _cache[2] || (_cache[2] = $event => ($options.changeOrder('dimension')))
+          }, [
+            createTextVNode(toDisplayString(_ctx.translate('COM_MEDIA_MEDIA_DIMENSION')) + " ", 1 /* TEXT */),
+            createBaseVNode("span", {
+              class: normalizeClass(["ms-1", {
+                'icon-sort': _ctx.$store.state.sortBy !== 'dimension',
+                'icon-caret-up': _ctx.$store.state.sortBy === 'dimension' && _ctx.$store.state.sortDirection === 'asc',
+                'icon-caret-down': _ctx.$store.state.sortBy === 'dimension' && _ctx.$store.state.sortDirection === 'desc'
+              }]),
+              "aria-hidden": "true"
+            }, null, 2 /* CLASS */)
+          ])
+        ]),
+        createBaseVNode("th", _hoisted_8$5, [
+          createBaseVNode("button", {
+            class: "btn btn-link",
+            onClick: _cache[3] || (_cache[3] = $event => ($options.changeOrder('date_created')))
+          }, [
+            createTextVNode(toDisplayString(_ctx.translate('COM_MEDIA_MEDIA_DATE_CREATED')) + " ", 1 /* TEXT */),
+            createBaseVNode("span", {
+              class: normalizeClass(["ms-1", {
+                'icon-sort': _ctx.$store.state.sortBy !== 'date_created',
+                'icon-caret-up': _ctx.$store.state.sortBy === 'date_created' && _ctx.$store.state.sortDirection === 'asc',
+                'icon-caret-down': _ctx.$store.state.sortBy === 'date_created' && _ctx.$store.state.sortDirection === 'desc'
+              }]),
+              "aria-hidden": "true"
+            }, null, 2 /* CLASS */)
+          ])
+        ]),
+        createBaseVNode("th", _hoisted_9$5, [
+          createBaseVNode("button", {
+            class: "btn btn-link",
+            onClick: _cache[4] || (_cache[4] = $event => ($options.changeOrder('date_modified')))
+          }, [
+            createTextVNode(toDisplayString(_ctx.translate('COM_MEDIA_MEDIA_DATE_MODIFIED')) + " ", 1 /* TEXT */),
+            createBaseVNode("span", {
+              class: normalizeClass(["ms-1", {
+                'icon-sort': _ctx.$store.state.sortBy !== 'date_modified',
+                'icon-caret-up': _ctx.$store.state.sortBy === 'date_modified' && _ctx.$store.state.sortDirection === 'asc',
+                'icon-caret-down': _ctx.$store.state.sortBy === 'date_modified' && _ctx.$store.state.sortDirection === 'desc'
+              }]),
+              "aria-hidden": "true"
+            }, null, 2 /* CLASS */)
+          ])
+        ])
+      ])
+    ]),
+    createBaseVNode("tbody", null, [
+      (openBlock(true), createElementBlock(Fragment, null, renderList($props.localItems, (item) => {
+        return (openBlock(), createBlock(_component_MediaBrowserItemRow, {
+          key: item.path,
+          item: item
+        }, null, 8 /* PROPS */, ["item"]))
+      }), 128 /* KEYED_FRAGMENT */))
+    ])
+  ]))
+}
+
+script$u.render = render$u;
+script$u.__file = "administrator/components/com_media/resources/scripts/components/browser/table/table.vue";
 
 var script$t = {
   name: 'MediaBrowserActionItemEdit',
@@ -13279,7 +13317,7 @@ function getCurrentPath() {
     return defaultDisk.drives[0].root;
   }
 
-  // Session missmatch
+  // Session mismatch
   setSession(path);
   return path;
 }
