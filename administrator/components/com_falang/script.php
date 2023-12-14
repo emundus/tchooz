@@ -75,12 +75,17 @@ class com_falangInstallerScript
 
     function install($parent)
     {
+
     }
 
     function uninstall($parent)
     {
     }
 
+    /*
+     * @update 5.2 remove the update of mod_falang for advanced dropdown falang 2.2
+     *             remove
+     * */
     function update($parent)
     {
         //change the component_list structure from the 2.0 falang version
@@ -88,42 +93,6 @@ class com_falangInstallerScript
             $params['component_list'] = $this->installation_params['components']['falang']['component_list'];
             $this->setParams($params);
         }
-        //update module params for advance dropdown and show_name value version 2.2.1+
-        if (version_compare($this->_previous_version, '2.2.0', 'le')) {
-            $db = Factory::getDbo();
-            $db->setQuery('SELECT params FROM #__extensions WHERE name = ' . $db->quote('mod_falang'));
-            $params = json_decode($db->loadResult(), true);
-            $params['show_name'] = '0';
-            $params['advanced_dropdown'] = '0';
-
-            $paramsString = json_encode($params);
-            $db->setQuery('UPDATE #__extensions SET params = ' .
-                $db->quote($paramsString) .
-                ' WHERE name = ' . $db->quote('mod_falang'));
-            $db->execute();
-
-            //update module params
-            $query = $db->getQuery(true);
-            $db->getQuery(true);
-            $query->select('id,params')
-                ->from('#__modules')
-                ->where('module= "mod_falang"');
-            $db->setQuery($query);
-            $rows = $db->loadObjectList();
-
-            foreach ($rows as $row) {
-                $params = json_decode($row->params, true);
-                $params['show_name'] = '0';
-                $params['advanced_dropdown'] = '0';
-                $paramsString = json_encode($params);
-                $db->setQuery('UPDATE #__modules SET params = ' .
-                    $db->quote($paramsString) .
-                    ' WHERE id = ' . $row->id);
-                $db->execute();
-            }
-
-        }
-
     }
 
     function preflight($type, $parent)
@@ -136,6 +105,7 @@ class com_falangInstallerScript
      * Runs right after any installation action is preformed on the component.
      *
      * @update 5.0 disabled postflight on uninstall (fix error on FalangVersion)
+     * @update 5.2 add default module param on install
      *
      * @param string $type - Type of PostFlight action. Possible values are:
      *                           - * install
@@ -162,12 +132,21 @@ class com_falangInstallerScript
         $this->_removeObsoleteFilesAndFolders($falangRemoveFiles);
 
         $status = $this->_installSubextensions($parent, $type);
+
         $this->_setDefaultParams($type);
+
+        $this->_setDefaultModuleParams($type);
 
         // Remove update site
         $this->_removeUpdateSite();
 
         $this->_removeUpdateSiteFromOtherVersion($version->_versiontype);
+
+        //fix order on install
+        if ($type == 'install'){
+            include_once(JPATH_ADMINISTRATOR . '/components/com_falang/helpers/controllerHelper.php');
+            FalangControllerHelper::_reorderPlugin();
+        }
 
     }
 
@@ -313,9 +292,25 @@ class com_falangInstallerScript
                 }
             }
         }
-
-
     }
+
+    /*
+     * @since 5.2 set default module parameter on installation
+     * */
+    private function _setDefaultModuleParams($type){
+        //set mod_falang default value
+        if ($type == 'install') {
+            $db = Factory::getDBO();
+            $query = $db->getQuery(true);
+            $query->update($db->quoteName('#__modules'));
+            $defaults = '{"dropdown":"0","advanced_dropdown":"advanced_dropdown","inline":"1","show_active":"1","image":"1","show_name":"0","full_name":"1"}'; // JSON format for the parameters
+            $query->set($db->quoteName('params') . ' = ' . $db->quote($defaults));
+            $query->where($db->quoteName('module') . ' = ' . $db->quote('mod_falang'));
+            $db->setQuery($query);
+            $db->execute();
+        }
+    }
+
 
     /**
      * Removes obsolete files and folders

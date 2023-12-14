@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -99,6 +99,7 @@ if((!empty($this->rows) || !$this->module || hikaInput::get()->getVar('hikashop_
 						if(!in_array($this->row->product_id, $field_products))
 							continue;
 					}
+					$oneExtraField->currentElement = $this->row;
 			?>
 				<dl class="hikashop_product_custom_<?php echo $oneExtraField->field_namekey;?>_line">
 					<dt class="hikashop_product_custom_name">

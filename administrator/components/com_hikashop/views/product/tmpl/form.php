@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -720,7 +720,7 @@ function descWidth(delay) {
 	<input type="hidden" name="product_id" value="<?php echo @$this->product->product_id; ?>"/>
 	<input type="hidden" name="cid[]" value="<?php echo @$this->product->product_id; ?>"/>
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>"/>
-	<input type="hidden" name="task" value=""/>
+	<input type="hidden" name="task" value="apply"/>
 	<input type="hidden" name="ctrl" value="product"/>
 	<input type="hidden" name="product_reset_custom"  id="product_reset_custom" value="0"/>
 	<input type="hidden" name="product_areas_order"  id="product_areas_order" value="<?php echo $this->escape($this->config->get('product_areas_order')); ?>"/>

@@ -59,17 +59,6 @@ class JOverrideDatabase extends MysqliDriver
 
     }
 
-    //Sbou5 fix this disconnect problem
-    //the disconnect is already done in the mysqlidirver but need to be seet to null
-    //with Joomla 5 the is \is_callable([$this->connection, 'close' is true not with Joomla 4
-    public function disconnect()
-    {
-        $this->connection = null;
-
-        // here to trigger the onAfterDisconnect() event
-        parent::disconnect();
-    }
-
 	protected function prepareStatement(string $query): StatementInterface
 	{
 		return new FMysqliStatement($this->connection, $query);

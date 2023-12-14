@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -11,6 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 if(!defined('DS'))
 	define('DS',DIRECTORY_SEPARATOR);
 include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
+if(!class_exists('hikashopJoomlaPlugin')) return;
 class plgSystemHikashopmassaction extends hikashopJoomlaPlugin {
 
 	function __construct(&$subject, $config){
@@ -538,7 +539,7 @@ class plgSystemHikashopmassaction extends hikashopJoomlaPlugin {
 							}
 							$customCheckboxes .= '</div>';
 						}
-						$db->setQuery('SELECT * FROM '.hikashop_table('product_related'));
+						$db->setQuery('SELECT DISTINCT product_related_type FROM '.hikashop_table('product_related'));
 						$relateds = $db->loadObjectList();
 						if(is_array($relateds)){
 							$customCheckboxes .= '<div id="action_'.$table->table.'_'.$key.'_displayResults_relatedColumn_div" class="hika_massaction_checkbox"><a style="cursor: pointer;" onclick="checkAll(\'action_'.$table->table.'_'.$key.'_displayResults_relatedColumn_div\',\'check\');">'.JText::_('SELECT_ALL').'</a> / <a style="cursor: pointer;" onclick="checkAll(\'action_'.$table->table.'_'.$key.'_displayResults_relatedColumn_div\',\'uncheck\');">'.JText::_('UNSELECT_ALL').'</a><br/>';

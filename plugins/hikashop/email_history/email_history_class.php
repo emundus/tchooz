@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,8 +23,8 @@ class hikashopPlg_email_historyClass extends hikashopClass {
 				'email_log_recipient_name' => 'varchar(255) NOT NULL DEFAULT \'\'',
 				'email_log_reply_email' => 'varchar(255) NOT NULL DEFAULT \'\'',
 				'email_log_reply_name' => 'varchar(255) NOT NULL DEFAULT \'\'',
-				'email_log_cc_email' => 'varchar(255) NOT NULL DEFAULT \'\'',
-				'email_log_bcc_email' => 'varchar(255) NOT NULL DEFAULT \'\'',
+				'email_log_cc_email' => 'text NOT NULL',
+				'email_log_bcc_email' => 'text NOT NULL',
 				'email_log_subject' => 'text NOT NULL',
 				'email_log_altbody' => 'text NOT NULL',
 				'email_log_body' => 'text NOT NULL',

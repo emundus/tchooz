@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="system">
 	<name>System - Hikashop Social Plugin</name>
-	<creationDate>30 octobre 2023</creationDate>
-	<version>5.0.0</version>
+	<creationDate>13 décembre 2023</creationDate>
+	<version>5.0.2</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -213,7 +213,7 @@
 					<option value="4">Trebuchet ms</option>
 					<option value="5">Verdana</option>
 				</field>
-				<field name="fb_type" type="list" default="0" showon="display_url_btn:1" label="PRODUCT_TYPE" description="SOCIAL_PRODUCT_TYPE">
+				<field name="fb_type" type="list" default="0" showon="display_fb:1[OR]display_fb:2" label="PRODUCT_TYPE" description="SOCIAL_PRODUCT_TYPE">
 					<option value="0">SOCIAL_PRODUCT_TYPE_PRODUCT</option>
 					<option value="1">SOCIAL_PRODUCT_TYPE_ALBUM</option>
 					<option value="2">SOCIAL_PRODUCT_TYPE_BOOK</option>
@@ -223,7 +223,7 @@
 					<option value="6">SOCIAL_PRODUCT_TYPE_MOVIE</option>
 					<option value="7">SOCIAL_PRODUCT_TYPE_SONG</option>
 				</field>
-				<field name="admin" type="text" default="" showon="display_url_btn:1" label="HIKA_FACEBOOK_ADMIN" description="FACEBOOK_ADMIN" />
+				<field name="admin" type="text" default="" showon="display_fb:1[OR]display_fb:2" label="HIKA_FACEBOOK_ADMIN" description="FACEBOOK_ADMIN" />
 				<field name="spacer2" showon="display_url_btn:1" type="spacer"	hr="true"/>
 				<field name="twitter_count" type="list" default="0" showon="display_url_btn:1" label="HIKA_TWITTER_COUNT_DISPLAY" description="TWITTER_COUNT_DISPLAY">
 					<option value="0">HORIZONTAL</option>

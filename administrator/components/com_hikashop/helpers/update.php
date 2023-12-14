@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -222,7 +222,7 @@ class hikashopUpdateHelper{
 				$extensionData->copyright = '(C) 2011-'.date('Y').' HIKARI SOFTWARE. All rights reserved.';
 				$extensionData->authorEmail = 'contact@hikashop.com';
 				$extensionData->authorUrl = 'https://www.hikashop.com';
-				$extensionData->version = '5.0.0';
+				$extensionData->version = '5.0.2';
 				$extensionData->description = $oneExt->name;
 				$extensionData->group = '';
 				$extensionData->filename = $oneExt->element;

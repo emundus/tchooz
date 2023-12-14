@@ -1,15 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-use Joomla\CMS\Factory;
 ?><?php
 include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
+if(!class_exists('hikashopJoomlaPlugin')) return;
 class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 	public $hikashopRegistrationInProgress = false;
 	public $oldUser = null;
@@ -105,15 +105,24 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 		$context = 'com_hikashop.product';
 		$app->triggerEvent('onFinderBeforeSave', array($context, $product, $isNew));
 	}
-	public function onAfterProductDelete($elements) {
+	public function onAfterProductDelete(&$ids) {
 		$app = JFactory::getApplication();
 		JPluginHelper::importPlugin('finder');
 		$context = 'com_hikashop.product';
 
-		foreach($elements as $element) {
-			$app->triggerEvent('onFinderAfterDelete', array($context, $element));
+		$productClass = hikashop_get('class.product');
+		$elements = $productClass->getProductsFromIdsWithCache($ids);
+		if(count($elements)) {
+			foreach($elements as $element) {
+				$app->triggerEvent('onFinderAfterDelete', array($context, $element));
+			}
 		}
 	}
+	public function onBeforeProductDelete(&$ids,&$do) {
+		$productClass = hikashop_get('class.product');
+		$productClass->getProductsFromIdsWithCache($ids);
+	}
+
 	public function onAfterCategoryUpdate(&$category) {
 		$app = JFactory::getApplication();
 		JPluginHelper::importPlugin('finder');
@@ -121,7 +130,7 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 			$app->triggerEvent('onFinderCategoryChangeState', array('com_hikashop', array($category->category_id), $category->category_published));
 	}
 
-	public function onContentPrepareForm($form, $data) {
+	public function onContentPrepareForm($form, $data=null) {
 		$app = JFactory::getApplication();
 
 		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('site'))
@@ -175,31 +184,6 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 		$head['scripts'] = $newScripts;
 
 		$doc->setHeadData($head);
-	}
-
-	public function onContentPrepare($context, &$article, &$params, $limitstart = 0) {
-		if($context == 'com_content.article')
-			$this->onPrepareContent($article, $params, $limitstart);
-	}
-
-	public function onPrepareContent(&$article, &$params, $limitstart) {
-		$app = JFactory::getApplication();
-
-		if(version_compare(JVERSION,'3.0','>='))
-			$tmpl = $app->input->getCmd('tmpl', '');
-		else
-			$tmpl = JRequest::getCmd('tmpl', '');
-		if($tmpl != 'component')
-			return true;
-
-		$db = JFactory::getDBO();
-		$query = 'SELECT config_value FROM #__hikashop_config WHERE config_namekey = ' . $db->Quote('checkout_terms');
-		$db->setQuery($query);
-		$terms_article = (int)$db->loadResult();
-		if($article->id != $terms_article)
-			return true;
-
-		$params->set('show_page_heading',false);
 	}
 
 	public function onAfterCartSave(&$cart) {
@@ -256,12 +240,6 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 	}
 
 	public function onAfterStoreUser($user, $isnew, $success, $msg) {
-		$app = Factory::getApplication();
-		// The method check here ensures that if running as a CLI Application we don't get any errors
-		if (method_exists($app, 'isClient') && ($app->isClient('site') || $app->isClient('cli'))) {
-			return;
-		}
-
 		if($success === false || !is_array($user))
 			return false;
 

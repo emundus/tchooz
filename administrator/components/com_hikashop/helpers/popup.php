@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -279,9 +279,11 @@ window.localPage.createBox = function(el,href,options) {
 	function image($content, $url, $id = null, $attr = '', $params = array()) {
 		$html = '';
 		$config = hikashop_config();
-		$popupMode = $config->get('image_popup_mode', 'shadowbox');
+		$popupMode = $config->get('image_popup_mode', 'fancybox');
 
 		switch($popupMode) {
+			case 'fancybox':
+				return $this->imageFancybox($content, $url, $id, $attr, $params);
 			case 'shadowbox':
 			case 'shadowbox-embbeded':
 			case 'mootools':
@@ -320,7 +322,6 @@ window.localPage.createBox = function(el,href,options) {
 		$html = '<a '.$attr.$onClick.$id.' href="'.$url.'" data-rel="{handler:\'image\'}" target="_blank">'.$content.'</a>';
 		return $html;
 	}
-
 	function imageShadowbox($content, $url, $id = null, $attr = '', $params = array()) {
 		$html = '';
 		if($content === null)
@@ -329,7 +330,7 @@ window.localPage.createBox = function(el,href,options) {
 		static $init = false;
 		if($init === false) {
 			$config = hikashop_config();
-			$shadowboxMode = $config->get('image_popup_mode', 'shadowbox');
+			$shadowboxMode = $config->get('image_popup_mode', 'fancybox');
 			$doc = JFactory::getDocument();
 			if($shadowboxMode != 'shadowbox-embbeded') {
 				$doc->addStyleSheet('https://cdn.hikashop.com/shadowbox/shadowbox.css');
@@ -355,6 +356,54 @@ window.localPage.createBox = function(el,href,options) {
 			$id = '';
 
 		$html = '<a '.$attr.$rel.$id.' href="'.$url.'">'.$content.'</a>';
+		return $html;
+	}
+	function imageFancybox($content, $url, $id = null, $attr = '', $params = array()) {
+		$html = '';
+		if($content === null)
+			return $html;
+
+		hikashop_loadJslib('fancybox');
+
+		$isRel = (strpos($attr, 'rel="') !== false);
+		$gallery = 'gallery';
+		$rel = '';
+		if(!$isRel) {
+			$rel = ' data-fancybox="gallery"';
+			if(!empty($params['gallery'])) {
+				$gallery = str_replace('"','', $params['gallery']);
+				$rel = ' data-fancybox="'.$gallery.'"';
+			}
+		} else {
+			if(preg_match('#rel="(.*)"#Ui', $attr,$matches)) {
+				$gallery = $matches[1];
+			}
+		}
+
+		static $done = array();
+		if(!isset($done[$gallery])) {
+			$done[$gallery] = true;
+			$html = '
+<script>
+	Fancybox.bind(\'[data-fancybox="'.$gallery.'"]\', {});
+	(function(){
+		window.Oby.registerAjax("hkContentChanged",function(params){
+			var key = \''.$gallery.'\';
+			if(params.selection) {
+				key = key.replace(/_VARIANT_NAME/g, params.selection);
+			}
+			Fancybox.bind(\'[data-fancybox="\'+key+\'"]\', {});
+		});
+	})();
+</script>
+			';
+		}
+		if(!empty($id))
+			$id = ' id="'.$id.'"';
+		else
+			$id = '';
+
+		$html .= '<a '.$attr.$rel.$id.' href="'.$url.'">'.$content.'</a>';
 		return $html;
 	}
 

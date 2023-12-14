@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -204,6 +204,7 @@ if(!empty($data->cart->products)){
 			foreach($itemFields as $field){
 				$namekey = $field->field_namekey;
 				if(empty($item->$namekey) || !strlen((string)$item->$namekey)) continue;
+				$field->currentElement = $item;
 				$t .= '<p>'.$fieldsClass->getFieldName($field).': '.$fieldsClass->show($field,$item->$namekey,'admin_email').'</p>';
 			}
 		}
@@ -213,6 +214,7 @@ if(!empty($data->cart->products)){
 			foreach($fields as $field){
 				$namekey = $field->field_namekey;
 				$productData = @$productClass->all_products[$item->product_id];
+				$field->currentElement = $productData;
 				$cartProduct['CUSTOMFIELD_VALUE'] .= '<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right">'.(empty($productData->$namekey)?'':$fieldsClass->show($field,$productData->$namekey)).'</td>';
 			}
 		}
@@ -454,6 +456,7 @@ ob_start();
 		foreach($fields as $fieldName => $oneExtraField) {
 			if($oneExtraField->field_type != 'customtext' && empty($data->cart->$fieldName))
 				continue;
+			$oneExtraField->currentElement = $data->cart;
 			echo $sep . $fieldsClass->trans($oneExtraField->field_realname).' : '.$fieldsClass->show($oneExtraField, @$data->cart->$fieldName,'admin_email');
 			$sep = '<br />';
 		}

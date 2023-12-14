@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopMassaction_user extends \Joomla\CMS\Plugin\CMSPlugin
+class plgHikashopMassaction_user extends JPlugin
 {
 	public $message = '';
 	public $massaction = null;
@@ -41,6 +41,8 @@ class plgHikashopMassaction_user extends \Joomla\CMS\Plugin\CMSPlugin
 		$triggers['onAfterUserCreate']=JText::_('AFTER_A_USER_IS_CREATED');
 		$triggers['onAfterUserUpdate']=JText::_('AFTER_A_USER_IS_UPDATED');
 		$triggers['onAfterUserDelete']=JText::_('AFTER_A_USER_IS_DELETED');
+		$triggers['onAfterUserVote']=JText::_('AFTER_A_USER_VOTE');
+		$triggers['onAfterUserComment']=JText::_('AFTER_A_USER_POST_A_COMMENT');
 	}
 
 	function onMassactionTableFiltersLoad(&$table,&$filters,&$filters_html,&$loadedData){
@@ -533,6 +535,21 @@ class plgHikashopMassaction_user extends \Joomla\CMS\Plugin\CMSPlugin
 
 	function onAfterUserDelete(&$element){
 		$this->massaction->trigger('onAfterUserDelete',$this->deletedUser);
+	}
+
+	function onAfterVoteCreate(&$element) {
+		if(empty($element->vote_user_id))
+			return;
+		$getUser = $this->user->get($element->vote_user_id);
+		if(empty($getUser))
+			return;
+		$users = array($getUser);
+		if(!empty($element->vote_comment)) {
+			$this->massaction->trigger('onAfterUserComment', $users);
+		}
+		if(!empty($element->vote_rating)) {
+			$this->massaction->trigger('onAfterUserVote', $users);
+		}
 	}
 
 }

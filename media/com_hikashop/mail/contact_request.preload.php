@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -95,6 +95,7 @@ if(hikashop_level(1)) {
 			$namekey = $field->field_namekey;
 			if(!isset($data->element->$namekey)) continue;
 			if(empty($data->element->$namekey) && !strlen($data->element->$namekey)) continue;
+			$field->currentElement = $data->element;
 			$vars['PRODUCT_DETAILS'] .= '<p>'.$fieldsClass->getFieldName($field).': '.$fieldsClass->show($field, $data->element->$namekey, 'admin_email').'</p>';
 		}
 		if(!empty($vars['PRODUCT_DETAILS']))

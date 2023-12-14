@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -126,6 +126,7 @@ if(isset($this->edit) && $this->edit === true) {
 } else {
 	if($this->config->get('address_show_details', 0)) {
 		foreach($this->fields as $fieldname => $field) {
+			$field->currentElement = $this->address;
 ?>
 	<dl class="hika_options">
 		<dt class="hikashop_user_address_<?php echo $fieldname;?>"><label><?php echo $this->fieldsClass->trans($field->field_realname);?></label></dt>
