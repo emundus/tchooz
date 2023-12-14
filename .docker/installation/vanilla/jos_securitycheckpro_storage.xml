@@ -13,7 +13,7 @@
    </row>
    <row>
     <field name="storage_key">installs</field>
-    <field name="storage_value">[{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;},{&quot;name&quot;:&quot;French (fr-FR) Language pack&quot;,&quot;type&quot;:&quot;package&quot;},{&quot;name&quot;:&quot;mod_falang&quot;,&quot;type&quot;:&quot;module&quot;},{&quot;name&quot;:&quot;plg_system_falangdriver&quot;,&quot;type&quot;:&quot;plugin&quot;},{&quot;name&quot;:&quot;plg_system_falangquickjump&quot;,&quot;type&quot;:&quot;plugin&quot;},{&quot;name&quot;:&quot;com_falang&quot;,&quot;type&quot;:&quot;component&quot;}]</field>
+    <field name="storage_value">[{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;},{&quot;name&quot;:&quot;French (fr-FR) Language pack&quot;,&quot;type&quot;:&quot;package&quot;},{&quot;name&quot;:&quot;mod_falang&quot;,&quot;type&quot;:&quot;module&quot;},{&quot;name&quot;:&quot;plg_system_falangdriver&quot;,&quot;type&quot;:&quot;plugin&quot;},{&quot;name&quot;:&quot;plg_system_falangquickjump&quot;,&quot;type&quot;:&quot;plugin&quot;},{&quot;name&quot;:&quot;com_falang&quot;,&quot;type&quot;:&quot;component&quot;},{&quot;name&quot;:&quot;FaLang Package&quot;,&quot;type&quot;:&quot;package&quot;},{&quot;name&quot;:&quot;HikaShop&quot;,&quot;type&quot;:&quot;component&quot;}]</field>
    </row>
    <row>
     <field name="storage_key">locked</field>

@@ -148,6 +148,9 @@ UPDATE `jos_emundus_setup_emails` SET `subject`=REPLACE(subject, "Sorbonne Unive
 UPDATE `jos_emundus_setup_emails` SET `message`=REPLACE(message, "Sorbonne Université", "[SITE_NAME]") ;
 
 DELETE FROM `jos_categories` WHERE `extension` like 'com_dropfiles';
+DELETE FROM `jos_assets` WHERE `name` LIKE 'com_dropfiles.category.%';
+
+DELETE FROM `jos_emundus_setup_action_tag` WHERE `id` NOT IN (1,2,3);
 
 ALTER TABLE `jos_users` auto_increment = 100;
 ALTER TABLE `jos_emundus_users` auto_increment = 100 ROW_FORMAT = COMPACT;

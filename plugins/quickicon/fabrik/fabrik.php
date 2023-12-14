@@ -58,7 +58,7 @@ class plgQuickiconFabrik extends CMSPlugin
 
 		$quickicons = array(
 			array(
-				'link' => Route::_('http://localhost:8383/administrator/index.php?option=com_fabrik&view=lists'),
+				'link' => Route::_('/administrator/index.php?option=com_fabrik&view=lists'),
 				'image' => 'fa fa-table-list',
 				'text' => 'Fabrik',
 				'group' => 'MOD_QUICKICON_EXTENSIONS',
