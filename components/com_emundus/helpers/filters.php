@@ -17,6 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 /**
  * Content Component Query Helper
@@ -415,7 +416,7 @@ class EmundusHelperFilters
 				$elements = $db->loadObjectList();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get fabrik elements by group id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get fabrik elements by group id ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 

@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 
 require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
@@ -34,7 +36,7 @@ class EmundusModelLogs extends JModelList
 
 		// write log file
 		jimport('joomla.log.log');
-		JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
+		Log::addLogger(['text_file' => 'com_emundus.logs.php'], Log::ERROR, 'com_emundus');
 	}
 
 	/**
@@ -54,7 +56,7 @@ class EmundusModelLogs extends JModelList
 		$logged = false;
 
 		jimport('joomla.log.log');
-		JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
+		Log::addLogger(['text_file' => 'com_emundus.logs.php'], Log::ERROR, 'com_emundus');
 
 		if (!empty($user_from)) {
 			$eMConfig                 = JComponentHelper::getParams('com_emundus');
@@ -85,14 +87,14 @@ class EmundusModelLogs extends JModelList
 							$logged = $db->execute();
 						}
 						catch (Exception $e) {
-							JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+							Log::add('Error logging at the following query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 						}
 					}
 				}
 			}
 		}
 		else {
-			JLog::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' user_from cannot be null in EmundusModelLogs::log', JLog::WARNING, 'com_emundus');
+			Log::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' user_from cannot be null in EmundusModelLogs::log', Log::WARNING, 'com_emundus');
 		}
 
 		return $logged;
@@ -101,7 +103,7 @@ class EmundusModelLogs extends JModelList
 	static function logs($user_from, $fnums, $action, $crud = '', $message = '', $params = '') {
 		$logged = false;
 		jimport('joomla.log.log');
-		JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
+		Log::addLogger(['text_file' => 'com_emundus.logs.php'], Log::ERROR, 'com_emundus');
 
 		if (!empty($user_from) && !empty($fnums)) {
 			if (!is_array($fnums)) {
@@ -136,13 +138,13 @@ class EmundusModelLogs extends JModelList
 							$db->setQuery($query);
 							$logged = $db->execute();
 						} catch (Exception $e) {
-							JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+							Log::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), Log::ERROR, 'com_emundus.error');
 						}
 					}
 				}
 			}
 		} else {
-			JLog::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' user_from cannot be null in EmundusModelLogs::logs', JLog::WARNING, 'com_emundus');
+			Log::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' user_from cannot be null in EmundusModelLogs::logs', Log::WARNING, 'com_emundus');
 		}
 
 
@@ -168,7 +170,7 @@ class EmundusModelLogs extends JModelList
 
 		// If the user ID from is not a number, something is wrong.
 		if (!is_numeric($user_from)) {
-			JLog::add('Getting user actions in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
+			Log::add('Getting user actions in model/logs with a user ID that isnt a number.', Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -192,7 +194,7 @@ class EmundusModelLogs extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Could not getUserActions in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('Could not getUserActions in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -218,7 +220,7 @@ class EmundusModelLogs extends JModelList
 
 		// If the user ID from is not a number, something is wrong.
 		if (!is_numeric($user_to)) {
-			JLog::add('Getting actions on user in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
+			Log::add('Getting actions on user in model/logs with a user ID that isnt a number.', Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -242,7 +244,7 @@ class EmundusModelLogs extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Could not getActionsOnUser in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('Could not getActionsOnUser in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -304,7 +306,7 @@ class EmundusModelLogs extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('Could not getActionsOnFnum in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('Could not getActionsOnFnum in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $results;
@@ -330,7 +332,7 @@ class EmundusModelLogs extends JModelList
 
 		// If the user ID from is not a number, something is wrong.
 		if (!is_numeric($user1) || !is_numeric($user2)) {
-			JLog::add('Getting actions between users in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
+			Log::add('Getting actions between users in model/logs with a user ID that isnt a number.', Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -355,7 +357,7 @@ class EmundusModelLogs extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Could not getActionsBetweenUsers in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('Could not getActionsBetweenUsers in model logs at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -528,7 +530,7 @@ class EmundusModelLogs extends JModelList
 				return JURI::base() . 'tmp/' . $fnum . '_logs.csv';
 			}
 			else {
-				JLog::add('Could not create csv file in model logs', JLog::ERROR, 'com_emundus');
+				Log::add('Could not create csv file in model logs', Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -553,7 +555,7 @@ class EmundusModelLogs extends JModelList
 				$logs = $db->loadObjectList();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/files | Error when get all affected user by fnum' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage() . '#fnum = ' . $fnum), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/files | Error when get all affected user by fnum' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage() . '#fnum = ' . $fnum), Log::ERROR, 'com_emundus');
 			}
 		}
 

@@ -176,6 +176,29 @@ class plgUserEmundus_registration_email extends CMSPlugin
             }
         }
 
+	    if (PluginHelper::getPlugin('system','emundusproxyredirect')) {
+		    $params = json_decode(PluginHelper::getPlugin('system','emundusproxyredirect')->params, true);
+		    $http_headers = $_SERVER;
+
+		    if($params['test_mode'] == 1) {
+			    $http_headers = [
+				    'username' => 'developer',
+				    'email'    => 'dev@emundus.io'
+			    ];
+
+			    $login_route = Uri::root().'connexion';
+			    $current_route = Uri::getInstance()->toString();
+
+			    if($current_route != $login_route) {
+				    return false;
+			    }
+		    }
+
+		    if(!empty($http_headers[$params['username']]) && !empty($http_headers[$params['email']])) {
+			    return false;
+		    }
+	    }
+
         if ($result && !$error) {
             // for anonym sessions
             $allow_anonym_files = $eMConfig->get('allow_anonym_files', 0);
