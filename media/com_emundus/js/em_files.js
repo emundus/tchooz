@@ -1125,7 +1125,7 @@ function runAction(action, url = '', option = '') {
 
                                         $('#em-modal-actions').modal('hide');
 
-                                        reloadData();
+                                        reloadData($('#view').val());
                                         reloadActions($('#view').val(), undefined, false);
                                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                                         $('body').removeClass('modal-open');
@@ -1183,7 +1183,7 @@ function runAction(action, url = '', option = '') {
 
                                 $('#em-modal-actions').modal('hide');
 
-                                reloadData();
+                                reloadData($('#view').val());
                                 reloadActions($('#view').val(), undefined, false);
                                 $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                                 $('body').removeClass('modal-open');
@@ -1254,7 +1254,7 @@ function runAction(action, url = '', option = '') {
 
                     $('#em-modal-actions').modal('hide');
 
-                    reloadData();
+                    reloadData($('#view').val());
                     reloadActions($('#view').val(), undefined, false);
                     $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                     $('body').removeClass('modal-open');
@@ -1308,7 +1308,7 @@ function runAction(action, url = '', option = '') {
                             window.dispatchEvent(refreshModuleFiltersEvent);
                         }
 
-                        reloadData();
+                        reloadData($('#view').val());
                         reloadActions($('#view').val(), undefined, false);
                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                         $('body').removeClass('modal-open');
@@ -1470,7 +1470,7 @@ function runAction(action, url = '', option = '') {
                         });
                     }
 
-                    reloadData();
+                    reloadData($('#view').val());
                     reloadActions($('#view').val(), undefined, false);
                 },
                 error: function (jqXHR) {
@@ -5839,7 +5839,7 @@ $(document).ready(function() {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 $('#em-modal-actions').modal('hide');
 
-                                                reloadData();
+                                                reloadData($('#view').val());
                                                 reloadActions($('#view').val(), undefined, false);
                                                 $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
                                                 $('body').removeClass('modal-open');
@@ -5884,7 +5884,7 @@ $(document).ready(function() {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 $('#em-modal-actions').modal('hide');
 
-                                                reloadData();
+                                                reloadData($('#view').val());
                                                 reloadActions($('#view').val(), undefined, false);
                                                 $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
                                                 $('body').removeClass('modal-open');
@@ -6767,7 +6767,7 @@ function sendMail(data)
 
                     addLoader();
 
-                    reloadData();
+                    reloadData($('#view').val());
                     reloadActions($('#view').val(), undefined, false);
 
                     Swal.fire({
@@ -6818,7 +6818,7 @@ function sendMail(data)
                     success: function(tags) {
                         addLoader();
 
-                        reloadData();
+                        reloadData($('#view').val());
                         reloadActions($('#view').val(), undefined, false);
 
                         Swal.fire({

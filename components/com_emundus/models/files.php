@@ -1526,6 +1526,7 @@ class EmundusModelFiles extends JModelLegacy
 				$query                 = "insert into #__emundus_tag_assoc (fnum, id_tag, date_time, user_id) VALUES ";
 
 				$logger = array();
+				$insert_tags = false;
 				foreach ($fnums as $fnum) {
 					// Get tags already associated to this fnum by the current user
 					$query_associated_tags->clear()
@@ -1539,6 +1540,8 @@ class EmundusModelFiles extends JModelLegacy
 					// Insert valid tags
 					foreach ($tags as $tag) {
 						if (!in_array($tag, $tags_already_associated)) {
+	                        $insert_tags = true;
+
 							$query     .= '("' . $fnum . '", ' . $tag . ',"' . $now . '",' . $user . '),';
 							$query_log = 'SELECT label
                                 FROM #__emundus_setup_action_tag
@@ -1558,9 +1561,13 @@ class EmundusModelFiles extends JModelLegacy
 					}
 				}
 
-				$query = substr_replace($query, ';', -1);
-				$this->_db->setQuery($query);
-				$tagged = $this->_db->execute();
+				if($insert_tags) {
+					$query = substr_replace($query, ';', -1);
+					$this->_db->setQuery($query);
+					$tagged = $this->_db->execute();
+				} else {
+					$tagged = true;
+				}
 			}
 			catch (Exception $e) {
 				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
