@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Symfony\Component\Yaml\Yaml;
 
 /** @var \Joomla\Component\Users\Site\View\Login\HtmlView $this */
 

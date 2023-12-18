@@ -463,6 +463,19 @@ class plgUserEmundus extends CMSPlugin
 		$input    = $this->app->input;
 		$redirect = $input->get->getBase64('redirect');
 
+		$instance = User::getInstance();
+		$id = (int) UserHelper::getUserId($user['username']);
+
+		if ($id)
+		{
+			$instance->load($id);
+		}
+
+		if ($instance->block == 1)
+		{
+			return false;
+		}
+
 		if (empty($redirect)) {
 			parse_str($input->server->getVar('HTTP_REFERER'), $return_url);
 			$previous_url = base64_decode($return_url['return']);
