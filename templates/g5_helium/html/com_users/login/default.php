@@ -46,6 +46,15 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 	$session->set('cid', $this->campaign);
 	$session->set('course', $this->course);
 
+	if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml')) {
+		$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml'));
+		$this->favicon = $yaml['favicon'];
+	}
+
+	if(!file_exists($this->favicon)) {
+		$this->favicon = '/images/custom/favicon.png';
+	}
+
 	echo $this->loadTemplate('login');
 }
 else {
