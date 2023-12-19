@@ -364,6 +364,13 @@
     }
 
     /* ALERTES */
+
+    .files-board #system-message .alert {
+        width: calc(100% - 90px);
+        float: right;
+        margin: 8px 7px;
+    }
+
     #system-message .alert, .fabrikMainError {
         @apply flex;
         @apply p-5;
@@ -422,6 +429,10 @@
 
     .field-error {
         border: solid 1px var(--red-500);
+    }
+
+    .alert.alert-danger ul, .alert.alert-error ul {
+        padding-left: 20px;
     }
 
     /* ALERT */
