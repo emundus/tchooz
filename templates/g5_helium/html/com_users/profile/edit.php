@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
@@ -28,6 +30,17 @@ $wa->useScript('keepalive')
     ->useScript('form.validate');
 $wa->registerAndUseStyle('com_users/profile/edit', 'templates/g5_helium/html/com_users/profile/style/com_users_profile_edit.css', array('version' => 'auto', 'relative' => true));
 
+$user_module = ModuleHelper::getModule('mod_emundus_user_dropdown');
+$back_url = '/';
+if(!empty($user_module->id)) {
+	$params = json_decode($user_module->params);
+	$link_edit_profile = $params->link_edit_profile;
+	$menu = Factory::getApplication()->getMenu()->getItem($link_edit_profile);
+	if(!empty($menu->id)) {
+		$back_url = Route::_($menu->link . '&Itemid=' . $menu->id);
+	}
+}
+
 ?>
 <div class="com-users-profile__edit profile-edit">
     <?php if ($this->params->get('show_page_heading')) : ?>
@@ -39,6 +52,12 @@ $wa->registerAndUseStyle('com_users/profile/edit', 'templates/g5_helium/html/com
     <?php endif; ?>
 
     <form id="member-profile" action="<?php echo Route::_('index.php?option=com_users'); ?>" method="post" class="com-users-profile__edit-form form-validate form-horizontal well" enctype="multipart/form-data">
+        <div>
+            <a class="em-back-button em-pointer" style="justify-content: start; padding: 20px 0" href="<?php echo $back_url ?>">
+                <span class="material-icons em-mr-4">navigate_before</span>
+			    <?php echo Text::_('GO_BACK'); ?>
+            </a>
+        </div>
         <?php // Iterate through the form fieldsets and display each one. ?>
         <?php foreach ($this->form->getFieldsets() as $group => $fieldset) : ?>
             <?php $fields = $this->form->getFieldset($group); ?>
