@@ -189,7 +189,7 @@ if (!empty($this->custom_title)) :?>
 					else {
 						$div .= JText::_('COM_EMUNDUS_ONBOARD_TYPE_FILE') . ' ' . $nb;
 					}
-					$div .= ' | <span style="font-size: 13px">' . ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2")) . '</span>';
+					$div .= ' | <span style="font-size: 13px">' . ucfirst(EmundusHelperDate::displayDate($item->timedate, 'DATE_FORMAT_LC2', 0)) . '</span>';
 					if ($this->show_shortdesc_input) {
 						$div .= ' | ';
 						$div .= empty($item->description) ? JText::_('COM_EMUNDUS_ATTACHMENTS_NO_DESC') : $item->description;
