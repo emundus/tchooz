@@ -347,7 +347,7 @@ class EmundusViewApplication extends JViewLegacy
 						$this->userComments = $m_application->getFileComments($fnum);
 
 						foreach ($this->userComments as $comment) {
-							$comment->date = EmundusHelperDate::displayDate($comment->date);
+							$comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2',0);
 						}
 					}
 					elseif (EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum)) {
@@ -357,7 +357,7 @@ class EmundusViewApplication extends JViewLegacy
 						$this->userComments = $m_application->getFileOwnComments($fnum, $this->user->id);
 
 						foreach ($this->userComments as $comment) {
-							$comment->date = EmundusHelperDate::displayDate($comment->date);
+							$comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2',0);
 						}
 
 						$this->fnum = $fnum;
