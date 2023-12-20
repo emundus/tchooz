@@ -248,3 +248,51 @@ font-size: 16px;
 	background: #DFDFDF;
 	border-radius: 8px;
 }
+
+/** ACTION DROPDOWN **/
+.fabrik_actions {
+	.fabrik_action {
+		.dropdown-toggle {
+			padding: 6px 4px !important;
+			border: unset;
+			background: transparent;
+
+			.caret {
+				border: unset;
+				background-image: url('/images/emundus/menus/more.png');
+				height: 25px;
+				width: 25px;
+				background-size: cover;
+				background-repeat: no-repeat;
+				margin: 0;
+				display: flex;
+			}
+		}
+
+		.dropdown-menu {
+			padding: unset;
+
+			li a {
+				background: transparent !important;
+				color: black !important;
+				padding: 6px;
+				margin-right: 0 !important;
+
+				&:hover {
+					background: $base-secondary-color !important;
+					color: white !important;
+				}
+			}
+
+			.js-1 {
+				border-top-left-radius: 5px;
+				border-top-right-radius: 5px;
+			}
+
+			.js-3 {
+				border-bottom-left-radius: 5px;
+				border-bottom-right-radius: 5px;
+			}
+		}
+	}
+}
