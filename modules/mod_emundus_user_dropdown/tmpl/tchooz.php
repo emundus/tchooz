@@ -329,15 +329,6 @@ if ($user != null) {
         let profile_color = '<?php echo $profile_details->class; ?>';
         let profile_state = <?php echo $profile_details->published; ?>;
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // if session storage is empty, get profile color and state from server
-            if (profile_color === null || profile_state === null) {
-                getProfileColorAndState();
-            } else {
-                applyColors(profile_color, profile_state);
-            }
-        });
-
         function getProfileColorAndState() {
             fetch('/index.php?option=com_emundus&controller=users&task=getcurrentprofile', {
                 method: 'GET',
@@ -390,37 +381,9 @@ if ($user != null) {
                 let root = document.querySelector(':root');
                 let css_var = getComputedStyle(root).getPropertyValue("--em-primary-color");
 
-                document.documentElement.style.setProperty("--em-profile-color", css_var);
-
-                // header background color
-                let iframeElements_2 = document.querySelectorAll("#background-shapes");
-
-                if (iframeElements_2 !== null) {
-                    iframeElements_2.forEach((iframeElement) => {
-                        let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                        let styleElement = iframeDocument.querySelector("style");
-                        let pathElements = iframeDocument.querySelectorAll("path");
-
-                        if (styleElement) {
-                            let styleContent = styleElement.textContent;
-                            styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
-                            styleElement.textContent = styleContent;
-                        }
-
-                        if (pathElements) {
-                            pathElements.forEach((pathElement) => {
-                                let pathStyle = pathElement.getAttribute("style");
-                                if (pathStyle && pathStyle.includes("fill:grey;")) {
-                                    pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
-                                    pathElement.setAttribute("style", pathStyle);
-
+                updateSvgColors(css_var);
                                 }
-                            });
-                        }
-                    });
-                }
-            } else { // it's a coordinator profile
-
+            else  { // it's a coordinator profile
                 if (profile_color != '') {
 
                     profile_color = profile_color.split('-')[1];
@@ -429,6 +392,28 @@ if ($user != null) {
                         let root = document.querySelector(':root');
                         let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
 
+                        updateSvgColors(css_var);
+                    }
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if(document.getElementById('profile_chzn') != null){
+                document.getElementById('profile_chzn').style.display = 'none';
+                document.getElementById('profile').style.display = 'block';
+                document.querySelector('#header-c .g-content').style.alignItems = 'start';
+            }
+
+            // if session storage is empty, get profile color and state from server
+            if (profile_color === null || profile_state === null) {
+                getProfileColorAndState();
+            } else {
+                applyColors(profile_color, profile_state);
+            }
+        });
+
+        function updateSvgColors(css_var) {
                         document.documentElement.style.setProperty("--em-profile-color", css_var);
 
                         // header background color
@@ -457,19 +442,7 @@ if ($user != null) {
                                 }
                             });
                         }
-
-                    }
-                }
-            }
         }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            if (document.getElementById('profile_chzn') != null) {
-                document.getElementById('profile_chzn').style.display = 'none';
-                document.getElementById('profile').style.display = 'block';
-                document.querySelector('#header-c .g-content').style.alignItems = 'start';
-            }
-        });
 
         function displayUserOptions() {
             var dropdown = document.getElementById('userDropdown');
@@ -585,11 +558,9 @@ if ($user != null) {
 	<?php endif; ?>
     <div class="header-right" style="text-align: right;">
 		<?php if ($show_registration) { ?>
-            <a class="btn btn-danger" href="<?= $link_register; ?>"
-               data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
+            <a class="btn btn-danger" href="<?= JRoute::_($link_register); ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
 		<?php } ?>
-        <a class="btn btn-danger btn-creer-compte" href="<?= $link_login; ?>"
-           data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
+        <a class="btn btn-danger btn-creer-compte" href="<?= JRoute::_($link_login); ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
     </div>
     <script>
 		<?php if ($guest): ?>
