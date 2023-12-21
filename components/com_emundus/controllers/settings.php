@@ -16,6 +16,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * Settings Controller
@@ -369,10 +370,10 @@ class EmundusControllersettings extends JControllerLegacy
 			$image = $this->input->files->get('file');
 			// get old logo
 			$logo_module = JModuleHelper::getModuleById('90');
-			if(empty($logo_module->id)) {
+			if (empty($logo_module->id)) {
 				$logo_module = JModuleHelper::getModuleById('116');
 			}
-			$regex       = '/logo_custom.{3,4}[png+|jpeg+|jpg+|svg+|gif+]/m';
+			$regex = '/logo_custom.{3,4}[png+|jpeg+|jpg+|svg+|gif+]/m';
 			preg_match($regex, $logo_module->content, $matches, PREG_OFFSET_CAPTURE, 0);
 			$old_logo = $matches[0][0];
 
@@ -387,10 +388,10 @@ class EmundusControllersettings extends JControllerLegacy
 					$target_file = $target_dir . basename('logo_custom.' . $ext);
 
 					$logo_module = JModuleHelper::getModuleById('90');
-					if(empty($logo_module->id)) {
+					if (empty($logo_module->id)) {
 						$logo_module = JModuleHelper::getModuleById('116');
 					}
-					
+
 					if (move_uploaded_file($image["tmp_name"], $target_file)) {
 						$regex = '/(logo.(png+|jpeg+|jpg+|svg+|gif+|webp+))|(logo_custom.(png+|jpeg+|jpg+|svg+|gif+|webp+))/m';
 
@@ -421,15 +422,11 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function updateicon()
 	{
-		$user = JFactory::getUser();
+		$result = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'filename' => '', 'old_favicon' => ''];
+		$user   = JFactory::getUser();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
-
-			$image = $this->input->files->get('file');
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$image  = $this->input->files->get('file');
 
 			if (isset($image)) {
 				$ext         = pathinfo($image['name'], PATHINFO_EXTENSION);
@@ -451,18 +448,22 @@ class EmundusControllersettings extends JControllerLegacy
 					$cache = JCache::getInstance('callback');
 					$cache->clean(null, 'notgroup');
 
-					$tab = array('status' => 1, 'msg' => JText::_('ICON_UPDATED'), 'filename' => 'favicon.' . $ext, 'old_favicon' => $old_favicon[0]);
+					$result['status']      = 1;
+					$result['msg']         = Text::_('ICON_UPDATED');
+					$result['filename']    = 'favicon.' . $ext;
+					$result['old_favicon'] = $old_favicon[0];
 				}
 				else {
-					$tab = array('status' => 0, 'msg' => JText::_('ICON_NOT_UPDATED'));
+					$resul['msg'] = Text::_('ICON_NOT_UPDATED');
 				}
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ICON_NOT_UPDATED'));
+				$result['msg'] = Text::_('ICON_NOT_UPDATED');
 			}
-			echo json_encode((object) $tab);
-			exit;
 		}
+
+		echo json_encode((object) $result);
+		exit;
 	}
 
 	public function removeicon()
@@ -942,19 +943,22 @@ class EmundusControllersettings extends JControllerLegacy
 
 				if (!file_exists($target_dir)) {
 					$response['msg'] = 'Error while trying to create the dropbox folder.';
-				} else {
+				}
+				else {
 					do {
 						$target_file = $target_dir . rand(1000, 90000) . '.' . $ext;
 					} while (file_exists($target_file));
 
 					if (move_uploaded_file($file['tmp_name'], $target_file)) {
-						$did = $this->m_settings->moveUploadedFileToDropbox(pathinfo($target_file, PATHINFO_BASENAME), $filename, $ext, $campaign_category, filesize($target_file));
+						$did      = $this->m_settings->moveUploadedFileToDropbox(pathinfo($target_file, PATHINFO_BASENAME), $filename, $ext, $campaign_category, filesize($target_file));
 						$response = $m_campaign->getDropfileDocument($did);
-					} else {
+					}
+					else {
 						$response['msg'] = 'Error while trying to move the file to the dropbox folder. File ' . $file['name'] . ' not uploaded to ' . $target_file . '.';
 					}
 				}
-			} else {
+			}
+			else {
 				$response['msg'] = 'Missing file';
 			}
 		}
@@ -963,44 +967,47 @@ class EmundusControllersettings extends JControllerLegacy
 		exit;
 	}
 
-    public function getemundusparams(){
+	public function getemundusparams()
+	{
 		$params = ['emundus' => [], 'joomla' => [], 'msg' => JText::_('ACCESS_DENIED')];
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
-	        $params = $this->m_settings->getEmundusParams();
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			$params        = $this->m_settings->getEmundusParams();
 			$params['msg'] = JText::_('SUCCESS');
 		}
 
-	    echo json_encode($params);
+		echo json_encode($params);
 		exit;
 	}
 
-    public function updateemundusparam(){
-        $user = Factory::getApplication()->getIdentity();
+	public function updateemundusparam()
+	{
+		$user     = Factory::getApplication()->getIdentity();
 		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-	        $response['msg'] = JText::_('MISSING_PARAMS');
-            $jinput = Factory::getApplication()->input;
-            $component = $jinput->getString('component');
-            $param = $jinput->getString('param');
-            $value = $jinput->getString('value', null);
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$response['msg'] = JText::_('MISSING_PARAMS');
+			$jinput          = Factory::getApplication()->input;
+			$component       = $jinput->getString('component');
+			$param           = $jinput->getString('param');
+			$value           = $jinput->getString('value', null);
 
 			if (!empty($param) && isset($value)) {
 				if ($this->m_settings->updateEmundusParam($component, $param, $value)) {
-					$response['msg'] = JText::_('SUCCESS');
+					$response['msg']    = JText::_('SUCCESS');
 					$response['status'] = true;
 
 					if ($param === 'list_limit') {
 						JFactory::getSession()->set('limit', $value);
 					}
-				} else {
+				}
+				else {
 					$response['msg'] = JText::_('PARAM_NOT_UPDATED');
-			}
+				}
 			}
 		}
 
-	    echo json_encode($response);
+		echo json_encode($response);
 		exit;
 	}
 
