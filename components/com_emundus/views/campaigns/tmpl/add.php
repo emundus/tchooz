@@ -67,6 +67,7 @@ Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
 Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
 Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 Text::script('BACK');
+Text::script('COM_EMUNDUS_CAMPAIGNS_PIN');
 ## END ##
 
 $app = Factory::getApplication();
