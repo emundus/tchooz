@@ -676,17 +676,21 @@ die("<script>
 			$params['toggle_where']    = '';
 		}
 
-		if ($plugin == 'currency') {
+		if($plugin == 'currency') {
 
-			$object                                                      = (object) [
-				'iso3'               => 'EUR',
-				'minimal_value'      => '0.00',
-				'maximal_value'      => '10000.00',
+			$object = (object) [
+				'iso3' => 'EUR',
+				'minimal_value' => '0.00',
+				'maximal_value' => '1000000.00',
 				'thousand_separator' => ' ',
-				'decimal_separator'  => ',',
-				'decimal_numbers'    => '2'
+				'decimal_separator' => ',',
+				'decimal_numbers' => '2'
 			];
 			$params['all_currencies_options']['all_currencies_options0'] = $object;
+		}
+
+		if($plugin == 'emundus_phonenumber') {
+			$params['default_country'] = 'FR';
 		}
 
 		return $params;
