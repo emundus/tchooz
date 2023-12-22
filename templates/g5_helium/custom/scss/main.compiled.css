@@ -1959,9 +1959,15 @@ input[type="text"],
     display: none;
   }
 /* ADD PIPE */
+pre#log {
+    display: none;
+  }
 div[id^='recorder-'] {
     margin-bottom: 12px;
   }
+div[id^='recorder-'] > div:nth-child(1) {
+      width: 100% !important;
+    }
 div[id^='recorder-'] div[id^='pipeStartRecording-recorder-'],div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] {
       display: flex;
       align-items: center;
