@@ -2220,6 +2220,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
      -moz-user-select: all;
           user-select: all;
 }
+.resize-y {
+  resize: vertical;
+}
 .\!resize {
   resize: both !important;
 }
