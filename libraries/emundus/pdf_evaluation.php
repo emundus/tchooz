@@ -1,6 +1,6 @@
 <?php
 
-function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $options = null) {
+function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $options = []) {
     jimport( 'joomla.html.parameter' );
     set_time_limit(0);
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');

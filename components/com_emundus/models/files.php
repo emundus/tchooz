@@ -4334,51 +4334,55 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAttachmentsAssignedToEmundusGroups($group_ids)
 	{
-		$attachments_assigned = [];
 
 		if (!is_array($group_ids)) {
 			$group_ids = [$group_ids];
 		}
 
-		$query = $this->_db->getQuery(true);
+		$db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
 
 		$result = [];
 		foreach ($group_ids as $group_id) {
 			$query->clear()
-				->select($this->_db->quoteName('anonymize'))
-				->from($this->_db->quoteName('#__emundus_setup_groups'))
-				->where($this->_db->quoteName('id') . ' = ' . $group_id);
-			$this->_db->setQuery($query);
-			$anonymize = $this->_db->loadResult();
+				->select($db->quoteName('anonymize'))
+				->from($db->quoteName('#__emundus_setup_groups'))
+				->where($db->quoteName('id') . ' = ' . $group_id);
+			$db->setQuery($query);
+			$anonymize = $db->loadResult();
 
 			// If the group has no anonymization, then the user can see all the attachments
 			if ($anonymize == 0) {
-				return $attachments_assigned;
+				return true;
 			}
 			else {
 				$query->clear()
-					->select($this->_db->quoteName('attachment_id_link'))
-					->from($this->_db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
-					->where($this->_db->quoteName('parent_id') . ' = ' . $group_id);
-				$this->_db->setQuery($query);
+					->select($db->quoteName('attachment_id_link'))
+					->from($db->quoteName('#__emundus_setup_groups_repeat_attachment_id_link'))
+					->where($db->quoteName('parent_id') . ' = ' . $group_id);
+				$db->setQuery($query);
 
 				try {
-					$attachments = $this->_db->loadColumn();
+					$attachments = $db->loadColumn();
 
 					// In the case of a group having no assigned Fabrik groups, it can get them all.
 					if (empty($attachments)) {
-						return $attachments_assigned;
+						return true;
 					}
 
-					$attachments_assigned = array_merge($result, $attachments);
-				} catch (Exception $e) {
-					return [];
+					$result = array_merge($result, $attachments);
+				}
+				catch (Exception $e) {
+					return false;
 				}
 			}
 		}
 
-		if (!empty($attachments_assigned)) {
-			return array_keys(array_flip($attachments_assigned));
+		if (empty($result)) {
+			return true;
+		}
+		else {
+			return array_keys(array_flip($result));
 		}
 	}
 
