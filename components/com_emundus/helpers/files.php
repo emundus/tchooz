@@ -2611,7 +2611,7 @@ class EmundusHelperFiles
 	}
 
 	// getDecision
-	function getDecision($format = 'html', $fnums = [])
+	static function getDecision($format = 'html', $fnums = [])
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
