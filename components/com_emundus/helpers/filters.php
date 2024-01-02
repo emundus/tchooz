@@ -386,7 +386,7 @@ class EmundusHelperFilters
 	 *
 	 * @return   array    list of Fabrik element ID used in evaluation form
 	 **/
-	function getAllElementsByGroups($groups, $show_in_list_summary = null, $hidden = null)
+	static function getAllElementsByGroups($groups, $show_in_list_summary = null, $hidden = null)
 	{
 		$elements = [];
 

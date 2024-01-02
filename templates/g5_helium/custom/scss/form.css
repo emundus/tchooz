@@ -1234,10 +1234,14 @@
   }
 
   /* ADD PIPE */
+  pre#log {
+    display: none;
+  }
+
   div[id^='recorder-'] {
     margin-bottom: 12px;
 
-    .pipeRecordRTC {
+    > div:nth-child(1) {
       width: 100% !important;
     }
 

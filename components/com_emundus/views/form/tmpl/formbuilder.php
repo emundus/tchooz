@@ -210,6 +210,7 @@ JText::script('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED');
 JText::script('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_PARAMETERS');
 JText::script('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL');
 JText::script('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_HIDDEN');
+JText::script('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT');
 JText::script('COM_EMUNDUS_FORM_BUILDER_ELEMENT_LABEL');
 JText::script('COM_EMUNDUS_FORM_BUILDER_SAVED_AT');
 JText::script('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT');
@@ -421,6 +422,8 @@ JText::script('COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_TOO_SMALL');
 JText::script('COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NOT_NUMBER');
 
 JText::script('COM_EMUNDUS_ONBOARD_IMAGE_DIMENSION_TITLE');
+JText::script('COM_EMUNDUS_ONBOARD_TYPE_PANEL');
+JText::script('COM_EMUNDUS_ONBOARD_BUILDER_PHONENUMBER_DEFAULT_COUNTRY');
 
 $vue = 'em-formBuilder-vue';
 if ($this->eval != 0) {
@@ -451,6 +454,8 @@ require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers
 $hash = EmundusHelperCache::getCurrentGitHash();
 
 $mode = JFactory::getApplication()->input->get('mode', '');
+
+JHTML::script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
 
 ?>
 

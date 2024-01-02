@@ -70,10 +70,12 @@ class EmundusViewUsers extends JViewLegacy
 		$filts_values = explode(',', $menu_params->get('em_filters_values'));
 
 		foreach ($filts_names as $key => $filt_name) {
-			if (array_key_exists($key, $filts_values) && !empty($filts_values[$key]))
+			if (array_key_exists($key, $filts_values) && !empty($filts_values[$key])) {
 				$this->filts_details[$filt_name] = explode('|', $filts_values[$key]);
-			else
+			}
+			else {
 				$this->filts_details[$filt_name] = null;
+			}
 		}
 
 		parent::__construct($config);
@@ -84,8 +86,28 @@ class EmundusViewUsers extends JViewLegacy
 		$m_users                = new EmundusModelUsers();
 		$m_users->filts_details = $this->filts_details;
 		$users                  = $m_users->getUsers();
-		$this->users            = $users;
 
+		$applicant_profiles = $m_users->getApplicantProfiles();
+		$applicant_profiles = array_column($applicant_profiles, 'id');
+
+		foreach ($users as $user) {
+			if (!empty($user->o_profiles)) {
+				$o_profiles       = explode(',', $user->o_profiles);
+				$profile_details  = $m_users->getProfilesByIDs($o_profiles);
+				$user->o_profiles = array_map((function ($a) use ($applicant_profiles, $profile_details) {
+					if (in_array($a, $applicant_profiles)) {
+						return JText::_('COM_EMUNDUS_APPLICANT');
+					}
+					else {
+						return $profile_details[$a]->label;
+					}
+				}), $o_profiles);
+
+				$user->o_profiles = implode('<br>', $user->o_profiles);
+			}
+		}
+
+		$this->users      = $users;
 		$pagination       = $m_users->getPagination();
 		$this->pagination = $pagination;
 
@@ -200,8 +222,9 @@ class EmundusViewUsers extends JViewLegacy
 	function display($tpl = null)
 	{
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			die('ACCESS_DENIED');
+		}
 
 		$layout  = JFactory::getApplication()->input->getString('layout', null);
 		$m_files = new EmundusModelFiles();
@@ -247,8 +270,9 @@ class EmundusViewUsers extends JViewLegacy
 							$menuActions[]              = $item;
 						}
 					}
-					else
+					else {
 						$menuActions[] = $item;
+					}
 				}
 
 				$this->items   = $menuActions;

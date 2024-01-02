@@ -1125,7 +1125,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 			$newTranslation = $this->input->getString("newTranslation");
 			$lang           = $this->input->getString("lang");
 
-			if (!empty($element) && !empty($options) && !empty($newTranslation)) {
+			if (!empty($element) && !empty($options) && $newTranslation !== '') {
 				$translated = $this->m_formbuilder->updateElementOption($element, $options, $index, $newTranslation, $lang);
 				$tab        = array('status' => $translated);
 			}
@@ -1359,6 +1359,30 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 				$document = $this->m_formbuilder->getDocumentSample($document_id, $profile_id);
 				$document = empty($document) ? array('has_sample' => 0, 'sample_filepath' => '') : $document;
 				$response = array('status' => true, 'msg' => JText::_('SUCCESS'), 'code' => 200, 'data' => $document);
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getsqldropdownoptions() {
+		$user     = JFactory::getUser();
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403, 'data' => []);
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$response = array('status' => false, 'msg' => JText::_('MISSING_PARAMS'));
+
+			$jinput = JFactory::getApplication()->input;
+			$table = $jinput->getString('table', '');
+			$key  = $jinput->getString('key', '');
+			$value  = $jinput->getString('value', '');
+			$translate  = $jinput->getBool('translate', false);
+
+
+			if(!empty($table) && !empty($key) && !empty($value)) {
+				$options = $this->m_formbuilder->getSqlDropdownOptions($table, $key, $value, $translate);
+				$response = array('status' => true, 'msg' => JText::_('SUCCESS'), 'code' => 200, 'data' => $options);
 			}
 		}
 
