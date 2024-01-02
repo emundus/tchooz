@@ -584,13 +584,12 @@ defined('_JEXEC') or die;
                 jQuery("#header-a").css("opacity", "1");
                 jQuery(".logo").css("position", "absolute");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
-
-                let elmnt = document.getElementById("g-top");
-                if (elmnt !== null) {
-                    jQuery(".logo").css("top", "-37px");
-                } else {
-                    jQuery(".logo").css("top", "7px");
-                }
+            }
+            let elmnt = document.getElementById("g-top");
+            if (elmnt !== null) {
+                jQuery(".logo").css("top", "-37px");
+            } else {
+                jQuery(".logo").css("top", "7px");
             }
             setTimeout(() => {
                 document.querySelectorAll(".image-title").forEach(function (elem) {
