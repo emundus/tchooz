@@ -89,7 +89,9 @@ class EmundusViewExport_select_columns extends JViewLegacy
 			}
 		}
 
-		$this->program = $program->label;
+		if(!empty($program)) {
+			$this->program = $program->label;
+		}
 
 		parent::display($tpl);
 	}
