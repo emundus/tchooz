@@ -2267,6 +2267,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .justify-between {
   justify-content: space-between;
 }
+.justify-around {
+  justify-content: space-around;
+}
 .gap-1 {
   gap: var(--em-spacing-1);
 }
@@ -2722,6 +2725,10 @@ button.swal2-cancel.goback-btn {
         border: 1px solid var(--em-secondary-color) !important;
         border-radius: var(--em-coordinator-br) !important;
         color: var(--neutral-0) !important;
+        text-transform: inherit;
+        font-size: 16px;
+        padding: 8px 12px;
+        font-weight: 400;
     }
 button.swal2-cancel.goback-btn:hover,
     button.swal2-cancel.goback-btn:active,
