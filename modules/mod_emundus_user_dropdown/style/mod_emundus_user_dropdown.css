@@ -316,6 +316,13 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     background: transparent !important;
 }
 
+#header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
 @media screen and (max-width: 479px) {
     #header-c .platform-content div#userDropdownLabel {
         position: fixed;
@@ -432,14 +439,46 @@ div#userDropdown {
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
     #background-shapes {
-        top: 0;
-        right: -4px;
+      display: none;
     }
 
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1023px) {
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 180px;
+    }
 }
 
 @media (max-width: 768px) {
     #background-shapes {
         display: none;
+    }
+}
+
+@media (max-width: 479px) {
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 160px;
+    }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+    #header-c .platform-content #userDropdownLabel .em-profile-container p.em-font-weight-500 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 120px;
     }
 }
