@@ -2203,6 +2203,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .w-auto {
   width: auto;
 }
+.w-fit {
+  width: -moz-fit-content;
+  width: fit-content;
+}
 .w-full {
   width: 100%;
 }
@@ -2403,6 +2407,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .text-red-500 {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity));
+}
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+.text-yellow-500 {
+  --tw-text-opacity: 1;
+  color: rgb(234 179 8 / var(--tw-text-opacity));
 }
 .underline {
   text-decoration-line: underline;
@@ -2850,10 +2862,13 @@ button.swal2-cancel.goback-btn:hover,
         margin: 0 0 10px 0 !important;
     }
 .alert a {
-        font-size: 20px !important;
+        text-decoration: underline;
+        font-weight: normal;
     }
 .alert a:hover {
-        font-size: 20px;
+        font-weight: normal;
+        text-decoration: underline;
+        color: var(--blue-500);
     }
 .has-error .help-block,
     .has-error .control-label,

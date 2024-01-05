@@ -80,7 +80,7 @@ if (!empty($s_elements)) {
             </div>
 		<?php elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') : ?>
 			<?php
-			$label = explode("-", $t->table_label);
+			$label = explode("-", $t->title);
 			$label = $label[1];
 			?>
             </div>
