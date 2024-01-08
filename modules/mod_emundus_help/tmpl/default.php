@@ -22,9 +22,9 @@ defined('_JEXEC') or die;
                 template: '<div class="popover" style="margin-top:-65px;"><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
                 content: "" +
 	                <?php if($current_lang == 'fr') : ?>
-                    "<a href='https://emundus.atlassian.net/wiki/x/BoCjn' target='_blank'><span class='material-icons'>menu_book</span><p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p></a>" +
+                    "<a href='https://emundus.atlassian.net/wiki/x/BoCjn' target='_blank'><img class='icone-aide-tchoozy' src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-articles-aide.svg' alt='icone articles aide'><p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p></a>" +
 	                <?php else : ?>
-                    "<a href='https://emundus.atlassian.net/wiki/x/NQDLn' target='_blank'><span class='material-icons'>menu_book</span><p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p></a>" +
+                    "<a href='https://emundus.atlassian.net/wiki/x/NQDLn' target='_blank'><img class='icone-aide-tchoozy' src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-articles-aide.svg' alt='icone articles aide'><p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p></a>" +
 	                <?php endif; ?>
                     "<a href='https://emundus.atlassian.net/servicedesk/customer/portals' target='_blank'><img class='icone-aide-tchoozy' src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-centre-aide.svg' alt='icone centre aide'><p><?= JText::_('MOD_EMUNDUS_HELP_HELP_CENTER'); ?></p></a>" +
 	                <?php if($current_lang == 'fr') : ?>
