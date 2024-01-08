@@ -54,13 +54,13 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
       id="em-add-user" class="em-addUser" role="form" method="post">
     <fieldset class="em-addUser-detail">
 		<?php if (JPluginHelper::getPlugin('authentication', 'ldap') && $this->edit == 0) : ?>
-            <div class="form-group em-addUser-detail-ldap flex items-center">
+            <div class="form-group em-addUser-detail-ldap tw-flex tw-items-center">
                 <input type="checkbox" id="ldap" name="ldap" style="margin-bottom:5px;"/>
                 <label class="control-label mb-0" for="ldap">LDAP</label>
             </div>
 		<?php endif; ?>
         <div id="user-information" class="em-addUser-detail-info">
-            <div class="grid grid-cols-2 gap-2">
+            <div class="tw-grid tw-grid-cols-2 tw-gap-2">
                 <div class="form-group em-addUser-detail-info-lastname">
                     <label class="control-label" for="lname"><?= JText::_('COM_EMUNDUS_FORM_LAST_NAME'); ?></label>
                     <input type="text" class="em-w-100" id="lname"
@@ -78,7 +78,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                 <input type="text" class="em-w-100" id="mail"
                        name="email" <?= $this->edit == 1 ? 'value="' . $this->user['email'] . '"' : ''; ?>/>
             </div>
-            <div class="form-group em-addUser-detail-info-same-login flex items-center">
+            <div class="form-group em-addUser-detail-info-same-login tw-flex tw-items-center">
                 <input type="checkbox" id="same_login_email" name="same_login_email"
                        style="margin-bottom: 5px; outline-offset: 1px;" <?= ($this->user['email'] == $this->user['login']) ? 'checked' : ''; ?>>
                 <label for="same_login_email"

@@ -2110,6 +2110,9 @@ class EmundusHelperUpdate
             } catch (Exception $e) {
                 $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
             }
+        } else {
+			$result['message'] = 'ADDING COLUMN : Column already exists.';
+			$result['status'] = true;
         }
 
         return $result;

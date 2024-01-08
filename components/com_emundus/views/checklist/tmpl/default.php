@@ -113,11 +113,11 @@ if (!empty($this->custom_title)) :?>
 
 <?php if (count($this->attachments) > 0) : ?>
 
-    <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
+    <div id="attachment_list" class="em-attachmentList em-repeat-card tw-p-6">
         <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg"
                 alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-        <h2 class="after-em-border after:bg-red-800 mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
-        <div class="alert alert-info flex items-center gap-1 mt-1">
+        <h2 class="after-em-border after:tw-bg-red-800 tw-mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
+        <div class="alert alert-info flex tw-items-center tw-gap-1 tw-mt-1">
             <span class="material-icons">info</span>
             <div>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' ' . JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
@@ -153,7 +153,7 @@ if (!empty($this->custom_title)) :?>
 			}
 			$div = '<div id="a' . $attachment->id . '" style="position: relative;top: -65px;"></div>
                 <fieldset id="a' . $attachment->id . '" class="em-fieldset-attachment mt-3">
-                <div id="l' . $attachment->id . '" class="flex items-center em-ml-8 em-mt-8">';
+                <div id="l' . $attachment->id . '" class="tw-flex tw-items-center em-ml-8 em-mt-8">';
 			if ($attachment->nb == 0) {
 				if ($this->show_info_legend) {
 					$div .= $attachment->mandatory ? '<span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>' : '<span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>';
@@ -656,10 +656,10 @@ if (!empty($this->custom_title)) :?>
             </div>
 
             <div class="col-md-12">
-                <div class="flex justify-between">
+                <div class="tw-flex tw-justify-between">
                     <div>
                         <div class="btn-group">
-                            <div class="em-goback-btn flex items-center"><span class="material-icons-outlined"
+                            <div class="em-goback-btn tw-flex tw-items-center"><span class="material-icons-outlined"
                                                                                style="color:var(--neutral-900);">navigate_before</span>
                                 <button type="button" class="btn goback-btn button" onclick="window.history.go(-1)"
                                         name="Goback"><?php echo JText::_('GO_BACK') ?></button>

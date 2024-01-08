@@ -27,7 +27,7 @@
         {{ ImportDatas }}
       </button>
     </div>
-    <div class="mt-1">
+    <div class="tw-mt-1">
       <div v-for="(database, index) in databases" :key="database.database_name" class="db-table">
         <div :class="[index == indexOpen ? 'down-arrow' : 'right-arrow']" class="db-item"
              @click="getDatas(database.database_name,index)">
@@ -35,7 +35,7 @@
           <p>{{ database.description }}</p>
         </div>
         <transition :name="'slide-down'" type="transition">
-          <div v-if="index == indexOpen" class="mt-1">
+          <div v-if="index == indexOpen" class="tw-mt-1">
             <table class="db-description">
               <tr class="db-columns">
                 <th v-for="(data, i) in datas.columns" :key="i" :id="'column_' + data">{{ data }}</th>

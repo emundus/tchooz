@@ -1248,7 +1248,7 @@ class EmundusHelperFiles
 		// Quick filter
 		$filters = '<div id="filters">
                  <p>' . JText::_('COM_EMUNDUS_FILTERS_RAPID_SEARCH') . '</p>
-                    <div id="quick" class="form-group flex items-center gap-2">
+                    <div id="quick" class="form-group tw-flex tw-items-center tw-gap-2">
                         <input type="text" id="input-tags" class="input-tags demo-default" value="' . $cs . '" placeholder="' . JText::_('COM_EMUNDUS_ACTIONS_SEARCH') . ' ...">
                        <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: \'FontAwesome\';" title="' . JText::_('COM_EMUNDUS_ACTIONS_SEARCH_BTN') . '"/>' .
 
@@ -2057,7 +2057,7 @@ class EmundusHelperFiles
 		}
 		//Advance filter builtin
 		if (@$params['adv_filter'] !== null) {
-			$filters  .= '</fieldset><fieldset class="em_filters_adv_filter mt-2">';
+			$filters  .= '</fieldset><fieldset class="em_filters_adv_filter tw-mt-2">';
 			$elements = $h_files->getElements();
 
 			// the button is disabled by default. It needs a selected campaign ->> look at em_files.js at the #select_multiple_campaigns on change function
@@ -2173,10 +2173,10 @@ class EmundusHelperFiles
 			$fnum  = $tag['fnum'];
 			$class = str_replace('label-', '', $tag['class']);
 			if (!isset($tagsList[$fnum])) {
-				$tagsList[$fnum] = '<div class="flex sticker label-border-' . $class . '"><span class="circle ' . $tag['class'] . '"></span><span class="label-text-' . $class . '">' . $tag['label'] . '</span></div>';
+				$tagsList[$fnum] = '<div class="tw-flex sticker label-border-' . $class . '"><span class="circle ' . $tag['class'] . '"></span><span class="label-text-' . $class . '">' . $tag['label'] . '</span></div>';
 			}
 			else {
-				$tagsList[$fnum] .= '<div class="flex sticker label-border-' . $class . '"><span class="circle ' . $tag['class'] . '"></span><span class="label-text-' . $class . '">' . $tag['label'] . '</span></div>';
+				$tagsList[$fnum] .= '<div class="tw-flex sticker label-border-' . $class . '"><span class="circle ' . $tag['class'] . '"></span><span class="label-text-' . $class . '">' . $tag['label'] . '</span></div>';
 			}
 		}
 

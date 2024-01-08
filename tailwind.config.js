@@ -2,6 +2,7 @@
 const plugin = require('tailwindcss/plugin')
 
 module.exports = {
+    prefix: 'tw-',
     content: [
         "./templates/g5_helium/html/**/*.{html,js,php}",
         "./modules/**/src/*.{html,js,php}",

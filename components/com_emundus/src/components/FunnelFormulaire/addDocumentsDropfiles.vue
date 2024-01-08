@@ -173,7 +173,7 @@ export default {
       Swal.fire({
         title: '',
         html: '<div class="form-group campaign-label">' +
-            '<label for="campLabel">' + this.DocumentName + '</label><input type="text" class="mt-2" maxlength="200" id="label_' + doc.id + '" value="' + doc.title + '"/>' +
+            '<label for="campLabel">' + this.DocumentName + '</label><input type="text" class="tw-mt-2" maxlength="200" id="label_' + doc.id + '" value="' + doc.title + '"/>' +
             '</div>',
         showCloseButton: true,
         allowOutsideClick: false,

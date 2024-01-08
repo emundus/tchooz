@@ -9,7 +9,7 @@ $nolinkImg    = '<img class="fabrikLightBoxImage" ' . $height . 'src="' . $d->fi
 if ($d->showImage == 0 && !$d->inListView) :
 	?>
 	<a href="<?php echo $d->fullSize; ?>">
-        <div class="em-flex-row em-gap-4 file-button w-fit">
+        <div class="em-flex-row em-gap-4 file-button tw-w-fit">
             <span class="material-icons-outlined">file_download</span>
             <span class="file-button__filename"><?php echo basename($d->file);?></span>
         </div>

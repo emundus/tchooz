@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-2">
+  <div class="tw-mt-2">
     <div :class="'editor_'+this.$attrs.id"></div>
   </div>
 </template>

@@ -92,11 +92,6 @@ class EmundusViewApplication extends JViewLegacy
 
 	function display($tpl = null)
 	{
-
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
-			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
-		}
-
 		$params = ComponentHelper::getParams('com_emundus');
 
 		$jinput = $this->app->input;
@@ -118,8 +113,8 @@ class EmundusViewApplication extends JViewLegacy
 
 		$expire = time() + 60 * 60 * 24 * 30;
 		setcookie("application_itemid", $jinput->getString('id', 0), $expire);
-
-		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum)) {
+		
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum) && EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
 
 			switch ($layout) {
 				case 'synthesis':
@@ -640,6 +635,14 @@ class EmundusViewApplication extends JViewLegacy
 
 			parent::display($tpl);
 
+		}
+		elseif (!empty($fnum) && in_array($fnum, array_keys($this->euser->fnums))) {
+			switch($layout) {
+				case 'collaborate':
+					break;
+			}
+
+			parent::display();
 		}
 		else {
 			echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");

@@ -50,14 +50,14 @@
           </div>
         </transition>
         <transition :name="'slide-down'" type="transition">
-          <div class="form-group mb-1" v-if="can_translate.label">
+          <div class="form-group tw-mb-1" v-if="can_translate.label">
             <input v-model="label.en" type="text" maxlength="40" class="form__input field-general w-input"/>
           </div>
         </transition>
-        <p v-if="errors && model_id == -1" class="error col-md-12 mb-2">
+        <p v-if="errors && model_id == -1" class="error col-md-12 tw-mb-2">
           <span class="error">{{ translations.LabelRequired }}</span>
         </p>
-        <div class="form-group mt-1" :class="{'mb-0': can_translate.intro}">
+        <div class="form-group tw-mt-1" :class="{'tw-mb-0': can_translate.intro}">
           <label>{{ translations.Intro }} :</label>
           <div class="input-can-translate">
               <textarea v-model="intro.fr" class="form__input field-general w-input" rows="3" maxlength="300"

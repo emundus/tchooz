@@ -2,12 +2,12 @@
   <div id="form-builder-phone-number">
     <div v-if="loading" class="em-loader"></div>
     <div v-else>
-      <div class="flex items-center">
-        <div class="h-10 country-select flex items-center p-2 justify-center">
+      <div class="tw-flex tw-items-center">
+        <div class="tw-h-10 country-select tw-flex tw-items-center tw-p-2 tw-justify-center">
           <img v-if="element.params.default_country" :src="'images/emundus/flags/'+element.params.default_country.toLowerCase()+'.png'">
           <img v-else src="images/emundus/flags/fr.png">
         </div>
-        <div class="w-full">
+        <div class="tw-w-full">
           <input class="phonenumber" readonly type="text" value="+33 6 12 34 56 78">
         </div>
       </div>

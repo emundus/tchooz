@@ -439,6 +439,15 @@ $current_tab = 0;
                                                                         </a>
 																	<?php endif; ?>
 
+	                                                                <?php if (in_array('collaborate', $actions)) : ?>
+                                                                        <a class="em-text-neutral-900 em-pointer em-flex-row"
+                                                                           onclick="shareApplication('<?php echo $application->fnum ?>')"
+                                                                           id="actions_button_rename_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
+                                                                            <span class="material-icons-outlined em-mr-8">people</span>
+			                                                                <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_COLLABORATE') ?>
+                                                                        </a>
+	                                                                <?php endif; ?>
+
 																	<?php if ($show_tabs == 1) : ?>
                                                                         <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                            onclick="moveToTab('<?php echo $application->fnum ?>','tab<?php echo $key ?>','card')"
@@ -1489,6 +1498,36 @@ $current_tab = 0;
                     }
                 });
             }
+        });
+    }
+
+    async function shareApplication(fnum) {
+        document.querySelector('.em-page-loader').style.display = 'block';
+
+        fetch('index.php?option=com_emundus&view=application&layout=collaborate&format=raw&fnum='+fnum, {
+            method: 'get',
+        }).then((response) => {
+            if (response.ok) {
+                return response.text();
+            }
+        }).then((res) => {
+            document.querySelector('.em-page-loader').style.display = 'none';
+
+            Swal.fire({
+                title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_TITLE'); ?>",
+                html: res,
+                showCancelButton: true,
+                reverseButtons: true,
+                confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SEND');?>",
+                cancelButtonText: "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_BACK');?>",
+                customClass: {
+                    title: 'em-swal-title',
+                    cancelButton: 'em-swal-cancel-button',
+                    confirmButton: 'em-swal-confirm-button',
+                }
+            }).then((result) => {
+
+            });
         });
     }
 

@@ -88,7 +88,7 @@ if(!empty($user_module->id)) {
         <?php endif; ?>
 
         <div class="com-users-profile__edit-submit control-group">
-            <div class="controls flex justify-content-between">
+            <div class="controls tw-flex tw-justify-content-between">
                 <a class="btn" href="<?php echo Route::_('/mon-profil') ?>" title="<?php echo JText::_('JCANCEL'); ?>">
 		            <?php echo JText::_('JCANCEL'); ?>
                 </a>

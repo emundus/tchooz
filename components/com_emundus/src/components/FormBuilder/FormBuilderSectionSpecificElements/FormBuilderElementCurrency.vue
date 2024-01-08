@@ -1,7 +1,7 @@
 <template>
   <div id="form-builder-currency">
     <div v-if="loading" class="em-loader"></div>
-    <div v-else class="w-full relative flex items-center currency-block">
+    <div v-else class="tw-w-full tw-relative tw-flex tw-items-center currency-block">
       <input class="currency" readonly type="text" value="10 000">
       <span class="currency-icon">€</span>
     </div>

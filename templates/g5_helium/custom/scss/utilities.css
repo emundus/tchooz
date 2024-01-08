@@ -1,14 +1,14 @@
 @layer utilities {
     h1 {
-        @apply em-default-title-1;
+        @apply tw-em-default-title-1;
     }
 
     h2 {
-        @apply em-default-title-2;
+        @apply tw-em-default-title-2;
     }
 
     h3 {
-        @apply em-default-title-3;
+        @apply tw-em-default-title-3;
     }
 
     h4 {
@@ -234,11 +234,11 @@
             padding: var(--em-alert-modal-padding) !important;
 
             .swal2-title {
-                @apply em-default-title-3;
-                @apply m-0;
+                @apply tw-em-default-title-3;
+                @apply tw-m-0;
                 padding: 0;
                 font-weight: 600;
-                @apply text-start;
+                @apply tw-text-start;
             }
 
             .swal2-icon {
@@ -246,13 +246,13 @@
             }
 
             .swal2-close {
-                @apply flex;
-                @apply flex-col;
-                @apply justify-center;
-                @apply items-center;
+                @apply tw-flex;
+                @apply tw-flex-col;
+                @apply tw-justify-center;
+                @apply tw-items-center;
                 color: var(--neutral-900);
-                @apply font-light;
-                @apply text-2xl;
+                @apply tw-font-light;
+                @apply tw-text-2xl;
                 right: 20px;
                 top: 20px;
                 width: 20px;
@@ -260,7 +260,7 @@
             }
 
             .swal2-html-container{
-                @apply text-base;
+                @apply tw-text-base;
                 text-align: left !important;
                 overflow: visible;
                 margin: var(--em-spacing-5) 0 0 0;
@@ -268,10 +268,10 @@
             }
 
             .swal2-actions {
-                @apply mt-10;
-                @apply w-full;
+                @apply tw-mt-10;
+                @apply tw-w-full;
                 button {
-                    @apply m-0;
+                    @apply tw-m-0;
                 }
             }
         }
@@ -376,12 +376,12 @@
     }
 
     #system-message .alert, .fabrikMainError {
-        @apply flex;
-        @apply p-5;
-        @apply text-lg;
+        @apply tw-flex;
+        @apply tw-p-5;
+        @apply tw-text-lg;
 
         .material-icons {
-            @apply mr-3;
+            @apply tw-mr-3;
         }
 
         p {
