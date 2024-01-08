@@ -347,13 +347,11 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function getfavicon()
 	{
-		$target_dir  = "images/custom/";
-		$filename    = 'favicon';
-		$old_favicon = glob("{$target_dir}{$filename}.*");
+		$favicon = $this->m_settings->getFavicon();
 
-		$tab = array('status' => 1, 'msg' => JText::_('FAVICON_FOUND'), 'filename' => $old_favicon[0]);
+		$tab = array('status' => 1, 'msg' => JText::_('FAVICON_FOUND'), 'filename' => $favicon);
 
-		echo json_encode((object) $tab);
+		echo json_encode((object)$tab);
 		exit;
 	}
 
