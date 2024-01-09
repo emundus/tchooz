@@ -1,8 +1,11 @@
 <?php
 defined('_JEXEC') or die;
 
-$user = JFactory::getSession()->get('emundusUser');
-$app = JFactory::getApplication();
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
+$app = Factory::getApplication();
+$user = $app->getSession()->get('emundusUser');
 
 if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 	if (!empty($params)) {
@@ -30,12 +33,12 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 					$app->redirect('/');
 				}
 			} else {
-				$app->enqueueMessage(JText::_('MOD_EM_FILTER_FABRIK_MISSING_CONFIGURATION'));
+				$app->enqueueMessage(Text::_('MOD_EM_FILTER_FABRIK_MISSING_CONFIGURATION'));
 			}
 		}
 
 		if (!empty($m_filters)) {
-			$document 	= JFactory::getDocument();
+			$document 	= $app->getDocument();
 			$document->addScript('media/mod_emundus_filters/chunk-vendors.js');
 			$document->addStyleSheet('media/mod_emundus_filters/app.css');
 			$document->addStyleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
@@ -48,6 +51,6 @@ if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 		}
 	}
 } else {
-	$app->enqueueMessage(JText::_('ACCESS_DENIED'));
+	$app->enqueueMessage(Text::_('ACCESS_DENIED'));
 	$app->redirect('/');
 }
