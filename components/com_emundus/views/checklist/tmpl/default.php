@@ -117,7 +117,7 @@ if (!empty($this->custom_title)) :?>
         <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg"
                 alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
         <h2 class="after-em-border after:tw-bg-red-800 tw-mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
-        <div class="alert alert-info flex tw-items-center tw-gap-1 tw-mt-1">
+        <div class="alert alert-info tw-flex tw-items-center tw-gap-1 tw-mt-1">
             <span class="material-icons">info</span>
             <div>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' ' . JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>

@@ -6,7 +6,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // no direct access
-defined('_JEXEC') or die;
+use Joomla\CMS\Language\Text;defined('_JEXEC') or die;
 
 $config      = JFactory::getConfig();
 $site_offset = $config->get('offset');
@@ -441,7 +441,7 @@ $current_tab = 0;
 
 	                                                                <?php if (in_array('collaborate', $actions)) : ?>
                                                                         <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                           onclick="shareApplication('<?php echo $application->fnum ?>')"
+                                                                           onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->id ?>')"
                                                                            id="actions_button_rename_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
                                                                             <span class="material-icons-outlined em-mr-8">people</span>
 			                                                                <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_COLLABORATE') ?>
@@ -993,7 +993,7 @@ $current_tab = 0;
         }
     }
 
-    $('#applications_searchbar').keyup(delay(function (e) {
+    jQuery('#applications_searchbar').keyup(delay(function (e) {
         let search = e.target.value;
 
         if (search !== '') {
@@ -1501,10 +1501,10 @@ $current_tab = 0;
         });
     }
 
-    async function shareApplication(fnum) {
+    async function shareApplication(fnum,ccid) {
         document.querySelector('.em-page-loader').style.display = 'block';
 
-        fetch('index.php?option=com_emundus&view=application&layout=collaborate&format=raw&fnum='+fnum, {
+        fetch('index.php?option=com_emundus&view=application&layout=collaborate&format=raw&fnum='+fnum+'&ccid='+ccid, {
             method: 'get',
         }).then((response) => {
             if (response.ok) {
@@ -1524,9 +1524,86 @@ $current_tab = 0;
                     title: 'em-swal-title',
                     cancelButton: 'em-swal-cancel-button',
                     confirmButton: 'em-swal-confirm-button',
+                    popup: 'tw-w-3/6'
+                },
+                didOpen: (toast) => {
+                    var tag = document.createElement("script");
+                    tag.src = "media/com_emundus/js/collaborate.js";
+                    document.getElementsByTagName("head")[0].appendChild(tag);
+
+                    jQuery("#collab_emails").selectize({
+                        plugins: ["remove_button"],
+                        create: true,
+                        preload: true,
+                        placeholder: '',
+                        render: {
+                            item: function (data, escape) {
+                                const val = data.value;
+                                return '<div>' +
+                                    '<span class="title">' +
+                                    '<span class="name">' + escape(val.substring(val.indexOf(":") + 1)) + '</span>' +
+                                    '</span>' +
+                                    '</div>';
+                            },
+                            option_create: function(data, escape) {
+                                const addString = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ADD_EMAIL'); ?>';
+                                return '<div class="create">' + addString + ' <strong>' + escape(data.input) + '</strong>&hellip;</div>';
+                            }
+                        },
+                        onItemAdd: function (value, $item) {
+                            var email = value.substring(value.indexOf(":") + 1);
+                            email = email.trim();
+
+                            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+                            if (!regex.test(email)) {
+                                this.removeItem(value);
+                            }
+                        }
+                    });
+                },
+                preConfirm: () => {
+                    if(document.querySelector("#collab_emails").value === '') {
+                        Swal.showValidationMessage('<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_FILL_EMAILS'); ?>')
+                    }
                 }
             }).then((result) => {
+                if(result.isConfirmed) {
+                    let formData = new FormData();
 
+                    const rights_elt = document.querySelectorAll("input[name='rights']");
+                    let rights = [];
+                    rights_elt.forEach((right) => {
+                        if(right.checked) {
+                            rights.push(right.value);
+                        }
+                    });
+                    formData.append('fnum', fnum);
+                    formData.append('ccid', ccid);
+                    formData.append('emails', document.querySelector('#collab_emails').value);
+                    formData.append('rights', JSON.stringify(rights));
+
+                    fetch('index.php?option=com_emundus&controller=application&task=sharefilewith', {
+                        body: formData,
+                        method: 'post',
+                    }).then((response) => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                    }).then((res) => {
+                        if (res.status == true) {
+                            window.location.reload();
+                        } else {
+                            Swal.fire({
+                                title: "Une erreur est survenue",
+                                text: res.msg,
+                                type: "error",
+                                reverseButtons: true,
+                                confirmButtonText: "<?php echo JText::_('JYES');?>",
+                                timer: 3000
+                            });
+                        }
+                    });
+                }
             });
         });
     }

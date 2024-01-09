@@ -5,7 +5,7 @@
       <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, index) in params" :key="index">
           <label :for="'param_' + index" class="tw-flex tw-items-center">
             {{ translate(param.label) }}
-            <span v-if="param.helptext" class="material-icons-outlined ml-2" @click="displayHelp(param.helptext)">help_outline</span>
+            <span v-if="param.helptext" class="material-icons-outlined tw-ml-2" @click="displayHelp(param.helptext)">help_outline</span>
           </label>
 
 

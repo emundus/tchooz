@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const plugin = require('tailwindcss/plugin')
+const plugin = require('tailwindcss/plugin');
 
 module.exports = {
     prefix: 'tw-',
@@ -17,6 +17,9 @@ module.exports = {
     safelist: [
         {
             pattern: /label-/
+        },
+        {
+            pattern: /m(l|r|t|b|x|y)-/
         }
     ],
     theme: {
@@ -73,7 +76,7 @@ module.exports = {
                     lineHeight: '24.2px',
                     fontWeight: 500,
                 }
-            })
+            });
         })
     ],
-}
+};

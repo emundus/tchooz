@@ -120,8 +120,8 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 </style>
 
 <div class="mod_emundus_flow___container" style="padding: 0 20px">
-    <div class="flex justify-between mod_emundus_flow___intro">
-        <div class="flex items-center">
+    <div class="tw-flex tw-justify-between mod_emundus_flow___intro">
+        <div class="tw-flex tw-items-center">
             <h1 class="em-mb-0-important"><?php echo $campaign_name ?></h1>
 			<?php
 			$color      = '#0A53CC';
@@ -142,11 +142,11 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			}
 			?>
         </div>
-        <div class="flex items-center justify-end mod_emundus_flow___buttons">
+        <div class="tw-flex tw-items-center tw-justify-end mod_emundus_flow___buttons">
 			<?php if ($show_back_button == 1) : ?>
                 <a href="<?php echo $home_link ?>"
                    title="<?php echo strip_tags(JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
-                    <button class="btn btn-primary mr-4"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
+                    <button class="btn btn-primary tw-mr-4"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
                 </a>
 			<?php endif; ?>
             <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>"
@@ -159,18 +159,18 @@ $now      = $dateTime->format('Y-m-d H:i:s');
         </div>
     </div>
 	<?php if ($show_deadline == 1 || $show_status == 1) : ?>
-        <div class="flex flex-col mt-2 mod_emundus_flow___infos">
+        <div class="tw-flex tw-flex-col tw-mt-2 mod_emundus_flow___infos">
 			<?php if ($show_deadline == 1) : ?>
-                <div class="flex items-center">
+                <div class="tw-flex tw-items-center">
                     <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
-                    <span class="ml-1.5"
+                    <span class="tw-ml-1.5"
                           style="white-space: nowrap"><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
                 </div>
 			<?php endif; ?>
 
 			<?php if ($show_programme == 1) : ?>
-                <div class="flex items-center em-flex-wrap">
-                    <p class="em-text-neutral-600 mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
+                <div class="tw-flex tw-items-center em-flex-wrap">
+                    <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_PROGRAMME'); ?> : </p>
                     <p class="em-programme-tag" style="color: <?php echo $color ?>;margin: unset;padding: 0">
 						<?php echo $current_application->prog_label; ?>
                     </p>
@@ -178,9 +178,9 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			<?php endif; ?>
 
 			<?php if ($show_status == 1) : ?>
-                <div class="flex items-center">
-                    <p class="em-text-neutral-600 mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
-                    <div class="mod_emundus_flow___status_<?= $current_application->class; ?> flex">
+                <div class="tw-flex tw-items-center">
+                    <p class="em-text-neutral-600 tw-mr-2"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?> : </p>
+                    <div class="mod_emundus_flow___status_<?= $current_application->class; ?> tw-flex">
                         <span class="label label-<?= $current_application->class; ?>"><?= $current_application->value ?></span>
                     </div>
                 </div>

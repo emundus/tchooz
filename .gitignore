@@ -29,6 +29,7 @@ docker-compose-*.yml
 !.idea/inspectionProfiles
 !.idea/cssdialects.xml
 .idea/*
+.idea/php.xml
 .scannerwork
 workspace.xml
 

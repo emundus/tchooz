@@ -44,8 +44,8 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 <?php
 endif;
 ?>
-<div class="emundus-form p-6">
-    <div class="mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
+<div class="emundus-form tw-p-6">
+    <div class="tw-mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
         <span class="material-icons">cancel</span>
 		<?php echo $form->error; ?>
     </div>
@@ -53,18 +53,18 @@ endif;
         <div class="em-mt-8">
 	        <?php if ($this->params->get('show-title', 1)) : ?>
                 <?php if($display_required_icon == 0) : ?>
-                    <p class="mb-5 text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
+                    <p class="tw-mb-5 tw-text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
                 <?php endif; ?>
                 <div class="page-header">
 			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
-                    <h2 class="after-em-border after:bg-red-800"><?= JText::_($title) ?></h2>
+                    <h2 class="after-em-border after:tw-bg-red-800"><?= JText::_($title) ?></h2>
                 </div>
 	        <?php endif; ?>
         </div>
 
 
 	    <?php if(!empty($form->intro)) : ?>
-        <div class="em-form-intro mt-4">
+        <div class="em-form-intro tw-mt-4">
             <?php
             echo trim($form->intro);
             ?>
@@ -101,23 +101,23 @@ endif;
 			$this->group = $group;
 			?>
 
-            <fieldset class="mt-0 mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
+            <fieldset class="tw-mt-0 tw-mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
 				echo 'fabrikGroupColumns-' . $group->columns . ' fabrikGroupColumns';
 			} ?>" id="group<?php echo $group->id; ?>" style="<?php echo $group->css; ?>">
                 <?php if(($group->showLegend && !empty($group->title)) || !empty($group->intro)) : ?>
-                <div class="mb-7">
+                <div class="tw-mb-7">
                     <?php
                     if ($group->showLegend) :?>
-                        <h3 class="after-em-border after:bg-neutral-500"><?php echo $group->title; ?></h3>
+                        <h3 class="after-em-border after:tw-bg-neutral-500"><?php echo $group->title; ?></h3>
                     <?php
                     endif;
 
                     if (!empty($group->intro)) : ?>
-                        <div class="groupintro mt-4"><?php echo $group->intro ?></div>
+                        <div class="groupintro tw-mt-4"><?php echo $group->intro ?></div>
                     <?php endif; ?>
 
 	                <?php if(!empty($group->maxRepeat) && $group->maxRepeat > 1) : ?>
-                        <p class="em-text-neutral-600 mt-2"><?php echo JText::sprintf('COM_FABRIK_REPEAT_GROUP_MAX',$group->maxRepeat) ?></p>
+                        <p class="em-text-neutral-600 tw-mt-2"><?php echo JText::sprintf('COM_FABRIK_REPEAT_GROUP_MAX',$group->maxRepeat) ?></p>
 	                <?php endif; ?>
                 </div>
                 <?php endif; ?>

@@ -20,10 +20,12 @@ JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models'); // 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 class EmundusModelApplication extends JModelList
 {
 	private $_mainframe;
+	private $h_cache;
 
 	private $_user;
 	protected $_db;
@@ -41,9 +43,11 @@ class EmundusModelApplication extends JModelList
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 
 		$this->_mainframe = Factory::getApplication();
 		$this->_db        = Factory::getDbo();
+		$this->h_cache        = new EmundusHelperCache();
 
 		$session  = $this->_mainframe->getSession();
 		$language = $this->_mainframe->getLanguage();
@@ -6249,5 +6253,131 @@ class EmundusModelApplication extends JModelList
 		}
 
 		return $done;
+	}
+
+	public function getSharedFileUsers($ccid)
+	{
+		$cache_key      = 'shared_file_users_' . $ccid;
+		$shared_file_users = $this->h_cache->get($cache_key);
+
+		if (empty($shared_file_users)) {
+			$query = $this->_db->getQuery(true);
+
+			$query->select('*')
+				->from($this->_db->quoteName('#__emundus_files_request'))
+				->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
+			$this->_db->setQuery($query);
+			$shared_file_users = $this->_db->loadObjectList();
+		}
+
+		return $shared_file_users;
+	}
+
+	public function shareFileWith($emails, $rights, $ccid, $user_id = null)
+	{
+		$shared = true;
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		$shared_users = $this->getSharedFileUsers($ccid);
+		foreach($shared_users as $shared_user) {
+			$index_to_remove = array_search($shared_user->email,$emails);
+			if($index_to_remove !== false) {
+				unset($emails[$index_to_remove]);
+			}
+		}
+
+		if(!empty($emails)) {
+			$query = $this->_db->getQuery(true);
+			
+			$query->select('fnum,applicant_id,campaign_id')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('id') . ' = ' . $ccid);
+			$this->_db->setQuery($query);
+			$file_info = $this->_db->loadObject();
+
+			foreach($emails as $email) {
+				$columns = [
+					'time_date',
+					'student_id',
+					'fnum',
+					'keyid',
+					'campaign_id',
+					'email',
+					'ccid',
+					'user_id',
+					'r',
+					'u',
+					'show_history',
+					'show_shared_users',
+				];
+
+				$values = [
+					EmundusHelperDate::getNow(),
+					$file_info->applicant_id,
+					$file_info->fnum,
+					md5(date('Y-m-d h:m:i') . '::' . $file_info->fnum . '::' . $file_info->applicant_id . '::' . rand()),
+					$file_info->campaign_id,
+					$email,
+					$ccid,
+					$user_id,
+					(int)in_array('read',$rights),
+					(int)in_array('update',$rights),
+					(int)in_array('view_history',$rights),
+					(int)in_array('view_others',$rights),
+				];
+
+				$query->clear()
+					->insert($this->_db->quoteName('#__emundus_files_request'))
+					->columns($columns)
+					->values(implode(',',$this->_db->quote($values)));
+
+				try {
+					$this->_db->setQuery($query);
+					$shared = $this->_db->execute();
+
+					if($shared) {
+						//TODO: Send email to collaborator
+					}
+
+					//TODO: Log this action
+				}
+				catch (Exception $e) {
+					$shared = false;
+					Log::add('Failed to get available campaigns via ccid ' . $ccid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				}
+			}
+
+			$cache_key      = 'shared_file_users_' . $ccid;
+			$this->h_cache->set($cache_key,[]);
+		}
+
+		return $shared;
+	}
+
+	public function removeSharedUser($request_id,$ccid,$user_id)
+	{
+		$removed = false;
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		try {
+			$query = $this->_db->getQuery(true);
+
+			$query->delete($this->_db->quoteName('#__emundus_files_request'))
+				->where($this->_db->quoteName('id') . ' = ' . $request_id)
+				->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
+			$this->_db->setQuery($query);
+			$removed = $this->_db->execute();
+
+			//TODO: Log this action
+		}
+		catch (Exception $e) {
+			Log::add('Failed to get available campaigns via ccid ' . $ccid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $removed;
 	}
 }

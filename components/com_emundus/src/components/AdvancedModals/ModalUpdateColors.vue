@@ -22,7 +22,7 @@
 
       <div class="tw-grid tw-grid-cols-5 tw-gap-y-0 tw-gap-x-6">
         <div v-for="(preset) in presets" :key="preset.id" class="preset-presentation"
-             :class="preset.selected ? 'outline-green-500' : ''"
+             :class="preset.selected ? 'tw-outline-green-500' : ''"
              :style="'background-color:' + preset.primary + ';border-right: 50px solid' + preset.secondary"
              @click="!preset.custom ? changeColors(preset) : openCustomPalette()">
           <span class="material-icons-outlined tw-text-white tw-p-3" v-if="preset.custom">color_lens</span>

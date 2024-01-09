@@ -37,7 +37,7 @@
           @click="addGroup(group)"
       >
           <div
-              class="form-builder-element flex tw-items-center tw-justify-between tw-cursor-pointer"
+              class="form-builder-element tw-flex tw-items-center tw-justify-between tw-cursor-pointer"
           >
             <span class="material-icons-outlined">{{ group.icon }}</span>
             <span class="em-w-100 em-p-16">{{ translate(group.name) }}</span>

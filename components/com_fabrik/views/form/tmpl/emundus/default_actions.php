@@ -28,10 +28,10 @@ if ( $form->prevButton || $form->nextButton ) {
 }
 
 if ($this->hasActions) : ?>
-<div class="fabrikActions form-actions p-0 m-0">
+<div class="fabrikActions form-actions tw-p-0 tw-m-0">
 	<div
         <?php if ($form->id != 307) : ?>
-            class="flex <?php if($countActions > 1) : ?>justify-between<?php else : ?>justify-end<?php endif; ?>"
+            class="tw-flex <?php if($countActions > 1) : ?>tw-justify-between<?php else : ?>tw-justify-end<?php endif; ?>"
         <?php endif; ?>
     >
         <?php if ( $form->gobackButton || $form->resetButton || $form->deleteButton || $form->clearMultipageSessionButton): ?>
@@ -40,7 +40,7 @@ if ($this->hasActions) : ?>
                 <?php
                 if($form->gobackButton)
                 {
-                    echo '<div class="em-goback-btn flex items-center"><span class="material-icons-outlined" style="color:var(--neutral-900);">navigate_before</span>';
+                    echo '<div class="em-goback-btn tw-flex tw-items-center"><span class="material-icons-outlined" style="color:var(--neutral-900);">navigate_before</span>';
 	                echo $form->gobackButton;
                     echo '</div>';
                 }

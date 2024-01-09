@@ -9,6 +9,7 @@
 // ensure this file is being included by a parent file
 defined('_JEXEC') or die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
+use Joomla\CMS\Language\Text;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Factory;
 
@@ -1052,6 +1053,52 @@ class EmundusControllerApplication extends JControllerLegacy
 
 		header('Content-Type: application/json');
 		header('HTTP/1.1 ' . $response['code'] . ' ' . $response['msg']);
+		echo json_encode($response);
+		exit;
+	}
+
+	public function sharefilewith()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		$fnum = $this->input->getString('fnum','');
+		$e_user = $this->app->getSession()->get('emundusUser');
+
+		if(!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || in_array($fnum, array_keys($e_user->fnums)))) {
+			$ccid = $this->input->getInt('ccid',0);
+			$emails = $this->input->getString('emails','');
+			$rights = $this->input->getString('rights','');
+
+			if(!empty($emails) && !empty($rights) && !empty($ccid)) {
+				$emails = explode(',',$emails);
+				$rights = json_decode($rights);
+
+				$m_application      = $this->getModel('Application');
+				$response['status'] = $m_application->shareFileWith($emails, $rights, $ccid, $this->_user->id);
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function removeshareduser()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		$fnum = $this->input->getString('fnum','');
+		$e_user = $this->app->getSession()->get('emundusUser');
+
+		if(!empty($fnum) && (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || in_array($fnum, array_keys($e_user->fnums)))) {
+			$ccid = $this->input->getInt('ccid',0);
+			$request_id = $this->input->getInt('request_id',0);
+
+			if(!empty($request_id) && !empty($ccid)) {
+				$m_application      = $this->getModel('Application');
+				$response['status'] = $m_application->removeSharedUser($request_id, $ccid, $this->_user->id);
+			}
+		}
+
 		echo json_encode($response);
 		exit;
 	}

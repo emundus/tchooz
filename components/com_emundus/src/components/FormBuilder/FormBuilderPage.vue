@@ -45,7 +45,7 @@
       >
       </form-builder-page-section>
     </div>
-    <button id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
+    <button id="add-section" class="em-primary-button tw-px-6 tw-py-3" @click="addSection()">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
     </button>
 

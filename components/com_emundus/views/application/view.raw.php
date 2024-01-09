@@ -57,6 +57,8 @@ class EmundusViewApplication extends JViewLegacy
 	protected $html_form;
 	protected $_user;
 	protected $sid;
+	
+	protected $collaborators;
 
 	function __construct($config = array())
 	{
@@ -96,6 +98,7 @@ class EmundusViewApplication extends JViewLegacy
 
 		$jinput = $this->app->input;
 		$fnum   = $jinput->getString('fnum', null);
+		$ccid   = $jinput->getInt('ccid', 0);
 		$layout = $jinput->getString('layout', 0);
 		$Itemid = $jinput->get('Itemid', 0);
 
@@ -114,7 +117,7 @@ class EmundusViewApplication extends JViewLegacy
 		$expire = time() + 60 * 60 * 24 * 30;
 		setcookie("application_itemid", $jinput->getString('id', 0), $expire);
 		
-		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum) && EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum) && EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && $layout !== 'collaborate') {
 
 			switch ($layout) {
 				case 'synthesis':
@@ -636,9 +639,10 @@ class EmundusViewApplication extends JViewLegacy
 			parent::display($tpl);
 
 		}
-		elseif (!empty($fnum) && in_array($fnum, array_keys($this->euser->fnums))) {
+		elseif (!empty($ccid) && !empty($fnum) && in_array($fnum, array_keys($this->euser->fnums))) {
 			switch($layout) {
 				case 'collaborate':
+					$this->collaborators = $m_application->getSharedFileUsers($ccid);
 					break;
 			}
 

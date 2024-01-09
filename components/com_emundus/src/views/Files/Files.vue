@@ -16,7 +16,7 @@
         <div class="tw-flex tw-items-center">
           <div class="tw-flex tw-items-center">
             <span>{{ translate('COM_EMUNDUS_FILES_TOTAL') }}</span>
-            <span class="ml-1">{{ total_count }}</span>
+            <span class="tw-ml-1">{{ total_count }}</span>
           </div>
           <span class="tw-ml-3 tw-mr-3">|</span>
           <div class="em-flex-row">

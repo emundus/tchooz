@@ -19,7 +19,7 @@
 
     <transition :name="'slide-down'" type="transition">
       <div class="w-form em-flex-row" style="align-items: unset">
-        <ul style="padding-left: 0" class="ml-0 w-50">
+        <ul style="padding-left: 0" class="tw-ml-0 w-50">
           <h2 class="blue-text-instruction" v-html="documentNoAssigned"></h2>
           <draggable
               v-model="undocuments"
@@ -45,7 +45,7 @@
                 <div class="em-flex-space-between em-flex-row">
                   <div class="em-flex-row">
                     <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
-                    <span class="em-flex-row ml-10px">
+                    <span class="em-flex-row tw-ml-10px">
                       {{ undocument.value }}
                       <span class="document-allowed_types">({{ undocument.allowed_types }})</span>
                     </span>

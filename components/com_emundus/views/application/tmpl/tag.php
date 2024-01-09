@@ -75,7 +75,7 @@ else {
                                             </div>
                                         </div>
                                         <div class="comment-text em-tags-action">
-                                            <div class="flex sticker label-border-<?php echo $color ?>">
+                                            <div class="tw-flex sticker label-border-<?php echo $color ?>">
                                                 <span class="circle label-<?php echo $color ?>"></span>
                                                 <span class="label-text-<?php echo $color; ?>"
                                                       style="float:unset"><?php echo $tag['label']; ?></span>
