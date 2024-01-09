@@ -37,7 +37,7 @@ class modemundusApplicationsHelper
 			}
 		}
 
-		$select = 'ecc.date_time AS campDateTime, ecc.*, esc.*, ess.step, ess.value, ess.class, ecc.published as published,p.label as programme,p.color as tag_color,ecc.tab as tab_id,ecct.name as tab_name,ecct.ordering as tab_ordering';
+		$select = 'ecc.date_time AS campDateTime,ecc.id as application_id, ecc.*, esc.*, ess.step, ess.value, ess.class, ecc.published as published,p.label as programme,p.color as tag_color,ecc.tab as tab_id,ecct.name as tab_name,ecct.ordering as tab_ordering';
 
 		// CCI-RS layout needs to get the start and end date of each application
 		if ($layout == '_:ccirs') {

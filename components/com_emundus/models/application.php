@@ -20,7 +20,9 @@ JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models'); // 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Router\Route;
 
 class EmundusModelApplication extends JModelList
 {
@@ -6263,8 +6265,9 @@ class EmundusModelApplication extends JModelList
 		if (empty($shared_file_users)) {
 			$query = $this->_db->getQuery(true);
 
-			$query->select('*')
-				->from($this->_db->quoteName('#__emundus_files_request'))
+			$query->select('efr.*,eu.firstname as user_firstname,eu.lastname as user_lastname, eu.profile_picture')
+				->from($this->_db->quoteName('#__emundus_files_request','efr'))
+				->leftJoin($this->_db->quoteName('#__emundus_users','eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('efr.user_id'))
 				->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
 			$this->_db->setQuery($query);
 			$shared_file_users = $this->_db->loadObjectList();
@@ -6273,9 +6276,9 @@ class EmundusModelApplication extends JModelList
 		return $shared_file_users;
 	}
 
-	public function shareFileWith($emails, $rights, $ccid, $user_id = null)
+	public function shareFileWith($emails, $ccid, $user_id = null)
 	{
-		$shared = true;
+		$results = ['status' => true, 'emails' => [], 'failed_emails' => []];
 		if(empty($user_id)) {
 			$user_id = $this->_user->id;
 		}
@@ -6298,6 +6301,22 @@ class EmundusModelApplication extends JModelList
 			$file_info = $this->_db->loadObject();
 
 			foreach($emails as $email) {
+				$query->clear()
+					->select('id')
+					->from($this->_db->quoteName('#__users'))
+					->where($this->_db->quoteName('email') . ' = ' . $this->_db->quote($email));
+				$this->_db->setQuery($query);
+				$shared_user_id = $this->_db->loadResult();
+
+				if(!empty($shared_user_id)) {
+					$query->clear()
+						->select('firstname,lastname')
+						->from($this->_db->quoteName('#__emundus_users'))
+						->where($this->_db->quoteName('user_id') . ' = ' . $shared_user_id);
+					$this->_db->setQuery($query);
+					$shared_user_infos = $this->_db->loadObject();
+				}
+
 				$columns = [
 					'time_date',
 					'student_id',
@@ -6313,39 +6332,42 @@ class EmundusModelApplication extends JModelList
 					'show_shared_users',
 				];
 
+				$key = md5(date('Y-m-d h:m:i') . '::' . $file_info->fnum . '::' . $file_info->applicant_id . '::' . $email . '::' . rand());
 				$values = [
-					EmundusHelperDate::getNow(),
+					$this->_db->quote(EmundusHelperDate::getNow()),
 					$file_info->applicant_id,
-					$file_info->fnum,
-					md5(date('Y-m-d h:m:i') . '::' . $file_info->fnum . '::' . $file_info->applicant_id . '::' . rand()),
+					$this->_db->quote($file_info->fnum),
+					$this->_db->quote($key),
 					$file_info->campaign_id,
-					$email,
+					$this->_db->quote($email),
 					$ccid,
-					$user_id,
-					(int)in_array('read',$rights),
-					(int)in_array('update',$rights),
-					(int)in_array('view_history',$rights),
-					(int)in_array('view_others',$rights),
+					(int)$shared_user_id,
+					1,
+					1,
+					0,
+					0
 				];
 
 				$query->clear()
 					->insert($this->_db->quoteName('#__emundus_files_request'))
 					->columns($columns)
-					->values(implode(',',$this->_db->quote($values)));
+					->values(implode(',',$values));
 
 				try {
 					$this->_db->setQuery($query);
 					$shared = $this->_db->execute();
 
 					if($shared) {
-						//TODO: Send email to collaborator
+						$results['emails'][$email] = $key;
+					} else {
+						$results['failed_emails'][] = $email;
 					}
 
 					//TODO: Log this action
 				}
 				catch (Exception $e) {
-					$shared = false;
-					Log::add('Failed to get available campaigns via ccid ' . $ccid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+					$results['status'] = false;
+					Log::add('Failed to share file with ccid ' . $ccid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
 
@@ -6353,7 +6375,7 @@ class EmundusModelApplication extends JModelList
 			$this->h_cache->set($cache_key,[]);
 		}
 
-		return $shared;
+		return $results;
 	}
 
 	public function removeSharedUser($request_id,$ccid,$user_id)
@@ -6375,9 +6397,80 @@ class EmundusModelApplication extends JModelList
 			//TODO: Log this action
 		}
 		catch (Exception $e) {
-			Log::add('Failed to get available campaigns via ccid ' . $ccid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			Log::add('Failed to remove shared user via request_id ' . $request_id . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $removed;
+	}
+
+	public function regenerateKey($request_id,$ccid,$user_id)
+	{
+		$results = ['status' => true, 'email' => '', 'key' => ''];
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		try {
+			$query = $this->_db->getQuery(true);
+
+			$query->select('fnum,applicant_id,campaign_id')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('id') . ' = ' . $ccid);
+			$this->_db->setQuery($query);
+			$file_info = $this->_db->loadObject();
+
+			if(!empty($file_info)) {
+				$results['key'] = md5(date('Y-m-d h:m:i') . '::' . $file_info->fnum . '::' . $file_info->applicant_id . '::' . rand());
+
+				$query->clear()
+					->update($this->_db->quoteName('#__emundus_files_request'))
+					->set($this->_db->quoteName('keyid') . ' = ' . $this->_db->quote($results['key']))
+					->where($this->_db->quoteName('id') . ' = ' . $request_id)
+					->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
+				$this->_db->setQuery($query);
+				$results['status'] = $this->_db->execute();
+
+				if($results['status']) {
+					$query->clear()
+						->select('email')
+						->from($this->_db->quoteName('#__emundus_files_request'))
+						->where($this->_db->quoteName('id') . ' = ' . $request_id);
+					$this->_db->setQuery($query);
+					$results['email'] = $this->_db->loadResult();
+				}
+			}
+
+			//TODO: Log this action
+		}
+		catch (Exception $e) {
+			Log::add('Failed to remove shared user via request_id ' . $request_id . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $results;
+	}
+
+	public function updateRight($request_id,$ccid,$right,$value,$user_id)
+	{
+		$updating = false;
+
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		try {
+			$query = $this->_db->getQuery(true);
+
+			$query->update($this->_db->quoteName('#__emundus_files_request'))
+				->set($this->_db->quoteName($right) . ' = ' . (int)$value)
+				->where($this->_db->quoteName('id') . ' = ' . $request_id)
+				->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
+			$this->_db->setQuery($query);
+			$updating = $this->_db->execute();
+		}
+		catch (Exception $e) {
+			Log::add('Failed to update right via request_id ' . $request_id . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updating;
 	}
 }

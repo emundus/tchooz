@@ -18,62 +18,81 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
 ?>
 
 <div>
-    <div>
+    <div id="collab_emails_block">
         <label for="collab_emails" class="tw-text-black"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_EMAILS') ?></label>
         <input type="text" name="collab_emails" id="collab_emails" class="tw-mt-2" />
     </div>
 
     <div class="tw-mt-6">
-        <label  class="tw-text-black">Droits</label>
-        <div class="tw-mt-2">
-            <input type="checkbox" name="rights" id="read" value="read" checked />
-            <label for="read"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_READ') ?></label>
-        </div>
+        <?php if(sizeof($this->collaborators) > 0) : ?>
+            <div class="tw-flex tw-items-center tw-justify-between" onclick="toggleRequests()">
+                <h3><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS') ?></h3>
+                <span class="material-icons" id="requests_icon">expand_less</span>
+            </div>
+            <div class="tw-mt-2 tw-flex tw-flex-col tw-gap-2 tw-hidden" id="collaborators_requests">
+                <?php foreach ($this->collaborators as $collaborator) : ?>
+                <div class="tw-py-4 tw-px-6 tw-border tw-border-neutral-500 tw-rounded-md tw-shadow-sm">
+                    <div class="tw-flex tw-items-center tw-justify-between" id="collaborator_block_<?php echo $collaborator->id ?>">
+                        <div class="tw-flex tw-items-center" style="max-width: 50%">
+			                <?php if(empty($collaborator->profile_picture)) : ?>
+                                <span class="material-icons-outlined"
+                                      style="font-size: 48px"
+                                      alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>">account_circle</span>
+			                <?php else : ?>
+                                <div class="em-profile-picture em-pointer em-user-dropdown-button tw-flex-none"
+                                     style="background-image:url('<?php echo $collaborator->profile_picture ?>');">
+                                </div>
+			                <?php endif; ?>
+                            <div class="tw-ml-3">
+                                <span class="tw-text-sm tw-mb-3">Envoyé le <?php echo EmundusHelperDate::displayDate($collaborator->time_date,'DATE_FORMAT_LC2',0)?></span>
+                                <p><?php echo !empty($collaborator->user_id) ? $collaborator->user_lastname . ' ' . $collaborator->user_firstname : $collaborator->email; ?></p>
+                            </div>
+                        </div>
 
-        <div>
-            <input type="checkbox" name="rights" id="update" value="update" />
-            <label for="update"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_UPDATE') ?></label>
-        </div>
-
-        <div>
-            <input type="checkbox" name="rights" id="view_history" value="view_history" />
-            <label for="view_history"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_HISTORY') ?></label>
-        </div>
-
-        <div>
-            <input type="checkbox" name="rights" id="view_others" value="view_others" />
-            <label for="view_others"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_OTHERS') ?></label>
-        </div>
-    </div>
-
-    <div class="tw-mt-6">
-        <h3><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS') ?></h3>
-        <div class="tw-mt-2 tw-flex tw-flex-col tw-gap-2">
-            <?php foreach ($this->collaborators as $collaborator) : ?>
-                <div class="tw-flex tw-items-center tw-justify-between tw-py-4 tw-px-6 tw-border tw-border-neutral-500 tw-rounded-md tw-shadow-sm" id="collaborator_block_<?php echo $collaborator->id ?>">
-                    <div class="tw-flex tw-items-center" style="max-width: 50%">
-                        <span class="material-icons-outlined"
-                              style="font-size: 48px"
-                              alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>">account_circle</span>
-                        <div class="tw-ml-3">
-                            <span class="tw-text-sm tw-mb-3">Envoyé le <?php echo EmundusHelperDate::displayDate($collaborator->time_date,'DATE_FORMAT_LC2',0)?></span>
-                            <p><?php echo !empty($collaborator->lastname) ? $collaborator->lastname . ' ' . $collaborator->firstname : $collaborator->email; ?></p>
+                        <div>
+			                <?php if($collaborator->uploaded == 1) : ?>
+                                <span class="label label-green-2 tw-text-white">Acceptée</span>
+			                <?php else: ?>
+                                <span class="label label-beige">Envoyée</span>
+			                <?php endif; ?>
+                        </div>
+                        <div class="tw-flex tw-items-center tw-gap-3">
+			                <?php if ($collaborator->uploaded == 0) : ?>
+                                <span class="material-icons-outlined tw-cursor-pointer" onclick="sendNewEmail('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>')">send</span>
+			                <?php endif; ?>
+                            <span class="material-icons-outlined tw-cursor-pointer tw-text-red-500" onclick="removeShared('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>')">person_remove</span>
                         </div>
                     </div>
 
-                    <div>
-                        <?php if($collaborator->uploaded == 1) : ?>
-                            <span class="label label-green-2 tw-text-white">Acceptée</span>
-                        <?php else: ?>
-                            <span class="label label-beige">Envoyée</span>
-                        <?php endif; ?>
-                    </div>
-                    <div class="tw-flex tw-items-center tw-gap-2">
-                        <span class="material-icons-outlined tw-cursor-pointer">send</span>
-                        <span class="material-icons-outlined tw-cursor-pointer tw-text-red-500" onclick="removeShared('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>')">person_remove</span>
+                    <hr/>
+
+                    <div class="tw-flex tw-items-center tw-justify-between tw-flex-wrap">
+                        <div class="tw-mt-2">
+                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="read" value="r" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->r == 1) : ?>checked<?php endif; ?> />
+                            <label for="read"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_READ') ?></label>
+                        </div>
+
+                        <div>
+                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="update" value="u" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->u == 1) : ?>checked<?php endif; ?> />
+                            <label for="update"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_UPDATE') ?></label>
+                        </div>
+
+                        <div>
+                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="view_history" value="show_history" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->show_history == 1) : ?>checked<?php endif; ?> />
+                            <label for="view_history"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_HISTORY') ?></label>
+                        </div>
+
+                        <div>
+                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="view_others" value="show_shared_users" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->show_shared_users == 1) : ?>checked<?php endif; ?> />
+                            <label for="view_others"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_OTHERS') ?></label>
+                        </div>
                     </div>
                 </div>
-            <?php endforeach; ?>
-        </div>
+
+
+
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
     </div>
 </div>

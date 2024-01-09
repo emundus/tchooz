@@ -441,7 +441,7 @@ $current_tab = 0;
 
 	                                                                <?php if (in_array('collaborate', $actions)) : ?>
                                                                         <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                           onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->id ?>')"
+                                                                           onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')"
                                                                            id="actions_button_rename_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
                                                                             <span class="material-icons-outlined em-mr-8">people</span>
 			                                                                <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_COLLABORATE') ?>
@@ -1224,7 +1224,6 @@ $current_tab = 0;
                     let new_tabs = document.querySelectorAll('#items li');
                     let tabs_to_post = []
                     new_tabs.forEach((tab, index) => {
-                        console.log(tab);
                         const tab_to_post = {
                             name: tab.firstChild.lastChild.innerText,
                             ordering: (index + 1),
@@ -1551,12 +1550,21 @@ $current_tab = 0;
                             }
                         },
                         onItemAdd: function (value, $item) {
+                            if(document.querySelector('#collab_error')) {
+                                document.querySelector('#collab_error').remove();
+                            }
+
                             var email = value.substring(value.indexOf(":") + 1);
                             email = email.trim();
 
                             const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
-                            if (!regex.test(email)) {
+                            if (!regex.test(email) || '<?php echo $user->email?>' === email) {
                                 this.removeItem(value);
+                                let p = document.createElement('p');
+                                p.classList.add('tw-text-red-500');
+                                p.id = 'collab_error';
+                                p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_NOT_YOUR_OWN'); ?>';
+                                document.querySelector('#collab_emails_block').append(p);
                             }
                         }
                     });
@@ -1570,17 +1578,9 @@ $current_tab = 0;
                 if(result.isConfirmed) {
                     let formData = new FormData();
 
-                    const rights_elt = document.querySelectorAll("input[name='rights']");
-                    let rights = [];
-                    rights_elt.forEach((right) => {
-                        if(right.checked) {
-                            rights.push(right.value);
-                        }
-                    });
                     formData.append('fnum', fnum);
                     formData.append('ccid', ccid);
                     formData.append('emails', document.querySelector('#collab_emails').value);
-                    formData.append('rights', JSON.stringify(rights));
 
                     fetch('index.php?option=com_emundus&controller=application&task=sharefilewith', {
                         body: formData,
@@ -1590,13 +1590,20 @@ $current_tab = 0;
                             return response.json();
                         }
                     }).then((res) => {
-                        if (res.status == true) {
-                            window.location.reload();
-                        } else {
+                        if (res.status != true) {
                             Swal.fire({
                                 title: "Une erreur est survenue",
                                 text: res.msg,
                                 type: "error",
+                                reverseButtons: true,
+                                confirmButtonText: "<?php echo JText::_('JYES');?>",
+                                timer: 3000
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SUCCESS'); ?>",
+                                text: res.msg,
+                                type: "success",
                                 reverseButtons: true,
                                 confirmButtonText: "<?php echo JText::_('JYES');?>",
                                 timer: 3000

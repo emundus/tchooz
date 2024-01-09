@@ -37,6 +37,7 @@ class EmundusControllerMessages extends JControllerLegacy
 	function __construct($config = array())
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'messages.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
@@ -1282,11 +1283,18 @@ class EmundusControllerMessages extends JControllerLegacy
 		}
 
 		// In case no post value is supplied
-		if (empty($post)) {
-			$post = [
-				'SITE_URL'   => JURI::base(),
-				'USER_EMAIL' => $email_address
-			];
+		$default_post = [
+			'SITE_URL'   => JURI::base(),
+			'SITE_NAME' => $config->get('sitename'),
+			'USER_EMAIL' => $email_address,
+			'LOGO' => EmundusHelperEmails::getLogo(),
+		];
+
+		if (!empty($post)) {
+			$post = array_merge($default_post, $post);
+			$post = array_unique($post, SORT_REGULAR);
+		} else {
+			$post = $default_post;
 		}
 
 		$cc   = [];

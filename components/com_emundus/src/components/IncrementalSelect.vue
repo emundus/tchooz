@@ -1,5 +1,5 @@
 <template>
-  <div id="incremental-selector">
+  <div id="incremental-selector" class="tw-mt-2">
     <div class="em-w-100 em-flex-row em-mb-16">
       <div v-if="isNewVal" id="new-value" class="em-w-100">
         <input type="text" class="em-w-100 em-mb-0-important" v-model="newValue.label" @focusin="showOptions = true"

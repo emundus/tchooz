@@ -20,7 +20,7 @@
               <label>{{ translations.emailName }} <span style="color: #E5283B">*</span></label>
               <input
                   type="text"
-                  class="tw-w-full"
+                  class="tw-w-full tw-mt-2"
                   v-model="form.subject"
                   :class="{ 'is-invalid': errors.subject}"
               />
@@ -83,14 +83,14 @@
           <div id="email-advanced-parameters" v-if="displayAdvancedParameters">
             <div class="form-group tw-mb-4">
               <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL') }}</label>
-              <span>{{ email_sender }}</span>
+              <p class="tw-mt-2">{{ email_sender }}</p>
             </div>
 
             <div class="form-group tw-mb-4">
               <label>{{ translations.receiverName }}</label>
               <input
                   type="text"
-                  class="tw-w-full fabrikinput"
+                  class="tw-w-full fabrikinput tw-mt-2"
                   v-model="form.name"
               />
             </div>
@@ -99,7 +99,7 @@
               <label>{{ translations.emailAddress }}</label>
               <input
                   type="text"
-                  class="tw-w-full fabrikinput"
+                  class="tw-w-full fabrikinput tw-mt-2"
                   v-model="form.emailfrom"
                   placeholder="reply-to@tchooz.io"
               />
@@ -110,6 +110,7 @@
             <div class="form-group tw-mb-4" id="receivers_cc">
               <label>{{ translations.ReceiversCC }}</label>
               <multiselect
+                  :class="'tw-mt-2'"
                   v-model="selectedReceiversCC"
                   label="email"
                   track-by="email"
@@ -130,6 +131,7 @@
             <div class="form-group tw-mb-4" id="receivers_bcc">
               <label>{{ translations.ReceiversBCC }}</label>
               <multiselect
+                  :class="'tw-mt-2'"
                   v-model="selectedReceiversBCC"
                   label="email"
                   track-by="email"
@@ -150,6 +152,7 @@
             <div class="form-group tw-mb-4" id="attached_letters" v-if="attached_letters">
               <label>{{ translations.Letters }}</label>
               <multiselect
+                  :class="'tw-mt-2'"
                   v-model="selectedLetterAttachments"
                   label="value"
                   track-by="id"
@@ -169,6 +172,7 @@
             <div class="form-group tw-mb-4" v-if="tags">
               <label>{{ translations.Tags }}</label>
               <multiselect
+                  :class="'tw-mt-2'"
                   v-model="selectedTags"
                   label="label"
                   track-by="id"
@@ -188,6 +192,7 @@
             <div class="form-group tw-mb-4">
               <label>{{ translations.CandidateAttachments }}</label>
               <multiselect
+                  :class="'tw-mt-2'"
                   v-model="selectedCandidateAttachments"
                   label="value"
                   track-by="id"

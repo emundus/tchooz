@@ -1824,8 +1824,8 @@ class EmundusHelperUpdate
                     'publish_down' => '2099-01-01 00:00:00',
                     'reset_button_label' => $datas['reset_button_label'] ?: 'RESET',
                     'submit_button_label' => $datas['submit_button_label'] ?: 'SAVE_CONTINUE',
-                    'form_template' => $datas['form_template'] ?: 'bootstrap',
-                    'view_only_template' => $datas['view_only_template'] ?: 'bootstrap',
+                    'form_template' => $datas['form_template'] ?: 'emundus',
+                    'view_only_template' => $datas['view_only_template'] ?: 'emundus',
                     'params' => json_encode($params),
                 ];
 
