@@ -3860,7 +3860,11 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND (' . $programme_where_cond . $fnum_assoc_where_cond . ') ';
 		}
 
-		$menu = JFactory::getApplication()->getMenu();
+		$app = Factory::getApplication();
+		if (method_exists($app, 'getMenu')) {
+			$menu = $app->getMenu();
+		}
+
 		if (!empty($menu)) {
 			$active = $menu->getActive();
 
@@ -3895,7 +3899,7 @@ class EmundusHelperFiles
 		}
 
 		// Now we handle session filters (if any)
-		$session              = JFactory::getSession();
+		$session              = $app->getSession();
 		$session_filters      = $session->get('em-applied-filters', []);
 		$quick_search_filters = $session->get('em-quick-search-filters', []);
 		if (!empty($session_filters) || !empty($quick_search_filters)) {

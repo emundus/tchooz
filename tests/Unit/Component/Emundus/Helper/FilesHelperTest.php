@@ -140,7 +140,7 @@ class FilesHelperTest extends UnitTestCase
 		$query = $this->db->getQuery(true);
 		$query->select('*')
 			->from('#__fabrik_elements')
-			->limit(1);
+			->setLimit(1);
 
 		$this->db->setQuery($query);
 		$element = $this->db->loadAssoc();
