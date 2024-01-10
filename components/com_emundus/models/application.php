@@ -516,8 +516,10 @@ class EmundusModelApplication extends JModelList
 		$logsParams = array('created' => [$logsStd]);
 		EmundusModelLogs::log(JFactory::getUser()->id, (int) substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
+		$now = EmundusHelperDate::getNow();
+
 		$query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
-                VALUES(' . $row['applicant_id'] . ',' . $row['user_id'] . ',' . $this->_db->Quote($row['reason']) . ',"' . date("Y.m.d H:i:s") . '",' . $this->_db->Quote($row['comment_body']) . ',' . $this->_db->Quote(@$row['fnum']) . ')';
+                VALUES(' . $row['applicant_id'] . ',' . $row['user_id'] . ',' . $this->_db->Quote($row['reason']) . ',"' . $now . '",' . $this->_db->Quote($row['comment_body']) . ',' . $this->_db->Quote(@$row['fnum']) . ')';
 		$this->_db->setQuery($query);
 
 		try {
@@ -3615,106 +3617,102 @@ class EmundusModelApplication extends JModelList
 
 	public function getAccessFnum($fnum)
 	{
-		$query = $this->_db->getQuery(true);
+		$access = [];
 
-		$query->select('jecc.fnum, jesg.label as gname, jea.*, jesa.label as aname')
-			->from($this->_db->quoteName('#__emundus_campaign_candidature', 'jecc'))
-			->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'jesc') . ' ON jesc.id = jecc.campaign_id')
-			->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'jesp') . ' ON jesp.code = jesc.training')
-			->leftJoin($this->_db->quoteName('#__emundus_setup_groups_repeat_course', 'jesgrc') . ' ON jesgrc.course = jesp.code')
-			->leftJoin($this->_db->quoteName('#__emundus_setup_groups', 'jesg') . ' ON jesg.id = jesgrc.parent_id')
-			->leftJoin($this->_db->quoteName('#__emundus_acl', 'jea') . ' ON jea.group_id = jesg.id')
-			->leftJoin($this->_db->quoteName('#__emundus_setup_actions', 'jesa') . ' ON jesa.id = jea.action_id')
-			->where($this->_db->quoteName('jecc.fnum') . ' like ' . $this->_db->quote($fnum))
-			->where($this->_db->quoteName('jesa.status') . ' = 1')
-			->order($this->_db->quoteName('jecc.fnum') . ', ' . $this->_db->quoteName('jea.group_id') . ', ' . $this->_db->quoteName('jea.action_id'));
+		if (!empty($fnum)) {
+			$query = "SELECT jecc.fnum, jesg.label as gname, jea.*, jesa.label as aname FROM #__emundus_campaign_candidature as jecc
+                    LEFT JOIN #__emundus_setup_campaigns as jesc on jesc.id = jecc.campaign_id
+                    LEFT JOIN #__emundus_setup_programmes as jesp on jesp.code = jesc.training
+                    LEFT JOIN #__emundus_setup_groups_repeat_course as jesgrc on jesgrc.course = jesp.code
+                    LEFT JOIN #__emundus_setup_groups as jesg on jesg.id = jesgrc.parent_id
+                    LEFT JOIN #__emundus_acl as jea on jea.group_id = jesg.id
+                    LEFT JOIN #__emundus_setup_actions as jesa on jesa.id = jea.action_id
+                    WHERE jecc.fnum like '".$fnum."' and jesa.status = 1 order by jecc.fnum, jea.group_id, jea.action_id";
 
-		try {
-			$this->_db->setQuery($query);
-			$res = $this->_db->loadAssocList();
+			try
+			{
+				$db = $this->getDbo();
+				$db->setQuery($query);
+				$res = $db->loadAssocList();
 
-			$access = array();
-			foreach ($res as $r) {
-				$access['groups'][$r['group_id']]['gname']                             = $r['gname'];
-				$access['groups'][$r['group_id']]['isAssoc']                           = false;
-				$access['groups'][$r['group_id']]['isACL']                             = true;
-				$access['groups'][$r['group_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
-				$access['groups'][$r['group_id']]['actions'][$r['action_id']]['c']     = $r['c'];
-				$access['groups'][$r['group_id']]['actions'][$r['action_id']]['r']     = $r['r'];
-				$access['groups'][$r['group_id']]['actions'][$r['action_id']]['u']     = $r['u'];
-				$access['groups'][$r['group_id']]['actions'][$r['action_id']]['d']     = $r['d'];
+				foreach($res as $r)
+				{
+					$access['groups'][$r['group_id']]['gname'] = $r['gname'];
+					$access['groups'][$r['group_id']]['isAssoc'] = false;
+					$access['groups'][$r['group_id']]['isACL'] = true;
+					$access['groups'][$r['group_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
+					$access['groups'][$r['group_id']]['actions'][$r['action_id']]['c'] = $r['c'];
+					$access['groups'][$r['group_id']]['actions'][$r['action_id']]['r'] = $r['r'];
+					$access['groups'][$r['group_id']]['actions'][$r['action_id']]['u'] = $r['u'];
+					$access['groups'][$r['group_id']]['actions'][$r['action_id']]['d'] = $r['d'];
+				}
+				$query = "SELECT jeacl.group_id, jeacl.action_id as acl_action_id, jeacl.c as acl_c, jeacl.r as acl_r, jeacl.u as acl_u, jeacl.d as acl_d,
+                        jega.fnum, jega.action_id, jega.c, jega.r, jega.u, jega.d, jesa.label as aname,
+                        jesg.label as gname
+                        FROM jos_emundus_acl as jeacl
+                        LEFT JOIN jos_emundus_setup_actions as jesa ON jesa.id = jeacl.action_id
+                        LEFT JOIN jos_emundus_setup_groups as jesg on jesg.id = jeacl.group_id
+                        LEFT JOIN jos_emundus_group_assoc as jega on jega.group_id=jesg.id
+                        WHERE  jega.fnum like ".$db->quote($fnum)." and jesa.status = 1
+                        ORDER BY jega.fnum, jega.group_id, jega.action_id";
+				$db->setQuery($query);
+				$res = $db->loadAssocList();
+				foreach($res as $r)
+				{
+					$overrideAction = ($r['acl_action_id'] == $r['action_id']) ? true : false;
+					if(isset($access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]))
+					{
+						$access['groups'][$r['group_id']]['isAssoc'] = true;
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] += ($overrideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] += ($overrideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] += ($overrideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] += ($overrideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
+					}
+					else
+					{
+						$access['groups'][$r['group_id']]['gname'] = $r['gname'];
+						$access['groups'][$r['group_id']]['isAssoc'] = true;
+						$access['groups'][$r['group_id']]['isACL'] = false;
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['aname'] = $r['aname'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] = ($overrideAction) ? (($r['acl_c']==-2 || $r['c']==-2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] = ($overrideAction) ? (($r['acl_r']==-2 || $r['r']==-2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] = ($overrideAction) ? (($r['acl_u']==-2 || $r['u']==-2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
+						$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] = ($overrideAction) ? (($r['acl_d']==-2 || $r['d']==-2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
+					}
+				}
+
+				$query = "SELECT jeua.*, ju.name as uname, jesa.label as aname
+                        FROM #__emundus_users_assoc as jeua
+                        LEFT JOIN #__users as ju on ju.id = jeua.user_id
+                        LEFT JOIN   #__emundus_setup_actions as jesa on jesa.id = jeua.action_id
+                        where  jeua.fnum like '".$fnum."' and jesa.status = 1
+                        ORDER BY jeua.fnum, jeua.user_id, jeua.action_id";
+				$db->setQuery($query);
+				$res = $db->loadAssocList();
+				foreach($res as $r)
+				{
+					if(isset($access['groups'][$r['user_id']]['actions'][$r['action_id']])) {
+						$access['users'][$r['user_id']]['actions'][$r['action_id']]['c'] += $r['c'];
+						$access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] += $r['r'];
+						$access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] += $r['u'];
+						$access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] += $r['d'];
+					} else {
+						$access['users'][$r['user_id']]['uname'] = $r['uname'];
+						$access['users'][$r['user_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
+						$access['users'][$r['user_id']]['actions'][$r['action_id']]['c'] = $r['c'];
+						$access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] = $r['r'];
+						$access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] = $r['u'];
+						$access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] = $r['d'];
+					}
+				}
 			}
-
-			$query->clear()
-				->select('jeacl.group_id, jeacl.action_id as acl_action_id, jeacl.c as acl_c, jeacl.r as acl_r, jeacl.u as acl_u, jeacl.d as acl_d,jega.fnum, jega.action_id, jega.c, jega.r, jega.u, jega.d, jesa.label as aname, jesg.label as gname')
-				->from($this->_db->quoteName('#__emundus_acl', 'jeacl'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_actions', 'jesa') . ' ON jesa.id = jeacl.action_id')
-				->leftJoin($this->_db->quoteName('#__emundus_setup_groups', 'jesg') . ' ON jesg.id = jeacl.group_id')
-				->leftJoin($this->_db->quoteName('#__emundus_group_assoc', 'jega') . ' ON jega.group_id = jesg.id')
-				->where($this->_db->quoteName('jega.fnum') . ' like ' . $this->_db->quote($fnum))
-				->where($this->_db->quoteName('jesa.status') . ' = 1')
-				->order($this->_db->quoteName('jega.fnum') . ', ' . $this->_db->quoteName('jega.group_id') . ', ' . $this->_db->quoteName('jega.action_id'));
-			$this->_db->setQuery($query);
-			$res = $this->_db->loadAssocList();
-
-			foreach ($res as $r) {
-				$ovverideAction = ($r['acl_action_id'] == $r['action_id']) ? true : false;
-
-				if (isset($access['groups'][$r['group_id']]['actions'][$r['acl_action_id']])) {
-					$access['groups'][$r['group_id']]['isAssoc']                           = true;
-					$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c'] += ($ovverideAction) ? (($r['acl_c'] == -2 || $r['c'] == -2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
-					$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r'] += ($ovverideAction) ? (($r['acl_r'] == -2 || $r['r'] == -2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
-					$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u'] += ($ovverideAction) ? (($r['acl_u'] == -2 || $r['u'] == -2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
-					$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d'] += ($ovverideAction) ? (($r['acl_d'] == -2 || $r['d'] == -2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
-				}
-				else {
-					$access['groups'][$r['group_id']]['gname']                                 = $r['gname'];
-					$access['groups'][$r['group_id']]['isAssoc']                               = true;
-					$access['groups'][$r['group_id']]['isACL']                                 = false;
-					$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['aname'] = $r['aname'];
-					$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['c']     = ($ovverideAction) ? (($r['acl_c'] == -2 || $r['c'] == -2) ? -2 : max($r['acl_c'], $r['c'])) : $r['acl_c'];
-					$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['r']     = ($ovverideAction) ? (($r['acl_r'] == -2 || $r['r'] == -2) ? -2 : max($r['acl_r'], $r['r'])) : $r['acl_r'];
-					$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['u']     = ($ovverideAction) ? (($r['acl_u'] == -2 || $r['u'] == -2) ? -2 : max($r['acl_u'], $r['u'])) : $r['acl_u'];
-					$access['groups'][$r['group_id']]['actions'][$r['acl_action_id']]['d']     = ($ovverideAction) ? (($r['acl_d'] == -2 || $r['d'] == -2) ? -2 : max($r['acl_d'], $r['d'])) : $r['acl_d'];
-				}
+			catch(Exception $e)
+			{
+				error_log($e->getMessage(), 0);
 			}
-
-			$query->clear()
-				->select('jeua.*, ju.name as uname, jesa.label as aname')
-				->from($this->_db->quoteName('#__emundus_users_assoc', 'jeua'))
-				->leftJoin($this->_db->quoteName('#__users', 'ju') . ' ON ju.id = jeua.user_id')
-				->leftJoin($this->_db->quoteName('#__emundus_setup_actions', 'jesa') . ' ON jesa.id = jeua.action_id')
-				->where($this->_db->quoteName('jeua.fnum') . ' like ' . $this->_db->quote($fnum))
-				->where($this->_db->quoteName('jesa.status') . ' = 1')
-				->order($this->_db->quoteName('jeua.fnum') . ', ' . $this->_db->quoteName('jeua.user_id') . ', ' . $this->_db->quoteName('jeua.action_id'));
-			$this->_db->setQuery($query);
-			$res = $this->_db->loadAssocList();
-
-			foreach ($res as $r) {
-				if (isset($access['groups'][$r['user_id']]['actions'][$r['action_id']])) {
-					$access['users'][$r['user_id']]['actions'][$r['action_id']]['c'] += $r['c'];
-					$access['users'][$r['user_id']]['actions'][$r['action_id']]['r'] += $r['r'];
-					$access['users'][$r['user_id']]['actions'][$r['action_id']]['u'] += $r['u'];
-					$access['users'][$r['user_id']]['actions'][$r['action_id']]['d'] += $r['d'];
-				}
-				else {
-					$access['users'][$r['user_id']]['uname']                             = $r['uname'];
-					$access['users'][$r['user_id']]['actions'][$r['action_id']]['aname'] = $r['aname'];
-					$access['users'][$r['user_id']]['actions'][$r['action_id']]['c']     = $r['c'];
-					$access['users'][$r['user_id']]['actions'][$r['action_id']]['r']     = $r['r'];
-					$access['users'][$r['user_id']]['actions'][$r['action_id']]['u']     = $r['u'];
-					$access['users'][$r['user_id']]['actions'][$r['action_id']]['d']     = $r['d'];
-				}
-
-			}
-
-			return $access;
 		}
-		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
 
-			return false;
-		}
+		return $access;
 	}
 
 	public function getActions()
@@ -4428,7 +4426,7 @@ class EmundusModelApplication extends JModelList
 				$this->_db->setQuery($query);
 				$stored = $this->_db->loadAssoc();
 
-				if (count($stored) > 0) {
+				if (!empty($stored)) {
 					// update form data
 					$parent_id = $stored['id'];
 					unset($stored['id']);

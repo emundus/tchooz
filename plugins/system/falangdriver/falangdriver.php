@@ -6,12 +6,14 @@
  * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
-// No direct access to this file
-defined('_JEXEC') or die;
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -26,7 +28,6 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\Database\Event\ConnectionEvent;
 use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
 
 //Global definitions use for front
@@ -34,28 +35,32 @@ if( !defined('DS') ) {
     define( 'DS', DIRECTORY_SEPARATOR );
 }
 
-
-jimport('joomla.plugin.plugin');
-
 /**
  * Falang Driver Plugin
+ * can't use SubscriberInterface in other case problem with the other event
+ *
  */
-class plgSystemFalangdriver extends CMSPlugin
+final class plgSystemFalangdriver extends CMSPlugin
 {
-
     /**
      * Affects constructor behavior. If true, language files will be loaded automatically.
      *
      * @var    boolean
      * @since  3.10.2
+     * @update 5.2 change constructor
+     *             add onAfterDisconnect
      */
     protected $autoloadLanguage = true;
 
-    public function __construct(&$subject, $config = array())
+    public function __construct(DispatcherInterface $dispatcher, $config = array())
     {
+        parent::__construct($dispatcher, $config);
 
-
-        parent::__construct($subject, $config);
+        //add onAfterDisconnect event support from SubscriberInterface
+        //fix database already close
+        if (Factory::getApplication()->isClient('site')) {
+            $dispatcher->addListener('onAfterDisconnect', [$this,'onAfterDisconnect']);
+        }
 
         $this->setupCoreFileOverride();
 
@@ -74,6 +79,20 @@ class plgSystemFalangdriver extends CMSPlugin
             $this->setupDatabaseDriverOverride();
         }
 
+    }
+
+    /*
+     * @since 5.2 set the connection too null fix the mysqli already close event
+     *            need to access to the protected var $connection
+     * */
+    public function onAfterDisconnect(ConnectionEvent $event){
+        $db = Factory::getDbo();
+        if (is_a($db, 'JFalangDatabase')){
+            $reflectionClass = new ReflectionClass('JFalangDatabase');
+            $reflectionProperty = $reflectionClass->getProperty('connection');
+            $reflectionProperty->setAccessible(true); // only required prior to PHP 8.1.0
+            $reflectionProperty->setValue($db, null);
+        }
     }
 
     /**
@@ -544,8 +563,9 @@ class plgSystemFalangdriver extends CMSPlugin
 
     /*
      * Use trigger to activate the language selection in the template
+     * and load the custom fields in the translated form
      */
-    function onContentPrepareForm($form, $data)
+    function onContentPrepareForm(Form $form, $data)
     {
         if (Factory::getApplication()->isClient('site')){return;}
 

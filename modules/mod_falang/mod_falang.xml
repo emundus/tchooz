@@ -2,12 +2,12 @@
 <extension 	type="module" version="4.0"	client="site" method="upgrade">
 	<name>mod_falang</name>
 	<author>Stéphane Bouey</author>
-	<creationDate>20 Novembre 2023</creationDate>
+	<creationDate>23 Novembre 2023</creationDate>
 	<copyright>2011-2023, Faboba</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>stephane.bouey@faboba.com</authorEmail>
 	<authorUrl>www.faboba.com</authorUrl>
-	<version>5.1</version>
+	<version>5.2</version>
 	<description>MOD_FALANG_XML_DESCRIPTION</description>
 	<files>
 		<filename module="mod_falang">mod_falang.php</filename>
@@ -139,24 +139,31 @@
 
 			</fieldset>
             <fieldset name="options" addfieldpath="/administrator/components/com_falang/models/fields">
-                <!-- >>> [FREE] >>> -->
-                <field
-                        name="@notice_imagespath"
-                        type="plaintext"
-                        label="MOD_FALANG_FIELD_IMAGEPATH_LABEL"
-                        description="MOD_FALANG_FIELD_IMAGEPATH_DESC"
-                        default="MOD_FALANG_ONLY_PAID"
-                        />
-                <field
-                        name="@notice_imagestype"
-                        type="plaintext"
-                        label="MOD_FALANG_FIELD_IMAGETYPE_LABEL"
-                        description="MOD_FALANG_FIELD_IMAGETYPE_DESC"
-                        default="MOD_FALANG_ONLY_PAID"
-                        />
-
-                <!-- <<< [FREE] <<< -->
                 
+                <!-- >>> [PAID] >>> -->
+                <field
+                        name="imagespath"
+                        type="text"
+                        label="MOD_FALANG_FIELD_IMAGEPATH_LABEL"
+                        description="MOD_FALANG_FIELD_IMAGEPATH_DESC" />
+                <field
+                        name="imagestype"
+                        type="list"
+                        default="gif"
+                        label="MOD_FALANG_FIELD_IMAGETYPE_LABEL"
+                        description="MOD_FALANG_FIELD_IMAGETYPE_DESC">
+                    <option
+                            value="gif">gif</option>
+                    <option
+                            value="png">png</option>
+                    <option
+                            value="jpg">jpg</option>
+                    <option
+                            value="jpeg">jpeg</option>
+					<option
+							value="svg">svg</option>
+                </field>
+                <!-- <<< [PAID] <<< -->
             </fieldset>
 			<fieldset name="advanced">
 				<field

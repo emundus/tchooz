@@ -1,4 +1,4 @@
-FROM joomla:5.0.0-php8.2-apache
+FROM joomla:5.0.1-php8.2-apache
 
 RUN apt-get update && apt-get install -y libz-dev libmemcached-dev libzip-dev && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-enable memcached

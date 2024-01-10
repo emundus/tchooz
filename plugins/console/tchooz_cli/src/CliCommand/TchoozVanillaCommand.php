@@ -142,6 +142,7 @@ class TchoozVanillaCommand extends AbstractCommand
 
 				foreach ($views as $view) {
 					$taskTime = microtime(true);
+					$xml_filename = $folderPath . '/' . $view . '.xml';
 					$filename = $folderPath . '/' . $view . '.sql';
 
 					$this->ioStyle->text(sprintf('Processing the %s view', $view));
@@ -153,6 +154,10 @@ class TchoozVanillaCommand extends AbstractCommand
 						}
 
 						File::write($filename, $dump);
+
+						if(file_exists($xml_filename)) {
+							File::delete($xml_filename);
+						}
 
 						$this->ioStyle->text(sprintf('Exported data for %s in %d seconds', $view, round(microtime(true) - $taskTime, 3)));
 					}

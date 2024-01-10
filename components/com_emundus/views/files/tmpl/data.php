@@ -17,7 +17,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 ?>
 
 <input type="hidden" id="view" name="view" value="files">
-<div class="panel panel-default em-data">
+<div class="panel panel-default em-data <?php if(!is_array($this->datas)) : ?>bg-transparent<?php endif; ?>">
 	<?php if (is_array($this->datas)): ?>
         <div class="container-result">
             <div class="em-ml-8 em-flex-row">
@@ -226,7 +226,10 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             </table>
         </div>
 	<?php else: ?>
-		<?= $this->datas ?>
+    <div class="text-center mt-6">
+        <h1 class="mb-8 !text-neutral-600"><?= $this->datas ?></h1>
+        <div class="no-result bg-no-repeat w-64 h-64 my-0 mx-auto"></div>
+    </div>
 	<?php endif; ?>
 </div>
 <script type="text/javascript">

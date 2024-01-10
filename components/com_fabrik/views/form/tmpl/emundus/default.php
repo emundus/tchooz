@@ -101,7 +101,7 @@ endif;
 			$this->group = $group;
 			?>
 
-            <fieldset class="mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
+            <fieldset class="mt-0 mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
 				echo 'fabrikGroupColumns-' . $group->columns . ' fabrikGroupColumns';
 			} ?>" id="group<?php echo $group->id; ?>" style="<?php echo $group->css; ?>">
                 <?php if(($group->showLegend && !empty($group->title)) || !empty($group->intro)) : ?>

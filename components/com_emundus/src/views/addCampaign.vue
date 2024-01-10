@@ -27,7 +27,7 @@
                 v-model="form.label[actualLanguage]"
                 required
                 :class="{ 'is-invalid': errors.label }"
-                class="form-control fabrikinput w-full"
+                class="mt-2 form-control fabrikinput w-full"
                 @focusout="onFormChange()"
             />
             <span v-if="errors.label" class="em-red-500-color mb-2">
@@ -44,7 +44,7 @@
                     v-model="form.start_date"
                     id="startDate"
                     type="datetime"
-                    class="w-full"
+                    class="mt-2 w-full"
                     format=""
                     :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE')"
                     :input-id="'start_date'"
@@ -61,7 +61,7 @@
                     v-model="form.end_date"
                     id="endDate"
                     type="datetime"
-                    class="w-full"
+                    class="mt-2 w-full"
                     format=""
                     :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') + ' *'"
                     :input-id="'end_date'"
@@ -90,7 +90,7 @@
               <input type="checkbox"
                      true-value="1"
                      false-value="0"
-                     class="em-toggle-check"
+                     class="mt-2 em-toggle-check"
                      id="published"
                      name="published"
                      v-model="form.published"
@@ -154,7 +154,7 @@
           <div class="flex items-center mb-4">
             <select
                 id="select_prog"
-                class="form-control fabrikinput w-full"
+                class="mt-2 form-control fabrikinput w-full"
                 v-model="form.training"
                 v-on:change="setCategory"
                 :disabled="this.programs.length <= 0"
@@ -185,7 +185,7 @@
                   <input
                       type="text"
                       id="prog_label"
-                      class="form-control fabrikinput w-full"
+                      class="mt-2 form-control fabrikinput w-full"
                       placeholder=" "
                       v-model="programForm.label"
                       :class="{ 'is-invalid': errors.progLabel }"

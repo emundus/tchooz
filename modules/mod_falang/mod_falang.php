@@ -24,11 +24,14 @@ if (!FaLangHelper::isFalangDriverActive()){
 $headerText	= StringHelper::trim($params->get('header_text',''));
 $footerText	= StringHelper::trim($params->get('footer_text',''));
 
-/* >>> [FREE] >>> */
-$relativePath = true;
-/* <<< [FREE] <<< */
 
 
+/* >>> [PAID] >>> */
+$optionsPath = StringHelper::trim($params->get('imagespath',''));
+$imagesType = StringHelper::trim($params->get('imagestype','gif'));
+$relativePath = empty($optionsPath)?true:false;
+$imagesPath = empty($optionsPath)?'mod_falang/':$optionsPath;
+/* <<< [PAID] <<< */
 
 $list   = FaLangHelper::getList($params);
 

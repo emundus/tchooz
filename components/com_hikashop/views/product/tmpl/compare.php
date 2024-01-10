@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -218,6 +218,7 @@ if(empty($this->elements)) {
 		<td class="hikashop_compare_custom_prod_column">
 <?php
 				if(!empty($element->$fieldName)) {
+					$oneExtraField->currentElement = $element;
 ?>
 			<span id="hikashop_product_<?php echo $element->product_id; ?>_custom_value_<?php echo $oneExtraField->field_id;?>" class="hikashop_product_custom_value">
 				<?php echo $this->fieldsClass->show($oneExtraField,$element->$fieldName); ?>

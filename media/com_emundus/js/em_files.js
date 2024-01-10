@@ -773,14 +773,16 @@ function getProgramCampaigns(code) {
     });
 }
 
-function setFiltersSumo(event){
+function setFiltersSumo(event, id){
     $.ajaxQ.abortAll();
     if (event.handle !== true) {
         event.handle = true;
 
-        var id = event.currentTarget.id;
+        if(event.target.id) {
+            id = event.target.id;
+        }
         const my_element = $('#' + id);
-        console.log(my_element);
+
         if (!id.includes('elements-')) {
             var multi = false;
             if (typeof my_element.attr('multiple') !== 'undefined') {
@@ -1123,7 +1125,7 @@ function runAction(action, url = '', option = '') {
 
                                         $('#em-modal-actions').modal('hide');
 
-                                        reloadData();
+                                        reloadData($('#view').val());
                                         reloadActions($('#view').val(), undefined, false);
                                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                                         $('body').removeClass('modal-open');
@@ -1181,7 +1183,7 @@ function runAction(action, url = '', option = '') {
 
                                 $('#em-modal-actions').modal('hide');
 
-                                reloadData();
+                                reloadData($('#view').val());
                                 reloadActions($('#view').val(), undefined, false);
                                 $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                                 $('body').removeClass('modal-open');
@@ -1252,7 +1254,7 @@ function runAction(action, url = '', option = '') {
 
                     $('#em-modal-actions').modal('hide');
 
-                    reloadData();
+                    reloadData($('#view').val());
                     reloadActions($('#view').val(), undefined, false);
                     $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                     $('body').removeClass('modal-open');
@@ -1306,7 +1308,7 @@ function runAction(action, url = '', option = '') {
                             window.dispatchEvent(refreshModuleFiltersEvent);
                         }
 
-                        reloadData();
+                        reloadData($('#view').val());
                         reloadActions($('#view').val(), undefined, false);
                         $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                         $('body').removeClass('modal-open');
@@ -1468,7 +1470,7 @@ function runAction(action, url = '', option = '') {
                         });
                     }
 
-                    reloadData();
+                    reloadData($('#view').val());
                     reloadActions($('#view').val(), undefined, false);
                 },
                 error: function (jqXHR) {
@@ -5837,7 +5839,7 @@ $(document).ready(function() {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 $('#em-modal-actions').modal('hide');
 
-                                                reloadData();
+                                                reloadData($('#view').val());
                                                 reloadActions($('#view').val(), undefined, false);
                                                 $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
                                                 $('body').removeClass('modal-open');
@@ -5882,7 +5884,7 @@ $(document).ready(function() {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 $('#em-modal-actions').modal('hide');
 
-                                                reloadData();
+                                                reloadData($('#view').val());
                                                 reloadActions($('#view').val(), undefined, false);
                                                 $('.modal-backdrop, .modal-backdrop.fade.in').css('display', 'none');
                                                 $('body').removeClass('modal-open');
@@ -6765,7 +6767,7 @@ function sendMail(data)
 
                     addLoader();
 
-                    reloadData();
+                    reloadData($('#view').val());
                     reloadActions($('#view').val(), undefined, false);
 
                     Swal.fire({
@@ -6816,7 +6818,7 @@ function sendMail(data)
                     success: function(tags) {
                         addLoader();
 
-                        reloadData();
+                        reloadData($('#view').val());
                         reloadActions($('#view').val(), undefined, false);
 
                         Swal.fire({

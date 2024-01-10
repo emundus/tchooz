@@ -6,6 +6,7 @@ import { syntaxHighlighting, defaultHighlightStyle, foldGutter } from '@codemirr
 import { history, defaultKeymap, historyKeymap, emacsStyleKeymap } from '@codemirror/commands';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
 import { closeBrackets } from '@codemirror/autocomplete';
+import { oneDark } from '@codemirror/theme-one-dark';
 
 /**
  * @copyright  (C) 2023 Open Source Matters, Inc. <https://www.joomla.org>
@@ -53,7 +54,7 @@ const optionsToExtensions = async options => {
       extensions.push(modeMod[options.mode](modeOptions));
     }).catch(error => {
       // eslint-disable-next-line no-console
-      console.error(`Cannot creat an extension for "${options.mode}" syntax mode.`, error);
+      console.error(`Cannot create an extension for "${options.mode}" syntax mode.`, error);
     }));
   }
   if (options.lineNumbers) {
@@ -90,6 +91,11 @@ const optionsToExtensions = async options => {
   // Set a custom name so later on we can retrieve this Compartment from view.state.config.compartments
   readOnly.$j_name = 'readOnly';
   extensions.push(readOnly.of(EditorState.readOnly.of(!!options.readOnly)));
+
+  // TODO: Use compartments to update on change of dark mode like: https://discuss.codemirror.net/t/dynamic-light-mode-dark-mode-how/4709
+  if ('colorSchemeOs' in document.body.dataset && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    extensions.push(oneDark);
+  }
 
   // Check for custom extensions,
   // in format [['module1 name or URL', ['init method2']], ['module2 name or URL', ['init method2']], () => <return extension>]

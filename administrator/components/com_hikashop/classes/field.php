@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1560,11 +1560,11 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			}
 
 			if(isset($fieldOptions['filtering']) && $fieldOptions['filtering']) {
-				$field->field_default = strip_tags($defaultValue);
+				$field->field_default = strip_tags((string)$defaultValue);
 			} else {
 				jimport('joomla.filter.filterinput');
 				$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
-				$field->field_default = $safeHtmlFilter->clean($defaultValue,'string');
+				$field->field_default = $safeHtmlFilter->clean((string)$defaultValue,'string');
 			}
 		}
 		$field->field_required = $field_required;
@@ -1742,6 +1742,8 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			$guest_mode = $field->guest_mode;
 			unset($field->guest_mode);
 		}
+
+		unset($field->currentElement);
 
 		if(isset($field->field_value_old)) {
 			unset($field->field_value_old);
@@ -2962,6 +2964,9 @@ class hikashopFieldWysiwyg extends hikashopFieldTextarea {
 	function display($field, $value, $map, $inside, $options = '', $test = false, $allFields = null, $allValues = null) {
 		$editorHelper = hikashop_get('helper.editor');
 		$editorHelper->name = $map;
+		if(strlen($value) < 1 && !empty($field->field_default)){
+			$value = $this->trans($field->field_default);
+		}
 		$editorHelper->content = $value;
 		$editorHelper->id = $this->prefix.@$field->field_namekey.$this->suffix;
 		$editorHelper->width = '100%';
@@ -3392,7 +3397,12 @@ class hikashopFieldMultipledropdown extends hikashopFieldDropdown{
 	var $type = 'multiple';
 	function display($field, $value, $map, $inside, $options = '', $test = false, $allFields = null, $allValues = null){
 		$value = explode(',',(string)$value);
-		return parent::display($field,$value,$map,$inside,$options,$test,$allFields,$allValues);
+		$html = parent::display($field,$value,$map,$inside,$options,$test,$allFields,$allValues);
+		if(HIKASHOP_J40) {
+			JFactory::getDocument()->getWebAssetManager()->usePreset('choicesjs')->useScript('webcomponent.field-fancy-select');
+			$html = '<joomla-field-fancy-select>'.$html.'</joomla-field-fancy-select>';
+		}
+		return $html;
 	}
 	function show(&$field,$value){
 		if(!is_array($value)){

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1629,7 +1629,10 @@ class ProductViewProduct extends hikashopView
 			$db->setQuery($query);
 			$product->characteristics = $db->loadObjectList('characteristic_id');
 
-			$query = 'SELECT p.* FROM '.hikashop_table('product').' as p WHERE p.product_type = '.$db->Quote('variant').' AND p.product_parent_id = '.(int)$product_id;
+			$variantFilters = array('p.product_type = '.$db->Quote('variant'), 'p.product_parent_id = '.(int)$product_id);
+			$order = '';
+			$this->_filterVariants($variantFilters, $order);
+			$query = 'SELECT p.* FROM '.hikashop_table('product').' as p '. $variantFilters.$order;
 			$db->setQuery($query);
 			$product->variants = $db->loadObjectList('product_id');
 
@@ -2016,7 +2019,10 @@ class ProductViewProduct extends hikashopView
 			$db->setQuery($query);
 			$product->characteristics = $db->loadObjectList('characteristic_id');
 
-			$query = 'SELECT p.* FROM '.hikashop_table('product').' as p WHERE p.product_type = '.$db->Quote('variant').' AND p.product_parent_id = '.(int)$product_id;
+			$variantFilters = array('p.product_type = '.$db->Quote('variant'), 'p.product_parent_id = '.(int)$product_id);
+			$order = '';
+			$this->_filterVariants($variantFilters, $order);
+			$query = 'SELECT p.* FROM '.hikashop_table('product').' as p '. $variantFilters.$order;
 			$db->setQuery($query);
 			$product->variants = $db->loadObjectList('product_id');
 
@@ -2088,6 +2094,44 @@ class ProductViewProduct extends hikashopView
 		}
 
 		$this->assignRef('product', $product);
+	}
+
+	private function _filterVariants(&$filters, &$order) {
+		$this->paramBase .= '_variants';
+
+		$app = JFactory::getApplication();
+		$pageInfo = new stdClass();
+		$pageInfo->filter = new stdClass();
+		$pageInfo->filter->order = new stdClass();
+		$pageInfo->limit = new stdClass();
+		$config = hikashop_config();
+
+		$pageInfo->filter->order->value = $app->getUserStateFromRequest($this->paramBase.".filter_order", 'filter_order', $config->get('default_order_column_on_variants_listing', ''), 'cmd');
+		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest($this->paramBase.".filter_order_Dir", 'filter_order_Dir', $config->get('default_order_direction_on_variants_listing', ''), 'word');
+
+		$pageInfo->search = $app->getUserStateFromRequest($this->paramBase.".search", 'search', '', 'string');
+		$pageInfo->search = HikaStringHelper::strtolower(trim($pageInfo->search));
+
+		$pageInfo->filter->filter_published = $app->getUserStateFromRequest( $this->paramBase.".filter_published", 'filter_published', 0, 'int');
+
+		$this->searchOptions = array('published' => 0);
+		$this->openfeatures_class = "hidden-features";
+
+		$database = JFactory::getDBO();
+
+		if($pageInfo->filter->filter_published==2){
+			$filters[]='p.product_published=1';
+		}elseif($pageInfo->filter->filter_published==1){
+			$filters[]='p.product_published=0';
+		}
+
+		$searchMap = array('p.product_name','p.product_description','p.product_id','p.product_code');
+
+		$this->assignRef('pageInfo',$pageInfo);
+		$this->processFilters($filters, $order, $searchMap, array('p.'));
+		$publishDisplay = hikashop_get('type.published');
+		$publish = $publishDisplay->display('filter_published',$pageInfo->filter->filter_published);
+		$this->assignRef('publishDisplay',$publish);
 	}
 
 	public function variant() {

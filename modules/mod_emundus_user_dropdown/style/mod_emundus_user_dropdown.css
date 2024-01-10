@@ -50,7 +50,6 @@
     animation-fill-mode: forwards;
     animation-delay: 0.2s;
     transition: all 0.3s ease-in-out;
-    margin-bottom: 5px;
 }
 
 #userDropdownMenu h5 {
@@ -290,6 +289,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     border: 1px solid var(--red-500) !important;
     background-color: var(--neutral-0) !important;
     color: var(--red-500) !important;
+    text-decoration: none;
 }
 
 .logout-button-user:hover span,

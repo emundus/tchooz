@@ -1862,7 +1862,10 @@ class EmundusModelFormbuilder extends JModelList
 			$eval                                            = 1;
 		}
 		else {
-			$key = array_search("notempty", $old_params['validations']['plugin']);
+			$key = false;
+			if(is_array($old_params['validations']['plugin'])) {
+            	$key = array_search("notempty",$old_params['validations']['plugin']);
+			}
 			unset($old_params['validations']['plugin'][$key]);
 			unset($old_params['validations']['plugin_published'][$key]);
 			unset($old_params['validations']['validate_in'][$key]);
@@ -1932,7 +1935,10 @@ class EmundusModelFormbuilder extends JModelList
 			$this->db->setQuery($query);
 			$db_element = $this->db->loadObject();
 
-			$key = array_search("notempty", $element['params']['validations']['plugin']);
+			$key = false;
+			if(is_array($element['params']['validations']['plugin'])) {
+            	$key = array_search("notempty", $element['params']['validations']['plugin']);
+			}
 			if ($element['FRequire'] != "true") {
 				if ($key !== false && $key !== null) {
 					unset($element['params']['validations']['plugin'][$key]);
@@ -2016,7 +2022,10 @@ class EmundusModelFormbuilder extends JModelList
 			}
 
 			if ($element['plugin'] === 'field') {
-				$key = array_search("isemail", $element['params']['validations']['plugin']);
+				$key = false;
+				if(is_array($element['params']['validations']['plugin'])) {
+                	$key = array_search("isemail", $element['params']['validations']['plugin']);
+				}
 
 				if ($element['params']['password'] == 3) {
 					if ($key === false || $key === null) {
@@ -2034,7 +2043,10 @@ class EmundusModelFormbuilder extends JModelList
 					}
 				}
 				else {
-					$key = array_search("isemail", $element['params']['validations']['plugin']);
+					$key = false;
+					if(is_array($element['params']['validations']['plugin'])) {
+                    	$key = array_search("isemail", $element['params']['validations']['plugin']);
+					}
 					if ($key !== false && $key !== null) {
 						unset($element['params']['validations']['plugin'][$key]);
 						unset($element['params']['validations']['plugin_published'][$key]);

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -58,8 +58,32 @@ class hikashopFileClass extends hikashopClass {
 				return false;
 			}
 		}
+		$result = $this->checkuploadedFile($uploadPath . $file_path);
+		if(!$result)
+			return false;
 
 		return $file_path;
+	}
+
+	function checkuploadedFile($path, $error_output = true) {
+		$extension = strtolower(substr($path,strrpos($path,'.')+1));
+		if($extension == 'svg') {
+			$svgsanitizerInc = hikashop_get('inc.svgsanitizer');
+			$svgsanitizerInc->load($path);
+			$svgsanitizerInc->sanitize();
+			$result = $svgsanitizerInc->saveSVG();
+			if(!$result) {
+				JFile::delete($path);
+				if($error_output) {
+					$app = JFactory::getApplication();
+					$app->enqueueMessage('Could not sanitize the SVG file', 'error');
+				} else {
+					throw new Exception('Could not sanitize the SVG file');
+				}
+				return false;
+			}
+		}
+		return true;
 	}
 
 	function storeFiles($type, $pkey, $var_name = 'files', $subPath = '') {
@@ -134,7 +158,12 @@ class hikashopFileClass extends hikashopClass {
 								$app->enqueueMessage(JText::sprintf( 'FAIL_UPLOAD',$files[$id]['tmp_name'],$uploadPath . $file_path), 'error');
 								continue;
 							}
+
 						}
+						$result = $this->checkuploadedFile($uploadPath . $file_path);
+						if(!$result)
+							return false;
+
 						if(!in_array($type,array('file','watermark'))) {
 							$imageHelper->autoRotate($file_path);
 							if($type == 'category') {

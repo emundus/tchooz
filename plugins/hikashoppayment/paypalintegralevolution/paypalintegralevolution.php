@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -203,7 +203,7 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 				array('\.','[0-9]+','|'),
 				$this->payment_params->ips
 			);
-			if(!preg_match('#(' . implode('|', $ips) . ')#', $ip)) {
+			if(!preg_match('#(' . $ips . ')#', $ip)) {
 				$email = new stdClass();
 				$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER', 'Paypal') . ' ' . JText::sprintf('IP_NOT_VALID', $dbOrder->order_number);
 				$email->body = str_replace('<br/>', "\r\n", JText::sprintf('NOTIFICATION_REFUSED_FROM_IP', 'Paypal', $ip, implode("\r\n", $this->payment_params->ips))) . "\r\n\r\n" . JText::sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#ip') . $order_text;

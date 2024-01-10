@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -167,7 +167,8 @@ class hikashopConfigClass extends hikashopClass{
 
 			$matches = [];
 			foreach($areas as $area) {
-				$matches = array_merge($matches, array_intersect($area->fields, $columns));
+				$result = array_map("unserialize", array_intersect($this->_serialize_array_values($area->fields),$this->_serialize_array_values($columns)));
+				$matches = array_merge($matches, $result);
 				if (count($columns) == count($matches)) {
 					return;
 				}
@@ -227,6 +228,17 @@ class hikashopConfigClass extends hikashopClass{
 				$configObject[$config_fieldsnamekey] = json_encode($areas);
 			}
 		}
+	}
+
+	function _serialize_array_values($arr, $sort=true) {
+		foreach($arr as $key=>$val) {
+		if ($sort && is_array($val)) {
+				sort($val);
+		}
+			$arr[$key]=serialize($val);
+		}
+
+		return $arr;
 	}
 
 	function reset() {

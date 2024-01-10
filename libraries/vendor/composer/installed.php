@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'joomla/joomla-cms',
-        'pretty_version' => 'dev-5.0/build/githublayout',
-        'version' => 'dev-5.0/build/githublayout',
-        'reference' => '0e23b165e580270f5b53f9dc0c5fd17011f4bf87',
+        'pretty_version' => 'dev-5.0-dev',
+        'version' => 'dev-5.0-dev',
+        'reference' => '609cafcb752911d264608cf520ad2bf215c72e75',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
@@ -254,9 +254,9 @@
             'dev_requirement' => false,
         ),
         'joomla/joomla-cms' => array(
-            'pretty_version' => 'dev-5.0/build/githublayout',
-            'version' => 'dev-5.0/build/githublayout',
-            'reference' => '0e23b165e580270f5b53f9dc0c5fd17011f4bf87',
+            'pretty_version' => 'dev-5.0-dev',
+            'version' => 'dev-5.0-dev',
+            'reference' => '609cafcb752911d264608cf520ad2bf215c72e75',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),

@@ -23,7 +23,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "da8949"
+      "version": "72d110"
     },
     {
       "name": "com_associations.admin-associations-modal",
@@ -35,7 +35,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "684ed0"
+      "version": "14d673"
     },
     {
       "name": "com_associations.associations-edit",
@@ -48,13 +48,13 @@
         "type": "module",
         "defer": true
       },
-      "version": "375be7"
+      "version": "27a347"
     },
     {
       "name": "com_associations.sidebyside",
       "type": "style",
       "uri": "com_associations/sidebyside.min.css",
-      "version": "de6649"
+      "version": "3d03a8"
     },
     {
       "name": "com_associations.sidebyside",
@@ -67,7 +67,7 @@
       "attributes": {
         "defer": true
       },
-      "version": "c267f6"
+      "version": "d01e3e"
     }
   ]
 }

@@ -257,8 +257,8 @@ class plgSystemFalangquickjump extends CMSPlugin
             $result['status'][$language->sef] = $actContentObject->state . '|' .$actContentObject->published;
 
             //free and paid mmust be on 1 line
-            /* >>> [FREE] >>> */$result['link-'.$language->sef] = 'index.php?option=com_falang&task=translate.editfree&tmpl=component&direct=1';/* <<< [FREE] <<< */
             
+            /* >>> [PAID] >>> */$result['link-'.$language->sef] = 'index.php?option=com_falang&task=translate.edit&layout=popup&catid=' . $component[1] .'&cid[]=0|'.$id.'|'.$language->lang_id.'&select_language_id='. $language->lang_id.'&direct=1';/* <<< [PAID] <<< */
 
         }
 
@@ -381,8 +381,8 @@ class plgSystemFalangquickjump extends CMSPlugin
             $publish = (isset($actContentObject->published) && $actContentObject->published == 1 )?" icon-publish":" icon-unpublish";
 
             //free and paid mmust be on 1 line
-            /* >>> [FREE] >>> */$url = 'index.php?option=com_falang&task=translate.editfree&tmpl=component&direct=1';/* <<< [FREE] <<< */
             
+            /* >>> [PAID] >>> */$url = 'index.php?option=com_falang&task=translate.edit&layout=popup&catid=' . $mapping[1] .'&cid[]=0|'.$id.'|'.$language->lang_id.'&select_language_id='. $language->lang_id.'&direct=1';/* <<< [PAID] <<< */
 
             //$newButton = new JToolbarButtonItrPopup('falang-quicktranslate-'.$language->lang_id,$language->title,$option);
             $options = array();

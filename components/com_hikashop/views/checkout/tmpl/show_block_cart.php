@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -272,6 +272,7 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 				$namekey = $field->field_namekey;
 				if(empty($item->$namekey) || !strlen($item->$namekey))
 					continue;
+				$field->currentElement = $item;
 				$edit = true;
 				$html .= '<p class="hikashop_cart_item_'.$namekey.'">'.$this->fieldClass->getFieldName($field).': '.$this->fieldClass->show($field, $item->$namekey).'</p>';
 			}
@@ -331,6 +332,7 @@ if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$
 	if(hikashop_level(1) && !empty($this->extraFields['product'])) {
 		foreach($this->extraFields['product'] as $field) {
 			$namekey = $field->field_namekey;
+			$field->currentElement = $product;
 ?>			<td data-title="<?php echo $this->fieldClass->trans($field->field_realname); ?>" class="hikashop_cart_product_field_<?php echo $namekey; ?>">
 <?php
 			if(!empty($product->$namekey)) {

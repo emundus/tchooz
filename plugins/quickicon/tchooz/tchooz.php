@@ -58,7 +58,7 @@ class plgQuickiconTchooz extends CMSPlugin
 
 		$quickicons = array(
 			array(
-				'link' => Route::_('http://localhost:8383/administrator/index.php?option=com_emundus&view=panel'),
+				'link' => Route::_('/administrator/index.php?option=com_emundus&view=panel'),
 				'image' => 'fa fa-graduation-cap',
 				'text' => Text::_('COM_EMUNDUS'),
 				'group' => 'MOD_QUICKICON_EXTENSIONS',

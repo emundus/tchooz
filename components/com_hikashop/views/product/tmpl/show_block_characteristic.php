@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -233,10 +233,42 @@ if($this->params->get('characteristic_display') != 'list') {
 ?>
 	<script>
 <?php echo $js; ?>
-
+window.hikashop.ready( function() {
+	var elements = document.querySelectorAll('[data-characteristic]');
+	if(elements && elements.length >= 1) {
+		for (index = 0; index < elements.length; ++index) {
+			elements[index].dataset.default = elements[index].selectedIndex;
+		}
+	}
+	elements = document.querySelector('[data-characrow] input');
+	if(elements && elements.length >= 1) {
+		for (index = 0; index < elements.length; ++index) {
+			if(elements[index].checked)
+				elements[index].dataset.defaultchecked = true;
+			else
+				elements[index].dataset.defaultchecked = false;
+		}
+	}
+	window.addEventListener('beforeunload', (event) => {
+		var elements = document.querySelectorAll('[data-characteristic]');
+		if(elements && elements.length >= 1) {
+			for (index = 0; index < elements.length; ++index) {
+				if(elements[index].tagName.toLowerCase() == 'select') {
+					elements[index].selectedIndex = elements[index].dataset.default;
+				}
+			}
+		}
+		elements = document.querySelector('[data-characrow] input');
+		if(elements && elements.length >= 1) {
+			for (index = 0; index < elements.length; ++index) {
+				elements[index].checked = elements[index].dataset.defaultchecked;
+			}
+		}
+	});
 <?php if(($characteristics_dynamic_display && $count > 1) || $characteristics_dynamic_display > 1) { ?>
-window.hikashop.ready( function() { initVariants(); });
+	initVariants();
 <?php } ?>
+});
 function initVariants() {
 	var allRows = document.querySelectorAll('tr[data-characrow]'), first = true,
 	qtyArea = document.getElementById('hikashop_product_quantity_main'), altArea = document.getElementById('hikashop_product_quantity_alt');
@@ -422,7 +454,7 @@ function hikashopVariantSelected(obj) {
 							found = true;
 							lastIndexFound = index;
 							inputs[index].parentNode.style.setProperty('display', '', 'important');
-							if(first== -1 || index == previouslySelected) first = index;
+							if(first == -1 || index == previouslySelected) first = index;
 						}
 					}
 

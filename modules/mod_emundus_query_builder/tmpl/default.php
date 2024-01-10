@@ -95,7 +95,7 @@ header('Content-Type: text/html; charset=utf-8');
         wrapper2.innerHTML = "<a class='closeButtonWelcomeStat' onclick='deleteWelcomeStat()'></a><?php echo JText::_('MOD_EMUNDUS_QUERY_BUILDER_TEXT_WELCOME_STAT'); ?>";
 
         jQuery('.g-content').has('.etiquette').attr('style', 'margin:auto!important');
-        jQuery('.g-content').has('.etiquette').attr('style', 'display:grid;grid-column-gap:15px;grid-row-gap:15px;grid-template-columns:repeat(3, 1fr);margin-bottom:15px!important;');
+        jQuery('.g-content').has('.etiquette').attr('style', 'padding: 14px;display:grid;grid-column-gap:15px;grid-row-gap:15px;grid-template-columns:repeat(3, 1fr);margin-bottom:15px!important;');
         jQuery('.platform-content').attr('style', 'width:100%!important');
         jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);');
         jQuery('.etiquette').attr('style', 'grid-column-end:span 3;');

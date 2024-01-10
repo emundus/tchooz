@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -56,14 +56,15 @@ if (!HIKASHOP_J40)
 		JHTML::_('hikaselect.option', 'no', JText::_('HIKA_NONE')),
 		JHTML::_('hikaselect.option', 'shadowbox', JText::_('shadowbox (external)')),
 		JHTML::_('hikaselect.option', 'shadowbox-embbeded', JText::_('shadowbox (embedded)')),
-		JHTML::_('hikaselect.option', 'without_link', JText::_('WITHOUT_LINK'))
+		JHTML::_('hikaselect.option', 'without_link', JText::_('WITHOUT_LINK')),
+		JHTML::_('hikaselect.option', 'fancybox', JText::_('Fancybox')),
 	);
 	if(!empty($this->popup_plugins['image'])) {
 		foreach($this->popup_plugins['image'] as $k => $v) {
 			$options[] = JHTML::_('hikaselect.option', $k, JText::_($v));
 		}
 	} 
-	echo JHTML::_('select.genericlist', $options, 'config[image_popup_mode]', 'class="custom-select" onchange="return window.localPage.imagepopupmode(this);"', 'value', 'text', $this->config->get('image_popup_mode', 'shadowbox'));
+	echo JHTML::_('select.genericlist', $options, 'config[image_popup_mode]', 'class="custom-select" onchange="return window.localPage.imagepopupmode(this);"', 'value', 'text', $this->config->get('image_popup_mode', 'fancybox'));
 ?>
 <script type="text/javascript">
 if(!window.localPage)

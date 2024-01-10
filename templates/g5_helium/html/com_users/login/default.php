@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Symfony\Component\Yaml\Yaml;
 
 /** @var \Joomla\Component\Users\Site\View\Login\HtmlView $this */
 
@@ -37,7 +38,7 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 
 	if (empty($this->registrationLink)) {
 		if (!empty($this->campaign) && !empty($this->course)) {
-			$this->registrationLink = 'inscription&course=' . $this->course . '&cid=' . $this->campaign;
+			$this->registrationLink = 'inscription?course=' . $this->course . '&cid=' . $this->campaign;
 		}
 		else {
 			$this->registrationLink = 'inscription';
@@ -45,6 +46,15 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 	}
 	$session->set('cid', $this->campaign);
 	$session->set('course', $this->course);
+
+	if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml')) {
+		$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml'));
+		$this->favicon = $yaml['favicon'];
+	}
+
+	if(!file_exists($this->favicon)) {
+		$this->favicon = '/images/custom/favicon.png';
+	}
 
 	echo $this->loadTemplate('login');
 }

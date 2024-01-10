@@ -7,7 +7,7 @@ docker-compose-*.yml
 /components/com_emundus/unittest/logs/
 /components/coverage/
 .phpunit.result.cache
-/tests/tmp/
+/tests/tmp
 /tests/logs/
 
 # IDE AND OS
@@ -29,6 +29,7 @@ docker-compose-*.yml
 !.idea/codeStyles
 !.idea/inspectionProfiles
 !.idea/cssdialects.xml
+.idea/*
 .scannerwork
 workspace.xml
 

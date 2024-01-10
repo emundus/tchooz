@@ -1,13 +1,23 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><div id="hikashop_invoice_main_div">
+?><style>
+@media print
+{
+  #htmlfieldset_products table { page-break-after:auto }
+  #htmlfieldset_products tr    { page-break-inside:avoid; page-break-after:auto }
+  #htmlfieldset_products td    { page-break-inside:avoid; page-break-after:auto }
+  #htmlfieldset_products thead { display:table-header-group }
+  #htmlfieldset_products tfoot { display:table-footer-group }
+}
+</style>
+<div id="hikashop_invoice_main_div">
 	<div id="print" style="float:right">
 		<a class="btn btn-primary" href="#" onclick="document.getElementById('print').style.visibility='hidden';window.focus();window.print();return false;">
 			<i class="fa fa-print"></i> <?php echo JText::_('HIKA_PRINT'); ?>
@@ -263,6 +273,7 @@ if (!empty($this->image_address_path)) {
 			$itemFields = $this->fieldsClass->getFields($type, $product, 'item');
 			if(!empty($itemFields)) {
 				foreach($itemFields as $field) {
+					$field->currentElement = $product;
 					$namekey = $field->field_namekey;
 					if(empty($product->$namekey) && (!isset($product->$namekey) || !strlen($product->$namekey))) {
 						continue;
@@ -310,6 +321,7 @@ if (!empty($this->image_address_path)) {
 				foreach($productFields as $field){
 					$namekey = $field->field_namekey;
 					$productData = @$this->products[$product->product_id];
+					$field->currentElement = $productData;
 ?>
 								<td><?php
 									if(!empty($productData->$namekey))
@@ -521,6 +533,7 @@ if (!empty($this->image_address_path)) {
 					<table class="hikashop_order_custom_fields_table adminlist" cellpadding="1" width="100%">
 <?php
 			foreach($fields as $fieldName => $oneExtraField) {
+				$oneExtraField->currentElement = $this->order;
 ?>
 						<tr class="hikashop_order_custom_field_<?php echo $fieldName;?>_line">
 							<td class="key">
@@ -575,6 +588,7 @@ if (!empty($this->image_address_path)) {
 					<table class="hikashop_order_custom_fields_table adminlist" cellpadding="1" width="100%">
 <?php
 			foreach($fields as $fieldName => $oneExtraField) {
+				$oneExtraField->currentElement = $this->order;
 ?>
 							<tr class="hikashop_order_custom_field_<?php echo $fieldName;?>_line">
 								<td class="key"><?php

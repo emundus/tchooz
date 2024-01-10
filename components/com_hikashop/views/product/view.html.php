@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -903,6 +903,7 @@ class ProductViewProduct extends HikaShopView {
 
 		if(!empty($pageInfo->filter->order->value)){
 			$order[] = $pageInfo->filter->order->value.' '.$pageInfo->filter->order->dir;
+			$order[] = 'b.product_id ASC';
 		}
 		if($this->params->get('add_to_cart','-1')=='-1'){
 			$defaultParams = $config->get('default_params');

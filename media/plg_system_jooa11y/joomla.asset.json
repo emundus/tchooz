@@ -9,7 +9,7 @@
       "name": "plg_system_jooa11y.jooa11y",
       "type": "style",
       "uri": "plg_system_jooa11y/jooa11y.min.css",
-      "version": "859fb8"
+      "version": "08a54e"
     },
     {
       "name": "plg_system_jooa11y.jooa11y",
@@ -21,7 +21,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "41fdb4"
+      "version": "09867b"
     }
   ]
 }

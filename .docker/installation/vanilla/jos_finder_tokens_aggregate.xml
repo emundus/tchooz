@@ -12,8 +12,8 @@
    <field Field="context_weight" Type="float unsigned" Null="NO" Key="" Default="0" Extra="" />
    <field Field="total_weight" Type="float unsigned" Null="NO" Key="" Default="0" Extra="" />
    <field Field="language" Type="char(7)" Null="NO" Key="" Default="" Extra="" />
-   <key Table="#__finder_tokens_aggregate" Non_unique="1" Key_name="token" Seq_in_index="1" Column_name="term" Collation="" Null="" Index_type="HASH" Sub_part="" Comment="" />
-   <key Table="#__finder_tokens_aggregate" Non_unique="1" Key_name="keyword_id" Seq_in_index="1" Column_name="term_id" Collation="" Null="" Index_type="HASH" Sub_part="" Comment="" />
+   <key Table="#__finder_tokens_aggregate" Non_unique="1" Key_name="token" Seq_in_index="1" Column_name="term" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__finder_tokens_aggregate" Non_unique="1" Key_name="keyword_id" Seq_in_index="1" Column_name="term_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
  </database>
 </mysqldump>

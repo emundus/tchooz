@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -187,6 +187,7 @@ window.orderMgr.setAdditionals = function(el) {
 
 	if(!empty($this->fields['order'])) {
 		foreach($this->fields['order'] as $fieldName => $oneExtraField) {
+			$oneExtraField->currentElement = $this->order;
 ?>
 		<tr class="hikashop_order_additional_customfield hikashop_order_additional_customfield_<?php echo $fieldName; ?>">
 			<td class="key"><?php echo $this->fieldsClass->getFieldName($oneExtraField);?></td>

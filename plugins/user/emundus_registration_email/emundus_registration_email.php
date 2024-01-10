@@ -14,6 +14,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailTemplate;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
@@ -126,7 +127,7 @@ class plgUserEmundus_registration_email extends CMSPlugin
     public function onUserAfterSave($user, $isnew, $result, $error) {
 	    $app = Factory::getApplication();
 	    // The method check here ensures that if running as a CLI Application we don't get any errors
-	    if (method_exists($app, 'isClient') && ($app->isClient('site') || $app->isClient('cli'))) {
+	    if (method_exists($app, 'isClient') && ($app->isClient('cli'))) {
 		    return;
 	    }
 
@@ -150,7 +151,7 @@ class plgUserEmundus_registration_email extends CMSPlugin
         $user = Factory::getUser($userId);
         $eMConfig = ComponentHelper::getParams('com_emundus');
 
-        if (!$isnew || !Factory::getUser()->guest) {
+        if (!$isnew || !Factory::getApplication()->getIdentity()->guest) {
             return;
         }
 
@@ -174,6 +175,29 @@ class plgUserEmundus_registration_email extends CMSPlugin
                 return;
             }
         }
+
+	    if (PluginHelper::getPlugin('system','emundusproxyredirect')) {
+		    $params = json_decode(PluginHelper::getPlugin('system','emundusproxyredirect')->params, true);
+		    $http_headers = $_SERVER;
+
+		    if($params['test_mode'] == 1) {
+			    $http_headers = [
+				    'username' => 'developer',
+				    'email'    => 'dev@emundus.io'
+			    ];
+
+			    $login_route = Uri::root().'connexion';
+			    $current_route = Uri::getInstance()->toString();
+
+			    if($current_route != $login_route) {
+				    return false;
+			    }
+		    }
+
+		    if(!empty($http_headers[$params['username']]) && !empty($http_headers[$params['email']])) {
+			    return false;
+		    }
+	    }
 
         if ($result && !$error) {
             // for anonym sessions
@@ -205,9 +229,9 @@ class plgUserEmundus_registration_email extends CMSPlugin
             // Send activation email
             if ($this->sendActivationEmail($user->getProperties(), $activation)) {
                 //Force user logout
-                if ($this->params->get('logout', null) && $userId === (int) JFactory::getUser()->id) {
+                if ($this->params->get('logout', null) && $userId === (int) Factory::getApplication()->getIdentity()->id) {
                     $this->app->logout();
-                    $this->app->redirect(JRoute::_(''), false);
+                    $this->app->redirect(Route::_(''), false);
                 }
             }
 
@@ -231,7 +255,7 @@ class plgUserEmundus_registration_email extends CMSPlugin
      */
     public function onUserAfterLogin(array $options): void
     {
-        $this->app = JFactory::getApplication();
+        $this->app = Factory::getApplication();
         $query = $this->db->getQuery(true);
 
         $query->select($this->db->quoteName(array('id','block', 'params')))
@@ -309,16 +333,13 @@ class plgUserEmundus_registration_email extends CMSPlugin
         $c_messages = new EmundusControllerMessages();
 
         $userID = (int) $data['id'];
-        $baseURL = rtrim(JURI::root(), '/');
+        $baseURL = rtrim(Uri::root(), '/');
         $md5Token = md5($token);
-
-        // Compile the user activated notification mail values.
-        $config = JFactory::getConfig();
 
         // Get a SEF friendly URL or else sites with SEF return 404.
         // WARNING: This requires making a root level menu item in the backoffice going to com_users&task=edit on the slug /activation.
         // TODO: Possibly use JRoute to make this work without needing a menu item?
-        if ($config->get('sef') == 0) {
+        if (Factory::getApplication()->get('sef') == 0) {
             $activation_url_rel = '/index.php?option=com_users&task=edit&emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
         } else {
             $activation_url_rel = '/activation?emailactivation=1&u='.$userID.'&'.$md5Token.'=1';
@@ -329,7 +350,7 @@ class plgUserEmundus_registration_email extends CMSPlugin
             'CIVILITY'      => $civility,
             'USER_NAME'     => $data['name'],
             'USER_EMAIL'    => $data['email'],
-            'SITE_NAME'     => $config->get('sitename'),
+            'SITE_NAME'     => Factory::getApplication()->get('sitename'),
             'ACTIVATION_URL' => $activation_url,
             'ACTIVATION_URL_REL' => $activation_url_rel,
             'BASE_URL'      => $baseURL,

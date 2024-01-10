@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -256,9 +256,12 @@ class hikashopImageHelper {
 		if(function_exists('exif_read_data')) {
 			$exif = @exif_read_data($filename);
 		}
-
-		if(empty($exif['Orientation']))
-			$exif = array('Orientation' => 1);
+		if(empty($exif['Orientation'])) {
+			if(isset($exif['IFD0']['Orientation']))
+				$exif['Orientation'] = $exif['IFD0']['Orientation'];
+			else
+				$exif = array('Orientation' => 1);
+		}
 		$ret['orientation'] = $exif['Orientation'];
 		$ret['autorotate'] = ($ret['orientation'] != 1);
 
@@ -703,7 +706,6 @@ class hikashopImageHelper {
 			default:
 				break;
 		}
-
 		if($rotate != 0) {
 			$old =& $res['res'];
 			unset($res['res']);
@@ -907,7 +909,7 @@ class hikashopImageHelper {
 				list($ret->width, $ret->height) = getimagesize($cachePath . $destFolder . DS . $filename);
 
 
-				if($config->get('add_webp_images', 1) && function_exists('imagewebp')) {
+				if($this->needWebp($extension)) {
 
 					$status = true;
 					$webpfile = preg_replace('#\.'. $extension.'$#i','.webp', $filename);
@@ -945,7 +947,7 @@ class hikashopImageHelper {
 			else
 				$ret->url = $ret->origin_url;
 
-			if($config->get('add_webp_images', 1) && function_exists('imagewebp') && empty($ret->default_image)) {
+			if($this->needWebp($extension) && empty($ret->default_image)) {
 				$webpfile = preg_replace('#\.'. $extension.'$#i','.webp', $fullFilename);
 				$status = true;
 				if(!JFile::exists($webpfile)) {
@@ -1061,7 +1063,7 @@ class hikashopImageHelper {
 			if(empty($ret->origin_url))
 				$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
 
-			if($config->get('add_webp_images', 1) && function_exists('imagewebp')) {
+			if($this->needWebp($resThumb['ext'])) {
 				if(empty($options['webp_quality']))
 					$options['webp_quality'] = $config->get('webp_image_quality', 80);
 				$webpfile = preg_replace('#\.'. $resThumb['ext'].'$#i','.webp', $filename);
@@ -1087,6 +1089,11 @@ class hikashopImageHelper {
 		$this->freeRes($resThumb);
 
 		return $ret;
+	}
+
+	private function needWebp($extension) {
+		$config = hikashop_config();
+		return $config->get('add_webp_images', 1) && function_exists('imagewebp') && !in_array($extension, array('svg', 'webp'));
 	}
 
 
@@ -1358,8 +1365,11 @@ window.hikashop.ready( function() {
 			$watermark_name = $options['watermark'];
 		}
 
+		$extension = strtolower(substr($file_path,strrpos($file_path,'.')+1));
+
 		$ok = true;
-		if(($image_x || $image_y) || !empty($watermark_name)){
+		if(!in_array($extension, array('svg')) && (($image_x || $image_y) || !empty($watermark_name))){
+
 			$new = getimagesize($this->uploadFolder . $file_path);
 			$this->width=$new[0];
 			$this->height=$new[1];

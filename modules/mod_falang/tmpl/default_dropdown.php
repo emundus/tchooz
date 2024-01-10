@@ -62,20 +62,18 @@ use Joomla\CMS\HTML\HTMLHelper;
         </script>
 
         
-
-        <!-- >>> [FREE] >>> -->
-    <?php foreach($list as $language):?>
-        <?php if ($language->active) :?>
-        <a href="javascript:;" class="langChoose">
-            <?php if ($params->get('image', 1)):?>
-                <?php echo HTMLHelper::_('image', 'mod_falang/'.$language->image.'.gif', $language->title_native, array('title'=>$language->title_native), $relativePath);?>
-            <?php else : ?>
-                <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
+        <?php foreach($list as $language):?>
+            <?php if ($language->active) :?>
+                <a href="javascript:;" class="langChoose">
+                   <?php if ($params->get('image', 1)):?>
+                      <?php echo HTMLHelper::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
+                   <?php else : ?>
+                       <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
+                   <?php endif; ?>
+                    <span class="caret"></span>
+                </a>
             <?php endif; ?>
-            <span class="caret"></span>
-        </a>
-    <?php endif; ?>
-    <?php endforeach;?>
+        <?php endforeach;?>
         <ul class="<?php echo $params->get('inline', 1) ? 'lang-inline' : 'lang-block';?>">
             <?php foreach($list as $language):?>
                 <?php if ($params->get('show_active', 0) || !$language->active):?>
@@ -83,19 +81,19 @@ use Joomla\CMS\HTML\HTMLHelper;
                         <?php if ($language->display) { ?>
                             <a href="<?php echo $language->link;?>">
                                 <?php if ($params->get('image', 1)):?>
-                                    <?php echo HTMLHelper::_('image', 'mod_falang/'.$language->image.'.gif', $language->title_native, array('title'=>$language->title_native), $relativePath);?>
+                                   <?php echo HTMLHelper::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
                                 <?php endif; ?>
                                 <?php if ($params->get('show_name', 1)):?>
-                                    <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
+                                   <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
                                 <?php endif; ?>
                                 <?php if($language->active){?> <i class="fa fa-check lang_checked"></i> <?php } ?>
                             </a>
                         <?php } else { ?>
                             <?php if ($params->get('image', 1)):?>
-                                <?php echo HTMLHelper::_('image', 'mod_falang/'.$language->image.'.gif', $language->title_native, array('title'=>$language->title_native,'style'=>'opacity:0.5'), $relativePath);?>
+                                <?php echo HTMLHelper::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native,'style'=>'opacity:0.5'), $relativePath);?>
                             <?php else : ?>
                                 <?php if ($params->get('show_name', 1)):?>
-                                    <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
+                                  <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
                                 <?php endif; ?>
                                 <?php if($language->active){?> <i class="fa fa-check lang_checked"></i> <?php } ?>
                             <?php endif; ?>
@@ -104,7 +102,9 @@ use Joomla\CMS\HTML\HTMLHelper;
                 <?php endif;?>
             <?php endforeach;?>
         </ul>
-        <!-- <<< [FREE] <<< -->
+        
+
+        
     <?php endif; ?>
 </form>
 

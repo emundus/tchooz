@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -55,7 +55,12 @@ if(empty($this->ajax)) {
 		$after = array();
 		foreach($fields as $fieldName => $oneExtraField) {
 			$oneExtraField->registration_page = @$this->registration_page;
-			$value = (isset($_SESSION['hikashop_order_data']) && is_object($_SESSION['hikashop_order_data']) && isset($_SESSION['hikashop_order_data']->$fieldName) && !is_null($_SESSION['hikashop_order_data']->$fieldName)) ? $_SESSION['hikashop_order_data']->$fieldName : @$cart->cart_fields->$fieldName;
+			if(isset($_SESSION['hikashop_order_data']) && is_object($_SESSION['hikashop_order_data']) && isset($_SESSION['hikashop_order_data']->$fieldName) && !is_null($_SESSION['hikashop_order_data']->$fieldName)) {
+				$element = $_SESSION['hikashop_order_data'];
+			} else {
+				$element = $cart->cart_fields;
+			}
+			$value = @$element->$fieldName;
 
 			if(empty($value) && !empty($this->options['read_only']))
 				continue;
@@ -78,6 +83,7 @@ if(empty($this->ajax)) {
 					continue;
 				}
 			}else{
+				$oneExtraField->currentElement = $element;
 				$html = $this->fieldClass->show($oneExtraField, $value);
 			}
 

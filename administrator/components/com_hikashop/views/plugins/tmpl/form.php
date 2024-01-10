@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -252,6 +252,22 @@ function hika_payment_algorithm(el) {
 					</td>
 					<td>
 						<input type="text" id="shipping_price_per_product" name="data[shipping][shipping_params][shipping_price_per_product]" value="<?php echo @$this->element->shipping_params->shipping_price_per_product; ?>" />
+					</td>
+				</tr>
+				<tr id="hikashop_price_per_product_mode_1"<?php if($this->element->shipping_params->shipping_per_product == false) { echo ' style="display:none;"';}?>>
+					<td class="key">
+						<label for="shipping_price_per_product_mode"><?php
+							echo JText::_( 'PRICE_PER_PRODUCT_MODE' );
+						?></label>
+					</td>
+					<td>
+						<?php
+						$values = array(
+							JHTML::_('select.option', 'sum', JText::_('SUM_ALL_SHIPPING_PRICES')),
+							JHTML::_('select.option', 'highest', JText::_('SELECT_HIGHEST_SHIPPING_PRICE')),
+						);
+						echo JHTML::_('select.genericlist', $values, "data[shipping][shipping_params][price_per_product_mode]" , '', 'value', 'text', @$this->element->shipping_params->price_per_product_mode);
+						?>
 					</td>
 				</tr>
 				<tr>

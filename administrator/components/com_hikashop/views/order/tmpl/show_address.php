@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -89,6 +89,7 @@ window.orderMgr.<?php echo $this->type;?>_history_changed = function(el) {
 		echo JHTML::_( 'form.token' );
 	} else {
 		foreach($this->order->$fields_type as $field){
+			$field->currentElement = $address;
 			if($field->$display){
 				$fieldname = $field->field_namekey;
 ?>

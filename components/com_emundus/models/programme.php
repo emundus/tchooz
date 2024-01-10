@@ -16,10 +16,12 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Component\ComponentHelper;
 
-class EmundusModelProgramme extends JModelList
+class EmundusModelProgramme extends ListModel
 {
 	private $app;
 	private $_em_user;
@@ -32,19 +34,11 @@ class EmundusModelProgramme extends JModelList
 		parent::__construct();
 
 		$this->app = Factory::getApplication();
-
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->_db      = Factory::getContainer()->get('DatabaseDriver');
-			$this->_em_user = $this->app->getSession()->get('emundusUser');
-			$this->_user    = $this->app->getIdentity();
-			$this->config   = $this->app->getConfig();
-		}
-		else {
-			$this->_db      = Factory::getDBO();
-			$this->_em_user = Factory::getSession()->get('emundusUser');
-			$this->_user    = Factory::getUser();
-			$this->config   = Factory::getConfig();
-		}
+		
+		$this->_db      = Factory::getContainer()->get('DatabaseDriver');
+		$this->_em_user = $this->app->getSession()->get('emundusUser');
+		$this->_user    = $this->app->getIdentity();
+		$this->config   = $this->app->getConfig();
 	}
 
 	/**
@@ -104,7 +98,7 @@ class EmundusModelProgramme extends JModelList
 				$associated_programs = $this->_db->loadColumn();
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting associated programmes in model/programme at query : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Error getting associated programmes in model/programme at query : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -154,8 +148,7 @@ class EmundusModelProgramme extends JModelList
 	}
 
 	/**
-	 * @param $published  int     get published or unpublished programme
-	 * @param $codeList   array   array of IN and NOT IN programme code to get
+	 * @param $code
 	 *
 	 * @return mixed
 	 * get list of declared programmes
@@ -222,7 +215,7 @@ class EmundusModelProgramme extends JModelList
 				return $this->_db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 
 				return $e->getMessage();
 			}
@@ -260,7 +253,7 @@ class EmundusModelProgramme extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 
 				return $e->getMessage();
 			}
@@ -294,7 +287,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting latest programme at model/programme at query :' . $query, JLog::ERROR, 'com_emundus');
+			Log::add('Error getting latest programme at model/programme at query :' . $query, Log::ERROR, 'com_emundus');
 
 			return '';
 		}
@@ -496,16 +489,18 @@ class EmundusModelProgramme extends JModelList
 	 * @param $sort
 	 * @param $recherche
 	 *
-	 * @return stdClass
+	 * @return array
 	 *
 	 * @since version 1.0
 	 */
-	function getAllPrograms($lim = 'all', $page = 0, $filter = null, $sort = 'DESC', $recherche = null)
+	function getAllPrograms($lim = 'all', $page = 0, $filter = null, $sort = 'DESC', $recherche = null, $user = null)
 	{
+		if(empty($user)) {
+			$user = $this->_user;
+		}
 		$all_programs = [];
 
 		// Get affected programs
-		$user     = JFactory::getUser();
 		$programs = $this->getUserPrograms($user->id);
 		//
 
@@ -565,14 +560,14 @@ class EmundusModelProgramme extends JModelList
 				$this->_db->setQuery($query);
 				$all_programs['count'] = count($this->_db->loadObjectList());
 
-				$db->setQuery($query, $offset, $limit);
+				$this->_db->setQuery($query, $offset, $limit);
 
 				$programs = $this->_db->loadObjectList();
 
 				$all_programs['datas'] = $programs;
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/program | Error at getting list of programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/program | Error at getting list of programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -628,7 +623,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting number of programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting number of programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -675,7 +670,7 @@ class EmundusModelProgramme extends JModelList
 			return $programme;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting program by id ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting program by id ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -792,7 +787,7 @@ class EmundusModelProgramme extends JModelList
 					);
 				}
 				catch (Exception $e) {
-					JLog::add('component/com_emundus/models/program | Error when creating a program : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+					Log::add('component/com_emundus/models/program | Error when creating a program : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 					$response = $e->getMessage();
 				}
 
@@ -849,7 +844,7 @@ class EmundusModelProgramme extends JModelList
 						}
 					}
 					catch (Exception $e) {
-						JLog::add('component/com_emundus/models/program | Error when updating the program ' . $id . ': ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+						Log::add('component/com_emundus/models/program | Error when updating the program ' . $id . ': ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 					}
 				}
 			}
@@ -897,7 +892,7 @@ class EmundusModelProgramme extends JModelList
 					$campaign_deleted = $m_campaign->deleteCampaign($campaigns);
 
 					if (!$campaign_deleted) {
-						JLog::add('Campaign has not been deleted', JLog::ERROR, 'com_emundus');
+						Log::add('Campaign has not been deleted', Log::ERROR, 'com_emundus');
 					}
 				}
 
@@ -914,7 +909,7 @@ class EmundusModelProgramme extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/program | Error wen delete programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+				Log::add('component/com_emundus/models/program | Error wen delete programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -956,7 +951,7 @@ class EmundusModelProgramme extends JModelList
 				return $this->_db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/program | Error when unpublish programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/program | Error when unpublish programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return $e->getMessage();
 			}
@@ -1002,7 +997,7 @@ class EmundusModelProgramme extends JModelList
 				return $this->_db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/program | Error when publish programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/program | Error when publish programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return $e->getMessage();
 			}
@@ -1044,7 +1039,7 @@ class EmundusModelProgramme extends JModelList
 			$categories = $tmp;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting program categories : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting program categories : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $categories;
@@ -1076,7 +1071,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting teaching unities of the program ' . $code . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting teaching unities of the program ' . $code . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return new stdClass();
 		}
@@ -1138,7 +1133,7 @@ class EmundusModelProgramme extends JModelList
 			return $users;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting users that can be affected to the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting users that can be affected to the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return [];
 		}
@@ -1210,7 +1205,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting users that can be affected to the group with a search term ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting users that can be affected to the group with a search term ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return [];
 		}
@@ -1241,7 +1236,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting administrators of the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting administrators of the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return [];
 		}
@@ -1271,7 +1266,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting evaluators of the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting evaluators of the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return [];
 		}
@@ -1315,7 +1310,7 @@ class EmundusModelProgramme extends JModelList
 			return $uid;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Cannot affect the user ' . $email . ' to the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Cannot affect the user ' . $email . ' to the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1352,7 +1347,7 @@ class EmundusModelProgramme extends JModelList
 				$this->_db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/program | Cannot affect users to the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/program | Cannot affect users to the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -1390,7 +1385,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Cannot remove user ' . $userid . ' from the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Cannot remove user ' . $userid . ' from the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1476,7 +1471,7 @@ class EmundusModelProgramme extends JModelList
 			);
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting users : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting users : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return [];
 		}
@@ -1506,7 +1501,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting users without applicants : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting users without applicants : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return [];
 		}
@@ -1541,7 +1536,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting users by term without applicants : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting users by term without applicants : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return [];
 		}
@@ -1629,7 +1624,7 @@ class EmundusModelProgramme extends JModelList
 							$this->_db->execute();
 						}
 						catch (Exception $e) {
-							JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+							Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 						}
 
 						$query->clear()
@@ -1641,7 +1636,7 @@ class EmundusModelProgramme extends JModelList
 							$this->_db->execute();
 						}
 						catch (Exception $e) {
-							JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+							Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 						}
 					}
 				}
@@ -1658,7 +1653,7 @@ class EmundusModelProgramme extends JModelList
 					$this->_db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 				}
 
 				$query->clear()
@@ -1670,7 +1665,7 @@ class EmundusModelProgramme extends JModelList
 					$this->_db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 				}
 			}
 			else {
@@ -1683,7 +1678,7 @@ class EmundusModelProgramme extends JModelList
 					$this->_db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 				}
 
 				$query->clear()
@@ -1695,7 +1690,7 @@ class EmundusModelProgramme extends JModelList
 					$this->_db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 				}
 			}
 		}
@@ -1767,18 +1762,18 @@ class EmundusModelProgramme extends JModelList
 						$this->_db->execute();
 					}
 					catch (Exception $e) {
-						JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+						Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 					}
 				}
 
 				return $newgroup;
 			}
 			catch (Exception $e) {
-				JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 		catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -1811,7 +1806,7 @@ class EmundusModelProgramme extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting evaluation grid of the program ' . $pid . ': ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting evaluation grid of the program ' . $pid . ': ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1854,7 +1849,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Cannot affect fabrik_group ' . $group . ' to program ' . $pid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Cannot affect fabrik_group ' . $group . ' to program ' . $pid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1899,7 +1894,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Cannot remove fabrik_group ' . $group . ' from the program ' . $pid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Cannot remove fabrik_group ' . $group . ' from the program ' . $pid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2142,7 +2137,7 @@ class EmundusModelProgramme extends JModelList
 						$query = $this->_db->getQuery(true);
 					}
 					catch (Exception $e) {
-						JLog::add('component/com_emundus/models/program | Cannot create a grid from the model ' . $model . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+						Log::add('component/com_emundus/models/program | Cannot create a grid from the model ' . $model . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 						return false;
 					}
@@ -2170,7 +2165,7 @@ class EmundusModelProgramme extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Cannot create a grid from the model ' . $model . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Cannot create a grid from the model ' . $model . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2203,7 +2198,7 @@ class EmundusModelProgramme extends JModelList
 			return $models;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting evaluation models : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting evaluation models : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2316,7 +2311,7 @@ class EmundusModelProgramme extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Cannot create a grid in the program' . $pid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Cannot create a grid in the program' . $pid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2353,7 +2348,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at delete the grid ' . $grid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at delete the grid ' . $grid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2395,7 +2390,7 @@ class EmundusModelProgramme extends JModelList
 				$user_programs = $progs;
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/program | Error at getting programs of the user ' . $user_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/program | Error at getting programs of the user ' . $user_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -2443,7 +2438,7 @@ class EmundusModelProgramme extends JModelList
 			return $groups;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting groups of programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting groups of programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2524,7 +2519,7 @@ class EmundusModelProgramme extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Cannot add the group ' . $parent . ' to the program ' . $code . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Cannot add the group ' . $parent . ' to the program ' . $code . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2554,7 +2549,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting groups by parent ' . $parent . ' of the program ' . $code . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting groups by parent ' . $parent . ' of the program ' . $code . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2582,7 +2577,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting campaigns by program ' . $program . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting campaigns by program ' . $program . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2601,7 +2596,7 @@ class EmundusModelProgramme extends JModelList
 			return $this->_db->loadColumn();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/program | Error at getting sessions : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/program | Error at getting sessions : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return [];
 		}

@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopGoogle_products extends \Joomla\CMS\Plugin\CMSPlugin {
+class plgHikashopGoogle_products extends JPlugin {
 	public $error = '';
 
 	function onHikashopCronTrigger(&$messages) {
@@ -88,6 +88,7 @@ class plgHikashopGoogle_products extends \Joomla\CMS\Plugin\CMSPlugin {
 
 		if(empty($xml)) {
 			if(!empty($this->error)) {
+				$app = JFactory::getApplication();
 				$app->enqueueMessage($this->error, 'error');
 			}
 			return;
@@ -116,7 +117,7 @@ class plgHikashopGoogle_products extends \Joomla\CMS\Plugin\CMSPlugin {
 		$pluginsClass = hikashop_get('class.plugins');
 		$plugin = $pluginsClass->getByName('hikashop','google_products');
 
-		if(empty($plugin->params)) {
+		if(empty($plugin->params) || !isset($plugin->params['in_stock_only'])) {
 			$this->error = 'Please configure the Google Products plugin\'s settings and save them before generating the XML feed.';
 			return '';
 		}
@@ -219,7 +220,7 @@ class plgHikashopGoogle_products extends \Joomla\CMS\Plugin\CMSPlugin {
 
 		$query = 'SELECT DISTINCT b.* FROM '.hikashop_table('category').' AS a LEFT JOIN '.
 					hikashop_table('category').' AS b ON a.category_left >= b.category_left WHERE '.
-					'b.category_right >= a.category_right AND a.category_id IN ('.$catList.') AND a.category_published=1 AND a.category_type=\'product\' AND b.category_id!='.$parentCatId.' '.
+					'b.category_right >= a.category_right AND a.category_id IN ('.$catList.') AND a.category_published=1 AND a.category_type=\'product\' '.
 					'ORDER BY b.category_left';
 		$db->setQuery($query);
 		$categories = $db->loadObjectList();
@@ -601,12 +602,15 @@ class plgHikashopGoogle_products extends \Joomla\CMS\Plugin\CMSPlugin {
 
 
 	function _connectionToGoogleDB($login, $pwd, $xml, $plugin, $name){
-		$ftp = new \phpseclib3\Net\SFTP("partnerupload.google.com",19321);
-
-		if(!$ftp->login($login, $pwd))
-			return "Could not login to uploads.google.com. Please check the FTP credentials in the google products plugin settings.";
-
-		$ftp->write($name, $xml);
+		try {
+			$ftp = new \phpseclib3\Net\SFTP("partnerupload.google.com",19321);
+			$result = $ftp->login($login, $pwd);
+			if(!$result)
+				return "Could not login to uploads.google.com. Please check the FTP credentials in the google products plugin settings.";
+			$ftp->write($name, $xml);
+		} catch(Exception $e) {
+			return $e->getMessage();
+		}
 		return true;
 	}
 

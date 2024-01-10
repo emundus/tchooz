@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -54,6 +54,7 @@ if(hikashop_level(2) && !empty($this->fields['item'])) {
 if(hikashop_level(2) && !empty($this->fields['product'])) {
 	foreach($this->fields['product'] as $field) {
 		$namekey = $field->field_namekey;
+		$field->currentElement = $this->cart_product;
 ?>
 			<td><?php
 		if(!empty($this->cart_product->$namekey))

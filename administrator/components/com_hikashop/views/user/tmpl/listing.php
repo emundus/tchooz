@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.2
  * @author	hikashop.com
  * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -98,6 +98,9 @@ if ($this->pageInfo->filter->filter_partner == 1)
 <?php
 	}
 ?>
+			<th class="hikashop_user_number_of_purchases_title title default" data-alias="number_of_purchases"><?php
+				echo JText::_('NUMBER_OF_PURCHASES');
+?></th>
 			<th class="title"><?php
 				echo JHTML::_('grid.sort', JText::_('ID'), 'huser.user_id', $this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value);
 			?></th>
@@ -142,6 +145,7 @@ if ($this->pageInfo->filter->filter_partner == 1)
 <?php
 		if(!empty($this->fields)){
 			foreach($this->fields as $field){
+				$field->currentElement = $row;
 				$namekey = $field->field_namekey;
 				echo '<td>'.$this->fieldsClass->show($field,$row->$namekey).'</td>';
 			}
@@ -161,6 +165,12 @@ if ($this->pageInfo->filter->filter_partner == 1)
 				?>
 			</td>
 <?php }?>
+
+			<td class="hikashop_user_number_of_purchases_value">
+				<?php
+					echo $row->number_of_purchases;
+				?>
+			</td>
 			<td width="1%"><?php
 				echo (int)$row->user_id;
 			?></td>
