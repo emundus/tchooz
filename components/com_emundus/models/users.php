@@ -3973,23 +3973,29 @@ class EmundusModelUsers extends JModelList
 
 	public function getIdentityPhoto($fnum, $applicant_id)
 	{
-		try {
-			$query = $this->db->getQuery(true);
+		$attachment_id = ComponentHelper::getParams('com_emundus')->get('photo_attachment', '');
 
-			$query->select('filename')
-				->from($this->db->quoteName('#__emundus_uploads'))
-				->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum))
-				->andWhere($this->db->quoteName('attachment_id') . ' = 10');
-			$this->db->setQuery($query);
-			$filename = $this->db->loadResult();
+		if(!empty($attachment_id)) {
+			try {
+				$query = $this->db->getQuery(true);
 
-			if (!empty($filename)) {
-				return EMUNDUS_PATH_REL . $applicant_id . '/' . $filename;
+				$query->select('filename')
+					->from($this->db->quoteName('#__emundus_uploads'))
+					->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum))
+					->andWhere($this->db->quoteName('attachment_id') . ' = ' . $attachment_id);
+				$this->db->setQuery($query);
+				$filename = $this->db->loadResult();
+
+				if (!empty($filename)) {
+					return EMUNDUS_PATH_REL . $applicant_id . '/' . $filename;
+				}
 			}
-		}
-		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			catch (Exception $e) {
+				JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 
+				return '';
+			}
+		} else {
 			return '';
 		}
 	}

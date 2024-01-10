@@ -20,6 +20,7 @@ require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
 
 /**
  * Class EmundusModelFiles
@@ -1835,24 +1836,28 @@ class EmundusModelFiles extends JModelLegacy
 		$photos = array();
 		$query  = $this->_db->getQuery(true);
 
-		try {
-			$query->select('emu.id, emu.user_id, c.fnum, emu.filename')
-				->from($this->_db->quoteName('#__emundus_uploads', 'emu'))
-				->join('LEFT', $this->_db->quoteName('#__emundus_campaign_candidature', 'c') . ' ON (' . $this->_db->quoteName('c.applicant_id') . ' = ' . $this->_db->quoteName('emu.user_id') . ')')
-				->where($this->_db->quoteName('attachment_id') . ' = 10');
+		$attachment_id = ComponentHelper::getParams('com_emundus')->get('photo_attachment', '');
 
-			if (count($fnums) > 0) {
-				$query->where($this->_db->quoteName('c.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')')
-					->group($this->_db->quoteName('emu.fnum'));
+		if(!empty($attachment_id)) {
+			try {
+				$query->select('emu.id, emu.user_id, c.fnum, emu.filename')
+					->from($this->_db->quoteName('#__emundus_uploads', 'emu'))
+					->join('LEFT', $this->_db->quoteName('#__emundus_campaign_candidature', 'c') . ' ON (' . $this->_db->quoteName('c.applicant_id') . ' = ' . $this->_db->quoteName('emu.user_id') . ')')
+					->where($this->_db->quoteName('attachment_id') . ' = ' . $attachment_id);
+
+				if (count($fnums) > 0) {
+					$query->where($this->_db->quoteName('c.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')')
+						->group($this->_db->quoteName('emu.fnum'));
+				}
+
+				$this->_db->setQuery($query);
+				$photos = $this->_db->loadAssocList('fnum');
+
 			}
-
-			$this->_db->setQuery($query);
-			$photos = $this->_db->loadAssocList('fnum');
-
-		}
-		catch (Exception $e) {
-			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			catch (Exception $e) {
+				echo $e->getMessage();
+				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
 		}
 
 		return $photos;
