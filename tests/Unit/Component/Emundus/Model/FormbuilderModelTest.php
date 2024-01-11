@@ -41,15 +41,14 @@ class FormbuilderModelTest extends UnitTestCase
 
 		$this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', $reference_id);
 		$new_key = $this->model->formsTrad('ELEMENT_TEST', ['fr' => $new_trad, 'en' => 'My test element'], $reference_id);
-
-		$this->assertNotEmpty($new_key, 'La fonction de traduction a fonctionné');
-
+		$this->assertNotFalse($new_key, 'La fonction de traduction a fonctionné');
 		
 		$query = $this->db->getQuery(true);
 
 		$query->select('override')
 			->from('#__emundus_setup_languages')
-			->where('reference_id = ' . $reference_id);
+			->where('reference_id = ' . $reference_id)
+			->andWhere('lang_code = ' . $this->db->quote('fr-FR'));
 
 		$this->db->setQuery($query);
 		$override = $this->db->loadResult();
@@ -112,7 +111,7 @@ class FormbuilderModelTest extends UnitTestCase
 
 		$this->assertSame($form->label, 'FORM_' . $prid . '_' . $form_id, 'Le label du formulaire est bien formaté.');
 		$this->assertSame($form->intro, '<p>' . 'FORM_' . $prid . '_INTRO_' . $form_id . '</p>', "L'introduction du formulaire est bien formaté");
-		$this->assertSame($form->published, '1', 'Le formulaire est bien publié à sa création');
+		$this->assertSame((int)$form->published, 1, 'Le formulaire est bien publié à sa création');
 
 		$deleted = $this->h_dataset->deleteSampleForm($form_id);
 		$this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
@@ -268,8 +267,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertEquals(0, $new_form_id, 'Copy form returns 0 if no form does not exists');
 
 		$new_form_id = $this->model->copyForm(102, 'Test Unitaire - ');
-		$this->assertNotEmpty($new_form_id, 'La copie de formulaire fonctionne');
-
+		$this->assertGreaterThan(0, $new_form_id, 'La copie de formulaire fonctionne');
 		
 		$query = $this->db->getQuery(true);
 

@@ -179,8 +179,9 @@ class EmundusModelFormbuilder extends JModelList
 	 */
 	function formsTrad($labelTofind, $NewSubLabel, $element = null, $group = null, $page = null)
 	{
+		$new_key = '';
+
 		try {
-			
 			$query = $this->db->getQuery(true);
 
 			if (!empty($element)) {
@@ -189,6 +190,7 @@ class EmundusModelFormbuilder extends JModelList
 					$query->update($this->db->quoteName('#__fabrik_elements'))
 						->set($this->db->quoteName('label') . ' = ' . $this->db->quote($new_key))
 						->where($this->db->quoteName('id') . ' = ' . $this->db->quote($element));
+
 					$this->db->setQuery($query);
 					$this->db->execute();
 				}
@@ -221,14 +223,14 @@ class EmundusModelFormbuilder extends JModelList
 			else {
 				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel);
 			}
-
-			return $new_key;
 		}
 		catch (Exception $e) {
+			error_log($e->getMessage());
 			JLog::add('component/com_emundus/models/formbuilder | Error when update the translation of ' . $labelTofind . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-			return false;
+			$new_key = false;
 		}
+
+		return $new_key;
 	}
 
 	/** END TRANSLATION SYSTEM */
@@ -4143,7 +4145,7 @@ class EmundusModelFormbuilder extends JModelList
 				$query->clear();
 				$query->insert($this->db->quoteName('#__fabrik_forms'));
 				foreach ($form_model as $key => $val) {
-					if ($key != 'id') {
+					if ($key != 'id' && !is_null($val)) {
 						$query->set($key . ' = ' . $this->db->quote($val));
 					}
 				}
@@ -4169,7 +4171,6 @@ class EmundusModelFormbuilder extends JModelList
 							$labels_to_duplicate[$language->sef] = $label_prefix . $this->getTranslation($form_model->label, $language->lang_code);
 						}
 						$this->translate('FORM_MODEL_' . $new_form_id, $labels_to_duplicate, 'fabrik_forms', $new_form_id, 'label');
-
 					}
 				}
 				catch (Exception $e) {

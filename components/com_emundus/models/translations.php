@@ -624,6 +624,9 @@ class EmundusModelTranslations extends JModelList
 			$tag = $this->generateNewTag($tag, $reference_table, $reference_id);
 		}
 
+		error_log($tag);
+
+
 		$query = $this->_db->getQuery(true);
 		$user  = JFactory::getUser();
 
@@ -653,13 +656,13 @@ class EmundusModelTranslations extends JModelList
 						->set($this->_db->qn('original_text') . ' = ' . $this->_db->q($override))
 						->set($this->_db->qn('original_md5') . ' = ' . $this->_db->q(md5($override)))
 						->set($this->_db->qn('created_by') . ' = ' . $this->_db->q($user->id))
-						->set($this->_db->qn('created_date') . ' = ' . $this->_db->q(time()));
+						->set($this->_db->qn('created_date') . ' = ' . $this->_db->q(date('Y-m-d H:i:s')));
 				}
 
 				$query->set($this->_db->quoteName('override') . ' = ' . $this->_db->quote($override))
 					->set($this->_db->quoteName('override_md5') . ' = ' . $this->_db->quote(md5($override)))
 					->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user->id))
-					->set($this->_db->quoteName('modified_date') . ' = ' . time())
+					->set($this->_db->quoteName('modified_date') . ' = ' .$this->_db->quote(date('Y-m-d H:i:s')))
 					->set($this->_db->quoteName('location') . ' = ' . $this->_db->quote($location));
 
 				if (!empty($reference_table)) {
@@ -702,6 +705,8 @@ class EmundusModelTranslations extends JModelList
 		}
 			// @codeCoverageIgnoreStart
 		catch (Exception $e) {
+
+			error_log($e->getMessage());
 			JLog::add('Problem when try to update translation ' . $tag . ' into file ' . $location . ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
 
 			return false;
