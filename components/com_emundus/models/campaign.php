@@ -167,7 +167,7 @@ class EmundusModelCampaign extends JModelList
 					$query .= ' AND id NOT IN (
 								select campaign_id
 								from #__emundus_campaign_candidature
-								where applicant_id=' . $uid . '
+								where applicant_id=' . $uid . ' and published <> -1
 							)';
 					break;
 				// Applicant can only have one file per year.
@@ -176,7 +176,7 @@ class EmundusModelCampaign extends JModelList
 								select sc.year
 								from #__emundus_campaign_candidature as cc
 								LEFT JOIN #__emundus_setup_campaigns as sc ON sc.id = cc.campaign_id
-								where applicant_id=' . $uid . '
+								where cc.applicant_id=' . $uid . ' and cc.published <> -1
 							)';
 					break;
 			}

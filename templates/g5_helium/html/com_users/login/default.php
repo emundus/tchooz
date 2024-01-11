@@ -47,14 +47,10 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 	$session->set('cid', $this->campaign);
 	$session->set('course', $this->course);
 
-	if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml')) {
-		$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml'));
-		$this->favicon = $yaml['favicon'];
-	}
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
+	$m_settings = new EmundusModelsettings();
 
-	if(!file_exists($this->favicon)) {
-		$this->favicon = '/images/custom/favicon.png';
-	}
+	$this->favicon = $m_settings->getFavicon();
 
 	echo $this->loadTemplate('login');
 }

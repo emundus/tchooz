@@ -79,13 +79,15 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 	 */
 	public function onBeforeStore()
 	{
-
+		require_once (JPATH_SITE . '/components/com_emundus/helpers/menu.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
 		jimport('joomla.log.log');
 		JLog::addLogger(array('text_file' => 'com_emundus.campaign-check.php'), JLog::ALL, array('com_emundus.campaign-check'));
 
 		$user = $this->app->getSession()->get('emundusUser');
+
+		$homepage_link = EmundusHelperMenu::getHomepageLink();
 
 		$eMConfig    = JComponentHelper::getParams('com_emundus');
 		$id_profiles = $eMConfig->get('id_profiles', '0');
@@ -142,7 +144,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 					JLog::add('User: ' . $user->id . ' already has a file.', JLog::ERROR, 'com_emundus.campaign-check');
 					$this->getModel()->formErrorMsg     = '';
 					$this->getModel()->getForm()->error = Text::_('CANNOT_HAVE_MULTI_FILE');
-					$this->app->redirect('index.php', Text::_('CANNOT_HAVE_MULTI_FILE'));
+					$this->app->redirect($homepage_link, Text::_('CANNOT_HAVE_MULTI_FILE'));
 				}
 
 				break;
@@ -163,7 +165,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 						JLog::add('User: ' . $user->id . ' already has a file for campaign id: ' . $campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
 						$this->getModel()->formErrorMsg     = '';
 						$this->getModel()->getForm()->error = Text::_('USER_HAS_FILE_FOR_CAMPAIGN');
-						$this->app->redirect('index.php', Text::_('USER_HAS_FILE_FOR_CAMPAIGN'));
+						$this->app->redirect($homepage_link, Text::_('USER_HAS_FILE_FOR_CAMPAIGN'));
 					}
 
 				}
@@ -203,7 +205,7 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 						JLog::add('User: ' . $user->id . ' already has a file for year belong to campaign: ' . $campaign_id, JLog::ERROR, 'com_emundus.campaign-check');
 						$this->getModel()->formErrorMsg     = '';
 						$this->getModel()->getForm()->error = Text::_('USER_HAS_FILE_FOR_YEAR');
-						$this->app->redirect('index.php', Text::_('USER_HAS_FILE_FOR_YEAR'));
+						$this->app->redirect($homepage_link, Text::_('USER_HAS_FILE_FOR_YEAR'));
 					}
 
 				}

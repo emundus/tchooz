@@ -1,12 +1,12 @@
-.blog-featuredhomepage {
+.blog-featuredhomepage{
     display: none;
 }
 
-.g-grid {
+.g-grid{
     width: 100%;
 }
 
-.notifications__counter {
+.notifications__counter{
     position: static;
     margin-bottom: 24px;
     background: var(--red-500);
