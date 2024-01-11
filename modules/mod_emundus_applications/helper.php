@@ -13,7 +13,7 @@ class modemundusApplicationsHelper
 {
 
 	// get users sorted by activation date
-	static function getApplications($layout, $order_by, $params = null)
+	static function getApplications($layout, $order_by, $params = null, $collaborate = false)
 	{
 		$applications = [];
 		$user         = JFactory::getUser();
@@ -37,20 +37,55 @@ class modemundusApplicationsHelper
 			}
 		}
 
-		$select = 'ecc.date_time AS campDateTime,ecc.id as application_id, ecc.*, esc.*, ess.step, ess.value, ess.class, ecc.published as published,p.label as programme,p.color as tag_color,ecc.tab as tab_id,ecct.name as tab_name,ecct.ordering as tab_ordering';
+		$select = [
+			'ecc.date_time AS campDateTime',
+			'ecc.id as application_id',
+			'ecc.*',
+			'esc.*',
+			'ess.step',
+			'ess.value',
+			'ess.class',
+			'ecc.published as published',
+			'p.label as programme',
+			'p.color as tag_color',
+			'ecc.tab as tab_id',
+			'ecct.name as tab_name',
+			'ecct.ordering as tab_ordering'
+		];
 
 		// CCI-RS layout needs to get the start and end date of each application
 		if ($layout == '_:ccirs') {
-			$select .= ', t.date_start as date_start, t.date_end as date_end, p.id as pid, p.url as url ';
+			$select_ccirs = [
+				't.date_start as date_start',
+				't.date_end as date_end',
+				'p.id as pid',
+				'p.url as url'
+			];
+			$select = array_merge($select,$select_ccirs);
 		}
 
 		// Hesam layout needs to get the title from the information about the project.
 		if ($has_table) {
-			$select .= ', pro.titre, pro.id AS search_engine_page, pro.question ';
+			$select_hesam = [
+				'pro.titre',
+				'pro.id AS search_engine_page',
+				'pro.question'
+			];
+			$select = array_merge($select,$select_hesam);
+		}
+
+		if($collaborate) {
+			$select_collaborate = [
+				'efr.r as read_right',
+				'efr.u as update_right',
+				'efr.show_history as show_history_right',
+				'efr.show_shared_users as show_shared_users_right',
+			];
+			$select = array_merge($select,$select_collaborate);
 		}
 
 		$query->clear()
-			->select($select)
+			->select(implode(',',$select))
 			->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 			->leftJoin($db->quoteName('#__emundus_campaign_candidature_tabs', 'ecct') . ' ON ecct.id=ecc.tab')
 			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id=ecc.campaign_id')
@@ -66,6 +101,12 @@ class modemundusApplicationsHelper
 		}
 
 		$query->where('ecc.applicant_id =' . $user->id);
+
+		// Files request
+		if ($collaborate) {
+			$query->leftJoin($db->quoteName('#__emundus_files_request', 'efr') . ' ON efr.ccid = ecc.id');
+			$query->orWhere($db->quoteName('efr.user_id') . ' = ' . $user->id);
+		}
 
 		if (!empty($params)) {
 			$selected_campaigns = $params->get('selected_campaigns', []);
@@ -499,19 +540,21 @@ class modemundusApplicationsHelper
                                   >' . JText::_($custom_action->mod_em_application_custom_action_label) . '</span>';
 						$html .= '</div>';
 					}
-					else if (!empty($custom_action->mod_em_application_custom_action_link)) {
-						$link   = str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link);
-						$target = $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '';
+					else {
+						if (!empty($custom_action->mod_em_application_custom_action_link)) {
+							$link   = str_replace('{fnum}', $application->fnum, $custom_action->mod_em_application_custom_action_link);
+							$target = $custom_action->mod_em_application_custom_action_link_blank ? 'target="_blank"' : '';
 
-						$html .= '<a id="actions_button_custom_' . $custom_action_key . '_card_tab' . $key . '" 
+							$html .= '<a id="actions_button_custom_' . $custom_action_key . '_card_tab' . $key . '" 
                                     class="em-text-neutral-900 em-pointer em-flex-row"
                                     href="' . $link . '" ' . $target . '>';
 
-						if ($custom_action->mod_em_application_custom_action_icon) {
-							$html .= '<span class="material-icons-outlined em-font-size-16 em-mr-8">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
-						}
+							if ($custom_action->mod_em_application_custom_action_icon) {
+								$html .= '<span class="material-icons-outlined em-font-size-16 em-mr-8">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
+							}
 
-						$html .= JText::_($custom_action->mod_em_application_custom_action_label) . '</a>';
+							$html .= JText::_($custom_action->mod_em_application_custom_action_label) . '</a>';
+						}
 					}
 				}
 			}

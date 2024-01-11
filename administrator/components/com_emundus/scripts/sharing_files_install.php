@@ -30,63 +30,78 @@ class SharingFilesInstall
 
 		$result = ['status' => false, 'message' => ''];
 
-		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request','ccid','int',11);
-		if(!$column_added['status']) {
+		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_users', 'password', 'varchar', 100);
+		if (!$column_added['status']) {
+			$result['message'] .= 'Erreur lors de l\'ajout de la colonne password à la table jos_emundus_users<br>';
+
+			return $result;
+		}
+
+		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request', 'ccid', 'int', 11);
+		if (!$column_added['status']) {
 			$result['message'] .= 'Erreur lors de l\'ajout de la colonne ccid à la table jos_emundus_files_request<br>';
+
 			return $result;
 		}
 
-		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request','user_id','int',11);
-		if(!$column_added['status']) {
+		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request', 'user_id', 'int', 11);
+		if (!$column_added['status']) {
 			$result['message'] .= 'Erreur lors de l\'ajout de la colonne user_id à la table jos_emundus_files_request<br>';
+
 			return $result;
 		}
 
-		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request','r','tinyint',3,0,0);
-		if(!$column_added['status']) {
+		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request', 'r', 'tinyint', 3, 0, 0);
+		if (!$column_added['status']) {
 			$result['message'] .= 'Erreur lors de l\'ajout de la colonne r à la table jos_emundus_files_request<br>';
+
 			return $result;
 		}
 
-		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request','u','tinyint',3,0,0);
-		if(!$column_added['status']) {
+		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request', 'u', 'tinyint', 3, 0, 0);
+		if (!$column_added['status']) {
 			$result['message'] .= 'Erreur lors de l\'ajout de la colonne u à la table jos_emundus_files_request<br>';
+
 			return $result;
 		}
 
-		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request','show_history','tinyint',3,0,0);
-		if(!$column_added['status']) {
+		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request', 'show_history', 'tinyint', 3, 0, 0);
+		if (!$column_added['status']) {
 			$result['message'] .= 'Erreur lors de l\'ajout de la colonne show_history à la table jos_emundus_files_request<br>';
+
 			return $result;
 		}
 
-		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request','show_shared_users','tinyint',3,0,0);
-		if(!$column_added['status']) {
+		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_files_request', 'show_shared_users', 'tinyint', 3, 0, 0);
+		if (!$column_added['status']) {
 			$result['message'] .= 'Erreur lors de l\'ajout de la colonne show_shared_users à la table jos_emundus_files_request<br>';
+
 			return $result;
 		}
 
 		$this->db->setQuery('ALTER TABLE `jos_emundus_files_request` MODIFY `attachment_id` int(11) NULL;');
 		$attachment_modified = $this->db->execute();
-		if(!$attachment_modified) {
+		if (!$attachment_modified) {
 			$result['message'] .= 'Erreur lors de la modification de la colonne attachment_id de la table jos_emundus_files_request<br>';
+
 			return $result;
 		}
 
-		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature','locked_elements','text');
-		if(!$column_added['status']) {
+		$column_added = EmundusHelperUpdate::addColumn('jos_emundus_campaign_candidature', 'locked_elements', 'text');
+		if (!$column_added['status']) {
 			$result['message'] .= 'Erreur lors de l\'ajout de la colonne locked_elements à la table jos_emundus_files_request<br>';
+
 			return $result;
 		}
 
 		$query->clear()
 			->select('id')
-			->from('#__fabrik_forms')
-			->where('name = "COM_EMUNDUS_COLLABORATION"');
+			->from($this->db->quoteName('#__fabrik_forms'))
+			->where($this->db->quoteName('label') . ' = ' . $this->db->quote('COM_EMUNDUS_COLLABORATION'));
 		$this->db->setQuery($query);
-		$fabrik_form = $this->db->loadResult();
+		$fabrik_form = $this->db->loadAssoc();
 
-		if(empty($fabrik_form)) {
+		if (empty($fabrik_form)) {
 			$datas       = [
 				'label'               => 'COM_EMUNDUS_COLLABORATION',
 				'error'               => 'FORM_ERROR',
@@ -130,12 +145,16 @@ class SharingFilesInstall
 			$datas          = [
 				'name' => 'COM_EMUNDUS_COLLABORATION',
 			];
-			$fabrik_group_1 = EmundusHelperUpdate::addFabrikGroup($datas, [], 1, true);
+			$params = [
+				'repeat_group_show_first' => 1
+			];
+			$fabrik_group_1 = EmundusHelperUpdate::addFabrikGroup($datas, $params, 1, true);
 			$datas          = [
 				'name' => 'Names',
 			];
 			$params         = [
 				'group_columns' => 2,
+				'repeat_group_show_first' => 1
 			];
 			$fabrik_group_2 = EmundusHelperUpdate::addFabrikGroup($datas, $params, 1, true);
 
@@ -281,30 +300,39 @@ class SharingFilesInstall
 
 				return $result;
 			}
+		}
 
-			$datas = [
-				'title'        => 'Accepter l\'invitation',
-				'menutype'     => 'mainmenu',
-				'link'         => 'index.php?option=com_fabrik&view=form&formid=' . $fabrik_form['id'],
-				'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
-			];
-			$menu  = EmundusHelperUpdate::addJoomlaMenu($datas);
-			if (!$menu['status']) {
-				$result['message'] .= 'Erreur lors de l\'ajout du menu de collaboration<br>';
+		$datas = [
+			'title'        => 'Accepter l\'invitation',
+			'menutype'     => 'mainmenu',
+			'link'         => 'index.php?option=com_fabrik&view=form&formid=' . $fabrik_form['id'],
+			'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
+		];
+		$menu  = EmundusHelperUpdate::addJoomlaMenu($datas);
+		if (!$menu['status']) {
+			$result['message'] .= 'Erreur lors de l\'ajout du menu de collaboration<br>';
 
-				return $result;
-			}
+			return $result;
+		}
 
-			$emundus_updated = EmundusHelperUpdate::updateExtensionParam('collaborate_link', $menu['alias']);
-			if (!$emundus_updated['status']) {
-				$result['message'] .= 'Erreur lors de l\'ajout du lien de collaboration<br>';
+		$emundus_updated = EmundusHelperUpdate::updateExtensionParam('collaborate_link', $menu['link']);
+		if (!$emundus_updated) {
+			$result['message'] .= 'Erreur lors de l\'ajout du lien de collaboration<br>';
 
-				return $result;
-			}
+			return $result;
+		}
 
-			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COLLABORATION_ACCEPT', 'Valider et accepter la collaboration');
-			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COLLABORATION', 'Collaboration - Renseignez vos informations');
+		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COLLABORATION_ACCEPT', 'Valider et accepter la collaboration');
+		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COLLABORATION', 'Collaboration - Renseignez vos informations');
 
+		$query->clear()
+			->select('id')
+			->from($this->db->quoteName('#__emundus_email_templates'))
+			->where($this->db->quoteName('lbl') . ' = ' . $this->db->quote('collaborate'));
+		$this->db->setQuery($query);
+		$tmpl = $this->db->loadResult();
+
+		if(empty($tmpl)) {
 			$columns = [
 				'date_time',
 				'lbl',
@@ -316,7 +344,7 @@ class SharingFilesInstall
 			$values = [
 				$this->db->quote(date('Y-m-d H:i:s')),
 				$this->db->quote('collaborate'),
-				'<!DOCTYPE html>
+				$this->db->quote('<!DOCTYPE html>
 <html>
 
 <head>
@@ -462,11 +490,10 @@ class SharingFilesInstall
 </body>
 
 </html>
-',
+'),
 				1,
 				1
 			];
-
 
 			$query->clear()
 				->insert($this->db->quoteName('#__emundus_email_templates'))
@@ -475,13 +502,23 @@ class SharingFilesInstall
 			$this->db->setQuery($query);
 			$tmpl_email_created = $this->db->execute();
 
-			if(!$tmpl_email_created) {
+			if (!$tmpl_email_created) {
 				$result['message'] .= 'Erreur lors de l\'ajout du template d\'email<br>';
+
 				return $result;
 			}
 
 			$tmpl = $this->db->insertid();
+		}
 
+		$query->clear()
+			->select('id')
+			->from($this->db->quoteName('#__emundus_setup_emails'))
+			->where($this->db->quoteName('lbl') . ' = ' . $this->db->quote('collaborate_invitation'));
+		$this->db->setQuery($query);
+		$email = $this->db->loadResult();
+
+		if(empty($email)) {
 			$columns = [
 				'lbl',
 				'subject',
@@ -513,10 +550,19 @@ class SharingFilesInstall
 			$this->db->setQuery($query);
 			$email_created = $this->db->execute();
 
-			if(!$email_created) {
+			if (!$email_created) {
 				$result['message'] .= 'Erreur lors de l\'ajout de l\'email<br>';
+
 				return $result;
 			}
+		}
+
+		// Install collaborate plugin
+		$installed = EmundusHelperUpdate::installExtension('PLG_FABRIK_FORM_EMUNDUSCOLLABORATE','emunduscollaborate','{"name":"PLG_FABRIK_FORM_EMUNDUSCOLLABORATE","type":"plugin","creationDate":"January 2024","author":"eMundus","copyright":"Copyright (C) 2017-2024 eMundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"2.0.0","description":"PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_DESCRIPTION","group":"","filename":"emunduscollaborate"}','plugin',1,'fabrik_form');
+		if(!$installed) {
+			$result['message'] .= 'Erreur lors de l\'ajout du plugin emunduscollaborate<br>';
+
+			return $result;
 		}
 
 		$result['status'] = true;

@@ -31,8 +31,8 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
             </div>
             <div class="tw-mt-2 tw-flex tw-flex-col tw-gap-2 tw-hidden" id="collaborators_requests">
                 <?php foreach ($this->collaborators as $collaborator) : ?>
-                <div class="tw-py-4 tw-px-6 tw-border tw-border-neutral-500 tw-rounded-md tw-shadow-sm">
-                    <div class="tw-flex tw-items-center tw-justify-between" id="collaborator_block_<?php echo $collaborator->id ?>">
+                <div class="tw-py-4 tw-px-6 tw-border tw-border-neutral-500 tw-rounded-md tw-shadow-sm" id="collaborator_block_<?php echo $collaborator->id ?>">
+                    <div class="tw-flex tw-items-center tw-justify-between">
                         <div class="tw-flex tw-items-center" style="max-width: 50%">
 			                <?php if(empty($collaborator->profile_picture)) : ?>
                                 <span class="material-icons-outlined"

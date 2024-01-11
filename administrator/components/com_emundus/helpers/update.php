@@ -9,8 +9,10 @@
 // No direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Language;
+use Joomla\CMS\Language\Transliterate;
 use Joomla\CMS\Table\Table;
 use Joomla\Component\Cache\Administrator\Model\CacheModel;
 use Joomla\CMS\Language\LanguageHelper;
@@ -265,8 +267,7 @@ class EmundusHelperUpdate
                         ->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
                         ->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
                         ->set($db->quoteName('params') . ' = ' . $db->quote($params))
-                        ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''))
-                        ->set($db->quoteName('system_data') . ' = ' . $db->quote(''));
+                        ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''));
                     $db->setQuery($query);
                     $installed = $db->execute();
                 } else {
@@ -589,7 +590,7 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function insertTranslationsTag($tag,$value,$type = 'override', $reference_id = null, $reference_table = null, $reference_field = null, $lang = 'fr-FR'){
+    public static function insertTranslationsTag($tag,$value,$type = 'override', $reference_id = 0, $reference_table = null, $reference_field = null, $lang = 'fr-FR'){
         $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
@@ -605,7 +606,8 @@ class EmundusHelperUpdate
             $tag_existing = $db->loadResult();
 
             if(empty($tag_existing)) {
-                $query->insert($db->quoteName('#__emundus_setup_languages'))
+                $query->clear()
+	                ->insert($db->quoteName('#__emundus_setup_languages'))
                     ->set($db->quoteName('tag') . ' = ' . $db->quote($tag))
                     ->set($db->quoteName('lang_code') . ' = ' . $db->quote($lang))
                     ->set($db->quoteName('override') . ' = ' . $db->quote($value))
@@ -1589,7 +1591,7 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function addJoomlaMenu($params, $parent_id = 1, $published = 1, $position='last-child', $modules = []) {
-        $result = ['status' => false, 'message' => '', 'id' => 0];
+        $result = ['status' => false, 'message' => '', 'id' => 0, 'alias' => '', 'link' => ''];
         $menu_table = JTableNested::getInstance('Menu');
 
         if (empty($params['menutype'])) {
@@ -1601,6 +1603,10 @@ class EmundusHelperUpdate
             return $result;
         }
 
+		if(empty($params['params'])) {
+			$params['params'] = [];
+		}
+		
         try {
             // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
             Factory::$database = null;
@@ -1611,13 +1617,13 @@ class EmundusHelperUpdate
 			if(empty($params['alias']))
 			{
 				$alias = str_replace("\xc2\xa0", ' ', ($params['menutype'] . '-' . $params['title']));
-				$alias = strtolower(JLanguageTransliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias)));
+				$alias = strtolower(Transliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias)));
 			} else {
 				$alias = $params['alias'];
 			}
-
+			
             $query->clear()
-                ->select('id')
+                ->select('id,alias,link')
                 ->from($db->quoteName('#__menu'))
                 ->where($db->quoteName('menutype') . ' = ' . $db->quote($params['menutype']));
             if(!empty($params['link'])) {
@@ -1627,10 +1633,10 @@ class EmundusHelperUpdate
                 $query->andWhere($db->quoteName('alias') . ' = ' . $db->quote($alias));
             }
             $db->setQuery($query);
-            $is_existing = $db->loadResult();
+            $is_existing = $db->loadObject();
 
             if (empty($is_existing)) {
-                if ($params['client_id'] != 1) {
+                if (!isset($params['client_id']) || $params['client_id'] != 1) {
                     $default_params = [
                         'menu-anchor_title' => '',
                         'menu-anchor_css' => '',
@@ -1670,6 +1676,8 @@ class EmundusHelperUpdate
                     return $result;
                 }
                 $result['id'] = $menu_table->id;
+                $result['alias'] = $menu_data['alias'];
+                $result['link'] = $menu_data['link'];
 
                 if (!empty($modules)) {
                     foreach ($modules as $module) {
@@ -1693,7 +1701,9 @@ class EmundusHelperUpdate
                     }
                 }
             } else {
-                $result['id'] = $is_existing;
+                $result['id'] = $is_existing->id;
+	            $result['alias'] = $is_existing->alias;
+	            $result['link'] = $is_existing->link;
             }
 
             $result['status'] = true;
@@ -2088,7 +2098,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $column_existing = $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name))->loadResult();
 
         if (empty($column_existing)) {
@@ -2552,7 +2562,7 @@ class EmundusHelperUpdate
 
 	public static function updateExtensionParam($param,$value,$old_value_checking = null,$component = 'com_emundus'){
 		$updated = false;
-		$config = JComponentHelper::getParams($component);
+		$config = ComponentHelper::getParams($component);
 
 		if(!empty($old_value_checking)){
 			$old_value = $config->get($param,'');
@@ -2563,8 +2573,8 @@ class EmundusHelperUpdate
 			$config->set($param, $value);
 		}
 
-		$componentid = JComponentHelper::getComponent($component)->id;
-		$db = Factory::getDBO();
+		$componentid = ComponentHelper::getComponent($component)->id;
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try {

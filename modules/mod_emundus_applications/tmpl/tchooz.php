@@ -388,14 +388,20 @@ $current_tab = 0;
 																}
 																?>
 																<?php if (empty($visible_status)) : ?>
-                                                                    <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
+                                                                    <div class="tw-flex tw-items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
                                                                         <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                        <?php if($application->applicant_id !== $user->id) : ?>
+                                                                            <span class="material-icons-outlined tw-ml-3">people</span>
+                                                                        <?php endif; ?>
                                                                     </div>
 																<?php elseif (in_array($application->status, $visible_status)) : ?>
-                                                                    <div class="mod_emundus_applications___status_<?= $application->class; ?> flex"
+                                                                    <div class="tw-flex tw-items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
                                                                          id="application_status_<?php echo $application->fnum ?>">
                                                                         <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+	                                                                    <?php if($application->applicant_id !== $user->id) : ?>
+                                                                            <span class="material-icons-outlined tw-ml-3">people</span>
+	                                                                    <?php endif; ?>
                                                                     </div>
 																<?php endif; ?>
 																<?php if (!empty($application->order_status)): ?>
@@ -421,7 +427,7 @@ $current_tab = 0;
 																		<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                                     </a>
 
-																	<?php if (in_array('rename', $actions)) : ?>
+																	<?php if (in_array('rename', $actions) && ($application->applicant_id === $user->id)) : ?>
                                                                         <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                            onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>','<?php echo $application->label ?>')"
                                                                            id="actions_button_rename_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
@@ -430,7 +436,7 @@ $current_tab = 0;
                                                                         </a>
 																	<?php endif; ?>
 
-																	<?php if (!empty($available_campaigns) && in_array('copy', $actions)) : ?>
+																	<?php if (!empty($available_campaigns) && in_array('copy', $actions) && ($application->applicant_id === $user->id)) : ?>
                                                                         <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                            onclick="copyApplication('<?php echo $application->fnum ?>')"
                                                                            id="actions_button_copy_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
@@ -439,7 +445,7 @@ $current_tab = 0;
                                                                         </a>
 																	<?php endif; ?>
 
-	                                                                <?php if (in_array('collaborate', $actions)) : ?>
+	                                                                <?php if (in_array('collaborate', $actions) && ($application->applicant_id === $user->id)) : ?>
                                                                         <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                            onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')"
                                                                            id="actions_button_rename_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
@@ -457,7 +463,7 @@ $current_tab = 0;
                                                                         </a>
 																	<?php endif; ?>
 
-																	<?php if (in_array('history', $actions)) : ?>
+																	<?php if (in_array('history', $actions) && ($application->applicant_id === $user->id || $application->show_history_right == 1)) : ?>
                                                                         <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                            href="<?= JRoute::_($first_page_url); ?>"
                                                                            id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
@@ -466,7 +472,7 @@ $current_tab = 0;
                                                                         </a>
 																	<?php endif; ?>
 
-																	<?php if (in_array($application->status, $status_for_delete)) : ?>
+																	<?php if (in_array($application->status, $status_for_delete) && ($application->applicant_id === $user->id)) : ?>
                                                                         <a class="em-red-500-color em-flex-row em-pointer"
                                                                            onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                                            id="actions_block_delete_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
@@ -762,14 +768,20 @@ $current_tab = 0;
 														}
 														?>
 														<?php if (empty($visible_status)) : ?>
-                                                            <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
+                                                            <div class="mod_emundus_applications___status_<?= $application->class; ?> tw-flex tw-items-center"
                                                                  id="application_status_<?php echo $application->fnum ?>">
                                                                 <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+	                                                            <?php if($application->applicant_id !== $user->id) : ?>
+                                                                    <span class="material-icons-outlined tw-ml-3">people</span>
+	                                                            <?php endif; ?>
                                                             </div>
 														<?php elseif (in_array($application->status, $visible_status)) : ?>
-                                                            <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row"
+                                                            <div class="mod_emundus_applications___status_<?= $application->class; ?> tw-flex tw-items-center"
                                                                  id="application_status_<?php echo $application->fnum ?>">
                                                                 <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+	                                                            <?php if($application->applicant_id !== $user->id) : ?>
+                                                                    <span class="material-icons-outlined tw-ml-3">people</span>
+	                                                            <?php endif; ?>
                                                             </div>
 														<?php endif; ?>
 														<?php if (!empty($application->order_status)): ?>
@@ -797,7 +809,7 @@ $current_tab = 0;
 																<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                             </a>
 
-															<?php if (in_array('rename', $actions)) : ?>
+															<?php if (in_array('rename', $actions) && ($application->applicant_id === $user->id)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    onclick="renameApplication('<?php echo $application->fnum ?>','<?php echo $application->name ?>','<?php echo $application->label ?>')"
                                                                    id="actions_button_rename_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
@@ -806,7 +818,7 @@ $current_tab = 0;
                                                                 </a>
 															<?php endif; ?>
 
-															<?php if (!empty($available_campaigns) && in_array('copy', $actions)) : ?>
+															<?php if (!empty($available_campaigns) && in_array('copy', $actions) && ($application->applicant_id === $user->id)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    onclick="copyApplication('<?php echo $application->fnum ?>')"
                                                                    id="actions_button_copy_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
@@ -824,7 +836,7 @@ $current_tab = 0;
                                                                 </a>
 															<?php endif; ?>
 
-															<?php if (in_array('history', $actions)) : ?>
+															<?php if (in_array('history', $actions) && ($application->applicant_id === $user->id || $application->show_history_right == 1)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                                    href="<?= JRoute::_($first_page_url); ?>"
                                                                    id="actions_button_history_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
@@ -833,7 +845,7 @@ $current_tab = 0;
                                                                 </a>
 															<?php endif; ?>
 
-															<?php if (in_array($application->status, $status_for_delete)) : ?>
+															<?php if (in_array($application->status, $status_for_delete) && ($application->applicant_id === $user->id)) : ?>
                                                                 <a class="em-red-500-color em-flex-row em-pointer"
                                                                    onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                                    id="actions_block_delete_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
