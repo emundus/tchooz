@@ -281,7 +281,8 @@ class Dataset
 				'training' => $program['programme_code'],
 				'year' => '2022-2023',
 				'published' => 1,
-				'is_limited' => 0
+				'is_limited' => 0,
+				'user' => 1
 			]);
 		}
 

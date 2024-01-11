@@ -302,32 +302,33 @@ class EmundusHelperAccess
 	 */
 	public static function isDataAnonymized($user_id)
 	{
+		$is_data_anonymized = false;
 		JLog::addLogger(['text_file' => 'com_emundus.access.error.php'], JLog::ERROR, 'com_emundus');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		$m_users = new EmundusModelUsers();
 
-		$group_ids = $m_users->getUserGroups($user_id);
+		if (!empty($user_id)) {
+			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+			$m_users = new EmundusModelUsers();
+			$group_ids = $m_users->getUserGroups($user_id);
+			if (!empty($group_ids)) {
+				// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
+				$group_ids = array_keys(array_flip(array_keys($group_ids)));
 
-		if (!empty($group_ids)) {
-			// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
-			$group_ids = array_keys(array_flip(array_keys($group_ids)));
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
+				$query->select($db->quoteName('anonymize'))->from($db->quoteName('#__emundus_setup_groups'))->where($db->quoteName('id') . ' IN (' . implode(',', $group_ids) . ')');
+				$db->setQuery($query);
 
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
-			$query->select($db->quoteName('anonymize'))->from($db->quoteName('#__emundus_setup_groups'))->where($db->quoteName('id') . ' IN (' . implode(',', $group_ids) . ')');
-			$db->setQuery($query);
+				try {
+					$is_data_anonymized = in_array('1', $db->loadColumn());
+				} catch (Exception $e) {
+					JLog::add('Error seeing if user can access non anonymous data. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 
-			try {
-				return in_array('1', $db->loadColumn());
-			}
-			catch (Exception $e) {
-				JLog::add('Error seeing if user can access non anonymous data. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-				return false;
+					$is_data_anonymized = false;
+				}
 			}
 		}
 
-		return false;
+		return $is_data_anonymized;
 	}
 
 	/**

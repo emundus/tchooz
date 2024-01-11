@@ -114,7 +114,8 @@ class CampaignModelTest extends UnitTestCase
 				'training'          => $program['programme_code'],
 				'year'              => '2022-2023',
 				'published'         => 1,
-				'is_limited'        => 0
+				'is_limited'        => 0,
+				'user' => 1
 			]);
 		}
 
@@ -314,10 +315,10 @@ class CampaignModelTest extends UnitTestCase
 				$this->assertTrue($this->model->deleteWorkflows(), 'La suppression de workflow fonctionne');
 
 				$this->assertObjectHasAttribute('display_preliminary_documents', $current_file_workflow, 'Le workflow contient un attribut "Afficher les Documents à télécharger"');
-				$this->assertSame('0', $current_file_workflow->display_preliminary_documents, 'Le workflow contient un attribut "Afficher les Documents à télécharger" à 0 par défaut');
+				$this->assertSame(0, (int)$current_file_workflow->display_preliminary_documents, 'Le workflow contient un attribut "Afficher les Documents à télécharger" à 0 par défaut');
 
 				$this->assertObjectHasAttribute('specific_documents', $current_file_workflow, 'Le workflow contient un attribut "Documents spécifique"');
-				$this->assertSame('0', $current_file_workflow->specific_documents, 'Le workflow contient un attribut "Documents spécifique" à 0 par défaut');
+				$this->assertSame(0, (int)$current_file_workflow->specific_documents, 'Le workflow contient un attribut "Documents spécifique" à 0 par défaut');
 
 				$this->assertObjectHasAttribute('documents', $current_file_workflow, 'Le workflow contient des documents');
 				$this->assertSame([], $current_file_workflow->documents, 'Le workflow contient un tableau vide par défaut');
@@ -355,18 +356,18 @@ class CampaignModelTest extends UnitTestCase
 		$this->assertTrue($pinned, 'La campagne existe, on peut la mettre en avant');
 
 		$campaign = $this->model->getCampaignByID($campaign_id);
-		$this->assertSame('1', $campaign['pinned'], 'La campagne est bien mise en avant');
+		$this->assertSame(1, (int)$campaign['pinned'], 'La campagne est bien mise en avant');
 
 		$new_campaign_id = $this->createUnitTestCampaign($program);
 		$pinned          = $this->model->pinCampaign($new_campaign_id);
 
 		// assert old campaign is not pinned anymore
 		$campaign = $this->model->getCampaignByID($campaign_id);
-		$this->assertSame('0', $campaign['pinned'], 'La campagne n\'est plus mise en avant');
+		$this->assertSame(0, (int)$campaign['pinned'], 'La campagne n\'est plus mise en avant');
 
 		// assert new campaign is pinned
 		$campaign = $this->model->getCampaignByID($new_campaign_id);
-		$this->assertSame('1', $campaign['pinned'], 'La nouvelle campagne est mise en avant');
+		$this->assertSame(1, (int)$campaign['pinned'], 'La nouvelle campagne est mise en avant');
 
 		// on duplicate campaign, pinned is not duplicated
 		$duplicated = $this->model->duplicateCampaign($new_campaign_id);
@@ -400,7 +401,7 @@ class CampaignModelTest extends UnitTestCase
 		$this->assertTrue($unpinned, 'La campagne existe, on peut la retirer de la mise en avant');
 
 		$campaign = $this->model->getCampaignByID($campaign_id);
-		$this->assertSame('0', $campaign['pinned'], 'La campagne n\'est plus mise en avant');
+		$this->assertSame(0, (int)$campaign['pinned'], 'La campagne n\'est plus mise en avant');
 
 		$this->assertFalse($this->model->unpinCampaign(['svsfg', 'dsgdfg', 'dsg']), 'Un tableau mal formé ne peut pas être passé en paramètre');
 	}
@@ -410,8 +411,8 @@ class CampaignModelTest extends UnitTestCase
 		$query = $this->db->getQuery(true);
 
 		$query->insert($this->db->quoteName('#__dropfiles_files'))
-			->columns($this->db->quoteName(['title', 'ext', 'file', 'state', 'catid']))
-			->values(" 'test', 'pdf', 'test.pdf', 1, 0");
+			->columns($this->db->quoteName(['title', 'ext', 'file', 'state', 'catid', 'ordering', 'size']))
+			->values("'test', 'pdf', 'test.pdf', 1, 0, 0, 0");
 
 		$this->db->setQuery($query);
 		$this->db->execute();

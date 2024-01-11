@@ -1928,9 +1928,14 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return bool|mixed
 	 */
-	public function getFnumInfos($fnum)
+	public function getFnumInfos($fnum, $user_id = 0)
 	{
 		$fnumInfos = [];
+
+		if (empty($user_id)) {
+			$user = $this->app->getIdentity();
+			$user_id = !empty($user) && !empty($user->id) ? $user->id : 0;
+		}
 
 		try {
 			$query = $this->_db->getQuery(true);
@@ -1943,7 +1948,7 @@ class EmundusModelFiles extends JModelLegacy
 			$this->_db->setQuery($query);
 			$fnumInfos = $this->_db->loadAssoc();
 
-			$anonymize_data = EmundusHelperAccess::isDataAnonymized($this->app->getIdentity()->id);
+			$anonymize_data = EmundusHelperAccess::isDataAnonymized($user_id);
 			if ($anonymize_data) {
 				$fnumInfos['name']  = $fnum;
 				$fnumInfos['email'] = $fnum;
@@ -1951,7 +1956,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 
 		return $fnumInfos;

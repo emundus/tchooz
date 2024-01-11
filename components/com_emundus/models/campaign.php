@@ -19,7 +19,7 @@ jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 
-require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
+require_once(JPATH_SITE. '/components/com_emundus/helpers/menu.php');
 
 class EmundusModelCampaign extends JModelList
 {
@@ -134,7 +134,7 @@ class EmundusModelCampaign extends JModelList
 		$query = $this->_buildQuery();
 
 		if (!empty($uid)) {
-			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+			require_once(JPATH_SITE. '/components/com_emundus/models/profile.php');
 			$m_profile           = new EmundusModelProfile();
 			$userProfiles        = $m_profile->getUserProfiles($uid);
 			$userEmundusProfiles = $m_profile->getProfileByApplicant($uid);
@@ -1214,7 +1214,16 @@ class EmundusModelCampaign extends JModelList
 					->where($this->_db->quoteName('id') . ' = ' . $id);
 
 				$this->_db->setQuery($query);
-				$values[] = implode(', ', $this->_db->quote($this->_db->loadRow()));
+				$values = $this->_db->loadAssoc();
+
+				foreach($values as $key => $value) {
+					if ($value == '') {
+						unset($values[$key]);
+						$columns = array_diff($columns, [$key]);
+					}
+				}
+
+				$values = implode(',', $this->_db->q(array_values($values)));
 
 				$query->clear()
 					->insert($this->_db->quoteName('#__emundus_setup_campaigns'))
@@ -1262,8 +1271,8 @@ class EmundusModelCampaign extends JModelList
 						}
 					}
 				}
-			}
-			catch (Exception $e) {
+			} catch (Exception $e) {
+				error_log($query->__toString() . $e->getMessage());
 				JLog::add('component/com_emundus/models/campaign | Error when duplicate campaigns : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
 			}
 		}
@@ -1311,8 +1320,8 @@ class EmundusModelCampaign extends JModelList
 		$campaign_id = 0;
 
 		if (!empty($data) && !empty($data['label'])) {
-			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'settings.php');
-			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+			require_once(JPATH_SITE . '/components/com_emundus/models/settings.php');
+			require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
 			$m_settings = new EmundusModelSettings;
 			$m_emails   = new EmundusModelEmails;
 
@@ -1334,7 +1343,6 @@ class EmundusModelCampaign extends JModelList
 			$campaign_columns = $this->_db->loadColumn();
 
 			$data['label'] = json_decode($data['label'], true);
-
 
 			$this->app->triggerEvent('onBeforeCampaignCreate', $data);
 			$this->app->triggerEvent('onCallEventHandler', ['onBeforeCampaignCreate', ['campaign' => $data]]);
@@ -1741,7 +1749,7 @@ class EmundusModelCampaign extends JModelList
 				$checklist = $this->_db->loadObject();
 
 				if ($checklist == null) {
-					require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'form.php');
+					require_once(JPATH_SITE. '/components/com_emundus/models/form.php');
 					$m_form = new EmundusModelForm;
 					$m_form->addChecklistMenu($profile);
 				}
@@ -1816,7 +1824,7 @@ class EmundusModelCampaign extends JModelList
 		$date  = new Date();
 
 		// Get affected programs
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
+		require_once(JPATH_SITE. '/components/com_emundus/models/programme.php');
 
 		$m_programme = new EmundusModelProgramme;
 		$programs    = $m_programme->getUserPrograms($this->_user->id);
