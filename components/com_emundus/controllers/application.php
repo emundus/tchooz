@@ -770,14 +770,18 @@ class EmundusControllerApplication extends JControllerLegacy
 	{
 		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			$m_application = $this->getModel('Application');
+		$m_application = $this->getModel('Application');
 
+		$upload_id = $this->input->getInt('upload_id', null);
+		$upload_details = $m_application->getUploadByID($upload_id);
+		$e_user = JFactory::getSession()->get('emundusUser');
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || (in_array($upload_details['fnum'], array_keys($e_user->fnums)) && $upload_details['can_be_viewed'] == 1)) {
 			$user     = $this->input->getInt('user', null);
 			$filename = $this->input->getString('filename', null);
 
 			if (!empty($filename) && !empty($user)) {
-				$response = $m_application->getAttachmentPreview($user, $filename);
+				$response = $m_application->getAttachmentPreview($upload_details['user_id'], $filename);
 			}
 		}
 

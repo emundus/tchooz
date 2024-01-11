@@ -174,7 +174,7 @@ class EmundusModelApplication extends JModelList
 		return $this->_db->loadObjectList();
 	}
 
-	function getUserAttachmentsByFnum($fnum, $search = '', $profile = null)
+	function getUserAttachmentsByFnum($fnum, $search = '', $profile = null, $applicant = false)
 	{
 		$attachments = [];
 
@@ -210,6 +210,10 @@ class EmundusModelApplication extends JModelList
 			}
 			else {
 				$query->order($this->_db->quoteName('eu.modified') . ' DESC');
+			}
+
+			if($applicant) {
+				$query->andWhere($this->_db->quoteName('eu.can_be_viewed') . ' = 1');
 			}
 
 			try {

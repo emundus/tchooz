@@ -403,7 +403,7 @@ class EmundusModelLogs extends JModelList
 							$action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
 						}
 						if (!empty($value->details)) {
-							$action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '</span></div>';
+							$action_details .= '<div class="tw-flew tw-items-center"><span class="em-red-500-color">' . $value->details . '</span></div>';
 						}
 					}
 					else {
@@ -421,7 +421,10 @@ class EmundusModelLogs extends JModelList
 					$action_details = '<b>' . reset($params->updated)->description . '</b>';
 
 					foreach ($params->updated as $value) {
-						$action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp';
+						$action_details .= '<div class="tw-flex tw-items-center">';
+						if(!empty($value->element)) {
+							$action_details .= '<span>' . $value->element . '&nbsp</span>&nbsp';
+						}
 						$value->old     = !empty($value->old) ? $value->old : '';
 						$value->new     = !empty($value->new) ? $value->new : '';
 

@@ -463,9 +463,9 @@ $current_tab = 0;
                                                                         </a>
 																	<?php endif; ?>
 
-																	<?php if (in_array('history', $actions) && ($application->applicant_id === $user->id || $application->show_history_right == 1)) : ?>
+																	<?php if (in_array('history', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
                                                                         <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                                           href="<?= JRoute::_($first_page_url); ?>"
+                                                                           href="<?= JRoute::_($history_link->route.'?ccid='. $application->id .'&fnum=' . $application->fnum); ?>"
                                                                            id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
                                                                             <span class="material-icons-outlined em-mr-8">history</span>
 																			<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>

@@ -6284,8 +6284,31 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-border-0 {
   border-width: 0px;
 }
+.tw-border-b {
+  border-bottom-width: 1px;
+}
+.tw-border-main-500 {
+  border-color: var(--em-profile-color);
+}
+.tw-border-neutral-300 {
+  border-color: var(--neutral-300);
+}
+.tw-border-neutral-400 {
+  border-color: var(--neutral-400);
+}
 .tw-border-neutral-500 {
   border-color: var(--neutral-500);
+}
+.tw-bg-neutral-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 245 245 / var(--tw-bg-opacity));
+}
+.tw-bg-transparent {
+  background-color: transparent;
+}
+.tw-bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 .tw-p-0 {
   padding: 0px;
@@ -6302,6 +6325,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-p-6 {
   padding: var(--em-spacing-6);
 }
+.tw-px-5 {
+  padding-left: var(--em-spacing-5);
+  padding-right: var(--em-spacing-5);
+}
 .tw-px-6 {
   padding-left: var(--em-spacing-6);
   padding-right: var(--em-spacing-6);
@@ -6314,11 +6341,17 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   padding-top: var(--em-spacing-4);
   padding-bottom: var(--em-spacing-4);
 }
-.tw-text-center {
-  text-align: center;
+.\!tw-pl-0 {
+  padding-left: 0px !important;
+}
+.tw-pr-1 {
+  padding-right: var(--em-spacing-1);
 }
 .\!tw-text-center {
   text-align: center !important;
+}
+.tw-text-center {
+  text-align: center;
 }
 .\!tw-text-6xl {
   font-size: 3.75rem !important;
@@ -6327,6 +6360,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
+}
+.tw-font-bold {
+  font-weight: 700;
 }
 .tw-font-normal {
   font-weight: 400;

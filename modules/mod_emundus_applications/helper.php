@@ -76,10 +76,10 @@ class modemundusApplicationsHelper
 
 		if($collaborate) {
 			$select_collaborate = [
-				'efr.r as read_right',
-				'efr.u as update_right',
-				'efr.show_history as show_history_right',
-				'efr.show_shared_users as show_shared_users_right',
+				'efr.r',
+				'efr.u',
+				'efr.show_history',
+				'efr.show_shared_users',
 			];
 			$select = array_merge($select,$select_collaborate);
 		}

@@ -29,8 +29,13 @@ module.exports = {
                     800: 'var(--red-800)',
                 },
                 neutral: {
+                    300: 'var(--neutral-300)',
+                    400: 'var(--neutral-400)',
                     500: 'var(--neutral-500)',
                     600: 'var(--neutral-600)',
+                },
+                main: {
+                    500: 'var(--em-profile-color)',
                 }
             },
             spacing: {
