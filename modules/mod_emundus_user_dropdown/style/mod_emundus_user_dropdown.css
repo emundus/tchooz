@@ -434,9 +434,14 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     position: absolute;
     height: 100%;
     top: 0;
-    right: 0;
+    right: -1px;
     pointer-events: none;
     z-index: -1;
+    mask-image: url('/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg');
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
 }
 
 div#userDropdown {

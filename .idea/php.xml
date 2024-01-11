@@ -425,12 +425,12 @@
   <component name="PhpUnit">
     <phpunit_settings>
       <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/autoload.php" />
-      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/plugins/eventbooking/spout/spout/vendor/autoload.php" />
-      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/administrator/tmp/install_612ca781d4518/com_eventbooking/packages/install_612ca782db671/spout/vendor/autoload.php" />
-      <phpunit_by_interpreter interpreter_id="a11aee6a-c5f1-49e0-835d-f00240451351" load_method="PHPUNIT_PHAR" configuration_file_path="tests/phpunit.xml" custom_loader_path="" phpunit_phar_path="/var/www/html/libraries/emundus/phpunit.phar" use_configuration_file="true" />
       <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/autoload.php" />
-      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/autoload.php" />
       <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/autoload.php" />
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/administrator/tmp/install_612ca781d4518/com_eventbooking/packages/install_612ca782db671/spout/vendor/autoload.php" />
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/autoload.php" />
+      <phpunit_by_interpreter interpreter_id="a11aee6a-c5f1-49e0-835d-f00240451351" load_method="PHPUNIT_PHAR" configuration_file_path="tests/phpunit.xml" custom_loader_path="" phpunit_phar_path="/var/www/html/libraries/emundus/phpunit.phar" use_configuration_file="true" />
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/plugins/eventbooking/spout/spout/vendor/autoload.php" />
     </phpunit_settings>
   </component>
   <component name="PsalmOptionsConfiguration">
