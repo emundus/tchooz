@@ -41,6 +41,8 @@ if(!class_exists('EmundusHelperAccess')) {
 class EmundusHelperEvents
 {
 
+	private $locked_elements = [];
+
 	/**
 	 * @param $params
 	 * Parameters available : $params['formModel']
@@ -55,10 +57,18 @@ class EmundusHelperEvents
 		jimport('joomla.log.log');
 		JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));
 
+		$fnum = Factory::getApplication()->input->getString('fnum','');
+
 		try {
 			$this->isApplicationSent($params);
 
 			$user = Factory::getApplication()->getSession()->get('emundusUser');
+
+			if(!empty($fnum)) {
+				require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+				$m_application   = new EmundusModelApplication();
+				$this->locked_elements = $m_application->getLockedElements($params['formModel']->id, $fnum);
+			}
 
 			if (isset($user->fnum)) {
 				if(!class_exists('EmundusModelForm')) {
@@ -179,6 +189,11 @@ class EmundusHelperEvents
 
 			return false;
 		}
+	}
+	
+	function onElementCanUse($params): bool
+	{
+		return $this->checkLockedElements($params);
 	}
 
 	function isApplicationSent($params): bool
@@ -1276,6 +1291,16 @@ class EmundusHelperEvents
 			return false;
 		}
 
+	}
+
+	function checkLockedElements($params): bool {
+		if(!empty($this->locked_elements)) {
+			if(in_array($params['elementModel']->getFullName(),$this->locked_elements)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private function logUpdateForms($params, $forms_to_log = []): bool

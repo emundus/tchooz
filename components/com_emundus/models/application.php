@@ -6495,7 +6495,7 @@ class EmundusModelApplication extends JModelList
 			try {
 				$query = $this->_db->getQuery(true);
 
-				$query->select('efr.*,ecc.applicant_id,ecc.campaign_id,ecc.status,ecc.published,ecc.form_progress,ecc.attachment_progress, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id')
+				$query->select('efr.r,efr.u,efr.show_history,efr.show_shared_users,ecc.id,ecc.fnum,ecc.applicant_id,ecc.campaign_id,ecc.status,ecc.published,ecc.form_progress,ecc.attachment_progress, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id')
 					->from($this->_db->quoteName('#__emundus_files_request', 'efr'))
 					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.id') . ' = ' . $this->_db->quoteName('efr.ccid'))
 					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
@@ -6515,5 +6515,88 @@ class EmundusModelApplication extends JModelList
 		}
 
 		return $files;
+	}
+
+	public function getLockedElements($fid,$fnum,$user_id = null)
+	{
+		$locked_elements = [];
+
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		if(!empty($fid) && !empty($fnum)) {
+			try {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('locked_elements')
+					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+					->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+				$this->_db->setQuery($query);
+				$locked_elements = $this->_db->loadResult();
+
+				if(!empty($locked_elements)) {
+					$locked_elements = json_decode($locked_elements, true);
+					if(!empty($locked_elements[$fid])) {
+						$locked_elements = $locked_elements[$fid];
+					} else {
+						$locked_elements = [];
+					}
+				}
+			}
+			catch (Exception $e) {
+				Log::add('Failed to get locked elements of form ' . $fid . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $locked_elements;
+	}
+
+	public function lockElement($element,$fid,$ccid,$state = 1,$user_id = null) {
+		$locked = false;
+
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		if(!empty($element) && !empty($fid) && !empty($ccid)) {
+			try {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('locked_elements')
+					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+					->where($this->_db->quoteName('id') . ' = ' . $ccid);
+				$this->_db->setQuery($query);
+				$locked_elements = $this->_db->loadResult();
+
+				if (!empty($locked_elements)) {
+					$locked_elements = json_decode($locked_elements, true);
+				}
+				else {
+					$locked_elements = [];
+				}
+
+				if($state == 1) {
+					$locked_elements[$fid][] = $element;
+				} else {
+					$index = array_search($element,$locked_elements[$fid]);
+					if($index !== false) {
+						unset($locked_elements[$fid][$index]);
+					}
+				}
+
+				$query->clear()
+					->update($this->_db->quoteName('#__emundus_campaign_candidature'))
+					->set($this->_db->quoteName('locked_elements') . ' = ' . $this->_db->quote(json_encode($locked_elements)))
+					->where($this->_db->quoteName('id') . ' = ' . $ccid);
+				$this->_db->setQuery($query);
+				$locked = $this->_db->execute();
+			}
+			catch (Exception $e) {
+				Log::add('Failed to lock element ' . $element . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $locked;
 	}
 }

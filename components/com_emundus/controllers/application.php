@@ -1189,4 +1189,25 @@ class EmundusControllerApplication extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+	public function lockelement()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		$element = $this->input->getString('element','');
+		$fid = $this->input->getInt('form_id',0);
+		$fnum = $this->input->getString('fnum','');
+		$state = $this->input->getInt('state',0);
+
+		$e_user = $this->app->getSession()->get('emundusUser');
+		$fnumInfos = $e_user->fnums[$fnum];
+
+		if(!empty($fnum) && $fnumInfos->applicant_id == $this->_user->id) {
+			$m_application      = $this->getModel('Application');
+			$response['status'] = $m_application->lockElement($element, $fid, $fnumInfos->id, $state);
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 }

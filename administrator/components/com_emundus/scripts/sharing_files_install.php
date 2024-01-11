@@ -565,6 +565,32 @@ class SharingFilesInstall
 			return $result;
 		}
 
+		// Install history menu
+		$query->clear()
+			->select('id')
+			->from($this->db->quoteName('#__modules'))
+			->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundusflow'))
+			->where($this->db->quoteName('published') . ' = 1');
+		$this->db->setQuery($query);
+		$flow_module_id = $this->db->loadResult();
+
+		$datas = [
+			'title'        => 'Voir mon dossier',
+			'menutype'     => 'applicantmenu',
+			'link'         => 'index.php?option=com_emundus&view=application&layout=history',
+			'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+			'params' => [
+				'tabs' => ["history","forms","attachments"],
+				'menu_show' => 0
+			]
+		];
+		$menu  = EmundusHelperUpdate::addJoomlaMenu($datas,1,1,'last-child',[$flow_module_id]);
+		if (!$menu['status']) {
+			$result['message'] .= 'Erreur lors de l\'ajout du menu de collaboration<br>';
+
+			return $result;
+		}
+
 		$result['status'] = true;
 
 		return $result;
