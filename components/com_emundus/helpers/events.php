@@ -292,6 +292,24 @@ class EmundusHelperEvents
 			$can_edit    = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
 			$can_read    = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
 
+			$fnumInfos = $user->fnums[$fnum];
+
+			if($fnumInfos->applicant_id == $user->id) {
+				$can_edit = true;
+				$can_read = true;
+			}
+
+			if(!$can_read) {
+				if(!empty($fnumInfos->r) && $fnumInfos->r == 1) {
+					$can_read = true;
+				}
+			}
+			if(!$can_edit) {
+				if(!empty($fnumInfos->u) && $fnumInfos->u == 1) {
+					$can_edit = true;
+				}
+			}
+
 			// once access condition is not correct, redirect page
 			$reload_url = true;
 
@@ -303,8 +321,9 @@ class EmundusHelperEvents
 				$fnumDetail = $mProfile->getFnumDetails($fnum);
 
 				$isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id);
-
-				if ($fnum == $user->fnum) {
+				
+				
+				if ($fnumInfos->applicant_id == $user->id) {
 					//try to access edit view
 					if ($view == 'form') {
 						if (in_array($user->id, $applicants)
@@ -351,7 +370,7 @@ class EmundusHelperEvents
 				}
 			}
 
-			if (isset($user->fnum) && !empty($user->fnum)) {
+			if ($fnumInfos->applicant_id == $user->id) {
 
 				if (in_array($user->id, $applicants)) {
 

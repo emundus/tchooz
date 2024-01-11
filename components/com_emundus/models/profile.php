@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 
 class EmundusModelProfile extends JModelList
@@ -1166,7 +1167,9 @@ class EmundusModelProfile extends JModelList
 		include_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		include_once(JPATH_SITE . '/components/com_emundus/models/admission.php');
+		include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 
+		$m_application      = new EmundusModelApplication;
 		$m_users      = new EmundusModelUsers;
 		$current_user = JFactory::getUser();
 		$session      = JFactory::getSession();
@@ -1221,9 +1224,9 @@ class EmundusModelProfile extends JModelList
 			// If the user is admitted then we fill the session with information about the admitted file
 			// regardeless of the current campaign
 			$emundusSession->fnum                   = $campaign["fnum"];
-			$emundusSession->fnums                  = $this->getApplicantFnums($current_user->id);
+			$emundusSession->fnums                  = array_merge($this->getApplicantFnums($current_user->id), $m_application->getMyFilesRequests($current_user->id));
 			$emundusSession->campaign_id            = $campaign["id"];
-			$emundusSession->status                 = @$campaign["status"];
+			$emundusSession->status                 = $campaign["status"];
 			$emundusSession->candidature_incomplete = ($campaign['status'] == 0) ? 0 : 1;
 			$emundusSession->profile                = !empty($profile["profile_id"]) ? $profile["profile_id"] : $profile["profile"];
 			$emundusSession->profile_label          = $profile["label"];
@@ -1236,12 +1239,12 @@ class EmundusModelProfile extends JModelList
 			$emundusSession->candidature_end        = $campaign["end_date"];
 			$emundusSession->admission_start_date   = $campaign["admission_start_date"];
 			$emundusSession->admission_end_date     = $campaign["admission_end_date"];
-			$emundusSession->candidature_posted     = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0 || @$profile["date_submitted"] == null) ? 0 : 1;
+			$emundusSession->candidature_posted     = ($profile["date_submitted"] == "0000-00-00 00:00:00" || $profile["date_submitted"] == 0 || $profile["date_submitted"] == null) ? 0 : 1;
 			$emundusSession->schoolyear             = $campaign["year"];
 			$emundusSession->code                   = $campaign["training"];
 			$emundusSession->campaign_name          = $campaign["campaign_label"];
 
-			$eMConfig           = JComponentHelper::getParams('com_emundus');
+			$eMConfig           = ComponentHelper::getParams('com_emundus');
 			$allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
 			if ($allow_anonym_files) {
 				$emundusSession->anonym       = $this->checkIsAnonymUser($current_user->id);

@@ -1611,16 +1611,22 @@ $current_tab = 0;
                                 confirmButtonText: "<?php echo JText::_('JYES');?>",
                                 timer: 3000
                             });
-                        } else {
-                            Swal.fire({
-                                title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SUCCESS'); ?>",
-                                text: res.msg,
-                                type: "success",
-                                reverseButtons: true,
-                                confirmButtonText: "<?php echo JText::_('JYES');?>",
-                                timer: 3000
-                            });
                         }
+                    });
+
+                    Swal.fire({
+                        title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SUCCESS'); ?>",
+                        text: res.msg,
+                        iconHtml: "<img src='media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg' width='200px' class='tw-mb-4' />",
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        customClass: {
+                            title: 'em-swal-title !tw-text-center',
+                            cancelButton: 'em-swal-cancel-button',
+                            confirmButton: 'em-swal-confirm-button',
+                            icon: 'tw-border-0 tw-w-full tw-h-full tw-mt-0',
+                        },
+                        timer: 3000
                     });
                 }
             });

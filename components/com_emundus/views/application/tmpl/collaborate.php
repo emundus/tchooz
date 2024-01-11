@@ -68,23 +68,23 @@ Text::script('COM_EMUNDUS_APPLICATION_SHARE_VIEW_REQUESTS');
 
                     <div class="tw-flex tw-items-center tw-justify-between tw-flex-wrap">
                         <div class="tw-mt-2">
-                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="read" value="r" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->r == 1) : ?>checked<?php endif; ?> />
-                            <label for="read"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_READ') ?></label>
+                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="read_<?php echo $collaborator->id; ?>" value="r" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->r == 1) : ?>checked<?php endif; ?> />
+                            <label for="read_<?php echo $collaborator->id; ?>"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_READ') ?></label>
                         </div>
 
                         <div>
-                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="update" value="u" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->u == 1) : ?>checked<?php endif; ?> />
-                            <label for="update"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_UPDATE') ?></label>
+                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="update_<?php echo $collaborator->id; ?>" value="u" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->u == 1) : ?>checked<?php endif; ?> />
+                            <label for="update_<?php echo $collaborator->id; ?>"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_UPDATE') ?></label>
                         </div>
 
                         <div>
-                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="view_history" value="show_history" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->show_history == 1) : ?>checked<?php endif; ?> />
-                            <label for="view_history"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_HISTORY') ?></label>
+                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="view_history_<?php echo $collaborator->id; ?>" value="show_history" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->show_history == 1) : ?>checked<?php endif; ?> />
+                            <label for="view_history_<?php echo $collaborator->id; ?>"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_HISTORY') ?></label>
                         </div>
 
                         <div>
-                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="view_others" value="show_shared_users" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->show_shared_users == 1) : ?>checked<?php endif; ?> />
-                            <label for="view_others"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_OTHERS') ?></label>
+                            <input type="checkbox" name="rights_<?php echo $collaborator->id; ?>" id="view_others_<?php echo $collaborator->id; ?>" value="show_shared_users" onchange="updateRight('<?php echo $collaborator->id ?>','<?php echo $collaborator->ccid ?>','<?php echo $collaborator->fnum ?>',this.value, this.checked)" <?php if($collaborator->show_shared_users == 1) : ?>checked<?php endif; ?> />
+                            <label for="view_others_<?php echo $collaborator->id; ?>"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SHARE_VIEW_OTHERS') ?></label>
                         </div>
                     </div>
                 </div>

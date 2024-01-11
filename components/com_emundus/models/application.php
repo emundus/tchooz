@@ -6271,6 +6271,10 @@ class EmundusModelApplication extends JModelList
 				->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
 			$this->_db->setQuery($query);
 			$shared_file_users = $this->_db->loadObjectList();
+
+			if(!empty($shared_file_users)) {
+				$this->h_cache->set($cache_key,$shared_file_users);
+			}
 		}
 
 		return $shared_file_users;
@@ -6472,5 +6476,40 @@ class EmundusModelApplication extends JModelList
 		}
 
 		return $updating;
+	}
+
+	public function getMyFilesRequests($user_id = null)
+	{
+		if(empty($user_id)) {
+			$user_id = $this->_user->id;
+		}
+
+		$cache_key      = 'my_shared_files_' . $user_id;
+		$files = $this->h_cache->get($cache_key);
+
+		if (empty($files)) {
+			try {
+				$query = $this->_db->getQuery(true);
+
+				$query->select('efr.*,ecc.applicant_id,ecc.campaign_id,ecc.status,ecc.published,ecc.form_progress,ecc.attachment_progress, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id')
+					->from($this->_db->quoteName('#__emundus_files_request', 'efr'))
+					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.id') . ' = ' . $this->_db->quoteName('efr.ccid'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('ecc.campaign_id'))
+					->where($this->_db->quoteName('efr.user_id') . ' = ' . $user_id)
+					->where($this->_db->quoteName('ecc.published') . ' = 1')
+					->where($this->_db->quoteName('efr.uploaded') . ' = 1');
+				$this->_db->setQuery($query);
+				$files = $this->_db->loadObjectList('fnum');
+
+				if(!empty($files)) {
+					$this->h_cache->set($cache_key,$files);
+				}
+			}
+			catch (Exception $e) {
+				Log::add('Failed to get my files requests with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $files;
 	}
 }

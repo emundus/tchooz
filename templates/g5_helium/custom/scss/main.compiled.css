@@ -4079,8 +4079,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-hidden {
   display: none;
 }
+.tw-h-0 {
+  height: 0px;
+}
 .tw-h-10 {
   height: var(--em-spacing-10);
+}
+.tw-h-full {
+  height: 100%;
 }
 .tw-h-max {
   height: -moz-max-content;
@@ -6275,6 +6281,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-border {
   border-width: 1px;
 }
+.tw-border-0 {
+  border-width: 0px;
+}
 .tw-border-neutral-500 {
   border-color: var(--neutral-500);
 }
@@ -6307,6 +6316,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-text-center {
   text-align: center;
+}
+.\!tw-text-center {
+  text-align: center !important;
 }
 .\!tw-text-6xl {
   font-size: 3.75rem !important;
@@ -6345,6 +6357,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-outline-green-500 {
   outline-color: #22c55e;
+}
+.tw-transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.tw-duration-300 {
+  transition-duration: 300ms;
 }
 h1 {
   color: var(--em-default-title-color-1);
