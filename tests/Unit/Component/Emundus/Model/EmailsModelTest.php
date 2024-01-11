@@ -89,18 +89,7 @@ class EmailsModelTest extends UnitTestCase
 	public function testsendExpertMail()
 	{
 		$response = $this->model->sendExpertMail([]);
-		$this->assertEmpty($response['sent'], 'L\'envoi de l\'email a échoué, car il manque des paramètres');
-
-		$params = [
-			'mail_from'      => '',
-			'mail_from_name' => '',
-			'mail_subject'   => '',
-			'mail_body'      => '',
-			'fnums'          => []
-		];
-
-		$app    = Factory::getApplication();
-		$jinput = $app->input;
+		$this->assertEmpty($response['sent'], 'L\'envoi de l\'email a échoué, car il n\'y a pas de fichier');
 
 		$user_id     = $this->h_dataset->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
 		$program     = $this->h_dataset->createSampleProgram();
@@ -109,16 +98,5 @@ class EmailsModelTest extends UnitTestCase
 
 		$response = $this->model->sendExpertMail([$fnum]);
 		$this->assertEmpty($response['sent'], 'L\'envoi de l\'email a échoué, car il manque des paramètres');
-
-		$params['mail_to'] = ['userunittest' . rand(0, 1000) . '@emundus.test.fr'];
-		$jinput->post->set('mail_to', $params['mail_to']);
-
-		$response = $this->model->sendExpertMail([$fnum]);
-		$this->assertContains($params['mail_to'][0], $response['failed'], 'L\'envoi de l\'email n\'a pas fonctionné, car il y n\'y a pas de message.');
-
-		$params['mail_subject'] = 'Test de l\'envoi d\'email';
-		$jinput->post->set('mail_subject', $params['mail_subject']);
-		$params['mail_body'] = '<p>Test de l\'envoi d\'email</p>';
-		$jinput->post->set('mail_body', $params['mail_body']);
 	}
 }

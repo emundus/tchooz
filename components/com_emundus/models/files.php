@@ -3881,17 +3881,23 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getVariables($str, $type = 'CURLY')
 	{
-		if ($type == 'CURLY') {
-			preg_match_all('/\$\{(.*?)}/i', $str, $matches);
-		}
-		elseif ($type == 'SQUARE') {
-			preg_match_all('/\[(.*?)]/i', $str, $matches);
-		}
-		else {
-			preg_match_all('/\{(.*?)}/i', $str, $matches);
+		$variables = [];
+
+		if (!empty($str)) {
+			if ($type == 'CURLY') {
+				preg_match_all('/\$\{(.*?)}/i', $str, $matches);
+			}
+			elseif ($type == 'SQUARE') {
+				preg_match_all('/\[(.*?)]/i', $str, $matches);
+			}
+			else {
+				preg_match_all('/\{(.*?)}/i', $str, $matches);
+			}
+
+			$variables = $matches[1];
 		}
 
-		return $matches[1];
+		return $variables;
 	}
 
 
