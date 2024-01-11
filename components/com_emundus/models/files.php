@@ -2822,6 +2822,9 @@ class EmundusModelFiles extends JModelLegacy
 									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . $where_condition . '))';
 									$databasejoin_sub_query .= ' AS ' . $already_joined[$child_table_alias] . '___' . $element->element_name;
 									$saved_element_as       = $already_joined[$child_table_alias] . '___' . $element->element_name;
+								} else {
+									// we should not be here, but just in case
+									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . $where_condition . ' LIMIT 1)';
 								}
 							}
 							else {
@@ -3028,12 +3031,12 @@ class EmundusModelFiles extends JModelLegacy
 			}
 
 			try {
-				$db = JFactory::getDbo();
+				$db = Factory::getContainer()->get('DatabaseDriver');
 				$db->setQuery($query . $from . $leftJoin . $where);
-
 				$rows = $db->loadAssocList();
 			}
 			catch (Exception $e) {
+				error_log($query . $from . $leftJoin . $where);
 				JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 
 				return false;
