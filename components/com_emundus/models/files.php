@@ -415,10 +415,15 @@ class EmundusModelFiles extends JModelLegacy
 	public function _buildContentOrderBy()
 	{
 		$order            = ' ORDER BY jecc.date_submitted DESC, jecc.date_time DESC';
-		$menu             = @JFactory::getApplication()->getMenu();
-		$current_menu     = $menu->getActive();
-		$menu_params      = $menu->getParams(@$current_menu->id);
-		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+		$app              = Factory::getApplication();
+		$menu             = method_exists($app, 'getMenu') ? $app->getMenu() : null;
+		if (!empty($menu)) {
+			$current_menu     = $menu->getActive();
+			$menu_params      = $menu->getParams(@$current_menu->id);
+			$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+		} else {
+			$em_other_columns = array();
+		}
 
 		$session          = JFactory::getSession();
 		$filter_order     = $session->get('filter_order');
@@ -669,7 +674,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$user_files = [];
 
-		$current_menu = $this->app->getMenu()->getActive();
+		$current_menu = method_exists($this->app, 'getMenu') ? $this->app->getMenu()->getActive() : null;
 		if (!empty($current_menu)) {
 			$menu_params      = $current_menu->getParams();
 			$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
@@ -2101,16 +2106,21 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return bool|mixed
 	 * @throws Exception
 	 */
-	public function getAllFnums($assoc_tab_fnums = false)
+	public function getAllFnums($assoc_tab_fnums = false, $user_id = null)
 	{
 		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		$m_users = new EmundusModelUsers;
 
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$current_user = $this->app->getIdentity();
-		}
-		else {
-			$current_user = Factory::getUser();
+
+		if (!empty($user_id)) {
+			$current_user = Factory::getUser($user_id);
+		} else {
+			if (version_compare(JVERSION, '4.0', '>')) {
+				$current_user = $this->app->getIdentity();
+			}
+			else {
+				$current_user = Factory::getUser();
+			}
 		}
 
 		$this->code = $m_users->getUserGroupsProgrammeAssoc($current_user->id);
@@ -2638,7 +2648,7 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return array|false
 	 */
-	public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0, $method = 0)
+	public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0, $method = 0, $user_id = null)
 	{
 		$data = [];
 
@@ -2652,9 +2662,12 @@ class EmundusModelFiles extends JModelLegacy
 			if (empty($current_lang)) {
 				$current_lang = 'fr';
 			}
-			$current_user = JFactory::getUser()->id;
+			$current_user = empty($user_id) ? Factory::getApplication()->getIdentity()->id : $user_id;
 
-			$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+			if (!class_exists('EmundusHelperAccess')) {
+				require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+			}
+			$anonymize_data = EmundusHelperAccess::isDataAnonymized($current_user);
 			if ($anonymize_data) {
 				$query = 'SELECT jecc.fnum, esc.label, sp.code, esc.id as campaign_id';
 			}

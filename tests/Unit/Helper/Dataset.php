@@ -583,7 +583,7 @@ class Dataset
 					->where('group_id = ' . $group_id);
 
 				$this->db->setQuery($query);
-				$this->dbjoin_id = $this->db->loadResult();
+				$dbjoin_id = $this->db->loadResult();
 
 				$query->clear();
 				$query->select('id')
@@ -601,12 +601,12 @@ class Dataset
 					->where('group_id = ' . $group_id);
 
 				$this->db->setQuery($query);
-				$this->dbjoin_multi_id = $this->db->loadResult();
+				$dbjoin_multi_id = $this->db->loadResult();
 
 				$insert_fabrik_joins = "INSERT INTO jos_fabrik_joins (list_id, element_id, join_from_table, table_join, table_key, table_join_key, join_type, group_id, params) 
-                    VALUES (0, " . $this->dbjoin_id . ", '', 'data_nationality', 'e_797_7978', 'id', 'left', " . $group_id  . ", '{\"join-label\":\"label_fr\",\"type\":\"element\",\"pk\":\"`data_nationality`.`id`\"}'),
+                    VALUES (0, " . $dbjoin_id . ", '', 'data_nationality', 'e_797_7978', 'id', 'left', " . $group_id  . ", '{\"join-label\":\"label_fr\",\"type\":\"element\",\"pk\":\"`data_nationality`.`id`\"}'),
                     (0, " . $ccd_id . ", '', 'jos_emundus_users', 'cascadingdropdown', 'id', 'left', " . $group_id  . ", '{\"join-label\":\"lastname\",\"type\":\"element\",\"pk\":\"`jos_emundus_users`.`id`\"}'),
-                    (" . $list_id . ", " . $this->dbjoin_multi_id . ", 'jos_emundus_unit_test_form', 'jos_emundus_unit_test_form_repeat_dbjoin_multi', 'dbjoin_multi', 'parent_id', 'left', 0, '{\"type\":\"repeatElement \",\"pk\":\"`jos_emundus_1001_00_repeat_dbjoin_multi`.`id`\"}')";
+                    (" . $list_id . ", " . $dbjoin_multi_id . ", 'jos_emundus_unit_test_form', 'jos_emundus_unit_test_form_repeat_dbjoin_multi', 'dbjoin_multi', 'parent_id', 'left', 0, '{\"type\":\"repeatElement \",\"pk\":\"`jos_emundus_1001_00_repeat_dbjoin_multi`.`id`\"}')";
 
 				$this->db->setQuery($insert_fabrik_joins);
 				$this->db->execute();
