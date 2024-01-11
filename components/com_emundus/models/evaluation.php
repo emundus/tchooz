@@ -65,10 +65,13 @@ class EmundusModelEvaluation extends JModelList
 			$session      = Factory::getSession();
 		}
 
-		$menu         = $this->app->getMenu();
-		$current_menu = $menu->getActive();
-
-		if (empty($current_menu)) {
+		$menu = method_exists($this->app, 'getMenu') ? $this->app->getMenu() : null;
+		if (!empty($menu)) {
+			$current_menu = $menu->getActive();
+			if (empty($current_menu)) {
+				return false;
+			}
+		} else {
 			return false;
 		}
 

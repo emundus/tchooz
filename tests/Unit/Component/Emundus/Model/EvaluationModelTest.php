@@ -38,8 +38,7 @@ class EvaluationModelTest extends UnitTestCase
 		$this->assertNotEmpty($letters, 'I should retrieve letters by programme status and campaign');
 
 		$letter_ids       = array_column($letters, 'id');
-		$letter_id_string = (string) $letter_id;
-		$this->assertContains($letter_id_string, $letter_ids, 'I should retrieve the created letter id in the list of letters');
+		$this->assertContains($letter_id, $letter_ids, 'I should retrieve the created letter id in the list of letters');
 
 	}
 
