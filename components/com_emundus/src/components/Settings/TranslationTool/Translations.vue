@@ -296,11 +296,15 @@ export default {
       })
     },
 
-    async saveTranslation({value,translation}){
+    async saveTranslation({value,translation}) {
       this.$emit('updateSaving',true);
-      translationsService.updateTranslations(value,this.object.table.type,this.lang.lang_code,translation.reference_id,translation.tag,translation.reference_table,translation.reference_field).then(() => {
-        this.$emit('updateLastSaving',this.formattedDate('','LT'));
-        this.$emit('updateSaving',false);
+      translationsService.updateTranslations(value,this.object.table.type,this.lang.lang_code,translation.reference_id,translation.tag,translation.reference_table,translation.reference_field).then((response) => {
+        if (response.status) {
+          this.$emit('updateLastSaving',this.formattedDate('','LT'));
+          this.$emit('updateSaving',false);
+        } else {
+          console.error(response.msg);
+        }
       });
     },
 
