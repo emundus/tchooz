@@ -69,7 +69,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		$menu = $this->app->getMenu();
         $active = $menu->getActive();
 		if (!empty($active)) {
-            $this->menu_params = $active->params;
+            $this->menu_params = $active->getParams();
         } else {
             // get default file menu of current user profile
             $profile_id = $this->m_users->getCurrentUserProfile($this->user->id);
@@ -91,7 +91,7 @@ class EmundusFiltersFiles extends EmundusFilters
                 // get menu params
                 if (!empty($menu_id)) {
                     $menu = $menu->getItem($menu_id);
-                    $this->menu_params = $menu->params;
+                    $this->menu_params = $menu->getParams();
                 }
             }
         }

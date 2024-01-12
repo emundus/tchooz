@@ -28,11 +28,11 @@ class EmundusFilters
 			$this->setFilters();
 		}
 
-		$session_filters = JFactory::getSession()->get('em-applied-filters', null);
+		$session_filters = $app->getSession()->get('em-applied-filters', null);
 		if (!empty($session_filters)) {
 			$this->setAppliedFilters($session_filters);
 		}
-		$quick_search_filters = JFactory::getSession()->get('em-quick-search-filters', null);
+		$quick_search_filters = $app->getSession()->get('em-quick-search-filters', null);
 		if (!empty($quick_search_filters)) {
 			$this->setQuickSearchFilters($quick_search_filters);
 		}
