@@ -154,15 +154,17 @@ class TranslationsModelTest extends UnitTestCase
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 		$query->insert('#__emundus_setup_status')
-			->columns('`step`, `value`')
-			->values($reference_id . ', "Translation Status"');
+			->columns('`step`, `value`, `ordering`')
+			->values($reference_id . ', "Translation Status", 1');
 
 		$db->setQuery($query);
 		$db->execute();
 
 		$translations = $this->model->getTranslationsFalang('fr-FR', 'en-GB', $reference_id, 'value', 'emundus_setup_status');
-		error_log(print_r($translations, true));
 		$this->assertNotEmpty($translations, 'Falang translations should not be empty');
+		$this->assertObjectHasAttribute('9999', $translations, 'Falang translations should have a key 9999');
+		$this->assertObjectHasAttribute('value', $translations->{9999}, 'Falang translations should have a key 9999 with a value attribute');
+		$this->assertSame('Translation Status', $translations->{9999}->value->default_lang, 'Falang translations should have a key 9999 with a value attribute equal to "Translation Status"');
 
 		// cleanup
 		$query = $db->getQuery(true);
