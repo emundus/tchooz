@@ -203,13 +203,6 @@
     },
     {
       "type": "script",
-      "name": "@codemirror/theme-one-dark",
-      "uri": "media/vendor/codemirror/js/codemirror-theme-one-dark.min.js",
-      "importmap": true,
-      "version": "6.1.2"
-    },
-    {
-      "type": "script",
       "name": "@codemirror/view",
       "uri": "media/vendor/codemirror/js/codemirror-view.min.js",
       "importmap": true,
@@ -395,7 +388,6 @@
         "@codemirror/lint",
         "@codemirror/search",
         "@codemirror/state",
-        "@codemirror/theme-one-dark",
         "@codemirror/view",
         "@lezer/common",
         "@lezer/css",
