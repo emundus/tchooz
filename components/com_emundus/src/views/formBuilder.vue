@@ -246,6 +246,10 @@ export default {
     this.profile_id = data.prid.value;
     this.campaign_id = data.cid.value;
 
+    if (data && data.settingsmenualias && data.settingsmenualias.value) {
+      this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value + '?layout=translation&default_menu=2&object=emundus_setup_profiles';
+    }
+
     if (data && data.mode && data.mode.value) {
       this.mode = data.mode.value;
 
@@ -255,7 +259,9 @@ export default {
         this.form_id = this.profile_id;
         this.profile_id = 0;
       }
-    } else {
+    }
+
+    if (this.profile_id > 0) {
       this.leftPanel.tabs[2].url += '&data=' + this.profile_id;
     }
 
