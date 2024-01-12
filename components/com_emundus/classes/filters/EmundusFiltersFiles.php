@@ -21,11 +21,9 @@ class EmundusFiltersFiles extends EmundusFilters
 
 	public function __construct($config = array(), $skip = false)
 	{
-		parent::__construct($config);
-
 		Log::addLogger(['text_file' => 'com_emundus.filters.php'], Log::ALL, 'com_emundus.filters');
 
-		$this->app        = Factory::getApplication();
+		$this->app = Factory::getApplication();
 		$this->user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id) || !EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id)) {
@@ -163,11 +161,6 @@ class EmundusFiltersFiles extends EmundusFilters
         $config_form_ids = [];
 
 		if (!empty($profiles)) {
-			$menus = [];
-			foreach ($profiles as $profile) {
-				$menus[] = 'menu-profile' . $profile;
-			}
-
 			// get all forms associated to the user's profiles
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);

@@ -4235,19 +4235,64 @@ class EmundusControllerFiles extends JControllerLegacy
 		exit;
 	}
 
-	public function setFiltersValuesAvailability()
+	public function getFiltersAvailable()
 	{
 		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
-		$user     = JFactory::getUser();
+		$app = Factory::getApplication();
+		$user = $app->getIdentity();
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$response['msg'] = JText::_('MISSING_PARAMS');
-			$module_id       = $this->input->getInt('module_id', 0);
+			$module_id = $app->input->getInt('module_id', 0);
 
 			if (!empty($module_id)) {
 				$response['msg'] = JText::_('NO_CALCULATION_FOR_THIS_MODULE');
 
-				$db    = JFactory::getDbo();
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
+
+				$query->select('params')
+					->from('#__modules')
+					->where('id = ' . $db->quote($module_id));
+
+				$db->setQuery($query);
+				$module_params = $db->loadResult();
+				$module_params = json_decode($module_params, true);
+
+				try {
+					if (!class_exists('EmundusFiltersFiles')) {
+						require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
+					}
+					$m_filters = new EmundusFiltersFiles($module_params);
+
+					$response['data'] = $m_filters->getFilters();
+					$response['status'] = true;
+					$response['code'] = 200;
+				} catch (Exception $e) {
+					$response['code'] = 500;
+					$response['msg'] = $e->getMessage();
+				}
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function setFiltersValuesAvailability()
+	{
+		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
+		$app = Factory::getApplication();
+		$user = $app->getIdentity();
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$response['msg'] = JText::_('MISSING_PARAMS');
+			$module_id = $app->input->getInt('module_id', 0);
+
+			if (!empty($module_id)) {
+				$response['msg'] = JText::_('NO_CALCULATION_FOR_THIS_MODULE');
+
+				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
 				$query->select('params')
@@ -4259,7 +4304,7 @@ class EmundusControllerFiles extends JControllerLegacy
 				$module_params = json_decode($module_params, true);
 
 				if (!empty($module_params) && $module_params['count_filter_values'] == 1) {
-					$session         = JFactory::getSession();
+					$session = $app->getSession();
 					$applied_filters = $session->get('em-applied-filters', []);
 
 					if (!empty($applied_filters)) {
@@ -4272,7 +4317,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 						require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 						$h_files = new EmundusHelperFiles();
-						$data    = $h_files->setFiltersValuesAvailability($applied_filters);
+						$data = $h_files->setFiltersValuesAvailability($applied_filters, $user->id);
 
 						$response = ['status' => true, 'code' => 200, 'msg' => JText::_('SUCCESS'), 'data' => $data];
 					}

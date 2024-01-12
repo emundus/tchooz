@@ -111,7 +111,7 @@ class EmundusFilters
 	{
 		$elements = [];
 
-		$db = JFactory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$query->select('jfl.id, jfl.db_table_name, jfl.form_id')
@@ -181,7 +181,7 @@ class EmundusFilters
 	{
 		$values = [];
 
-		$db = JFactory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		switch ($element['plugin']) {
@@ -208,25 +208,25 @@ class EmundusFilters
 							$select .= ', ' . $db->quoteName($params['join_val_column'], 'label');
 						}
 
-                        $select .= ', 0 as count';
+						$select .= ', 0 as count';
 
 						$query->clear()
 							->select($select)
 							->from($params['join_db_name']);
 
 						if(!empty($params['database_join_where_sql'])) {
-                            // TODO: I don't know yet how to handle complex database_join_where_sql using calculated fields
-                            if (strpos($params['database_join_where_sql'], '_raw}') === false) {
-                                $params['database_join_where_sql'] = str_replace('{thistable}', $params['join_db_name'], $params['database_join_where_sql']);
-                                $params['database_join_where_sql'] = str_replace('{shortlang}', $lang, $params['database_join_where_sql']);
-                                $first_where_pos = stripos($params['database_join_where_sql'], 'WHERE');
+							// TODO: I don't know yet how to handle complex database_join_where_sql using calculated fields
+							if (strpos($params['database_join_where_sql'], '_raw}') === false) {
+								$params['database_join_where_sql'] = str_replace('{thistable}', $params['join_db_name'], $params['database_join_where_sql']);
+								$params['database_join_where_sql'] = str_replace('{shortlang}', $lang, $params['database_join_where_sql']);
+								$first_where_pos = stripos($params['database_join_where_sql'], 'WHERE');
 
-                                if ($first_where_pos !== false) {
-                                    $params['database_join_where_sql'] = substr($params['database_join_where_sql'], $first_where_pos + 5);
-                                }
+								if ($first_where_pos !== false) {
+									$params['database_join_where_sql'] = substr($params['database_join_where_sql'], $first_where_pos + 5);
+								}
 
-                                $query->where($params['database_join_where_sql']);
-                            }
+								$query->where($params['database_join_where_sql']);
+							}
 						}
 
 						try {
@@ -245,13 +245,13 @@ class EmundusFilters
 					$params = json_decode($element['params'], true);
 					if (!empty($params['sub_options'])) {
 						foreach($params['sub_options']['sub_values'] as $sub_opt_key => $sub_opt) {
-							$label = Text::_($params['sub_options']['sub_labels'][$sub_opt_key]);
+							$label = \Text::_($params['sub_options']['sub_labels'][$sub_opt_key]);
 							if (empty($label)) {
 								$label = $sub_opt;
 							}
 
 							$values[] = [
-                                'count' => 0,
+								'count' => 0,
 								'value' => $sub_opt,
 								'label' => $label
 							];
@@ -272,7 +272,7 @@ class EmundusFilters
 		$values = [];
 
 		if (!empty($element_id)) {
-			$db = JFactory::getDbo();
+			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('plugin, params')
@@ -300,7 +300,7 @@ class EmundusFilters
 
 	protected function saveFiltersAllValues($element_values = null)
 	{
-		$session = JFactory::getSession();
+		$session = Factory::getApplication()->getSession();
 
 		if (!empty($element_values)) {
 			$filters_all_values = $session->get('em-filters-all-values', []);

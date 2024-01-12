@@ -31,7 +31,6 @@ class EmundusModelFormbuilder extends JModelList
 
 		$this->app = Factory::getApplication();
 		$this->db = Factory::getDbo();
-	
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'translations.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
