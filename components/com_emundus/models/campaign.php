@@ -1471,10 +1471,7 @@ class EmundusModelCampaign extends JModelList
 		$updated = false;
 
 		if (!empty($data) && !empty($cid)) {
-			if (isset($data['start_date']) && empty($data['start_date'])) {
-				return $updated;
-			}
-			if (isset($data['end_date']) && empty($data['end_date'])) {
+			if (empty($data['start_date']) || empty($data['end_date'])) {
 				return $updated;
 			}
 
@@ -1483,8 +1480,9 @@ class EmundusModelCampaign extends JModelList
 			require_once(JPATH_ROOT . '/components/com_emundus/models/falang.php');
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
+			$app = JFactory::getApplication();
 			$m_falang       = new EmundusModelFalang;
-			$lang           = JFactory::getLanguage();
+			$lang           = $app->getLanguage();
 			$actualLanguage = substr($lang->getTag(), 0, 2);
 
 			$limit_status = [];
@@ -1492,10 +1490,14 @@ class EmundusModelCampaign extends JModelList
 			$labels       = new stdClass;
 
 
-			JFactory::getApplication()->triggerEvent('onBeforeCampaignUpdate', $data);
-			JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeCampaignUpdate', ['campaign' => $cid]]);
+			$app->triggerEvent('onBeforeCampaignUpdate', $data);
+			$app->triggerEvent('onCallEventHandler', ['onBeforeCampaignUpdate', ['campaign' => $cid]]);
 
 			foreach ($data as $key => $val) {
+				if ($val === '') {
+					continue;
+				}
+
 				switch ($key) {
 					case 'label':
 						$labels        = $data['label'];
@@ -1560,8 +1562,8 @@ class EmundusModelCampaign extends JModelList
 
 					$this->createYear($data);
 
-					JFactory::getApplication()->triggerEvent('onAfterCampaignUpdate', $data);
-					JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterCampaignUpdate', ['campaign' => $cid]]);
+					$app->triggerEvent('onAfterCampaignUpdate', $data);
+					$app->triggerEvent('onCallEventHandler', ['onAfterCampaignUpdate', ['campaign' => $cid]]);
 				}
 				else {
 					JLog::add('Attempt to update $campaign ' . $cid . ' with data ' . json_encode($data) . ' failed.', JLog::WARNING, 'com_emundus.error');
