@@ -9,6 +9,7 @@
 
 namespace Unit\Component\Emundus\Model;
 
+use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
 
 class TranslationsModelTest extends UnitTestCase
@@ -145,5 +146,30 @@ class TranslationsModelTest extends UnitTestCase
 		$this->assertFalse($this->model->checkTagIsCorrect('', 'Ma traduction', 'insert', 'fr'));
 		$this->assertFalse($this->model->checkTagIsCorrect('E[L<$EN^()T_TE\T', 'Ma traduction', 'insert', 'fr'));
 		$this->assertTrue($this->model->checkTagIsCorrect('MON_ELEMENT', 'Ma traduction', 'insert', 'fr'));
+	}
+
+	public function testgetTranslationsFalang()
+	{
+		$reference_id = 9999;
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->insert('#__emundus_setup_status')
+			->columns('`step`, `value`')
+			->values($reference_id . ', "Translation Status"');
+
+		$db->setQuery($query);
+		$db->execute();
+
+		$translations = $this->model->getTranslationsFalang('fr-FR', 'en-GB', $reference_id, 'value', 'emundus_setup_status');
+		error_log(print_r($translations, true));
+		$this->assertNotEmpty($translations, 'Falang translations should not be empty');
+
+		// cleanup
+		$query = $db->getQuery(true);
+		$query->delete('#__emundus_setup_status')
+			->where('`step` = ' . $reference_id);
+
+		$db->setQuery($query);
+		$db->execute();
 	}
 }

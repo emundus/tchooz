@@ -946,7 +946,7 @@ class EmundusModelTranslations extends JModelList
 	 *
 	 * @since version 1.28.0
 	 */
-	public function getTranslationsFalang($default_lang, $lang_to, $reference_id, $fields, $reference_table, $reference_field = '')
+	public function getTranslationsFalang($default_lang, $lang_to, $reference_id, $fields, $reference_table)
 	{
 		$translations = new stdClass();
 		$fields       = explode(',', $fields);
