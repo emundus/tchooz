@@ -1,58 +1,58 @@
 <template>
   <div id="emundus-filters" class="em-w-100">
-	  <section id="filters-top-actions" class="em-mb-16">
-		  <span id="clear-filters" class="material-icons-outlined em-pointer hidden" @click="clearFilters" :alt="translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS')">filter_list_off</span>
-			<span id="save-filters" class="material-icons-outlined em-pointer hidden" @click="onClickSaveFilter" :alt="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS')">save</span>
+    <section id="filters-top-actions" class="em-mb-16">
+      <span id="clear-filters" class="material-icons-outlined em-pointer hidden" @click="clearFilters" :alt="translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS')">filter_list_off</span>
+      <span id="save-filters" class="material-icons-outlined em-pointer hidden" @click="onClickSaveFilter" :alt="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS')">save</span>
 
-		  <div id="global-search-wrapper" style="position: relative;">
-			  <div id="global-search-values" ref="globalSearchValues" class="em-border-radius-8 em-border-neutral-400 em-flex-row em-flex-wrap em-white-bg" @click="onEnterGlobalSearchDiv">
-				  <div v-if="globalSearch.length > 0" class="em-flex-row em-flex-wrap">
-					  <div v-for="value in globalSearch" :key="value.value + '-' + value.scope" class="global-search-tag em-flex-row em-box-shadow em-border-radius-8 em-border-neutral-400 em-w-auto em-mt-4 em-mb-4 em-ml-4 em-mr-4">
-						  <span style="white-space: nowrap">{{ translatedScope(value.scope) }} : {{ value.value }}</span>
-						  <span class="material-icons-outlined em-pointer" @click="removeGlobalSearchValue(value.value, value.scope)">clear</span>
-					  </div>
-				  </div>
-				  <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="(e) => {this.onGlobalSearchChange(e, 'everywhere')}" :placeholder="globalSearchPlaceholder">
-			  </div>
-			  <ul id="select-scopes" class="em-w-100 em-w-100 em-border-radius-8 em-white-bg em-border-neutral-400 em-box-shadow" :class="{'hidden': currentGlobalSearch.length < 1}">
-				  <li v-for="option in globalSearchScopes" :key="option.value" @click="(e) => {this.onGlobalSearchChange(option.value)}" class="em-pointer global-search-scope">
-					  <button>{{ currentGlobalSearch }} {{ translate('MOD_EMUNDUS_FILTERS_SCOPE_IN') }}  {{ translate(option.label) }}</button>
-				  </li>
-			  </ul>
-		  </div>
-		  <div id="save-filters-inputs-btns">
-			  <div id="save-filter-new-name" class="em-flex-row em-flex-space-between em-border-radius-8 em-white-bg em-box-shadow em-w-100 em-p-16" :class="{'hidden': !openSaveFilter}">
-				  <input id="new-filter-name" ref="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')" minlength="2" @keyup.enter="saveFilters" @focusout="onFocusOutNewFilter">
-				  <span id="save-new-filter" class="material-icons-outlined em-pointer" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 1}" @click="saveFilters">done</span>
-			  </div>
-			  <div v-if="registeredFilters.length > 0" id="registered-filters-wrapper" class="em-mt-8">
-				  <label for="registered-filters">{{ translate('MOD_EMUNDUS_FILTERS_SAVED_FILTERS') }}</label>
-				  <div class="em-flex-row em-flex-space-between">
-					  <select id="registered-filters" class="em-w-100" v-model="selectedRegisteredFilter" @change="onSelectRegisteredFilter">
-						  <option value="0">{{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</option>
-						  <option v-for="registeredFilter in registeredFilters" :key="registeredFilter.id" :value="registeredFilter.id">{{ registeredFilter.name }}</option>
-					  </select>
-					  <span v-if="selectedRegisteredFilter > 0" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteRegisteredFilter">delete</span>
-				  </div>
-			  </div>
-		  </div>
-	  </section>
-	  <section id="applied-filters">
-			<div v-for="appliedFilter in appliedFilters" :key="appliedFilter.uid">
-				<MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" :countFilterValues="countFilterValues" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></MultiSelect>
-				<DateFilter v-else-if="appliedFilter.type === 'date'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DateFilter>
-				<TimeFilter v-else-if="appliedFilter.type === 'time'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></TimeFilter>
-				<DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DefaultFilter>
-			</div>
-	  </section>
-	  <div id="filters-selection-wrapper" class="em-w-100 em-mt-16 em-mb-16" :class="{'hidden': !openFilterOptions}">
-		  <label for="filters-selection"> {{ translate('MOD_EMUNDUS_FILTERS_SELECT_FILTER_LABEL') }} </label>
-			<AdvancedSelect :module-id="moduleId" :filters="availableFilters" @filter-selected="onSelectNewFilter"></AdvancedSelect>
-	  </div>
-	  <section id="filters-bottom-actions">
-		  <button id="em-add-filter" class="em-secondary-button em-white-bg em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
-		  <button id="em-apply-filters" class="em-primary-button em-mt-16 hidden" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
-	  </section>
+      <div id="global-search-wrapper" style="position: relative;">
+        <div id="global-search-values" ref="globalSearchValues" class="em-border-radius-8 em-border-neutral-400 em-flex-row em-flex-wrap em-white-bg" @click="onEnterGlobalSearchDiv">
+          <div v-if="globalSearch.length > 0" class="em-flex-row em-flex-wrap">
+            <div v-for="value in globalSearch" :key="value.value + '-' + value.scope" class="global-search-tag em-flex-row em-box-shadow em-border-radius-8 em-border-neutral-400 em-w-auto em-mt-4 em-mb-4 em-ml-4 em-mr-4">
+              <span style="white-space: nowrap">{{ translatedScope(value.scope) }} : {{ value.value }}</span>
+              <span class="material-icons-outlined em-pointer" @click="removeGlobalSearchValue(value.value, value.scope)">clear</span>
+            </div>
+          </div>
+          <input id="current-global-search" ref="globalSearchInput" class="em-border-radius-8" v-model="currentGlobalSearch" type="text" @keyup.enter="(e) => {this.onGlobalSearchChange(e, 'everywhere')}" :placeholder="globalSearchPlaceholder">
+        </div>
+        <ul id="select-scopes" class="em-w-100 em-w-100 em-border-radius-8 em-white-bg em-border-neutral-400 em-box-shadow" :class="{'hidden': currentGlobalSearch.length < 1}">
+          <li v-for="option in globalSearchScopes" :key="option.value" @click="(e) => {this.onGlobalSearchChange(option.value)}" class="em-pointer global-search-scope">
+            <button>{{ currentGlobalSearch }} {{ translate('MOD_EMUNDUS_FILTERS_SCOPE_IN') }}  {{ translate(option.label) }}</button>
+          </li>
+        </ul>
+      </div>
+      <div id="save-filters-inputs-btns">
+        <div id="save-filter-new-name" class="em-flex-row em-flex-space-between em-border-radius-8 em-white-bg em-box-shadow em-w-100 em-p-16" :class="{'hidden': !openSaveFilter}">
+          <input id="new-filter-name" ref="new-filter-name" type="text" class="em-flex-row" v-model="newFilterName" :placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')" minlength="2" @keyup.enter="saveFilters" @focusout="onFocusOutNewFilter">
+          <span id="save-new-filter" class="material-icons-outlined em-pointer" :class="{'em-pointer em-dark-blue-500-color': newFilterName.length > 1}" @click="saveFilters">done</span>
+        </div>
+        <div v-if="registeredFilters.length > 0" id="registered-filters-wrapper" class="em-mt-8">
+          <label for="registered-filters">{{ translate('MOD_EMUNDUS_FILTERS_SAVED_FILTERS') }}</label>
+          <div class="em-flex-row em-flex-space-between">
+            <select id="registered-filters" class="em-w-100" v-model="selectedRegisteredFilter" @change="onSelectRegisteredFilter">
+              <option value="0">{{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</option>
+              <option v-for="registeredFilter in registeredFilters" :key="registeredFilter.id" :value="registeredFilter.id">{{ registeredFilter.name }}</option>
+            </select>
+            <span v-if="selectedRegisteredFilter > 0" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteRegisteredFilter">delete</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="applied-filters">
+      <div v-for="appliedFilter in appliedFilters" :key="appliedFilter.uid">
+        <MultiSelect v-if="appliedFilter.type === 'select'" :filter="appliedFilter" :module-id="moduleId" :countFilterValues="countFilterValues" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></MultiSelect>
+        <DateFilter v-else-if="appliedFilter.type === 'date'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DateFilter>
+        <TimeFilter v-else-if="appliedFilter.type === 'time'" :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)"></TimeFilter>
+        <DefaultFilter v-else :filter="appliedFilter" :module-id="moduleId" class="em-w-100" @remove-filter="onRemoveFilter(appliedFilter)" @filter-changed="onFilterChanged"></DefaultFilter>
+      </div>
+    </section>
+    <div id="filters-selection-wrapper" class="em-w-100 em-mt-16 em-mb-16" :class="{'hidden': !openFilterOptions}">
+      <label for="filters-selection"> {{ translate('MOD_EMUNDUS_FILTERS_SELECT_FILTER_LABEL') }} </label>
+      <AdvancedSelect :module-id="moduleId" :filters="availableFilters" @filter-selected="onSelectNewFilter"></AdvancedSelect>
+    </div>
+    <section id="filters-bottom-actions">
+      <button id="em-add-filter" class="em-secondary-button em-white-bg em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
+      <button id="em-apply-filters" class="em-primary-button em-mt-16 hidden" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
+    </section>
   </div>
 </template>
 
@@ -125,10 +125,10 @@ export default {
 		this.getRegisteredFilters();
 		this.selectedRegisteredFilter = sessionStorage.getItem('emundus-current-filter') || 0;
 		this.appliedFilters = this.defaultAppliedFilters.map((filter) => {
-			if (!filter.hasOwnProperty('operator')) {
+      if (!filter.hasOwnProperty('operator')) {
 				filter.operator = '=';
 			}
-			if (!filter.hasOwnProperty('andorOperator')) {
+      if (!filter.hasOwnProperty('andorOperator')) {
 				filter.andorOperator = 'OR';
 			}
 
@@ -251,7 +251,6 @@ export default {
         }
 
         filtersService.getFiltersAvailable(this.moduleId).then((filters) => {
-          console.log(filters);
           this.filters = filters;
         }).catch((error) => {
           console.error(error);
