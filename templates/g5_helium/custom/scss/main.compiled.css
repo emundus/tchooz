@@ -861,7 +861,8 @@ video {
     .view-registration.em-formRegistrationCenter .emundus-form {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto
+        margin: 0 auto;
+        padding-top: 0
 
     }
       }
@@ -869,7 +870,8 @@ video {
     .view-registration.em-formRegistrationCenter .emundus-form {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto
+        margin: 0 auto;
+        padding-top: 0
 
     }
       }
@@ -1663,9 +1665,16 @@ form.fabrikForm .plg-birthday .fabrikElement .fabrikSubElementContainer table tb
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
       }
+form.fabrikForm .control-group.\!error label {
+        color: var(--em-form-label-color-error) !important;
+      }
 form.fabrikForm .control-group.error input,form.fabrikForm .control-group.error textarea,form.fabrikForm .control-group.error select {
         border-color: var(--em-form-bc-error);
         color: var(--em-default-text-color-1);
+      }
+form.fabrikForm .control-group.\!error input,form.fabrikForm .control-group.\!error textarea,form.fabrikForm .control-group.\!error select {
+        border-color: var(--em-form-bc-error) !important;
+        color: var(--em-default-text-color-1) !important;
       }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-bc-error);
@@ -1950,9 +1959,15 @@ input[type="text"],
     display: none;
   }
 /* ADD PIPE */
+pre#log {
+    display: none;
+  }
 div[id^='recorder-'] {
     margin-bottom: 12px;
   }
+div[id^='recorder-'] > div:nth-child(1) {
+      width: 100% !important;
+    }
 div[id^='recorder-'] div[id^='pipeStartRecording-recorder-'],div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] {
       display: flex;
       align-items: center;
@@ -1995,6 +2010,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .sticky {
   position: sticky;
+}
+.isolate {
+  isolation: isolate;
 }
 .col-auto {
   grid-column: auto;
@@ -2064,6 +2082,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .ml-3 {
   margin-left: var(--em-spacing-3);
 }
+.ml-4 {
+  margin-left: var(--em-spacing-4);
+}
 .ml-8 {
   margin-left: var(--em-spacing-8);
 }
@@ -2127,6 +2148,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .inline-block {
   display: inline-block;
 }
+.\!inline {
+  display: inline !important;
+}
 .inline {
   display: inline;
 }
@@ -2157,6 +2181,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .h-0 {
   height: 0px;
 }
+.h-10 {
+  height: var(--em-spacing-10);
+}
 .h-64 {
   height: 16rem;
 }
@@ -2167,11 +2194,18 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .w-1 {
   width: var(--em-spacing-1);
 }
+.w-11\/12 {
+  width: 91.666667%;
+}
 .w-64 {
   width: 16rem;
 }
 .w-auto {
   width: auto;
+}
+.w-fit {
+  width: -moz-fit-content;
+  width: fit-content;
 }
 .w-full {
   width: 100%;
@@ -2193,6 +2227,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
      -moz-user-select: all;
           user-select: all;
 }
+.resize-y {
+  resize: vertical;
+}
 .\!resize {
   resize: both !important;
 }
@@ -2213,6 +2250,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+.grid-cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
 .flex-col {
   flex-direction: column;
 }
@@ -2221,6 +2261,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .items-start {
   align-items: flex-start;
+}
+.items-end {
+  align-items: flex-end;
 }
 .items-center {
   align-items: center;
@@ -2234,6 +2277,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .justify-between {
   justify-content: space-between;
 }
+.justify-around {
+  justify-content: space-around;
+}
 .gap-1 {
   gap: var(--em-spacing-1);
 }
@@ -2242,6 +2288,13 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .gap-2 {
   gap: var(--em-spacing-2);
+}
+.gap-x-6 {
+  -moz-column-gap: var(--em-spacing-6);
+       column-gap: var(--em-spacing-6);
+}
+.gap-y-0 {
+  row-gap: 0px;
 }
 .overflow-hidden {
   overflow: hidden;
@@ -2328,6 +2381,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .text-end {
   text-align: end;
 }
+.\!text-6xl {
+  font-size: 3.75rem !important;
+  line-height: 1 !important;
+}
 .text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -2351,6 +2408,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity));
 }
+.text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+.text-yellow-500 {
+  --tw-text-opacity: 1;
+  color: rgb(234 179 8 / var(--tw-text-opacity));
+}
 .underline {
   text-decoration-line: underline;
 }
@@ -2361,6 +2426,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .outline {
   outline-style: solid;
+}
+.outline-green-500 {
+  outline-color: #22c55e;
 }
 .blur {
   --tw-blur: blur(8px);
@@ -2689,6 +2757,10 @@ button.swal2-cancel.goback-btn {
         border: 1px solid var(--em-secondary-color) !important;
         border-radius: var(--em-coordinator-br) !important;
         color: var(--neutral-0) !important;
+        text-transform: inherit;
+        font-size: 16px;
+        padding: 8px 12px;
+        font-weight: 400;
     }
 button.swal2-cancel.goback-btn:hover,
     button.swal2-cancel.goback-btn:active,
@@ -2702,6 +2774,11 @@ button.swal2-cancel.goback-btn:hover,
         font-family: var(--em-coordinator-font);
     }
 /* ALERTES */
+.files-board #system-message .alert {
+        width: calc(100% - 90px);
+        float: right;
+        margin: 8px 7px;
+    }
 #system-message .alert, .fabrikMainError {
   display: flex;
   padding: var(--em-spacing-5);
@@ -2748,6 +2825,9 @@ button.swal2-cancel.goback-btn:hover,
 .alert.alert-success .material-icons {
             color: var(--em-alert-success-icon-color);
         }
+.alert.alert-danger ul, .alert.alert-error ul {
+        padding-left: 20px;
+    }
 /* ALERT */
 .messenger__notifications_counter {
         background: var(--red-500);
@@ -2782,10 +2862,13 @@ button.swal2-cancel.goback-btn:hover,
         margin: 0 0 10px 0 !important;
     }
 .alert a {
-        font-size: 20px !important;
+        text-decoration: underline;
+        font-weight: normal;
     }
 .alert a:hover {
-        font-size: 20px;
+        font-weight: normal;
+        text-decoration: underline;
+        color: var(--blue-500);
     }
 .has-error .help-block,
     .has-error .control-label,
@@ -3162,6 +3245,7 @@ body {
     background-position: top -6px right 30px;
     width: 100%;
     padding-right: 28%;
+    min-height: 150px;
 }
 /* Connexion */
 .login > #g-page-surround {
@@ -3257,6 +3341,12 @@ body {
     /* Accueil */
     .homepage #g-container-main .g-container {
         background-image : none;
+    }
+
+    .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
+        background-position: top -6px right -75px;
+        background-image: none;
+        padding-right: 0;
     }
 
     /* Connexion */

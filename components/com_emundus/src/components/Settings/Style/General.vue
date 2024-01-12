@@ -1,11 +1,15 @@
 <template>
   <div>
     <ModalUpdateColors
+        :key="primary + secondary"
+        v-if="primary && secondary"
+        :primary="primary"
+        :secondary="secondary"
         @UpdateColors="updateColors"
     />
 
     <!-- LOGO -->
-    <div class="em-grid-2" v-show="!loading">
+    <div class="em-grid-2" v-if="!loading">
       <div class="em-style-options em-mb-32">
         <div class="em-flex-row">
           <div>
@@ -19,7 +23,8 @@
         </div>
 
         <div class="em-logo-box pointer em-mt-16" v-if="!logo_updating">
-          <img class="logo-settings" v-if="!hideLogo" :src="imageLink" :srcset="'/'+imageLink" @error="hideLogo = true">
+          <img id="logo-img" class="logo-settings" v-if="!hideLogo" :src="imageLink" :srcset="'/'+imageLink"
+               @error="hideLogo = true">
           <p v-if="hideLogo">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_LOGO') }}</p>
         </div>
         <div class="em-mt-16" v-if="logo_updating">
@@ -40,7 +45,7 @@
           </vue-dropzone>
         </div>
 
-        <button @click="logo_updating = !logo_updating" class="em-mt-8 em-primary-button">
+        <button id="btn-update-logo" @click="logo_updating = !logo_updating" class="em-mt-8 em-primary-button">
           <span v-if="!logo_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_LOGO") }}</span>
           <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
         </button>
@@ -54,7 +59,7 @@
               {{ translate("COM_EMUNDUS_ONBOARD_ICON") }}
               <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayFaviconTip">help_outline</span>
             </h4>
-            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png</em></p>
+            <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png, ico</em></p>
             <p><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ICON_RECOMMENDED') }}</em></p>
           </div>
         </div>
@@ -81,7 +86,7 @@
           </vue-dropzone>
         </div>
 
-        <button @click="favicon_updating = !favicon_updating" class="em-mt-8 em-primary-button">
+        <button id="btn-update-favicon" @click="favicon_updating = !favicon_updating" class="em-mt-8 em-primary-button">
           <span v-if="!favicon_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_ICON") }}</span>
           <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
         </button>
@@ -143,7 +148,7 @@
           </vue-dropzone>
         </div>
 
-        <button @click="banner_updating = !banner_updating" class="em-mt-8 em-primary-button">
+        <button id="btn-update-banner" @click="banner_updating = !banner_updating" class="em-mt-8 em-primary-button">
           <span v-if="!banner_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_BANNER") }}</span>
           <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
         </button>
@@ -189,8 +194,8 @@ export default {
       favicon_updating: false,
       banner_updating: false,
 
-      imageLink: '',
-      iconLink: window.location.origin + '//images/custom/favicon.png' + '?' + new Date().getTime(),
+      imageLink: null,
+      iconLink: null,
       bannerLink: null,
       primary: '',
       secondary: '',
@@ -227,8 +232,7 @@ export default {
         addRemoveLinks: true,
         thumbnailWidth: null,
         thumbnailHeight: null,
-        resizeMimeType: 'image/png',
-        acceptedFiles: 'image/png,image/jpeg',
+        acceptedFiles: 'image/png,image/jpeg,,image/x-icon,image/vnd.microsoft.icon',
         previewTemplate: getTemplate(),
         dictCancelUpload: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD"),
         dictCancelUploadConfirmation: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),
@@ -258,85 +262,91 @@ export default {
     }
   },
 
-  created() {
+  async created() {
     this.loading = true;
     this.changes = false;
 
-    axios({
-      method: "get",
-      url: 'index.php?option=com_emundus&controller=settings&task=getlogo',
-    }).then((rep) => {
-      if (rep.data.filename == null) {
-        this.imageLink = 'images/custom/logo.png';
-      } else {
-        this.imageLink = 'images/custom/' + rep.data.filename + '?' + new Date().getTime();
-      }
+    await this.getLogo();
+    await this.getFavicon();
+    await this.getBanner();
+    await this.getAppColors();
 
-      setTimeout(() => {
-        this.changes = true;
-      }, 1000);
-    });
-
-    axios({
-      method: "get",
-      url: 'index.php?option=com_emundus&controller=settings&task=getfavicon',
-    }).then((rep) => {
-      if (rep.data.filename == null) {
-        this.iconLink = 'images/custom/favicon.png';
-      } else {
-        this.iconLink = rep.data.filename + '?' + new Date().getTime();
-      }
-
-      setTimeout(() => {
-        this.changes = true;
-      }, 1000);
-    });
-
-    axios({
-      method: "get",
-      url: 'index.php?option=com_emundus&controller=settings&task=getbanner',
-    }).then((rep) => {
-      if (rep.data.filename != null) {
-        this.bannerLink = rep.data.filename;
-      }
-
-      setTimeout(() => {
-        this.changes = true;
-      }, 1000);
-    });
-
-    axios({
-      method: "get",
-      url: 'index.php?option=com_emundus&controller=settings&task=getbanner',
-    }).then((rep) => {
-      if (rep.data.filename != null) {
-        this.bannerLink = rep.data.filename;
-      }
-
-      setTimeout(() => {
-        this.changes = true;
-      }, 1000);
-      this.loading = false;
-    });
-
-    axios({
-      method: "get",
-      url: 'index.php?option=com_emundus&controller=settings&task=getappcolors',
-    }).then((rep) => {
-      this.primary = rep.data.primary;
-      this.secondary = rep.data.secondary;
-      setTimeout(() => {
-        this.changes = true;
-      }, 1000);
-      this.loading = false;
-    });
+    this.changes = true;
+    this.loading = false;
   },
 
   methods: {
+    getLogo() {
+      return new Promise((resolve) => {
+        axios({
+          method: "get",
+          url: 'index.php?option=com_emundus&controller=settings&task=getlogo',
+        }).then((rep) => {
+          if (rep.data.filename == null) {
+            this.imageLink = 'images/custom/logo.png';
+          } else {
+            this.imageLink = 'images/custom/' + rep.data.filename + '?' + new Date().getTime();
+          }
+
+          resolve(true);
+        });
+      });
+    },
+
+    getFavicon() {
+      return new Promise((resolve) => {
+        axios({
+          method: "get",
+          url: 'index.php?option=com_emundus&controller=settings&task=getfavicon',
+        }).then((rep) => {
+          if (rep.data.filename == null) {
+            this.iconLink = 'images/custom/favicon.png';
+          } else {
+            this.iconLink = rep.data.filename + '?' + new Date().getTime();
+          }
+
+          resolve(true);
+        });
+      });
+    },
+
+    getBanner() {
+      return new Promise((resolve) => {
+        axios({
+          method: "get",
+          url: 'index.php?option=com_emundus&controller=settings&task=getbanner',
+        }).then((rep) => {
+          if (rep.data.filename != null) {
+            this.bannerLink = rep.data.filename;
+          }
+
+          resolve(true);
+        });
+      });
+    },
+
+    getAppColors() {
+      return new Promise((resolve) => {
+        axios({
+          method: "get",
+          url: 'index.php?option=com_emundus&controller=settings&task=getappcolors',
+        }).then((rep) => {
+          this.primary = rep.data.primary;
+          this.secondary = rep.data.secondary;
+
+          resolve(true);
+        });
+      });
+    },
+
     updateView(response) {
       this.hideLogo = false;
       this.imageLink = 'images/custom/' + response.filename + '?' + new Date().getTime();
-      document.querySelector('img[src="/images/custom/' + response.old_logo + '"]').src = '/images/custom/' + response.filename + '?' + new Date().getTime();
+
+      const oldLogo = document.querySelector('img[src="/images/custom/' + response.old_logo + '"]');
+      if (oldLogo) {
+        oldLogo.src = '/' + this.imageLink;
+      }
       this.$forceUpdate();
     },
     updateIcon(response) {
@@ -350,10 +360,7 @@ export default {
       this.bannerLink = 'images/custom/default_banner.' + ext + '?' + new Date().getTime();
       this.$forceUpdate();
     },
-    updateBanner() {
-      this.bannerLink = 'images/custom/default_banner.png?' + new Date().getTime();
-      this.$forceUpdate();
-    },
+
     updateColors(colors) {
       this.primary = colors.primary;
       this.secondary = colors.secondary;

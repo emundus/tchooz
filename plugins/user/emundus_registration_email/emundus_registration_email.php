@@ -81,7 +81,8 @@ class plgUserEmundus_registration_email extends CMSPlugin
                 $token = $params->get('emailactivation_token');
                 $token = md5($token);
 
-                $redirect = $this->params->get('activation_redirect','index.php');
+	            require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+	            $redirect = EmundusHelperMenu::getHomepageLink($this->params->get('activation_redirect','index.php'));
 
                 if (!empty($token) && strlen($token) === 32 && $input->getInt($token, 0, 'get') === 1) {
 

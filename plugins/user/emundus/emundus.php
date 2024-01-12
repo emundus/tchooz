@@ -138,19 +138,23 @@ class plgUserEmundus extends CMSPlugin
 		}
 
 		$dir = EMUNDUS_PATH_ABS . $user['id'] . DS;
+		$dir = EMUNDUS_PATH_ABS.$user['id'].DS;
+		if(is_dir($dir)) {
+			if (!$dh = opendir($dir)) {
+				Factory::getApplication()->enqueueMessage(JText::_("JERROR_AN_ERROR_HAS_OCCURRED"), 'error');
+				return false;
+			}
 
-		if (!$dh = opendir($dir)) {
-			return false;
+			while (false !== ($obj = readdir($dh))) {
+				if ($obj == '.' || $obj == '..') continue;
+				if (!unlink($dir . $obj)) {
+					Factory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND") . " : " . $obj . "\n", 'error');
+				}
+			}
+
+			closedir($dh);
+			rmdir($dir);
 		}
-
-		while (false !== ($obj = readdir($dh))) {
-			if ($obj == '.' || $obj == '..') continue;
-			if (!unlink($dir . $obj))
-				Factory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND") . " : " . $obj . "\n", 'error');
-		}
-
-		closedir($dh);
-		rmdir($dir);
 
 		if ($this->params->get('send_email_delete', 0) == 1) {
 			require_once(JPATH_SITE . '/components/com_emundus/controllers/messages.php');

@@ -84,7 +84,7 @@ defined('_JEXEC') or die;
 
     /*** Sublevel parent ***/
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before {
-        background: var(--neutral-900);
+        background: var(--em-profile-color);
         width: 3px;
         height: 100%;
         content: "";
@@ -111,7 +111,7 @@ defined('_JEXEC') or die;
 
     /*** List style ***/
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li {
-        margin: 6px 10px;
+        margin-inline: 10px;
         font-family: var(--em-default-font);
     }
 
@@ -128,7 +128,7 @@ defined('_JEXEC') or die;
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
         width: 30px;
-        height: fit-content;
+        height: 30px;
     }
 
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container {
@@ -277,17 +277,7 @@ defined('_JEXEC') or die;
 
 		<?php
 
-		$target_dir = "images/custom/";
-		$filename   = 'favicon';
-		$favicon    = glob("{$target_dir}{$filename}.*");
-
-		if (file_exists(JPATH_SITE . '/' . $favicon[0])) {
-			$favicon = JURI::base() . '/' . $favicon[0];
-		}
-		else {
-			$favicon = JURI::base() . '/images/emundus/tchooz_favicon.png';
-		}
-		echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="' . JText::_('MOD_EMUNDUSMENU_HOME') . '" href="' . $favicon_link . '"><img src="' . $favicon . '" alt="' . JText::_('MOD_EMUNDUSMENU_HOME') . '"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="'.JText::_('MOD_EMUNDUSMENU_HOME').'" href="'.$favicon_link.'"><img src="'.JURI::base().'/'.$favicon.'" alt="'.JText::_('MOD_EMUNDUSMENU_HOME').'"></a>
         </li>';
 
 		if ($display_tchooz) :
@@ -584,13 +574,12 @@ defined('_JEXEC') or die;
                 jQuery("#header-a").css("opacity", "1");
                 jQuery(".logo").css("position", "absolute");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
-
-                let elmnt = document.getElementById("g-top");
-                if (elmnt !== null) {
-                    jQuery(".logo").css("top", "-37px");
-                } else {
-                    jQuery(".logo").css("top", "7px");
-                }
+            }
+            let elmnt = document.getElementById("g-top");
+            if (elmnt !== null) {
+                jQuery(".logo").css("top", "-37px");
+            } else {
+                jQuery(".logo").css("top", "7px");
             }
             setTimeout(() => {
                 document.querySelectorAll(".image-title").forEach(function (elem) {

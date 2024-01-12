@@ -28,12 +28,14 @@
       @media all and (min-width: 768px) {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto;
+        margin: 0 auto;
+        padding-top: 0;
       }
       @media all and (min-width: 1440px) {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto;
+        margin: 0 auto;
+        padding-top: 0;
       }
 
       .em-form-intro {
@@ -1232,10 +1234,14 @@
   }
 
   /* ADD PIPE */
+  pre#log {
+    display: none;
+  }
+
   div[id^='recorder-'] {
     margin-bottom: 12px;
 
-    .pipeRecordRTC {
+    > div:nth-child(1) {
       width: 100% !important;
     }
 

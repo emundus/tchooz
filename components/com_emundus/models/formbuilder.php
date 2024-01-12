@@ -918,7 +918,7 @@ class EmundusModelFormbuilder extends JModelList
 			$group       = $this->createGroup($group_label, $formid);
 
 			$eid = $this->createElement('declare', $group['group_id'], 'checkbox', 'Confirmation', '', 0, 0, 0);
-			EmundusHelperFabrik::addOption($eid, 'CONFIRM_POST', 1);
+			EmundusHelperFabrik::addOption($eid, 'CONFIRM_POST', 'JYES');
 			EmundusHelperFabrik::addNotEmptyValidation($eid);
 
 			//
@@ -1292,8 +1292,8 @@ class EmundusModelFormbuilder extends JModelList
 				case 'email':
 
 					$label = array(
-						'fr' => 'Email',
-						'en' => 'Email',
+						'fr' => 'Adresse email',
+						'en' => 'Email address',
 					);
 
 					$created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation, $label);
@@ -1461,7 +1461,7 @@ class EmundusModelFormbuilder extends JModelList
 				$dbnull  = 'NULL';
 				$default = '';
 
-				if ($plugin === 'display') {
+				if ($plugin === 'display' || $plugin === 'panel') {
 					$default = 'Ajoutez du texte personnalisé pour vos candidats';
 				}
 
@@ -2445,6 +2445,25 @@ class EmundusModelFormbuilder extends JModelList
 		}
 
 		return ${"element" . $element};
+	}
+
+	function getSimpleElement($eid) {
+		$query = $this->db->getQuery(true);
+
+		$element = [];
+
+		try {
+			$query->select('*')
+				->from($this->db->quoteName('#__fabrik_elements'))
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($eid));
+			$this->db->setQuery($query);
+			$element = $this->db->loadAssoc();
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/formbuilder | Cannot get simple element : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+		}
+
+		return $element;
 	}
 
 	function deleteElement($elt)
@@ -4434,5 +4453,55 @@ class EmundusModelFormbuilder extends JModelList
 		if (!is_array($document)) $document = array();
 
 		return $document;
+	}
+
+	public function getSqlDropdownOptions($table,$key,$value,$translate)
+	{
+		$datas = [];
+
+		$db = JFactory::getDbo();
+		$query = $db->getQuery(true);
+
+		$tables_allowed = [];
+		$elements_params = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/form-builder-elements-params.json');
+		if(!empty($elements_params)) {
+			$elements_params = json_decode($elements_params, true);
+
+			foreach ($elements_params as $params) {
+				foreach ($params as $param) {
+					if($param['type'] == 'sqldropdown') {
+						$tables_allowed[] = $param['table'];
+					}
+				}
+			}
+		}
+
+		if(!in_array($table, $tables_allowed)) {
+			return $datas;
+		}
+
+		try {
+			if($translate) {
+				$query->select('sef')
+					->from($db->quoteName('#__languages'))
+					->where($db->quoteName('lang_code') . ' = ' . $db->quote(JFactory::getLanguage()->getTag()));
+				$db->setQuery($query);
+				$language = $db->loadResult();
+
+				$query->clear()
+					->select($key . ' as value, ' . $value . '_' . $language . ' as label');
+			} else {
+				$query->select($key . ' as value, ' . $value . ' as label');
+			}
+
+			$query->from($db->quoteName($table));
+			$db->setQuery($query);
+			$datas = $db->loadAssocList();
+		}
+		catch (Exception $e) {
+			JLog::add('component/com_emundus/models/formbuilder | Error at getting sql dropdown options : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+		}
+
+		return $datas;
 	}
 }

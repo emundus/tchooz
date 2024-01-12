@@ -13,6 +13,259 @@
     <option name="highlightLevel" value="WARNING" />
     <option name="transferred" value="true" />
   </component>
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/phpmailer/phpmailer" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/filter" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/brumann/polyfill-unserialize" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/registry" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/phpoffice/phpword" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/application" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/simplepie/simplepie" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/image" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/event" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/input" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/di" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/compat" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/ircmaxell/password-compat" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/uri" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/archive" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/symfony/polyfill-php71" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/symfony/yaml" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/filesystem" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/data" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/symfony/polyfill-php73" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/ldap" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/session" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/string" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/symfony/polyfill-php55" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/zendframework/zend-validator" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/zendframework/zend-stdlib" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/pclzip/pclzip" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/typo3/phar-stream-wrapper" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/zendframework/zend-escaper" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/symfony/polyfill-php56" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/joomla/utilities" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/phpoffice/common" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/paragonie/sodium_compat" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/google/recaptcha" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/symfony/polyfill-util" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/vendor/leafo/lessphp" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/monolog/monolog" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/firebase/php-jwt" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/phpseclib/phpseclib" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/google/apiclient-services" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/google/auth" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/guzzlehttp/ringphp" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/guzzlehttp/streams" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/react/promise" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/psr/cache" />
+      <path value="$PROJECT_DIR$/../core_j3/components/com_dropfiles/helpers/pdfparser/tecnickcom/tcpdf" />
+      <path value="$PROJECT_DIR$/../core_j3/components/com_dropfiles/helpers/pdfparser/smalot/pdfparser" />
+      <path value="$PROJECT_DIR$/../core_j3/components/com_dropfiles/helpers/pdfparser/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/compat/vendor/pimple/pimple" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/compat/vendor/scssphp/scssphp" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/compat/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/compat/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/compat/vendor/twig/twig" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/php-http/client-common" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/php-http/curl-client" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/php-http/discovery" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/mailgun/mailgun-php" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/php-http/httplug" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/php-http/message" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/php-http/message-factory" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/clue/stream-filter" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/php-http/multipart-stream-builder" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/symfony/options-resolver" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/php-http/promise" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailgun/vendor/webmozart/assert" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/google/apiclient-services" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/psr/log" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/firebase/php-jwt" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/paragonie/constant_time_encoding" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/google/auth" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/phpseclib/phpseclib" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/psr/cache" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/monolog/monolog" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/google/apiclient" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/psr/http-client" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/GoogleV3/packages/psr/http-message" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/lines-of-code" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/object-enumerator" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/object-reflector" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/recursion-context" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/resource-operations" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/markbaker/matrix" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/type" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/version" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/setasign/fpdf" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/setasign/fpdi" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/setasign/fpdi_pdf-parser" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpdocumentor/reflection-common" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/svrnm/exceldatatables" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpdocumentor/reflection-docblock" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpdocumentor/type-resolver" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sabberworm/php-css-parser" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/giggsey/libphonenumber-for-php" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/giggsey/locale" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/doctrine/deprecations" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/tecnickcom/tcpdf" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpoffice/phpspreadsheet" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpoffice/phpword" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpspec/prophecy" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/dompdf/dompdf" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/theseer/tokenizer" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/webmozart/assert" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/gotenberg/gotenberg-php" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpunit/php-code-coverage" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpunit/php-file-iterator" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/nikic/php-parser" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpunit/php-invoker" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpunit/php-text-template" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpunit/php-timer" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phar-io/manifest" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phar-io/version" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpunit/phpunit" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/psr/http-client" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/psr/http-factory" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/psr/simple-cache" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phenx/php-font-lib" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/php-http/discovery" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/php-http/guzzle7-adapter" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/ezyang/htmlpurifier" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/php-http/httplug" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/php-http/promise" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phenx/php-svg-lib" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/myclabs/deep-copy" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/cli-parser" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/code-unit" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/masterminds/html5" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/code-unit-reverse-lookup" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/comparator" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/complexity" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/diff" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/environment" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/exporter" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/phpstan/phpdoc-parser" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/laminas/laminas-escaper" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/maennchen/zipstream-php" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/markbaker/complex" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/sebastian/global-state" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/hikashoppayment/paypalcheckout/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/hikashoppayment/paypalcheckout/vendor/paypal/paypalhttp" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/hikashoppayment/paypalcheckout/vendor/paypal/paypal-checkout-sdk" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_visualization/fusionchart/vendor/fusioncharts/fusionexport" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_visualization/fusionchart/vendor/paquettg/string-encode" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_visualization/fusionchart/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_visualization/fusionchart/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_visualization/fusionchart/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_visualization/fusionchart/vendor/paquettg/php-html-parser" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_visualization/fusionchart/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_visualization/fusionchart/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/eventbookingsms/clockwork/clockwork/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/psr/http-message" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/symfony/polyfill-intl-idn" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/krizalys/onedrive-php-sdk" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/symfony/polyfill-intl-normalizer" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/symfony/polyfill-php70" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/symfony/polyfill-php72" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/microsoft/microsoft-graph" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/components/com_dropfiles/classes/OneDriveBusiness/packages/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/eventbooking/spout/spout/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_element/captcha/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_element/captcha/vendor/google/recaptcha" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/zoom/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/zoom/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/zoom/vendor/firebase/php-jwt" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/zoom/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/zoom/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/sabberworm/php-css-parser" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/setasign/fpdi" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/stripe/stripe-php" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/arcturial/clickatell" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/twilio/sdk" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/mtdowling/jmespath.php" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/myclabs/deep-copy" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/aws/aws-sdk-php" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/paragonie/random_compat" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/doctrine/cache" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/phenx/php-font-lib" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/phenx/php-svg-lib" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/dompdf/dompdf" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/markrogoyski/ipv4-subnet-calculator" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/guzzlehttp/guzzle" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/guzzlehttp/promises" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/guzzlehttp/psr7" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/phplicengine/bitly" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/popphp/pop-shipping" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/psr/http-message" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/psr/http-client" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/mpdf/mpdf" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/ralouphie/getallheaders" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/tmp/install_612ca781d4518/com_eventbooking/packages/install_612ca782db671/spout/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/administrator/tmp/install_612ca781d4518/com_eventbooking/packages/install_612ca78326f59/clockwork/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailchimp/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/plugins/fabrik_form/mailchimp/vendor/drewm/mailchimp-api" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/twig/twig" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/rockettheme/toolbox" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/scssphp/scssphp" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/leafo/scssphp" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/symfony/event-dispatcher" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/composer" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/erusev/parsedown" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/erusev/parsedown-extra" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/filp/whoops" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/symfony/yaml" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/pimple/pimple" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/mpdf/psr-http-message-shim" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/masterminds/html5" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/aws/aws-crt-php" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/psr/http-factory" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/mpdf/psr-log-aware-trait" />
+      <path value="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/symfony/deprecation-contracts" />
+    </include_path>
+  </component>
   <component name="PhpInterpreters">
     <interpreters>
       <interpreter id="a11aee6a-c5f1-49e0-835d-f00240451351" name="joomla" home="docker-compose://DATA" auto="false" debugger_id="php.debugger.XDebug">
@@ -24,10 +277,83 @@
           <envs />
         </remote_data>
       </interpreter>
+      <interpreter id="26daf28f-7d7d-4fc3-aad1-f7ad49a4098e" name="joomla 3" home="docker-compose://DATA" auto="false" debugger_id="php.debugger.XDebug">
+        <remote_data INTERPRETER_PATH="php" HELPERS_PATH="/opt/.phpstorm_helpers" VALID="true" RUN_AS_ROOT_VIA_SUDO="false" DOCKER_ACCOUNT_NAME="Docker" DOCKER_COMPOSE_SERVICE_NAME="joomla" DOCKER_REMOTE_PROJECT_PATH="/opt/project">
+          <type_data command="RUN" />
+          <dockerComposeConfigurationPaths>
+            <item value="$PROJECT_DIR$/docker-compose.yml" />
+            <item value="$PROJECT_DIR$/../../docker_vanilla_emjmd/docker-compose-bhubinet.yml" />
+          </dockerComposeConfigurationPaths>
+          <envs />
+        </remote_data>
+      </interpreter>
     </interpreters>
   </component>
   <component name="PhpInterpretersPhpInfoCache">
     <phpInfoCache>
+      <interpreter name="joomla 3">
+        <phpinfo binary_type="PHP" php_cli="/usr/local/bin/php" path_separator=":" version="8.2.13">
+          <additional_php_ini>/usr/local/etc/php/conf.d/docker-php-ext-apcu.ini, /usr/local/etc/php/conf.d/docker-php-ext-bcmath.ini, /usr/local/etc/php/conf.d/docker-php-ext-bz2.ini, /usr/local/etc/php/conf.d/docker-php-ext-exif.ini, /usr/local/etc/php/conf.d/docker-php-ext-gd.ini, /usr/local/etc/php/conf.d/docker-php-ext-gmp.ini, /usr/local/etc/php/conf.d/docker-php-ext-imagick.ini, /usr/local/etc/php/conf.d/docker-php-ext-intl.ini, /usr/local/etc/php/conf.d/docker-php-ext-ldap.ini, /usr/local/etc/php/conf.d/docker-php-ext-memcached.ini, /usr/local/etc/php/conf.d/docker-php-ext-mysqli.ini, /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini, /usr/local/etc/php/conf.d/docker-php-ext-pdo_mysql.ini, /usr/local/etc/php/conf.d/docker-php-ext-pdo_pgsql.ini, /usr/local/etc/php/conf.d/docker-php-ext-pgsql.ini, /usr/local/etc/php/conf.d/docker-php-ext-redis.ini, /usr/local/etc/php/conf.d/docker-php-ext-sodium.ini, /usr/local/etc/php/conf.d/docker-php-ext-zip.ini, /usr/local/etc/php/conf.d/error-logging.ini, /usr/local/etc/php/conf.d/opcache-recommended.ini</additional_php_ini>
+          <configuration_file />
+          <configuration_options>
+            <configuration_option name="include_path" value=".:/usr/local/lib/php" />
+          </configuration_options>
+          <debuggers />
+          <loaded_extensions>
+            <extension name="Core" />
+            <extension name="PDO" />
+            <extension name="Phar" />
+            <extension name="Reflection" />
+            <extension name="SPL" />
+            <extension name="SimpleXML" />
+            <extension name="Zend OPcache" />
+            <extension name="apcu" />
+            <extension name="bcmath" />
+            <extension name="bz2" />
+            <extension name="ctype" />
+            <extension name="curl" />
+            <extension name="date" />
+            <extension name="dom" />
+            <extension name="exif" />
+            <extension name="fileinfo" />
+            <extension name="filter" />
+            <extension name="ftp" />
+            <extension name="gd" />
+            <extension name="gmp" />
+            <extension name="hash" />
+            <extension name="iconv" />
+            <extension name="imagick" />
+            <extension name="intl" />
+            <extension name="json" />
+            <extension name="ldap" />
+            <extension name="libxml" />
+            <extension name="mbstring" />
+            <extension name="memcached" />
+            <extension name="mysqli" />
+            <extension name="mysqlnd" />
+            <extension name="openssl" />
+            <extension name="pcre" />
+            <extension name="pdo_mysql" />
+            <extension name="pdo_pgsql" />
+            <extension name="pdo_sqlite" />
+            <extension name="pgsql" />
+            <extension name="posix" />
+            <extension name="random" />
+            <extension name="readline" />
+            <extension name="redis" />
+            <extension name="session" />
+            <extension name="sodium" />
+            <extension name="sqlite3" />
+            <extension name="standard" />
+            <extension name="tokenizer" />
+            <extension name="xml" />
+            <extension name="xmlreader" />
+            <extension name="xmlwriter" />
+            <extension name="zip" />
+            <extension name="zlib" />
+          </loaded_extensions>
+        </phpinfo>
+      </interpreter>
       <interpreter name="joomla">
         <phpinfo binary_type="PHP" php_cli="/usr/local/bin/php" path_separator=":" version="8.1.20">
           <additional_php_ini>/usr/local/etc/php/conf.d/docker-php-ext-apcu.ini, /usr/local/etc/php/conf.d/docker-php-ext-bcmath.ini, /usr/local/etc/php/conf.d/docker-php-ext-bz2.ini, /usr/local/etc/php/conf.d/docker-php-ext-exif.ini, /usr/local/etc/php/conf.d/docker-php-ext-gd.ini, /usr/local/etc/php/conf.d/docker-php-ext-gmp.ini, /usr/local/etc/php/conf.d/docker-php-ext-imagick.ini, /usr/local/etc/php/conf.d/docker-php-ext-intl.ini, /usr/local/etc/php/conf.d/docker-php-ext-ldap.ini, /usr/local/etc/php/conf.d/docker-php-ext-memcached.ini, /usr/local/etc/php/conf.d/docker-php-ext-mysqli.ini, /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini, /usr/local/etc/php/conf.d/docker-php-ext-pdo_mysql.ini, /usr/local/etc/php/conf.d/docker-php-ext-pdo_pgsql.ini, /usr/local/etc/php/conf.d/docker-php-ext-pgsql.ini, /usr/local/etc/php/conf.d/docker-php-ext-redis.ini, /usr/local/etc/php/conf.d/docker-php-ext-sodium.ini, /usr/local/etc/php/conf.d/docker-php-ext-zip.ini, /usr/local/etc/php/conf.d/error-logging.ini, /usr/local/etc/php/conf.d/opcache-recommended.ini</additional_php_ini>
@@ -98,7 +424,13 @@
   </component>
   <component name="PhpUnit">
     <phpunit_settings>
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/libraries/fabrik/vendor/autoload.php" />
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/libraries/emundus/vendor/autoload.php" />
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/libraries/gantry5/vendor/autoload.php" />
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/administrator/tmp/install_612ca781d4518/com_eventbooking/packages/install_612ca782db671/spout/vendor/autoload.php" />
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/libraries/php-google-api-client/vendor/autoload.php" />
       <phpunit_by_interpreter interpreter_id="a11aee6a-c5f1-49e0-835d-f00240451351" load_method="PHPUNIT_PHAR" configuration_file_path="tests/phpunit.xml" custom_loader_path="" phpunit_phar_path="/var/www/html/libraries/emundus/phpunit.phar" use_configuration_file="true" />
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/../core_j3/plugins/eventbooking/spout/spout/vendor/autoload.php" />
     </phpunit_settings>
   </component>
   <component name="PsalmOptionsConfiguration">

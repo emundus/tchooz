@@ -429,7 +429,7 @@ class EmundusHelperFiles
 	public static function getApplicants()
 	{
 		$db    = JFactory::getDBO();
-		$query = 'SELECT esp.id, esp.label
+		$query = 'SELECT esp.id, esp.label, esp.published
         FROM #__emundus_setup_profiles esp
         WHERE esp.status=1 and esp.id <> 1';
 		$db->setQuery($query);
@@ -644,7 +644,7 @@ class EmundusHelperFiles
 			}
 
 			$query = 'SELECT distinct(concat_ws("___",tab.db_table_name,element.name)) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
-                    INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title,
+                    INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, form.label AS table_label, tab.created_by_alias, joins.table_join, menu.id as menu_id, menu.title,
                     p.label, p.id as profil_id
                     FROM #__fabrik_elements element';
 			$join  = 'INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
@@ -685,9 +685,6 @@ class EmundusHelperFiles
 							continue;
 						}
 						$value->id            = $key;
-						$value->table_label   = JText::_($value->table_label);
-						$value->group_label   = JText::_($value->group_label);
-						$value->element_label = JText::_($value->element_label);
 						$elts[]               = $value;
 					}
 				}
@@ -723,7 +720,7 @@ class EmundusHelperFiles
 			}
 
 			$query = 'SELECT distinct(concat_ws("___",tab.db_table_name,element.name)) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.id, groupe.id AS group_id, groupe.label AS group_label, element.params AS element_attribs,
-                    INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, joins.table_join, menu.title,
+                    INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, form.label AS table_label, tab.created_by_alias, joins.table_join,menu.id as menu_id, menu.title,
                     p.label, p.id as profil_id
                     FROM #__fabrik_elements element';
 			$join  = 'INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
@@ -771,9 +768,6 @@ class EmundusHelperFiles
 							continue;
 						}
 						$value->id            = $key;
-						$value->table_label   = JText::_($value->table_label);
-						$value->group_label   = JText::_($value->group_label);
-						$value->element_label = JText::_($value->element_label);
 						$elts[]               = $value;
 					}
 				}
@@ -1353,6 +1347,10 @@ class EmundusHelperFiles
                          	<option value="0">' . JText::_('COM_EMUNDUS_ACTIONS_ALL') . '</option>';
 
 			$profiles = $h_files->getApplicants();
+			$profiles = array_filter($profiles, function($profile) {
+				return $profile->published == 0;
+			});
+
 			foreach ($profiles as $prof) {
 				$profile .= '<option title="' . $prof->label . '" value="' . $prof->id . '"';
 				if (!empty($current_profile) && (in_array($prof->id, $current_profile) || $prof->id == $current_profile)) {
@@ -1373,7 +1371,7 @@ class EmundusHelperFiles
 			if (!$hidden) {
 				$profile .= '<div class="form-group em-filter" id="o_profiles">
                                     <div class="em_label">
-                                    	<label class="control-label em-filter-label">' . JText::_('COM_EMUNDUS_USERS_OTHER_PROFILES') . '&ensp; <a href="javascript:clearchosen(\'#select_oprofiles\')"><span class="fas fa-redo" title="' . JText::_('COM_EMUNDUS_FILTERS_CLEAR') . '"></span></a></label>
+                                    	<label class="control-label em-filter-label">' . JText::_('COM_EMUNDUS_O_PROFILES') . '&ensp; <a href="javascript:clearchosen(\'#select_oprofiles\')"><span class="fas fa-redo" title="' . JText::_('COM_EMUNDUS_FILTERS_CLEAR') . '"></span></a></label>
                                     </div>';
 			}
 
@@ -2611,7 +2609,7 @@ class EmundusHelperFiles
 	}
 
 	// getDecision
-	function getDecision($format = 'html', $fnums = [])
+	static function getDecision($format = 'html', $fnums = [])
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
