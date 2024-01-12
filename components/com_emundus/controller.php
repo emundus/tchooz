@@ -736,7 +736,7 @@ class EmundusController extends JControllerLegacy
 		$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
 		require_once(JPATH_SITE . DS . 'components/com_emundus/models/logs.php');
-		EmundusModelLogs::log(Factory::getUser()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
+		EmundusModelLogs::log($this->app->getIdentity()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
 
 		$this->app->triggerEvent('onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]);
 		$this->app->triggerEvent('onCallEventHandler', ['onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]]);

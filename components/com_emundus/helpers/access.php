@@ -434,21 +434,24 @@ class EmundusHelperAccess
 		return new JCrypt(new JCryptCipherSimple, $key);
 	}
 
-	public static function buildFormUrl($link,$fnum): string
+	public static function buildFormUrl($link, $fnum): string
 	{
-		parse_str(parse_url($link)['query'], $output);
+		$url_params = [];
+		$parsed_url = parse_url($link);
+		parse_str($parsed_url['query'], $url_params);
 
-		if(!empty($output['formid'])) {
-			$db_table_name = EmundusHelperFabrik::getDbTableName($output['formid']);
-
+		if(!empty($url_params['formid'])) {
+			$db_table_name = EmundusHelperFabrik::getDbTableName($url_params['formid']);
 			$rowid = EmundusHelperAccess::getRowIdByFnum($db_table_name, $fnum);
 
-			if (!empty($fnum)) {
-				$link .= '&fnum=' . $fnum;
-			}
 			if (!empty($rowid)) {
-				$link .= '&rowid=' . $rowid;
+				$url_params['rowid'] = $rowid;
 			}
+			if (!empty($fnum)) {
+				$url_params['fnum'] = $fnum;
+			}
+
+			$link = http_build_url($link, ['query' => http_build_query($url_params)]);
 		}
 
 		return $link;

@@ -4920,23 +4920,20 @@ class EmundusModelApplication extends JModelList
 		}
 		else {
 			if (!empty($user->menutype)) {
-
-				$query->select(['id', 'link'])
+				$query->select('CONCAT(link,"&Itemid=", id) as link')
 					->from($this->_db->quoteName('#__menu'))
-					->where($this->_db->quoteName('published') . '=1 AND ' . $this->_db->quoteName('menutype') . ' LIKE ' . $this->_db->quote($user->menutype) . ' AND ' . $this->_db->quoteName('link') . ' <> "" AND ' . $this->_db->quoteName('link') . ' <> "#"')
-					->order($this->_db->quoteName('lft') . ' ASC');
+					->where($this->_db->quoteName('published').'=1 AND '.$this->_db->quoteName('menutype').' LIKE '.$this->_db->quote($user->menutype).' AND '.$this->_db->quoteName('link').' <> "" AND '.$this->_db->quoteName('link').' <> "#"')
+					->order($this->_db->quoteName('lft').' ASC');
 
 				try {
 					$this->_db->setQuery($query);
-					$res = $this->_db->loadObject();
+					$redirect = $this->_db->loadResult();
 
-					if(!empty($res->link)) {
-						$redirect = EmundusHelperAccess::buildFormUrl($res->link, $user->fnum);
-						$redirect = $redirect . '&Itemid=' . $res->id;
+					if (!empty($redirect)) {
+						$redirect = EmundusHelperAccess::buildFormUrl($redirect, $user->fnum);
 					}
-				}
-				catch (Exception $e) {
-					JLog::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+				} catch (Exception $e) {
+					JLog::add('Error getting first page of application at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 				}
 			}
 		}
