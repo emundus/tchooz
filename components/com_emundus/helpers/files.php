@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * eMundus Component Query Helper
@@ -4223,42 +4224,61 @@ class EmundusHelperFiles
 		$joins = [];
 
 		if (!empty($searched_table) && !empty($base_table) && $searched_table != $base_table) {
-			$db = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
+			$found_from_cache = false;
+			if ($i === 0) {
+				if (!class_exists('EmundusHelperCache')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+				}
+				$h_cache = new EmundusHelperCache();
 
-			$query->clear()
-				->select('COLUMN_NAME as table_key, REFERENCED_COLUMN_NAME as table_join_key, TABLE_NAME as join_from_table, REFERENCED_TABLE_NAME as table_join')
-				->from($db->quoteName('INFORMATION_SCHEMA.KEY_COLUMN_USAGE'))
-				->where('TABLE_NAME IN (' . $db->quote($searched_table) . ', ' . $db->quote($base_table) . ')')
-				->andWhere('REFERENCED_TABLE_NAME IN (' . $db->quote($base_table) . ', ' . $db->quote($searched_table) . ')');
+				if ($h_cache->isEnabled()) {
+					$cache_key = 'emundus_joins_between_tables_' . $searched_table . '_' . $base_table;
+					$joins = $h_cache->get($cache_key);
 
-			try {
-				$db->setQuery($query);
-				$join = $db->loadAssoc();
-			} catch(Exception $e) {
-				JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					if (!empty($joins)) {
+						$found_from_cache = true;
+					}
+				}
 			}
 
-			if (empty($join)) {
-				// look into fabrik tables
+			if (!$found_from_cache) {
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
+
 				$query->clear()
-					->select('DISTINCT table_key, table_join_key, join_from_table, table_join, params')
-					->from($db->quoteName('#__fabrik_joins'))
-					->where('table_join = ' . $db->quote($base_table))
-					->andWhere('table_join_key IN ("id", "parent_id")');
+					->select('COLUMN_NAME as table_key, REFERENCED_COLUMN_NAME as table_join_key, TABLE_NAME as join_from_table, REFERENCED_TABLE_NAME as table_join')
+					->from($db->quoteName('INFORMATION_SCHEMA.KEY_COLUMN_USAGE'))
+					->where('TABLE_NAME IN (' . $db->quote($searched_table) . ', ' . $db->quote($base_table) . ')')
+					->andWhere('REFERENCED_TABLE_NAME IN (' . $db->quote($base_table) . ', ' . $db->quote($searched_table) . ')');
 
 				try {
 					$db->setQuery($query);
-					$leftJoin = $db->loadAssoc();
+					$join = $db->loadAssoc();
 				} catch(Exception $e) {
 					JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 				}
 
-				$next_index = $i + 1;
-				$joins[] = $leftJoin;
-				$joins = array_merge($joins, $this->findJoinsBetweenTablesRecursively($searched_table, $leftJoin['join_from_table'], $next_index));
-			} else {
-				$joins[] = $join;
+				if (empty($join)) {
+					// look into fabrik tables
+					$query->clear()
+						->select('DISTINCT table_key, table_join_key, join_from_table, table_join, params')
+						->from($db->quoteName('#__fabrik_joins'))
+						->where('table_join = ' . $db->quote($base_table))
+						->andWhere('table_join_key IN ("id", "parent_id")');
+
+					try {
+						$db->setQuery($query);
+						$leftJoin = $db->loadAssoc();
+					} catch(Exception $e) {
+						JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					}
+
+					$next_index = $i + 1;
+					$joins[] = $leftJoin;
+					$joins = array_merge($joins, $this->findJoinsBetweenTablesRecursively($searched_table, $leftJoin['join_from_table'], $next_index));
+				} else {
+					$joins[] = $join;
+				}
 			}
 		}
 
@@ -4272,12 +4292,16 @@ class EmundusHelperFiles
 					$joins = [];
 				} else {
 					$joins = array_map(function($join) {
-						if (!empty($join['params'])) {
+						if (!empty($join['params']) && is_string($join['params'])) {
 							$join['params'] = json_decode($join['params'], true);
 						}
 						return $join;
 					}, $joins);
 				}
+			}
+
+			if (!empty($joins) && $h_cache->isEnabled()) {
+				$h_cache->set('emundus_joins_between_tables_' . $searched_table . '_' . $base_table, $joins);
 			}
 		}
 

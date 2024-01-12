@@ -20,6 +20,7 @@ require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
 
 /**
@@ -285,7 +286,7 @@ class EmundusModelFiles extends JModelLegacy
 						$element_attribs = json_decode($def_elmt->element_attribs);
 						$select          = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . Text::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 						}
 						$select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name, 'GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ' SEPARATOR ", ")', $select);
 
@@ -300,7 +301,7 @@ class EmundusModelFiles extends JModelLegacy
 						$select          = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
 							$select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-								JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+								Text::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 						}
 						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 					}
@@ -310,7 +311,7 @@ class EmundusModelFiles extends JModelLegacy
 						$element_attribs = json_decode($def_elmt->element_attribs);
 						$select          = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . Text::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 						}
 						$select                    = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name, 'GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ' SEPARATOR ", ")', $select);
 						$this->_elements_default[] = '(
@@ -325,7 +326,7 @@ class EmundusModelFiles extends JModelLegacy
 						$element_replacement = $def_elmt->tab_name . '___' . $def_elmt->element_name;
 						$select              = $def_elmt->tab_name . '.' . $def_elmt->element_name . ' AS ' . $this->_db->quote($element_replacement) . ', CASE ';
 						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-							$select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $this->_db->quote($value) . ' THEN ' . $this->_db->quote(JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])));
+							$select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $this->_db->quote($value) . ' THEN ' . $this->_db->quote(Text::_(addslashes($element_attribs->sub_options->sub_labels[$key])));
 						}
 						$select .= ' ELSE ' . $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						$select .= ' END AS ' . $this->_db->quote($element_replacement);
@@ -336,13 +337,13 @@ class EmundusModelFiles extends JModelLegacy
 				elseif ($def_elmt->element_plugin == 'yesno') {
 					if ($group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
-                                                        SELECT REPLACE(REPLACE(GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . '  SEPARATOR ", "), "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")
+                                                        SELECT REPLACE(REPLACE(GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . '  SEPARATOR ", "), "0", "' . Text::_('JNO') . '"), "1", "' . Text::_('JYES') . '")
                                                         FROM ' . $def_elmt->table_join . '
                                                         WHERE ' . $def_elmt->table_join . '.parent_id = ' . $def_elmt->tab_name . '.id
                                                       ) AS `' . $def_elmt->table_join . '___' . $def_elmt->element_name . '`';
 					}
 					else {
-						$this->_elements_default[] = 'REPLACE(REPLACE(' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ', "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")  AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
+						$this->_elements_default[] = 'REPLACE(REPLACE(' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ', "0", "' . Text::_('JNO') . '"), "1", "' . Text::_('JYES') . '")  AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 					}
 				}
 				else {
@@ -806,7 +807,7 @@ class EmundusModelFiles extends JModelLegacy
 			$user_files = $this->_db->loadAssocList();
 		}
 		catch (Exception $e) {
-			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_GET_ALL_FILES_ERROR') . ' ' . $e->getMessage(), 'error');
+			$this->app->enqueueMessage(Text::_('COM_EMUNDUS_GET_ALL_FILES_ERROR') . ' ' . $e->getMessage(), 'error');
 			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' ' . $e->getMessage() . ' -> ' . $query, JLog::ERROR, 'com_emundus.error');
 		}
 
@@ -1773,25 +1774,25 @@ class EmundusModelFiles extends JModelLegacy
 			// Old publish status
 			switch ($old_publish) {
 				case(1):
-					$old_publish_lbl = JText::_('PUBLISHED');
+					$old_publish_lbl = Text::_('PUBLISHED');
 					break;
 				case(0):
-					$old_publish_lbl = JText::_('ARCHIVED');
+					$old_publish_lbl = Text::_('ARCHIVED');
 					break;
 				case(-1):
-					$old_publish_lbl = JText::_('TRASHED');
+					$old_publish_lbl = Text::_('TRASHED');
 					break;
 			}
 			// New publish status
 			switch ($publish) {
 				case(1):
-					$new_publish_lbl = JText::_('PUBLISHED');
+					$new_publish_lbl = Text::_('PUBLISHED');
 					break;
 				case(0):
-					$new_publish_lbl = JText::_('ARCHIVED');
+					$new_publish_lbl = Text::_('ARCHIVED');
 					break;
 				case(-1):
-					$new_publish_lbl = JText::_('TRASHED');
+					$new_publish_lbl = Text::_('TRASHED');
 					break;
 			}
 			// Log the update
@@ -2348,10 +2349,10 @@ class EmundusModelFiles extends JModelLegacy
 						$element_attribs = json_decode($elt->element_attribs);
 						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
 							if (empty($first_replace)) {
-								$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+								$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . Text::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 							}
 							else {
-								$select .= ',REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+								$select .= ',REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . Text::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 							}
 						}
 						$query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
@@ -2448,7 +2449,7 @@ class EmundusModelFiles extends JModelLegacy
 						if ($raw != 1) {
 							$element_attribs = json_decode($elt->element_attribs);
 							foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-								$if[]  = 'IF(' . $select . '="' . $value . '","' . JText::_($element_attribs->sub_options->sub_labels[$key]) . '"';
+								$if[]  = 'IF(' . $select . '="' . $value . '","' . Text::_($element_attribs->sub_options->sub_labels[$key]) . '"';
 								$endif .= ')';
 							}
 							$select = implode(',', $if) . ',' . $select . $endif;
@@ -2462,9 +2463,9 @@ class EmundusModelFiles extends JModelLegacy
 					elseif ($elt->element_plugin == 'yesno') {
 						$select = 'REPLACE(`' . $elt->table_join . '`.`' . $elt->element_name . '`, "\t", "" )';
 						if ($raw != 1) {
-							$if[]   = 'IF(' . $select . '="0","' . JText::_('JNO') . '"';
+							$if[]   = 'IF(' . $select . '="0","' . Text::_('JNO') . '"';
 							$endif  .= ')';
-							$if[]   = 'IF(' . $select . '="1","' . JText::_('JYES') . '"';
+							$if[]   = 'IF(' . $select . '="1","' . Text::_('JYES') . '"';
 							$endif  .= ')';
 							$select = implode(',', $if) . ',' . $select . $endif;
 							$query  .= ', ( SELECT GROUP_CONCAT(' . $select . ' SEPARATOR ", ") ';
@@ -2508,10 +2509,10 @@ class EmundusModelFiles extends JModelLegacy
 						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
 							if ($elt->element_plugin == 'checkbox') {
 								if (empty($if)) {
-									$if = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+									$if = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . Text::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 								}
 								else {
-									$if = 'REGEXP_REPLACE(' . $if . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+									$if = 'REGEXP_REPLACE(' . $if . ', "\\\b' . $value . '\\\b", "' . Text::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 								}
 							}
 							else {
@@ -2530,9 +2531,9 @@ class EmundusModelFiles extends JModelLegacy
 				}
 				elseif ($elt->element_plugin == 'yesno') {
 					if ($raw != 1) {
-						$if[]   = 'IF(' . $select . '="0","' . JText::_('JNO') . '"';
+						$if[]   = 'IF(' . $select . '="0","' . Text::_('JNO') . '"';
 						$endif  .= ')';
-						$if[]   = 'IF(' . $select . '="1","' . JText::_('JYES') . '"';
+						$if[]   = 'IF(' . $select . '="1","' . Text::_('JYES') . '"';
 						$endif  .= ')';
 						$select = implode(',', $if) . ',' . $select . $endif;
 					}
@@ -2877,7 +2878,7 @@ class EmundusModelFiles extends JModelLegacy
 							}
 
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
+								$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
 								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 								$sub_value = str_replace("'", "\'", $sub_value);
@@ -2912,7 +2913,7 @@ class EmundusModelFiles extends JModelLegacy
 						$element_params = json_decode($element->element_attribs, true);
 						if (!empty($element_params['sub_options']['sub_values'])) {
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
+								$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
 								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 								$sub_value = str_replace("'", "\'", $sub_value);
@@ -2945,7 +2946,7 @@ class EmundusModelFiles extends JModelLegacy
 							}
 
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-								$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
+								$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
 								$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 								$sub_value = str_replace("'", "\'", $sub_value);
@@ -2974,7 +2975,7 @@ class EmundusModelFiles extends JModelLegacy
 
 							if (!empty($element_params['sub_options']['sub_values'])) {
 								foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-									$sub_label = JText::_($element_params['sub_options']['sub_labels'][$sub_key]);
+									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
 									$sub_label = empty($sub_label) ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 									$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 									$sub_value = str_replace("'", "\'", $sub_value);
@@ -3026,11 +3027,11 @@ class EmundusModelFiles extends JModelLegacy
 						break;
 					case 'yesno':
 						if ($is_repeat) {
-							$query            .= ', CASE ' . $child_element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $child_element_table_alias . '.' . $element->element_name . ' END AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+							$query            .= ', CASE ' . $child_element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . Text::_('JNO') . '\' WHEN 1 THEN \'' . Text::_('JYES') . '\' ELSE ' . $child_element_table_alias . '.' . $element->element_name . ' END AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
 							$saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
 						}
 						else {
-							$query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . JText::_('JNO') . '\' WHEN 1 THEN \'' . JText::_('JYES') . '\' ELSE ' . $element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
+							$query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . Text::_('JNO') . '\' WHEN 1 THEN \'' . Text::_('JYES') . '\' ELSE ' . $element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
 						}
 						break;
 					default:
@@ -4884,9 +4885,9 @@ class EmundusModelFiles extends JModelLegacy
 								'COURSE_LABEL'   => $programme->label,
 								'CAMPAIGN_LABEL' => $file['label'],
 								'CAMPAIGN_YEAR'  => $file['year'],
-								'CAMPAIGN_START' => JHTML::_('date', $file['start_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
-								'CAMPAIGN_END'   => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
-								'DEADLINE'       => JHTML::_('date', $file['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+								'CAMPAIGN_START' => JHTML::_('date', $file['start_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
+								'CAMPAIGN_END'   => JHTML::_('date', $file['end_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
+								'DEADLINE'       => JHTML::_('date', $file['end_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
 								'SITE_URL'       => JURI::base(),
 								'USER_EMAIL'     => $file['email']
 							];
@@ -4944,7 +4945,7 @@ class EmundusModelFiles extends JModelLegacy
 							}
 
 							if ($send !== true) {
-								$msg .= '<div class="alert alert-dismissable alert-danger">' . JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT') . ' : ' . $to . ' ' . $send . '</div>';
+								$msg .= '<div class="alert alert-dismissable alert-danger">' . Text::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT') . ' : ' . $to . ' ' . $send . '</div>';
 								JLog::add($send, JLog::ERROR, 'com_emundus.email');
 							}
 							else {
@@ -4976,11 +4977,11 @@ class EmundusModelFiles extends JModelLegacy
 									'user_id_from' => $from_id,
 									'user_id_to'   => $file['applicant_id'],
 									'subject'      => $subject,
-									'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $to . '</i><br>' . $body,
+									'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . $to . '</i><br>' . $body,
 									'email_id'     => $trigger_email_id,
 								);
 								$logged  = $m_email->logEmail($message, $file['fnum']);
-								$msg     .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $to . '<br>';
+								$msg     .= Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $to . '<br>';
 								JLog::add($to . ' ' . $body, JLog::INFO, 'com_emundus.email');
 							}
 						}
@@ -5028,7 +5029,7 @@ class EmundusModelFiles extends JModelLegacy
 
 						$send = $mailer->Send();
 						if ($send !== true) {
-							$msg .= '<div class="alert alert-dismissable alert-danger">' . JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT') . ' : ' . $to . ' ' . $send->__toString() . '</div>';
+							$msg .= '<div class="alert alert-dismissable alert-danger">' . Text::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT') . ' : ' . $to . ' ' . $send->__toString() . '</div>';
 							JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
 						}
 						else {
@@ -5060,11 +5061,11 @@ class EmundusModelFiles extends JModelLegacy
 								'user_id_from' => $from_id,
 								'user_id_to'   => $recipient['id'],
 								'subject'      => $subject,
-								'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $to . '</i><br>' . $body,
+								'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . $to . '</i><br>' . $body,
 								'email_id'     => $trigger_email_id,
 							);
 							$m_email->logEmail($message, $file['fnum']);
-							$msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $to . '<br>';
+							$msg .= Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $to . '<br>';
 							JLog::add($to . ' ' . $body, JLog::INFO, 'com_emundus.email');
 						}
 					}

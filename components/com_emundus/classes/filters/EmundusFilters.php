@@ -245,7 +245,7 @@ class EmundusFilters
 					$params = json_decode($element['params'], true);
 					if (!empty($params['sub_options'])) {
 						foreach($params['sub_options']['sub_values'] as $sub_opt_key => $sub_opt) {
-							$label = \Text::_($params['sub_options']['sub_labels'][$sub_opt_key]);
+							$label = Text::_($params['sub_options']['sub_labels'][$sub_opt_key]);
 							if (empty($label)) {
 								$label = $sub_opt;
 							}
