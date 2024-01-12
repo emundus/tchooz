@@ -915,7 +915,7 @@ class EmundusModelFormbuilder extends JModelList
 			$this->createElement('id', $hidden_group['group_id'], 'internalid', 'id', '', 1, 0, 0);
 			$this->createElement('time_date', $hidden_group['group_id'], 'date', 'SENT_ON', '', 1, 0);
 			$this->createElement('user', $hidden_group['group_id'], 'user', 'user', '', 1, 0);
-			$default_fnum = '$fnum = JFactory::getApplication()->input->get(\'rowid\');if (empty($fnum)) { $fnum = JFactory::getSession()->get(\'emundusUser\')->fnum;}return $fnum;';
+			$default_fnum = 'use Joomla\CMS\Factory; $app = Factory::getApplication(); $fnum = $app->getInput()->getString(\'rowid\');if (empty($fnum)) { $fnum = $app->getSession()->get(\'emundusUser\')->fnum;}return $fnum;';
 			$this->createElement('fnum', $hidden_group['group_id'], 'field', 'fnum', $default_fnum, 1, 0, 1, 1, 0, 44);
 			//
 
