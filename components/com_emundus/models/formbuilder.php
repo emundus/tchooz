@@ -532,6 +532,7 @@ class EmundusModelFormbuilder extends JModelList
 		$form_id = 0;
 
 		if (!empty($prid) && !empty($label) && is_array($label)) {
+			$user = Factory::getApplication()->getIdentity();
 			
 			$query = $this->db->getQuery(true);
 
@@ -543,11 +544,11 @@ class EmundusModelFormbuilder extends JModelList
 					'error'               => 'FORM_ERROR',
 					'intro'               => '<p>' . 'FORM_' . $prid . '_INTRO</p>',
 					'created'             => gmdate('Y-m-d h:i:s'),
-					'created_by'          => JFactory::getUser()->id,
-					'created_by_alias'    => JFactory::getUser()->username,
+					'created_by'          => $user->id,
+					'created_by_alias'    => $user->username,
 					'modified'            => gmdate('Y-m-d h:i:s'),
-					'modified_by'         => JFactory::getUser()->id,
-					'checked_out'         => JFactory::getUser()->id,
+					'modified_by'         => $user->id,
+					'checked_out'         => $user->id,
 					'checked_out_time'    => gmdate('Y-m-d h:i:s'),
 					'publish_up'          => gmdate('Y-m-d h:i:s'),
 					'reset_button_label'  => 'RESET',
