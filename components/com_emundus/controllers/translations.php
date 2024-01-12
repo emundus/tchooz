@@ -279,22 +279,26 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function getfalangtranslations()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED')];
+		$user = Factory::getApplication()->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			die(Text::_('ACCESS_DENIED'));
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$default_lang    = $this->input->get->getString('default_lang', null);
+			$lang_to         = $this->input->get->getString('lang_to', null);
+			$reference_table = $this->input->get->getString('reference_table', null);
+			$reference_id    = $this->input->get->getString('reference_id', null);
+			$fields          = $this->input->get->getString('fields', null);
+
+			$translation = $this->model->getTranslationsFalang($default_lang, $lang_to, $reference_id, $fields, $reference_table);
+
+			if (!empty($translation)) {
+				$response = ['status' => true, 'message' => Text::_('SUCCESS'), 'data' => $translation];
+			} else {
+				$response['message'] = Text::_('NO_TRANSLATION_FOUND');
+			}
 		}
 
-
-		$default_lang    = $this->input->get->getString('default_lang', null);
-		$lang_to         = $this->input->get->getString('lang_to', null);
-		$reference_table = $this->input->get->getString('reference_table', null);
-		$reference_id    = $this->input->get->getString('reference_id', null);
-		$fields          = $this->input->get->getString('fields', null);
-
-		$result = $this->model->getTranslationsFalang($default_lang, $lang_to, $reference_id, $fields, $reference_table);
-
-		echo json_encode($result);
+		echo json_encode($response);
 		exit;
 	}
 

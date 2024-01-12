@@ -121,6 +121,8 @@ export default {
             reference_id,
             fields,
           }
+        }).then(response => {
+          return response.data;
         });
       } catch (e) {
         return {

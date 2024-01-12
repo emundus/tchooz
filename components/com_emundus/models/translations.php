@@ -971,7 +971,6 @@ class EmundusModelTranslations extends JModelList
 			$translations->{$reference_id} = new stdClass;
 
 			foreach ($fields as $field) {
-				$labels                  = new stdClass();
 				$labels                  = new stdClass;
 				$labels->reference_field = $field;
 				$labels->reference_table = $reference_table;
@@ -989,9 +988,17 @@ class EmundusModelTranslations extends JModelList
 
 				if (empty($labels->default_lang)) {
 					$query->clear()
+						->select('tablepkID')
+						->from($this->_db->quoteName('#__falang_tableinfo'))
+						->where($this->_db->quoteName('joomlatablename') . ' = ' . $this->_db->quote($reference_table));
+
+					$this->_db->setQuery($query);
+					$tablepkID = $this->_db->loadResult();
+
+					$query->clear()
 						->select($field)
 						->from($this->_db->quoteName('#__' . $reference_table))
-						->where($this->_db->quoteName('id') . ' = ' . $reference_id);
+						->where($this->_db->quoteName($tablepkID) . ' = ' . $reference_id);
 					$this->_db->setQuery($query);
 					$labels->default_lang = $this->_db->loadResult();
 				}
