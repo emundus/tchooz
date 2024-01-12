@@ -14,13 +14,12 @@ defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
 
 jimport('joomla.application.component.model');
-require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
-require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
-require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
+require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 
 use Joomla\CMS\Factory;
-
 
 class EmundusModelEvaluation extends JModelList
 {
@@ -65,10 +64,13 @@ class EmundusModelEvaluation extends JModelList
 			$session      = Factory::getSession();
 		}
 
-		$menu         = $this->app->getMenu();
-		$current_menu = $menu->getActive();
-
-		if (empty($current_menu)) {
+		$menu = method_exists($this->app, 'getMenu') ? $this->app->getMenu() : null;
+		if (!empty($menu)) {
+			$current_menu = $menu->getActive();
+			if (empty($current_menu)) {
+				return false;
+			}
+		} else {
 			return false;
 		}
 
@@ -480,13 +482,13 @@ class EmundusModelEvaluation extends JModelList
 	/**
 	 * Get list of ALL evaluation element
 	 *
-	 * @param   int  $show_in_list_summary
+	 * @param   int  $show_in_list_summary 1 is default value
 	 * @param   string code of the programme
 	 *
 	 * @return array list of Fabrik element ID used in evaluation form
 	 * @throws Exception
 	 */
-	public function getAllEvaluationElements($show_in_list_summary = 1, $programme_code)
+	public function getAllEvaluationElements($show_in_list_summary, $programme_code)
 	{
 		$session = JFactory::getSession();
 
@@ -538,7 +540,7 @@ class EmundusModelEvaluation extends JModelList
 	 * @return    array list of Fabrik element ID used in evaluation form
 	 **@throws Exception
 	 */
-	public function getAllDecisionElements($show_in_list_summary = 1, $programme_code)
+	public function getAllDecisionElements($show_in_list_summary, $programme_code)
 	{
 		$session = JFactory::getSession();
 
@@ -617,7 +619,7 @@ class EmundusModelEvaluation extends JModelList
 		return '';
 	}
 
-	public function multi_array_sort($multi_array = array(), $sort_key, $sort = SORT_ASC)
+	public function multi_array_sort($multi_array, $sort_key, $sort = SORT_ASC)
 	{
 
 		if (is_array($multi_array)) {
@@ -914,7 +916,7 @@ class EmundusModelEvaluation extends JModelList
 
 	public function getUsers($current_fnum = null)
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
 
 		$session = JFactory::getSession();
 
@@ -968,7 +970,7 @@ class EmundusModelEvaluation extends JModelList
 							if (!empty($join_informations)) {
 								$already_joined_tables[] = $table_to_join;
 
-								$leftJoin .= ' LEFT JOIN ' . $this->db->quoteName($join_informations['join_from_table']) . ' ON ' . $dbo->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $dbo->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
+								$leftJoin .= ' LEFT JOIN ' . $this->db->quoteName($join_informations['join_from_table']) . ' ON ' . $this->db->quoteName($join_informations['join_from_table'] . '.' . $join_informations['table_key']) . ' = ' . $this->db->quoteName($already_join_alias . '.' . $join_informations['table_join_key']);
 								$joined   = true;
 								break;
 							}
@@ -2106,11 +2108,11 @@ class EmundusModelEvaluation extends JModelList
 		$whitespace_textarea  = $eMConfig->get('generate_letter_whitespace_textarea', 0);
 
 		$tmp_path = JPATH_SITE . DS . 'tmp' . DS;
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/evaluation.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/emails.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
+		require_once(JPATH_LIBRARIES . DS . 'emundus/fpdi.php');
 		require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 		$_mEval  = new EmundusModelEvaluation();
 		$_mFile  = new EmundusModelFiles();
@@ -2189,7 +2191,7 @@ class EmundusModelEvaluation extends JModelList
 				$rand = rand(0, 1000000);
 				if (!$anonymize_data) {
 					if (!empty($generated_doc_name)) {
-						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
+						require_once(JPATH_SITE . DS . 'components/com_emundus/models/checklist.php');
 						$m_checklist = new EmundusModelChecklist;
 						$filename    = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
 					}
@@ -2250,7 +2252,7 @@ class EmundusModelEvaluation extends JModelList
 							$font             = $eMConfig->get('generate_letter_font', 'helvetica');
 							$font_size        = $eMConfig->get('generate_letter_font_size', 10);
 
-							require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
+							require_once(JPATH_LIBRARIES . DS . 'emundus/MYPDF.php');
 							$pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 							$pdf->SetCreator(PDF_CREATOR);
 							$pdf->SetAuthor($user->name);
@@ -2310,7 +2312,7 @@ class EmundusModelEvaluation extends JModelList
 
 					case 3:
 						if (file_exists($letter_file)) {
-							require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'export.php');
+							require_once(JPATH_SITE . DS . 'components/com_emundus/models/export.php');
 							$m_Export = new EmundusModelExport();
 
 							try {
@@ -2571,7 +2573,7 @@ class EmundusModelEvaluation extends JModelList
 												$fabrikElts = array();
 											}
 
-											require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'files.php');
+											require_once(JPATH_SITE . DS . 'components/com_emundus/controllers/files.php');
 											$_cFiles = new EmundusControllerFiles;
 
 											$fabrikValues = $_cFiles->getValueByFabrikElts($fabrikElts, [$fnum]);
@@ -2956,7 +2958,7 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
-		$_tmpFolders = glob(EMUNDUS_PATH_ABS . 'tmp' . DS . '*');
+		$_tmpFolders = glob(EMUNDUS_PATH_ABS . 'tmp/*');
 		foreach ($_tmpFolders as $_tmpFolder) {
 			$this->deleteAll($_tmpFolder);
 		}

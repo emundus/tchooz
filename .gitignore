@@ -8,6 +8,7 @@ docker-compose-*.yml
 /components/coverage/
 .phpunit.result.cache
 /tests/tmp
+/tests/logs/
 
 # IDE AND OS
 ## VisualStudioCode

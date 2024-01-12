@@ -89,9 +89,16 @@ class EmundusModelFiles extends JModelLegacy
 
 		JPluginHelper::importPlugin('emundus');
 
+		if (!method_exists($this->app, 'getMenu')) {
+			return false;
+		}
+
 		// Get current menu parameters
 		$menu         = $this->app->getMenu();
 		$current_menu = $menu->getActive();
+		if (empty($current_menu)) {
+			return false;
+		}
 
 		$Itemid                   = $this->app->input->getInt('Itemid', $current_menu->id);
 		$menu_params              = $menu->getParams($Itemid);
@@ -100,9 +107,6 @@ class EmundusModelFiles extends JModelLegacy
 		$h_files = new EmundusHelperFiles;
 		$m_users = new EmundusModelUsers;
 
-		if (empty($current_menu)) {
-			return false;
-		}
 
 		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
@@ -412,10 +416,15 @@ class EmundusModelFiles extends JModelLegacy
 	public function _buildContentOrderBy()
 	{
 		$order            = ' ORDER BY jecc.date_submitted DESC, jecc.date_time DESC';
-		$menu             = @JFactory::getApplication()->getMenu();
-		$current_menu     = $menu->getActive();
-		$menu_params      = $menu->getParams(@$current_menu->id);
-		$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+		$app              = Factory::getApplication();
+		$menu             = method_exists($app, 'getMenu') ? $app->getMenu() : null;
+		if (!empty($menu)) {
+			$current_menu     = $menu->getActive();
+			$menu_params      = $menu->getParams(@$current_menu->id);
+			$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
+		} else {
+			$em_other_columns = array();
+		}
 
 		$session          = JFactory::getSession();
 		$filter_order     = $session->get('filter_order');
@@ -666,7 +675,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$user_files = [];
 
-		$current_menu = $this->app->getMenu()->getActive();
+		$current_menu = method_exists($this->app, 'getMenu') ? $this->app->getMenu()->getActive() : null;
 		if (!empty($current_menu)) {
 			$menu_params      = $current_menu->getParams();
 			$em_other_columns = explode(',', $menu_params->get('em_other_columns'));
@@ -1947,9 +1956,14 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return bool|mixed
 	 */
-	public function getFnumInfos($fnum)
+	public function getFnumInfos($fnum, $user_id = 0)
 	{
 		$fnumInfos = [];
+
+		if (empty($user_id)) {
+			$user = $this->app->getIdentity();
+			$user_id = !empty($user) && !empty($user->id) ? $user->id : 0;
+		}
 
 		try {
 			$query = $this->_db->getQuery(true);
@@ -1962,7 +1976,7 @@ class EmundusModelFiles extends JModelLegacy
 			$this->_db->setQuery($query);
 			$fnumInfos = $this->_db->loadAssoc();
 
-			$anonymize_data = EmundusHelperAccess::isDataAnonymized($this->app->getIdentity()->id);
+			$anonymize_data = EmundusHelperAccess::isDataAnonymized($user_id);
 			if ($anonymize_data) {
 				$fnumInfos['name']  = $fnum;
 				$fnumInfos['email'] = $fnum;
@@ -1970,7 +1984,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 
 		return $fnumInfos;
@@ -2115,16 +2129,21 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return bool|mixed
 	 * @throws Exception
 	 */
-	public function getAllFnums($assoc_tab_fnums = false)
+	public function getAllFnums($assoc_tab_fnums = false, $user_id = null)
 	{
 		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		$m_users = new EmundusModelUsers;
 
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$current_user = $this->app->getIdentity();
-		}
-		else {
-			$current_user = Factory::getUser();
+
+		if (!empty($user_id)) {
+			$current_user = Factory::getUser($user_id);
+		} else {
+			if (version_compare(JVERSION, '4.0', '>')) {
+				$current_user = $this->app->getIdentity();
+			}
+			else {
+				$current_user = Factory::getUser();
+			}
 		}
 
 		$this->code = $m_users->getUserGroupsProgrammeAssoc($current_user->id);
@@ -2652,7 +2671,7 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return array|false
 	 */
-	public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0, $method = 0)
+	public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0, $method = 0, $user_id = null)
 	{
 		$data = [];
 
@@ -2666,9 +2685,12 @@ class EmundusModelFiles extends JModelLegacy
 			if (empty($current_lang)) {
 				$current_lang = 'fr';
 			}
-			$current_user = JFactory::getUser()->id;
+			$current_user = empty($user_id) ? Factory::getApplication()->getIdentity()->id : $user_id;
 
-			$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+			if (!class_exists('EmundusHelperAccess')) {
+				require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
+			}
+			$anonymize_data = EmundusHelperAccess::isDataAnonymized($current_user);
 			if ($anonymize_data) {
 				$query = 'SELECT jecc.fnum, esc.label, sp.code, esc.id as campaign_id';
 			}
@@ -2823,6 +2845,9 @@ class EmundusModelFiles extends JModelLegacy
 									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $child_table_alias . '.' . $element->element_name . $where_condition . '))';
 									$databasejoin_sub_query .= ' AS ' . $already_joined[$child_table_alias] . '___' . $element->element_name;
 									$saved_element_as       = $already_joined[$child_table_alias] . '___' . $element->element_name;
+								} else {
+									// we should not be here, but just in case
+									$databasejoin_sub_query .= ' WHERE ' . $element_params['join_db_name'] . '.' . $element_params['join_key_column'] . ' = ' . $element_table_alias . '.' . $element->element_name . $where_condition . ' LIMIT 1)';
 								}
 							}
 							else {
@@ -3029,12 +3054,12 @@ class EmundusModelFiles extends JModelLegacy
 			}
 
 			try {
-				$db = JFactory::getDbo();
+				$db = Factory::getContainer()->get('DatabaseDriver');
 				$db->setQuery($query . $from . $leftJoin . $where);
-
 				$rows = $db->loadAssocList();
 			}
 			catch (Exception $e) {
+				error_log($query . $from . $leftJoin . $where);
 				JLog::add('Error trying to generate data for xlsx export ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 
 				return false;
@@ -3895,17 +3920,23 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getVariables($str, $type = 'CURLY')
 	{
-		if ($type == 'CURLY') {
-			preg_match_all('/\$\{(.*?)}/i', $str, $matches);
-		}
-		elseif ($type == 'SQUARE') {
-			preg_match_all('/\[(.*?)]/i', $str, $matches);
-		}
-		else {
-			preg_match_all('/\{(.*?)}/i', $str, $matches);
+		$variables = [];
+
+		if (!empty($str)) {
+			if ($type == 'CURLY') {
+				preg_match_all('/\$\{(.*?)}/i', $str, $matches);
+			}
+			elseif ($type == 'SQUARE') {
+				preg_match_all('/\[(.*?)]/i', $str, $matches);
+			}
+			else {
+				preg_match_all('/\{(.*?)}/i', $str, $matches);
+			}
+
+			$variables = $matches[1];
 		}
 
-		return $matches[1];
+		return $variables;
 	}
 
 

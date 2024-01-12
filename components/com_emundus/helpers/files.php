@@ -952,7 +952,7 @@ class EmundusHelperFiles
 		$elements = [];
 
 		if (!empty($elements_id) && !empty(ltrim($elements_id))) {
-			$db = JFactory::getDBO();
+			$db = Factory::getContainer()->get('DatabaseDriver');
 
 			$query = $db->getQuery(true);
 			$query->select('element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, element.hidden as element_hidden, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.id as table_list_id, tab.created_by_alias AS created_by_alias, joins.join_from_table, joins.table_join, joins.table_key, joins.table_join_key')
@@ -3858,7 +3858,11 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND (' . $programme_where_cond . $fnum_assoc_where_cond . ') ';
 		}
 
-		$menu = JFactory::getApplication()->getMenu();
+		$app = Factory::getApplication();
+		if (method_exists($app, 'getMenu')) {
+			$menu = $app->getMenu();
+		}
+
 		if (!empty($menu)) {
 			$active = $menu->getActive();
 
@@ -3893,7 +3897,7 @@ class EmundusHelperFiles
 		}
 
 		// Now we handle session filters (if any)
-		$session              = JFactory::getSession();
+		$session              = $app->getSession();
 		$session_filters      = $session->get('em-applied-filters', []);
 		$quick_search_filters = $session->get('em-quick-search-filters', []);
 		if (!empty($session_filters) || !empty($quick_search_filters)) {
@@ -4240,7 +4244,7 @@ class EmundusHelperFiles
 		$joins = [];
 
 		if (!empty($searched_table) && !empty($base_table) && $searched_table != $base_table) {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->clear()
@@ -4273,9 +4277,11 @@ class EmundusHelperFiles
 					JLog::add('Failed to retreive join informations in filter context ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 				}
 
-				$next_index = $i + 1;
-				$joins[]    = $leftJoin;
-				$joins      = array_merge($joins, $this->findJoinsBetweenTablesRecursively($searched_table, $leftJoin['join_from_table'], $next_index));
+				if (!empty($leftJoin)) {
+					$next_index = $i + 1;
+					$joins[]    = $leftJoin;
+					$joins      = array_merge($joins, $this->findJoinsBetweenTablesRecursively($searched_table, $leftJoin['join_from_table'], $next_index));
+				}
 			}
 			else {
 				$joins[] = $join;
