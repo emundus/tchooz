@@ -356,7 +356,6 @@ class EmundusModelFormbuilder extends JModelList
 				'msg'    => 'MISSING_PRID'
 			];
 		}
-
 		
 		$query = $this->db->getQuery(true);
 
@@ -469,7 +468,14 @@ class EmundusModelFormbuilder extends JModelList
 			$this->createElement('id', $group['group_id'], 'internalid', 'id', '', 1, 0, 0);
 			$this->createElement('time_date', $group['group_id'], 'date', 'time date', '', 1, 0);
 			$this->createElement('user', $group['group_id'], 'user', 'user', '', 1, 0);
-			$default_fnum = '$fnum = JFactory::getApplication()->input->get(\'rowid\');if (empty($fnum)) { $fnum = JFactory::getApplication()->getSession()->get(\'emundusUser\')->fnum;}return $fnum;';
+			$default_fnum = 'use Joomla\CMS\Factory;
+			$app = Factory::getApplication();
+			$fnum = Factory::getApplication()->getInput()->getString(\'rowid\', \'\');
+			if (empty($fnum)) { 
+			$fnum = Factory::getApplication()->getSession()->get(\'emundusUser\')->fnum;
+			}
+			return $fnum;';
+
 			$this->createElement('fnum', $group['group_id'], 'field', 'fnum', $default_fnum, 1, 0, 1, 1, 0, 44);
 			//
 
