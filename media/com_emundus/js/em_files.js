@@ -2230,7 +2230,6 @@ $(document).ready(function() {
                                                                 $('#elements-popup').empty();
                                                                 $('#em-export-form').empty();
                                                                 $('#em-export-form').empty();
-                                                                //$('#em-export').empty();
                                                                 $.ajax({
                                                                     type:'get',
                                                                     url: 'index.php?option=com_emundus&controller=files&task=getformelem&code='+code+'&camp='+camp+'&Itemid='+itemId,
@@ -2256,8 +2255,7 @@ $(document).ready(function() {
                                                                                 item += '</optgroup>';
 
                                                                             if (grId != result.elts[d].group_id) {
-
-                                                                                if (Joomla.Text._(result.elts[d].group_id) == "undefined" || Joomla.Text._(result.elts[d].group_id) == "")
+                                                                                if (Joomla.Text._(result.elts[d].group_id.toString()) === "undefined" || Joomla.Text._(result.elts[d].group_id.toString()) === '')
                                                                                     item += '<optgroup label=">> '+result.elts[d].group_label+'">'
                                                                                 else
                                                                                     item += '<optgroup label=">> '+Joomla.Text._(result.elts[d].group_label)+'">'
@@ -2268,7 +2266,7 @@ $(document).ready(function() {
                                                                             var label = result.elts[d].element_label.replace(/(<([^>]+)>)/ig, "");
                                                                             var elt_label = Joomla.Text._(label);
 
-                                                                            if (elt_label == "undefined" || elt_label == "") {
+                                                                            if (elt_label == "undefined" || elt_label === '') {
                                                                                 elt_label = label;
                                                                             }
 
@@ -2281,7 +2279,7 @@ $(document).ready(function() {
 
 
                                                                         item ="";
-                                                                        if (view == "files") {
+                                                                        if (view === "files") {
                                                                             for (var d in result.defaults) {
                                                                                 if (isNaN(parseInt(d)))
                                                                                     break;
@@ -2495,7 +2493,7 @@ $(document).ready(function() {
 
                                                                     if (grId != result.elts[d].group_id) {
 
-                                                                        if (Joomla.Text._(result.elts[d].group_id) == "undefined" || Joomla.Text._(result.elts[d].group_id) == "")
+                                                                        if (Joomla.Text._(result.elts[d].group_id.toString()) == "undefined" || Joomla.Text._(result.elts[d].group_id.toString()) == "")
                                                                             item += '<optgroup label=">> '+result.elts[d].group_label+'">';
                                                                         else
                                                                             item += '<optgroup label=">> '+Joomla.Text._(result.elts[d].group_label)+'">';
@@ -2874,10 +2872,10 @@ $(document).ready(function() {
 
                                                                                     if (grId != result.elts[d].group_id) {
 
-                                                                                        if (Joomla.Text._(result.elts[d].group_id) == "undefined" || Joomla.Text._(result.elts[d].group_id) == "")
+                                                                                        if (Joomla.Text._(result.elts[d].group_id.toString()) == "undefined" || Joomla.Text._(result.elts[d].group_id.toString()) === '')
                                                                                             item += '<optgroup label=">> '+result.elts[d].group_label+'">';
                                                                                         else
-                                                                                            item += '<optgroup label=">> '+Joomla.Text._(result.elts[d].group_label)+'">'
+                                                                                            item += '<optgroup label=">> '+ Joomla.Text._(result.elts[d].group_label)+'">'
                                                                                     }
 
                                                                                     grId = result.elts[d].group_id;
