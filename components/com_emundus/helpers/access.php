@@ -170,18 +170,16 @@ class EmundusHelperAccess
 	 */
 	static function asAccessAction($action_id, $crud, $user_id = null, $fnum = null)
 	{
-
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		$m_users = new EmundusModelUsers();
-
 		if (!is_null($fnum) && !empty($fnum)) {
+			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+			$m_users = new EmundusModelUsers();
 			$canAccess = $m_users->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
 			if ($canAccess > 0) {
 				return true;
 			}
 			elseif ($canAccess == 0 || $canAccess === null) {
-				$groups = JFactory::getSession()->get('emundusUser')->emGroups;
-				if (!empty($groups) && count($groups) > 0) {
+				$groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
+				if (!empty($groups)) {
 					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
 				}
 				else {
@@ -193,7 +191,7 @@ class EmundusHelperAccess
 			}
 		}
 		else {
-			return EmundusHelperAccess::canAccessGroup(JFactory::getSession()->get('emundusUser')->emGroups, $action_id, $crud);
+			return EmundusHelperAccess::canAccessGroup(Factory::getApplication()->getSession()->get('emundusUser')->emGroups, $action_id, $crud);
 		}
 	}
 
@@ -211,7 +209,7 @@ class EmundusHelperAccess
 	static function canAccessGroup($gids, $action_id, $crud, $fnum = null)
 	{
 
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		$m_users = new EmundusModelUsers();
 
 		if (!is_null($fnum) && !empty($fnum)) {
@@ -260,8 +258,8 @@ class EmundusHelperAccess
 	 */
 	public static function getUserFabrikGroups($user_id)
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'groups.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/groups.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
 		$m_groups = new EmundusModelGroups();
 		$m_users  = new EmundusModelUsers();
 
@@ -281,8 +279,8 @@ class EmundusHelperAccess
 	 */
 	public static function getUserAllowedAttachmentIDs($user_id)
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
 		$m_files = new EmundusModelFiles();
 		$m_users = new EmundusModelUsers();
 

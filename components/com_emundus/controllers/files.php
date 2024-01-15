@@ -56,8 +56,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getSession()->get('emundusUser');
-
-		$this->_db = Factory::getDBO();
+		$this->_db = Factory::getContainer()->get('DatabaseDriver');
 
 		parent::__construct($config);
 	}
@@ -1330,10 +1329,9 @@ class EmundusControllerFiles extends JControllerLegacy
 
 	public function getfnums_csv()
 	{
-
 		$m_files = $this->getModel('Files');
 
-		$fnums_post  = $this->input->get('fnums', null);
+		$fnums_post  = $this->app->getInput()->getString('fnums', null);
 		$fnums_array = ($fnums_post == 'all') ? 'all' : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
 		if ($fnums_array == 'all') {
@@ -1347,9 +1345,6 @@ class EmundusControllerFiles extends JControllerLegacy
 		}
 
 		$validFnums = array();
-		$db         = JFactory::getDbo();
-		$query      = $db->getQuery(true);
-
 		foreach ($fnums as $fnum) {
             if ($fnum != 'em-check-all-all' && $fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 				$validFnums[] = $fnum;
@@ -1357,15 +1352,12 @@ class EmundusControllerFiles extends JControllerLegacy
 		}
 
 		if (!empty($validFnums)) {
-			EmundusModelLogs::logs(JFactory::getUser()->id, $validFnums, 6, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_EXCEL');
+			EmundusModelLogs::logs($this->_user->id, $validFnums, 6, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_EXCEL');
 		}
 
-		$totalfile = count($validFnums);
-
-		$session = JFactory::getSession();
+		$session = $this->app->getSession();
 		$session->set('fnums_export', $validFnums);
-
-		$result = array('status' => true, 'totalfile' => $totalfile, 'valid_fnums' => $validFnums);
+		$result = array('status' => true, 'totalfile' => count($validFnums), 'valid_fnums' => $validFnums);
 		echo json_encode((object) $result);
 		exit();
 	}

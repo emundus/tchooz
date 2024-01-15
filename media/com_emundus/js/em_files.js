@@ -4838,7 +4838,7 @@ $(document).ready(function() {
                     const dataWrapper = document.getElementById('data');
                     if (dataWrapper) {
                         dataWrapper.classList.remove('em-loader');
-                        dataWrapper.innerHTML = '<p class="alert alert-error">' + Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE') +'</p>';
+                        dataWrapper.innerHTML = '<p class="alert alert-error">' + Joomla.Text._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE') +'</p>';
                         console.warn(err);
                     }
                 });
