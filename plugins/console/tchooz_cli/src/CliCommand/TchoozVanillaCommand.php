@@ -308,7 +308,7 @@ class TchoozVanillaCommand extends AbstractCommand
 						$tableExists = $this->db->loadAssoc();
 
 						if (empty($tableExists)) {
-							$this->ioStyle->error(sprintf('The %s table does not exist.', $tableName));
+							$this->ioStyle->warning(sprintf('The %s table does not exist.', $tableName));
 							continue;
 						}
 

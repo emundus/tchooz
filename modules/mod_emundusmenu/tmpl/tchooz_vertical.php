@@ -517,40 +517,55 @@ defined('_JEXEC') or die;
     const originalMargin = parseInt(document.querySelector("[id^=tooltip-]:first-of-type").style.marginTop, 10);
 
     function enableTooltip(menu) {
-        if (window.getComputedStyle(document.querySelector(".image-title")).getPropertyValue("display") !== "none") {
-            if (document.querySelector("#sublevel_list_" + menu)) {
-                document.querySelector("#tooltip-" + menu).style.marginLeft = "200px";
-                document.querySelector("#tooltip-" + menu).style.display = "block";
-            }
-        } else {
-            document.querySelector("#tooltip-" + menu).style.marginLeft = "0";
-            document.querySelector("#tooltip-" + menu).style.display = "block";
+        let enabled = false;
+        let tooltipMenu = document.querySelector("#tooltip-" + menu);
 
-            //Reposition tooltip if out of viewport or scroll happened
-            var tooltipBox = document.querySelector("#tooltip-" + menu);
-            var tooltipRect = tooltipBox.getBoundingClientRect();
-            const menuBox = document.querySelector("li.g-menu-item-" + menu);
-            const menuRect = menuBox.getBoundingClientRect();
-            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        if (tooltipMenu) {
+            if (window.getComputedStyle(document.querySelector('.image-title')).getPropertyValue('display') !== 'none') {
+                if (document.querySelector('#sublevel_list_' + menu)) {
+                    tooltipMenu.style.marginLeft = '200px';
+                    tooltipMenu.style.display = 'block';
+                }
+            } else {
+                tooltipMenu.style.marginLeft = '0';
+                tooltipMenu.style.display = 'block';
 
-            //reposition after scrolling
-            if (tooltipRect.top - menuRect.top > 10) {
-                document.querySelector("#tooltip-" + menu).style.marginTop = -(tooltipRect.top - menuRect.top - originalMargin) + 'px';
-                //get new position of tooltip
-                tooltipBox = document.querySelector("#tooltip-" + menu);
-                tooltipRect = tooltipBox.getBoundingClientRect();
+                //Reposition tooltip if out of viewport or scroll happened
+                let tooltipRect = tooltipMenu.getBoundingClientRect();
+                const menuBox = document.querySelector('li.g-menu-item-' + menu);
+                const menuRect = menuBox.getBoundingClientRect();
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+                //reposition after scrolling
+                if (tooltipRect.top - menuRect.top > 10) {
+                    tooltipMenu.style.marginTop = -(tooltipRect.top - menuRect.top - originalMargin) + 'px';
+                    // get new position of tooltip
+                    tooltipRect = tooltipMenu.getBoundingClientRect();
+                }
+
+                // reposition out of viewport
+                if (tooltipRect.bottom > viewportHeight) {
+                    tooltipMenu.style.marginTop = -(tooltipRect.bottom - viewportHeight - parseInt(tooltipMenu.style.marginTop, 10)) + 'px';
+                }
             }
 
-            //reposition out of viewport
-            if (tooltipRect.bottom > viewportHeight) {
-                document.querySelector("#tooltip-" + menu).style.marginTop = -(tooltipRect.bottom - viewportHeight - parseInt(document.querySelector("#tooltip-" + menu).style.marginTop, 10)) + 'px';
-            }
+            enabled = true;
         }
+
+        return enabled;
     }
 
     function disableTooltip(menu) {
-        document.querySelector("#tooltip-" + menu).style.display = "none";
-        document.querySelector("#tooltip-" + menu).style.marginTop = originalMargin + "px";
+        let disabled = false;
+
+        let tooltipMenu = document.querySelector('#tooltip-' + menu);
+        if (tooltipMenu) {
+            tooltipMenu.style.display = 'none';
+            tooltipMenu.style.marginTop = originalMargin + 'px';
+            disabled = true;
+        }
+
+        return disabled;
     }
 
     function enableTitles(state) {

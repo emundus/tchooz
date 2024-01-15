@@ -70,7 +70,7 @@
         "key": "campaign",
         "actions": [
           {
-            "action": "index.php?option=com_emundus&view=campaigns&layout=add",
+            "action": "campaigns/add",
             "label": "Add",
             "type": "add"
           },
