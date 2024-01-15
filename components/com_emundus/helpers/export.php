@@ -111,6 +111,16 @@ class EmundusHelperExport
 	}
 
 
+	/**
+	 * @param $fnumInfos
+	 * @param $sid
+	 * @param $fnum
+	 * @param $options
+	 *
+	 * @return string
+	 * @throws Exception
+	 * @deprecated since version 2.0.0
+	 */
 	public static function buildHeaderPDF($fnumInfos, $sid, $fnum, $options = null)
 	{
 		$file = JPATH_LIBRARIES . DS . 'emundus' . DS . 'pdf_' . $fnumInfos['training'] . '.php';

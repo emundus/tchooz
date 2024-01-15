@@ -2019,7 +2019,7 @@ class EmundusControllerFiles extends JControllerLegacy
 	 */
 	public function generate_pdf()
 	{
-		$current_user = JFactory::getUser();
+		$current_user = $this->app->getIdentity();
 
 		if (!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
@@ -2035,7 +2035,7 @@ class EmundusControllerFiles extends JControllerLegacy
 			$fnums_post = [$session->get('application_fnum')];
 		}
 
-		$file       = $this->input->getVar('file', null, 'STRING');
+		$file       = $this->input->getString('file', null);
 		$totalfile  = $this->input->getVar('totalfile', null);
 		$start      = $this->input->getInt('start', 0);
 		$limit      = $this->input->getInt('limit', 1);
@@ -2044,9 +2044,9 @@ class EmundusControllerFiles extends JControllerLegacy
 		$assessment = $this->input->getInt('assessment', 0);
 		$decision   = $this->input->getInt('decision', 0);
 		$admission  = $this->input->getInt('admission', 0);
-		$ids        = $this->input->getVar('ids', null);
-		$formid     = $this->input->getVar('formids', null);
-		$attachids  = $this->input->getVar('attachids', null);
+		$ids        = $this->input->getString('ids', null);
+		$formid     = $this->input->getString('formids', null);
+		$attachids  = $this->input->getString('attachids', null);
 		$options    = $this->input->getVar('options', null);
 
 		$profiles = $this->input->getRaw('profiles', null);
@@ -2107,7 +2107,7 @@ class EmundusControllerFiles extends JControllerLegacy
 		else {
 			$files_list = array();
 		}
-		$db = JFactory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		for ($i = $start; $i <= $totalfile; $i++) {
 			$fnum = $validFnums[$i];
@@ -2124,7 +2124,7 @@ class EmundusControllerFiles extends JControllerLegacy
 					}
 					if ($forms || !empty($forms_to_export)) {
 
-						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+						require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
 						$m_profile   = $this->getModel('Profile');
 						$infos       = $m_profile->getFnumDetails($fnum);
 						$campaign_id = $infos['campaign_id'];
@@ -2157,9 +2157,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
 				if ($admission)
 					$files_list[] = EmundusHelperExport::getAdmissionPDF($fnum, $options);
-
-				if (($forms != 1) && $formids[0] == "" && ($attachment != 1) && ($attachids[0] == "") && ($assessment != 1) && ($decision != 1) && ($admission != 1) && ($options[0] != "0"))
-					$files_list[] = EmundusHelperExport::buildHeaderPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $options);
 
 				EmundusModelLogs::log($this->_user->id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
 			}
