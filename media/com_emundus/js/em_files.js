@@ -1914,7 +1914,8 @@ $(document).ready(function() {
                                     if (result.status) {
                                         $('#em-export-prg').append(result.html);
                                         $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
-                                        nbprg = $('#em-export-prg option').size();
+                                        let programOptions = document.querySelectorAll('#em-export-prg option');
+                                        let nbprg = programOptions.length;
 
                                         if (nbprg == 2) {
                                             document.getElementById('em-export-prg').selectedIndex = 1;
@@ -3176,7 +3177,8 @@ $(document).ready(function() {
                                 $('#em-export-prg').append(result.html);
                                 $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
 
-                                nbprg = $('#em-export-prg option').size();
+                                let programOptions = document.querySelectorAll('#em-export-prg option');
+                                let nbprg = programOptions.length;
 
                                 if (nbprg == 2) {
                                     $('#em-export-prg option:eq(1)').attr('selected', true);
@@ -3708,9 +3710,9 @@ $(document).ready(function() {
                             $('#em-export-prg').append(result.html);
                             $('#em-export-prg').chosen('destroy').chosen({width: "100%"});
 
-                            nbprg = $('#em-export-prg option').size();
-
-                            /*if (nbprg == 2) {
+                            /*let programOptions = document.querySelectorAll('#em-export-prg option');
+                            let nbprg = programOptions.length;
+                            if (nbprg == 2) {
                                 document.getElementById('em-export-prg').selectedIndex = 1;
                                 $('#em-export-prg').trigger("chosen:updated");
 
