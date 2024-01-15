@@ -24,6 +24,7 @@ use Joomla\CMS\Factory;
 class EmundusViewExport_select_columns extends JViewLegacy
 {
 	private $_user;
+	private $_app;
 
 	public $elements;
 	public $form;
@@ -31,7 +32,8 @@ class EmundusViewExport_select_columns extends JViewLegacy
 
 	function __construct($config = array())
 	{
-		$this->_user = Factory::getApplication()->getIdentity();
+		$this->_app = Factory::getApplication();
+		$this->_user = $this->_app->getIdentity();
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			die(JText::_('ACCESS_DENIED'));
 		}
@@ -45,7 +47,7 @@ class EmundusViewExport_select_columns extends JViewLegacy
 
 	function display($tpl = null)
 	{
-		$jinput     = Factory::getApplication()->getInput();
+		$jinput     = $this->_app->getInput();
 		$prg        = $jinput->getString('code', null);
 		$this->form = $jinput->get('form', null);
 		$camp       = $jinput->get('camp', null);
