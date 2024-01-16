@@ -324,6 +324,13 @@ class SharingFilesInstall
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COLLABORATION_ACCEPT', 'Valider et accepter la collaboration');
 		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COLLABORATION', 'Collaboration - Renseignez vos informations');
+		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_LOCK_FOR_OTHERS', 'Verrouiller cet élément pour vos collaborateurs');
+		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_UNLOCK_FOR_OTHERS', 'Dévérouiller cet élément pour vos collaborateurs');
+
+		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COLLABORATION_ACCEPT', 'Validate and accept the collaboration', 'override', 0, 'fabrik_forms', '', 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COLLABORATION', 'Collaboration - Fill in your details', 'override', 0, 'fabrik_forms', 'label', 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_LOCK_FOR_OTHERS', 'Lock this item for your collaborators', 'override', 0, '', '', 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_FABRIK_UNLOCK_FOR_OTHERS', 'Unlock this element for your collaborators', 'override', 0, '', '', 'en-GB');
 
 		$query->clear()
 			->select('id')

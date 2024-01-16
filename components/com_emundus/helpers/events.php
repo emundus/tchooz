@@ -193,7 +193,24 @@ class EmundusHelperEvents
 	
 	function onElementCanUse($params): bool
 	{
-		return $this->checkLockedElements($params);
+		$user = Factory::getApplication()->getSession()->get('emundusUser');
+
+		$fnum = Factory::getApplication()->input->getString('fnum','');
+		if(!empty($fnum)) {
+			$fnum = $user->fnum;
+		}
+
+		$collaborator = false;
+		if(!empty($user->fnums)) {
+			$fnumInfos = $user->fnums[$fnum];
+			$collaborator = $fnumInfos->applicant_id != $user->id;
+		}
+
+		if($collaborator) {
+			return $this->checkLockedElements($params);
+		} else {
+			return true;
+		}
 	}
 
 	function isApplicationSent($params): bool

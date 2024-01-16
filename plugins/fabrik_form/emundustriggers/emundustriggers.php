@@ -325,7 +325,7 @@ class PlgFabrik_FormEmundustriggers extends PlgFabrik_Form
         JPluginHelper::importPlugin('emundus','custom_event_handler');
         $results = \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onElementCanUse', ['formModel' => $formModel, 'elementModel' => $elementModel]]);
 		
-		if(!empty($results)) {
+		if(!empty($results) && !empty($results[0])) {
 			$onElementCanUse = array_map(function($result) {
 				return $result['onElementCanUse'];
 			}, $results);
