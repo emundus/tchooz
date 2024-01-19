@@ -673,7 +673,7 @@ video {
   --tw-ring-inset:  ;
   --tw-ring-offset-width: 0px;
   --tw-ring-offset-color: #fff;
-  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-color: rgb(147 197 253 / 0.5);
   --tw-ring-offset-shadow: 0 0 #0000;
   --tw-ring-shadow: 0 0 #0000;
   --tw-shadow: 0 0 #0000;
@@ -722,7 +722,7 @@ video {
   --tw-ring-inset:  ;
   --tw-ring-offset-width: 0px;
   --tw-ring-offset-color: #fff;
-  --tw-ring-color: rgb(59 130 246 / 0.5);
+  --tw-ring-color: rgb(147 197 253 / 0.5);
   --tw-ring-offset-shadow: 0 0 #0000;
   --tw-ring-shadow: 0 0 #0000;
   --tw-shadow: 0 0 #0000;
@@ -1941,9 +1941,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .em-attachmentList .em-fieldset-attachment-table .em-attachment-dropzone .dz-default.dz-message {
           margin-top: var(--em-spacing-3);
         }
-.tw-absolute {
-  position: absolute;
-}
 .tw-relative {
   position: relative;
 }
@@ -4079,9 +4076,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-grid {
   display: grid;
 }
-.\!tw-hidden {
-  display: none !important;
-}
 .tw-hidden {
   display: none;
 }
@@ -4091,15 +4085,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-h-10 {
   height: var(--em-spacing-10);
 }
-.tw-h-full {
-  height: 100%;
-}
 .tw-h-max {
   height: -moz-max-content;
   height: max-content;
-}
-.tw-w-3\/6 {
-  width: 50%;
 }
 .tw-w-fit {
   width: -moz-fit-content;
@@ -4107,9 +4095,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-w-full {
   width: 100%;
-}
-.tw-flex-none {
-  flex: none;
 }
 .tw-cursor-pointer {
   cursor: pointer;
@@ -6281,33 +6266,11 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-rounded-lg {
   border-radius: 0.5rem;
 }
-.tw-rounded-md {
-  border-radius: 0.375rem;
-}
-.tw-border {
-  border-width: 1px;
-}
-.tw-border-0 {
-  border-width: 0px;
-}
-.tw-border-b {
-  border-bottom-width: 1px;
-}
-.tw-border-main-500 {
-  border-color: var(--em-profile-color);
-}
 .tw-border-neutral-300 {
   border-color: var(--neutral-300);
 }
-.tw-border-neutral-400 {
-  border-color: var(--neutral-400);
-}
-.tw-border-neutral-500 {
-  border-color: var(--neutral-500);
-}
 .tw-bg-neutral-100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(245 245 245 / var(--tw-bg-opacity));
+  background-color: var(--neutral-100);
 }
 .tw-bg-transparent {
   background-color: transparent;
@@ -6331,10 +6294,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-p-6 {
   padding: var(--em-spacing-6);
 }
-.tw-px-5 {
-  padding-left: var(--em-spacing-5);
-  padding-right: var(--em-spacing-5);
-}
 .tw-px-6 {
   padding-left: var(--em-spacing-6);
   padding-right: var(--em-spacing-6);
@@ -6353,19 +6312,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-pr-1 {
   padding-right: var(--em-spacing-1);
 }
-.\!tw-text-center {
-  text-align: center !important;
-}
 .tw-text-center {
   text-align: center;
 }
 .\!tw-text-6xl {
   font-size: 3.75rem !important;
   line-height: 1 !important;
-}
-.\!tw-text-sm {
-  font-size: 0.875rem !important;
-  line-height: 1.25rem !important;
 }
 .tw-text-sm {
   font-size: 0.875rem;
@@ -6377,19 +6329,11 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-font-normal {
   font-weight: 400;
 }
-.\!tw-text-neutral-600 {
-  color: var(--neutral-600) !important;
-}
-.tw-text-black {
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
-}
 .tw-text-neutral-600 {
   color: var(--neutral-600);
 }
 .tw-text-red-500 {
-  --tw-text-opacity: 1;
-  color: rgb(239 68 68 / var(--tw-text-opacity));
+  color: var(--red-500);
 }
 .tw-text-white {
   --tw-text-opacity: 1;
@@ -7301,6 +7245,8 @@ body {
 
     .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
         background-position: top -6px right -75px;
+        background-image: none;
+        padding-right: 0;
     }
 
     /* Connexion */
