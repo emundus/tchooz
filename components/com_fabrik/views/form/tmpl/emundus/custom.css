@@ -9,9 +9,7 @@ form .fabrikGroupColumns.fabrikGroup .row {
 }
 
 .fabrikElementContainer {
-    padding: 0 0 0 20px;
     position: relative;
-    left: -20px;
 }
 
 form .fabrikGroupColumns.fabrikGroup .row .fabrikElementContainer {

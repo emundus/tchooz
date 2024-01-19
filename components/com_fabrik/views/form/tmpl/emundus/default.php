@@ -50,7 +50,7 @@ if ($this->params->get('show_page_heading', 1)) : ?>
 <?php
 endif;
 ?>
-<div class="emundus-form tw-p-6">
+<div class="emundus-form tw-p-6 <?php echo $pageClass; ?>">
 	<?php  if($form->id == $profile_form) : ?>
         <iframe id="background-shapes" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
 	<?php endif; ?>
@@ -58,8 +58,8 @@ endif;
         <span class="material-icons">cancel</span>
 		<?php echo $form->error; ?>
     </div>
-    <div class="mb-8">
-        <div class="em-mt-8">
+    <div class="tw-mb-8">
+        <div class="tw-mt-8">
 	        <?php if ($this->params->get('show-title', 1)) : ?>
                 <?php if($display_required_icon == 0) : ?>
                     <p class="tw-mb-5 tw-text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
