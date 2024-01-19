@@ -6359,6 +6359,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   --tw-text-opacity: 1;
   color: rgb(234 179 8 / var(--tw-text-opacity));
 }
+.tw-underline {
+  text-decoration-line: underline;
+}
 .tw-shadow-sm {
   --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);

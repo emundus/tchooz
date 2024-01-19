@@ -42,10 +42,10 @@ else {
 	<?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header tw-flex tw-flex-col tw-items-center">
 	        <?php if (file_exists($this->favicon)) : ?>
-                <a href="index.php" alt="Logo" class="em-profile-picture mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $this->favicon ?>)">
+                <a href="index.php" alt="Logo" class="em-profile-picture tw-mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $this->favicon ?>)">
                 </a>
 	        <?php endif; ?>
-            <h1 class="em-mb-8">
+            <h1 class="tw-mb-4">
 				<?php echo JText::_('JLOGIN'); ?>
             </h1>
         </div>
@@ -73,7 +73,7 @@ else {
         <fieldset>
 			<?php echo $this->form->renderFieldset('credentials', ['class' => 'com-users-login__input']); ?>
 
-            <div class="em-w-100 em-flex-row em-flex-end">
+            <div class="tw-full tw-flex tw-items-center tw-justify-end">
 				<?php if (PluginHelper::isEnabled('system', 'remember')) : ?>
                     <div class="control-group">
                         <div class="control-label">
@@ -88,9 +88,9 @@ else {
 				<?php endif; ?>
 
 				<?php if ($this->displayForgotten) : ?>
-                    <div class="control-group em-float-right">
+                    <div class="control-group tw-float-right">
                         <div class="control-label">
-                            <a class="em-text-underline" href="<?php echo JRoute::_($this->forgottenLink); ?>">
+                            <a class="tw-underline" href="<?php echo JRoute::_($this->forgottenLink); ?>">
 								<?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
                             </a>
                         </div>

@@ -25,10 +25,10 @@ $favicon = $m_settings->getFavicon();
 	<?php if ($this->params->get('show_page_heading')) : ?>
 		<div class="page-header">
             <?php if (file_exists('images/custom/favicon.png')) : ?>
-                <a href="index.php" alt="Logo" class="em-profile-picture mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $favicon ?>)">
+                <a href="index.php" alt="Logo" class="em-profile-picture tw-mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $favicon ?>)">
                 </a>
             <?php endif; ?>
-            <h1 class="em-mb-8">
+            <h1 class="tw-mb-4">
                 <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
             </h1>
 		</div>
