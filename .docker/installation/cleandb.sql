@@ -1,7 +1,9 @@
 SET FOREIGN_KEY_CHECKS=0;
 
 TRUNCATE TABLE jos_action_logs;
+TRUNCATE TABLE jos_action_logs_users;
 TRUNCATE TABLE jos_dropfiles;
+TRUNCATE TABLE jos_dropfiles_statistics;
 TRUNCATE TABLE jos_dropfiles_files;
 TRUNCATE TABLE jos_emundus_9_00;
 TRUNCATE TABLE jos_emundus_admission;
