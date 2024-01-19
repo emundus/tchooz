@@ -366,7 +366,6 @@
                     <option value="rename">MOD_EMUNDUS_APPLICATIONS_ACTIONS_RENAME</option>
                     <option value="copy">MOD_EMUNDUS_APPLICATIONS_ACTIONS_COPY</option>
                     <option value="history">MOD_EMUNDUS_APPLICATIONS_ACTIONS_HISTORY</option>
-                    <option value="collaborate">MOD_EMUNDUS_APPLICATIONS_ACTIONS_COLLABORATE</option>
                 </field>
 
                 <field showon="layout:_:tchooz"

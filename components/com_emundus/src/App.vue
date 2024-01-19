@@ -99,7 +99,6 @@ export default {
 
     if (this.data.columns) {
       this.data.columns = JSON.parse(atob(this.data.columns));
-      console.log(this.data.columns);
     }
 
     if (typeof this.$props.datas != 'undefined') {

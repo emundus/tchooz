@@ -13,7 +13,7 @@ class modemundusApplicationsHelper
 {
 
 	// get users sorted by activation date
-	static function getApplications($layout, $order_by, $params = null, $collaborate = false)
+	static function getApplications($layout, $order_by, $params = null)
 	{
 		$applications = [];
 		$user         = JFactory::getUser();
@@ -74,16 +74,6 @@ class modemundusApplicationsHelper
 			$select = array_merge($select,$select_hesam);
 		}
 
-		if($collaborate) {
-			$select_collaborate = [
-				'efr.r',
-				'efr.u',
-				'efr.show_history',
-				'efr.show_shared_users',
-			];
-			$select = array_merge($select,$select_collaborate);
-		}
-
 		$query->clear()
 			->select(implode(',',$select))
 			->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
@@ -101,12 +91,6 @@ class modemundusApplicationsHelper
 		}
 
 		$query->where('ecc.applicant_id =' . $user->id);
-
-		// Files request
-		if ($collaborate) {
-			$query->leftJoin($db->quoteName('#__emundus_files_request', 'efr') . ' ON efr.ccid = ecc.id');
-			$query->orWhere($db->quoteName('efr.user_id') . ' = ' . $user->id);
-		}
 
 		if (!empty($params)) {
 			$selected_campaigns = $params->get('selected_campaigns', []);

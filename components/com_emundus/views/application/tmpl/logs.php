@@ -420,7 +420,6 @@ else {
     });
 
     document.querySelector('#grid_view_button').addEventListener('click', function () {
-        console.log('here');
         changeViewType('logs_grids');
     });
 

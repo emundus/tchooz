@@ -133,18 +133,6 @@ class Com_EmundusInstallerScript
 					EmundusHelperUpdate::displayMessage('Erreur lors de l\'ajout de la colonne max_filesize à la table jos_emundus_setup_attachments', 'error');
 					$succeed = false;
 				}
-
-				// Sharing files feature
-				require_once JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/sharing_files_install.php';
-				$sharing_files_install = new scripts\SharingFilesInstall();
-				$sharing_files_installed = $sharing_files_install->install();
-				if($sharing_files_installed['status']) {
-					EmundusHelperUpdate::displayMessage('La fonctionnalité de partage de dossier a été installée avec succès', 'success');
-				}
-				else {
-					EmundusHelperUpdate::displayMessage($sharing_files_installed['message'], 'error');
-					$succeed = false;
-				}
             }
         }
 
