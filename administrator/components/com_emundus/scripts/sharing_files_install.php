@@ -598,6 +598,20 @@ class SharingFilesInstall
 			return $result;
 		}
 
+		EmundusHelperUpdate::addColumn('jos_fabrik_form_sessions', 'fnum', 'VARCHAR', 28);
+
+		$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `referring_url` VARCHAR(255) NULL';
+		$this->db->setQuery($query);
+		$this->db->execute();
+
+		$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `last_page` INT(11) NULL';
+		$this->db->setQuery($query);
+		$this->db->execute();
+
+		$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `hash` VARCHAR(255) NULL';
+		$this->db->setQuery($query);
+		$this->db->execute();
+
 		$result['status'] = true;
 
 		return $result;
