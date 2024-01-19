@@ -10,6 +10,8 @@ var loading;
 var moduleFilters = null;
 var refreshModuleFiltersEvent = new Event('refresh-emundus-module-filters');
 
+var $ = jQuery.noConflict();
+
 var show = function (elem) {
     elem.style.display = 'block';
 };

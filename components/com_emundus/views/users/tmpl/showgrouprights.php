@@ -143,6 +143,7 @@
 <?php endforeach; ?>
 
 <script type="text/javascript">
+    var $ = jQuery.noConflict();
     var itemId = <?= $this->itemId; ?>;
     $(document).ready(function () {
         $('.action').click(function () {
