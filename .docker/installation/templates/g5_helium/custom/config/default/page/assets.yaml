@@ -40,13 +40,6 @@ javascript:
     priority: '0'
     name: 'Sweet Alert'
   -
-    location: 'gantry-assets://custom/custom-js.js'
-    inline: ''
-    in_footer: '0'
-    extra: {  }
-    priority: '0'
-    name: custom-js
-  -
     location: /media/com_emundus/js/fabrik.js
     inline: ''
     in_footer: '0'
