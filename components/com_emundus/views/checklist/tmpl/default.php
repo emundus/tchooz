@@ -198,7 +198,7 @@ if (!empty($this->custom_title)) :?>
 					$div .= '<tr class="em-added-files">
                     <td class="em-flex-row">';
 					if ($item->can_be_viewed == 1) {
-						$div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="' . $chemin . $this->user->id . '/' . $item->filename . '" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>' . JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
+						$div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>' . JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
 					}
 					else {
 						$div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
@@ -217,7 +217,7 @@ if (!empty($this->custom_title)) :?>
 			// Disable upload UI if
 			if (!$block_upload) {
 
-				if ($attachment->nb < $attachment->nbmax || $this->user->profile <= 4) {
+				if ($attachment->nb < $attachment->nbmax || $this->_user->profile <= 4) {
 					$div .= '
                 <tr>
                     <td>';
