@@ -13120,10 +13120,6 @@ a:not([class]) {
   text-decoration: underline;
 }
 
-a:not(.btn):hover, a:not(.btn):focus {
-  color: var(--cassiopeia-color-hover);
-}
-
 a.navbar-brand {
   color: var(--cassiopeia-color-brand);
 }
@@ -13389,8 +13385,12 @@ meter {
   padding: 2.5rem .5em;
 }
 
-.footer a {
+.footer a:not(.btn), .footer .btn-link {
   color: currentColor;
+}
+
+.footer a:not(.btn):hover, .footer a:not(.btn):focus, .footer .btn-link:hover, .footer .btn-link:focus {
+  color: var(--gray-200);
 }
 
 .footer .mod-menu {
@@ -13742,11 +13742,11 @@ fieldset > * {
   margin-top: .5em;
 }
 
-.container-header .mod-finder, .container-header .mod-finder a {
+.container-header .mod-finder, .container-header .mod-finder a:not(.jmodedit) {
   color: #fff;
 }
 
-.container-header .mod-finder a:hover, .container-header .mod-finder a:focus {
+.container-header .mod-finder a:not(.jmodedit):hover, .container-header .mod-finder a:not(.jmodedit):focus {
   color: #e6e6e6;
 }
 
@@ -13840,8 +13840,12 @@ iframe {
   color: #fff;
 }
 
-.container-topbar a, .container-below-top a {
+.container-topbar a:not(.btn), .container-topbar .btn-link, .container-below-top a:not(.btn), .container-below-top .btn-link {
   color: currentColor;
+}
+
+.container-topbar a:not(.btn):hover, .container-topbar a:not(.btn):focus, .container-topbar .btn-link:hover, .container-topbar .btn-link:focus, .container-below-top a:not(.btn):hover, .container-below-top a:not(.btn):focus, .container-below-top .btn-link:hover, .container-below-top .btn-link:focus {
+  color: var(--gray-200);
 }
 
 .container-banner {

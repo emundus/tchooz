@@ -281,6 +281,18 @@
       "version": "08e025"
     },
     {
+      "name": "messages",
+      "type": "script",
+      "uri": "system/messages.min.js",
+      "attributes": {
+        "type": "module"
+      },
+      "dependencies": [
+        "messages-legacy"
+      ],
+      "version": "7a5169"
+    },
+    {
       "name": "inlinehelp",
       "type": "script",
       "uri": "system/inlinehelp.min.js",
@@ -305,16 +317,16 @@
       "version": "5fac85"
     },
     {
-      "name": "messages",
+      "name": "searchtools",
       "type": "script",
-      "uri": "system/messages.min.js",
-      "attributes": {
-        "type": "module"
-      },
       "dependencies": [
-        "messages-legacy"
+        "core"
       ],
-      "version": "7a5169"
+      "uri": "system/searchtools.min.js",
+      "attributes": {
+        "defer": true
+      },
+      "version": "a3a99b"
     },
     {
       "name": "showon",
@@ -327,18 +339,6 @@
         "type": "module"
       },
       "version": "891646"
-    },
-    {
-      "name": "searchtools",
-      "type": "script",
-      "dependencies": [
-        "core"
-      ],
-      "uri": "system/searchtools.min.js",
-      "attributes": {
-        "defer": true
-      },
-      "version": "a3a99b"
     },
     {
       "name": "switcher",
@@ -561,12 +561,6 @@
       "version": "71e3f4"
     },
     {
-      "name": "webcomponent.field-simple-color",
-      "type": "style",
-      "uri": "system/fields/joomla-field-simple-color.min.css",
-      "version": "41e2e2"
-    },
-    {
       "name": "webcomponent.field-send-test-mail",
       "type": "script",
       "uri": "system/fields/joomla-field-send-test-mail.min.js",
@@ -577,6 +571,12 @@
         "webcomponent.field-send-test-mail-legacy"
       ],
       "version": "f8992f"
+    },
+    {
+      "name": "webcomponent.field-simple-color",
+      "type": "style",
+      "uri": "system/fields/joomla-field-simple-color.min.css",
+      "version": "41e2e2"
     },
     {
       "name": "webcomponent.field-simple-color",

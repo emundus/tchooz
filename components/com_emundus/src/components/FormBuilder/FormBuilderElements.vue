@@ -188,7 +188,7 @@ export default {
   cursor: grab;
 }
 
-#form-builder-elements-title {
-  border-bottom: 1px solid black;
+.em-light-selected-tab {
+  border-bottom: 1px solid var(--main-400);
 }
 </style>

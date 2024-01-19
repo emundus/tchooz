@@ -4,6 +4,8 @@ namespace Emundus\Plugin\Console\Tchooz\CliCommand;
 defined('_JEXEC') or die;
 
 use Exception;
+use Joomla\Archive\Archive;
+use Joomla\Archive\Zip;
 use Joomla\CMS\Factory;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Database\DatabaseAwareTrait;
@@ -210,6 +212,132 @@ class TchoozVanillaCommand extends AbstractCommand
 				$this->ioStyle->success(sprintf('Import completed in %d seconds', round(microtime(true) - $totalTime, 3)));
 			}
 		}
+
+		// php cli/joomla.php tchooz:vanilla --action="export_foreign_keys"
+		if($action === 'export_foreign_keys') {
+			$this->ioStyle->title('Exporting foreign keys');
+
+			$this->ioStyle->warning('This command will export your foreign keys.');
+			$confirm = $this->ioStyle->confirm('Are you sure you want to continue?');
+
+			if($confirm) {
+				$totalTime = microtime(true);
+
+				$destinationFile = '.docker/installation/vanilla/foreign_keys/foreign_keys.xml';
+				$tables = $this->db->getTableList();
+
+				// erase $destinationFile content
+				if (file_exists($destinationFile)) {
+					File::delete($destinationFile);
+				}
+
+				File::write($destinationFile, '');
+
+				// add xml header
+				$dom = new \DOMDocument('1.0', 'utf-8');
+				$dom->formatOutput = true;
+
+				$xml = $dom->createElement('tables');
+				foreach ($tables as $table) {
+					$taskTime = microtime(true);
+
+					$this->ioStyle->text(sprintf('Processing the %s table', $table));
+
+					$query = 'SELECT * FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_NAME = "' . $table . '" AND REFERENCED_TABLE_NAME IS NOT NULL';
+					$this->db->setQuery($query);
+					$foreign_keys = $this->db->loadAssocList();
+
+					if (!empty($foreign_keys)) {
+						$xml_table = $dom->createElement('table');
+						$xml_table->setAttribute('name', $table);
+
+						foreach ($foreign_keys as $foreign_key) {
+							$xml_row = $dom->createElement('row');
+							$xml_row->setAttribute('constraint_name', $foreign_key['CONSTRAINT_NAME']);
+							$xml_row->setAttribute('column_name', $foreign_key['COLUMN_NAME']);
+							$xml_row->setAttribute('referenced_table_name', $foreign_key['REFERENCED_TABLE_NAME']);
+							$xml_row->setAttribute('referenced_column_name', $foreign_key['REFERENCED_COLUMN_NAME']);
+
+							$xml_table->appendChild($xml_row);
+						}
+
+						$xml->appendChild($xml_table);
+					}
+
+					$this->ioStyle->text(sprintf('Exported data for %s in %d seconds', $table, round(microtime(true) - $taskTime, 3)));
+				}
+
+				$dom->appendChild($xml);
+				$dom->save($destinationFile);
+
+				$this->ioStyle->success(sprintf('Export completed in %d seconds', round(microtime(true) - $totalTime, 3)));
+			}
+		}
+
+		// php cli/joomla.php tchooz:vanilla --action="import_foreign_keys"
+	    if ($action === 'import_foreign_keys') {
+			$this->ioStyle->title('Importing foreign keys');
+
+		    $this->ioStyle->warning('This command will replace your foreign keys.');
+		    $confirm = $this->ioStyle->confirm('Are you sure you want to continue?');
+
+		    if ($confirm) {
+			    $totalTime = microtime(true);
+
+			    $srcFile = '.docker/installation/vanilla/foreign_keys/foreign_keys.xml';
+
+				// Check file
+			    if (!file_exists($srcFile)) {
+					$this->ioStyle->warning(sprintf('The %s file does not exist.', $srcFile));
+				} else {
+					$dom = new \DOMDocument('1.0', 'utf-8');
+					$dom->load($srcFile);
+
+					$xpath = new \DOMXPath($dom);
+					$tables = $xpath->query('//table');
+
+					foreach ($tables as $table) {
+						$taskTime = microtime(true);
+
+						$tableName = $table->getAttribute('name');
+						$this->ioStyle->text(sprintf('Processing the %s table', $tableName));
+
+						// check if table exists
+						$query = 'SELECT * FROM information_schema.TABLES WHERE TABLE_NAME = "' . $tableName . '"';
+						$this->db->setQuery($query);
+						$tableExists = $this->db->loadAssoc();
+
+						if (empty($tableExists)) {
+							$this->ioStyle->warning(sprintf('The %s table does not exist.', $tableName));
+							continue;
+						}
+
+						$rows = $xpath->query('//table[@name="' . $tableName . '"]/row');
+
+						foreach ($rows as $row) {
+							$constraintName = $row->getAttribute('constraint_name');
+							$columnName = $row->getAttribute('column_name');
+							$referencedTableName = $row->getAttribute('referenced_table_name');
+							$referencedColumnName = $row->getAttribute('referenced_column_name');
+
+							$query = 'ALTER TABLE `' . $tableName . '` ADD CONSTRAINT `' . $constraintName . '` FOREIGN KEY (`' . $columnName . '`) REFERENCES `' . $referencedTableName . '` (`' . $referencedColumnName . '`) ON DELETE CASCADE ON UPDATE CASCADE';
+
+							try {
+								$this->db->setQuery($query);
+								$this->db->execute();
+							} catch (\Exception $e) {
+								$this->ioStyle->error(sprintf('Error while importing foreign key %s for the %s table.', $constraintName, $tableName));
+								continue;
+							}
+						}
+
+						$this->ioStyle->text(sprintf('Imported data for %s in %d seconds', $tableName, round(microtime(true) - $taskTime, 3)));
+					}
+			    }
+
+			    $this->ioStyle->success(sprintf('Import completed in %d seconds', round(microtime(true) - $totalTime, 3)));
+		    }
+	    }
 
 	    return Command::SUCCESS;
     }

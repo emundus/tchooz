@@ -161,8 +161,6 @@ class EmundusModelProgramme extends ListModel
 			return false;
 		}
 
-		
-
 		$query = $this->_db->getQuery(true);
 
 		$query

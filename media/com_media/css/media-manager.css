@@ -571,7 +571,12 @@ html[dir="rtl"] .infobar-leave-active {
   visibility: hidden;
 }
 
-.media-browser-table .selected, .media-browser-table .selected > td, .media-browser-table .selected > th {
+.media-browser-table .selected {
+  background-color: #006898;
+}
+
+.media-browser-table .selected > td, .media-browser-table .selected > th {
+  color: #fff;
   background-color: #006898;
 }
 

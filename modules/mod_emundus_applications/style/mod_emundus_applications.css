@@ -102,6 +102,7 @@ button#back:hover, button#back:active, button#back:focus,
     border: 1px solid var(--red-500) !important;
     color: var(--neutral-0) !important;
     padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+    border-radius: var(--em-coordinator-br);
 }
 
 .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover,
@@ -262,6 +263,7 @@ a.btn.btn-success:not(.btn-xs) {
 .view-featured .candidacy-files-list .row {
     position: relative;
     height: 100%;
+    overflow: hidden;
 }
 
 @media all and (max-width: 479px) {
@@ -518,9 +520,9 @@ a.btn.btn-success:not(.btn-xs) {
     position: absolute;
     background: var(--neutral-0);
     z-index: 9999;
-    margin-top: 34px;
     width: max-content;
     right: 20px;
+    top: 60px;
 }
 
 .mod_emundus_applications__actions a:hover,
@@ -791,6 +793,7 @@ circle.circle {
     transition: background-image .3s;
     height: 286px;
     z-index: 3;
+    overflow: hidden;
 }
 
 /* Fond formes */

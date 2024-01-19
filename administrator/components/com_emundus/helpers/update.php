@@ -1606,7 +1606,7 @@ class EmundusHelperUpdate
 		if(empty($params['params'])) {
 			$params['params'] = [];
 		}
-		
+
         try {
             // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
             Factory::$database = null;
@@ -1621,7 +1621,7 @@ class EmundusHelperUpdate
 			} else {
 				$alias = $params['alias'];
 			}
-			
+
             $query->clear()
                 ->select('id,alias,link')
                 ->from($db->quoteName('#__menu'))
@@ -2121,8 +2121,8 @@ class EmundusHelperUpdate
                 $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
             }
         } else {
-			$result['message'] = 'ADDING COLUMN : Column already exists.';
 			$result['status'] = true;
+			$result['message'] = 'Column already exists';
         }
 
         return $result;
@@ -3629,7 +3629,7 @@ class EmundusHelperUpdate
 
 			// Session
 			$storage_value['session_protection_active'] = 1;
-			$storage_value['session_hijack_protection'] = 1;
+			$storage_value['session_hijack_protection'] = 0;
 			$storage_value['session_hijack_protection_what_to_check'] = 2;
 			$storage_value['session_protection_groups'] = ["11","3","5","2","10","1"];
 			$storage_value['track_failed_logins'] = 1;

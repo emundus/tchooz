@@ -14,6 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
 
+use Joomla\CMS\Factory;
+
 /**
  * HTML View class for the Emundus Component
  *
@@ -22,6 +24,7 @@ jimport('joomla.application.component.view');
 class EmundusViewExport_select_columns extends JViewLegacy
 {
 	private $_user;
+	private $_app;
 
 	public $elements;
 	public $form;
@@ -29,51 +32,48 @@ class EmundusViewExport_select_columns extends JViewLegacy
 
 	function __construct($config = array())
 	{
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
+		$this->_app = Factory::getApplication();
+		$this->_user = $this->_app->getIdentity();
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			die(JText::_('ACCESS_DENIED'));
+		}
 
-		$this->_user = JFactory::getUser();
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/programme.php');
 
 		parent::__construct($config);
 	}
 
 	function display($tpl = null)
 	{
-		$m_program = new EmundusModelProgramme();
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'admission.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'decision.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-
-
-		$jinput     = JFactory::getApplication()->input;
+		$jinput     = $this->_app->getInput();
 		$prg        = $jinput->getString('code', null);
 		$this->form = $jinput->get('form', null);
 		$camp       = $jinput->get('camp', null);
 		$profile    = $jinput->get('profile', null);
 		$all        = $jinput->get('all', null);
 
-		$program = $m_program->getProgramme($prg);
-		$code    = array();
-		$camps   = array();
-		$code[]  = $prg;
-		$camps[] = $camp;
-
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			die(JText::_('ACCESS_DENIED'));
+		if (!empty($prg)) {
+			$m_program = new EmundusModelProgramme();
+			$program = $m_program->getProgramme($prg);
 		}
+		$code    = [$prg];
+		$camps   = [$camp];
 
-		$m_admission = new EmundusModelAdmission;
-		$m_decision  = new EmundusModelDecision;
-		$m_eval      = new EmundusModelEvaluation;
-
-		if ($this->form == "decision") {
+		if ($this->form === 'decision') {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/decision.php');
+			$m_decision  = new EmundusModelDecision;
 			$this->elements = $m_decision->getDecisionElementsName(0, 0, $code, $all);
 		}
-		elseif ($this->form == "admission") {
+		elseif ($this->form === 'admission') {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/admission.php');
+			$m_admission = new EmundusModelAdmission;
 			$this->elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code, $all);
 		}
-		elseif ($this->form == "evaluation") {
+		elseif ($this->form === 'evaluation') {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
+			$m_eval = new EmundusModelEvaluation;
 			$this->elements = $m_eval->getEvaluationElementsName(0, 0, $code, $all);
 		}
 		else {

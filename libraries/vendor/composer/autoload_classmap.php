@@ -2655,6 +2655,7 @@ return array(
     'phpseclib3\\Crypt\\EC\\Formats\\Keys\\XML' => $vendorDir . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Keys/XML.php',
     'phpseclib3\\Crypt\\EC\\Formats\\Keys\\libsodium' => $vendorDir . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Keys/libsodium.php',
     'phpseclib3\\Crypt\\EC\\Formats\\Signature\\ASN1' => $vendorDir . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Signature/ASN1.php',
+    'phpseclib3\\Crypt\\EC\\Formats\\Signature\\IEEE' => $vendorDir . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Signature/IEEE.php',
     'phpseclib3\\Crypt\\EC\\Formats\\Signature\\Raw' => $vendorDir . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Signature/Raw.php',
     'phpseclib3\\Crypt\\EC\\Formats\\Signature\\SSH2' => $vendorDir . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Signature/SSH2.php',
     'phpseclib3\\Crypt\\EC\\Parameters' => $vendorDir . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Parameters.php',

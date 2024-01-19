@@ -31,7 +31,6 @@ class EmundusModelFormbuilder extends JModelList
 
 		$this->app = Factory::getApplication();
 		$this->db = Factory::getDbo();
-	
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'translations.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
@@ -179,8 +178,9 @@ class EmundusModelFormbuilder extends JModelList
 	 */
 	function formsTrad($labelTofind, $NewSubLabel, $element = null, $group = null, $page = null)
 	{
+		$new_key = '';
+
 		try {
-			
 			$query = $this->db->getQuery(true);
 
 			if (!empty($element)) {
@@ -189,6 +189,7 @@ class EmundusModelFormbuilder extends JModelList
 					$query->update($this->db->quoteName('#__fabrik_elements'))
 						->set($this->db->quoteName('label') . ' = ' . $this->db->quote($new_key))
 						->where($this->db->quoteName('id') . ' = ' . $this->db->quote($element));
+
 					$this->db->setQuery($query);
 					$this->db->execute();
 				}
@@ -221,14 +222,14 @@ class EmundusModelFormbuilder extends JModelList
 			else {
 				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel);
 			}
-
-			return $new_key;
 		}
 		catch (Exception $e) {
+			error_log($e->getMessage());
 			JLog::add('component/com_emundus/models/formbuilder | Error when update the translation of ' . $labelTofind . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-			return false;
+			$new_key = false;
 		}
+
+		return $new_key;
 	}
 
 	/** END TRANSLATION SYSTEM */
@@ -355,7 +356,6 @@ class EmundusModelFormbuilder extends JModelList
 				'msg'    => 'MISSING_PRID'
 			];
 		}
-
 		
 		$query = $this->db->getQuery(true);
 
@@ -468,7 +468,14 @@ class EmundusModelFormbuilder extends JModelList
 			$this->createElement('id', $group['group_id'], 'internalid', 'id', '', 1, 0, 0);
 			$this->createElement('time_date', $group['group_id'], 'date', 'time date', '', 1, 0);
 			$this->createElement('user', $group['group_id'], 'user', 'user', '', 1, 0);
-			$default_fnum = '$fnum = JFactory::getApplication()->input->get(\'rowid\');if (empty($fnum)) { $fnum = JFactory::getApplication()->getSession()->get(\'emundusUser\')->fnum;}return $fnum;';
+			$default_fnum = 'use Joomla\CMS\Factory;
+			$app = Factory::getApplication();
+			$fnum = Factory::getApplication()->getInput()->getString(\'rowid\', \'\');
+			if (empty($fnum)) { 
+			$fnum = Factory::getApplication()->getSession()->get(\'emundusUser\')->fnum;
+			}
+			return $fnum;';
+
 			$this->createElement('fnum', $group['group_id'], 'field', 'fnum', $default_fnum, 1, 0, 1, 1, 0, 44);
 			//
 
@@ -525,6 +532,7 @@ class EmundusModelFormbuilder extends JModelList
 		$form_id = 0;
 
 		if (!empty($prid) && !empty($label) && is_array($label)) {
+			$user = Factory::getApplication()->getIdentity();
 			
 			$query = $this->db->getQuery(true);
 
@@ -536,11 +544,11 @@ class EmundusModelFormbuilder extends JModelList
 					'error'               => 'FORM_ERROR',
 					'intro'               => '<p>' . 'FORM_' . $prid . '_INTRO</p>',
 					'created'             => gmdate('Y-m-d h:i:s'),
-					'created_by'          => JFactory::getUser()->id,
-					'created_by_alias'    => JFactory::getUser()->username,
+					'created_by'          => $user->id,
+					'created_by_alias'    => $user->username,
 					'modified'            => gmdate('Y-m-d h:i:s'),
-					'modified_by'         => JFactory::getUser()->id,
-					'checked_out'         => JFactory::getUser()->id,
+					'modified_by'         => $user->id,
+					'checked_out'         => $user->id,
 					'checked_out_time'    => gmdate('Y-m-d h:i:s'),
 					'publish_up'          => gmdate('Y-m-d h:i:s'),
 					'reset_button_label'  => 'RESET',
@@ -907,7 +915,7 @@ class EmundusModelFormbuilder extends JModelList
 			$this->createElement('id', $hidden_group['group_id'], 'internalid', 'id', '', 1, 0, 0);
 			$this->createElement('time_date', $hidden_group['group_id'], 'date', 'SENT_ON', '', 1, 0);
 			$this->createElement('user', $hidden_group['group_id'], 'user', 'user', '', 1, 0);
-			$default_fnum = '$fnum = JFactory::getApplication()->input->get(\'rowid\');if (empty($fnum)) { $fnum = JFactory::getSession()->get(\'emundusUser\')->fnum;}return $fnum;';
+			$default_fnum = 'use Joomla\CMS\Factory; $app = Factory::getApplication(); $fnum = $app->getInput()->getString(\'rowid\');if (empty($fnum)) { $fnum = $app->getSession()->get(\'emundusUser\')->fnum;}return $fnum;';
 			$this->createElement('fnum', $hidden_group['group_id'], 'field', 'fnum', $default_fnum, 1, 0, 1, 1, 0, 44);
 			//
 
@@ -3693,7 +3701,7 @@ class EmundusModelFormbuilder extends JModelList
 
 		include_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 
-		$fnum = @EmundusHelperFiles::createFnum($cid, $uid);
+		$fnum = EmundusHelperFiles::createFnum($cid, $uid, false);
 
 		try {
 			$query->insert($this->db->quoteName('#__emundus_campaign_candidature'));
@@ -4162,7 +4170,7 @@ class EmundusModelFormbuilder extends JModelList
 				$query->clear();
 				$query->insert($this->db->quoteName('#__fabrik_forms'));
 				foreach ($form_model as $key => $val) {
-					if ($key != 'id') {
+					if ($key != 'id' && !is_null($val)) {
 						$query->set($key . ' = ' . $this->db->quote($val));
 					}
 				}
@@ -4188,7 +4196,6 @@ class EmundusModelFormbuilder extends JModelList
 							$labels_to_duplicate[$language->sef] = $label_prefix . $this->getTranslation($form_model->label, $language->lang_code);
 						}
 						$this->translate('FORM_MODEL_' . $new_form_id, $labels_to_duplicate, 'fabrik_forms', $new_form_id, 'label');
-
 					}
 				}
 				catch (Exception $e) {
