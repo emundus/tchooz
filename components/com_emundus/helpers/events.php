@@ -303,7 +303,8 @@ class EmundusHelperEvents
 				$fnumDetail = $mProfile->getFnumDetails($fnum);
 
 				$isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id);
-
+				
+				
 				if ($fnum == $user->fnum) {
 					//try to access edit view
 					if ($view == 'form') {

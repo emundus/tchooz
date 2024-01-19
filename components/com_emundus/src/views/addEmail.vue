@@ -10,7 +10,7 @@
     <div>
       <form @submit.prevent="submit" class="fabrikForm emundus-form">
         <div>
-          <div class="mb-4">
+          <div class="tw-mb-4">
             <h1>{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
             <span class="em-red-500-color em-mb-8">{{ translations.RequiredFieldsIndicate }}</span>
           </div>
@@ -20,16 +20,16 @@
               <label>{{ translations.emailName }} <span style="color: #E5283B">*</span></label>
               <input
                   type="text"
-                  class="w-full"
+                  class="tw-w-full tw-mt-2"
                   v-model="form.subject"
                   :class="{ 'is-invalid': errors.subject}"
               />
             </div>
-            <span v-if="errors.subject" class="em-red-500-color mb-2">
+            <span v-if="errors.subject" class="em-red-500-color tw-mb-2">
               <span class="em-red-500-color">{{ translations.SubjectRequired }}</span>
             </span>
 
-            <div class="mb-4">
+            <div class="tw-mb-4">
               <label>{{ translations.emailBody }} <span style="color: #E5283B">*</span></label>
               <editor-quill
                   style="height: 30em"
@@ -42,13 +42,13 @@
                   :class="{ 'is-invalid': errors.message}"
               >
               </editor-quill>
-              <div class="mt-12">
+              <div class="tw-mt-12">
                 <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
                    class="em-main-500-color em-hover-main-600"
                    target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
               </div>
             </div>
-            <p v-if="errors.message" class="em-red-500-color mb-2">
+            <p v-if="errors.message" class="em-red-500-color tw-mb-2">
               <span class="em-red-500-color">{{ translations.BodyRequired }}</span>
             </p>
 
@@ -69,37 +69,37 @@
         <hr/>
 
         <div>
-          <div class="flex items-center mb-4 gap-1">
-            <h3 class="cursor-pointer em-mb-0-important" @click="displayAdvanced">{{ translations.Advanced }}</h3>
-            <button :title="translations.Advanced" type="button" class="em-transparent-button flex flex-col"
+          <div class="tw-flex tw-items-center tw-mb-4 tw-gap-1">
+            <h3 class="tw-cursor-pointer em-mb-0-important" @click="displayAdvanced">{{ translations.Advanced }}</h3>
+            <button :title="translations.Advanced" type="button" class="em-transparent-button tw-flex tw-flex-col"
                     @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
             <button :title="translations.Advanced" type="button" @click="displayAdvanced"
-                    class="em-transparent-button flex flex-col" v-show="displayAdvancedParameters">
+                    class="em-transparent-button tw-flex tw-flex-col" v-show="displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
             </button>
           </div>
           <div id="email-advanced-parameters" v-if="displayAdvancedParameters">
-            <div class="form-group mb-4">
+            <div class="form-group tw-mb-4">
               <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL') }}</label>
-              <span>{{ email_sender }}</span>
+              <p class="tw-mt-2">{{ email_sender }}</p>
             </div>
 
-            <div class="form-group mb-4">
+            <div class="form-group tw-mb-4">
               <label>{{ translations.receiverName }}</label>
               <input
                   type="text"
-                  class="w-full fabrikinput"
+                  class="tw-w-full fabrikinput tw-mt-2"
                   v-model="form.name"
               />
             </div>
 
-            <div class="form-group mb-4">
+            <div class="form-group tw-mb-4">
               <label>{{ translations.emailAddress }}</label>
               <input
                   type="text"
-                  class="w-full fabrikinput"
+                  class="tw-w-full fabrikinput tw-mt-2"
                   v-model="form.emailfrom"
                   placeholder="reply-to@tchooz.io"
               />
@@ -107,9 +107,10 @@
                 {{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP') }}</p>
             </div>
 
-            <div class="form-group mb-4" id="receivers_cc">
+            <div class="form-group tw-mb-4" id="receivers_cc">
               <label>{{ translations.ReceiversCC }}</label>
               <multiselect
+                  :class="'tw-mt-2'"
                   v-model="selectedReceiversCC"
                   label="email"
                   track-by="email"
@@ -127,9 +128,10 @@
             </div>
 
             <!-- Email -- BCC (in form of email adress or fabrik element -->
-            <div class="form-group mb-4" id="receivers_bcc">
+            <div class="form-group tw-mb-4" id="receivers_bcc">
               <label>{{ translations.ReceiversBCC }}</label>
               <multiselect
+                  :class="'tw-mt-2'"
                   v-model="selectedReceiversBCC"
                   label="email"
                   track-by="email"
@@ -147,9 +149,10 @@
             </div>
 
             <!-- Email -- Associated letters (in form of email adress or fabrik element -->
-            <div class="form-group mb-4" id="attached_letters" v-if="attached_letters">
+            <div class="form-group tw-mb-4" id="attached_letters" v-if="attached_letters">
               <label>{{ translations.Letters }}</label>
               <multiselect
+                  :class="'tw-mt-2'"
                   v-model="selectedLetterAttachments"
                   label="value"
                   track-by="id"
@@ -166,9 +169,10 @@
             </div>
 
             <!-- Email -- Action tags -->
-            <div class="form-group mb-4" v-if="tags">
+            <div class="form-group tw-mb-4" v-if="tags">
               <label>{{ translations.Tags }}</label>
               <multiselect
+                  :class="'tw-mt-2'"
                   v-model="selectedTags"
                   label="label"
                   track-by="id"
@@ -185,9 +189,10 @@
             </div>
 
             <!-- Email -- Candidat attachments -->
-            <div class="form-group mb-4">
+            <div class="form-group tw-mb-4">
               <label>{{ translations.CandidateAttachments }}</label>
               <multiselect
+                  :class="'tw-mt-2'"
                   v-model="selectedCandidateAttachments"
                   label="value"
                   track-by="id"
@@ -205,7 +210,7 @@
           </div>
         </div>
 
-        <div class="flex justify-between mt-4">
+        <div class="tw-flex tw-justify-between tw-mt-4">
           <button
               type="button"
               class="em-secondary-button em-w-auto"

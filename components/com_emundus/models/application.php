@@ -20,10 +20,14 @@ JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models'); // 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Router\Route;
 
 class EmundusModelApplication extends JModelList
 {
 	private $_mainframe;
+	private $h_cache;
 
 	private $_user;
 	protected $_db;
@@ -41,9 +45,11 @@ class EmundusModelApplication extends JModelList
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
+		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 
 		$this->_mainframe = Factory::getApplication();
 		$this->_db        = Factory::getDbo();
+		$this->h_cache        = new EmundusHelperCache();
 
 		$session  = $this->_mainframe->getSession();
 		$language = $this->_mainframe->getLanguage();
@@ -176,7 +182,7 @@ class EmundusModelApplication extends JModelList
 	 *
 	 * @return array|mixed
 	 */
-	function getUserAttachmentsByFnum($fnum, $search = '', $profile = null, $user_id = null)
+	function getUserAttachmentsByFnum($fnum, $search = '', $profile = null, $applicant = false, $user_id = null)
 	{
 		$attachments = [];
 
@@ -216,6 +222,10 @@ class EmundusModelApplication extends JModelList
 			}
 			else {
 				$query->order($this->_db->quoteName('eu.modified') . ' DESC');
+			}
+
+			if($applicant) {
+				$query->andWhere($this->_db->quoteName('eu.can_be_viewed') . ' = 1');
 			}
 
 			try {

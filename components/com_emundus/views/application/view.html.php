@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserHelper;
 
 /**
@@ -77,6 +78,12 @@ class EmundusViewApplication extends JViewLegacy
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
+
+		$jinput     = $this->app->input;
+		$this->fnum = $jinput->getString('fnum', '');
+		$this->ccid = $jinput->getInt('ccid', 0);
+		$layout     = $jinput->getString('layout', 0);
+
 
 		if (version_compare(JVERSION, '4.0', '>')) {
 			$wa = $this->jdocument->getWebAssetManager();
@@ -153,6 +160,6 @@ class EmundusViewApplication extends JViewLegacy
 		$this->actions = EmundusHelperList::createActionsBlock($user, $options);
 		unset($options);
 
-		parent::display($tpl);
+		parent::display();
 	}
 }

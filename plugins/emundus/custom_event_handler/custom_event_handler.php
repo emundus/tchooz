@@ -46,7 +46,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 			$returned_values = [];
 
 			if (method_exists($this->hEvents, $event)) {
-				$this->hEvents->{$event}($args);
+				$returned_values[$event] = $this->hEvents->{$event}($args);
 			}
 
 			foreach ($events as $index => $caller_index) {

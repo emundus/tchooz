@@ -40,7 +40,7 @@ else {
 <iframe id="background-shapes2" class="background-shaped-bottom" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
 <div class="com-users-login login">
 	<?php if ($this->params->get('show_page_heading')) : ?>
-        <div class="page-header flex flex-column items-center">
+        <div class="page-header tw-flex tw-flex-col tw-items-center">
 	        <?php if (file_exists($this->favicon)) : ?>
                 <a href="index.php" alt="Logo" class="em-profile-picture mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $this->favicon ?>)">
                 </a>

@@ -32,7 +32,7 @@
             <option v-for="model in models" :key="model.form_id" :value="model.form_id">{{ model.label }}</option>
           </select>
         </div>
-        <div class="form-group" :class="{ 'mb-0': can_translate.label}">
+        <div class="form-group" :class="{ 'tw-mb-0': can_translate.label}">
           <label>{{ translations.Name }}<span class="em-red-500-color">*</span> :</label>
           <div class="input-can-translate">
             <input v-model="label.fr" type="text" maxlength="40" class="form__input field-general w-input"
@@ -50,14 +50,14 @@
           </div>
         </transition>
         <transition :name="'slide-down'" type="transition">
-          <div class="form-group mb-1" v-if="can_translate.label">
+          <div class="form-group tw-mb-1" v-if="can_translate.label">
             <input v-model="label.en" type="text" maxlength="40" class="form__input field-general w-input"/>
           </div>
         </transition>
-        <p v-if="errors && model_id == -1" class="error col-md-12 mb-2">
+        <p v-if="errors && model_id == -1" class="error col-md-12 tw-mb-2">
           <span class="error">{{ translations.LabelRequired }}</span>
         </p>
-        <div class="form-group mt-1" :class="{'mb-0': can_translate.intro}">
+        <div class="form-group tw-mt-1" :class="{'tw-mb-0': can_translate.intro}">
           <label>{{ translations.Intro }} :</label>
           <div class="input-can-translate">
               <textarea v-model="intro.fr" class="form__input field-general w-input" rows="3" maxlength="300"
@@ -75,16 +75,16 @@
           </div>
         </transition>
         <transition :name="'slide-down'" type="transition">
-          <div class="form-group mb-1" v-if="can_translate.intro">
+          <div class="form-group tw-mb-1" v-if="can_translate.intro">
             <textarea v-model="intro.en" rows="3" class="form__input field-general w-input" maxlength="300"></textarea>
           </div>
         </transition>
         <div class="col-md-12 em-flex-row" v-if="model_id == -1">
           <input type="checkbox" v-model="template">
-          <label class="ml-10px">{{ translations.SaveAsTemplate }} :</label>
+          <label class="tw-ml-10px">{{ translations.SaveAsTemplate }} :</label>
         </div>
       </div>
-      <div class="em-flex-row em-flex-space-between mb-1">
+      <div class="em-flex-row em-flex-space-between tw-mb-1">
         <button type="button"
                 class="bouton-sauvergarder-et-continuer w-retour"
                 @click.prevent="$modal.hide('modalAddEvaluation')"

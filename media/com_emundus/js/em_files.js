@@ -522,7 +522,7 @@ function openFiles(fnum, page = 0, vue = false) {
                                 url += '&Itemid='+itemId;
 
                                 if(typeof menus[m].notifications != 'undefined'){
-                                    menuList += '<a href="'+url+'" class="list-group-item list-item-notifications flex items-center" title="'+menus[m].title+'" id="'+menus[m].id+'">';
+                                    menuList += '<a href="'+url+'" class="list-group-item list-item-notifications tw-flex tw-items-center" title="'+menus[m].title+'" id="'+menus[m].id+'">';
                                 } else {
                                     menuList += '<a href="' + url + '" class="list-group-item" title="' + menus[m].title + '" id="' + menus[m].id + '">';
                                 }

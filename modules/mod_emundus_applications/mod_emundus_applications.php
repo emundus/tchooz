@@ -18,7 +18,10 @@ $app = Factory::getApplication();
 
 $document = $app->getDocument();
 $wa       = $document->getWebAssetManager();
+$wa->useScript('jquery');
 $wa->registerAndUseStyle('mod_emundus_applications', 'modules/mod_emundus_applications/style/mod_emundus_applications.css');
+$wa->registerAndUseScript('com_emundus_selectize', 'media/com_emundus/lib/selectize/dist/js/standalone/selectize.js');
+$wa->registerAndUseStyle('com_emundus_selectize', 'media/com_emundus/lib/selectize/dist/css/selectize.default.css');
 $wa->useScript('jquery');
 $user = $app->getSession()->get('emundusUser');
 

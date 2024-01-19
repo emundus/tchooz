@@ -323,7 +323,7 @@ if ($user != null) {
     <script>
         // get current profile color and state
         let profile_color = '<?php echo $profile_details->class; ?>';
-        let profile_state = <?php echo $profile_details->published; ?>;
+        let profile_state = '<?php echo $profile_details->published; ?>';
 
         // if session storage is empty, get profile color and state from server
         if (profile_color === null || profile_state === null) {

@@ -20,16 +20,16 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-5 gap-y-0 gap-x-6">
+      <div class="tw-grid tw-grid-cols-5 tw-gap-y-0 tw-gap-x-6">
         <div v-for="(preset) in presets" :key="preset.id" class="preset-presentation"
-             :class="preset.selected ? 'outline-green-500' : ''"
+             :class="preset.selected ? 'tw-outline-green-500' : ''"
              :style="'background-color:' + preset.primary + ';border-right: 50px solid' + preset.secondary"
              @click="!preset.custom ? changeColors(preset) : openCustomPalette()">
-          <span class="material-icons-outlined text-white p-3" v-if="preset.custom">color_lens</span>
-          <span class="material-icons-outlined text-yellow-500" v-if="!preset.rgaa">warning</span>
+          <span class="material-icons-outlined tw-text-white tw-p-3" v-if="preset.custom">color_lens</span>
+          <span class="material-icons-outlined tw-text-yellow-500" v-if="!preset.rgaa">warning</span>
         </div>
-        <div class="preset-presentation flex items-center justify-center" v-if="presets[presets.length-1].custom === false" @click="openCustomPalette">
-          <span class="material-icons-outlined !text-6xl">add_circle_outline</span>
+        <div class="preset-presentation tw-flex tw-items-center tw-justify-center" v-if="presets[presets.length-1].custom === false" @click="openCustomPalette">
+          <span class="material-icons-outlined !tw-text-6xl">add_circle_outline</span>
         </div>
       </div>
     </modal>
@@ -108,7 +108,7 @@ export default {
     openCustomPalette() {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_CUSTOM_PALETTE"),
-        html: `<div><label>`+this.translate("COM_EMUNDUS_ONBOARD_PRIMARY_COLOR")+`</label><div class="flex items-center"><input type="color" onchange="document.querySelector('#hexacode-primary').innerHTML = event.srcElement.value;checkContrast('#FFFFFF',event.srcElement.value,'#swal2-content');checkSimilarity(event.srcElement.value,document.querySelector('#secondary_color').value,'#swal2-content')" class="custom-color-picker" value="`+this.primary+`" id="primary_color" /><span id="hexacode-primary" class="ml-4">`+this.primary+`</span></div></div><div class="mt-4 mb-3"><label>`+this.translate("COM_EMUNDUS_ONBOARD_SECONDARY_COLOR")+`</label><div><input type="color" value="`+this.secondary+`" class="custom-color-picker" id="secondary_color" onchange="document.querySelector('#hexacode-secondary').innerHTML = event.srcElement.value;checkContrast('#FFFFFF',event.srcElement.value,'#swal2-content');checkSimilarity(event.srcElement.value,document.querySelector('#primary_color').value,'#swal2-content')" /><span id="hexacode-secondary" class="ml-4">`+this.secondary+`</span></div></div></div>`,
+        html: `<div><label>`+this.translate("COM_EMUNDUS_ONBOARD_PRIMARY_COLOR")+`</label><div class="tw-flex tw-items-center"><input type="color" onchange="document.querySelector('#hexacode-primary').innerHTML = event.srcElement.value;checkContrast('#FFFFFF',event.srcElement.value,'#swal2-content');checkSimilarity(event.srcElement.value,document.querySelector('#secondary_color').value,'#swal2-content')" class="custom-color-picker" value="`+this.primary+`" id="primary_color" /><span id="hexacode-primary" class="tw-ml-4">`+this.primary+`</span></div></div><div class="tw-mt-4 mb-3"><label>`+this.translate("COM_EMUNDUS_ONBOARD_SECONDARY_COLOR")+`</label><div class="tw-flex tw-items-center"><input type="color" value="`+this.secondary+`" class="custom-color-picker" id="secondary_color" onchange="document.querySelector('#hexacode-secondary').innerHTML = event.srcElement.value;checkContrast('#FFFFFF',event.srcElement.value,'#swal2-content');checkSimilarity(event.srcElement.value,document.querySelector('#primary_color').value,'#swal2-content')" /><span id="hexacode-secondary" class="tw-ml-4">`+this.secondary+`</span></div></div></div>`,
         showCancelButton: true,
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),

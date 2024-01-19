@@ -39,14 +39,14 @@
                 />
 
                 <field name="description"
-                       type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                       type="editor" filter="safehtml" hide="readmore,pagebreak"
                        default=""
                        label="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION"
                        description="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION_DESC">
                 </field>
 
                 <field name="override_default_content"
-                       type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                       type="editor" filter="safehtml" hide="readmore,pagebreak"
                        default=""
                        label="MOD_EMUNDUS_APPLICATIONS_OVERRIDE_EMPTY_APPLICATION"
                        description="MOD_EMUNDUS_APPLICATIONS_OVERRIDE_EMPTY_APPLICATION_DESC">
@@ -351,7 +351,7 @@
                 </field>
 
                 <field name="tags"
-                       type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                       type="editor" filter="safehtml" hide="readmore,pagebreak"
                        default=""
                        label="MOD_EMUNDUS_TAGS"
                        description="MOD_EMUNDUS_TAGS_DESC">

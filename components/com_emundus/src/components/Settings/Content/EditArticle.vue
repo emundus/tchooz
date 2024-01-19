@@ -21,7 +21,7 @@
         ></multiselect>
       </div>
 
-      <div class="mb-4 flex items-center" v-if="category === 'rgpd'">
+      <div class="tw-mb-4 tw-flex tw-items-center" v-if="category === 'rgpd'">
         <div class="em-toggle">
           <input type="checkbox"
                  true-value="1"

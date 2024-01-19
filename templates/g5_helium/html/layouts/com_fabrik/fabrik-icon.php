@@ -24,7 +24,7 @@ if ($iconParts[1] == 'notempty' || $iconParts[0] != 'icon-question-sign')
     $icon = explode('-',$iconParts[0]);
     if(in_array(trim($icon[1]),['eye','star','envelope'])) {
         $icon[1] = 'emergency';
-        $class = 'text-xxs text-red-500 mr-0';
+        $class = '!tw-text-xs tw-text-red-500 tw-mr-0';
         $style = 'style="top: -5px;position: relative"';
     }
 	?>

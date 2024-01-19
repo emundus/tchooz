@@ -10,28 +10,31 @@
  */
 
 // No direct access
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die('Restricted access');
 
 $element = $this->element;
+
 ?>
-<?php echo $element->label;?>
+<?php echo $element->label; ?>
 
 <?php if ($this->tipLocation == 'above') : ?>
-	<span class="fabrikElementTip fabrikElementTipAbove"><?php echo $element->tipAbove ?></span>
+    <span class="fabrikElementTip fabrikElementTipAbove"><?php echo $element->tipAbove ?></span>
 <?php endif ?>
 
 <div class="fabrikElement">
-	<?php echo $element->element;?>
+	<?php echo $element->element; ?>
 </div>
 
-<div class="<?php echo $this->class?>">
+<div class="<?php echo $this->class ?>">
 	<?php echo $element->error ?>
 </div>
 
 <?php if ($this->tipLocation == 'side') : ?>
-	<span class="fabrikElementTip"><?php echo $element->tipSide ?></span>
+    <span class="fabrikElementTip"><?php echo $element->tipSide ?></span>
 <?php endif ?>
 
-<?php if ($this->tipLocation == 'below') :?>
-	<span class="fabrikElementTip fabrikElementTipBelow"><?php echo $element->tipBelow ?></span>
+<?php if ($this->tipLocation == 'below') : ?>
+    <span class="fabrikElementTip fabrikElementTipBelow"><?php echo $element->tipBelow ?></span>
 <?php endif ?>

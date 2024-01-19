@@ -5,6 +5,7 @@
         :fnum="data.fnum"
         :user="data.user"
         :defaultAttachments="data.attachments ? data.attachments : null"
+        :columns="data.columns"
     ></Attachments>
 
     <Files
@@ -94,6 +95,10 @@ export default {
 
     if (this.data.attachments) {
       this.data.attachments = JSON.parse(atob(this.data.attachments));
+    }
+
+    if (this.data.columns) {
+      this.data.columns = JSON.parse(atob(this.data.columns));
     }
 
     if (typeof this.$props.datas != 'undefined') {

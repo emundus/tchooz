@@ -1,6 +1,6 @@
 <template>
   <div id="form-builder-elements">
-    <div class="flex items-center justify-around">
+    <div class="tw-flex tw-items-center tw-justify-around">
       <div v-for="menu in menus" :key="menu.id" id="form-builder-elements-title" class="em-light-tabs em-pointer" @click="selected = menu.id" :class="selected === menu.id ? 'em-light-selected-tab' : ''">
         {{ translate(menu.name) }}
       </div>
@@ -37,7 +37,7 @@
           @click="addGroup(group)"
       >
           <div
-              class="form-builder-element flex items-center justify-between cursor-pointer"
+              class="form-builder-element tw-flex tw-items-center tw-justify-between tw-cursor-pointer"
           >
             <span class="material-icons-outlined">{{ group.icon }}</span>
             <span class="em-w-100 em-p-16">{{ translate(group.name) }}</span>

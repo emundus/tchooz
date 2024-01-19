@@ -710,6 +710,7 @@ class EmundusController extends JControllerLegacy
 		$aid = $session->get('emundusUser');
 
 		$m_profile = $this->getModel('Profile');
+
 		$infos     = $m_profile->getFnumDetails($fnum);
 
 		if ($aid->id != $infos['applicant_id']) {

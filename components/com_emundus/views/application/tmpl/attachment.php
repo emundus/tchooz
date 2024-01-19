@@ -58,6 +58,7 @@ $hash = EmundusHelperCache::getCurrentGitHash();
      base=<?= JURI::base() ?>
      attachments="<?= base64_encode(json_encode($this->userAttachments)) ?>"
      rights="<?= base64_encode(json_encode(['can_export' => $can_export, 'can_see' => $can_see_attachments])) ?>"
+     columns="<?= base64_encode(json_encode($this->columns)) ?>"
 >
 </div>
 

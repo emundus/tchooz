@@ -125,7 +125,7 @@ if ($just_logged && !$only_applicant) {
                 allowOutsideClick: false,
                 confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_SWITCH_PROFILE_OK') ?>",
                 customClass: {
-                    header: 'items-center',
+                    header: 'tw-items-center',
                     title: 'em-swal-title',
                     confirmButton: 'em-swal-confirm-button',
                     content: 'em-switch-profile-swal-content',

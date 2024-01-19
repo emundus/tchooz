@@ -12,6 +12,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
 
 class Com_EmundusInstallerScript
 {
@@ -103,6 +104,8 @@ class Com_EmundusInstallerScript
 
         if ($this->manifest_cache) {
             if (version_compare($cache_version, '2.0.0', '<=') || $firstrun) {
+	            EmundusHelperUpdate::displayMessage('Installation de la version 2.0.0...');
+
 				$disabled = EmundusHelperUpdate::disableEmundusPlugins('webauthn');
 				if($disabled) {
 					EmundusHelperUpdate::displayMessage('Le plugin WebAuthn a été désactivé.', 'success');
@@ -191,6 +194,38 @@ class Com_EmundusInstallerScript
 		if(!$db->execute()) {
 			return false;
 		}
+		
+		// Sync gantry5 logo
+	    if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml')) {
+		    $logo = JPATH_SITE . '/images/logo_custom.png';
+		    $query->clear()
+			    ->select('id,content')
+			    ->from($db->quoteName('#__modules'))
+			    ->where($db->quoteName('module') . ' = ' . $db->quote('mod_custom'))
+			    ->where($db->quoteName('title') . ' LIKE ' . $db->quote('Logo'));
+		    $db->setQuery($query);
+		    $logo_module = $db->loadObject();
+
+		    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+		    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+		    if (preg_match($pattern, $tab[1])) {
+			    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+		    }
+
+		    if (!empty($tab[1])) {
+			    $logo = str_replace('images/', 'gantry-media://', $tab[1]);
+
+			    EmundusHelperUpdate::updateYamlVariable('image', $logo, JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml');
+		    } elseif(file_exists($logo)) {
+			    $logo = str_replace('images/', 'gantry-media://', $tab[1]);
+
+			    EmundusHelperUpdate::updateYamlVariable('image', $logo, JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml');
+		    }
+	    }
 
 	    // Insert new translations in overrides files
 	    EmundusHelperUpdate::languageBaseToFile();

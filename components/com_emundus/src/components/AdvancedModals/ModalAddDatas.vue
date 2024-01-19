@@ -33,7 +33,7 @@
           <label>{{ Description }} :</label>
           <textarea v-model="form.desc" maxlength="150" class="form__input field-general w-input" style="margin: 0"/>
         </div>
-        <div class="col-md-8 flex">
+        <div class="col-md-8 tw-flex">
           <label class="require col-md-3">{{ Values }} :</label>
           <button @click.prevent="add" class="add-option">+</button>
         </div>
@@ -52,7 +52,7 @@
           </div>
         </div>
       </div>
-      <div class="em-flex-row em-flex-space-between mb-1">
+      <div class="em-flex-row em-flex-space-between tw-mb-1">
         <button
             type="button"
             class="bouton-sauvergarder-et-continuer w-retour"

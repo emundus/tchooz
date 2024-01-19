@@ -23,8 +23,8 @@
           contenteditable="true"
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"></span>
 
-    <div class="form-builder-page-sections mt-2">
-      <button v-if="sections.length > 0" id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
+    <div class="form-builder-page-sections tw-mt-2">
+      <button v-if="sections.length > 0" id="add-section" class="em-primary-button tw-px-6 tw-py-3" @click="addSection()">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
       </button>
       <form-builder-page-section
@@ -45,7 +45,7 @@
       >
       </form-builder-page-section>
     </div>
-    <button id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
+    <button id="add-section" class="em-primary-button tw-px-6 tw-py-3" @click="addSection()">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
     </button>
 
