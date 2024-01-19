@@ -10,10 +10,14 @@
 defined('_JEXEC') or die;
 $document = JFactory::getDocument();
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+
 $user = JFactory::getSession()->get('emundusUser');
 if (!$user->just_logged) {
 	return;
 }
+
+$redirect = EmundusHelperMenu::getHomepageLink();
 
 $m_profiles = new EmundusModelProfile;
 $app_prof   = $m_profiles->getApplicantsProfilesArray();

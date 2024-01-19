@@ -14,7 +14,10 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Log\Log;
 
@@ -187,6 +190,37 @@ class EmundusHelperMenu
 		}
 
 		return $menu_lists;
+	}
+
+
+	static function getHomepageLink($default_link = null)
+	{
+		$menu = 'index.php';
+
+		$activeLanguage = Factory::getLanguage()->getTag();
+		$languages = LanguageHelper::getLanguages('lang_code');
+		$sef = '';
+		if (isset($languages[$activeLanguage]))
+		{
+			$sef = $languages[$activeLanguage]->sef;
+		}
+
+		$homepage_itemId = ComponentHelper::getParams('com_emundus')->get('logged_homepage_link', '');
+
+		if(!empty($homepage_itemId)) {
+			$menu = Factory::getApplication()->getMenu()->getItem($homepage_itemId);
+			if(!empty($menu)) {
+				$menu = $menu->alias;
+			}
+		}
+
+		if(!in_array($default_link, ['/','index.php','']) && $default_link !== $menu) {
+			$menu = $default_link;
+		} else {
+			$menu = $sef.'/'.$menu;
+		}
+
+		return $menu;
 	}
 }
 

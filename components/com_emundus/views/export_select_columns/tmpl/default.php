@@ -1,15 +1,17 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-JHTML::_('behavior.modal');
-$document = JFactory::getDocument();
-$document->addStyleSheet("media/com_emundus/css/emundus_export_select_columns.css");
+use Joomla\CMS\Factory;
+
+$app = Factory::getApplication();
+$document = $app->getDocument();
+$document->addStyleSheet('media/com_emundus/css/emundus_export_select_columns.css');
 $eMConfig     = JComponentHelper::getParams('com_emundus');
-$current_user = JFactory::getUser();
-$view         = JFactory::getApplication()->input->get('v', null, 'GET', 'none', 0);
-$comments     = JFactory::getApplication()->input->get('comments', null, 'POST', 'none', 0);
-$itemid       = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
-$session      = JFactory::getSession();
+$current_user = $app->getIdentity();
+$view         = $app->getInput()->get('v', null, 'GET', 'none', 0);
+$comments     = $app->getInput()->get('comments', null, 'POST', 'none', 0);
+$itemid       = $app->getInput()->getInt('Itemid', null);
+$session      = $app->getSession();
 
 $s_elements = $session->get('s_elements');
 $comments   = $session->get('comments');
@@ -159,17 +161,16 @@ else echo JText::_('COM_EMUNDUS_FORM_NO_FORM_DEFINED');                /// corri
 <script>
     function copyid() {
         /* Get the text field */
-        console.log(this);
-        var copyText = document.getElementById("myInput");
+        let copyText = document.getElementById('myInput');
 
         /* Select the text field */
         copyText.select();
 
         /* Copy the text inside the text field */
-        document.execCommand("copy");
+        navigator.clipboard.writeText(copyText.value);
 
         /* Alert the copied text */
-        alert("Copied the text: " + copyText.value);
+        alert('Copied the text: ' + copyText.value);
     }
 
 </script>

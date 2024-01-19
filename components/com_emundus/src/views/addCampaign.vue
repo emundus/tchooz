@@ -101,6 +101,25 @@
             </div>
             <span for="published" class="ml-2">{{ translate('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH') }}</span>
           </div>
+
+          <div class="mb-4 flex items-center">
+            <div class="em-toggle">
+              <input type="checkbox"
+                     true-value="1"
+                     false-value="0"
+                     class="mt-2 em-toggle-check"
+                     id="pinned"
+                     name="pinned"
+                     v-model="form.pinned"
+                     @click="onFormChange()"
+              />
+              <strong class="b em-toggle-switch"></strong>
+              <strong class="b em-toggle-track"></strong>
+            </div>
+            <span for="pinned" class="ml-2 flex items-center">{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}
+              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayPinnedCampaignTip">help_outline</span>
+            </span>
+          </div>
         </div>
 
         <hr/>
@@ -305,6 +324,7 @@ export default {
       profile_id: 9,
       limit: 50,
       limit_status: [],
+      pinned: 0,
     },
     programForm: {
       code: "",
@@ -380,6 +400,21 @@ export default {
     });
   },
   methods: {
+    displayPinnedCampaignTip() {
+      Swal.fire({
+        title: this.translate("COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT"),
+        showCancelButton: false,
+        confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: "em-swal-single-action",
+        },
+      });
+    },
+
     getCampaignById() {
       // Check if we add or edit a campaign
       if (typeof this.campaignId !== 'undefined' && this.campaignId !== '' && this.campaignId > 0) {

@@ -108,7 +108,7 @@
            v-if="menuHighlight !== 0 && menuHighlightProg !== 0">
         <button
             type="button"
-            class="em-primary-button em-w-auto"
+            class="em-primary-button em-w-auto mb-4"
             @click="next">
           {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
         </button>

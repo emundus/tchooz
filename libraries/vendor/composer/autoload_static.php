@@ -3170,6 +3170,7 @@ class ComposerStaticInita11e9fcd1917529c4c799d5c8760ec09
         'phpseclib3\\Crypt\\EC\\Formats\\Keys\\XML' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Keys/XML.php',
         'phpseclib3\\Crypt\\EC\\Formats\\Keys\\libsodium' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Keys/libsodium.php',
         'phpseclib3\\Crypt\\EC\\Formats\\Signature\\ASN1' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Signature/ASN1.php',
+        'phpseclib3\\Crypt\\EC\\Formats\\Signature\\IEEE' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Signature/IEEE.php',
         'phpseclib3\\Crypt\\EC\\Formats\\Signature\\Raw' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Signature/Raw.php',
         'phpseclib3\\Crypt\\EC\\Formats\\Signature\\SSH2' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Formats/Signature/SSH2.php',
         'phpseclib3\\Crypt\\EC\\Parameters' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/Crypt/EC/Parameters.php',

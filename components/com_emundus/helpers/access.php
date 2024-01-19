@@ -170,18 +170,16 @@ class EmundusHelperAccess
 	 */
 	static function asAccessAction($action_id, $crud, $user_id = null, $fnum = null)
 	{
-
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		$m_users = new EmundusModelUsers();
-
 		if (!is_null($fnum) && !empty($fnum)) {
+			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+			$m_users = new EmundusModelUsers();
 			$canAccess = $m_users->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
 			if ($canAccess > 0) {
 				return true;
 			}
 			elseif ($canAccess == 0 || $canAccess === null) {
-				$groups = JFactory::getSession()->get('emundusUser')->emGroups;
-				if (!empty($groups) && count($groups) > 0) {
+				$groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
+				if (!empty($groups)) {
 					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
 				}
 				else {
@@ -193,7 +191,7 @@ class EmundusHelperAccess
 			}
 		}
 		else {
-			return EmundusHelperAccess::canAccessGroup(JFactory::getSession()->get('emundusUser')->emGroups, $action_id, $crud);
+			return EmundusHelperAccess::canAccessGroup(Factory::getApplication()->getSession()->get('emundusUser')->emGroups, $action_id, $crud);
 		}
 	}
 
@@ -211,7 +209,7 @@ class EmundusHelperAccess
 	static function canAccessGroup($gids, $action_id, $crud, $fnum = null)
 	{
 
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		$m_users = new EmundusModelUsers();
 
 		if (!is_null($fnum) && !empty($fnum)) {
@@ -260,8 +258,8 @@ class EmundusHelperAccess
 	 */
 	public static function getUserFabrikGroups($user_id)
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'groups.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/groups.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
 		$m_groups = new EmundusModelGroups();
 		$m_users  = new EmundusModelUsers();
 
@@ -281,8 +279,8 @@ class EmundusHelperAccess
 	 */
 	public static function getUserAllowedAttachmentIDs($user_id)
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
 		$m_files = new EmundusModelFiles();
 		$m_users = new EmundusModelUsers();
 
@@ -302,32 +300,33 @@ class EmundusHelperAccess
 	 */
 	public static function isDataAnonymized($user_id)
 	{
+		$is_data_anonymized = false;
 		JLog::addLogger(['text_file' => 'com_emundus.access.error.php'], JLog::ERROR, 'com_emundus');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		$m_users = new EmundusModelUsers();
 
-		$group_ids = $m_users->getUserGroups($user_id);
+		if (!empty($user_id)) {
+			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+			$m_users = new EmundusModelUsers();
+			$group_ids = $m_users->getUserGroups($user_id);
+			if (!empty($group_ids)) {
+				// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
+				$group_ids = array_keys(array_flip(array_keys($group_ids)));
 
-		if (!empty($group_ids)) {
-			// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
-			$group_ids = array_keys(array_flip(array_keys($group_ids)));
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
+				$query->select($db->quoteName('anonymize'))->from($db->quoteName('#__emundus_setup_groups'))->where($db->quoteName('id') . ' IN (' . implode(',', $group_ids) . ')');
+				$db->setQuery($query);
 
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
-			$query->select($db->quoteName('anonymize'))->from($db->quoteName('#__emundus_setup_groups'))->where($db->quoteName('id') . ' IN (' . implode(',', $group_ids) . ')');
-			$db->setQuery($query);
+				try {
+					$is_data_anonymized = in_array('1', $db->loadColumn());
+				} catch (Exception $e) {
+					JLog::add('Error seeing if user can access non anonymous data. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 
-			try {
-				return in_array('1', $db->loadColumn());
-			}
-			catch (Exception $e) {
-				JLog::add('Error seeing if user can access non anonymous data. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-				return false;
+					$is_data_anonymized = false;
+				}
 			}
 		}
 
-		return false;
+		return $is_data_anonymized;
 	}
 
 	/**
@@ -433,21 +432,24 @@ class EmundusHelperAccess
 		return new JCrypt(new JCryptCipherSimple, $key);
 	}
 
-	public static function buildFormUrl($link,$fnum): string
+	public static function buildFormUrl($link, $fnum): string
 	{
-		parse_str(parse_url($link)['query'], $output);
+		$url_params = [];
+		$parsed_url = parse_url($link);
+		parse_str($parsed_url['query'], $url_params);
 
-		if(!empty($output['formid'])) {
-			$db_table_name = EmundusHelperFabrik::getDbTableName($output['formid']);
-
+		if(!empty($url_params['formid'])) {
+			$db_table_name = EmundusHelperFabrik::getDbTableName($url_params['formid']);
 			$rowid = EmundusHelperAccess::getRowIdByFnum($db_table_name, $fnum);
 
-			if (!empty($fnum)) {
-				$link .= '&fnum=' . $fnum;
-			}
 			if (!empty($rowid)) {
-				$link .= '&rowid=' . $rowid;
+				$url_params['rowid'] = $rowid;
 			}
+			if (!empty($fnum)) {
+				$url_params['fnum'] = $fnum;
+			}
+
+			$link = http_build_url($link, ['query' => http_build_query($url_params)]);
 		}
 
 		return $link;

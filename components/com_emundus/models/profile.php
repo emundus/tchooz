@@ -1185,8 +1185,11 @@ class EmundusModelProfile extends JModelList
 
 		$emundusSession = new stdClass();
 
-		foreach ($session->get('user') as $key => $value) {
-			$emundusSession->{$key} = $value;
+		$user_session = $session->get('user');
+		if (!empty($user_session)) {
+			foreach ($session->get('user') as $key => $value) {
+				$emundusSession->{$key} = $value;
+			}
 		}
 
 		$emundusSession->firstname  = $profile["firstname"];

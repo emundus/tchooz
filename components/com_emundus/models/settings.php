@@ -16,6 +16,7 @@ jimport('joomla.application.component.model');
 
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Symfony\Component\Yaml\Yaml;
 
 class EmundusModelsettings extends JModelList
 {
@@ -863,28 +864,46 @@ class EmundusModelsettings extends JModelList
 		}
 	}
 
-	function onAfterCreateCampaign($user_id)
+	function onAfterCreateCampaign($user_id = null)
 	{
+		$event_runned = false;
+
+		if (empty($user_id)) {
+			if (!empty($this->_user->id)) {
+				$user_id = $this->_user->id;
+			} else {
+				$user = Factory::getApplication()->getIdentity();
+
+				if (!empty($user->id)) {
+					$user_id = $user->id;
+				} else {
+					return false;
+				}
+			}
+		}
+
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
 		$query->select('count(id)')
 			->from($db->quoteName('#__emundus_setup_campaigns'));
-		$db->setQuery($query);
 
 		try {
+			$db->setQuery($query);
+
 			if ($db->loadResult() === '1') {
 				$this->removeParam('first_login', $user_id);
 
-				return $this->createParam('first_form', $user_id);
+				$event_runned = $this->createParam('first_form', $user_id);
+			} else {
+				$event_runned = true;
 			}
-
-			return true;
 		}
 		catch (Exception $e) {
 			JLog::add('component/com_emundus/models/settings | Error at set tutorial param after create a campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-
-			return false;
+			$event_runned =  false;
 		}
+
+		return $event_runned;
 	}
 
 	function onAfterCreateForm($user_id)
@@ -1729,5 +1748,25 @@ class EmundusModelsettings extends JModelList
 		}
 
 		return $updated;
+	}
+
+	public function getFavicon() {
+		$favicon = 'images/custom/default_favicon.ico';
+
+		$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml'));
+
+		if(!empty($yaml)) {
+			$favicon_gantry = $yaml['favicon'];
+
+			if (!empty($favicon_gantry)) {
+				$favicon = str_replace('gantry-media:/', 'images', $favicon_gantry);
+
+				if (!file_exists(JPATH_ROOT . '/' . $favicon)) {
+					$favicon = 'images/custom/default_favicon.ico';
+				}
+			}
+		}
+
+		return $favicon;
 	}
 }

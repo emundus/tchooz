@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * Campaign Controller
@@ -70,7 +71,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 	 */
 	public function addcampaigns()
 	{
-		$tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+		$tab = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$data                      = array();
@@ -91,10 +92,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			}
 
 			if ($result === false) {
-				$tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_AMETYS_ERROR_CANNOT_ADD_CAMPAIGNS'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('COM_EMUNDUS_AMETYS_ERROR_CANNOT_ADD_CAMPAIGNS'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_CAMPAIGNS_ADDED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('COM_EMUNDUS_CAMPAIGNS_ADDED'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -108,7 +109,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 	 */
 	public function getcampaignsbyprogram()
 	{
-		$tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"), 'campaigns' => []);
+		$tab = array('status' => 0, 'msg' => Text::_("ACCESS_DENIED"), 'campaigns' => []);
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 
@@ -129,7 +130,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 	 */
 	public function getcampaignsbyprogramme()
 	{
-		$tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+		$tab = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 
@@ -138,10 +139,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$campaigns = $this->m_campaign->getCampaignsByProgramme($program);
 
 			if (count($campaigns) > 0) {
-				$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns);
+				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns);
+				$tab = array('status' => 0, 'msg' => Text::_('NO_CAMPAIGNS'), 'data' => $campaigns);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -155,7 +156,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 	 */
 	public function getallcampaign()
 	{
-		$tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$tab = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 
@@ -184,29 +185,32 @@ class EmundusControllerCampaign extends JControllerLegacy
 					$end_date      = strtotime($campaign->end_date);
 
 					if ($now < $start_date) {
-						$campaign_time_state_label = JText::_('COM_EMUNDUS_CAMPAIGN_YET_TO_COME');
+						$campaign_time_state_label = Text::_('COM_EMUNDUS_CAMPAIGN_YET_TO_COME');
 						$campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
 					}
 					else if ($now > $end_date) {
-						$campaign_time_state_label = JText::_('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
+						$campaign_time_state_label = Text::_('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
 						$campaign_time_state_class = 'label label-black em-p-5-12 em-font-weight-600';
 					}
 					else {
-						$campaign_time_state_label = JText::_('COM_EMUNDUS_CAMPAIGN_ONGOING');
+						$campaign_time_state_label = Text::_('COM_EMUNDUS_CAMPAIGN_ONGOING');
 						$campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
 					}
 
-					$start_date = date('d/m/Y H\hi', strtotime($campaign->start_date));
-					$end_date   = date('d/m/Y H\hi', strtotime($campaign->end_date));
+					if (!class_exists('EmundusHelperDate')) {
+						require_once JPATH_ROOT . '/components/com_emundus/helpers/date.php';
+					}
+					$start_date = EmundusHelperDate::displayDate($campaign->start_date, 'DATE_FORMAT_LC5');
+					$end_date = EmundusHelperDate::displayDate($campaign->end_date, 'DATE_FORMAT_LC5');
 
 					$state_values = [
 						[
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
-							'value'   => $campaign->published ? JText::_('PUBLISHED') : JText::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
+							'value'   => $campaign->published ? Text::_('PUBLISHED') : Text::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
 							'classes' => $campaign->published ? 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
 						],
 						[
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_TIME_STATE'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_TIME_STATE'),
 							'value'   => $campaign_time_state_label,
 							'classes' => $campaign_time_state_class
 						]
@@ -214,44 +218,44 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 					$campaign->additional_columns = [
 						[
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_START_DATE'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_START_DATE'),
 							'value'   => $start_date,
 							'classes' => '',
 							'display' => 'table'
 						],
 						[
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_END_DATE'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_END_DATE'),
 							'value'   => $end_date,
 							'classes' => '',
 							'display' => 'table'
 						],
 						[
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
 							'type'    => 'tags',
 							'values'  => $state_values,
 							'display' => 'table'
 						],
 						[
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
 							'value'   => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
 							'classes' => 'go-to-campaign-link',
 							'display' => 'table'
 						],
 						[
-							'value'   => JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM') . ' ' . $start_date . ' ' . JText::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO') . ' ' . $end_date,
+							'value'   => Text::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_FROM') . ' ' . $start_date . ' ' . Text::_('COM_EMUNDUS_DASHBOARD_CAMPAIGN_TO') . ' ' . $end_date,
 							'classes' => 'em-font-size-14 em-neutral-700-color',
 							'display' => 'blocs'
 						],
 						[
 							'type'    => 'tags',
-							'key'     => JText::_('COM_EMUNDUS_ONBOARD_STATE'),
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
 							'values'  => [
 								$state_values[0],
 								$state_values[1],
 								[
-									'key'     => JText::_('COM_EMUNDUS_FILES_FILES'),
-									'value'   => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . ' ' . ($campaign->nb_files > 1 ? JText::_('COM_EMUNDUS_FILES_FILES') : JText::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
-									'classes' => 'em-p-5-12 em-font-weight-600  em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius go-to-campaign-link',
+									'key'     => Text::_('COM_EMUNDUS_FILES_FILES'),
+									'value'   => '<a class="em-font-weight-600 em-profile-color em-flex-row" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;font-size:14px;">' . $campaign->nb_files . ' ' . ($campaign->nb_files > 1 ? Text::_('COM_EMUNDUS_FILES_FILES') : Text::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
+									'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-border-radius go-to-campaign-link',
 								]
 							],
 							'classes' => 'em-mt-8 em-mb-8',
@@ -261,10 +265,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 					$campaigns['datas'][$key]     = $campaign;
 				}
 
-				$tab = array('status' => true, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
+				$tab = array('status' => true, 'msg' => Text::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
 			}
 			else {
-				$tab = array('status' => false, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
+				$tab = array('status' => false, 'msg' => Text::_('NO_CAMPAIGNS'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -274,7 +278,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 	public function goToCampaign()
 	{
 		$app      = JFactory::getApplication();
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$campaign_id = $app->input->getInt('campaign_id', 0);
@@ -311,7 +315,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 				$app->redirect('/' . $items->alias);
 			}
 			else {
-				$response['msg'] = JText::_('NO_FILES_VIEW_AVAILABLE');
+				$response['msg'] = Text::_('NO_FILES_VIEW_AVAILABLE');
 			}
 		}
 
@@ -326,7 +330,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 	 */
 	public function deletecampaign()
 	{
-		$tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+		$tab = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 
@@ -334,10 +338,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->deleteCampaign($data, true);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_DELETED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_DELETED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_DELETE_CAMPAIGN'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_DELETE_CAMPAIGN'), 'data' => $result);
 			}
 		}
 
@@ -355,7 +359,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -364,10 +368,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->unpublishCampaign($data);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_UNPUBLISHED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_UNPUBLISHED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UNPUBLISH_CAMPAIGN'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UNPUBLISH_CAMPAIGN'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -384,7 +388,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -393,10 +397,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->publishCampaign($data);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_PUBLISHED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_PUBLISHED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_PUBLISH_CAMPAIGN'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_PUBLISH_CAMPAIGN'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -413,7 +417,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -425,7 +429,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 				$this->getallcampaign();
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_DUPLICAT_CAMPAIGN'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_DUPLICAT_CAMPAIGN'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -444,16 +448,16 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$years = $this->m_campaign->getYears();
 
 			if ($years > 0) {
-				$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $years);
+				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGNS_RETRIEVED'), 'data' => $years);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_CAMPAIGNS'), 'data' => $years);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_CAMPAIGNS'), 'data' => $years);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -470,7 +474,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -480,10 +484,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->createCampaign($data);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_ADDED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_ADDED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_CAMPAIGN'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_ADD_CAMPAIGN'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -497,10 +501,9 @@ class EmundusControllerCampaign extends JControllerLegacy
 	 */
 	public function updatecampaign()
 	{
-		$tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-
 			$data = $this->input->getRaw('body');
 			$cid  = $this->input->getInt('cid');
 
@@ -510,18 +513,18 @@ class EmundusControllerCampaign extends JControllerLegacy
 				$result = $this->m_campaign->updateCampaign($data, $cid);
 
 				if ($result) {
-					$tab = array('status' => true, 'msg' => JText::_('CAMPAIGN_UPDATED'), 'data' => $result);
+					$response = array('status' => true, 'msg' => Text::_('CAMPAIGN_UPDATED'), 'data' => $result);
 				}
 				else {
-					$tab = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_UPDATE_CAMPAIGN'), 'data' => $result);
+					$response['msg'] = Text::_('ERROR_CANNOT_UPDATE_CAMPAIGN');
 				}
 			}
 			else {
-				$tab = array('status' => false, 'msg' => JText::_('MISSING_PARAMETERS'));
+				$response['msg'] = Text::_('MISSING_PARAMETERS');
 			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -535,7 +538,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -544,10 +547,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$campaign = $this->m_campaign->getCampaignDetailsById($id);
 
 			if (!empty($campaign)) {
-				$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $campaign);
+				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_RETRIEVED'), 'data' => $campaign);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_CAMPAIGN'), 'data' => $campaign);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_CAMPAIGN'), 'data' => $campaign);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -564,16 +567,16 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$campaign = $this->m_campaign->getCreatedCampaign();
 
 			if (!empty($campaign)) {
-				$tab = array('status' => 1, 'msg' => JText::_('CREATED_CAMPAIGN_RETRIEVED'), 'data' => $campaign);
+				$tab = array('status' => 1, 'msg' => Text::_('CREATED_CAMPAIGN_RETRIEVED'), 'data' => $campaign);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_CREATED_CAMPAIGN'), 'data' => $campaign);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_CREATED_CAMPAIGN'), 'data' => $campaign);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -594,10 +597,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 		$result = $this->m_campaign->updateProfile($profile, $campaign);
 
 		if ($result) {
-			$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_UPDATED'), 'data' => $result);
+			$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_UPDATED'), 'data' => $result);
 		}
 		else {
-			$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_CAMPAIGN'), 'data' => $result);
+			$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_CAMPAIGN'), 'data' => $result);
 		}
 
 		echo json_encode((object) $tab);
@@ -614,16 +617,16 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$campaigns = $this->m_campaign->getCampaignsToAffect();
 
 			if (!empty($campaigns)) {
-				$tab = array('status' => 1, 'msg' => JText::_('USERS_RETRIEVED'), 'data' => $campaigns);
+				$tab = array('status' => 1, 'msg' => Text::_('USERS_RETRIEVED'), 'data' => $campaigns);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_USERS'), 'data' => $campaigns);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_USERS'), 'data' => $campaigns);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -640,7 +643,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$term = $this->input->getString('term');
@@ -648,10 +651,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$campaigns = $this->m_campaign->getCampaignsToAffectByTerm($term);
 
 			if (!empty($campaigns)) {
-				$tab = array('status' => 1, 'msg' => JText::_('USERS_RETRIEVED'), 'data' => $campaigns);
+				$tab = array('status' => 1, 'msg' => Text::_('USERS_RETRIEVED'), 'data' => $campaigns);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_USERS'), 'data' => $campaigns);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_USERS'), 'data' => $campaigns);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -669,7 +672,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$document = $this->input->getString('document');
@@ -684,10 +687,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->createDocument($document, $types, $cid, $pid);
 
 			if ($result['status']) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_ADDED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_ADDED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_($result['msg']), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_($result['msg']), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -705,7 +708,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$document = $this->input->getString('document');
@@ -718,7 +721,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$did               = $this->input->getInt('did');
 			$pid               = $this->input->getInt('pid');
 
-			$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => '');
+			$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => '');
 
 			if (!empty($document)) {
 				$result = $this->m_campaign->updateDocument($document, $types, $did, $pid, $isModeleAndUpdate);
@@ -726,7 +729,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 				$tab['data'] = $result;
 				if ($result) {
 					$tab['status'] = 1;
-					$tab['msg']    = JText::_('DOCUMENT_UPDATED');
+					$tab['msg']    = Text::_('DOCUMENT_UPDATED');
 				}
 			}
 		}
@@ -739,7 +742,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -750,7 +753,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 			if (!empty($did) && !empty($pid)) {
 				$tab['status'] = $this->m_campaign->updatedDocumentMandatory($did, $pid, $mandatory);
 				if ($tab['status']) {
-					$tab['msg'] = JText::_('DOCUMENT_UPDATED');
+					$tab['msg'] = Text::_('DOCUMENT_UPDATED');
 				}
 			}
 		}
@@ -778,10 +781,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 		$result   = $m_falang->updateFalang($text, $reference_id, 'emundus_setup_attachments', 'value');
 
 		if ($result) {
-			$tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATED'), 'data' => $result);
+			$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_UPDATED'), 'data' => $result);
 		}
 		else {
-			$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => $result);
+			$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => $result);
 		}
 		echo json_encode((object) $tab);
 		exit;
@@ -795,7 +798,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 	 */
 	public function getDocumentFalang()
 	{
-		$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => 0);
+		$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => 0);
 
 
 		$reference_id = $this->input->getInt('docid');
@@ -806,7 +809,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $m_falang->getFalang($reference_id, 'emundus_setup_attachments', 'value');
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATE'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_UPDATE'), 'data' => $result);
 			}
 		}
 
@@ -825,7 +828,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result   = 0;
-			$response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$response = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -851,7 +854,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -860,10 +863,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->deleteDocumentDropfile($did);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_DELETED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_DELETED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_DELETE_DOCUMENT'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_DELETE_DOCUMENT'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -881,7 +884,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -891,10 +894,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->editDocumentDropfile($did, $name);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_EDITED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_EDITED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_EDIT_DOCUMENT'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_EDIT_DOCUMENT'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -912,7 +915,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -921,10 +924,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->updateOrderDropfileDocuments($documents);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_ORDERING'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_ORDERING'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ORDERING_DOCUMENTS'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_ORDERING_DOCUMENTS'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -942,7 +945,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result   = 0;
-			$response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$response = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -967,7 +970,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -978,10 +981,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->editDocumentForm($did, $name, $pid);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_EDITED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_EDITED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_EDIT_DOCUMENT'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_EDIT_DOCUMENT'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -999,7 +1002,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -1009,10 +1012,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->deleteDocumentForm($did, $pid);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_EDITED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_EDITED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_EDIT_DOCUMENT'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_EDIT_DOCUMENT'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -1023,7 +1026,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_('ACCESS_DENIED'));
+			$tab    = array('status' => $result, 'msg' => Text::_('ACCESS_DENIED'));
 		}
 		else {
 
@@ -1032,10 +1035,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->pinCampaign($cid);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_PINNED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_PINNED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_PINNED_CAMPAIGN'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_PINNED_CAMPAIGN'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -1044,7 +1047,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 	public function unpincampaign()
 	{
-		$tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$tab = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -1053,10 +1056,10 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$result = $this->m_campaign->unpinCampaign($cid);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_UNPINNED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_UNPINNED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UNPIN_CAMPAIGN'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UNPIN_CAMPAIGN'), 'data' => $result);
 			}
 		}
 

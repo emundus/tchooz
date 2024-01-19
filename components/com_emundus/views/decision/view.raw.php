@@ -155,8 +155,13 @@ class EmundusViewDecision extends JViewLegacy
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
 
-				// get applications files
-				$this->users = $m_decision->getUsers($cfnum);
+
+				if(!empty($m_decision->fnum_assoc) || !empty($m_decision->code)) {
+					// get applications files
+					$users = $m_decision->getUsers($cfnum);
+				} else {
+					$users = array();
+				}
 
 				// get evaluation form ID
 				$this->formid        = $m_decision->getDecisionFormByProgramme();
@@ -270,12 +275,19 @@ class EmundusViewDecision extends JViewLegacy
 							}
 
 							elseif ($key == 'evaluator') {
-								if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(29, 'r', $this->_user->id)) {
-									$userObj->val = !empty($value) ? '<a href="' . $form_url_view . $user['evaluation_id'] . '"  target="_blank" data-remote="' . $form_url_view . $user['evaluation_id'] . '" id="em_form_eval_' . $i . '-' . $user['evaluation_id'] . '">
+								if(!empty($value)) {
+									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction(29, 'r', $this->_user->id)) {
+										$link_view = '<a href="' . $form_url_view . $user['evaluation_id'] . '"  target="_blank" data-remote="' . $form_url_view . $user['evaluation_id'] . '" id="em_form_eval_' . $i . '-' . $user['evaluation_id'] . '">
 											<span class="glyphicon icon-eye-open" title="' . JText::_('COM_EMUNDUS_DETAILS') . '">  </span>
-										</a>' . $value : '';
-								}
-								else {
+										</a>';
+									}
+
+									if (EmundusHelperAccess::asAccessAction(29, 'u', $this->_user->id)) {
+										$link_edit = '<a href="' . $this->form_url_edit . $user['evaluation_id'] . '" target="_blank"><span class="glyphicon icon-edit" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '"> </span></a>';
+									}
+
+									$userObj->val = $link_view.' '.$link_edit.' '.$value;
+								} else {
 									$userObj->val = $value;
 								}
 

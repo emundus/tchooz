@@ -16,6 +16,8 @@ $layout = $params->get('layout', 'default');
 // Include the syndicate functions only once
 require_once dirname(__FILE__) . '/helper.php';
 include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
+include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
 $app = Factory::getApplication();
 
@@ -25,7 +27,7 @@ $user     = $session->get('emundusUser');
 
 // Here we get the menu which is defined in the params
 $jooomla_menu_name       = $params->get('menu_name', 0);
-$switch_profile_redirect = $params->get('switch_profile_redirect', 'index.php');
+$switch_profile_redirect = EmundusHelperMenu::getHomepageLink($params->get('switch_profile_redirect', 'index.php'));
 
 $primary_color        = $params->get('primary_color', 'ECF0F1');
 $secondary_color      = $params->get('secondary_color', 'F89406');
@@ -122,6 +124,17 @@ $is_anonym_user     = $user->anonym;
 $allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
 if ($is_anonym_user && !$allow_anonym_files) {
 	return;
+}
+
+$m_users = new EmundusModelUsers;
+$profile_details = new stdClass();
+if (!JFactory::getUser()->guest) {
+	if (!empty($user->profile)) {
+		$profile_details = $m_users->getProfileDetails($user->profile);
+	} else {
+		$profile_details->class = '';
+		$profile_details->published = '';
+	}
 }
 
 require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', $layout);

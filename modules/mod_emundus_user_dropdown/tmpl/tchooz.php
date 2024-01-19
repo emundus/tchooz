@@ -20,11 +20,11 @@ if ($user != null) {
 
 // background color of the home page
 	include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
-	$m_profiles   = new EmundusModelProfile();
-	$app_prof     = $m_profiles->getApplicantsProfilesArray();
-    if(!empty($user->profile)) {
-        $user_profile = $m_profiles->getProfileById($user->profile);
-    }
+	$m_profiles = new EmundusModelProfile();
+	$app_prof   = $m_profiles->getApplicantsProfilesArray();
+	if (!empty($user->profile)) {
+		$user_profile = $m_profiles->getProfileById($user->profile);
+	}
 
 	$user = JFactory::getSession()->get('emundusUser');
 
@@ -173,19 +173,17 @@ if ($user != null) {
 
         .em-profile-container p:nth-child(2) {
             overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            /*text-overflow: ellipsis;*/
-            width: 85px;
+            max-width: 140px;
             max-height: 30px;
-
             font-family: var(--em-applicant-font);
             font-size: 12px;
             font-style: normal;
             font-weight: 400;
             line-height: 15px;
             letter-spacing: 0.004em;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
     </style>
 
@@ -195,8 +193,7 @@ if ($user != null) {
     <div class='dropdown' tabindex="0" id="userDropdown"
          style="float: right;">
 		<?php if ($display_svg == 1) : ?>
-            <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg"
-                    alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
+    <div id="background-shapes"></div>
 		<?php endif; ?>
 		<?php if (!empty($profile_picture)): ?>
             <div id="userDropdownLabel">
@@ -216,8 +213,8 @@ if ($user != null) {
                 </div>
             </div>
 		<?php else : ?>
-            <div class="em-flex-row em-flex-end em-profile-container" id="userDropdownLabel" onclick="manageHeight()">
-                <div class="em-flex-row">
+            <div  id="userDropdownLabel" onclick="manageHeight()">
+                <div class="em-flex-row em-flex-end em-profile-container">
                     <div class="mr-4">
 						<?php if (!empty($user)) : ?>
                             <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0] . '.'; ?></p>
@@ -226,8 +223,7 @@ if ($user != null) {
                             <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
 						<?php endif; ?>
                     </div>
-                    <div class="em-user-dropdown-button"
-                         id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
+                    <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
                         <span class="material-icons-outlined em-user-dropdown-icon"
                               alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>">account_circle</span>
                     </div>
@@ -325,131 +321,103 @@ if ($user != null) {
     </div>
 
     <script>
+        // get current profile color and state
+        let profile_color = '<?php echo $profile_details->class; ?>';
+        let profile_state = <?php echo $profile_details->published; ?>;
 
-        // get profile color
-        let url = window.location.origin + '/index.php?option=com_emundus&controller=users&task=getcurrentprofile';
-        fetch(url, {
-            method: 'GET',
-        }).then((response) => {
-            if (response.ok) {
-                return response.json();
-            }
-            throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
-        }).then((result) => {
-            if (result.status) {
+        // if session storage is empty, get profile color and state from server
+        if (profile_color === null || profile_state === null) {
+            getProfileColorAndState();
+        } else {
+            applyColors(profile_color, profile_state);
+        }
 
-                let profile_color = result.data.class;
-                let profile_state = result.data.published;
+        function getProfileColorAndState() {
+            fetch('/index.php?option=com_emundus&controller=users&task=getcurrentprofile', {
+                method: 'GET',
+            }).then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+                }
+            }).then((result) => {
+                if (result.status) {
 
-                let label_colors = {
-                    'lightpurple': '--em-purple-2',
-                    'purple': '--em-purple-2',
-                    'darkpurple': '--em-purple-2',
-                    'lightblue': '--em-light-blue-2',
-                    'blue': '--em-blue-2',
-                    'darkblue': '--em-blue-3',
-                    'lightgreen': '--em-green-2',
-                    'green': '--em-green-2',
-                    'darkgreen': '--em-green-2',
-                    'lightyellow': '--em-yellow-2',
-                    'yellow': '--em-yellow-2',
-                    'darkyellow': '--em-yellow-2',
-                    'lightorange': '--em-orange-2',
-                    'orange': '--em-orange-2',
-                    'darkorange': '--em-orange-2',
-                    'lightred': '--em-red-1',
-                    'red': '--em-red-2',
-                    'darkred': '--em-red-2',
-                    'pink': '--em-pink-2',
-                    'default': '--neutral-600',
-                };
+                    let profile_color = result.data.class;
+                    let profile_state = result.data.published;
 
-                if (profile_state == 1) { // it's an applicant profile
+                    // save profile color and state in local storage
+                    sessionStorage.setItem('profile_color', profile_color);
+                    sessionStorage.setItem('profile_state', profile_state);
+                    applyColors(profile_color, profile_state);
+                }
+            });
+        }
 
-                    let root = document.querySelector(':root');
-                    let css_var = getComputedStyle(root).getPropertyValue("--em-primary-color");
+        function applyColors(profile_color, profile_state) {
+            const label_colors = {
+                'lightpurple': '--em-purple-2',
+                'purple': '--em-purple-2',
+                'darkpurple': '--em-purple-2',
+                'lightblue': '--em-light-blue-2',
+                'blue': '--em-blue-2',
+                'darkblue': '--em-blue-3',
+                'lightgreen': '--em-green-2',
+                'green': '--em-green-2',
+                'darkgreen': '--em-green-2',
+                'lightyellow': '--em-yellow-2',
+                'yellow': '--em-yellow-2',
+                'darkyellow': '--em-yellow-2',
+                'lightorange': '--em-orange-2',
+                'orange': '--em-orange-2',
+                'darkorange': '--em-orange-2',
+                'lightred': '--em-red-1',
+                'red': '--em-red-2',
+                'darkred': '--em-red-2',
+                'pink': '--em-pink-2',
+                'default': '--neutral-600',
+            };
 
-                    document.documentElement.style.setProperty("--em-profile-color", css_var);
+            if (profile_state == 1) { // it's an applicant profile
 
-                    // header background color
-                    let iframeElements_2 = document.querySelectorAll("#background-shapes");
+                let root = document.querySelector(':root');
+                let css_var = getComputedStyle(root).getPropertyValue("--em-primary-color");
 
-                    if (iframeElements_2 !== null) {
-                        iframeElements_2.forEach((iframeElement) => {
-                            let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                            let styleElement = iframeDocument.querySelector("style");
-                            let pathElements = iframeDocument.querySelectorAll("path");
+                updateSvgColors(css_var);
+                                }
+            else  { // it's a coordinator profile
+                if (profile_color != '') {
 
-                            if (styleElement) {
-                                let styleContent = styleElement.textContent;
-                                styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
-                                styleElement.textContent = styleContent;
-                            }
+                    profile_color = profile_color.split('-')[1];
 
-                            if (pathElements) {
-                                pathElements.forEach((pathElement) => {
-                                    let pathStyle = pathElement.getAttribute("style");
-                                    if (pathStyle && pathStyle.includes("fill:grey;")) {
-                                        pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
-                                        pathElement.setAttribute("style", pathStyle);
+                    if (label_colors[profile_color] != undefined) {
+                        let root = document.querySelector(':root');
+                        let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
 
-                                    }
-                                });
-                            }
-                        });
-                    }
-                } else { // it's a coordinator profile
-
-                    if (profile_color != '') {
-
-                        profile_color = profile_color.split('-')[1];
-
-                        if (label_colors[profile_color] != undefined) {
-                            let root = document.querySelector(':root');
-                            let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
-
-                            document.documentElement.style.setProperty("--em-profile-color", css_var);
-
-                            // header background color
-                            let iframeElements_2 = document.querySelectorAll("#background-shapes");
-                            if (iframeElements_2 !== null) {
-                                iframeElements_2.forEach((iframeElement) => {
-                                    let iframeDocument = iframeElement.contentDocument || iframeElement.contentWindow.document;
-                                    let styleElement = iframeDocument.querySelector("style");
-                                    let pathElements = iframeDocument.querySelectorAll("path");
-
-                                    if (styleElement) {
-                                        let styleContent = styleElement.textContent;
-                                        styleContent = styleContent.replace(/fill:#[0-9A-Fa-f]{6};/, "fill:" + css_var + ";");
-                                        styleElement.textContent = styleContent;
-                                    }
-
-                                    if (pathElements) {
-                                        pathElements.forEach((pathElement) => {
-                                            let pathStyle = pathElement.getAttribute("style");
-                                            if (pathStyle && pathStyle.includes("fill:grey;")) {
-                                                pathStyle = pathStyle.replace(/fill:grey;/, "fill:" + css_var + ";");
-                                                pathElement.setAttribute("style", pathStyle);
-
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-
-                        }
+                        updateSvgColors(css_var);
                     }
                 }
             }
-        });
+        }
 
         document.addEventListener('DOMContentLoaded', function () {
-            if (document.getElementById('profile_chzn') != null) {
+            if(document.getElementById('profile_chzn') != null){
                 document.getElementById('profile_chzn').style.display = 'none';
                 document.getElementById('profile').style.display = 'block';
                 document.querySelector('#header-c .g-content').style.alignItems = 'start';
             }
+
+            let elmnt2 = document.getElementById("g-top");
+            if(elmnt2 !== null) {
+                let hauteurTotaleElem = elmnt2.offsetHeight;
+                document.getElementById("g-navigation").style.top = hauteurTotaleElem + 'px';
+            }
         });
+
+        function updateSvgColors(css_var) {
+                        document.documentElement.style.setProperty("--em-profile-color", css_var);
+        }
 
         function displayUserOptions() {
             var dropdown = document.getElementById('userDropdown');
@@ -560,16 +528,13 @@ if ($user != null) {
     </script>
 <?php } else { ?>
 	<?php if ($display_svg == 1) : ?>
-        <iframe id="background-shapes" src="/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg"
-                alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
+        <iframe id="background-shapes" alt="<?= JText::_('COM_EMUNDUS_USERDROPDOWN_IFRAME') ?>"></iframe>
 	<?php endif; ?>
     <div class="header-right" style="text-align: right;">
 		<?php if ($show_registration) { ?>
-            <a class="btn btn-danger" href="<?= $link_register; ?>"
-               data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
+            <a class="btn btn-danger" href="<?= JRoute::_($link_register); ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
 		<?php } ?>
-        <a class="btn btn-danger btn-creer-compte" href="<?= $link_login; ?>"
-           data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
+        <a class="btn btn-danger btn-creer-compte" href="<?= JRoute::_($link_login); ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
     </div>
     <script>
 		<?php if ($guest): ?>

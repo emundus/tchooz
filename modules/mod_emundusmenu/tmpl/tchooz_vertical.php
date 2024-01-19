@@ -84,7 +84,7 @@ defined('_JEXEC') or die;
 
     /*** Sublevel parent ***/
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before {
-        background: var(--neutral-900);
+        background: var(--em-profile-color);
         width: 3px;
         height: 100%;
         content: "";
@@ -111,7 +111,7 @@ defined('_JEXEC') or die;
 
     /*** List style ***/
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li {
-        margin: 6px 10px;
+        margin-inline: 10px;
         font-family: var(--em-default-font);
     }
 
@@ -128,7 +128,7 @@ defined('_JEXEC') or die;
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
         width: 30px;
-        height: fit-content;
+        height: 30px;
     }
 
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container {
@@ -277,17 +277,7 @@ defined('_JEXEC') or die;
 
 		<?php
 
-		$target_dir = "images/custom/";
-		$filename   = 'favicon';
-		$favicon    = glob("{$target_dir}{$filename}.*");
-
-		if (file_exists(JPATH_SITE . '/' . $favicon[0])) {
-			$favicon = JURI::base() . '/' . $favicon[0];
-		}
-		else {
-			$favicon = JURI::base() . '/images/emundus/tchooz_favicon.png';
-		}
-		echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="' . JText::_('MOD_EMUNDUSMENU_HOME') . '" href="' . $favicon_link . '"><img src="' . $favicon . '" alt="' . JText::_('MOD_EMUNDUSMENU_HOME') . '"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="'.JText::_('MOD_EMUNDUSMENU_HOME').'" href="'.$favicon_link.'"><img src="'.JURI::base().'/'.$favicon.'" alt="'.JText::_('MOD_EMUNDUSMENU_HOME').'"></a>
         </li>';
 
 		if ($display_tchooz) :
@@ -527,40 +517,55 @@ defined('_JEXEC') or die;
     const originalMargin = parseInt(document.querySelector("[id^=tooltip-]:first-of-type").style.marginTop, 10);
 
     function enableTooltip(menu) {
-        if (window.getComputedStyle(document.querySelector(".image-title")).getPropertyValue("display") !== "none") {
-            if (document.querySelector("#sublevel_list_" + menu)) {
-                document.querySelector("#tooltip-" + menu).style.marginLeft = "200px";
-                document.querySelector("#tooltip-" + menu).style.display = "block";
-            }
-        } else {
-            document.querySelector("#tooltip-" + menu).style.marginLeft = "0";
-            document.querySelector("#tooltip-" + menu).style.display = "block";
+        let enabled = false;
+        let tooltipMenu = document.querySelector("#tooltip-" + menu);
 
-            //Reposition tooltip if out of viewport or scroll happened
-            var tooltipBox = document.querySelector("#tooltip-" + menu);
-            var tooltipRect = tooltipBox.getBoundingClientRect();
-            const menuBox = document.querySelector("li.g-menu-item-" + menu);
-            const menuRect = menuBox.getBoundingClientRect();
-            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        if (tooltipMenu) {
+            if (window.getComputedStyle(document.querySelector('.image-title')).getPropertyValue('display') !== 'none') {
+                if (document.querySelector('#sublevel_list_' + menu)) {
+                    tooltipMenu.style.marginLeft = '200px';
+                    tooltipMenu.style.display = 'block';
+                }
+            } else {
+                tooltipMenu.style.marginLeft = '0';
+                tooltipMenu.style.display = 'block';
 
-            //reposition after scrolling
-            if (tooltipRect.top - menuRect.top > 10) {
-                document.querySelector("#tooltip-" + menu).style.marginTop = -(tooltipRect.top - menuRect.top - originalMargin) + 'px';
-                //get new position of tooltip
-                tooltipBox = document.querySelector("#tooltip-" + menu);
-                tooltipRect = tooltipBox.getBoundingClientRect();
+                //Reposition tooltip if out of viewport or scroll happened
+                let tooltipRect = tooltipMenu.getBoundingClientRect();
+                const menuBox = document.querySelector('li.g-menu-item-' + menu);
+                const menuRect = menuBox.getBoundingClientRect();
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+                //reposition after scrolling
+                if (tooltipRect.top - menuRect.top > 10) {
+                    tooltipMenu.style.marginTop = -(tooltipRect.top - menuRect.top - originalMargin) + 'px';
+                    // get new position of tooltip
+                    tooltipRect = tooltipMenu.getBoundingClientRect();
+                }
+
+                // reposition out of viewport
+                if (tooltipRect.bottom > viewportHeight) {
+                    tooltipMenu.style.marginTop = -(tooltipRect.bottom - viewportHeight - parseInt(tooltipMenu.style.marginTop, 10)) + 'px';
+                }
             }
 
-            //reposition out of viewport
-            if (tooltipRect.bottom > viewportHeight) {
-                document.querySelector("#tooltip-" + menu).style.marginTop = -(tooltipRect.bottom - viewportHeight - parseInt(document.querySelector("#tooltip-" + menu).style.marginTop, 10)) + 'px';
-            }
+            enabled = true;
         }
+
+        return enabled;
     }
 
     function disableTooltip(menu) {
-        document.querySelector("#tooltip-" + menu).style.display = "none";
-        document.querySelector("#tooltip-" + menu).style.marginTop = originalMargin + "px";
+        let disabled = false;
+
+        let tooltipMenu = document.querySelector('#tooltip-' + menu);
+        if (tooltipMenu) {
+            tooltipMenu.style.display = 'none';
+            tooltipMenu.style.marginTop = originalMargin + 'px';
+            disabled = true;
+        }
+
+        return disabled;
     }
 
     function enableTitles(state) {
@@ -584,13 +589,12 @@ defined('_JEXEC') or die;
                 jQuery("#header-a").css("opacity", "1");
                 jQuery(".logo").css("position", "absolute");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
-
-                let elmnt = document.getElementById("g-top");
-                if (elmnt !== null) {
-                    jQuery(".logo").css("top", "-37px");
-                } else {
-                    jQuery(".logo").css("top", "7px");
-                }
+            }
+            let elmnt = document.getElementById("g-top");
+            if (elmnt !== null) {
+                jQuery(".logo").css("top", "-37px");
+            } else {
+                jQuery(".logo").css("top", "7px");
             }
             setTimeout(() => {
                 document.querySelectorAll(".image-title").forEach(function (elem) {

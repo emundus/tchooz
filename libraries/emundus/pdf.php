@@ -800,7 +800,7 @@ function data_to_img($match) {
  * @return false|string|void
  * @throws Exception
  */
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = [], $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once (JPATH_SITE.'/components/com_emundus/helpers/date.php');
@@ -870,8 +870,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
 		    } else {
 
-			    if (file_exists(JPATH_ROOT . DS . 'images' . DS . 'custom' . DS . $item->training . '.png')) {
-				    $logo = JPATH_ROOT . DS . 'images' . DS . 'custom' . DS . $item->training . '.png';
+			    if (file_exists(JPATH_ROOT . DS . 'images/custom' . DS . $item->training . '.png')) {
+				    $logo = JPATH_ROOT . DS . 'images/custom' . DS . $item->training . '.png';
 			    } else {
 				    $logo_module = JModuleHelper::getModuleById('90');
 				    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
@@ -1233,16 +1233,18 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
  *
  * @throws Exception
  * @since version
+ * @deprecated since version 2.0
  */
 function application_header_pdf($user_id, $fnum = null, $output = true, $options = null) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
 
-    require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
-    require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-    require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+    require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+    require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+    require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 
-    $config = JFactory::getConfig();
+	$app = Factory::getApplication();
+    $config = $app->getConfig();
     $offset = $config->get('offset');
 
     $m_profile = new EmundusModelProfile;
@@ -1250,8 +1252,8 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $m_files = new EmundusModelFiles;
 
     $db = JFactory::getDBO();
-    $app = JFactory::getApplication();
-    $current_user = JFactory::getUser();
+
+    $current_user = $app->getIdentity();
     $user = $m_profile->getEmundusUser($user_id);
     $fnum = empty($fnum) ? $user->fnum : $fnum;
 
@@ -1262,11 +1264,21 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata = '';
 
     // Create PDF object
+	/*if (!class_exists('Fpdi')) {
+		require_once(JPATH_ROOT . '/libraries/emundus/fpdf.php');
+		require_once(JPATH_ROOT . '/libraries/emundus/fpdi.php');
+	}
     $pdf = new Fpdi();
 
-    $pdf->SetCreator(PDF_CREATOR);
-    $pdf->SetAuthor('eMundus');
-    $pdf->SetTitle('Application Form');
+	$pdf->SetCreator(PDF_CREATOR);
+	$pdf->SetAuthor('eMundus');
+	$pdf->SetTitle('Application Form');*/
+
+	// replace fpdi with dompdf
+	$pdf_options = new Options();
+	$pdf_options->set('defaultFont', 'freeserif');
+	$pdf_options->set('isPhpEnabled', true);
+	$dompdf = new Dompdf($pdf_options);
 
     try {
 
@@ -1306,13 +1318,13 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     //get title
     $title = $config->get('sitename');
     if (is_file($logo)) {
-        $pdf->SetHeaderData($logo, 20, $title, PDF_HEADER_STRING);
+        //$pdf->SetHeaderData($logo, 20, $title, PDF_HEADER_STRING);
     }
 
     unset($logo);
     unset($title);
 
-    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    /*$pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
     $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
     $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
@@ -1326,8 +1338,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     // set font
     $pdf->SetFont('freeserif', '', 10);
     $pdf->AddPage();
-    $dimensions = $pdf->getPageDimensions();
-
+    $dimensions = $pdf->getPageDimensions();*/
 
     /*** Applicant   ***/
     $htmldata .=
@@ -1370,8 +1381,8 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 	</style>';
 
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
-        $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
-        $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+        $anonymize_data = EmundusHelperAccess::isDataAnonymized($current_user->id);
+        $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($current_user->id);
         if (!$anonymize_data) {
             if ($allowed_attachments === true || in_array('10', $allowed_attachments)) {
                 $htmldata .= '<div class="card">
@@ -1441,14 +1452,16 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     $htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
 
     if (!empty($htmldata)) {
-        $pdf->startTransaction();
+        /*$pdf->startTransaction();
         $start_y = $pdf->GetY();
         $start_page = $pdf->getPage();
-        $pdf->writeHTMLCell(0, '', '', $start_y, $htmldata, 'B', 1);
-        $htmldata = '';
-    }
+        $pdf->writeHTMLCell(0, '', '', $start_y, $htmldata, 'B', 1);*/
 
-    if (!file_exists(EMUNDUS_PATH_ABS . @$item->user_id)) {
+	    $dompdf->loadHtml($htmldata);
+		$dompdf->render();
+	}
+
+    if (!file_exists(EMUNDUS_PATH_ABS . $item->user_id)) {
         mkdir(EMUNDUS_PATH_ABS . $item->user_id, 0777, true);
         chmod(EMUNDUS_PATH_ABS . $item->user_id, 0777);
     }
@@ -1459,7 +1472,8 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 	    if (!isset($current_user->applicant) || $current_user->applicant != 1) {
             //$output?'FI':'F'
             $name = 'application_header_' . date('Y-m-d_H-i-s') . '.pdf';
-            $pdf->Output(EMUNDUS_PATH_ABS . $item->user_id . DS . $name, 'FI');
+            //$pdf->Output(EMUNDUS_PATH_ABS . $item->user_id . DS . $name, 'FI');
+		    file_put_contents(EMUNDUS_PATH_ABS . $item->user_id . DS . $name, $dompdf->output());
             $attachment = $m_application->getAttachmentByLbl("_application_form");
             $keys = array('user_id', 'attachment_id', 'filename', 'description', 'can_be_deleted', 'can_be_viewed', 'campaign_id', 'fnum');
             $values = array($item->user_id, $attachment['id'], $name, $item->training . ' ' . date('Y-m-d H:i:s'), 0, 0, $campaign_id, $fnum);
@@ -1467,10 +1481,14 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
             $m_application->uploadAttachment($data);
 
         } else {
-            $pdf->Output(EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . '_header.pdf', 'FI');
-        }
+            //$pdf->Output(EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . '_header.pdf', 'FI');
+		    file_put_contents(EMUNDUS_PATH_ABS . $item->user_id . DS . $fnum . '_header.pdf', $dompdf->output());
+
+
+	    }
     } else {
-        $pdf->Output(EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . '_header.pdf', 'F');
+        //$pdf->Output(EMUNDUS_PATH_ABS . @$item->user_id . DS . $fnum . '_header.pdf', 'F');
+	    file_put_contents(EMUNDUS_PATH_ABS . $item->user_id . DS . $fnum . '_header.pdf', $dompdf->output());
     }
 }
 

@@ -460,7 +460,7 @@ div#frame.outline {
       display: flex;
       flex-direction: row;
       justify-content: flex-end;
-      align-items: center;
+      align-items: center !important;
 
       .platform-content {
         margin: 0 0 0 16px;
@@ -3533,6 +3533,9 @@ div#em-appli-block {
 
     .comment-name, .comment-date a {
       color: var(--neutral-900);
+      &:hover, &:active, &:focus {
+        text-decoration: none;
+      }
     }
 
     .list-group-item .ctext {
@@ -3543,7 +3546,7 @@ div#em-appli-block {
       color: var(--night-blue);
     }
 
-    .em-list-status-date {
+    .mic-info.comment-date {
       padding: 10px 0;
     }
 
@@ -3908,6 +3911,15 @@ div#em-appli-block {
     left: 237px;
     pointer-events: none;
     border-bottom-right-radius: 14px;
+    mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: contain;
+    -webkit-mask-size: contain;
   }
 }
 
@@ -3936,6 +3948,11 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   z-index: 1;
 }
 
+/* CHOSEN */
+.chzn-container-multi .chzn-choices li.search-choice .search-choice-close:hover {
+  transition: inherit;
+}
+
 /* VIEW FORM - FORMULAIRE */
 
 .view-form:not(.com_emundus),
@@ -3961,7 +3978,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
     padding: 0;
 
     /* INTRO FORMULAIRE */
-    .emundus-form {
+    &> .emundus-form, .mon-profil .emundus-form, div:not(.view-registration) > .emundus-form {
       margin-top: 0;
       margin-bottom: 64px;
       border-radius: var(--em-form-br-block) !important;
@@ -5193,6 +5210,7 @@ screen and (max-height: 769px) {
 
     .emundus-form {
       margin-top: 0 !important;
+      padding-top: 0;
     }
   }
 

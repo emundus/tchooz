@@ -52,7 +52,7 @@
             </div>
           </div>
           <div class="tab-content em-flex-start">
-            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated">
+            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage">
             </form-builder-elements>
             <form-builder-document-formats
                 v-else-if="leftPanelActiveTab === 'Documents'"
@@ -209,7 +209,7 @@ export default {
         ]
       },
       showInRightPanel: 'hierarchy',
-      createDocumentMandatory: true,
+      createDocumentMandatory: '1',
       lastSave: null,
       leftPanel: {
         tabs: [
@@ -230,7 +230,7 @@ export default {
             icon: 'translate',
             active: false,
             displayed: true,
-            url: '/parametres-globaux'
+            url: '/parametres-globaux?layout=translation&default_menu=2&object=emundus_setup_profiles'
           },
         ],
       },
@@ -246,6 +246,10 @@ export default {
     this.profile_id = data.prid.value;
     this.campaign_id = data.cid.value;
 
+    if (data && data.settingsmenualias && data.settingsmenualias.value) {
+      this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value + '?layout=translation&default_menu=2&object=emundus_setup_profiles';
+    }
+
     if (data && data.mode && data.mode.value) {
       this.mode = data.mode.value;
 
@@ -255,6 +259,10 @@ export default {
         this.form_id = this.profile_id;
         this.profile_id = 0;
       }
+    }
+
+    if (this.profile_id > 0) {
+      this.leftPanel.tabs[2].url += '&data=' + this.profile_id;
     }
 
     this.getFormTitle();

@@ -5,10 +5,10 @@
  * @copyright   Copyright (C) 2015 emundus.fr. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
-
 // No direct access
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -624,6 +624,9 @@ class EmundusModelTranslations extends JModelList
 			$tag = $this->generateNewTag($tag, $reference_table, $reference_id);
 		}
 
+		error_log($tag);
+
+
 		$query = $this->_db->getQuery(true);
 		$user  = JFactory::getUser();
 
@@ -653,13 +656,13 @@ class EmundusModelTranslations extends JModelList
 						->set($this->_db->qn('original_text') . ' = ' . $this->_db->q($override))
 						->set($this->_db->qn('original_md5') . ' = ' . $this->_db->q(md5($override)))
 						->set($this->_db->qn('created_by') . ' = ' . $this->_db->q($user->id))
-						->set($this->_db->qn('created_date') . ' = ' . $this->_db->q(time()));
+						->set($this->_db->qn('created_date') . ' = ' . $this->_db->q(date('Y-m-d H:i:s')));
 				}
 
 				$query->set($this->_db->quoteName('override') . ' = ' . $this->_db->quote($override))
 					->set($this->_db->quoteName('override_md5') . ' = ' . $this->_db->quote(md5($override)))
 					->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user->id))
-					->set($this->_db->quoteName('modified_date') . ' = ' . time())
+					->set($this->_db->quoteName('modified_date') . ' = ' .$this->_db->quote(date('Y-m-d H:i:s')))
 					->set($this->_db->quoteName('location') . ' = ' . $this->_db->quote($location));
 
 				if (!empty($reference_table)) {
@@ -702,6 +705,8 @@ class EmundusModelTranslations extends JModelList
 		}
 			// @codeCoverageIgnoreStart
 		catch (Exception $e) {
+
+			error_log($e->getMessage());
 			JLog::add('Problem when try to update translation ' . $tag . ' into file ' . $location . ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
 
 			return false;
@@ -941,7 +946,7 @@ class EmundusModelTranslations extends JModelList
 	 *
 	 * @since version 1.28.0
 	 */
-	public function getTranslationsFalang($default_lang, $lang_to, $reference_id, $fields, $reference_table, $reference_field = '')
+	public function getTranslationsFalang($default_lang, $lang_to, $reference_id, $fields, $reference_table)
 	{
 		$translations = new stdClass();
 		$fields       = explode(',', $fields);
@@ -966,7 +971,6 @@ class EmundusModelTranslations extends JModelList
 			$translations->{$reference_id} = new stdClass;
 
 			foreach ($fields as $field) {
-				$labels                  = new stdClass();
 				$labels                  = new stdClass;
 				$labels->reference_field = $field;
 				$labels->reference_table = $reference_table;
@@ -984,9 +988,17 @@ class EmundusModelTranslations extends JModelList
 
 				if (empty($labels->default_lang)) {
 					$query->clear()
+						->select('tablepkID')
+						->from($this->_db->quoteName('#__falang_tableinfo'))
+						->where($this->_db->quoteName('joomlatablename') . ' = ' . $this->_db->quote($reference_table));
+
+					$this->_db->setQuery($query);
+					$tablepkID = $this->_db->loadResult();
+
+					$query->clear()
 						->select($field)
 						->from($this->_db->quoteName('#__' . $reference_table))
-						->where($this->_db->quoteName('id') . ' = ' . $reference_id);
+						->where($this->_db->quoteName($tablepkID) . ' = ' . $reference_id);
 					$this->_db->setQuery($query);
 					$labels->default_lang = $this->_db->loadResult();
 				}
@@ -1025,12 +1037,14 @@ class EmundusModelTranslations extends JModelList
 	 *
 	 * @since version
 	 */
-	public function updateFalangTranslation($value, $lang_to, $reference_table, $reference_id, $field)
+	public function updateFalangTranslation($value, $lang_to, $reference_table, $reference_id, $field, $user_id = null)
 	{
 		$updated = false;
 		$query   = $this->_db->getQuery(true);
 
-		$user = JFactory::getUser()->id;
+		if (empty($user_id)) {
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
 
 		try {
 			$query->select('lang_id')
@@ -1039,37 +1053,43 @@ class EmundusModelTranslations extends JModelList
 			$this->_db->setQuery($query);
 			$lang_to_id = $this->_db->loadResult();
 
-			$query->clear()
-				->select('id')
-				->from($this->_db->quoteName('#__falang_content'))
-				->where($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lang_to_id))
-				->where($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id))
-				->where($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table))
-				->where($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($field));
-			$this->_db->setQuery($query);
-			$falang_translation = $this->_db->loadResult();
+			if (!empty($lang_to_id)) {
+				$query->clear()
+					->select('id')
+					->from($this->_db->quoteName('#__falang_content'))
+					->where($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lang_to_id))
+					->where($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id))
+					->where($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table))
+					->where($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($field));
+				$this->_db->setQuery($query);
+				$falang_translation = $this->_db->loadResult();
 
-			if (!empty($falang_translation)) {
-				$query->update($this->_db->quoteName('#__falang_content'))
-					->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($value))
-					->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user))
-					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($falang_translation));
-			}
-			else {
-				$query->insert($this->_db->quoteName('#__falang_content'))
-					->set($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lang_to_id))
-					->set($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id))
-					->set($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table))
-					->set($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($field))
-					->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($value))
-					->set($this->_db->quoteName('original_text') . ' = ' . $this->_db->quote($value))
-					->set($this->_db->quoteName('modified') . ' = ' . $this->_db->quote(date('Y-m-d H:i:s')))
-					->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user))
-					->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote(1));
-			}
+				if (!empty($falang_translation)) {
+					$query->clear()
+						->update($this->_db->quoteName('#__falang_content'))
+						->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($value))
+						->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user_id))
+						->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($falang_translation));
+				}
+				else {
+					$query->clear()
+						->insert($this->_db->quoteName('#__falang_content'))
+						->set($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lang_to_id))
+						->set($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id))
+						->set($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table))
+						->set($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($field))
+						->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($value))
+						->set($this->_db->quoteName('original_text') . ' = ' . $this->_db->quote($value))
+						->set($this->_db->quoteName('modified') . ' = ' . $this->_db->quote(date('Y-m-d H:i:s')))
+						->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user_id))
+						->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote(1));
+				}
 
-			$this->_db->setQuery($query);
-			$updated = $this->_db->execute();
+				$this->_db->setQuery($query);
+				$updated = $this->_db->execute();
+			} else {
+				JLog::add('component/com_emundus/models/translations | Error at getting the language id for ' . $lang_to, JLog::ERROR, 'com_emundus.translations');
+			}
 		}
 		catch (Exception $e) {
 			JLog::add('component/com_emundus/models/translations | Error at updating the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.translations');

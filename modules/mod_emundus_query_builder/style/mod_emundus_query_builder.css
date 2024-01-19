@@ -231,6 +231,10 @@
     font-weight: bold;
 }
 
+.inputFilter select {
+    padding: 8px 10px;
+}
+
 .etiquette {
     width: 100% !important;
     margin: 0 !important;

@@ -965,6 +965,7 @@ class EmundusHelperEvents
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
 		$mApplication = new EmundusModelApplication;
 		$mFiles       = new EmundusModelFiles;
@@ -1191,7 +1192,7 @@ class EmundusHelperEvents
 				$redirect_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $student->fnum;
 			}
 			else {
-				$redirect_url = !empty($params['plugin_options']->get('trigger_confirmpost_redirect_url')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_redirect_url')) : 'index.php';
+				$redirect_url = !empty($params['plugin_options']->get('trigger_confirmpost_redirect_url')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_redirect_url')) : EmundusHelperMenu::getHomepageLink();
 				if ($params['plugin_options']->get('trigger_confirmpost_display_success_msg', 1) == 1) {
 					$app->enqueueMessage($redirect_message, 'success');
 				}
@@ -1202,7 +1203,7 @@ class EmundusHelperEvents
 			if ($params['plugin_options']->get('trigger_confirmpost_display_success_msg', 1) == 1) {
 				$app->enqueueMessage($redirect_message, 'success');
 			}
-			$redirect_url = 'index.php';
+			$redirect_url = EmundusHelperMenu::getHomepageLink();
 		}
 
 		$app->redirect($redirect_url);
@@ -1224,6 +1225,19 @@ class EmundusHelperEvents
 
 				$eMConfig            = JComponentHelper::getParams('com_emundus');
 				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
+
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__emundus_setup_groups_repeat_course'))
+					->where($db->quoteName('course') . ' LIKE ' . $db->quote($code))
+					->where($db->quoteName('parent_id') . ' = ' . $db->quote($all_rights_group_id));
+				$db->setQuery($query);
+				$exists = $db->loadResult();
+
+				if(!empty($exists))
+				{
+					return true;
+				}
 
 				$columns = array('parent_id', 'course');
 				$values  = array($db->quote($all_rights_group_id), $db->quote($code));

@@ -126,6 +126,13 @@ Options +FollowSymlinks
 	RewriteRule .* index.php [L]
 	#
 	## End - Joomla! core SEF Section.
+
+	## Begin Tchooz Hide Backend Url
+	RewriteCond %{HTTP_REFERER} !.*administrator/
+	RewriteCond %{QUERY_STRING} !^X3xAqXmxNkAKd5ckHBqmT$
+	RewriteCond %{QUERY_STRING} !com_securitycheckprocontrolcenter [NC]
+	RewriteRule ^.*administrator/? / [R,L]
+	## End Tchooz Hide Backend Url
 </IfModule>
 
 ## These directives are only enabled if the Apache mod_rewrite module is disabled
