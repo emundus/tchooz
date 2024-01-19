@@ -226,9 +226,9 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             </table>
         </div>
 	<?php else: ?>
-    <div class="text-center mt-6">
-        <h1 class="mb-8 !text-neutral-600"><?= $this->datas ?></h1>
-        <div class="no-result bg-no-repeat w-64 h-64 my-0 mx-auto"></div>
+    <div class="text-center tw-mt-6">
+        <h1 class="tw-mb-8 !tw-text-neutral-600"><?= $this->datas ?></h1>
+        <div class="no-result tw-bg-no-repeat tw-w-64 tw-h-64 tw-my-0 tw-mx-auto"></div>
     </div>
 	<?php endif; ?>
 </div>

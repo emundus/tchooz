@@ -89,7 +89,7 @@ defined('_JEXEC') or die;
         height: 100%;
         content: "";
         position: absolute;
-        left: -20px;
+        left: -18px;
         display: flex;
     }
 
@@ -113,6 +113,7 @@ defined('_JEXEC') or die;
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li {
         margin-inline: 10px;
         font-family: var(--em-default-font);
+        margin: 5px 0.5rem;
     }
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo {
@@ -154,7 +155,6 @@ defined('_JEXEC') or die;
         width: 30px;
         height: 30px;
         padding: 3px !important;
-        color: var(--em-profile-color) !important;
     }
 
     .image-title {

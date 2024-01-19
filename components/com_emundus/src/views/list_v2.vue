@@ -133,7 +133,7 @@
               </td>
               <td class="columns" v-for="column in item.additional_columns" :key="column.key"
                   v-if="column.display === viewType || column.display === 'all'">
-                <div v-if="column.type === 'tags'" class="tw-flex tw-flex-wrap" :class="column.classes">
+                <div v-if="column.type === 'tags'" class="tw-flex tw-items-center tw-flex-wrap" :class="column.classes">
                   <span v-for="tag in column.values" :key="tag.key" class="tw-mr-2 h-max" :class="tag.classes">{{
                       tag.value
                     }}</span>

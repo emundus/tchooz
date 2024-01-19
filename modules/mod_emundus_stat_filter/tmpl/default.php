@@ -5,7 +5,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 <p><?php echo JText::_('SORTABLE_GRAPHS'); ?><p>
 <div>
-    <div class="filter">
+    <div class="filter tw-mb-4">
         <form action="" method="" onsubmit="return false;">
             <div class="inputFilter">
                 <label><?php echo JText::_('PROGRAM'); ?> :</label>

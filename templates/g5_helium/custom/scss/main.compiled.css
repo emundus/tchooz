@@ -4085,9 +4085,15 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-h-10 {
   height: var(--em-spacing-10);
 }
+.tw-h-64 {
+  height: 16rem;
+}
 .tw-h-max {
   height: -moz-max-content;
   height: max-content;
+}
+.tw-w-64 {
+  width: 16rem;
 }
 .tw-w-fit {
   width: -moz-fit-content;
@@ -6279,6 +6285,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
+.tw-bg-no-repeat {
+  background-repeat: no-repeat;
+}
 .tw-p-0 {
   padding: 0px;
 }
@@ -6319,6 +6328,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   font-size: 3.75rem !important;
   line-height: 1 !important;
 }
+.\!tw-text-xs {
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
+}
 .tw-text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -6328,6 +6341,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-font-normal {
   font-weight: 400;
+}
+.\!tw-text-neutral-600 {
+  color: var(--neutral-600) !important;
 }
 .tw-text-neutral-600 {
   color: var(--neutral-600);
@@ -6612,6 +6628,11 @@ div:where(.swal2-container) div:where(.swal2-popup) .swal2-html-container {
                 overflow: visible;
                 margin: var(--em-spacing-5) 0 0 0;
                 padding: 0;
+}
+div:where(.swal2-container) div:where(.swal2-popup) .swal2-content {
+  font-size: 1rem;
+  line-height: 1.5rem;
+                text-align: left !important;
 }
 div:where(.swal2-container) div:where(.swal2-popup) .swal2-actions {
   margin-top: var(--em-spacing-10);

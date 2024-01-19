@@ -267,6 +267,11 @@
                 padding: 0;
             }
 
+            .swal2-content {
+                @apply tw-text-base;
+                text-align: left !important;
+            }
+
             .swal2-actions {
                 @apply tw-mt-10;
                 @apply tw-w-full;
