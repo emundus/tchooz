@@ -119,6 +119,11 @@
 			<option value="">Please select your option</option>
 		</field>
 
+        <field name="see_only_filled_workflows" type="radio" default="0" label="COM_EMUNDUS_SEE_ONLY_FILLED_WORKFLOWS">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
 		<field
 				name="spacer0"
 				type="spacer"
@@ -294,7 +299,6 @@
                key_field="link"
                value_field="label"
 		/>
-
     </fieldset>
     <fieldset label="COM_EMUNDUS_FORM_BUILDER" name="form_builder" description="COM_EMUNDUS_FORM_BUILDER_DESC">
         <field
