@@ -1770,7 +1770,7 @@ $(document).ready(function() {
             case 32 :
                 addLoader();
                 swal_popup_class = 'em-w-auto'
-                swal_actions_class = 'em-actions-none'
+                swal_actions_class = '!tw-hidden'
 
                 html = '<iframe src="'+url+'" style="width:'+$(window).width()*0.8+'px; height:'+$(window).height()*0.8+'px; border:none"></iframe>';
 

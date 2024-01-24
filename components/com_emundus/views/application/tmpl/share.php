@@ -54,7 +54,7 @@
                         </table>
                     </div>
                     <div class="access-table table-right em-container-share-table-right">
-                        <table class="table table-bordered" id="groups-access-table">
+                        <table class="table table-bordered tw-mb-0" id="groups-access-table">
                             <thead>
                             <tr>
 								<?php foreach ($this->access['groups'] as $gid => $groups) :?>

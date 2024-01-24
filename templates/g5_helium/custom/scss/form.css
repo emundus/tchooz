@@ -613,6 +613,7 @@
       background-size: 8px;
       background-repeat: no-repeat;
       @apply tw-pr-4;
+      @apply tw-cursor-pointer;
       &.input-small {
         background-position-x: 92%;
       }
@@ -696,12 +697,16 @@
               }
 
             .fabrikgrid_checkbox {
+              @apply tw-flex;
+              @apply tw-items-center;
               input {
+                @apply tw-cursor-pointer;
                 accent-color: var(--em-form-checkbox-color-checked);
                 transform: scale(var(--em-form-checkbox-scale));
-                margin-left: 0;
+                margin: 0;
               }
               label {
+                @apply tw-cursor-pointer;
                 margin-bottom: 0;
                 span {
                   box-decoration-break: clone;

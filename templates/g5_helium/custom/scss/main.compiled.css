@@ -1403,6 +1403,7 @@ form.fabrikForm select {
       background-size: 8px;
       background-repeat: no-repeat;
       padding-right: var(--em-spacing-4);
+      cursor: pointer;
     }
 form.fabrikForm select.input-small {
         background-position-x: 92%;
@@ -1471,14 +1472,20 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row:las
                 margin-bottom: 0;
                 padding-bottom: 0;
               }
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox {
+  display: flex;
+  align-items: center;
+}
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox input {
+  cursor: pointer;
                 accent-color: var(--em-form-checkbox-color-checked);
                 transform: scale(var(--em-form-checkbox-scale));
-                margin-left: 0;
-              }
+                margin: 0;
+}
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox label {
+  cursor: pointer;
                 margin-bottom: 0;
-              }
+}
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox label span {
                   box-decoration-break: clone;
                   -webkit-box-decoration-break: clone;
@@ -4076,6 +4083,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-grid {
   display: grid;
 }
+.\!tw-hidden {
+  display: none !important;
+}
 .tw-hidden {
   display: none;
 }
@@ -6652,6 +6662,9 @@ div:where(.swal2-container) div:where(.swal2-popup) .swal2-actions button {
     .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover {
         border: none !important;
     }*/
+.swal2-popup {
+        border-radius: calc(var(--em-default-br) * 2) !important;
+    }
 button.swal2-styled.swal2-confirm {
         background: var(--blue-500);
         border-radius: var(--em-coordinator-br);
@@ -7177,6 +7190,7 @@ body {
     background-position: top 120px left 20px, bottom 50px right 20px;
     background-repeat : no-repeat, no-repeat;
     background-size : 25%, 25%;
+    overflow: hidden;
 }
 .login #g-navigation .g-container {
     background : transparent;
