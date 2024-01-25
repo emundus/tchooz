@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
     <p id="trigger" data-toggle="popover" class="mod_emundus_help__popover"><span class="material-icons">help</span></p>
 
     <template data-popover="popover">
-        <div class="popover" style="margin-top:-65px;">
+        <div class="popover help-popover" id="help_popover" style="margin-top:-65px;">
             <div class="popover-inner">
                 <h3 class="popover-title"></h3>
                 <div class="popover-content">
@@ -92,24 +92,24 @@ defined('_JEXEC') or die;
             }
         )
 
-        document.addEventListener("click", function (evt) {
-            let popover = document.getElementById('mod_emundus_help'),
-                targetEl = evt.target; // clicked element
-            do {
-                if (targetEl === popover) {
-                    return;
+        document.addEventListener("click", function (e) {
+            let clickInsideModule = false;
+
+            e.composedPath().forEach((pathElement) => {
+                if (pathElement.id == "help_popover") {
+                    clickInsideModule = true;
                 }
-                // Go up the DOM
-                targetEl = targetEl.parentNode;
-            } while (targetEl);
+            });
 
-            if(targetEl === null) {
-                jQuery('[data-toggle="popover"]').click();
-            }
+            console.log(clickInsideModule)
 
-            if (document.querySelector('#mod_emundus_help .popover') != null) {
-                jQuery('[data-toggle="popover"]').click();
+            if (clickInsideModule) {
+                jQuery('p.mod_emundus_help__popover[data-toggle="popover"]').click();
+            } else {
+                if(document.querySelector('.help-popover') != null) {
+                    jQuery('p.mod_emundus_help__popover[data-toggle="popover"]').click();
+                }
             }
         });
-    })
+    });
 </script>
