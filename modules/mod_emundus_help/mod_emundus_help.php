@@ -15,9 +15,9 @@ $app      = Factory::getApplication();
 $lang_tag = $app->getLanguage()->getTag();
 $document = $app->getDocument();
 $wa       = $document->getWebAssetManager();
-$wa->useScript('core')
-	->useScript('bootstrap.popover');
+$wa->useScript('core');
 $wa->registerAndUseStyle('mod_emundus_help', 'modules/mod_emundus_help/style/mod_emundus_help.css');
+$wa->registerAndUseStyle('popover', 'modules/mod_emundus_help/style/popover.css');
 
 
 // Get release version

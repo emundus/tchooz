@@ -6313,9 +6313,17 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-p-6 {
   padding: var(--em-spacing-6);
 }
+.tw-px-3 {
+  padding-left: var(--em-spacing-3);
+  padding-right: var(--em-spacing-3);
+}
 .tw-px-6 {
   padding-left: var(--em-spacing-6);
   padding-right: var(--em-spacing-6);
+}
+.tw-py-2 {
+  padding-top: var(--em-spacing-2);
+  padding-bottom: var(--em-spacing-2);
 }
 .tw-py-3 {
   padding-top: var(--em-spacing-3);
@@ -6354,6 +6362,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .\!tw-text-neutral-600 {
   color: var(--neutral-600) !important;
+}
+.tw-text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity));
 }
 .tw-text-neutral-600 {
   color: var(--neutral-600);
@@ -7200,8 +7212,7 @@ body {
 }
 /* Pop-up aide */
 .icone-aide-tchoozy {
-    width: 20px;
-    margin-right: 5px;
+    width: 24px;
 }
 /* Page settings */
 .com_emundus.view-settings #g-page-surround {
@@ -7361,4 +7372,7 @@ small {
 .after\:tw-bg-red-800::after {
   content: var(--tw-content);
   background-color: var(--red-800);
+}
+.hover\:tw-bg-neutral-300:hover {
+  background-color: var(--neutral-300);
 }

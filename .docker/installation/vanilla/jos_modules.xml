@@ -660,7 +660,7 @@
     <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-04-24 09:53:04</field>
     <field name="publish_down" value_is_null="true"></field>
-    <field name="published">0</field>
+    <field name="published">1</field>
     <field name="module">mod_emundus_help</field>
     <field name="access">7</field>
     <field name="showtitle">0</field>

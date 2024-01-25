@@ -1,0 +1,121 @@
+body {
+    margin: 400px;
+    font: 11.4285714286px normal Arial, sans-serif;
+}
+@keyframes slide-top {
+    0% {
+        opacity: 0;
+        transform: translateY(-15%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes slide-right {
+    0% {
+        opacity: 0;
+        transform: translateX(15%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes slide-bottom {
+    0% {
+        opacity: 0;
+        transform: translateY(15%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes slide-left {
+    0% {
+        opacity: 0;
+        transform: translateX(-15%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+.popover {
+    border-radius: 8px !important;
+    background: white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+    top: -25px !important;
+}
+.popover-content a:first-child {
+    border-radius: 8px 8px 0 0;
+}
+.popover--top {
+    margin-top: -16px;
+    animation: 0.4s slide-top;
+}
+.popover--top::before, .popover--top::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -8px;
+    border: 8px solid transparent;
+    border-top-color: white;
+}
+.popover--top::before {
+    margin-top: 1px;
+    border-top-color: #6a6a6a;
+}
+.popover--right {
+    margin-left: 16px;
+    animation: 0.4s slide-right;
+}
+.popover--right::before, .popover--right::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -8px;
+    border: 8px solid transparent;
+    border-right-color: white;
+}
+.popover--right::before {
+    margin-right: 1px;
+    border-right-color: #6a6a6a;
+}
+.popover--bottom {
+    margin-top: 16px;
+    animation: 0.4s slide-bottom;
+}
+.popover--bottom::before, .popover--bottom::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -8px;
+    border: 8px solid transparent;
+    border-bottom-color: white;
+}
+.popover--bottom::before {
+    margin-bottom: 1px;
+    border-bottom-color: #6a6a6a;
+}
+.popover--left {
+    margin-left: -16px;
+    animation: 0.4s slide-left;
+}
+.popover--left::before, .popover--left::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    margin-top: -8px;
+    border: 8px solid transparent;
+    border-left-color: white;
+}
+.popover--left::before {
+    margin-left: 1px;
+    border-left-color: #6a6a6a;
+}
