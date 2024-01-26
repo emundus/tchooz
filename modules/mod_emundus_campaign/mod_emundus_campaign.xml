@@ -136,7 +136,7 @@
 
                 <field
                         name="mod_em_campaign_intro"
-                        type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                        type="editor" filter="safehtml" hide="readmore,pagebreak"
                         default=""
                         label="MOD_EM_CAMPAIGN_INTRO"
                         description="MOD_EM_CAMPAIGN_INTRO_DESC"/>

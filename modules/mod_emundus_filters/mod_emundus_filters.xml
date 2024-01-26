@@ -134,6 +134,7 @@
                            key_field="id"
                            value_field="label_concat"
                            multiple="true"
+                           class="advancedSelect"
                     />
                 </fieldset>
             </fieldset>

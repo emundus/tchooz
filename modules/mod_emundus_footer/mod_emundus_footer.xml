@@ -55,14 +55,14 @@
                 </field>
                 <field
                         name="mod_emundus_footer_texte_col_1"
-                        type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                        type="editor" filter="safehtml" hide="readmore,pagebreak"
                         default=""
                         label="MOD_EM_FOOTER_COL_1"
                         description="MOD_EM_FOOTER_COL_1">
                 </field>
                 <field
                         name="mod_emundus_footer_texte_col_2"
-                        type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+                        type="editor" filter="safehtml" hide="readmore,pagebreak"
                         default=""
                         label="MOD_EM_FOOTER_COL_2"
                         description="MOD_EM_FOOTER_COL_2">

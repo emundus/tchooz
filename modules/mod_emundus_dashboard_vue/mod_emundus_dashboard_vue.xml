@@ -45,7 +45,8 @@
                        label="Profil"
                        description="Profils eMundus ayant accès à ce dashboard"
                        key_field="id"
-                       value_field="label">
+                       value_field="label"
+                       class="advancedSelect">
                 </field>
 
                 <field name="filter_programmes" type="radio" default="0" label="Filtrer par programme"

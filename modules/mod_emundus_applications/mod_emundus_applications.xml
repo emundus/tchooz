@@ -156,6 +156,7 @@
                        value_field="label"
                        multiple="true"
                        default="0"
+                       class="advancedSelect"
                 />
 
                 <field name="selected_campaigns_exclusion"
@@ -381,6 +382,7 @@
                                 type="sql"
                                 query="SELECT step, value FROM #__emundus_setup_status"
                                 multiple="true"
+                                class="advancedSelect"
                                 default=''
                                 key_field="step"
                                 value_field="value"
