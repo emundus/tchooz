@@ -9,10 +9,6 @@
   </table_structure>
   <table_data name="#__modules_menu">
    <row>
-    <field name="moduleid">1</field>
-    <field name="menuid">0</field>
-   </row>
-   <row>
     <field name="moduleid">2</field>
     <field name="menuid">0</field>
    </row>
@@ -42,14 +38,6 @@
    </row>
    <row>
     <field name="moduleid">15</field>
-    <field name="menuid">0</field>
-   </row>
-   <row>
-    <field name="moduleid">16</field>
-    <field name="menuid">0</field>
-   </row>
-   <row>
-    <field name="moduleid">17</field>
     <field name="menuid">0</field>
    </row>
    <row>
@@ -233,6 +221,10 @@
     <field name="menuid">285</field>
    </row>
    <row>
+    <field name="moduleid">123</field>
+    <field name="menuid">370</field>
+   </row>
+   <row>
     <field name="moduleid">124</field>
     <field name="menuid">273</field>
    </row>
@@ -291,42 +283,6 @@
    <row>
     <field name="moduleid">130</field>
     <field name="menuid">141</field>
-   </row>
-   <row>
-    <field name="moduleid">131</field>
-    <field name="menuid">0</field>
-   </row>
-   <row>
-    <field name="moduleid">132</field>
-    <field name="menuid">0</field>
-   </row>
-   <row>
-    <field name="moduleid">133</field>
-    <field name="menuid">0</field>
-   </row>
-   <row>
-    <field name="moduleid">134</field>
-    <field name="menuid">0</field>
-   </row>
-   <row>
-    <field name="moduleid">135</field>
-    <field name="menuid">0</field>
-   </row>
-   <row>
-    <field name="moduleid">136</field>
-    <field name="menuid">0</field>
-   </row>
-   <row>
-    <field name="moduleid">137</field>
-    <field name="menuid">0</field>
-   </row>
-   <row>
-    <field name="moduleid">138</field>
-    <field name="menuid">0</field>
-   </row>
-   <row>
-    <field name="moduleid">139</field>
-    <field name="menuid">0</field>
    </row>
   </table_data>
  </database>
