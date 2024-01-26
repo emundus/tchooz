@@ -413,7 +413,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 .dropdown #background-shapes {
     mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
     -webkit-mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
-    height: 72px;
+    height: 67px;
     background: var(--em-profile-color);
     position: absolute;
     width: 300px;

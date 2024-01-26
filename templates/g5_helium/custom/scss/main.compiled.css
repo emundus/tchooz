@@ -6733,6 +6733,7 @@ button.swal2-cancel.goback-btn:hover,
   padding: var(--em-spacing-5);
   font-size: 1.125rem;
   line-height: 1.75rem;
+  margin-bottom: 0px;
 }
 #system-message .alert .material-icons, .fabrikMainError .material-icons {
   margin-right: var(--em-spacing-3);

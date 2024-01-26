@@ -23,7 +23,7 @@ $msgList = $displayData['msgList'];
 ?>
 <div id="system-message-container">
 	<?php if (is_array($msgList) && !empty($msgList)) : ?>
-        <div id="system-message">
+        <div id="system-message" class="tw-mt-4">
 			<?php foreach ($msgList as $type => $msgs) : ?>
 				<?php
 				switch ($type) {

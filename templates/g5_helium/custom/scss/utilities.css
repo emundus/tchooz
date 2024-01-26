@@ -384,6 +384,7 @@
         @apply tw-flex;
         @apply tw-p-5;
         @apply tw-text-lg;
+        @apply tw-mb-0;
 
         .material-icons {
             @apply tw-mr-3;
