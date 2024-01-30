@@ -2093,26 +2093,22 @@ div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
 .view-featured .mod_emundus_campaign__list_content--default {
   position: relative;
   overflow: hidden;
+  margin: 0 0 20px;
 
   #background-shapes {
     position: absolute;
     z-index: 2;
-    width: 24%;
-    height: 58%;
-    top: 0;
+    width: 33%;
+    height: 170%;
+    top: -142px;
     right: 0;
     pointer-events: none;
     mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
-    -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-clair.svg');
     background: var(--em-profile-color);
     mask-repeat: no-repeat;
-    -webkit-mask-repeat: no-repeat;
     mask-position: center;
-    -webkit-mask-position: center;
-    mask-size: 300px;
-    -webkit-mask-size: 300px;
+    mask-size: 413px;
     mask-origin: border-box;
-    -webkit-mask-origin: border-box;
   }
 }
 
