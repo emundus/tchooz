@@ -97,7 +97,7 @@ body {
 }
 
 /* Connexion */
-.login > #g-page-surround {
+.view-login .login > #g-page-surround {
     background-image: var(--display-digital-testing), var(--display-candidate-button);
     background-position: top 120px left 20px, bottom 50px right 20px;
     background-repeat : no-repeat, no-repeat;
