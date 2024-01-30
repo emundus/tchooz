@@ -90,7 +90,7 @@ else {
 				<?php if ($this->displayForgotten) : ?>
                     <div class="control-group tw-float-right">
                         <div class="control-label">
-                            <a class="tw-underline" href="<?php echo JRoute::_($this->forgottenLink); ?>">
+                            <a class="em-text-underline" href="<?php echo JRoute::_($this->forgottenLink); ?>">
 								<?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
                             </a>
                         </div>

@@ -237,7 +237,7 @@ class EmundusControllerCampaign extends JControllerLegacy
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
-							'value'   => '<a target="_blank" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
+							'value'   => '<a target="_blank" class="em-profile-color em-text-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
 							'classes' => 'go-to-campaign-link',
 							'display' => 'table'
 						],
@@ -254,8 +254,8 @@ class EmundusControllerCampaign extends JControllerLegacy
 								$state_values[1],
 								[
 									'key'     => Text::_('COM_EMUNDUS_FILES_FILES'),
-									'value'   => '<a class="em-font-weight-600 em-profile-color tw-flex tw-items-center" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;font-size:14px;">' . $campaign->nb_files . ' ' . ($campaign->nb_files > 1 ? Text::_('COM_EMUNDUS_FILES_FILES') : Text::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
-									'classes' => 'go-to-campaign-link em-font-weight-600 em-profile-color tw-flex tw-items-center',
+									'value'   => '<a class="go-to-campaign-link em-font-weight-600 em-profile-color em-flex-row em-text-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;font-size:14px;">' . $campaign->nb_files . ' ' . ($campaign->nb_files > 1 ? Text::_('COM_EMUNDUS_FILES_FILES') : Text::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
+									'classes' => 'py-1',
 								]
 							],
 							'classes' => 'em-mt-8 em-mb-8',

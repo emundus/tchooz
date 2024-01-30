@@ -491,7 +491,7 @@
     .alert a:hover {
         font-weight: normal;
         text-decoration: underline;
-        color: var(--blue-500);
+        color: inherit;
     }
 
     .has-error .help-block,
