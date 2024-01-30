@@ -49,7 +49,28 @@ class EmundusModelExport extends JModelList
 		$eMConfig             = JComponentHelper::getParams('com_emundus');
 		$gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
 		$gotenberg_url        = $eMConfig->get('gotenberg_url', 'http://localhost:3000');
-		$gotenberg_ssl        = (bool) $eMConfig->get('gotenberg_ssl', 1);
+
+		$client = null;
+		$config = JFactory::getConfig();
+		$proxy_enable = $config->get('proxy_enable', 0);
+
+		// If proxy enabled we have to define a guzzle client with proxy
+		if($proxy_enable == 1) {
+			$proxy_host = $config->get('proxy_host', '');
+			$proxy_port = $config->get('proxy_port', '');
+			$proxies = [
+				'http'  => 'http://'.$proxy_host.':'.$proxy_port,
+				'https' => 'http://'.$proxy_host.':'.$proxy_port
+			];
+
+			$client = new Client([
+				RequestOptions::PROXY => $proxies,
+				RequestOptions::VERIFY => false, # disable SSL certificate validation
+				RequestOptions::TIMEOUT => 30, # timeout of 30 seconds
+			]);
+		}
+
+
 
 		$res = new stdClass();
 
@@ -82,13 +103,12 @@ class EmundusModelExport extends JModelList
 							Stream::path($file_src)
 						);
 
-					Gotenberg::save($request, $dest_path . '/');
-				}
-				else {
+					Gotenberg::save($request, $dest_path .'/', $client);
+				} else {
 					$request = Gotenberg::chromium($gotenberg_url)
 						->html(Stream::string('my.html', $src));
 
-					Gotenberg::save($request, $dest_path . '/');
+					Gotenberg::save($request, $dest_path .'/', $client);
 				}
 				$res->file = $dest_path . '/' . $dest_file . '.pdf';
 			}
