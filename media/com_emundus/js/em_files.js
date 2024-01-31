@@ -4489,7 +4489,7 @@ $(document).ready(function() {
                                 }
                                 tags += '</select></div>';
                                 $('#data').append(tags);
-                                $('.modal-chzn-select').chosen({width:'100%'});
+                                $('.modal-chzn-select').chosen({width:'100%', search_contains: true});
                                 $("#em-action-export-tag").hide();
 
                                 $('#change-status input[name=export-status]').on('change', function(){
@@ -4883,7 +4883,7 @@ $(document).ready(function() {
             runAction(id);
         }
 
-        $('.modal-chzn-select').chosen({width:'100%'});
+        $('.modal-chzn-select').chosen({width:'100%', search_contains: true});
 
         /***
          * On Category change
