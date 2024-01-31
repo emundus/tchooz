@@ -15,6 +15,7 @@
    <field Field="payment_shipping_methods" Type="text" Null="NO" Key="" Extra="" />
    <field Field="payment_currency" Type="varchar(255)" Null="NO" Key="" Extra="" />
    <field Field="payment_price" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="payment_alias" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
    <key Table="#__hikashop_payment" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="payment_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
  </database>

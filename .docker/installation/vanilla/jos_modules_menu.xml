@@ -284,6 +284,42 @@
     <field name="moduleid">130</field>
     <field name="menuid">141</field>
    </row>
+   <row>
+    <field name="moduleid">140</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">141</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">142</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">143</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">144</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">145</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">146</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">147</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">148</field>
+    <field name="menuid">0</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

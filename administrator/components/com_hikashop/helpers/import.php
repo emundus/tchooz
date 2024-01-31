@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -452,8 +452,7 @@ class hikashopImportHelper extends stdClass
 		$quoted = false;
 		$dataPointer=0;
 		$data = array('');
-
-		while($data!==false && isset($this->importLines[$this->i]) && (count($data) < $this->numberColumns||$quoted)){
+		while($data!==false && isset($this->importLines[$this->i]) && (count($data) < $this->numberColumns || $quoted || $this->numberColumns==1)){
 			$k = 0;
 			$total = strlen($this->importLines[$this->i]);
 			while($k < $total){
@@ -1496,17 +1495,17 @@ class hikashopImportHelper extends stdClass
 				$product->variant_links = $this->template->variant_links;
 			}
 			if(!empty($product->variant_links)){
-				$ids[] = (int)$product->product_id;
+				if(!$this->keep_other_variants || $product->product_type == 'main') {
+					$ids[] = (int)$product->product_id;
+				}
 				foreach($product->variant_links as $link){
 					$value = array((int)$link,(int)$product->product_id);
 					$values[] = implode(',',$value);
 					$totalValid++;
 					if( $totalValid%$this->perBatch == 0){
 						if(!empty($ids)){
-							if(!$this->keep_other_variants) {
-								$this->db->setQuery('DELETE FROM '.hikashop_table('variant').' WHERE variant_product_id IN ('.implode(',',$ids).')');
-								$this->db->execute();
-							}
+							$this->db->setQuery('DELETE FROM '.hikashop_table('variant').' WHERE variant_product_id IN ('.implode(',',$ids).')');
+							$this->db->execute();
 							$ids=array();
 						}
 						$this->db->setQuery($insert.implode('),(',$values).')');
@@ -1518,7 +1517,7 @@ class hikashopImportHelper extends stdClass
 			}
 		}
 		if(!empty($values)){
-			if(!empty($ids) && !$this->keep_other_variants){
+			if(!empty($ids)){
 				$this->db->setQuery('DELETE FROM '.hikashop_table('variant').' WHERE variant_product_id IN ('.implode(',',$ids).')');
 				$this->db->execute();
 			}

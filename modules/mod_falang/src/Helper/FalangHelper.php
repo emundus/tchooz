@@ -21,6 +21,7 @@ use Joomla\CMS\Router\SiteRouter;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Menus\Administrator\Helper\MenusHelper;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Table\Table;
 
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -82,7 +83,6 @@ class FalangHelper
             else {
             // Load component associations
                 $class = str_replace('com_', '', $option) . 'HelperAssociation';
-//                JLoader::registerAlias($class, 'Joomla\Component\\' . $namespace_class . '\Site\Helper\AssociationHelper');
                 \JLoader::register($class, JPATH_SITE . '/components/' . $option . '/helpers/association.php');
             if (class_exists($class) && is_callable(array($class, 'getAssociations')))
             {
@@ -364,7 +364,6 @@ class FalangHelper
                             }
                         }
 
-
                         $url = 'index.php?'.URI::buildQuery($vars);
                         $language->link = Route::_($url);
 
@@ -398,21 +397,19 @@ class FalangHelper
                         {
                             $fManager = \FalangManager::getInstance();
                             $id_lang = $fManager->getLanguageID($language->lang_code);
-                            $db = Factory::getDbo();
-                            // get translated path if exist
-                            $query = $db->getQuery(true);
-                            $query->select('fc.value')
-                                ->from('#__falang_content fc')
-                                ->where('fc.reference_id = '.(int)$vars['Itemid'])
-                                ->where('fc.language_id = '.(int) $id_lang )
-                                ->where('fc.reference_field = \'path\'')
-                                ->where('fc.published = 1')
-                                ->where('fc.reference_table = \'menu\'');
-                            $db->setQuery($query);
-                            $translatedPath = $db->loadResult();
+
+                            //get translated path form existing falang menu item translation
+                            $translatedPath = FaLangHelper::getTranslatedPathFromMenuItem($vars['Itemid'],$id_lang);
+
+                            //not exist simulate the build like when we create it on backend
+                            //always return a value
+                            if (empty($translatedPath)){
+                                $translatedPath = FaLangHelper::getMenuPath('',$vars['Itemid'],$id_lang);
+                            }
 
                             // $translatedPath not exist if not translated or site default language
                             // don't pass id to the query , so no translation given by falang
+                            $db = Factory::getDbo();
                             $query = $db->getQuery(true);
                             $query->select('m.path')
                                 ->from('#__menu m')
@@ -422,33 +419,13 @@ class FalangHelper
 
                             $pathInUse = null;
                             //si on est sur une page traduite on doit récupérer la traduction du path en cours
-                            if ($default_lang != $lang->getTag() ) {
-                                $id_lang = $fManager->getLanguageID($lang->getTag());
-                                // get translated path if exist
-                                $query = $db->getQuery(true);
-                                $query->select('fc.value')
-                                    ->from('#__falang_content fc')
-                                    ->where('fc.reference_id = '.(int)$vars['Itemid'])
-                                    ->where('fc.language_id = '.(int) $id_lang )
-                                    ->where('fc.reference_field = \'path\'')
-                                    ->where('fc.published = 1')
-                                    ->where('fc.reference_table = \'menu\'');
-                                $db->setQuery($query);
-                                $pathInUse = $db->loadResult();
-
-                            }
-
-                            if (!isset($translatedPath)) {
-                                $translatedPath = $originalPath;
-                            }
-
-                            // not exist if not translated or site default language
-                            if (!isset($pathInUse)) {
-                                $pathInUse = $originalPath ;
+                            $id_lang = $fManager->getLanguageID($lang->getTag());
+                            $pathInUse = FaLangHelper::getTranslatedPathFromMenuItem($vars['Itemid'],$id_lang);
+                            if (empty($pathInUse)){
+                                $pathInUse = FaLangHelper::getMenuPath('',$vars['Itemid'],$id_lang);
                             }
 
                             //make replacement in the url
-
                             //si language de boucle et language site
                             if($language->lang_code == $default_lang) {
                                 if (isset($pathInUse) && isset($originalPath)){
@@ -698,5 +675,74 @@ class FalangHelper
 
         return $name;
 
+    }
+
+    public static function getTranslatedPathFromMenuItem($ItemID,$idLang){
+        $db = Factory::getDbo();
+        // get translated path if exist
+        $query = $db->getQuery(true);
+        $query->select('fc.value')
+            ->from('#__falang_content fc')
+            ->where('fc.reference_id = '.$ItemID)
+            ->where('fc.language_id = '.(int) $idLang )
+            ->where('fc.reference_field = \'path\'')
+            ->where('fc.published = 1')
+            ->where('fc.reference_table = \'menu\'');
+        $db->setQuery($query);
+        $result = $db->loadResult();
+        return $result;
+    }
+
+    //copy from administrator/components/com_falang/models/ContentObject.php
+    public static function getMenuPath($alias,$reference_id,$lang_id)
+    {
+
+        $table = Table::getInstance("Menu");
+        // TODO get this from the translation!
+
+        $table->load($reference_id);
+        // Get the path from the node to the root (translated)
+        $db     = Factory::getDBO();
+        $query  = $db->getQuery(true);
+        $select = 'p.*, jfc.value as jfcvalue';
+        $query->select($select);
+        $query->from('#__menu AS n, #__menu AS p');
+        $query->join('left', "#__falang_content as jfc ON jfc.reference_table='menu' AND jfc.reference_id=p.id AND jfc.language_id='$lang_id' and jfc.reference_field='alias' ");
+        $query->where('n.lft BETWEEN p.lft AND p.rgt');
+        $query->where('n.id = ' . (int) $reference_id);
+        $query->where('p.client_id = 0');
+        $query->order('p.lft');
+
+        $db->setQuery($query);
+        $sql       = (string) $db->getQuery();
+        $pathNodes = $db->loadObjectList('', 'stdClass', false);
+
+        $segments = array();
+        foreach ($pathNodes as $node)
+        {
+            // Don't include root in path
+            if ($node->alias != 'root')
+            {
+                //we don't use the alias stored for this translation only the alias posted.
+                if (isset($node->jfcvalue) && ($node->id != $reference_id))
+                {
+                    $segments[] = $node->jfcvalue;
+                }
+                else
+                {
+                    //use the alias value from post directly and not the node alias if not empty
+                    if (($node->id == $reference_id) && !empty($alias))
+                    {
+                        $segments[] = $alias;
+                    }
+                    else
+                    {
+                        $segments[] = $node->alias;
+                    }
+                }
+            }
+        }
+        $newPath = trim(implode('/', $segments), ' /\\');
+        return $newPath;
     }
 }

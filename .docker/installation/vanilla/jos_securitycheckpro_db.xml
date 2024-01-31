@@ -363,6 +363,66 @@
     <field name="solution_type">update</field>
     <field name="solution">8.0.5</field>
    </row>
+   <row>
+    <field name="id">24</field>
+    <field name="Product">com_jlexreview</field>
+    <field name="vuln_type">component</field>
+    <field name="Vulnerableversion">6.0.1</field>
+    <field name="modvulnversion">&lt;=</field>
+    <field name="Joomlaversion">4.0.0</field>
+    <field name="modvulnjoomla">&gt;=</field>
+    <field name="description">JLex Review Component</field>
+    <field name="vuln_class">Cross Site Scripting vulnerability</field>
+    <field name="published">Nov 17 2023</field>
+    <field name="vulnerable">Version 6.0.1 and maybe lower</field>
+    <field name="solution_type">none</field>
+    <field name="solution">No details</field>
+   </row>
+   <row>
+    <field name="id">25</field>
+    <field name="Product">com_jlexguestbook</field>
+    <field name="vuln_type">component</field>
+    <field name="Vulnerableversion">1.6.4</field>
+    <field name="modvulnversion">&lt;=</field>
+    <field name="Joomlaversion">4.0.0</field>
+    <field name="modvulnjoomla">&gt;=</field>
+    <field name="description">JLex GuestBook Component</field>
+    <field name="vuln_class">Cross Site Scripting vulnerability</field>
+    <field name="published">Nov 17 2023</field>
+    <field name="vulnerable">Version 1.6.4 and maybe lower</field>
+    <field name="solution_type">none</field>
+    <field name="solution">No details</field>
+   </row>
+   <row>
+    <field name="id">26</field>
+    <field name="Product">Joomla!</field>
+    <field name="vuln_type">core</field>
+    <field name="Vulnerableversion">4.4.0</field>
+    <field name="modvulnversion">&lt;=</field>
+    <field name="Joomlaversion">4.0.0</field>
+    <field name="modvulnjoomla">&gt;=</field>
+    <field name="description">Joomla! core</field>
+    <field name="vuln_class">One high vulnerability</field>
+    <field name="published">Nov 30 2023</field>
+    <field name="vulnerable">Joomla 1.6.0 to 4.4.0</field>
+    <field name="solution_type">update</field>
+    <field name="solution">4.4.1</field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="Product">Joomla!</field>
+    <field name="vuln_type">core</field>
+    <field name="Vulnerableversion">5.0.0</field>
+    <field name="modvulnversion">&lt;=</field>
+    <field name="Joomlaversion">5.0.0</field>
+    <field name="modvulnjoomla">&gt;=</field>
+    <field name="description">Joomla! core</field>
+    <field name="vuln_class">One high vulnerability</field>
+    <field name="published">Nov 30 2023</field>
+    <field name="vulnerable">Joomla 5.0.0</field>
+    <field name="solution_type">update</field>
+    <field name="solution">5.0.1</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

@@ -12,6 +12,7 @@ use Joomla\CMS\Session\Session;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
 
 Session::checkToken('get') or die('Invalid Token');
 
@@ -19,30 +20,12 @@ Session::checkToken('get') or die('Invalid Token');
 $lang2 = Factory::getLanguage();
 $lang2->load('plg_system_securitycheckpro');
 
-$type_array = array(HTMLHelper::_('select.option', 'Component', JText::_('COM_SECURITYCHECKPRO_TITLE_COMPONENT')),
-            HTMLHelper::_('select.option', 'Plugin', JText::_('COM_SECURITYCHECKPRO_TITLE_PLUGIN')),
-            HTMLHelper::_('select.option', 'Module', JText::_('COM_SECURITYCHECKPRO_TITLE_MODULE')));
+$type_array = array(HTMLHelper::_('select.option', 'Component', Text::_('COM_SECURITYCHECKPRO_TITLE_COMPONENT')),
+            HTMLHelper::_('select.option', 'Plugin', Text::_('COM_SECURITYCHECKPRO_TITLE_PLUGIN')),
+            HTMLHelper::_('select.option', 'Module', Text::_('COM_SECURITYCHECKPRO_TITLE_MODULE')));
             
-$vulnerable_array = array(HTMLHelper::_('select.option', 'Si', JText::_('COM_SECURITYCHECKPRO_HEADING_VULNERABLE')),
-            HTMLHelper::_('select.option', 'No', JText::_('COM_SECURITYCHECKPRO_GREEN_COLOR')));
-
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
-
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-
-?>
-
-
-<?php 
-// Cargamos el contenido común
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
+$vulnerable_array = array(HTMLHelper::_('select.option', 'Si', Text::_('COM_SECURITYCHECKPRO_HEADING_VULNERABLE')),
+            HTMLHelper::_('select.option', 'No', Text::_('COM_SECURITYCHECKPRO_GREEN_COLOR')));
 ?>
 
 
@@ -62,7 +45,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
 						// Construimos la cabecera de la versión de Joomla para la que se muestran vulnerabilidades según la versión instalada
 						$joomla_version_header = "<i class=\"fa fa-fw icon-joomla\"> " . $local_joomla_branch[0] ."</i>";       
 					?>
-                    <span class="badge background-FFADF5 padding-10-10-10-10 float-right"><?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABILITY_LIST'); echo $joomla_version_header; ?></span>
+                    <span class="badge background-FFADF5 padding-10-10-10-10 float-right"><?php echo Text::_('COM_SECURITYCHECKPRO_VULNERABILITY_LIST'); echo $joomla_version_header; ?></span>
                 </div>
                 <div class="card-body">                        
                         <div class="table-responsive">
@@ -70,22 +53,22 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
                                 <thead>
                                     <tr>
                                         <th width="5" class="vulnerabilities-list text-center">
-            <?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABILITY_PRODUCT'); ?>
+            <?php echo Text::_('COM_SECURITYCHECKPRO_VULNERABILITY_PRODUCT'); ?>
                                         </th>
                                         <th class="vulnerabilities-list text-center">
-            <?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABILITY_DETAILS'); ?>
+            <?php echo Text::_('COM_SECURITYCHECKPRO_VULNERABILITY_DETAILS'); ?>
                                         </th>
                                         <th class="vulnerabilities-list text-center">
-            <?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABILITY_CLASS'); ?>
+            <?php echo Text::_('COM_SECURITYCHECKPRO_VULNERABILITY_CLASS'); ?>
                                         </th>
                                         <th class="vulnerabilities-list text-center">
-            <?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABILITY_PUBLISHED'); ?>
+            <?php echo Text::_('COM_SECURITYCHECKPRO_VULNERABILITY_PUBLISHED'); ?>
                                         </th>
                                         <th class="vulnerabilities-list text-center">
-            <?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABILITY_VULNERABLE'); ?>
+            <?php echo Text::_('COM_SECURITYCHECKPRO_VULNERABILITY_VULNERABLE'); ?>
                                         </th>
                                         <th class="vulnerabilities-list text-center">
-            <?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABILITY_SOLUTION'); ?>
+            <?php echo Text::_('COM_SECURITYCHECKPRO_VULNERABILITY_SOLUTION'); ?>
                                         </th>
                                     </tr>
                                 </thead>
@@ -127,9 +110,9 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
                                         <?php 
                                         $solution_type = $row['solution_type'];            
                                         if ($solution_type == 'update' ) {
-                                            echo JText::_('COM_SECURITYCHECKPRO_SOLUTION_TYPE_' . $row['solution_type']) . ' ' . $row['solution'];
+                                            echo Text::_('COM_SECURITYCHECKPRO_SOLUTION_TYPE_' . $row['solution_type']) . ' ' . $row['solution'];
                                         }else if ($solution_type == 'none' ) {
-                                            echo JText::_('COM_SECURITYCHECKPRO_SOLUTION_TYPE_NONE');
+                                            echo Text::_('COM_SECURITYCHECKPRO_SOLUTION_TYPE_NONE');
                                         }
                                             
                                         ?>
@@ -144,7 +127,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
                         </div>    
                         
                         <div class="alert alert-success centrado">
-        <?php echo JText::_('COM_SECURITYCHECKPRO_VULNERABILITY_EXPLAIN_1'); ?>    
+        <?php echo Text::_('COM_SECURITYCHECKPRO_VULNERABILITY_EXPLAIN_1'); ?>    
                         </div>
 
         <?php

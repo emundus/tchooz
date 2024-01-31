@@ -17,25 +17,8 @@ use Joomla\CMS\Layout\LayoutHelper;
 $lang2 = Factory::getLanguage();
 $lang2->load('plg_system_securitycheckpro');
             
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
-
-// Add style declaration
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-?>
-
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 ?>
 
 
@@ -65,31 +48,31 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
                     <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
                         <thead>
 							<tr>
-                                <th class="logs text-center">
+                                <th class="center">
 									<?php echo HTMLHelper::_('grid.sort', 'Ip', 'ip', $listDirn, $listOrder); ?>                
                                 </th>                                        
-                                <th class="logs text-center">
+                                <th class="center">
 									<?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_TIME', 'time', $listDirn, $listOrder); ?>                
                                 </th>
-								<th class="logs text-center">
+								<th class="center">
 									<?php echo Text::_('COM_SECURITYCHECKPRO_USER'); ?>
                                 </th>
-                                <th class="logs text-center">
+                                <th class="center">
 									<?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_DESCRIPTION', 'description', $listDirn, $listOrder); ?>            
                                 </th>
-                                <th class="logs text-center width-35">
+                                <th class="center width-35">
 									<?php echo Text::_('COM_SECURITYCHECKPRO_LOG_URI'); ?>
                                 </th>
-                                <th class="logs text-center">
+                                <th class="center">
 									<?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_TYPE_COMPONENT', 'component', $listDirn, $listOrder); ?>                
                                 </th>
-                                <th class="logs text-center">
+                                <th class="center">
 									<?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_TYPE', 'type', $listDirn, $listOrder); ?>                    
                                 </th>
-                                <th class="logs text-center">
+                                <th class="center">
 									<?php echo HTMLHelper::_('grid.sort', 'COM_SECURITYCHECKPRO_LOG_READ', 'marked', $listDirn, $listOrder); ?>                
                                 </th>
-                                <th class="logs text-center">
+                                <th class="center">
                                     <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
                                 </th>                                        
                             </tr>

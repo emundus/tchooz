@@ -14,8 +14,9 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\Router\Route;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
-
 
 /**
  * Main Admin View
@@ -31,6 +32,11 @@ class HtmlView extends BaseHtmlView {
     function display($tpl = null) {
 		  
 		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_CONTROL_PANEL_TEXT'), 'securitycheckpro');
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common')		 
+		  ->useScript('com_securitycheckpro.Fileintegrity');
 		
 		// Obtenemos los datos del modelo
        	$model               = $this->getModel();
@@ -97,6 +103,21 @@ class HtmlView extends BaseHtmlView {
             ToolBarHelper::custom('mark_checked_files_as_safe', 'flag', 'flag', 'COM_SECURITYCHECKPRO_FILEINTEGRITY_MARK_CHECKED_FILES_AS_SAFE');
             ToolBarHelper::custom('export_logs_integrity', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_EXPORT_INFO_CSV', false);
         }
+		
+		// Also comes common data from SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\DisplayController
+		
+		// Pass parameters to the cpanel.js script using Joomla's script options API
+		$this->document->addScriptOptions('securitycheckpro.Fileintegrity.activetaskText', addslashes(Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ACTIVE_TASK')));
+		$this->document->addScriptOptions('securitycheckpro.Fileintegrity.taskfailureText', addslashes(Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_TASK_FAILURE')));
+		$this->document->addScriptOptions('securitycheckpro.Fileintegrity.repairviewlogheader', '<div class="alert alert-info" role="alert">' . addslashes(Text::_('COM_SECURITYCHECKPRO_REPAIR_VIEW_LOG_HEADER')) . '</div>');
+		$this->document->addScriptOptions('securitycheckpro.Fileintegrity.processcompletedText', addslashes(Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_PROCESS_COMPLETED')));		
+		$this->document->addScriptOptions('securitycheckpro.Fileintegrity.end', '<span class="badge bg-success">' . addslashes(Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ENDED')) . '</span>');
+		$this->document->addScriptOptions('securitycheckpro.Fileintegrity.inprogress', '<span class="badge bg-info">' . addslashes(Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_IN_PROGRESS')) . '</span>');
+		$this->document->addScriptOptions('securitycheckpro.Fileintegrity.error', '<span class="badge bg-danger">' . addslashes(Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR')) . '</span>');
+		$this->document->addScriptOptions('securitycheckpro.Fileintegrity.updatingstats', addslashes(Text::_('COM_SECURITYCHECKPRO_UPDATING_STATS')) . '<br/><br/><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
+		$this->document->addScriptOptions('securitycheckpro.Fileintegrity.urltoredirect', Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. Session::getFormToken() .'=1', false));
+		$this->document->addScriptOptions('securitycheckpro.Fileintegrity.failureText', addslashes(Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_FAILURE')));
+		$this->document->addScriptOptions('securitycheckpro.Fileintegrity.errorbutton', '<button class="btn btn-primary" type="button" onclick="window.location.reload();">' . addslashes(Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_REFRESH_BUTTON')) . '</button>');		
 
         parent::display($tpl); 
     }

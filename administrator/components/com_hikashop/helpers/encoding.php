@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -28,12 +28,58 @@ class hikashopEncodingHelper{
 			return @mb_convert_encoding($data, $output, $input);
 		}
 		if ($input == 'ISO-8859-1' && $output == 'UTF-8'){
-			return utf8_encode($data);
+			return $this->utf8_encode($data);
 		}
 		if ($input == 'UTF-8' && $output == 'ISO-8859-1'){
-			return utf8_decode($data);
+			return $this->utf8_decode($data);
 		}
 		return $data;
+	}
+	function utf8_encode(string $s): string {
+		if(function_exists('utf8_encode'))
+			return utf8_encode($s);
+		$s .= $s;
+		$len = \strlen($s);
+
+		for ($i = $len >> 1, $j = 0; $i < $len; ++$i, ++$j) {
+			switch (true) {
+				case $s[$i] < "\x80": $s[$j] = $s[$i]; break;
+				case $s[$i] < "\xC0": $s[$j] = "\xC2"; $s[++$j] = $s[$i]; break;
+				default: $s[$j] = "\xC3"; $s[++$j] = \chr(\ord($s[$i]) - 64); break;
+			}
+		}
+
+		return substr($s, 0, $j);
+	}
+
+	function utf8_decode(string $string): string {
+		if(function_exists('utf8_decode'))
+			return utf8_decode($s);
+		$s = (string) $string;
+		$len = \strlen($s);
+
+		for ($i = 0, $j = 0; $i < $len; ++$i, ++$j) {
+			switch ($s[$i] & "\xF0") {
+				case "\xC0":
+				case "\xD0":
+					$c = (\ord($s[$i] & "\x1F") << 6) | \ord($s[++$i] & "\x3F");
+					$s[$j] = $c < 256 ? \chr($c) : '?';
+					break;
+
+				case "\xF0":
+					++$i;
+
+				case "\xE0":
+					$s[$j] = '?';
+					$i += 2;
+					break;
+
+				default:
+					$s[$j] = $s[$i];
+			}
+		}
+
+		return substr($s, 0, $j);
 	}
 
 	function detectEncoding(&$content){

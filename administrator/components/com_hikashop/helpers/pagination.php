@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -234,19 +234,21 @@ class hikashopBridgePaginationHelper extends JPagination {
 			$current_url = preg_replace('#limit'.$this->hikaSuffix.'(=|-)[0-9]+#','limit'.$this->hikaSuffix.'${1}'.$this->limit, $current_url);
 		}
 
-		if($ret_start && $ret_limit)
-			return $current_url;
-		elseif($ret_start && !$ret_limit) {
-			if(strpos($current_url, '&limit='.$this->limit)) {
+		if(!hikashop_isClient('administrator')) {
+			if($ret_start && $ret_limit)
 				return $current_url;
+			elseif($ret_start && !$ret_limit) {
+				if(strpos($current_url, '&limit='.$this->limit)) {
+					return $current_url;
+				}
+				return $current_url . '&limit='.$this->limit;
 			}
-			return $current_url . '&limit='.$this->limit;
 		}
 
 		$sep = '?';
 		if(strpos($current_url, '?'))
 			$sep = '&';
-		$return_url = $current_url.$sep.'limitstart'.$this->hikaSuffix.'='.$start;
+		$return_url = rtrim($current_url, $sep).$sep.'limitstart'.$this->hikaSuffix.'='.$start;
 		if(strpos($return_url, '&limit='.$this->limit)) {
 			return $return_url;
 		}

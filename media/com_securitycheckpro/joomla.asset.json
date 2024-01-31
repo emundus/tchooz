@@ -1,0 +1,284 @@
+{
+	"$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+	"name": "com_securitycheckpro",
+	"version": "4.1",
+	"description": "Securitycheck Pro",
+	"license": "GPL-3.0-or-later",
+	"assets": [
+		{
+			"name": "com_securitycheckpro.cpanelui",
+			"description": "Common user interface CSS",
+			"type": "style",
+			"uri": "com_securitycheckpro/cpanelui.css"
+		},
+		{
+			"name": "com_securitycheckpro.sweetalert",
+			"description": "Sweetalert CSS",
+			"type": "style",
+			"uri": "com_securitycheckpro/sweetalert.css"
+		},
+		{
+			"name": "com_securitycheckpro.circle",
+			"description": "Circle CSS",
+			"type": "style",
+			"uri": "com_securitycheckpro/circle.css"
+		},
+		{
+			"name": "com_securitycheckpro.sweetalert",
+			"description": "Sweetalert JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/sweetalert.min.js",
+			"dependencies": [
+				"core"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.chart",
+			"description": "Chart JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Chart.min.js",
+			"dependencies": [
+				"core"				
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.common",
+			"description": "Common JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Common.js",
+			"dependencies": [
+				"core",
+				"jquery"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Cpanel",
+			"description": "Cpanel JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Cpanel.js",
+			"dependencies": [
+				"core",
+				"jquery",
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Controlcenter",
+			"description": "ControlCenter JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Controlcenter.js",
+			"dependencies": [
+				"core",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Cron",
+			"description": "Cron JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Cron.js",
+			"dependencies": [
+				"core",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Dbcheck",
+			"description": "Dbcheck JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Dbcheck.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Filemanager",
+			"description": "Filemanager JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Filemanager.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Fileintegrity",
+			"description": "Fileintegrity JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Fileintegrity.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Malwarescan",
+			"description": "Malwarescan JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Malwarescan.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Onlinechecks",
+			"description": "Onlinechecks JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Onlinechecks.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Protection",
+			"description": "Protection JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Protection.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Rules",
+			"description": "Rules JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Rules.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Ruleslog",
+			"description": "Ruleslog JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Ruleslog.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Securitycheckpros",
+			"description": "Securitycheckpros JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Securitycheckpros.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Sysinfo",
+			"description": "Sysinfo JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Sysinfo.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Upload",
+			"description": "Upload JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Upload.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		{
+			"name": "com_securitycheckpro.Firewallconfig",
+			"description": "Firewallconfig JavaScript",
+			"type": "script",
+			"uri": "com_securitycheckpro/Firewallconfig.js",
+			"dependencies": [
+				"core",
+				"jquery",				
+				"com_securitycheckpro.common"
+			],
+			"attributes": {
+				"defer": true
+			}
+		},
+		
+		{
+			"name": "com_securitycheckpro.common",
+			"type": "preset",
+			"dependencies": [
+				"com_securitycheckpro.cpanelui#style",
+				"com_securitycheckpro.sweetalert#style",
+				
+				"com_securitycheckpro.common#script",
+				"com_securitycheckpro.sweetalert#script"
+			]
+		}
+	]
+}

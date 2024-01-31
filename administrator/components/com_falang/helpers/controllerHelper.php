@@ -9,44 +9,60 @@
 // No direct access to this file
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use Joomla\CMS\Plugin\PluginHelper;
 
 class  FalangControllerHelper  {
 
-	/**
-	 * Sets up ContentElement Cache - mainly used for data to determine primary key id for tablenames ( and for
-	 * future use to allow tables to be dropped from translation even if contentelements are installed )
-	 */
-	static function _setupContentElementCache()
-	{
-		$db = Factory::getDBO();
-		// Make usre table exists otherwise create it.
-		$db->setQuery( "CREATE TABLE IF NOT EXISTS `#__falang_tableinfo` ( `id` int(11) NOT NULL auto_increment, `joomlatablename` varchar(100) NOT NULL default '',  `tablepkID`  varchar(100) NOT NULL default '', PRIMARY KEY (`id`)) ENGINE=MyISAM");
-		$db->execute();
-		// clear out existing data
-		$db->setQuery( "DELETE FROM `#__falang_tableinfo`");
-		$db->execute();
-		$falangManager = FalangManager::getInstance();
-		$contentElements = $falangManager->getContentElements(true);
-		$sql = "INSERT INTO `#__falang_tableinfo` (joomlatablename,tablepkID) VALUES ";
-		$firstTime = true;
-		foreach ($contentElements as $key => $jfElement){
-			$tablename = $jfElement->getTableName();
-			$refId = $jfElement->getReferenceID();
-			$sql .= $firstTime?"":",";
-			$sql .= " ('".$tablename."', '".$refId."')";
-			$firstTime = false;
-		}
+    /**
+     * Sets up ContentElement Cache - mainly used for data to determine primary key id for tablenames ( and for
+     * future use to allow tables to be dropped from translation even if contentelements are installed )
+     *
+     * update 5.3 improve performance (don't delete/create element each time)
+     */
+    static function _setupContentElementCache()
+    {
+        $db = Factory::getDBO();
+        //get installed content elements in database
+        $query = $db->getQuery(true);
+        $query->select('*')->from('#__falang_tableinfo');
+        $db->setQuery($query);
+        $elements = $db->loadObjectList('joomlatablename');
 
-		$db->setQuery( $sql);
-		$db->execute();
+        $falangManager = FalangManager::getInstance();
+        $contentElements = $falangManager->getContentElements(true);
 
-	}
+        //update database with installed content elements
+        $sql = "INSERT INTO `#__falang_tableinfo` (joomlatablename,tablepkID) VALUES ";
+        $newCE = false;//new content element to add
+        foreach ($contentElements as $key => $jfElement){
+            if (array_key_exists($key,$elements)){continue;}
+            $tablename = $jfElement->getTableName();
+            $refId = $jfElement->getReferenceID();
+            $sql .= $newCE?",":"";
+            $sql .= " ('".$tablename."', '".$refId."')";
+            $newCE = true;
+        }
 
+        //only launch update query if something to add
+        if ($newCE){
+            $db->setQuery( $sql);
+            $db->execute();
+        }
+
+        //remove element from db who don't have content element
+        foreach ($elements as $element){
+            $search = $element->joomlatablename;
+            if (!array_key_exists($search,$contentElements)){
+                $query = $db->getQuery(true);
+                $query->delete($db->quoteName('#__falang_tableinfo'));
+                $query->where( $db->quoteName('joomlatablename') . ' = ' . $db->quote($search));
+                $db->setQuery($query);
+                $db->execute();
+            }
+        }
+    }
 
 	public static function _checkDBCacheStructure (){
 

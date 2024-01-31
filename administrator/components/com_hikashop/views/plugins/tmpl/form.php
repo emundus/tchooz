@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,7 +24,9 @@ if(!empty($this->plugin->pluginView)) {
 	$plugin_published = $type . '_published';
 	$plugin_images = $type . '_images';
 	$plugin_name = $type . '_name';
+	$plugin_alias = $type . '_alias';
 	$plugin_name_input = $plugin_name . '_input';
+	$plugin_alias_input = $plugin_alias . '_input';
 ?>
 <div id="page-plugins" class="hk-row-fluid hikashop_backend_tile_edition">
 	<div class="hkc-md-6">
@@ -34,6 +36,7 @@ if(!empty($this->plugin->pluginView)) {
 			?></div>
 <?php
 	$this->$plugin_name_input = 'data['.$type.']['.$plugin_name.']';
+	$this->$plugin_alias_input = 'data['.$type.']['.$plugin_alias.']';
 	if($this->translation) {
 		$this->setLayout('translation');
 	} else {

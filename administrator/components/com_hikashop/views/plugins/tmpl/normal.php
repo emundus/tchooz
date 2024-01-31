@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,6 +11,8 @@ defined('_JEXEC') or die('Restricted access');
 $type = $this->plugin_type;
 $upType = strtoupper($type);
 $plugin_name = $type.'_name';
+$plugin_alias = $type.'_alias';
+$plugin_alias_input =$plugin_alias.'_input';
 $plugin_published = $type.'_published';
 $plugin_name_input =$plugin_name.'_input';
 $plugin_description = $type.'_description';
@@ -31,6 +33,14 @@ $plugin_description_id = $plugin_description.'_id';
 ?>
 			<span id="<?php echo $publishedid; ?>" class="spanloading"><?php echo $this->toggle->toggle($publishedid,(int) $this->$plugin_name_published,'translation') ?></span>
 <?php } ?>
+		</td>
+	</tr>
+	<tr>
+		<td class="key"><label for="hikashop_plugin_alias_field"><?php
+			echo JText::_( 'HIKA_ALIAS' );
+		?></label></td>
+		<td>
+			<input id="hikashop_plugin_alias_field" type="text" name="<?php echo $this->$plugin_alias_input; ?>" value="<?php echo $this->escape(@$this->element->$plugin_alias); ?>" />
 		</td>
 	</tr>
 	<tr>

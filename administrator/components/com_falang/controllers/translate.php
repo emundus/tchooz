@@ -111,6 +111,7 @@ class TranslateController extends AdminController   {
 	 * presenting the translation dialog
 	 *
      * @update 5.0
+     * @update 5.3 setup on translation page the supported content Element (hiksahop fix not use element page)
 	 */
 	function showTranslate() {
 
@@ -125,9 +126,9 @@ class TranslateController extends AdminController   {
 		}
 
         if ($task == 'translate.show'){
-            //TODO : check if the next method is still necessary
-            //FalangControllerHelper::_setupContentElementCache();
+            FalangControllerHelper::_setupContentElementCache();
             $this->showTranslationOverview( $this->_select_language_id, $this->_catid );
+
         } else {
             //translate.save
             $this->setRedirect(

@@ -471,7 +471,7 @@ class Securitycheckpro extends CMSPlugin
                 foreach($xss_forbidden_words_array as $word) {
                     if ((is_string($string)) && (!empty($word))) {
                         if (substr_count(strtolower($string), strtolower($word))) {
-                            $string_sanitized = preg_replace($word, "", $string);
+                            $string_sanitized = str_replace($word, "", $string);
                             $this->grabar_log($logs_attacks, $ip, 'TAGS_STRIPPED', '[' .$methods_options .':' .$a .']', 'XSS', $request_uri, $string, $username, $pageoption);
                             $modified = true;                                                    
                             /* Hemos de cortar la conexión, independientemente de lo que tengamos configurado en el parámetro "redirect_after_attack". Esto es necesario porque algunos ataques XSS llegan a producirse, aunque sean detectados, al haber una redirección */
@@ -949,6 +949,10 @@ class Securitycheckpro extends CMSPlugin
 		// Creamos el nuevo objeto query
         $db = Factory::getDBO();
         $query = $db->getQuery(true);
+		
+		if (empty($this->pro_plugin)) {
+			$this->pro_plugin = new BaseModel();
+		}
         
         $dynamic_blacklist = $this->pro_plugin->getValue('dynamic_blacklist', 1, 'pro_plugin');
         
@@ -1358,9 +1362,10 @@ class Securitycheckpro extends CMSPlugin
                     }
                                         
                     $modified = false;
-                        
-                    $option = $this->get_component();
-
+                    
+					$entradas = Factory::getApplication()->input;
+					$option = $entradas->get('option','com_notfound');
+                   
                     $req = $this->cleanQuery($attack_ip, $req, $methods_options, $a, $request_uri, $modified, $check_base_64, $logs_attacks, $option);
 					                    
                     if ($modified) {
@@ -1431,7 +1436,6 @@ class Securitycheckpro extends CMSPlugin
         
             try 
             {
-                // Invocamos la clase JMail
                 $mailer = Factory::getMailer();
                 // Emisor
                 $mailer->setSender($from);
@@ -1946,7 +1950,7 @@ class Securitycheckpro extends CMSPlugin
     }
 	   
         
-    function onAfterInitialise()
+    function onAfterRoute()
     {
 		$plugin_enabled = false;
         $tables_locked = false;
@@ -1975,15 +1979,39 @@ class Securitycheckpro extends CMSPlugin
         
         // Is the plugin enabled?
         if ($plugin_enabled) {	
+		
+			/* Chequeamos los archivos subidos al servidor usando cabeceras HTTP y método POST. Los archivos son arrays con el siguiente formato:
+			[integer] error = 0
+			[string] name = "k.txt"
+			[integer] size = 4674
+			[string] tmp_name = "/tmp/phpkhm2Jz"
+			[string] type = "text/plain"
+			*/
+			
+			$this->pro_plugin = new BaseModel();
+			
+			// Extraemos la configuración del escaner de subidas
+			$upload_scanner_enabled = $this->pro_plugin->getValue('upload_scanner_enabled', 1, 'pro_plugin');
+			$check_multiple_extensions = $this->pro_plugin->getValue('check_multiple_extensions', 1, 'pro_plugin');
+			$extensions_blacklist = $this->pro_plugin->getValue('extensions_blacklist', 'php,js,exe,xml', 'pro_plugin');
+			$delete_files = $this->pro_plugin->getValue('delete_files', 1, 'pro_plugin');
+			$actions_upload_scanner = $this->pro_plugin->getValue('actions_upload_scanner', 0, 'pro_plugin');
+			
+			// Si el escáner está habilitado y existen archivos subidos, los comprobamos
+			if (($upload_scanner_enabled) && ($_FILES)) {
+				foreach ($_FILES as $file)
+				{ 
+					$this->check_file($check_multiple_extensions, $extensions_blacklist, $delete_files, $file, $actions_upload_scanner);            
+				}
+				
+			}
     
             // Cargamos el lenguaje del sitio
             $lang = Factory::getLanguage();
             $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
             $not_applicable = $lang->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
             $access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
-			
-			$this->pro_plugin = new BaseModel();
-			
+						
             $methods = $this->pro_plugin->getValue('methods', 'GET,POST,REQUEST', 'pro_plugin');
             $logs_attacks = $this->pro_plugin->getValue('logs_attacks', 1, 'pro_plugin');
             $mode = $this->pro_plugin->getValue('mode', 1, 'pro_plugin');
@@ -2116,160 +2144,7 @@ class Securitycheckpro extends CMSPlugin
 		
     }
     
-    // Obtiene el componente de Joomla implicado en una petición al servidor
-	// Basado en el método 'parseSefRoute' de /libraries/src/Router/SiteRouter.php
-    private function get_component()
-    {
         
-        //Inicializamos variables
-        $option = '';
-        
-        $is_admin = Factory::getApplication()->isClient('administrator');
-		
-		$uri = Uri::getInstance();	
-								
-		if ($is_admin)
-		{
-			// Get the variables from the uri
-			$vars = $uri->getQuery(true);		
-		
-			if (isset($vars['option'])) {
-				$option = strip_tags($vars['option']);
-				if (preg_match('/[^_0-9a-zA-Z]+/', $option))
-				{
-				// hackers tried to inject some code in the component
-					$option = 'com_notfound';
-				}
-			// Let's check if the option value is set in the _POST variable
-			} else if (isset($_POST['option'])) {
-				$option = strip_tags($_POST['option']);
-				if (preg_match('/[^_0-9a-zA-Z]+/', $option))
-				{
-					// hackers tried to inject some code in the component
-					$option = 'com_notfound';
-				}
-					
-			} else {
-				$option = 'com_notfound';
-			}			
-		}
-		else
-		{
-			if (version_compare(JVERSION, '4.0', 'ge')) {
-				$app = Factory::getContainer()->get(SiteApplication::class);					
-			} else {
-				$app = CMSApplication::getInstance('site');
-			}
-			$menu = $app->getMenu();
-			$route = $uri->getPath();
-						
-			// Remove the suffix
-			if ($app->get('sef_suffix'))
-			{
-				if ($suffix = pathinfo($route, PATHINFO_EXTENSION))
-				{
-					$route = str_replace('.' . $suffix, '', $route);
-				}
-			}
-		
-			$items = $menu->getMenu();
-								
-			$found           = false;
-			$route_lowercase = StringHelper::strtolower($route);
-			$lang_tag        = $app->getLanguage()->getTag();
-										
-			// Iterate through all items and check route matches.
-			foreach ($items as $item)
-			{					
-				//if ($item->route && StringHelper::strpos($route_lowercase . '/', $item->route . '/') === 1 && $item->type !== 'menulink')
-				if ($item->route && StringHelper::strpos($route_lowercase . '/', $item->route . '/') !== false )
-				{
-					// Usual method for non-multilingual site.
-					if (!$app->getLanguageFilter())
-					{
-						// Exact route match. We can break iteration because exact item was found.
-						if ($item->route === $route_lowercase)
-						{
-							$found = $item;
-							break;
-						}
-							// Partial route match. Item with highest level takes priority.
-						if (!$found || $found->level < $item->level)
-						{
-							$found = $item;
-						}
-					}
-					// Multilingual site.
-					elseif ($item->language === '*' || $item->language === $lang_tag)
-					{
-						// Exact route match.
-						if ($item->route === $route_lowercase)
-						{
-							$found = $item;
-								// Break iteration only if language is matched.
-							if ($item->language === $lang_tag)
-							{
-								break;
-							}
-						}
-							// Partial route match. Item with highest level or same language takes priority.
-						if (!$found || $found->level < $item->level || $item->language === $lang_tag)
-						{
-							$found = $item;
-						}
-					}
-				}
-			}
-						
-			if ($found)
-			{
-				$option = $found->component;
-			} else {
-				$components = ComponentHelper::getComponents();		
-				
-				foreach ($components as $component)
-				{
-					$component_without_com = str_replace("com_", "",$component->option);					
-					
-					if (strstr($route,$component_without_com))
-					{
-						$option = $component->option;
-					}			
-				}
-				// None of the components matches. Maybe something went wrong. Let's set a predefined value.
-				if (empty($option))
-				{
-					// Do we have a non-sef url?
-					$vars = $uri->getQuery(true);		
-				
-					if (isset($vars['option'])) {
-						$option = strip_tags($vars['option']);
-						if (preg_match('/[^_0-9a-zA-Z]+/', $option))
-						{
-							// hackers tried to inject some code in the component
-							$option = 'com_notfound';
-						}
-					// Let's check if the option value is set in the _POST variable
-					} else if (isset($_POST['option'])) {
-						$option = strip_tags($_POST['option']);
-						if (preg_match('/[^_0-9a-zA-Z]+/', $option))
-						{
-							// hackers tried to inject some code in the component
-							$option = 'com_notfound';
-						}
-							
-					} else {
-						$option = 'com_notfound';
-					}							
-				}
-				
-			}
-		}		
-					  
-        // Sanitizamos la salida        
-        return (htmlspecialchars($option));
-    }
-    
     /* Función que chequea si un fichero tiene múltiples extensiones o pertenece a una lista de extensiones prohibidas. Según el valor de la variable $delete_files, el fichero será borrado */
     protected function check_file($check_multiple_extensions,$extensions_blacklist,$delete_files,$file,$actions_upload_scanner)
     {
@@ -2352,7 +2227,7 @@ class Securitycheckpro extends CMSPlugin
         $user = Factory::getUser();
         
         // Obtenemos el componente de la petición
-        $component = $this->get_component();
+		$component = Factory::getApplication()->input->get('option','com_notfound');
             
         if ((!empty($file_name)) && (is_string($file_name))) {
             
@@ -2405,36 +2280,7 @@ class Securitycheckpro extends CMSPlugin
             }
         }
     }
-    
-    public function onAfterRoute()
-    {
-        /* Chequeamos los archivos subidos al servidor usando cabeceras HTTP y método POST. Los archivos son arrays con el siguiente formato:
-        [integer] error = 0
-        [string] name = "k.txt"
-        [integer] size = 4674
-        [string] tmp_name = "/tmp/phpkhm2Jz"
-        [string] type = "text/plain"
-        */
-		
-		$this->pro_plugin = new BaseModel();
-        
-        // Extraemos la configuración del escaner de subidas
-        $upload_scanner_enabled = $this->pro_plugin->getValue('upload_scanner_enabled', 1, 'pro_plugin');
-        $check_multiple_extensions = $this->pro_plugin->getValue('check_multiple_extensions', 1, 'pro_plugin');
-        $extensions_blacklist = $this->pro_plugin->getValue('extensions_blacklist', 'php,js,exe,xml', 'pro_plugin');
-        $delete_files = $this->pro_plugin->getValue('delete_files', 1, 'pro_plugin');
-        $actions_upload_scanner = $this->pro_plugin->getValue('actions_upload_scanner', 0, 'pro_plugin');
-        
-        // Si el escáner está habilitado y existen archivos subidos, los comprobamos
-        if (($upload_scanner_enabled) && ($_FILES)) {
-            foreach ($_FILES as $file)
-            { 
-                $this->check_file($check_multiple_extensions, $extensions_blacklist, $delete_files, $file, $actions_upload_scanner);            
-            }
-            
-        }
-        
-    }
+       
     
     /* Auditamos las entradas fallidas de los usuarios */
     public function onUserLoginFailure($response)

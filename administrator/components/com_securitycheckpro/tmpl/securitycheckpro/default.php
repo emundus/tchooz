@@ -27,33 +27,7 @@ $type_array = array(HTMLHelper::_('select.option', 'Component', Text::_('COM_SEC
 $vulnerable_array = array(HTMLHelper::_('select.option', 'Si', Text::_('COM_SECURITYCHECKPRO_HEADING_VULNERABLE')),
             HTMLHelper::_('select.option', 'No', Text::_('COM_SECURITYCHECKPRO_GREEN_COLOR')));
 
-
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
-
-// styles ('data-xxx' for J3 and 'data-bs-xxxx' for J4)
-$data_dismiss = "data-dismiss";
-
-if (version_compare(JVERSION, '4.0', 'ge')) {	
-	$data_dismiss = "data-bs-dismiss";
-}
-
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-
-?>
-
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/securitycheckpros.php';
+$data_dismiss = "data-bs-dismiss";
 ?>
 
     <!-- Modal vulnerable extension -->
@@ -88,18 +62,18 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/securitych
             <div class="card mb-3">
                     <div class="card-body">
         <?php if (($this->update_database_plugin_exists) && ($this->update_database_plugin_enabled) && ($this->database_message == "PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED") ) { ?>                        
-                        <div class="badge badge-success">
+                        <div class="badge bg-success">
                             <h4><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES'); ?></h4>
                             <p><strong><?php echo Text::_('COM_SECURITYCHECKPRO_DATABASE_VERSION'); ?></strong><?php echo($this->database_version); ?></p>
                             <p><strong><?php echo Text::_('COM_SECURITYCHECKPRO_LAST_CHECK'); ?></strong><?php echo($this->last_check); ?></p>
                         </div>
         <?php } else if (($this->update_database_plugin_exists) && ($this->update_database_plugin_enabled) && (is_null($this->database_message)) ) { ?>
-                            <div class="badge badge-success">
+                            <div class="badge bg-success">
                                 <h4><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES'); ?></h4>
                                 <p><strong><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_LAUNCHED'); ?></strong></p>                        
                             </div>
         <?php } else if (($this->update_database_plugin_exists) && ($this->update_database_plugin_enabled) && ( !($this->database_message == "PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED") && !(is_null($this->database_message) )) ) { ?>                            
-                            <div class="badge badge-danger">
+                            <div class="badge bg-danger">
                                 <h4><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_PROBLEM'); ?></h4>
                                 <p><strong><?php echo Text::_('COM_SECURITYCHECKPRO_DATABASE_MESSAGE'); ?></strong><?php echo Text::_($this->database_message); ?></p>
             <?php
@@ -112,12 +86,12 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/securitych
                                         
                             </div>    
         <?php } else if (($this->update_database_plugin_exists) && (!$this->update_database_plugin_enabled) ) { ?>
-                            <div class="badge badge-warning">
+                            <div class="badge bg-warning">
                                 <h4><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME'); ?></h4>
                                 <p><strong><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_DISABLED'); ?></strong></p>                        
                             </div>
         <?php } else if (!($this->update_database_plugin_exists) ) { ?>
-                            <div class="badge badge-info">
+                            <div class="badge bg-info">
                                 <h4><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_INSTALLED'); ?></h4>
                                 <p><strong><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES_NOT_RECEIVE'); ?></strong></p>            
                             </div>                        
@@ -134,17 +108,17 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/securitych
                     <table class="table table-borderless">                        
                         <thead>
                             <tr>
-                                <td><span class="badge badge-success"> </span>
+                                <td><span class="badge bg-success"> </span>
                                 </td>
                                 <td class="left">
 									<?php echo Text::_('COM_SECURITYCHECKPRO_GREEN_COLOR'); ?>
                                 </td>
-                                <td><span class="badge badge-warning"> </span>
+                                <td><span class="badge bg-warning"> </span>
                                 </td>
                                 <td class="left">
 									<?php echo Text::_('COM_SECURITYCHECKPRO_YELLOW_COLOR'); ?>
                                 </td>
-                                <td><span class="badge badge-danger"> </span>
+                                <td><span class="badge bg-danger"> </span>
                                 </td>
                                 <td class="left">
 									<?php echo Text::_('COM_SECURITYCHECKPRO_RED_COLOR'); ?>
@@ -171,7 +145,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/securitych
 					<?php  if (!empty($this->items) ) {  echo $this->pagination->getLimitBox();  }?>
 					</div>
 					<div class="col">
-						<span class="badge badge-info padding-10-10-10-10 float-right"><?php echo Text::_('COM_SECURITYCHECKPRO_UPDATE_DATE') . $this->last_update; ?></span>
+						<span class="badge bg-info padding-10-10-10-10 float-right"><?php echo Text::_('COM_SECURITYCHECKPRO_UPDATE_DATE') . $this->last_update; ?></span>
 					</div>
                 </div>
 				
@@ -223,13 +197,13 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/securitych
                                     <td class="text-center">
                 <?php
                 if ($type == 'core' ) {
-                    echo "<span class=\"badge\" class=\"background-FFADF5; \">";
+                    echo "<span class=\"badge background-FFADF5\">";
                 } else if ($type == 'component' ) {
-                    echo "<span class=\"badge badge-info\">";
+                    echo "<span class=\"badge bg-info\">";
                 } else if ($type == 'module' ) {
-                    echo "<span class=\"badge\">";
+                    echo "<span class=\"badge bg-secondary\">";
                 } else {
-                    echo "<span class=\"badge badge-inverse\">";
+                    echo "<span class=\"badge bg-dark\">";
                 }
                 ?>
                 <?php echo Text::_('COM_SECURITYCHECKPRO_TYPE_' . $row->sc_type); ?>
@@ -244,12 +218,12 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/securitych
                             <td class="text-center">
                 <?php
                 if ($vulnerable == 'Si' ) {
-                    echo "<span class=\"badge badge-important\">";
+                    echo "<span class=\"badge bg-danger\">";
                 } else if ($vulnerable == 'Indefinido' ) {
-                    echo "<span class=\"badge badge-warning\">";
+                    echo "<span class=\"badge bg-warning\">";
                 } else
                 {
-                    echo "<span class=\"badge badge-success\">";
+                    echo "<span class=\"badge bg-success\">";
                 }
                 ?>
                 <?php echo Text::_('COM_SECURITYCHECKPRO_VULNERABLE_' . $row->Vulnerable); ?>

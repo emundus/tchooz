@@ -35,7 +35,7 @@ class OnlineChecksModel extends ListModel
     
         $managewebsites_search = $app->getUserStateFromRequest('filter.onlinechecks_search', 'filter_onlinechecks_search');
         $this->setState('filter.onlinechecks_search', $managewebsites_search);
-                
+		                
         parent::populateState();
     }
 
@@ -154,16 +154,16 @@ class OnlineChecksModel extends ListModel
         $db->setQuery($query);
         $websites = $db->loadRowList();
     
-        /* Obtenemos el número de registros del array que hemos de mostrar. Si el límite superior es '0', entonces devolvemos todo el array */
+        // Obtenemos el número de registros del array que hemos de mostrar. Si el límite superior es '0', entonces devolvemos todo el array
         $upper_limit = $this->getState('limitstart');
-        $lower_limit = $this->getState('limit');
-    
-        /* Obtenemos los valores de los filtros */
+        $lower_limit = $this->getState('limit', 0 , 'integer');
+		
+       // Obtenemos los valores de los filtros
         $filter_onlinechecks_search = $this->state->get('filter.onlinechecks_search');
-        $search = htmlentities($filter_onlinechecks_search);
-    
-        /* Si el campo 'search' no está vacío, buscamos en todos los campos del array */            
+		    
+        // Si el campo 'search' no está vacío, buscamos en todos los campos del array           
         if (!empty($search)) {
+			$search = htmlentities($filter_onlinechecks_search);
             // Inicializamos el array
             $filtered_array = array();
             $filtered_array = array_values(
@@ -181,7 +181,7 @@ class OnlineChecksModel extends ListModel
         $this->total = count($websites);
         
         /* Cortamos el array para mostrar sólo los valores mostrados por la paginación */
-        $websites = array_splice($websites, $upper_limit, $lower_limit);
+        $websites = array_splice($websites, $lower_limit, $upper_limit,);
     
         return $websites;
     }

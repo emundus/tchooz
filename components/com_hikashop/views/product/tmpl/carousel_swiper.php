@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -64,7 +64,7 @@ $marge = 100;
 if ($quantityDisplay)
     $marge = 140;
 
-if ($pagination_position == 'bottom')
+if ($pagination && $pagination_position == 'bottom')
     $marge = $marge + 75;
 
 if ($thumbnailWidth == 0)
@@ -115,7 +115,7 @@ if (($pagination_position == 'left' || $pagination_position == 'right') && $pagi
 	background-color: #fff;
 }
 <?php
-if($pagination_type != "no_pagination") {
+if($pagination) {
 ?>
 #hikashop_carousel_thumbs_<?php echo $mainDivName; ?> .swiper-wrapper .swiper-slide {
     width: <?php echo $swiperSlideWidth; ?>px !important;
@@ -131,7 +131,7 @@ if ($options["direction"] == '"vertical"') {
         transform: rotate(90deg);
     }
 <?php
-    if ($pagination_position == 'left') {
+    if ($pagination && $pagination_position == 'left') {
 ?>  #<?php echo $mainDivName; ?> .swiper-button-prev {
         margin-left: 5%;
         left: var(--swiper-navigation-sides-offset,0px);
@@ -242,7 +242,7 @@ else {
         right: 25%;
     }
 <?php
-    if ($pagination_position == 'top') {
+    if ($pagination_position == 'top' && $pagination) {
 ?>      #<?php echo $mainDivName; ?> #hikashop_carousel_<?php echo $mainDivName; ?> {
             padding-top: <?php echo (int)$thumbnailHeight + 5; ?>px;
         }
@@ -265,7 +265,7 @@ else {
         }
     <?php
     }
-    if ($pagination_position == 'inside') {
+    if ($pagination_position == 'inside' && $pagination) {
 ?>      #<?php echo $mainDivName; ?> .swiper-thumbs {
             position: relative;
             top: -<?php echo $thumbnailHeight; ?>px;
@@ -278,7 +278,7 @@ else {
         }
 <?php
     }
-    if ($pagination_position == 'bottom') {
+    if ($pagination_position == 'bottom' && $pagination) {
 ?>      #hikashop_carousel_pagination_<?php echo $mainDivName; ?> .swiper-pagination {
             position: relative;
             transform: unset;
@@ -457,7 +457,7 @@ window.hikashop.ready(function(){
 <?php
 
 $ThumbsOptions = [];
-if ($pagination_position == 'left' || $pagination_position == 'right') 
+if ($pagination && $pagination_position == 'left' || $pagination_position == 'right') 
     $ThumbsOptions['direction'] = '"vertical"';
 $ThumbsOptions['spaceBetween'] = $spaceBetween;
 $ThumbsOptions['slidesPerView'] = $thumbs;

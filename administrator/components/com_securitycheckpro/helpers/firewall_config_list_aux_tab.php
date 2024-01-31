@@ -6,7 +6,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 <!-- Aux Lists tab -->
     <div class="card mb-3">    
         <div class="card-header">
-			<i class="fapro fa-bars"></i>
+			<i class="fa fa-bars"></i>
             <?php echo Text::_('COM_SECURITYCHECKPRO_LISTS_MANAGEMENT'); ?>
         </div>
         <div class="card-body">

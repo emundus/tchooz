@@ -38,6 +38,10 @@ class HtmlView extends BaseHtmlView {
         if (Factory::getUser()->authorise('core.admin', 'com_userlogs') || Factory::getUser()->authorise('core.options', 'com_userlogs')) {
             ToolBarHelper::custom('exportLogs', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_EXPORT_LOGS_CSV', false);
         }
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common');
 
         // Obtenemos los datos del modelo
             

@@ -14,60 +14,24 @@ use Joomla\CMS\Router\Route;
 use Joomla\Input\Input;
 use Joomla\CMS\HTML\HTMLHelper;
 
-// Load language
-$lang = Factory::getLanguage();
-$lang->load('com_securitycheckpro.sys');
-
 HTMLHelper::_('bootstrap.tooltip', '.hasTooltip');
 
-// Load plugin language
-$lang2 = Factory::getLanguage();
-$lang2->load('plg_system_securitycheckpro');
-
-$review = sprintf($lang->_('COM_SECURITYCHECKPRO_REVIEW'), '<a href="http://extensions.joomla.org/extensions/extension/access-a-security/site-security/securitycheck-pro" target="_blank"  rel="noopener noreferrer">', '</a>');
-$translator_name = $lang2->_('COM_SECURITYCHECKPRO_TRANSLATOR_NAME');
-$firewall_plugin_status = $lang2->_('COM_SECURITYCHECKPRO_FIREWALL_PLUGIN_STATUS');
-$cron_plugin_status = $lang2->_('COM_SECURITYCHECKPRO_CRON_PLUGIN_STATUS');
-$update_database_plugin_status = $lang2->_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_PLUGIN_STATUS');
-$spam_protection_plugin_status = $lang2->_('COM_SECURITYCHECKPRO_SPAM_PROTECTION_PLUGIN_STATUS');
-$logs_status = $lang->_('COM_SECURITYCHECKPRO_LOGS_STATUS');
-$autoupdate_status = $lang2->_('COM_SECURITYCHECKPRO_AUTOUPDATE_STATUS');
-$translator_url = $lang2->_('COM_SECURITYCHECKPRO_TRANSLATOR_URL');
-
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
-
-$document->addScript(URI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-$opa_icons = "media/com_securitycheckpro/stylesheets/opa-icons.css";
-HTMLHelper::stylesheet($opa_icons);
-
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-
-// Css circle
-HTMLHelper::stylesheet('media/com_securitycheckpro/new/css/circle.css');
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
+$review = sprintf(Text::_('COM_SECURITYCHECKPRO_REVIEW'), '<a href="http://extensions.joomla.org/extensions/extension/access-a-security/site-security/securitycheck-pro" target="_blank"  rel="noopener noreferrer">', '</a>');
+$translator_name = Text::_('COM_SECURITYCHECKPRO_TRANSLATOR_NAME');
+$firewall_plugin_status = Text::_('COM_SECURITYCHECKPRO_FIREWALL_PLUGIN_STATUS');
+$cron_plugin_status = Text::_('COM_SECURITYCHECKPRO_CRON_PLUGIN_STATUS');
+$update_database_plugin_status = Text::_('COM_SECURITYCHECKPRO_UPDATE_DATABASE_PLUGIN_STATUS');
+$spam_protection_plugin_status = text::_('COM_SECURITYCHECKPRO_SPAM_PROTECTION_PLUGIN_STATUS');
+$logs_status = Text::_('COM_SECURITYCHECKPRO_LOGS_STATUS');
+$autoupdate_status = Text::_('COM_SECURITYCHECKPRO_AUTOUPDATE_STATUS');
+$translator_url = Text::_('COM_SECURITYCHECKPRO_TRANSLATOR_URL');
 
 // Url to be used on statistics
 $logUrl = 'index.php?option=com_securitycheckpro&controller=securitycheckpro&view=logs&datefrom=%s&dateto=%s';
-?>
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
 
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/cpanel.php';
-
-echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/tab.min.js"></script>';
-?>
-
-<?php 
-    $valor_a_mostrar = 0; 
-    $contador = 0; 
-    $period = ""; 
+$valor_a_mostrar = 0; 
+$contador = 0; 
+$period = ""; 
 	
 while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
     $aleatorio = rand(1, 5);	
@@ -143,7 +107,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                 <div class="card-body">
                     <p class="card-text"><?php echo Text::_('COM_SECURITYCHECKPRO_DOWNLOAD_ID_MESSAGE'); ?></p>
                     <a href="index.php?option=com_config&view=component&component=com_securitycheckpro&path=&return=<?php echo base64_encode(Uri::getInstance()->toString()); ?>" class="btn btn-info">
-                    <i class="icon-edit icon-white"></i>                    
+                    <i class="fa fa-edit"></i>                    
         <?php echo Text::_('COM_SECURITYCHECKPRO_FILL_IT_NOW'); ?>
                     </a>
                 </div>                
@@ -170,16 +134,16 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
             <div class="card-body">                
                 <?php
                 if ($enabled) { ?>
-                        <span class="sc-icon32 sc-icon-green sc-icon-globe"></span>                    
+                        <span class="fa fa-2x fa-globe" style="color:green"></span>                    
                 <?php  } else { ?>
-                        <span class="sc-icon32 sc-icon-darkgray sc-icon-globe"></span>
+                        <span class="fa fa-2x fa-globe" style="color:gray"></span> 
                 <?php     }  ?>                                
                 <div>
                 <?php
                 if ($enabled) { ?>
-                            <span class="badge badge-success"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED')); ?></span>
+                            <span class="badge bg-success"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED')); ?></span>
                 <?php     }else{ ?>
-                            <span class="badge badge-danger"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED')); ?></span>
+                            <span class="badge bg-danger"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED')); ?></span>
                 <?php	}  ?>
                 </div>
                 <div class="margin-top-10">
@@ -187,7 +151,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                 if ($enabled) { 
                     ?>
                     <button id="disable_firewall_button" class="btn btn-danger" href="#">
-                        <i class="fapro fa-fw fa-power-off"> </i>
+                        <i class="fa fa-power-off"> </i>
                     <?php echo Text::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
                     </button>
                 <?php     }else{ ?>
@@ -216,16 +180,16 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
             <div class="card-body">
                 <?php
                 if ($enabled) { ?>
-                        <span class="sc-icon32 sc-icon-green sc-icon-clock"></span>                        
+					 <span class="fa fa-2x fa-clock" style="color:green"></span>                                              
                 <?php  } else { ?>
-                        <span class="sc-icon32 sc-icon-darkgray sc-icon-clock"></span>
+                     <span class="fa fa-2x fa-clock" style="color:gray"></span>
                 <?php     }  ?>                            
                 <div>
                 <?php
                 if ($enabled) { ?>
-                            <span class="badge badge-success"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED')); ?></span>
+                            <span class="badge bg-success"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED')); ?></span>
                 <?php     }else{ ?>
-                            <span class="badge badge-danger"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED')); ?></span>
+                            <span class="badge bg-danger"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED')); ?></span>
                 <?php	}  ?>
                 </div>
                 <div class="margin-top-10">
@@ -233,7 +197,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                 if ($enabled) { 
                     ?>
                     <button id="disable_cron_button" class="btn btn-danger" href="#">
-                        <i class="fapro fa-fw fa-power-off"> </i>
+                        <i class="fa fa-power-off"> </i>
                     <?php echo Text::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
                     </button>
                 <?php     }else{ ?>
@@ -267,21 +231,20 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
             <div class="card-body">
                 <?php
                 if (!$exists) { ?>
-                        <span class="sc-icon32 sc-icon-black sc-icon-refresh"></span>                        
+					<span class="fa fa-2x fa-sync" style="color:black"></span>                                           
                 <?php  } else if ($enabled && $exists) { ?>
-                        <span class="sc-icon32 sc-icon-green sc-icon-refresh"></span>
+					<span class="fa fa-2x fa-sync" style="color:green"></span>                    
                 <?php     }else if (!$enabled && $exists) { ?>
-                        <span class="sc-icon32 sc-icon-darkgray sc-icon-refresh"></span>
+					<span class="fa fa-2x fa-sync" style="color:gray"></span>
                 <?php	}  ?>                                
                 <div>
                 <?php
                 if (!$exists) { ?>
-                            <span class="badge badge-dark"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED')); ?></span>
-                            
+                    <span class="badge bg-dark"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED')); ?></span>                            
                 <?php  } else if ($enabled && $exists) { ?>
-                            <span class="badge badge-success"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED')); ?></span>
+                    <span class="badge bg-success"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED')); ?></span>
                 <?php     }else if (!$enabled && $exists) { ?>
-                            <span class="badge badge-danger"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED')); ?></span>
+                    <span class="badge bg-danger"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED')); ?></span>
                 <?php	}  ?>
                 </div>
                 <div class="margin-top-10">
@@ -289,7 +252,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                 if ($enabled && $exists ) { 
                     ?>
                     <button id="disable_update_database_button" class="btn btn-danger" href="#">
-                        <i class="fapro fa-fw fa-power-off"> </i>
+                        <i class="fa fa-power-off"> </i>
                     <?php echo Text::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
                     </button>
                 <?php } else if (!$enabled && $exists ) { ?>
@@ -298,7 +261,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                     <?php echo Text::_('COM_SECURITYCHECKPRO_ENABLE'); ?>
                     </button>
                 <?php } else if (!$exists ) { ?>
-                    <a class="btn btn-info" type="button" href="https://securitycheck.protegetuordenador.com/index.php/our-products/securitycheck-pro-database-update" target="_blank"  rel="noopener noreferrer"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?> <i class="fapro fa-external-link"></i></a>
+                    <a class="btn btn-info" type="button" href="https://securitycheck.protegetuordenador.com/index.php/our-products/securitycheck-pro-database-update" target="_blank"  rel="noopener noreferrer"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></a>
                 <?php } ?>
                 </div>              
             </div>            
@@ -325,21 +288,20 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
             <div class="card-body">
                 <?php
                 if (!$exists) { ?>
-                        <span class="sc-icon32 sc-icon-black sc-icon-user"></span>                        
+					<span class="fa fa-2x fa-user" style="color:black"></span>                       
                 <?php  } else if ($enabled && $exists) { ?>
-                        <span class="sc-icon32 sc-icon-green sc-icon-user"></span>
+                   <span class="fa fa-2x fa-user" style="color:green"></span>
                 <?php     }else if (!$enabled && $exists) { ?>
-                        <span class="sc-icon32 sc-icon-darkgray sc-icon-user"></span>
+                   <span class="fa fa-2x fa-user" style="color:gray"></span>
                 <?php	}  ?>                                
                 <div>
                 <?php
                 if (!$exists) { ?>
-                            <span class="badge badge-dark"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED')); ?></span>
-                            
+                    <span class="badge bg-dark"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED')); ?></span>                            
                 <?php  } else if ($enabled && $exists) { ?>
-                            <span class="badge badge-success"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED')); ?></span>
+                    <span class="badge bg-success"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED')); ?></span>
                 <?php     }else if (!$enabled && $exists) { ?>
-                            <span class="badge badge-danger"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED')); ?></span>
+                    <span class="badge bg-danger"><?php echo(Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED')); ?></span>
                 <?php	}  ?>
                 </div>
                 <div class="margin-top-10">
@@ -347,7 +309,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                 if ($enabled && $exists ) { 
                     ?>
                     <button id="disable_spam_protection_button" class="btn btn-danger" href="#">
-                        <i class="fapro fa-fw fa-power-off"> </i>
+                        <i class="fa fa-power-off"> </i>
                     <?php echo Text::_('COM_SECURITYCHECKPRO_DISABLE'); ?>
                     </button>
                 <?php } else if (!$enabled && $exists ) { ?>
@@ -356,7 +318,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                     <?php echo Text::_('COM_SECURITYCHECKPRO_ENABLE'); ?>
                     </button>
                 <?php } else if (!$exists ) { ?>
-                    <a class="btn btn-info" type="button" href="https://securitycheck.protegetuordenador.com/index.php/our-products/securitycheck-spam-protection" target="_blank"  rel="noopener noreferrer"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?> <i class="fapro fa-external-link"></i></a>
+                    <a class="btn btn-info" type="button" href="https://securitycheck.protegetuordenador.com/index.php/our-products/securitycheck-spam-protection" target="_blank"  rel="noopener noreferrer"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></a>
                 <?php } ?>
                 </div>              
             </div>            
@@ -369,7 +331,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
         <!-- Statistics-->
             <div class="card mb-3">
                 <div class="card-header">
-                    <i class="fapro fa-bars"></i>
+                    <i class="fa fa-bars"></i>
         <?php echo ' ' . Text::_('COM_SECURITYCHECKPRO_CPANEL_STATISTICS'); ?>
                 </div>
                 <div class="card-body">
@@ -551,15 +513,15 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                                     <td>
             <?php
             if (($black-1) >= 0 ) { ?>
-                                                <span class="badge badge-danger"><?php echo $this->blacklist_elements[$black-1]; ?></span>
+                                                <span class="badge bg-danger"><?php echo $this->blacklist_elements[$black-1]; ?></span>
             <?php } ?>
             <?php
             if (($black-2) >= 0 ) { ?>
-                                                <span class="badge badge-danger"><?php echo $this->blacklist_elements[$black-2]; ?></span>
+                                                <span class="badge bg-danger"><?php echo $this->blacklist_elements[$black-2]; ?></span>
             <?php } ?>                                        
             <?php
             if (($black-3) >= 0 ) { ?>
-                                                <span class="badge badge-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
+                                                <span class="badge bg-danger"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
             <?php } ?>
                                     </td>
                                     <td>                                            
@@ -580,15 +542,15 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                                     <td>
             <?php
             if (($dynamic-1) >= 0 ) { ?>
-                                                <span class="badge badge-warning"><?php echo $this->dynamic_blacklist_elements[$dynamic-1]; ?></span>
+                                                <span class="badge bg-warning"><?php echo $this->dynamic_blacklist_elements[$dynamic-1]; ?></span>
             <?php } ?>
             <?php
             if (($dynamic-2) >= 0 ) { ?>
-                                                <span class="badge badge-warning"><?php echo $this->dynamic_blacklist_elements[$dynamic-2]; ?></span>
+                                                <span class="badge bg-warning"><?php echo $this->dynamic_blacklist_elements[$dynamic-2]; ?></span>
             <?php } ?>
             <?php
             if (($dynamic-3) >= 0 ) { ?>
-                                                <span class="badge badge-warning"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
+                                                <span class="badge bg-warning"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
             <?php } ?>                                        
                                     </td>
                                     <td>                                            
@@ -609,15 +571,15 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                                     <td>
             <?php
             if (($white-1) >= 0 ) { ?>
-                                                <span class="badge badge-success"><?php echo $this->whitelist_elements[$white-1]; ?></span>
+                                                <span class="badge bg-success"><?php echo $this->whitelist_elements[$white-1]; ?></span>
             <?php } ?>
             <?php
             if (($white-2) >= 0 ) { ?>
-                                                <span class="badge badge-success"><?php echo $this->whitelist_elements[$white-2]; ?></span>
+                                                <span class="badge bg-success"><?php echo $this->whitelist_elements[$white-2]; ?></span>
             <?php } ?>
             <?php
             if (($white-3) >= 0 ) { ?>
-                                                <span class="badge badge-success"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
+                                                <span class="badge bg-success"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE'); ?></span>
             <?php } ?>                                        
                                     </td>
                                     <td>                                            
@@ -648,7 +610,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
             <!-- Overall status -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <i class="fapro fa-chart-pie"></i>
+                    <i class="fa fa-chart-pie"></i>
         <?php echo Text::_('COM_SECURITYCHECKPRO_SECURITY_OVERALL_SECURITY_STATUS'); ?>
                 </div>
                 <div class="card-body">
@@ -677,24 +639,24 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
 
             <div class="card mb-3 border-dark">
                 <div class="card-header bg-dark text-white">
-                    <i class="fapro fa-lock"></i>
+                    <i class="fa fa-lock"></i>
         <?php echo Text::_('COM_SECURITYCHECKPRO_LOCK_STATUS'); ?>
                 </div>
                 <div class="card-body">
                     <div class="centrado">
         <?php
         if ($this->lock_status) { ?>
-                                <div class="alert alert-success" role="alert">
+            <div class="alert alert-success" role="alert">
             <?php echo(Text::_('COM_SECURITYCHECKPRO_CPANEL_APPLIED')); ?>
-                                </div>    
-                                <button id="unlock_tables_button" class="btn btn-info btn-sm right" type="button" href="#"><?php echo Text::_('COM_SECURITYCHECKPRO_UNLOCK_TABLES'); ?></i></button>
+            </div>    
+            <button id="unlock_tables_button" class="btn btn-info btn-sm" type="button" href="#"><?php echo Text::_('COM_SECURITYCHECKPRO_UNLOCK_TABLES'); ?></i></button>
         <?php     }else{ ?>
-                                    <div class="alert alert-info" role="alert">
+            <div class="alert alert-info" role="alert">
             <?php echo(Text::_('COM_SECURITYCHECKPRO_CPANEL_NOT_APPLIED')); ?>
-                                    </div>                                    
-                                    <button id="lock_tables_button" class="btn btn-info btn-sm right" type="button" href="#"><?php echo Text::_('COM_SECURITYCHECKPRO_LOCK_TABLES'); ?></i></button>
+            </div>                                    
+            <button id="lock_tables_button" class="btn btn-info btn-sm margin-bottom-5" type="button" href="#"><?php echo Text::_('COM_SECURITYCHECKPRO_LOCK_TABLES'); ?></i></button>
         <?php	}  ?>
-                        <a class="btn btn-dark btn-sm left" type="button" href="https://scpdocs.securitycheckextensions.com/dashboard/cpanel/lock-tables-cpanel" target="_blank"  rel="noopener noreferrer"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?> <i class="fapro fa-external-link"></i></a>                        
+            <a class="btn btn-dark btn-sm" type="button" href="https://scpdocs.securitycheckextensions.com/dashboard/cpanel/lock-tables-cpanel" target="_blank"  rel="noopener noreferrer"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></i></a>                        
                     </div>                    
                 </div>                                
             </div>
@@ -712,7 +674,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
             <!-- Subscription status -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <i class="fapro fa-ellipsis-v-alt"></i>
+                    <i class="fa fa-ellipsis-v"></i>
                     <a href="#" id="subscriptions_status" data-bs-toggle="tooltip" title="<?php echo Text::_('COM_SECURITYCHECKPRO_SUBSCRIPTIONS_STATUS_EXPLAINED'); ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_SUBSCRIPTIONS_STATUS'); ?></a>
                 </div>
                 <div class="card-body">
@@ -723,48 +685,48 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
         $exists_trackactions = $this->trackactions_plugin_exists;                        
                         
         if (!$exists ) {
-            $span_update_database = "Securitycheck Pro Update Database<br/><span class=\"badge badge-dark\">";
+            $span_update_database = "Securitycheck Pro Update Database<br/><span class=\"badge bg-dark\">";
             $scp_update_database_subscription_status = Text::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED');
         } else {
             $scp_update_database_subscription_status = $mainframe->getUserState("scp_update_database_subscription_status", Text::_('COM_SECURITYCHECKPRO_NOT_DEFINED'));
-            $span_update_database = "Securitycheck Pro Update Database<br/>(<span id=\"update_database_version\" data-bs-toggle=\"tooltip\" title=\"" . Text::_('COM_SECURITYCHECKPRO_VERSION_INSTALLED') . ":&nbsp;" . $this->version_update_database . "\" class=\"badge badge-info\">" . $this->version_update_database . "</span>)&nbsp;&nbsp;";
+            $span_update_database = "Securitycheck Pro Update Database<br/>(<span id=\"update_database_version\" data-bs-toggle=\"tooltip\" title=\"" . Text::_('COM_SECURITYCHECKPRO_VERSION_INSTALLED') . ":&nbsp;" . $this->version_update_database . "\" class=\"badge bg-info\">" . $this->version_update_database . "</span>)&nbsp;&nbsp;";
             if ($scp_update_database_subscription_status == Text::_('COM_SECURITYCHECKPRO_ACTIVE') ) {                    
-                $span_update_database .= "<span class=\"badge badge-success\">";                                
+                $span_update_database .= "<span class=\"badge bg-success\">";                                
             } else if ($scp_update_database_subscription_status == Text::_('COM_SECURITYCHECKPRO_EXPIRED') ) {
-                $span_update_database .= "<span class=\"badge badge-danger\">";
+                $span_update_database .= "<span class=\"badge bg-danger\">";
                 $expired = true;
             } else {
-                $span_update_database .= "<span class=\"badge badge-dark\">";
+                $span_update_database .= "<span class=\"badge bg-dark\">";
             }
         }
                         
         if (!$exists_trackactions ) {
-            $span_trackactions = "Track Actions<br/><span class=\"badge badge-dark\">";
+            $span_trackactions = "Track Actions<br/><span class=\"badge bg-dark\">";
             $trackactions_subscription_status = Text::_('COM_SECURITYCHECKPRO_PLUGIN_NOT_INSTALLED');
         } else {
             $trackactions_subscription_status = $mainframe->getUserState("trackactions_subscription_status", Text::_('COM_SECURITYCHECKPRO_NOT_DEFINED'));
-            $span_trackactions = "Track Actions<br/>(<span id=\"trackactions_version\" data-bs-toggle=\"tooltip\" title=\"" . Text::_('COM_SECURITYCHECKPRO_VERSION_INSTALLED') . ":&nbsp;" . $this->version_trackactions . "\" class=\"badge badge-info\">" . $this->version_trackactions . "</span>)&nbsp;&nbsp;";
+            $span_trackactions = "Track Actions<br/>(<span id=\"trackactions_version\" data-bs-toggle=\"tooltip\" title=\"" . Text::_('COM_SECURITYCHECKPRO_VERSION_INSTALLED') . ":&nbsp;" . $this->version_trackactions . "\" class=\"badge bg-info\">" . $this->version_trackactions . "</span>)&nbsp;&nbsp;";
             if ($trackactions_subscription_status == Text::_('COM_SECURITYCHECKPRO_ACTIVE') ) {                    
-                $span_trackactions .= "<span class=\"badge badge-success\">";                                
+                $span_trackactions .= "<span class=\"badge bg-success\">";                                
             } else if ($trackactions_subscription_status == Text::_('COM_SECURITYCHECKPRO_EXPIRED') ) {
-                $span_trackactions .= "<span class=\"badge badge-danger\">";
+                $span_trackactions .= "<span class=\"badge bg-danger\">";
                 $expired = true;
             } else {
-                $span_trackactions .= "<span class=\"badge badge-dark\">";
+                $span_trackactions .= "<span class=\"badge bg-dark\">";
             }
         }
                         
         $scp_subscription_status = $mainframe->getUserState("scp_subscription_status", Text::_('COM_SECURITYCHECKPRO_NOT_DEFINED'));
         if ($scp_subscription_status == Text::_('COM_SECURITYCHECKPRO_ACTIVE') ) {                    
-            $span_scp = "<span class=\"badge badge-success\">";                                
+            $span_scp = "<span class=\"badge bg-success\">";                                
         } else if ($scp_subscription_status == Text::_('COM_SECURITYCHECKPRO_EXPIRED') ) {
-            $span_scp = "<span class=\"badge badge-danger\">";    
+            $span_scp = "<span class=\"badge bg-danger\">";    
             $expired = true;
         } else {
-            $span_scp = "<span class=\"badge badge-dark\">";                    
+            $span_scp = "<span class=\"badge bg-dark\">";                    
         }                                                
         ?>
-                    <p>Securitycheck Pro<br/>(<span id="scp_version" data-bs-toggle="tooltip" title="<?php echo Text::_('COM_SECURITYCHECKPRO_VERSION_INSTALLED'); ?>:&nbsp;<?php echo $this->version_scp; ?>" class="badge badge-info"><?php echo $this->version_scp ?></span>)&nbsp;&nbsp;<?php echo $span_scp ?><?php echo $scp_subscription_status ?> </span></p>
+                    <p>Securitycheck Pro<br/>(<span id="scp_version" data-bs-toggle="tooltip" title="<?php echo Text::_('COM_SECURITYCHECKPRO_VERSION_INSTALLED'); ?>:&nbsp;<?php echo $this->version_scp; ?>" class="badge bg-info"><?php echo $this->version_scp ?></span>)&nbsp;&nbsp;<?php echo $span_scp ?><?php echo $scp_subscription_status ?> </span></p>
                     <p><?php echo $span_update_database ?><?php echo $scp_update_database_subscription_status ?> </span></p>
                     <p><?php echo $span_trackactions ?><?php echo $trackactions_subscription_status ?> </span></p>
         <?php if ($expired ) { ?>
@@ -776,7 +738,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
             <!-- Easy config -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <i class="fapro fa-cog"></i>
+                    <i class="fa fa-cog"></i>
         <?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_EASY_CONFIG'); ?>
                 </div>
                 <div class="card-body text-center">
@@ -784,9 +746,9 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                     <div><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_EASY_CONFIG_STATUS'); ?></div>
         <?php
         if ($easy_config_applied) { ?>
-                                <span class="badge badge-success"><?php echo(Text::_('COM_SECURITYCHECKPRO_CPANEL_APPLIED')); ?></span>
+                                <span class="badge bg-success"><?php echo(Text::_('COM_SECURITYCHECKPRO_CPANEL_APPLIED')); ?></span>
         <?php     }else{ ?>
-                                <span class="badge badge-info"><?php echo(Text::_('COM_SECURITYCHECKPRO_CPANEL_NOT_APPLIED')); ?></span>
+                                <span class="badge bg-info"><?php echo(Text::_('COM_SECURITYCHECKPRO_CPANEL_NOT_APPLIED')); ?></span>
         <?php	}  ?>
                     <br/>
                     <br/>
@@ -803,10 +765,10 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
             <!-- Help us -->
             <div class="card bg-light mb-3">
                 <div class="card-body text-center">
-                    <h3 class="card-title"><i class="fapro fa-thumbs-up"></i><?php echo ' ' . Text::_('COM_SECURITYCHECKPRO_CPANEL_HELP_US'); ?></h3>
+                    <h3 class="card-title"><i class="fa fa-thumbs-up"></i><?php echo ' ' . Text::_('COM_SECURITYCHECKPRO_CPANEL_HELP_US'); ?></h3>
                     <p class="card-text">
         <?php echo($review); ?><br/><br/>
-                        <i class="fapro fa-info-square"></i><?php echo('<a href="' . $translator_url . '" target="_blank"  rel="noopener noreferrer">' . $translator_name . '</a>'); ?>
+                        <i class="fa fa-info-circle"></i><?php echo('<a href="' . $translator_url . '" target="_blank"  rel="noopener noreferrer">' . $translator_name . '</a>'); ?>
                     </p>
                 </div>
             </div>
@@ -814,15 +776,9 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
             
     </div>
     
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#mainNav">
-      <i class="fapro fa-angle-up"></i>
-    </a>
     
 <!-- End Main panel -->    
 </div> 
-
-<script src="<?php echo URI::root(); ?>media/com_securitycheckpro/new/vendor/jquery-easing/jquery.easing.min.js"></script>
 
 <input type="hidden" name="option" value="com_securitycheckpro" />
 <input type="hidden" name="task" value="" />

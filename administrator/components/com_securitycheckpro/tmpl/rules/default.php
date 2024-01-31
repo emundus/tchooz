@@ -17,25 +17,6 @@ use Joomla\CMS\HTML\HTMLHelper;
 
 
 Session::checkToken('get') or die('Invalid Token');
-
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
-
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-JHTML::stylesheet($sweet);
-
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-?>
-
-<?php 
-// Cargamos el contenido común
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/rules.php';
 ?>
 
 <form action="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=rules&view=rules&'. Session::getFormToken() .'=1');?>" style=" margin-left: 10px !important;  margin-right: 10px !important;" method="post" name="adminForm" id="adminForm">
@@ -49,9 +30,9 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/rules.php'
                 <div class="card-body">
                     <div>
 						<div class="input-group">
-							<input type="text" name="filter_acl_search" class="form-control" placeholder="<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_acl_search" value="<?php echo $this->escape($this->state->get('filter.acl_search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
-							<button class="btn btn-outline-secondary" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-							<button class="btn btn-outline-secondary" type="button" id="filter_acl_search_button" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
+							<input type="text" name="filter_acl_search" class="form-control" placeholder="<?php echo Text::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_acl_search" value="<?php echo $this->escape($this->state->get('filter.acl_search')); ?>" title="<?php echo Text::_('JSEARCH_FILTER'); ?>" />
+							<button class="btn btn-outline-secondary" type="submit" rel="tooltip" title="<?php echo Text::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+							<button class="btn btn-outline-secondary" type="button" id="filter_acl_search_button" rel="tooltip" title="<?php echo Text::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 							<div class="btn-group margin-left-10">
                                 <?php 
 									if (!empty($this->pagination)) {
@@ -62,26 +43,26 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/rules.php'
 						</div>			
                         
                         <div class="alert alert-info" class="margin-top-10" role="alert">
-							<?php echo JText::_('COM_SECURITYCHECKPRO_RULES_GUEST_USERS'); ?>
+							<?php echo Text::_('COM_SECURITYCHECKPRO_RULES_GUEST_USERS'); ?>
                         </div>
         
                         <table class="table table-bordered table-hover">
                             <thead>
                                 <tr>
                                     <th width="1%" class="nowrap center rules">
-                                        <input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
+                                        <input type="checkbox" name="checkall-toggle" value="" title="<?php echo Text::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
                                     </th>
                                     <th class="rules">
-										<?php echo JText::_('COM_SECURITYCHECKPRO_RULES_GROUP_TITLE'); ?>
+										<?php echo Text::_('COM_SECURITYCHECKPRO_RULES_GROUP_TITLE'); ?>
                                     </th>
                                     <th width="20%" class="rules">
-										<?php echo JText::_('COM_SECURITYCHECKPRO_RULES_RULES_APPLIED'); ?>
+										<?php echo Text::_('COM_SECURITYCHECKPRO_RULES_RULES_APPLIED'); ?>
                                     </th>
                                     <th width="5%" class="rules">
-										<?php echo JText::_('JGRID_HEADING_ID'); ?>
+										<?php echo Text::_('JGRID_HEADING_ID'); ?>
                                     </th>
                                     <th width="20%" class="rules">
-										<?php echo JText::_('COM_SECURITYCHECKPRO_RULES_LAST_CHANGE'); ?>
+										<?php echo Text::_('COM_SECURITYCHECKPRO_RULES_LAST_CHANGE'); ?>
                                     </th>
                                 </tr>
                             </thead>
@@ -93,14 +74,14 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/rules.php'
 
                                 <tr class="row<?php echo $k % 2; ?>">
                                     <td class="center">
-                <?php echo JHtml::_('grid.id', $k, $row->id); ?>
+                <?php echo HTMLHelper::_('grid.id', $k, $row->id); ?>
                                     </td>
                                     <td>
                 <?php echo str_repeat('<span class="gi">|&mdash;</span>', $row->level) ?>
                 <?php echo $this->escape($row->title); ?> 
                                     </td>
                                     <td class="rules-logs">
-                <?php echo JHtml::_(
+                <?php echo HTMLHelper::_(
                     'jgrid.state', $states = array(
                     0 => array(
                     'task'                => 'apply_rules',

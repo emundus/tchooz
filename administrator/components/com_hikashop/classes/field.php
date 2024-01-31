@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -809,7 +809,7 @@ foreach($results as $i => $oneResult){
 		foreach($zones as $zone){
 			if($field->field_type=='zone' && !empty($field->field_options['zone_type']) && $field->field_options['zone_type']==$zone->zone_type){
 				$title = $zone->zone_name_english;
-				if($zone->zone_name_english != $zone->zone_name){
+				if($zone->zone_name_english != $zone->zone_name && !empty($zone->zone_name)){
 					$title.=' ('.$zone->zone_name.')';
 				}
 				$obj = new stdClass();
@@ -2156,7 +2156,7 @@ class hikashopFieldItem extends stdClass{
 		if(is_string($value))
 			$value = trim($value);
 
-		if(!$field->field_required || is_array($value) || strlen($value) || ($value === null && strlen($oldvalue)))
+		if(!$field->field_required || is_array($value) || strlen((string)$value) || ($value === null && strlen($oldvalue)))
 			return true;
 
 		if($field->field_table == 'order' && (!in_array($field->field_products, array('all', '')) || !in_array($field->field_categories, array('all', '')))){
@@ -2553,7 +2553,7 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 			)
 		);
 
-		$value = trim($value, '|');
+		$value = trim((string)$value, '|');
 
 		if(!empty($value)) {
 			if(empty($field->field_options['multiple'])) {
@@ -2686,83 +2686,98 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 	}
 
 	function check(&$field,&$value, $oldvalue) {
-		if(!empty($value) && !is_array($value))
-			return false;
-		if(is_array($value)) {
-			if(!empty($field->field_options['multiple'])) {
-				$tmp_array = array();
-				foreach($value as $k => $element) {
-					if(empty($element)) {
-						continue;
-					}
-					$tmp_array[$k] = $element;
+		if(empty($value)) {
+			if(!empty($oldvalue)) {
+				if(is_string($oldvalue))
+					$oldfiles = explode('|',$oldvalue);
+				else
+					$oldfiles = $oldvalue;
+				foreach($oldfiles as $oldfile) {
+					$this->_handleDelete($field, $oldfile);
 				}
-				$value = $tmp_array;
-
-				$newvalue = array();
-				$error = false;
-				$sec_start = count($value)/2;
-				$mode = null;
-				foreach($value as $k => $element) {
-					if(empty($element['name']))
-						continue;
-
-					if(is_null($mode)) {
-						if(!empty($value[$k+1]['sec']))
-							$mode = 'no_sec_start';
-						elseif(!empty($value[$sec_start+$k]['sec']))
-							$mode = 'sec_start';
-					}
-					if($mode == 'sec_start') {
-						if(!empty($value[$sec_start+$k]['sec']))
-							$sec = $value[$sec_start+$k]['sec'];
-						elseif(!empty($value[$k+1]['sec']))
-							$sec = $value[$k+1]['sec'];
-						else
-							continue;
-					} else {
-						if(!empty($value[$k+1]['sec']))
-							$sec = $value[$k+1]['sec'];
-						elseif(!empty($value[$sec_start+$k]['sec']))
-							$sec = $value[$sec_start+$k]['sec'];
-						else
-							continue;
-
-					}
-					$file = array('name' => $element['name'], 'sec' => $sec);
-					$ok = $this->_checkOneFile($file, '', $field);
-					if($ok) {
-						$newvalue[] = $file;
-					} else {
-						$error = true;
-					}
-				}
-				if($error) {
-					$value = $oldvalue;
-					return false;
-				} else {
-					if(is_string($oldvalue))
-						$oldfiles = explode('|',$oldvalue);
-					else
-						$oldfiles = $oldvalue;
-					foreach($oldfiles as $oldfile) {
-						if(!in_array($oldfile, $newvalue)) {
-							$this->_handleDelete($field, $oldfile);
-						}
-					}
-
-					$value = implode('|', $newvalue);
-				}
-			} else {
-				$return = $this->_checkOneFile($value, $oldvalue, $field);
-				if(!$return)
-					return $return;
 			}
-		} else if($value != $oldvalue) {
-			$this->_handleDelete($field, $oldvalue);
-			$value = $oldvalue;
-			return false;
+			if($field->field_required)
+				return false;
+			return true;
 		}
+		if(!is_array($value)) {
+			$fileClass = hikashop_get('class.file');
+			$path = $fileClass->getPath('file', '', $field);
+			$hash = md5_file($path . $value);
+			$value = array('name' => $value, 'sec' => $hash);
+		}
+
+
+		if(!empty($field->field_options['multiple'])) {
+			$tmp_array = array();
+			foreach($value as $k => $element) {
+				if(empty($element)) {
+					continue;
+				}
+				$tmp_array[$k] = $element;
+			}
+			$value = $tmp_array;
+
+			$newvalue = array();
+			$error = false;
+			$sec_start = count($value)/2;
+			$mode = null;
+			foreach($value as $k => $element) {
+				if(empty($element['name']))
+					continue;
+
+				if(is_null($mode)) {
+					if(!empty($value[$k+1]['sec']))
+						$mode = 'no_sec_start';
+					elseif(!empty($value[$sec_start+$k]['sec']))
+						$mode = 'sec_start';
+				}
+				if($mode == 'sec_start') {
+					if(!empty($value[$sec_start+$k]['sec']))
+						$sec = $value[$sec_start+$k]['sec'];
+					elseif(!empty($value[$k+1]['sec']))
+						$sec = $value[$k+1]['sec'];
+					else
+						continue;
+				} else {
+					if(!empty($value[$k+1]['sec']))
+						$sec = $value[$k+1]['sec'];
+					elseif(!empty($value[$sec_start+$k]['sec']))
+						$sec = $value[$sec_start+$k]['sec'];
+					else
+						continue;
+
+				}
+				$file = array('name' => $element['name'], 'sec' => $sec);
+				$ok = $this->_checkOneFile($file, '', $field);
+				if($ok) {
+					$newvalue[] = $file;
+				} else {
+					$error = true;
+				}
+			}
+			if($error) {
+				$value = $oldvalue;
+				return false;
+			} else {
+				if(is_string($oldvalue))
+					$oldfiles = explode('|',$oldvalue);
+				else
+					$oldfiles = $oldvalue;
+				foreach($oldfiles as $oldfile) {
+					if(!in_array($oldfile, $newvalue)) {
+						$this->_handleDelete($field, $oldfile);
+					}
+				}
+
+				$value = implode('|', $newvalue);
+			}
+		} else {
+			$return = $this->_checkOneFile($value, $oldvalue, $field);
+			if(!$return)
+				return $return;
+		}
+
 		return parent::check($field,$value,$oldvalue);
 	}
 

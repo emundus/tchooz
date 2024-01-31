@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,6 +17,13 @@ class hikashopConfigClass extends hikashopClass{
 		if(!empty($this->values['default_params']->config_value)){
 			$this->values['default_params']->config_value = hikashop_unserialize(base64_decode($this->values['default_params']->config_value));
 		}
+
+		JPluginHelper::importPlugin('hikashop');
+		JPluginHelper::importPlugin('hikashopshipping');
+		JPluginHelper::importPlugin('hikashoppayment');
+		$app = JFactory::getApplication();
+		$do = true;
+		$app->triggerEvent('onAfterConfigLoad', array(&$this->values) );
 	}
 
 	function set($namekey,$value=null){

@@ -37,15 +37,15 @@ use Joomla\CMS\HTML\HTMLHelper;
             <p><?php echo Text::_('COM_SECURITYCHECKPRO_ADD_IP_HEADER'); ?></p>
             <ol>
                 <li>
-					<b><?php echo Text::_('COM_SECURITYCHECKPRO_ADD_IP_SINGLE'); ?></b>, i.e.<var><?php echo $current_ip; ?></var>
+					<b><?php echo Text::_('COM_SECURITYCHECKPRO_ADD_IP_SINGLE'); ?></b>, i.e.<var><?php echo $this->current_ip; ?></var>
                 </li>
                 <li>
-                    <b><?php echo Text::_('COM_SECURITYCHECKPRO_ADD_IP_RANGE'); ?></b>, i.e.<var><?php echo $range_example; ?></var>
+                    <b><?php echo Text::_('COM_SECURITYCHECKPRO_ADD_IP_RANGE'); ?></b>, i.e.<var><?php echo $this->range_example; ?></var>
                 </li>
             </ol>
             <p>
                 <?php echo Text::_('COM_SECURITYCHECKPRO_ADD_IP_CURRENT'); ?>
-                <code><?php echo $current_ip; ?></code>        
+                <code><?php echo $this->current_ip; ?></code>        
                 <button type="button" id="add_ip_whitelist_button" class="btn btn-sm btn-success" href="#">
 					<?php echo Text::_('COM_SECURITYCHECKPRO_ADD_TO_WHITELIST'); ?>
                 </button>
@@ -57,7 +57,7 @@ use Joomla\CMS\HTML\HTMLHelper;
             </div>
             <div class="btn-group pull-left" class="margin-left-10 margin-bottom-20">
                 <button class="btn btn-success" id="addip_whitelist_button" href="#">
-					<i class="fapro fa-plus-octagon"> </i>
+					<i class="fa fa-plus"> </i>
                     <?php echo Text::_('COM_SECURITYCHECKPRO_ADD'); ?>
                 </button>
             </div>

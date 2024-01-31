@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -950,7 +950,7 @@ class hikashopUserClass extends hikashopClass {
 			$status = false;
 			$messages['register_email'] = array(JText::_('EMAIL_INVALID'), 'error');
 		}
-		if($mode != 2) {
+		if($mode != 2 && !empty($registerData->email)) {
 			$domains = $params->get('domains');
 			if ($domains) {
 				$emailDomain = explode('@', $registerData->email);

@@ -194,7 +194,7 @@ class Scpadmin_quickiconsHelper
                 (int) $logs_pending = $cpanel_model->LogsPending();
 				                
                 if ($logs_pending == 0) {
-                        $check_not_readed_logs_image = 'fa fa-inbox';
+                        $check_not_readed_logs_image = 'fa fa-file';
                         $document = Factory::getDocument();
                         $document->addScriptDeclaration(
                             "
@@ -213,11 +213,8 @@ class Scpadmin_quickiconsHelper
                     $check_not_readed_logs_label = Text::_('MOD_SECURITYCHECKPRO_NOT_UNREAD_LOGS');
                 } else
                 {
-                        $check_not_readed_logs_image = 'fapro fa-inbox-in';
-                        $document = Factory::getDocument();
-                        // Add style to avoid fapro icons not to be shown aligned to fa icons
-                        $style = '.quick-icons a .fapro { margin: 5px auto -3px !important; }';
-                        $document->addStyleDeclaration($style);
+                        $check_not_readed_logs_image = 'fa fa-file-alt';
+                        $document = Factory::getDocument();                        
                         $document->addScriptDeclaration(
                             "
 						function scp_logs() {

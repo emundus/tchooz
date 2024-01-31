@@ -42,29 +42,68 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
      */
     private $ObsoleteFilesAndFolders = array
     (
-    'files'    => array
-    (
-    // Outdated code
-    'administrator/components/com_securitycheckpro/securitycheckpro.php',
-	'administrator/components/com_securitycheckpro/helpers/ip.php',
-	'administrator/components/com_securitycheckpro/helpers/end.php',
-	'administrator/components/com_securitycheckpro/helpers/databaseupdates.php',
-	'media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css', 
-	'media/com_securitycheckpro/new/vendor/bootstrap/css/bootstrap.css.gz', 
-    ),
-    'folders'    => array
-    (
-	// Remove version 3 folders
-	'administrator/components/com_securitycheckpro/controllers', 
-	'administrator/components/com_securitycheckpro/models', 
-	'administrator/components/com_securitycheckpro/helpers/library',
-	'administrator/components/com_securitycheckpro/helpers/views',
-	'media/com_securitycheckpro/new/vendor/bootstrap/js',
-	'media/com_securitycheckpro/new/vendor/chosen',
-	'media/com_securitycheckpro/new/vendor/jquery',
-	'media/com_securitycheckpro/new/vendor/jquery-easing',
-	'media/com_securitycheckpro/new/vendor/popper',
-    )
+		'files'    => array
+		(   
+		// Remove old php files
+		'administrator/components/com_securitycheckpro/helpers/common.php',
+		'administrator/components/com_securitycheckpro/helpers/controlcenter.php',
+		'administrator/components/com_securitycheckpro/helpers/cpanel.php',
+		'administrator/components/com_securitycheckpro/helpers/cron.php',
+		'administrator/components/com_securitycheckpro/helpers/databaseupdates.php',
+		'administrator/components/com_securitycheckpro/helpers/dbcheck.php',
+		'administrator/components/com_securitycheckpro/helpers/end.php',
+		'administrator/components/com_securitycheckpro/helpers/fileintegrity.php',
+		'administrator/components/com_securitycheckpro/helpers/filemanager.php',
+		'administrator/components/com_securitycheckpro/helpers/ip.php',
+		'administrator/components/com_securitycheckpro/helpers/firewallconfig.php',
+		'administrator/components/com_securitycheckpro/helpers/j3_firewallconfig.php',
+		'administrator/components/com_securitycheckpro/helpers/logs.php',
+		'administrator/components/com_securitycheckpro/helpers/malwarescan.php',
+		'administrator/components/com_securitycheckpro/helpers/onlinechecks.php',
+		'administrator/components/com_securitycheckpro/helpers/protection.php',
+		'administrator/components/com_securitycheckpro/helpers/rules.php',
+		'administrator/components/com_securitycheckpro/helpers/ruleslog.php',
+		'administrator/components/com_securitycheckpro/helpers/securitycheckpros.php',
+		'administrator/components/com_securitycheckpro/helpers/sysinfo.php',
+		'administrator/components/com_securitycheckpro/helpers/trackactions_logs.php',
+		'administrator/components/com_securitycheckpro/helpers/upload.php',
+		// Remove old image files
+		'media/com_securitycheckpro/images/compat_icon_1_6.png',
+		'media/com_securitycheckpro/images/compat_icon_1_7.png',
+		'media/com_securitycheckpro/images/compat_icon_2_5.png',
+		'media/com_securitycheckpro/images/compat_icon_3_x.png',
+		'media/com_securitycheckpro/images/glyphicons-halflings.png',
+		'media/com_securitycheckpro/images/glyphicons-halflings-white.png',
+		'media/com_securitycheckpro/images/loading.gif',
+		'media/com_securitycheckpro/images/opa-icons-black16.png',
+		'media/com_securitycheckpro/images/opa-icons-black32.png',
+		'media/com_securitycheckpro/images/opa-icons-blue16.png',
+		'media/com_securitycheckpro/images/opa-icons-blue32.png',
+		'media/com_securitycheckpro/images/opa-icons-color16.png',
+		'media/com_securitycheckpro/images/opa-icons-color32.png',
+		'media/com_securitycheckpro/images/opa-icons-darkgray16.png',
+		'media/com_securitycheckpro/images/opa-icons-darkgray32.png',
+		'media/com_securitycheckpro/images/opa-icons-gray16.png',
+		'media/com_securitycheckpro/images/opa-icons-gray32.png',
+		'media/com_securitycheckpro/images/opa-icons-green16.png',
+		'media/com_securitycheckpro/images/opa-icons-green32.png',
+		'media/com_securitycheckpro/images/opa-icons-orange16.png',
+		'media/com_securitycheckpro/images/opa-icons-orange32.png',
+		'media/com_securitycheckpro/images/opa-icons-red16.png',
+		'media/com_securitycheckpro/images/opa-icons-red32.png',
+		'media/com_securitycheckpro/images/opa-icons-white16.png',
+		'media/com_securitycheckpro/images/opa-icons-white32.png',
+		'media/com_securitycheckpro/images/row_bkg.png',
+		'media/com_securitycheckpro/images/header_bkg.png',
+		'media/com_securitycheckpro/images/arrows.png',
+		),
+		'folders'    => array
+		(
+		// Remove new, fonts and stylesheet folders
+		'media/com_securitycheckpro/new',
+		'media/com_securitycheckpro/stylesheets',
+		'media/com_securitycheckpro/fonts',
+		)
     );
             
     /* Función que desinstala el componente Securitycheck */
@@ -123,8 +162,10 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
         if(!empty($ObsoleteFilesAndFolders['folders'])) { foreach($ObsoleteFilesAndFolders['folders'] as $folder)
             {
                 $f = JPATH_ROOT.'/'.$folder;
-                if(!Folder::exists($f)) { continue;
+                if( !file_exists($f) ) { continue;
                 }   
+				if( !is_dir($f) ) { continue;
+                }      
 				try{		
 					$res = Folder::delete($f);
 				} catch (Exception $e)
@@ -407,7 +448,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
           
         }
 		// Remove obsolete files and folders
-		//$this->_removeObsoleteFilesAndFolders($this->ObsoleteFilesAndFolders);        
+		$this->_removeObsoleteFilesAndFolders($this->ObsoleteFilesAndFolders);        
     }
     
     /**

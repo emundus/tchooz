@@ -13,26 +13,6 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\HTML\HTMLHelper;
-
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
-
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-// Add style declaration
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-?>
-
-<?php 
-// Cargamos el contenido común
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/ruleslog.php';
 ?>
 
 <form action="<?php echo Route::_('index.php?option=com_securitycheckpro&view=ruleslogs');?>" class="margin-top-minus18" method="post" name="adminForm" id="adminForm">
@@ -47,9 +27,9 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/ruleslog.p
                 <div class="card-body">
                     <div>
 						<div class="input-group margin-bottom-10">
-							<input type="text" name="filter_rules_search" class="form-control" placeholder="<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_rules_search" value="<?php echo $this->escape($this->state->get('filter.rules_search')); ?>" title="<?php echo JText::_('JSEARCH_FILTER'); ?>" />
-							<button class="btn btn-outline-secondary" type="submit" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-							<button class="btn btn-outline-secondary" type="button" id="filter_rules_search_button" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
+							<input type="text" name="filter_rules_search" class="form-control" placeholder="<?php echo Text::_('JSEARCH_FILTER_LABEL'); ?>" id="filter_rules_search" value="<?php echo $this->escape($this->state->get('filter.rules_search')); ?>" title="<?php echo Text::_('JSEARCH_FILTER'); ?>" />
+							<button class="btn btn-outline-secondary" type="submit" rel="tooltip" title="<?php echo Text::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+							<button class="btn btn-outline-secondary" type="button" id="filter_rules_search_button" rel="tooltip" title="<?php echo Text::_('JSEARCH_FILTER_CLEAR'); ?>"><i class="icon-remove"></i></button>
 							<div class="btn-group margin-left-10">
                                 <?php 
 									if (!empty($this->pagination)) {
@@ -62,17 +42,17 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/ruleslog.p
                         <table class="table table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <th class="rules-logs">
-										<?php echo JText::_("Ip"); ?>
+                                    <th class="center">
+										<?php echo Text::_("Ip"); ?>
                                     </th>
-                                    <th class="rules-logs">
-										<?php echo JText::_('COM_SECURITYCHECKPRO_USER'); ?>
+                                    <th class="center">
+										<?php echo Text::_('COM_SECURITYCHECKPRO_USER'); ?>
                                     </th>
-                                    <th class="rules-logs">
-										<?php echo JText::_('COM_SECURITYCHECKPRO_RULES_LOGS_LAST_ENTRY'); ?>
+                                    <th class="center">
+										<?php echo Text::_('COM_SECURITYCHECKPRO_RULES_LOGS_LAST_ENTRY'); ?>
                                     </th>
-                                    <th class="rules-logs">
-										<?php echo JText::_('COM_SECURITYCHECKPRO_RULES_LOGS_REASON_HEADER'); ?>
+                                    <th class="center">
+										<?php echo Text::_('COM_SECURITYCHECKPRO_RULES_LOGS_REASON_HEADER'); ?>
                                     </th>
                                 </tr>
                             </thead>
@@ -82,16 +62,16 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/ruleslog.p
 								foreach ($this->log_details as &$row) {    
 									?>
 									<tr class="row<?php echo $k % 2; ?>">
-										<td class="rules-logs">
+										<td class="center">
 											<?php echo $row->ip; ?>    
 										</td>
-										<td class="rules-logs">
+										<td class="center">
 											<?php echo $row->username; ?>    
 										</td>
-										<td class="rules-logs">
+										<td class="center">
 											<?php echo $row->last_entry; ?>    
 										</td>
-										<td class="rules-logs">
+										<td class="center">
 											<?php echo $row->reason; ?>    
 										</td>
 									</tr>
@@ -118,7 +98,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/ruleslog.p
 
                         <div class="card" class="margin-top-10 margin-left-10 width-40rem">
                             <div class="card-body card-header">
-                                <?php echo JText::_('COM_SECURITYCHECKPRO_COPYRIGHT'); ?><br/>                                
+                                <?php echo Text::_('COM_SECURITYCHECKPRO_COPYRIGHT'); ?><br/>                                
                             </div>                                
                         </div>            
                 </div>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -452,6 +452,26 @@ class ProductViewProduct extends HikaShopView {
 								$on = '';
 								$a = hikashop_table('product').' AS b';
 								$this->type = 'variant';
+							}elseif($product_synchronize == 5) {
+								$invoice_statuses = $config->get('invoice_order_statuses','confirmed,shipped');
+								if(empty($invoice_statuses))
+									$invoice_statuses = 'confirmed,shipped';
+								$invoice_statuses = explode(',', $invoice_statuses);
+								foreach($invoice_statuses as $k => $i) {
+									$invoice_statuses[$k] = $database->Quote($i);
+								}
+
+								$query = 'SELECT hkop2.product_id FROM #__hikashop_product AS hkp LEFT JOIN #__hikashop_order_product AS hkop ON hkp.product_id = hkop.product_id LEFT JOIN #__hikashop_order AS hko ON hkop.order_id = hko.order_id LEFT JOIN #__hikashop_order_product AS hkop2 ON hko.order_id = hkop2.order_id WHERE hko.order_status IN ('.implode(', ', $invoice_statuses).') AND hkop2.product_id != hkp.product_id AND (hkp.product_id = '.$product_id.' OR hkp.product_parent_id = '.$product_id.')';
+								$database->setQuery($query);
+								$alsoIds = $database->loadColumn();
+								if(empty($alsoIds)) {
+									$alsoIds = array(0);
+								}
+								$select = 'SELECT DISTINCT b.*';
+								$filters[] = 'b.product_id IN ('.implode(',', $alsoIds).')';
+								$b = '';
+								$on = '';
+								$a = hikashop_table('product').' AS b';
 							} else {
 								$pathway_sef_name = $config->get('pathway_sef_name','category_pathway');
 								$pathway = hikaInput::get()->getInt($pathway_sef_name,0);
@@ -1391,6 +1411,7 @@ class ProductViewProduct extends HikaShopView {
 	public function show() {
 		$app = JFactory::getApplication();
 		$product_id = (int)hikashop_getCID('product_id');
+		$this->productlayout = '';
 
 		$config =& hikashop_config();
 		$this->assignRef('config', $config);

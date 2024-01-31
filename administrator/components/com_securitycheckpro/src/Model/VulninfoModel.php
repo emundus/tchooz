@@ -92,7 +92,7 @@ class VulninfoModel extends BaseModel
 		$db = Factory::getDbo();
 		
 		$query = $db->getQuery(true)
-			->select($db->quoteName('*'))
+			->select('*')
 			->from($db->quoteName('#__securitycheckpro_db'))
 			->where($db->quoteName('Joomlaversion') . ' = ' . $db->quote($joomla_version_db))
 			->order('id DESC');

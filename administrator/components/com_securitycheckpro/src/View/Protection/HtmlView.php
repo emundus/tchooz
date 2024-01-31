@@ -31,7 +31,8 @@ class HtmlView extends BaseHtmlView {
      */
     function display($tpl = null) {
 		
-		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'), 'securitycheckpro');
+		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'), 'securitycheckpro');		
+				  
         // Si existe el fichero .htaccess, mostramos la opción para borrarlo.
         // Obtenemos el modelo
         $model = $this->getModel();
@@ -52,6 +53,13 @@ class HtmlView extends BaseHtmlView {
         }
 
         ToolBarHelper::apply();
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common')
+		  ->useScript('bootstrap.tab')		 
+		  ->useScript('bootstrap.toast')		 
+		  ->useScript('com_securitycheckpro.Protection');
 
         // Obtenemos la configuración actual...
         $config = $model->getConfig();
@@ -70,6 +78,14 @@ class HtmlView extends BaseHtmlView {
         $trackactions_plugin_exists = $common_model->PluginStatus(8);
         $this->logs_pending = $logs_pending;
         $this->trackactions_plugin_exists = $trackactions_plugin_exists;
+		
+		$params = ComponentHelper::getParams('com_securitycheckpro');
+		$size = $params->get('secret_key_length', 20); 
+		
+		// Also comes common data from SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\DisplayController
+		
+		// Pass parameters to the cpanel.js script using Joomla's script options API
+		$this->document->addScriptOptions('securitycheckpro.Protection.blockedaccessText', (int) $size);
         
         parent::display($tpl);  
     }

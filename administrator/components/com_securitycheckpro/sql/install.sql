@@ -65,7 +65,11 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('Joomla!','core','4.3.1','<=','4.0.0','>=','Joomla! core','Two moderate vulnerabilities','May 31 2023','Joomla 4.2.0 to 4.3.1','update','4.3.2'),
 ('com_jbusinessdirectory','component','5.7.7','>=','4.0.0','>=','JBusiness Directory Component','Other vulnerability','Jul 14 2023','Version 5.7.7 and lower','update','5.8.8'),
 ('com_hikashop','component','4.7.2','<=','4.0.0','>=','Hikashop Component','Sql Injection vulnerability','Jul 14 2023','Version 4.4.1 to 4.7.2','update','4.7.4'),
-('com_jchoptimize','component','8.0.4','<=','4.0.0','>=','Jchoptimize Component','Other vulnerability','Aug 04 2023','Version 8.0.4 and maybe lower','update','8.0.5');
+('com_jchoptimize','component','8.0.4','<=','4.0.0','>=','Jchoptimize Component','Other vulnerability','Aug 04 2023','Version 8.0.4 and maybe lower','update','8.0.5'),
+('com_jlexreview','component','6.0.1','<=','4.0.0','>=','JLex Review Component','Cross Site Scripting vulnerability','Nov 17 2023','Version 6.0.1 and maybe lower','none','No details'),
+('com_jlexguestbook','component','1.6.4','<=','4.0.0','>=','JLex GuestBook Component','Cross Site Scripting vulnerability','Nov 17 2023','Version 1.6.4 and maybe lower','none','No details'),
+('Joomla!','core','4.4.0','<=','4.0.0','>=','Joomla! core','One high vulnerability','Nov 30 2023','Joomla 1.6.0 to 4.4.0','update','4.4.1'),
+('Joomla!','core','5.0.0','<=','5.0.0','>=','Joomla! core','One high vulnerability','Nov 30 2023','Joomla 5.0.0','update','5.0.1');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (

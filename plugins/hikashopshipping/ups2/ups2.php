@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -393,7 +393,10 @@ class plgHikashopshippingUps2 extends hikashopShippingPlugin
 			$data['height'] = $packages['z'];
 			$data['length'] = $packages['y'];
 			$data['width'] = $packages['x'];
-			$data['price'] = $price;
+			if(!empty($packages['price']))
+				$data['price'] = $packages['price'];
+			else
+				$data['price'] = $price;
 			$data['quantity'] = 1;
 
 			$packagesToSend[] = $this->_createPackage($data, $rate, $order, true);

@@ -10,6 +10,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Form\Form;
+use Joomla\Input\Input;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\FormModel;
 
@@ -84,7 +85,7 @@ class ImportModelImport extends FormModel
 
         $dedup = array();
 
-        $files = new JInput($_FILES, array());
+        $files = new Input($_FILES, array());
         $file = $files->get('jform', null, 'array');
 
         $db = Factory::getDbo();
@@ -274,9 +275,6 @@ class ImportModelImport extends FormModel
 				}
 
 				$root[(string)$attribs['original']] = $element;
-
-//				$dedup[(string)$attribs['id']] = (string)$item[0]->target;;
-
 
 				$translation[] = $root;
 			}

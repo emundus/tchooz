@@ -23,6 +23,7 @@
    <field Field="sync" Type="int" Null="YES" Key="" Default="0" Extra="" />
    <field Field="sync_method" Type="varchar(50)" Null="YES" Key="" Extra="" />
    <field Field="params" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="max_filesize" Type="double(6,2)" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_setup_attachments" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_attachments" Non_unique="0" Key_name="lbl" Seq_in_index="1" Column_name="lbl" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_attachments" Non_unique="1" Key_name="fb_filter_value_INDEX" Seq_in_index="1" Column_name="value" Collation="A" Null="YES" Index_type="BTREE" Sub_part="10" Comment="" />
@@ -53,6 +54,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">2</field>
@@ -76,6 +78,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">3</field>
@@ -99,6 +102,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">4</field>
@@ -122,6 +126,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">6</field>
@@ -145,6 +150,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">8</field>
@@ -168,6 +174,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">10</field>
@@ -191,6 +198,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">11</field>
@@ -214,6 +222,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">12</field>
@@ -237,6 +246,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">20</field>
@@ -260,6 +270,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">21</field>
@@ -283,6 +294,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">25</field>
@@ -306,6 +318,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">26</field>
@@ -329,6 +342,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">27</field>
@@ -352,6 +366,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">36</field>
@@ -375,6 +390,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">37</field>
@@ -398,6 +414,7 @@
     <field name="sync">0</field>
     <field name="sync_method"></field>
     <field name="params"></field>
+    <field name="max_filesize" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

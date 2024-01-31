@@ -21,26 +21,6 @@ Session::checkToken('get') or die('Invalid Token');
 // Load plugin language
 $lang2 = Factory::getLanguage();
 $lang2->load('plg_system_securitycheckpro');
-
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
-
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-
-?>
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/sysinfo.php';
-
-echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/tab.min.js"></script>';
 ?>
 
 
@@ -55,7 +35,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
             
             <div class="card mb-3">
                 <div class="card-header">
-                  <i class="fapro fa-table"></i>
+                  <i class="fa fa-table"></i>
         <?php echo Text::_('COM_SECURITYCHECKPRO_SYSTEM_INFORMATION'); ?>
                 </div>
                 <div class="card-body">
@@ -110,18 +90,18 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['kickstart_exists'] ) {
-                                                    $span = "<span class=\"badge badge-danger\">" . Text::_("COM_SECURITYCHECKPRO_YES");
+                                                    $span = "<span class=\"badge bg-danger\">" . Text::_("COM_SECURITYCHECKPRO_YES");
                                                 } else {                                
-                                                    $span = "<span class=\"badge badge-success\">" . Text::_("COM_SECURITYCHECKPRO_NO");
+                                                    $span = "<span class=\"badge bg-success\">" . Text::_("COM_SECURITYCHECKPRO_NO");
                                                 }
                                                 ?>                        
                                                 </span>
                                                 <div>                            
                 <?php 
                 if (!$this->system_info['kickstart_exists'] ) {
-                    echo "<span class=\"badge badge-success\">OK</span>";
+                    echo "<span class=\"badge bg-success\">OK</span>";
                 } else {
-                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                     ?>
                                                         
                                                     <!-- Modal Akeeba restoration -->
@@ -155,9 +135,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if (version_compare($this->system_info['coreinstalled'], $this->system_info['corelatest'], '==') ) {
-                                                    $span = "<span class=\"badge badge-success\">";
+                                                    $span = "<span class=\"badge bg-success\">";
                                                 } else {
-                                                    $span = "<span class=\"badge badge-danger\">";
+                                                    $span = "<span class=\"badge bg-danger\">";
                                                 }
                                                 ?>
                                                 <?php echo $span . $this->system_info['coreinstalled']; ?>
@@ -165,9 +145,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                                 <div>                            
                 <?php 
                 if (version_compare($this->system_info['coreinstalled'], $this->system_info['corelatest'], '==') ) {
-                    echo "<span class=\"badge badge-success\">OK</span>";
+                    echo "<span class=\"badge bg-success\">OK</span>";
                 } else {
-                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                     ?>
                                                         <button class="btn btn-info btn-sm" id="GoToJoomlaUpdate_button" type="button"><i class="icon-wrench icon-white"></i></button>
                 <?php }    ?>                                                        
@@ -183,9 +163,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['vuln_extensions'] == 0 ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['vuln_extensions']) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['vuln_extensions']) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" id="GoToVuln_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal vuln extensions -->
@@ -218,9 +198,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['suspicious_files'] == 0 ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['suspicious_files']) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['suspicious_files']) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" id="GoToMalware_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal malware found -->
@@ -253,9 +233,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['files_with_bad_integrity'] == 0 ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['files_with_bad_integrity']) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['files_with_bad_integrity']) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" id="GoToIntegrity_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal file integrity -->
@@ -288,9 +268,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['files_with_incorrect_permissions'] == 0 ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['files_with_incorrect_permissions']) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', $this->system_info['files_with_incorrect_permissions']) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" id="GoToPermissions_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal file permissions -->
@@ -323,9 +303,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['backend_protection'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" id="GoToHtaccessProtection_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal Hide backend -->
@@ -358,9 +338,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['firewall_options']['forbid_new_admins'] == 1 ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_session_protection_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal forbid new admins -->
@@ -393,9 +373,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['twofactor_enabled'] >= 1 ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_joomla_plugins_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal two factor -->
@@ -428,9 +408,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if (($this->system_info['htaccess_protection']['xframe_options'] > 0) && ($this->system_info['htaccess_protection']['sts_options'] > 0) && ($this->system_info['htaccess_protection']['xss_options'] > 0) && ($this->system_info['htaccess_protection']['csp_policy'] > 0) && ($this->system_info['htaccess_protection']['referrer_policy'] > 0) && ($this->system_info['htaccess_protection']['prevent_mime_attacks'] > 0) ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_headers_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal http headers -->
@@ -492,9 +472,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['firewall_plugin_enabled'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_twofactor_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal firewall enabled -->
@@ -527,12 +507,12 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge badge-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
                                                 } else if ($this->system_info['firewall_options']['dynamic_blacklist'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                     
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_security_status_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal firewall enabled -->
@@ -544,7 +524,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
 																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>               
 																</div>
 																<div class="modal-body">    
-																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_FIREWALL_ENABLED_INFO'); ?></p>    
+																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_INFO'); ?></p>    
 																</div>
                                                                 <div class="modal-footer">
                                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
@@ -565,11 +545,11 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge badge-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
                                                 } else     if ($this->system_info['firewall_options']['logs_attacks'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_security_status_logs_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal firewall enabled -->
@@ -602,12 +582,12 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge badge-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
                                                 } else     if ($this->system_info['firewall_options']['second_level'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                     
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_second_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal firewall enabled -->
@@ -640,11 +620,11 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge badge-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
                                                 } else if ($this->system_info['firewall_options']['exclude_exceptions_if_vulnerable'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";                                        
+                                                    echo "<span class=\"badge bg-success\">OK</span>";                                        
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_exclude_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal exceptions -->
@@ -677,11 +657,11 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge badge-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
                                                 } else     if (!(strstr($this->system_info['firewall_options']['strip_tags_exceptions'], '*')) ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_xss_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal xss filter -->
@@ -714,11 +694,11 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge badge-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
                                                 } else if (!(strstr($this->system_info['firewall_options']['sql_pattern_exceptions'], '*')) ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_sql_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal SQL filter -->
@@ -751,11 +731,11 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge badge-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
                                                 } else if (!(strstr($this->system_info['firewall_options']['lfi_exceptions'], '*')) ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_lfi_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal LFI filter -->
@@ -792,11 +772,11 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                                     $shared_session_enabled = $params->get('shared_session');
                     
                                                 if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge badge-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
                                                 } else if (($this->system_info['firewall_options']['session_protection_active']) && (!$shared_session_enabled) ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_session_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal Session protection -->
@@ -833,11 +813,11 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                                     $shared_session_enabled = $params->get('shared_session');
                                                     
                                                 if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge badge-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
                                                 } else if (($this->system_info['firewall_options']['session_hijack_protection']) && (!$shared_session_enabled) ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_session_hijack_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal Session hijack -->
@@ -870,12 +850,12 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge badge-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
                                                 } else if ($this->system_info['firewall_options']['upload_scanner_enabled'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                     
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_upload_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal upload scanner -->
@@ -908,12 +888,12 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if (!$this->system_info['firewall_plugin_enabled'] ) {    
-                                                    echo "<span class=\"badge badge-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
+                                                    echo "<span class=\"badge bg-warning\">" . Text::_('COM_SECURITYCHECKPRO_ENABLE_FIREWALL_TO_APPLY') . "</span>";
                                                 } else if ($this->system_info['firewall_options']['upload_scanner_enabled'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                     
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_cron_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal cron enabled -->
@@ -958,18 +938,18 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
 													}
                                                                                         
                                                 if ($interval < 2 ) {
-                                                    $span = "<span class=\"badge badge-success\">";
+                                                    $span = "<span class=\"badge bg-success\">";
                                                 } else {
-                                                    $span = "<span class=\"badge badge-warning\">";
+                                                    $span = "<span class=\"badge bg-warning\">";
                                                 }
                                                 ?>
 												<?php echo $span . $this->system_info['last_check']; ?>
                                                     </span>
                 <?php 
                 if ($interval < 2 ) {
-                    echo "<span class=\"badge badge-success\">OK</span>";
+                    echo "<span class=\"badge bg-success\">OK</span>";
                 } else {
-                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                     ?>                                            
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_filemanager_check_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal last filemanager -->
@@ -1014,18 +994,18 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
 													}
                                                                                         
                                                 if ($interval < 2 ) {
-                                                    $span = "<span class=\"badge badge-success\">";
+                                                    $span = "<span class=\"badge bg-success\">";
                                                 } else {
-                                                    $span = "<span class=\"badge badge-warning\">";
+                                                    $span = "<span class=\"badge bg-warning\">";
                                                 }
                                                 ?>
                 <?php echo $span . $this->system_info['last_check_integrity']; ?>
                                                     </span>
                 <?php 
                 if ($interval < 2 ) {
-                    echo "<span class=\"badge badge-success\">OK</span>";
+                    echo "<span class=\"badge bg-success\">OK</span>";
                 } else {
-                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                     ?>                                            
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_fileintegrity_check_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal last fileintegrity -->
@@ -1058,9 +1038,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['spam_protection_plugin_enabled'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_spam_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal spam protection -->
@@ -1095,9 +1075,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['htaccess_protection']['prevent_access'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_htaccess_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal htaccess protection -->
@@ -1130,9 +1110,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['htaccess_protection']['prevent_unauthorized_browsing'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_browsing_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal unauthorized browsing -->
@@ -1165,9 +1145,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['htaccess_protection']['file_injection_protection'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_file_injection_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal file injection -->
@@ -1200,9 +1180,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['htaccess_protection']['self_environ'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_self_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal self environ -->
@@ -1235,9 +1215,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['htaccess_protection']['xframe_options'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_xframe_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal xframe options -->
@@ -1270,9 +1250,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['htaccess_protection']['prevent_mime_attacks'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_mime_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal mime attacks -->
@@ -1305,9 +1285,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['htaccess_protection']['default_banned_list'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_default_banned_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal default banned list -->
@@ -1340,9 +1320,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['htaccess_protection']['disable_server_signature'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_signature_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal disable server signature -->
@@ -1375,9 +1355,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['htaccess_protection']['disallow_php_eggs'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_eggs_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal disallow php eggs -->
@@ -1410,9 +1390,9 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/ta
                                             <li class="list-group-item">
                                                 <?php 
                                                 if ($this->system_info['htaccess_protection']['disallow_php_eggs'] ) {
-                                                    echo "<span class=\"badge badge-success\">OK</span>";
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
                                                 } else {
-                                                    echo "<span class=\"badge badge-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', 1) . "</span>";
                                                     ?>
                                                     <button class="btn btn-info btn-sm" type="button" id="li_extension_status_sensible_button" href="#"><i class="icon-wrench icon-white"></i></button>
                                                     <!-- Modal disallow sensible files -->

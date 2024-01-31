@@ -25,33 +25,11 @@ $status_array = array(HTMLHelper::_('select.option', '0', Text::_('COM_SECURITYC
             HTMLHelper::_('select.option', '1', Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_OK')),
             HTMLHelper::_('select.option', '2', Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_EXCEPTIONS')));
 
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
-
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
 $list_group_style = 'class="margin-right-5" style="width: fit-content;"';
 if (version_compare(JVERSION, '4.0', 'ge')) {		
 	$list_group_style = 'style="width: fit-content;"';
 }
 
-// Add style declaration
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-?>
-
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/fileintegrity.php';
-?>
-
-<?php
 if (empty($this->last_check_integrity) ) {
     $this->last_check_integrity = Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_NEVER');
 }
@@ -81,27 +59,27 @@ if (empty($this->files_status) ) {
                             <div <?php echo $list_group_style; ?>>
                                 <ul class="list-group text-center">
                                     <li class="list-group-item active font-size-13"><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_CHECK_STARTTIME'); ?></li>
-                                    <li class="list-group-item"><span id="start_time" class="badge badge-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_NEVER'); ?></span></li>
+                                    <li class="list-group-item"><span id="start_time" class="badge bg-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_NEVER'); ?></span></li>
                                 </ul>
                             </div>                            
                             <div <?php echo $list_group_style; ?>>
                                 <ul class="list-group text-center">
                                     <li class="list-group-item active font-size-13"><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_CHECK_TASK'); ?></li>
                                     <li class="list-group-item">
-                                        <span id="task_status" class="badge badge-info"><?php echo $this->files_status; ?></span>
-                                        <span id="task_error" class="badge badge-danger display-none">Error</span>
+                                        <span id="task_status" class="badge bg-info"><?php echo $this->files_status; ?></span>
+                                        <span id="task_error" class="badge bg-danger display-none">Error</span>
                                     </li>
                                 </ul>
                             </div>
                             <div <?php echo $list_group_style; ?>>
                                 <ul class="list-group text-center">
                                     <li class="list-group-item active font-size-13"><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_HASH_ALG'); ?></li>
-                                    <li class="list-group-item"><span id="end_time" class="badge badge-dark"><?php echo $this->hash_alg; ?></span></li>
+                                    <li class="list-group-item"><span id="end_time" class="badge bg-dark"><?php echo $this->hash_alg; ?></span></li>
                                 </ul>                                
                             </div>                            
                         </div>                        
                         <div id="button_start_scan" class="card-footer">
-                            <button class="btn btn-primary" type="button" id="button_start_scan"><i class="fapro fa-fw fa-fire"></i><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON'); ?></button>
+                            <button class="btn btn-primary" type="button" id="button_start_scan"><i class="fa fa-fire"></i><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON'); ?></button>
                         </div>                        
                     </div>
                 </div>
@@ -117,10 +95,10 @@ if (empty($this->files_status) ) {
                             <div class="modal-body"> 
 								<?php if (!empty($this->last_scan_info)) { ?>
 									<div class="margin-left-10">
-										<span class="badge badge-info"><b><?php echo Text::_('COM_SECURITYCHECKPRO_MAX_TIME_TO_SCAN_FILE') . '</b>' . htmlspecialchars($this->last_scan_info['max_time']) . " " . Text::_('COM_SECURITYCHECKPRO_SECONDS'); ?></span>
+										<span class="badge bg-info"><b><?php echo Text::_('COM_SECURITYCHECKPRO_MAX_TIME_TO_SCAN_FILE') . '</b>' . htmlspecialchars($this->last_scan_info['max_time']) . " " . Text::_('COM_SECURITYCHECKPRO_SECONDS'); ?></span>
 									</div>
 									<div class="margin-left-10">
-										<span class="badge badge-info margin-bottom-20"><b><?php echo Text::_('COM_SECURITYCHECKPRO_MAX_TIME_FILE') . '</b>' . htmlspecialchars($this->last_scan_info['max_time_filename']); ?></span>
+										<span class="badge bg-info margin-bottom-20"><b><?php echo Text::_('COM_SECURITYCHECKPRO_MAX_TIME_FILE') . '</b>' . htmlspecialchars($this->last_scan_info['max_time_filename']); ?></span>
 									</div>				
 									
 									<div class="wrapper">
@@ -173,19 +151,19 @@ if (empty($this->files_status) ) {
                             <div <?php echo $list_group_style; ?>>
                                 <ul class="list-group text-center">
                                     <li class="list-group-item text-white bg-success"><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_LAST_CHECK'); ?></li>
-                                    <li class="list-group-item"><span class="badge badge-dark"><?php echo $this->last_check_integrity; ?></span></li>
+                                    <li class="list-group-item"><span class="badge bg-dark"><?php echo $this->last_check_integrity; ?></span></li>
                                 </ul>
                             </div>
 							<div <?php echo $list_group_style; ?>>
                                 <ul class="list-group text-center">
                                     <li class="list-group-item text-white bg-success"><?php echo Text::_('COM_SECURITYCHECKPRO_TIME_TAKEN'); ?></li>
-                                    <li class="list-group-item"><span class="badge badge-dark"><?php echo $this->time_taken; ?></span></li>
+                                    <li class="list-group-item"><span class="badge bg-dark"><?php echo $this->time_taken; ?></span></li>
                                 </ul>
                             </div>
                             <div <?php echo $list_group_style; ?>>
                                 <ul class="list-group text-center">
                                     <li class="list-group-item text-white bg-success"><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_FILES_SCANNED'); ?></li>
-                                    <li class="list-group-item"><span class="badge badge-dark"><?php echo $this->files_scanned_integrity; ?></span></li>
+                                    <li class="list-group-item"><span class="badge bg-dark"><?php echo $this->files_scanned_integrity; ?></span></li>
 									<?php
 										if ( (!empty($this->time_taken)) && (is_array($this->last_scan_info)) ){
 									?>
@@ -199,7 +177,7 @@ if (empty($this->files_status) ) {
                                 <ul class="list-group text-center">
                                     <li class="list-group-item text-white bg-success font-size-13"><?php echo Text::_('COM_SECURITYCHECKPRO_FILEINTEGRITY_FILES_MODIFIED'); ?></li>
                                     <li class="list-group-item">
-                                        <span class="badge badge-dark"><?php echo $this->files_with_bad_integrity; ?></span>
+                                        <span class="badge bg-dark"><?php echo $this->files_with_bad_integrity; ?></span>
                                     </li>
                                 </ul>
                             </div>   	
@@ -207,7 +185,7 @@ if (empty($this->files_status) ) {
                         <div id="button_show_log" class="card-footer">    
         <?php	                            
         if (!empty($this->log_filename) ) { ?>
-            <button class="btn btn-success" type="button" id="view_modal_log_button"><i class="fapro fa-fw fa-eye"></i><?php echo substr(Text::_('COM_SECURITYCHECKPRO_ACTION_VIEWLOGS'), 0, -1); ?></button>
+            <button class="btn btn-success" type="button" id="view_modal_log_button"><i class="fa fa-eye"></i><?php echo substr(Text::_('COM_SECURITYCHECKPRO_ACTION_VIEWLOGS'), 0, -1); ?></button>
         <?php }    ?>                            
                         </div>    
                     </div>                    
@@ -328,17 +306,17 @@ if (empty($this->files_status) ) {
                                     <table class="table table-borderless margin-top-30">
                                         <thead>
                                             <tr>
-                                                <td><span class="badge badge-success"> </span>
+                                                <td><span class="badge bg-success"> </span>
                                                 </td>
                                                 <td class="left">
                                                     <?php echo Text::_('COM_SECURITYCHECKPRO_FILEINTEGRITY_GREEN_COLOR'); ?>
                                                 </td>
-                                                <td><span class="badge badge-warning"> </span>
+                                                <td><span class="badge bg-warning"> </span>
                                                 </td>
                                                 <td class="left">
                                                     <?php echo Text::_('COM_SECURITYCHECKPRO_FILEINTEGRITY_YELLOW_COLOR'); ?>
                                                 </td>
-                                                <td><span class="badge badge-danger"> </span>
+                                                <td><span class="badge bg-danger"> </span>
                                                 </td>
                                                 <td class="left">
                                                     <?php echo Text::_('COM_SECURITYCHECKPRO_FILEINTEGRITY_RED_COLOR'); ?>
@@ -355,7 +333,7 @@ if (empty($this->files_status) ) {
                                 <div id="permissions_buttons">
                                     <div class="pull-right">
                                         <button class="btn btn-success margin-right-5" id="add_exception_button" href="#">
-                                            <i class="fapro fa-fw fa-plus"> </i>
+                                            <i class="fa fa-plus"> </i>
                 <?php echo Text::_('COM_SECURITYCHECKPRO_ADD_AS_EXCEPTION'); ?>
                                         </button>                                        
                                     </div>
@@ -365,7 +343,7 @@ if (empty($this->files_status) ) {
                                     <div id="permissions_buttons">
                                         <div class="btn-group pull-right">
                                             <button class="btn btn-danger" id="delete_exception_button" href="#">
-                                                <i class="icon-trash icon-white"> </i>
+                                                <i class="fa fa-trash"> </i>
                 <?php echo Text::_('COM_SECURITYCHECKPRO_DELETE_EXCEPTION'); ?>
                                             </button>
                                         </div>
@@ -404,31 +382,31 @@ if (empty($this->files_status) ) {
 											<?php 
 												if ($this->checkbox_position == 1) {
 											?>
-											<th class="filesintegrity-table width-5">
+											<th class="center width-5">
                                                 <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
                                             </th> 
 											<?php 
 												}
 											?>
-                                            <th class="filesintegrity-table">
+                                            <th class="center">
                                                 <?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_NAME'); ?>
                                             </th>
-                                            <th class="filesintegrity-table ruta-style">
+                                            <th class="center">
                                                 <?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_RUTA'); ?>                
                                             </th>
-                                            <th class="filesintegrity-table">
+                                            <th class="center">
                                                 <?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_TAMANNO'); ?>                
                                             </th>
-                                            <th class="filesintegrity-table">
+                                            <th class="center">
                                                 <?php echo Text::_('Info'); ?>            
                                             </th>
-                                            <th class="filesintegrity-table">
+                                            <th class="center">
                                                 <?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_LAST_MODIFIED'); ?>
                                             </th>
                                             <?php 
 												if ($this->checkbox_position == 0) {
 											?>
-											<th class="filesintegrity-table width-5">
+											<th class="center width-5">
                                                 <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
                                             </th> 
 											<?php 
@@ -476,18 +454,18 @@ if (empty($this->files_status) ) {
                     </td>
 					<?php 
                     if ($safe_integrity == '0' ) {
-                        echo "<td class=\"centrado;\"><span class=\"badge badge-danger\">";
+                        echo "<td class=\"centrado;\"><span class=\"badge bg-danger\">";
                     } else if ($safe_integrity == '1' ) {
-                        echo "<td class=\"centrado;\"><span class=\"badge badge-success\">";
+                        echo "<td class=\"centrado;\"><span class=\"badge bg-success\">";
                     } else if ($safe_integrity == '2' ) {
-                        echo "<td class=\"centrado;\"><span class=\"badge badge-warning\">";
+                        echo "<td class=\"centrado;\"><span class=\"badge bg-warning\">";
                     } ?>
                     <?php echo htmlspecialchars($row['notes']); ?>
                     </span>
                     </td>
                     <?php 
                     if ($safe_integrity == '0' ) {
-                        echo "<td class=\"centrado;\"><span class=\"badge badge-danger\">";
+                        echo "<td class=\"centrado;\"><span class=\"badge bg-danger\">";
                     } else {
                         echo "<td class=\"centrado;\">";
                     } 

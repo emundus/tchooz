@@ -19,6 +19,8 @@ Session::checkToken('get') or die('Invalid Token');
 $lang2 = Factory::getLanguage();
 $lang2->load('plg_system_securitycheckpro');
 
+$site_url = Uri::root();
+
 function booleanlist( $name, $attribs = null, $selected = null, $id=false )
 {
     $arr = array(
@@ -136,62 +138,7 @@ function what_to_check( $name, $attribs = null, $selected = null, $id=false )
     HTMLHelper::_('select.option',  '2', Text::sprintf('PLG_SECURITYCHECKPRO_IP_USER_AGENT', "AND"))
     );
     return HTMLHelper::_('select.genericlist',  $arr, $name, 'class="form-select"', 'value', 'text', (int) $selected, $id);
-}
-
-$document = Factory::getDocument();
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-$site_url = Uri::root();
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-?>
-
-<?php
-    $current_ip = "";
-    $range_example = "";
-	// Contribution of George Acu - thanks!
-	if (isset($_SERVER['HTTP_TRUE_CLIENT_IP']))
-	{
-		# CloudFlare specific header for enterprise paid plan, compatible with other vendors
-		$current_ip = $_SERVER['HTTP_TRUE_CLIENT_IP']; 
-	} elseif (isset($_SERVER['HTTP_CF_CONNECTING_IP']))
-	{
-		# another CloudFlare specific header available in all plans, including the free one
-		$current_ip = $_SERVER['HTTP_CF_CONNECTING_IP']; 
-	} elseif (isset($_SERVER['HTTP_INCAP_CLIENT_IP'])) 
-	{
-		// Users of Incapsula CDN
-		$current_ip = $_SERVER['HTTP_INCAP_CLIENT_IP']; 
-	} elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) 
-	{
-		# specific header for proxies
-		$current_ip = $_SERVER['HTTP_X_FORWARDED_FOR']; 
-		$result_ip_address = explode(', ', $clientIpAddress);
-        $current_ip = $result_ip_address[0];
-	} elseif (isset($_SERVER['REMOTE_ADDR']))
-	{
-		# this one would be used, if no header of the above is present
-		$current_ip = $_SERVER['REMOTE_ADDR']; 
-	}
-
-    $range_example = explode('.', $current_ip);
-    $range_example[2] = "*";
-    $range_example[3] = "*";
-    $range_example = implode('.', $range_example);
-    $cidr_v4_example = $current_ip . "/20";
-?>
-
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallconfig.php';
-
+}   
 ?>
 
 <form action="<?php echo Route::_('index.php?option=com_securitycheckpro&view=firewallconfig&'. Session::getFormToken() .'=1');?>" class="margin-left-10 margin-right-10" enctype="multipart/form-data" method="post" name="adminForm" id="adminForm">       

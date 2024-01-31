@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1662,9 +1662,26 @@ class hikashopFilterTypeClass extends hikashopClass {
 		foreach($categories_name as $k => $category_name) {
 			$categories_name[$k]->category_name = hikashop_translate($category_name->category_name);
 		}
+		if(empty($filter->filter_options['parent_category_id']) && (empty($override) || $orderby == 'a.category_ordering ASC')){
+			$sorting_array = array();
+			foreach($categories_name as $category) {
+				$key = $this->_getKey($categories_name, $category);
+				$sorting_array[$key] = $category;
+			}
+			$categories_name = ksort($sorting_array, SORT_STRING);
+		}
 		if(!empty($datas))
 			$this->storeValuesInSession($filter, $categories_name);
 		return $categories_name;
+	}
+
+	function _getKey(&$categories, $category, $calls = 0) {
+		if($calls>20)
+			return 0;
+		if(empty($category->category_parent_id) || !isset($categories[$category->category_parent_id])) {
+			return (int)$category->category_ordering;
+		}
+		return $this->_getKey($categories, $categories[$category->category_parent_id], $calls+1).'_'.(int)$category->category_ordering;
 	}
 
 	function getCharacteristics($filter, $datas=''){

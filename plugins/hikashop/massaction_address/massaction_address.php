@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -90,8 +90,14 @@ class plgHikashopMassaction_address extends JPlugin
 				if($filter['type'] == 'address_state' || $filter['type'] == 'address_country'){
 					$type = str_replace('address_','',$filter['type']);
 					$nquery = 'SELECT zone_namekey FROM '.hikashop_table('zone').' WHERE ';
-					$key = str_replace($filter['type'],'',$this->massaction->getRequest($filter));
-					$nquery .= 'zone_name '.$key.' OR zone_name_english '.$key.' OR zone_namekey '.$key;
+					$zonefilter = hikashop_copy($filter);
+					$columns = array('zone_name', 'zone_name_english', 'zone_namekey');
+					$conditions = array();
+					foreach($columns as $column) {
+						$zonefilter['type'] = $column;
+						$conditions[] = $this->massaction->getRequest($zonefilter);
+					}
+					$nquery .= '('.implode(' OR ', $conditions).')';
 					$nquery .= ' AND zone_type = '.$db->quote($type);
 					$db->setQuery($nquery);
 					$result = $db->loadResult();
@@ -333,7 +339,7 @@ class plgHikashopMassaction_address extends JPlugin
 		foreach($clone as $id){
 			$addresses[] = $this->addressClass->get($id);
 		}
-		$this->deletedAdress = &$addresses;
+		$this->deletedAdress = $addresses;
 		$this->massaction->trigger('onBeforeAddressDelete',$addresses);
 	}
 }

@@ -31,6 +31,14 @@ class HtmlView extends BaseHtmlView {
     function display($tpl = null) {
 		
 		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CONTROLPANEL'), 'securitycheckpro');
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common')
+		  ->useScript('bootstrap.tab')
+		  ->useStyle('com_securitycheckpro.circle')
+		  ->useScript('com_securitycheckpro.chart')
+		  ->useScript('com_securitycheckpro.Cpanel');		
         
 		$mainframe = Factory::getApplication();		
 		$subscription_status_checked = $mainframe->getUserState("subscription_status_checked", 0);
@@ -148,7 +156,17 @@ class HtmlView extends BaseHtmlView {
         $this->whitelist_elements =  $whitelist_elements;        
         $this->version_scp =  $version_scp;
         $this->lock_status = $model->lock_status();
-        
+		
+		// Also comes common data from SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\DisplayController
+		
+		// Pass parameters to the cpanel.js script using Joomla's script options API
+		$this->document->addScriptOptions('securitycheckpro.Cpanel.blockedaccessText', addslashes(Text::_('COM_SECURITYCHECKPRO_BLOCKED_ACCESS')));
+		$this->document->addScriptOptions('securitycheckpro.Cpanel.userandsessionprotectionText', addslashes(Text::_('COM_SECURITYCHECKPRO_USER_AND_SESSION_PROTECTION')));
+		$this->document->addScriptOptions('securitycheckpro.Cpanel.firewallrulesappliedText', addslashes(Text::_('COM_SECURITYCHECKPRO_FIREWALL_RULES_APLIED')));
+		$this->document->addScriptOptions('securitycheckpro.Cpanel.setdefaultconfigconfirmText', addslashes(Text::_('COM_SECURITYCHECKPRO_SET_DEFAULT_CONFIG_CONFIRM')));
+		$this->document->addScriptOptions('securitycheckpro.Cpanel.totalblockedaccess', (int) $this->total_blocked_access);
+		$this->document->addScriptOptions('securitycheckpro.Cpanel.totalusersessionprotection', (int) $this->total_user_session_protection);
+		$this->document->addScriptOptions('securitycheckpro.Cpanel.totalfirewallrules', (int) $this->total_firewall_rules);        
 		
         parent::display($tpl);
     }

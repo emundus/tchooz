@@ -20,25 +20,6 @@ Session::checkToken('get') or die('Invalid Token');
 $document = Factory::getDocument();
 
 HTMLHelper::_('bootstrap.tooltip', '.hasTooltip');
-
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-$opa_icons = "media/com_securitycheckpro/stylesheets/opa-icons.css";
-HTMLHelper::stylesheet($opa_icons);
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-?>
-
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/dbcheck.php';
 ?>
 
 <form action="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=dbcheck');?>" class="margin-left-10 margin-right-10" method="post" name="adminForm" id="adminForm">
@@ -54,8 +35,8 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/dbcheck.ph
             
                 <div class="col-xl-3 col-sm-6 mb-3">
                     <div class="card text-center">                        
-                        <div class="card-body">                        
-                            <span class="sc-icon32 sc-icon-orange sc-icon-search"></span>
+                        <div class="card-body">  
+							<span class="fa fa-2x fa-search" style="color:orange"></span> 
                             <div class="margin-top-5"><?php echo Text::_('COM_SECURITYCHECKPRO_SHOW_TABLES'); ?></div>
                             <div class="margin-top-5"><span class="label label-info"><?php echo $this->show_tables; ?></span></div>                                                                 
                         </div>
@@ -67,8 +48,8 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/dbcheck.ph
                 
                 <div class="col-xl-3 col-sm-6 mb-3">
                     <div class="card text-center">                        
-                        <div class="card-body">                        
-                            <span class="sc-icon32 sc-icon-orange sc-icon-date"></span>
+                        <div class="card-body">        
+							<span class="fa fa-2x fa-calendar-day" style="color:orange"></span>
                             <div class="margin-top-5"><?php echo Text::_('COM_SECURITYCHECKPRO_LAST_OPTIMIZATION_LABEL'); ?></div>
                             <div class="margin-top-5"><span class="label label-info"><?php echo $this->last_check_database; ?></span></div>
                         </div>
@@ -81,12 +62,12 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/dbcheck.ph
                  <div class="col-lg-12">
                     <div class="card mb-3">
                         <div class="card-header">
-                            <i class="fapro fa-database"></i>
+                            <i class="fa fa-database"></i>
         <?php echo ' ' . Text::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'); ?>
                         </div>
                         <div class="card-body">
                             <div id="buttondatabase" class="text-center">
-                                <button class="btn btn-primary" id="start_db_check" type="button"><i class="fapro fa-fw fa-fire"> </i><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON'); ?></button>
+                                <button class="btn btn-primary" id="start_db_check" type="button"><i class="fa fa-fire"> </i><?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_START_BUTTON'); ?></button>
                             </div>
                             
                             <div id="securitycheck-bootstrap-main-content">        

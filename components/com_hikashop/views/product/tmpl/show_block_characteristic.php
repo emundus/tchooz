@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -759,11 +759,12 @@ if(!empty($this->element->main->characteristics)) {
 				<?php
 				}
 				else {
+					$threshold_stock_message = (int)$this->config->get('threshold_stock_message', 1);
 ?>
 					<span class="hikashop_product_stock_count">
 <?php
 					if($this->row->product_quantity > 0)
-						echo (($this->row->product_quantity == 1 && JText::_('X_ITEM_IN_STOCK') != 'X_ITEM_IN_STOCK') ? JText::sprintf('X_ITEM_IN_STOCK', $this->row->product_quantity) : JText::sprintf('X_ITEMS_IN_STOCK', $this->row->product_quantity));
+						echo (($this->row->product_quantity <= $threshold_stock_message && JText::_('X_ITEM_IN_STOCK') != 'X_ITEM_IN_STOCK') ? JText::sprintf('X_ITEM_IN_STOCK', $this->row->product_quantity) : JText::sprintf('X_ITEMS_IN_STOCK', $this->row->product_quantity));
 					elseif($this->row->product_quantity == 0)
 						echo JText::_('NO_STOCK');
 ?>

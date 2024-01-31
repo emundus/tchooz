@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -273,10 +273,23 @@ class ViewViewView extends hikashopView{
 		}
 
 		$viewTypes= array('0' => JHTML::_('select.option', 0, JText::_('ALL_VIEWS')));
+		$done = array();
 		foreach($templates as $temp){
-			if(!isset($viewTypes[strip_tags($temp->view)]) && !empty($temp->view)){
-				$viewTypes[strip_tags($temp->view)] = JHTML::_('select.option', strip_tags($temp->view), strip_tags($temp->view));
+			if(!empty($temp->view)){
+				$client_txt = 'BACK_END';
+				if($temp->client_id == 0) {
+					$client_txt = 'FRONT_END';
+				}
+				$key = strip_tags($temp->view);
+				if(isset($done[$key]) && count($done[$key])> 1) {
+					$client_txt = 'FRONT_END_AND_BACK_END';
+				}
+				$done[$key][$temp->client_id] = true;
+				$viewTypes[$key] = JHTML::_('select.option', $key, $key.' ('.JText::_($client_txt).')');
 			}
+		}
+		if(!empty($pageInfo->filter->viewType) && !isset($viewTypes[$pageInfo->filter->viewType])) {
+			$viewTypes[$pageInfo->filter->viewType] = JHTML::_('select.option', strip_tags($pageInfo->filter->viewType), strip_tags($pageInfo->filter->viewType));
 		}
 
 		$pageInfo->elements = new stdClass();

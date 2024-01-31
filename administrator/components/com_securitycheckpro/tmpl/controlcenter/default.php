@@ -25,27 +25,6 @@ function booleanlist($name, $attribs = null, $selected = null, $id=false)
     );
     return HTMLHelper::_('select.genericlist',  $arr, $name, 'class="form-select"', 'value', 'text', (int) $selected, $id);
 }
-
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-?>
-
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/controlcenter.php';
-
-echo '<script type="module" src="' . Uri::root() . 'media/vendor/bootstrap/js/toast.min.js"></script>';
 ?>
 
 
@@ -110,16 +89,16 @@ echo '<script type="module" src="' . Uri::root() . 'media/vendor/bootstrap/js/to
 									<?php
 									 if (!empty($cc_status)) {
 									?>
-									<button class="btn btn-success" type="button" onclick="Joomla.submitbutton('download_controlcenter_log');"><i class="fapro fa-fw fa-download"></i><?php echo Text::_('COM_SECURITYCHECKPRO_DOWNLOAD_LOG'); ?></button>
+									<button class="btn btn-success" type="button" onclick="Joomla.submitbutton('download_controlcenter_log');"><i class="fa fa-download"></i><?php echo Text::_('COM_SECURITYCHECKPRO_DOWNLOAD_LOG'); ?></button>
 									<?php
 									}
 									if ($this->error_file_exists == 1) {
 									?>
-									<button class="btn btn-danger" type="button" onclick="add_element_to_form('error_log','1'); Joomla.submitbutton('download_controlcenter_log');"><i class="fapro fa-fw fa-download"></i><?php echo Text::_('COM_SECURITYCHECKPRO_DOWNLOAD_ERROR_LOG'); ?></button>
+									<button class="btn btn-danger" type="button" onclick="add_element_to_form('error_log','1'); Joomla.submitbutton('download_controlcenter_log');"><i class="fa fa-download"></i><?php echo Text::_('COM_SECURITYCHECKPRO_DOWNLOAD_ERROR_LOG'); ?></button>
 									<?php
 									 }
 									 ?>
-									<button class="btn btn-warning" type="button" onclick="Joomla.submitbutton('delete_controlcenter_log');"><i class="fapro fa-fw fa-trash"></i><?php echo Text::_('COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_DELETE_LOG_FILE_LABEL'); ?></button>
+									<button class="btn btn-warning" type="button" onclick="Joomla.submitbutton('delete_controlcenter_log');"><i class="fa fa-trash"></i><?php echo Text::_('COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_DELETE_LOG_FILE_LABEL'); ?></button>
 								</div>  
 								<?php }    ?>        							  
 								

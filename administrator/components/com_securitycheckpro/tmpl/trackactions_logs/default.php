@@ -19,23 +19,6 @@ $document = Factory::getDocument();
 
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
-
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-$font_awesome = "media/com_securitycheckpro/stylesheets/font-awesome.min.css";
-HTMLHelper::stylesheet($font_awesome);
-
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-?>
-
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
 ?>
 
 <form action="<?php echo Route::_('index.php?option=com_securitycheckpro&view=trackactions_logs');?>" class="margin-left-10 margin-right-10" method="post" name="adminForm" id="adminForm">
@@ -61,17 +44,17 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
                                 <table class="table table-borderless">                                
                                 <thead>
                                     <tr>
-                                        <td><span class="badge badge-warning"> </span>
+                                        <td><span class="badge bg-warning"> </span>
                                         </td>
                                         <td class="left">
             <?php echo Text::_('COM_SECURITYCHECKPRO_ADMINISTRATOR_GROUP'); ?>
                                         </td>
-                                        <td><span class="badge badge-danger"> </span>
+                                        <td><span class="badge bg-danger"> </span>
                                         </td>
                                         <td class="left">
             <?php echo Text::_('COM_SECURITYCHECKPRO_SUPER_USERS_GROUP'); ?>
                                         </td>
-                                        <td><span class="badge badge-default"> </span>
+                                        <td><span class="badge bg-default"> </span>
                                         </td>
                                         <td class="left">
             <?php echo Text::_('COM_SECURITYCHECKPRO_OTHER_GROUPS'); ?>
@@ -158,16 +141,16 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php
                                             $user_object = \Joomla\CMS\Factory::getUser($user_id);
                                             // El usuario pertenece al grupo Super users
                                             if (array_search(8, $user_object->groups) !== false ) {                                    
-                                                $span = '<span class="badge badge-danger">';
+                                                $span = '<span class="badge bg-danger">';
                                                 // El usuario pertenece al grupo Administrators
                                             } else if (array_search(7, $user_object->groups) !== false ) {
-                                                $span = '<span class="badge badge-warning">';
+                                                $span = '<span class="badge bg-warning">';
                                             } else {
-                                                $span = '<span class="badge badge-default">';
+                                                $span = '<span class="badge bg-default">';
                                             }
                                                             echo $span . $user_object->name . "</span>";
                                         } else {
-                                            echo "<span class=\"badge badge-info\" data-toggle=\"tooltip\" title=\"" . Text::_('COM_SECURITYCHECKPRO_USER_DONT_EXISTS') . "\">---</span>";
+                                            echo "<span class=\"badge bg-info\" data-toggle=\"tooltip\" title=\"" . Text::_('COM_SECURITYCHECKPRO_USER_DONT_EXISTS') . "\">---</span>";
                                                             
                                         }
                                         ?>

@@ -79,28 +79,6 @@ function periodicitylist( $name, $attribs = null, $selected = null, $id=false )
     return HTMLHelper::_('select.genericlist',  $arr, $name, 'class="form-select" onchange="Disable()"', 'value', 'text', (int) $selected, $id);
 }
 
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
-
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-
-?>
-
-
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/cron.php';
-
-echo '<script type="module" src="' . Uri::root() . 'media/vendor/bootstrap/js/toast.min.js"></script>';
 ?>
 
 <form action="<?php echo Route::_('index.php?option=com_securitycheckpro&view=cron&'. Session::getFormToken() .'=1');?>" class="margin-left-10 margin-right-10" method="post" name="adminForm" id="adminForm">

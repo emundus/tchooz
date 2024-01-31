@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -110,7 +110,7 @@ defined('_JEXEC') or die('Restricted access');
 			$oneExtraField = $this->extraFields['address']['address_country'];
 	?>
 				<dt><label for="address_country"><?php echo JText::_('COUNTRY'); ?></label></dt>
-				<dd><?php echo $this->fieldsClass->display($oneExtraField,@$this->address->address_country,'address_country',false,''); ?></dd>
+				<dd><?php echo $this->fieldsClass->display($oneExtraField,@$this->address->address_country,'address_country  class="custom-select"',false,''); ?></dd>
 	<?php
 		}
 		if(isset($this->extraFields['address']['address_state'])) {
@@ -122,7 +122,7 @@ defined('_JEXEC') or die('Restricted access');
 		}
 	?>
 				<dt><label for="shop_address"><?php echo JText::_('ADDRESS'); ?></label></dt>
-				<dd><textarea class="wizard_shop_address" style="min-width:300px; min-height: 80px;" id="shop_address" name="shop_address"></textarea>*</dd>
+				<dd><textarea class="wizard_shop_address" style="min-width:300px; min-height: 140px;" id="shop_address" name="shop_address"></textarea>*</dd>
 			</dl>
 		</div>
 	</div>
@@ -142,7 +142,7 @@ defined('_JEXEC') or die('Restricted access');
 			<!-- CURRENCY -->
 			<div class="wizard_shop_currency">
 				<span class="wizard_label"><label for="wizard_currency"><?php echo JText::_('MAIN_CURRENCY').': '; ?></label></span>
-				<select name="currency" id="wizard_currency"><?php
+				<select name="currency" id="wizard_currency" class="custom-select"><?php
 					foreach($this->currencies as $currency){
 						$selected = '';
 						if($currency->currency_code == 'EUR') $selected = 'selected="selected"';
@@ -268,7 +268,7 @@ defined('_JEXEC') or die('Restricted access');
 				<br/>
 				<div class="wizard_product_type"><b><?php echo JText::_('WIZARD_PRODUCT_TYPE'); ?></b></div>
 					<label for="wizard_virtual_product"><?php echo JText::_('WIZARD_PRODUCT_TYPE_SOLD').': '; ?></label>
-					<select name="product_type" id="wizard_virtual_product">
+					<select name="product_type" id="wizard_virtual_product" class="custom-select">
 						<option value="virtual"><?php echo JText::_('WIZARD_VIRTUAL'); ?></option>
 						<option value="real"><?php echo JText::_('WIZARD_REAL'); ?></option>
 						<option value="both" selected><?php echo JText::_('WIZARD_BOTH'); ?></option>

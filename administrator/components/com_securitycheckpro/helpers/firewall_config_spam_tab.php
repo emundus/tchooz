@@ -74,7 +74,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 												<div class="card-body">                                                                                                    
 													<h4 class="card-title"><?php echo Text::_('COM_SECURITYCHECKPRO_SPAM_PROTECTION_FORMS_LABEL'); ?></h4>
 													<div class="controls">
-														<textarea name="form-control forms_to_include_honeypot_in"><?php echo $this->forms_to_include_honeypot_in ?></textarea>
+														<textarea name="forms_to_include_honeypot_in"><?php echo $this->forms_to_include_honeypot_in ?></textarea>
 													</div>
 													<blockquote><p class="text-info"><small><?php echo Text::_('COM_SECURITYCHECKPRO_SPAM_PROTECTION_FORMS_LABEL_DESCRIPTION') ?></small></p></blockquote>
 												</div>                                               

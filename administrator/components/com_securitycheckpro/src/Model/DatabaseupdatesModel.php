@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 
 /**
@@ -273,7 +274,7 @@ class DatabaseupdatesModel extends BaseModel
                     curl_close($ch);                
                 } else
                 {
-                    Factory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_CURL_NOT_DEFINED'));
+                    Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_CURL_NOT_DEFINED'));
                 }
             
                 // Comprobamos que hemos leido el archivo xml (esta variable será FALSE, por ejemplo, si no puede conectar con el servidor)
@@ -307,12 +308,11 @@ class DatabaseupdatesModel extends BaseModel
                     $this->add_vuln($array_complete, $local_database_version);    
                 } else
                 {
-                        $result = false;
-                
-                        $scp_update_database_subscription_status = $mainframe->getUserState("scp_update_database_subscription_status", null);
+                    $result = false;                
+                    $scp_update_database_subscription_status = $mainframe->getUserState("scp_update_database_subscription_status", null);
                     if (empty($scp_update_database_subscription_status)) {
-                        /* Establecemos la variable scp_update_database_subscription_status a 'No definida' */    
-                        $mainframe->setUserState("scp_update_database_subscription_status", JText::_('COM_SECURITYCHECKPRO_NOT_DEFINED'));
+						// Establecemos la variable scp_update_database_subscription_status a 'No definida'    
+                        $mainframe->setUserState("scp_update_database_subscription_status", Text::_('COM_SECURITYCHECKPRO_NOT_DEFINED'));
                     }                
                 }
             

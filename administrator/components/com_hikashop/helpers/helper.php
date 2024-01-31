@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,13 +20,14 @@ define('HIKASHOP_J16', true); define('HIKASHOP_J17', true); define('HIKASHOP_J25
 if(!defined('HIKASHOP_J30')) define('HIKASHOP_J30',version_compare($jversion,'3.0.0','>=') ? true : false);
 if(!defined('HIKASHOP_J40')) define('HIKASHOP_J40',version_compare($jversion,'4.0.0','>=') ? true : false);
 if(!defined('HIKASHOP_J50')) define('HIKASHOP_J50',version_compare($jversion,'5.0.0','>=') ? true : false);
+if(!defined('HIKASHOP_J60')) define('HIKASHOP_J60',version_compare($jversion,'6.0.0','>=') ? true : false);
 define('HIKASHOP_JVERSION', $jversion);
 
 define('HIKASHOP_PHP5',version_compare(PHP_VERSION,'5.0.0', '>=') ? true : false);
 define('HIKASHOP_PHP7',version_compare(PHP_VERSION,'7.0.0', '>=') ? true : false);
 define('HIKASHOP_PHP8',version_compare(PHP_VERSION,'8.0.0', '>=') ? true : false);
 
-define('HIKASHOP_VERSION', '5.0.2');
+define('HIKASHOP_VERSION', '5.0.3');
 
 
 if(HIKASHOP_J50 && !Joomla\CMS\Plugin\PluginHelper::isEnabled('behaviour', 'compat')) {
@@ -1451,7 +1452,7 @@ if(!function_exists('hikashop_footer')) {
 			$link.='?partner_id='.$aff;
 		}
 		$text = '<!--  HikaShop Component powered by '.$link.' -->
-		<!-- version '.$config->get('level').' : '.$config->get('version').' [2312131747] -->';
+		<!-- version '.$config->get('level').' : '.$config->get('version').' [2401311558] -->';
 		if(!$config->get('show_footer',true)) return $text;
 		$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 		$app= JFactory::getApplication();

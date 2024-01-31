@@ -36,6 +36,11 @@ class HtmlView extends BaseHtmlView {
         ToolBarHelper::unpublish('not_apply_rules', Text::_('COM_SECURITYCHECKPRO_RULES_NOT_APPLY'), true);
         ToolBarHelper::custom('rules_logs', 'users', 'users', 'COM_SECURITYCHECKPRO_RULES_VIEW_LOGS', false);
 		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common')
+		  ->useScript('com_securitycheckpro.Rules');
+		
 		// Filtro por tipo de extensión
         $this->state= $this->get('State');
         $acl_search = $this->state->get('filter.acl_search');

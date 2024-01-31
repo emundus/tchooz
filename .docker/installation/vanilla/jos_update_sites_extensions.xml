@@ -60,6 +60,10 @@
     <field name="update_site_id">11</field>
     <field name="extension_id">601</field>
    </row>
+   <row>
+    <field name="update_site_id">12</field>
+    <field name="extension_id">347</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

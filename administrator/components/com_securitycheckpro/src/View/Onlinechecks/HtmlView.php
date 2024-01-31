@@ -34,6 +34,11 @@ class HtmlView extends BaseHtmlView {
 		ToolBarHelper::custom('download_log_file', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_DOWNLOAD_LOG', false);
         ToolBarHelper::custom('delete_files', 'remove', 'remove', 'COM_SECURITYCHECKPRO_DELETE_FILE');
         ToolBarHelper::custom('view_log', 'eye', 'eye', 'COM_SECURITYCHECKPRO_REPAIR_VIEW_LOG_MESSAGE');
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common')		 
+		  ->useScript('com_securitycheckpro.Onlinechecks');
                         
         // Obtenemos los datos del modelo
         $model = $this->getModel();
@@ -46,7 +51,13 @@ class HtmlView extends BaseHtmlView {
 
         $common_model = new BaseModel();
         $this->logs_pending = $common_model->LogsPending();
-		$this->trackactions_plugin_exists = $common_model->PluginStatus(8);   
+		$this->trackactions_plugin_exists = $common_model->PluginStatus(8);
+
+		// Var for the javascript file
+		$mainframe = Factory::getApplication();
+		$contenido = $mainframe->getUserState('contenido', "vacio");
+			
+		$this->document->addScriptOptions('securitycheckpro.Onlinechecks.contenido', $contenido);
         
         parent::display($tpl);  
     }

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -192,7 +192,7 @@ if(!empty($data->cart->products)){
 				$namekey = $field->field_namekey;
 				if(empty($item->$namekey) && !strlen((string)$item->$namekey)) continue;
 				$field->currentElement = $item;
-				$t .= '<p>'.$fieldsClass->getFieldName($field).': '.$fieldsClass->show($field,$item->$namekey,'user_email').'</p>';
+				$t .= '<p>'.$fieldsClass->getFieldName($field).': '.$fieldsClass->show($field,$item->$namekey,'admin_email').'</p>';
 			}
 		}
 
@@ -202,7 +202,7 @@ if(!empty($data->cart->products)){
 				$namekey = $field->field_namekey;
 				$productData = @$productClass->all_products[$item->product_id];
 				$field->currentElement = $productData;
-				$cartProduct['CUSTOMFIELD_VALUE'] .= '<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right">'.(empty($productData->$namekey)?'':$fieldsClass->show($field,$productData->$namekey)).'</td>';
+				$cartProduct['CUSTOMFIELD_VALUE'] .= '<td style="border-bottom:1px solid #ddd;padding-bottom:3px;text-align:right">'.(empty($productData->$namekey)?'':$fieldsClass->show($field,$productData->$namekey, 'admin_email')).'</td>';
 			}
 		}
 
@@ -436,7 +436,7 @@ ob_start();
 			if($oneExtraField->field_type != 'customtext' && empty($data->cart->$fieldName))
 				continue;
 			$oneExtraField->currentElement = $data->cart;
-			echo $sep . $fieldsClass->trans($oneExtraField->field_realname).' : '.$fieldsClass->show($oneExtraField, @$data->cart->$fieldName,'user_email');
+			echo $sep . $fieldsClass->trans($oneExtraField->field_realname).' : '.$fieldsClass->show($oneExtraField, @$data->cart->$fieldName,'admin_email');
 			$sep = '<br />';
 		}
 	}
@@ -453,12 +453,12 @@ $vars['SHIPPING_ADDRESS'] = '';
 
 $addressClass = hikashop_get('class.address');
 if(!empty($data->cart->billing_address) && !empty($data->cart->fields)){
-	$vars['BILLING_ADDRESS'] = $addressClass->displayAddress($data->cart->fields,$data->cart->billing_address,$view);
+	$vars['BILLING_ADDRESS'] = $addressClass->displayAddress($data->cart->fields,$data->cart->billing_address,$view, false, 'admin_email');
 }
 if(!empty($data->cart->override_shipping_address)) {
 	$vars['SHIPPING_ADDRESS'] =  $data->cart->override_shipping_address;
 } elseif(!empty($data->order_shipping_id) && !empty($data->cart->shipping_address) && !empty($data->cart->fields)) {
-	$vars['SHIPPING_ADDRESS'] = $addressClass->displayAddress($data->cart->fields,$data->cart->shipping_address,$view);
+	$vars['SHIPPING_ADDRESS'] = $addressClass->displayAddress($data->cart->fields,$data->cart->shipping_address,$view, false, 'admin_email');
 } else {
 	$vars['SHIPPING_ADDRESS'] = $vars['BILLING_ADDRESS'];
 }

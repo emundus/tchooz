@@ -30,7 +30,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Business';
-	var $version = '5.0.2';
+	var $version = '5.0.3';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -888,6 +888,18 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			));
 			$this->databaseHelper->addColumns("characteristic", array(
 				"`characteristic_values_on_listing` tinyint(4) signed DEFAULT '0'",
+			));
+
+		}
+		if(version_compare($this->fromVersion, '5.0.3', '<')) {
+			$this->databaseHelper->addColumns("shipping", array(
+				"`shipping_alias` varchar(255) NOT NULL DEFAULT ''",
+			));
+			$this->databaseHelper->addColumns("payment", array(
+				"`payment_alias` varchar(255) NOT NULL DEFAULT ''",
+			));
+			$this->databaseHelper->addColumns("plugin", array(
+				"`plugin_alias` varchar(255) NOT NULL DEFAULT ''",
 			));
 
 		}

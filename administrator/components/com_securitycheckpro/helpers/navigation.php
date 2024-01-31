@@ -66,9 +66,13 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
 					<?php echo Text::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS_MESSAGE'); ?>                       
                     <?php echo Text::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS_MESSAGE_EXPLAINED'); ?>
                 </div>
-                <div id="div_loading" style="text-align:center; display:none;">
+                <div id="div_loading" class="margen_inferior" style="text-align:center; display:none;">
                     <span class="tammano-18"><?php echo Text::_('COM_SECURITYCHECKPRO_PURGING'); ?></span><br/>
-                    <img src="<?php echo Uri::root(); ?>media/com_securitycheckpro/images/loading.gif" width="30" height="30" />
+                    <div class="d-flex justify-content-center">
+						<div class="spinner-border" role="status">
+							<span class="visually-hidden"><?php echo Text::_('COM_SECURITYCHECKPRO_PURGING'); ?></span>
+						</div>
+					</div>
                 </div>        
               </div>
                 <div class="modal-footer" id="div_boton_subida">
@@ -97,7 +101,7 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
                 </div>        
               </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" id="buttonwrapper" type="button" onclick="hideElement('buttonwrapper'); hideElement('buttonclose'); clear_data_button();"><i class="fapro fa-fw fa-fire"></i><?php echo Text::_('COM_SECURITYCHECKPRO_CLEAR_DATA_CLEAR_BUTTON'); ?></button>
+                    <button class="btn btn-primary" id="buttonwrapper" type="button" onclick="hideElement('buttonwrapper'); hideElement('buttonclose'); clear_data_button();"><i class="fa fa-fire"></i><?php echo Text::_('COM_SECURITYCHECKPRO_CLEAR_DATA_CLEAR_BUTTON'); ?></button>
                     <button type="button" id="buttonclose" class="btn btn-default" <?php echo $data_dismiss; ?>="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
                 </div>              
             </div>
@@ -126,7 +130,7 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
                 </div>
               </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" id="buttonwrapper_tmpdir" type="button" onclick="hideElement('buttonwrapper_tmpdir'); hideElement('buttonclose_tmpdir'); clean_tmp_dir();"><i class="fapro fa-fw fa-fire"></i><?php echo Text::_('COM_SECURITYCHECKPRO_CLEAR_DATA_CLEAR_BUTTON'); ?></button>
+                    <button class="btn btn-primary" id="buttonwrapper_tmpdir" type="button" onclick="hideElement('buttonwrapper_tmpdir'); hideElement('buttonclose_tmpdir'); clean_tmp_dir();"><i class="fa fa-fire"></i><?php echo Text::_('COM_SECURITYCHECKPRO_CLEAR_DATA_CLEAR_BUTTON'); ?></button>
                     <button type="button" id="buttonclose_tmpdir" class="btn btn-default" <?php echo $data_dismiss; ?>="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
                 </div>              
             </div>
@@ -135,27 +139,27 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
 
 	<div class="d-grid gap-2 d-xxl-block" style="margin-bottom: 1rem; margin-top: 1rem; text-align: center;">
 		<a class="btn btn-primary" href="<?php echo Route::_('index.php?option=com_securitycheckpro');?>">
-			<span class="fapro fa-fw fa-home"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_DASHBOARD'); ?>			
+			<span class="fa fa-home"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_DASHBOARD'); ?>			
 		</a>
-		<a class="btn btn-primary" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=sysinfo&'. Session::getFormToken() .'=1');?>">
-			<span class="fapro fa-fw fa-info-square"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_SYSINFO_TEXT'); ?>			
+		<a class="btn btn-primary" href="<?php echo Route::_('index.php?option=com_securitycheckpro&view=sysinfo&'. Session::getFormToken() .'=1');?>">
+			<span class="fa fa-info-circle"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_SYSINFO_TEXT'); ?>			
 		</a>
 		
 		<a class="btn btn-primary" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=securitycheckpro&view=securitycheckpro&'. Session::getFormToken() .'=1');?>">
-            <span class="fapro fa-fw fa-check-circle"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_CHECK_VULNERABILITIES_TEXT'); ?>            
+            <span class="fa fa-check-circle"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_CHECK_VULNERABILITIES_TEXT'); ?>            
         </a>        
         
         <a class="btn btn-primary" href="<?php echo 'index.php?option=com_securitycheckpro&controller=securitycheckpro&view=logs'?>">
-            <span class="fapro fa-fw fa-eye"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS'); ?>           
+            <span class="fa fa-eye"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_FIREWALL_LOGS'); ?>           
 			<?php	
 			if ($this->logs_pending >= 99) {
 				$this->logs_pending = "+99";
 			}
 			if ($this->logs_pending == 0) { ?>
-						<span class="badge badge-success">
+						<span class="badge bg-success">
 			<?php     } else
 							{ ?>
-						<span class="badge badge-warning">
+						<span class="badge bg-warning">
 			<?php	}
 						echo $this->logs_pending;
 			?>
@@ -166,7 +170,7 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
 		if ($this->trackactions_plugin_exists) {                 
 			?>
 				<a class="btn btn-primary" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=securitycheckpro&view=trackactions_logs');?>">
-					<span class="fapro fa-fw fa-binoculars"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_TRACKACTIONS_LOGS'); ?>				
+					<span class="fa fa-binoculars"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_TRACKACTIONS_LOGS'); ?>				
 				</a>
 			<?php
 		}
@@ -187,16 +191,16 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
 			<ul class="<?php echo $dropdown_class_style; ?>" aria-labelledby="dropdownMenuoptions">
 				<li>
 					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filemanager&'. Session::getFormToken() .'=1');
-					?>"><span class="fapro fa-fw fa-circle"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_TEXT'); ?></a>
+					?>"><span class="fa fa-circle"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_FILE_MANAGER_TEXT'); ?></a>
 				</li>
 				<li>
-					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. Session::getFormToken() .'=1');?>"><span class="fapro fa-fw fa-file-check"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_TEXT'); ?></a>
+					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=filesintegrity&'. Session::getFormToken() .'=1');?>"><span class="fa fa-file-signature"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_FILE_INTEGRITY_TEXT'); ?></a>
 				</li>
 				<li>
-					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=protection&view=protection&'. Session::getFormToken() .'=1');?>"><span class="fapro fa-fw fa-file-alt"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'); ?></a>
+					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=protection&view=protection&'. Session::getFormToken() .'=1');?>"><span class="fa fa-file-alt"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_HTACCESS_PROTECTION_TEXT'); ?></a>
 				</li>
 				<li>
-					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=malwarescan&'. Session::getFormToken() .'=1');?>"><span class="fapro fa-fw fa-bug"></span><?php echo Text::_('COM_SECURITYCHECKPRO_MALWARESCAN'); ?></a>
+					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=malwarescan&'. Session::getFormToken() .'=1');?>"><span class="fa fa-bug"></span><?php echo Text::_('COM_SECURITYCHECKPRO_MALWARESCAN'); ?></a>
 				</li>				  
 			</ul>
 		</div>
@@ -209,21 +213,21 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
 			</button>
 			<ul class="<?php echo $dropdown_class_style; ?>" aria-labelledby="dropdownMenuConfiguration">
 				<li>
-					<a class="dropdown-item" href="index.php?option=com_config&view=component&component=com_securitycheckpro&path=&return=<?php echo base64_encode(Uri::getInstance()->toString()) ?>"><span class="fapro fa-fw fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_GLOBAL_CONFIGURATION'); ?></a>
+					<a class="dropdown-item" href="index.php?option=com_config&view=component&component=com_securitycheckpro&path=&return=<?php echo base64_encode(Uri::getInstance()->toString()) ?>"><span class="fa fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_GLOBAL_CONFIGURATION'); ?></a>
 				</li>
 				<li>
-					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. Session::getFormToken() .'=1');?>"><span class="fapro fa-fw fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_WAF_CONFIG'); ?></a>
+					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. Session::getFormToken() .'=1');?>"><span class="fa fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_WAF_CONFIG'); ?></a>
 				</li>
 				<li>
-					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=cron&view=cron&'. Session::getFormToken() .'=1');?>"><span class="fapro fa-fw fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_CRON_CONFIGURATION'); ?></a>
+					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=cron&view=cron&'. Session::getFormToken() .'=1');?>"><span class="fa fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_CRON_CONFIGURATION'); ?></a>
 				</li>
 				<li>
 					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=rules&view=rules&'. Session::getFormToken() .'=1');
-					?>"><span class="fapro fa-fw fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_RULES_TEXT'); ?></a>
+					?>"><span class="fa fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_RULES_TEXT'); ?></a>
 				</li>
 				<li>
 					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=controlcenter&view=controlcenter&'. Session::getFormToken() .'=1');
-					?>"><span class="fapro fa-fw fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_CONTROLCENTER_TEXT'); ?></a>
+					?>"><span class="fa fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_CONTROLCENTER_TEXT'); ?></a>
 				</li>			  
 			</ul>
 		</div>
@@ -234,13 +238,13 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
 			</button>
 			<ul class="<?php echo $dropdown_class_style; ?>" aria-labelledby="dropdownMenuTasks">
 				<li>
-					<a class="dropdown-item" href="#initialize_data" data-bs-toggle="modal" data-bs-target="#initialize_data"><span class="fapro fa-fw fa-undo"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_INITIALIZE_DATA'); ?></a>
+					<a class="dropdown-item" href="#initialize_data" data-bs-toggle="modal" data-bs-target="#initialize_data"><span class="fa fa-undo"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_INITIALIZE_DATA'); ?></a>
 				</li>
 				<li>
-					<a class="dropdown-item" href="#" onclick="Joomla.submitbutton('Export_config');"><span class="fapro fa-fw fa-download"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_EXPORT_CONFIG'); ?></a>
+					<a class="dropdown-item" href="#" onclick="Joomla.submitbutton('Export_config');"><span class="fa fa-download"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_EXPORT_CONFIG'); ?></a>
 				</li>
 				<li>
-					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=upload&'. Session::getFormToken() .'=1');?>"><span class="fapro fa-fw fa-upload"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_IMPORT_CONFIG'); ?></a>
+					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=filemanager&view=upload&'. Session::getFormToken() .'=1');?>"><span class="fa fa-upload"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_IMPORT_CONFIG'); ?></a>
 				</li>		  
 			</ul>
 		</div>
@@ -257,22 +261,22 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
 						$dbtype = $config->get('dbtype');
 						if (strstr($dbtype,"mysql")) {
 					?>
-					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=dbcheck&view=dbcheck&'. Session::getFormToken() .'=1');?>"><span class="fapro fa-fw fa-database"></span><?php echo Text::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'); ?></a>
+					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=dbcheck&view=dbcheck&'. Session::getFormToken() .'=1');?>"><span class="fa fa-database"></span><?php echo Text::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'); ?></a>
 					<?php
 					}
 					?>
 				</li>
 				<li>
-					<a class="dropdown-item" href="#purge_sessions" data-bs-toggle="modal" data-bs-target="#purgesessions"><span class="fapro fa-fw fa-user-times"></span><?php echo Text::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS'); ?></a>
+					<a class="dropdown-item" href="#purge_sessions" data-bs-toggle="modal" data-bs-target="#purgesessions"><span class="fa fa-user-times"></span><?php echo Text::_('COM_SECURITYCHECKPRO_PURGE_SESSIONS'); ?></a>
 				</li> 
 				<li>
-					<a class="dropdown-item" href="#clean_tmp_dir" data-bs-toggle="modal" data-bs-target="#cleantmpdir"><span class="fapro fa-fw fa-recycle"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CLEAN_TMP_DIR'); ?></a>
+					<a class="dropdown-item" href="#clean_tmp_dir" data-bs-toggle="modal" data-bs-target="#cleantmpdir"><span class="fa fa-recycle"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CLEAN_TMP_DIR'); ?></a>
 				</li> 
 			</ul>
 		</div>
 				
 		<a class="btn btn-primary" href="#" onclick="get_otp_status();">
-			<span class="fapro fa-fw fa-sign-in"><?php echo Text::_('OTP'); ?></span>
+			<span class="fa fa-sign-in-alt"><?php echo Text::_('OTP'); ?></span>
 		</a>
      
 	</div>

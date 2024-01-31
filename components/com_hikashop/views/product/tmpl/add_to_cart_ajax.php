@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,6 +20,8 @@ if(!empty($this->return_url))
 	$classical_url .= '&return_url=' . urlencode(base64_encode(urldecode($this->redirect_url)));
 
 $in_stock = (((int)$this->row->product_quantity == -1 && (empty($this->element->main) || $this->element->main->product_quantity == -1 || $this->element->main->product_quantity > 0)) || (int)$this->row->product_quantity > 0);
+$threshold_stock_message = (int)$this->config->get('threshold_stock_message', 1);
+
 $has_fields = !empty($this->row->itemFields);
 $has_required_fields = !empty($this->row->has_required_item_field);
 $is_free = empty($this->row->prices);
@@ -86,7 +88,7 @@ $stock_class = ($this->row->product_quantity != 0) ? "" : " hikashop_product_no_
 	if(!empty($this->row->product_stock_message))
 		echo JText::sprintf($this->row->product_stock_message, $this->row->product_quantity);
 	elseif($this->row->product_quantity > 0)
-		echo (($this->row->product_quantity == 1 && JText::_('X_ITEM_IN_STOCK') != 'X_ITEM_IN_STOCK') ? JText::sprintf('X_ITEM_IN_STOCK', $this->row->product_quantity) : JText::sprintf('X_ITEMS_IN_STOCK', $this->row->product_quantity));
+		echo (($this->row->product_quantity <= $threshold_stock_message && JText::_('X_ITEM_IN_STOCK') != 'X_ITEM_IN_STOCK') ? JText::sprintf('X_ITEM_IN_STOCK', $this->row->product_quantity) : JText::sprintf('X_ITEMS_IN_STOCK', $this->row->product_quantity));
 	elseif(!$in_stock)
 		echo JText::_('NO_STOCK');
 ?>

@@ -195,4 +195,16 @@ class JOverrideDatabase extends MysqliDriver
 		$pfunc = $this->_profile($pfunc);
 	}
 
+    /*
+     * @from 5.4 add override for locktable
+     *           necessary for front-end edition when a table need to be locked like during a category translation
+     * */
+    public function lockTable($table)
+    {
+        //lock the falang table when another table is locked
+        $this->executeUnpreparedQuery($this->replacePrefix('LOCK TABLES ' . $this->quoteName($table) . ' WRITE,'.$this->quoteName('#__falang_content').' WRITE'));
+
+        return $this;
+    }
+
 }

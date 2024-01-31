@@ -14,6 +14,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use Joomla\CMS\Table\Table;
+use Joomla\CMS\HTML\HTMLHelper;
 
 /**
  * Modelo Securitycheck
@@ -461,7 +462,8 @@ class CpanelModel extends BaseModel
 			$params['strip_all_tags'] = $previous_params['previous_config']['strip_all_tags'];
         
             // Codificamos de nuevo los parámetros y los introducimos en la BBDD
-            $params = utf8_encode(json_encode($params));
+			$params = mb_convert_encoding($params,'UTF-8', 'UTF-8');
+            $params = json_encode($params);
         
             $query = $db->getQuery(true)
                 ->delete($db->quoteName('#__securitycheckpro_storage'))
@@ -491,14 +493,12 @@ class CpanelModel extends BaseModel
         
             $object = (object)array(
             'storage_key'    => 'easy_config',
-            'storage_value'    => utf8_encode(
-                json_encode(
+            'storage_value'    => json_encode(
                     array(
                     'applied'        => false,
                     'previous_config'        => null
                     )
                 )
-            )
             );
             
             try 
@@ -616,8 +616,8 @@ class CpanelModel extends BaseModel
         // Load the necessary files if they haven't yet been loaded
         if (!isset($included)) {
             // Load the javascript and css            
-            JHTML::_('script', 'system/modal.js', false, true);
-            JHTML::_('stylesheet', 'system/modal.css', array(), true);
+            HTMLHelper::_('script', 'system/modal.js', false, true);
+            HTMLHelper::_('stylesheet', 'system/modal.css', array(), true);
 
             $included = true;
         }
@@ -643,7 +643,7 @@ class CpanelModel extends BaseModel
         $opt['onShow']          = (isset($params['onShow'])) ? $params['onShow'] : null;
         $opt['onHide']          = (isset($params['onHide'])) ? $params['onHide'] : null;
 
-        $options = JHtml::_getJSObject($opt);
+        $options = HTMLHelper::_getJSObject($opt);
 
         // Attach modal behavior to document
         $document->addScriptDeclaration(

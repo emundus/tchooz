@@ -26,29 +26,7 @@ $status_array = array(HTMLHelper::_('select.option', '0', Text::_('COM_SECURITYC
             HTMLHelper::_('select.option', '1', Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_OK')),
             HTMLHelper::_('select.option', '2', Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_EXCEPTIONS')));
 
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
 $data_dismiss = "data-bs-dismiss";
-
-
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-
-// Add style declaration
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-?>
-
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/onlinechecks.php';
 ?>
 
 <!-- Modal view file -->
@@ -76,7 +54,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/onlinechec
 </div>
 
 
-<form action="<?php echo JRoute::_('index.php?option=com_securitycheckpro&view=onlinechecks&'. Session::getFormToken() .'=1');?>" method="post" class="margin-left-10 margin-right-10" name="adminForm" id="adminForm">
+<form action="<?php echo Route::_('index.php?option=com_securitycheckpro&view=onlinechecks&'. Session::getFormToken() .'=1');?>" method="post" class="margin-left-10 margin-right-10" name="adminForm" id="adminForm">
 
 <?php 
         
@@ -114,19 +92,19 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/onlinechec
                                     <table id="onlinechecks_logs_table" class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
-                                            <th class="onlinelogs-table">
+                                            <th class="center">
                                                 <?php echo Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_FILES_SCANNED'); ?>
                                             </th>
-                                            <th class="onlinelogs-table">
+                                            <th class="center">
                                                 <?php echo Text::_('COM_SECURITYCHECKPRO_THREATS_FOUND'); ?>                
                                             </th>
-                                            <th class="onlinelogs-table">
+                                            <th class="center">
                                                 <?php echo Text::_('COM_SECURITYCHECKPRO_INFECTED_FILES'); ?>                
                                             </th>
-                                            <th class="onlinelogs-table">
+                                            <th class="center">
                                                 <?php echo Text::_('COM_SECURITYCHECKPRO_CREATION_DATE'); ?>
                                             </th>                                            
-                                            <th class="onlinelogs-table">
+                                            <th class="center">
                                                 <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
                                             </th>        
                                         </tr>
@@ -139,7 +117,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/onlinechec
                                         <tr>
                                         <td class="center">
                     <?php
-                    $span = "<span class=\"badge bg-inverse\">";
+                    $span = "<span class=\"badge bg-dark\">";
                     echo $span . $row[2]; ?>
                                             </span>                    
                                         </td>
@@ -149,7 +127,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/onlinechec
                         $span = "<span class=\"badge bg-success\">";
                         echo $span . $row[3];
                     } else  {
-                        $span = "<span class=\"badge bg-important\">";
+                        $span = "<span class=\"badge bg-danger\">";
                         echo $span . $row[3];
                     }
                     ?>

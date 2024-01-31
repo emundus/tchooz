@@ -31,6 +31,10 @@ class HtmlView extends BaseHtmlView {
     function display($tpl = null) {
 		  
 		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_VULN_DATABASE_TEXT'), 'securitycheckpro');
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common');
                         
         // Obtenemos los datos del modelo
         $model = $this->getModel();

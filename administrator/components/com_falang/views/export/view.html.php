@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Toolbar\ToolbarHelper;
 
 jimport('joomla.application.component.view');
 JLoader::import( 'views.default.view',FALANG_ADMINPATH);
@@ -42,7 +43,7 @@ class ExportViewExport extends FalangViewDefault
 
 
         //add toolbar actions
-        ToolBarHelper::cancel('export.cancel','TOOLBAR_CANCEL');
+        ToolBarHelper::cancel('export.cancel',Text::_('JCANCEL'));
 
     }
 }

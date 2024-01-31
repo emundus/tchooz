@@ -13,6 +13,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Component\ComponentHelper;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use Joomla\Plugin\System\Securitycheckpro\Extension\Securitycheckpro;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
@@ -169,7 +170,7 @@ class Url_inspector extends CMSPlugin
 				}
 				catch (Exception $e)
 				{
-				// JErrorPage::render(new Exception(JText::_('PLG_SYSTEM_REDIRECT_ERROR_UPDATING_DATABASE'), 500, $e));
+				
 				}
 
 				// Write a log (if set to do it) in Securitycheck Pro logs
@@ -210,8 +211,6 @@ class Url_inspector extends CMSPlugin
 			->where($db->quoteName('storage_key') . ' = ' . $db->quote($key_name));
 		$db->setQuery($query);
 		$res = $db->loadResult();
-
-		$this->config = new Registry('securitycheckpro');
 		
 		if (!empty($res))
 		{
@@ -388,7 +387,7 @@ class Url_inspector extends CMSPlugin
 			}
 			catch (Exception $e)
 			{
-			// JErrorPage::render(new Exception(JText::_('PLG_SYSTEM_REDIRECT_ERROR_UPDATING_DATABASE'), 500, $e));
+			
 			}
 
 			// Write a log (if set to do it) in Securitycheck Pro logs
@@ -472,7 +471,7 @@ class Url_inspector extends CMSPlugin
 		// A redirect object was found and, if published, will be used
 		if (!is_null($redirect) && ((int) $redirect->published === 1))
 		{
-			if (!$redirect->header || (bool) JComponentHelper::getParams('com_redirect')->get('mode', false) === false)
+			if (!$redirect->header || (bool) ComponentHelper::getParams('com_redirect')->get('mode', false) === false)
 			{
 				$redirect->header = 301;
 			}

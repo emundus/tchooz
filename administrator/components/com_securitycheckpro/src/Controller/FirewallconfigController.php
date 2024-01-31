@@ -117,8 +117,9 @@ class FirewallconfigController extends SecuritycheckproBaseController
                 break;
             }
         }
-    
+		    
         $data['inspector_forbidden_words'] = $model->clearstring($data['inspector_forbidden_words'], 1);
+		
 		if ( array_key_exists("forms_to_include_honeypot_in",$data) ) {
 			$data['forms_to_include_honeypot_in'] = $model->clearstring($data['forms_to_include_honeypot_in'], 1);
 		} else {

@@ -32,6 +32,11 @@ class HtmlView extends BaseHtmlView {
     function display($tpl = null) {
 		
 		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_RULES_VIEW_LOGS'), 'securitycheckpro');
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common')		  
+		  ->useScript('com_securitycheckpro.Ruleslog');
 
         // Obtenemos los datos del modelo        
         $this->state= $this->get('State');

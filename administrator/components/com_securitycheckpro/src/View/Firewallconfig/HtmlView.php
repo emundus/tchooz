@@ -33,6 +33,11 @@ class HtmlView extends BaseHtmlView {
 		ToolBarHelper::save();
         ToolBarHelper::apply();
 		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common')		 
+		  ->useScript('com_securitycheckpro.Firewallconfig');
+		
 		// Obtenemos el modelo
         $model = $this->getModel();
 		
@@ -72,6 +77,39 @@ class HtmlView extends BaseHtmlView {
         $trackactions_plugin_exists = $model->PluginStatus(8);
         $this->logs_pending = $logs_pending;
         $this->trackactions_plugin_exists = $trackactions_plugin_exists;
+		
+		$current_ip = "";
+		$range_example = "";
+		// Contribution of George Acu - thanks!
+		if (isset($_SERVER['HTTP_TRUE_CLIENT_IP']))
+		{
+			# CloudFlare specific header for enterprise paid plan, compatible with other vendors
+			$current_ip = $_SERVER['HTTP_TRUE_CLIENT_IP']; 
+		} elseif (isset($_SERVER['HTTP_CF_CONNECTING_IP']))
+		{
+			# another CloudFlare specific header available in all plans, including the free one
+			$current_ip = $_SERVER['HTTP_CF_CONNECTING_IP']; 
+		} elseif (isset($_SERVER['HTTP_INCAP_CLIENT_IP'])) 
+		{
+			// Users of Incapsula CDN
+			$current_ip = $_SERVER['HTTP_INCAP_CLIENT_IP']; 
+		} elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) 
+		{
+			# specific header for proxies
+			$current_ip = $_SERVER['HTTP_X_FORWARDED_FOR']; 
+			$result_ip_address = explode(', ', $clientIpAddress);
+			$current_ip = $result_ip_address[0];
+		} elseif (isset($_SERVER['REMOTE_ADDR']))
+		{
+			# this one would be used, if no header of the above is present
+			$current_ip = $_SERVER['REMOTE_ADDR']; 
+		}
+
+		$range_example = explode('.', $current_ip);
+		$range_example[2] = "*";
+		$range_example[3] = "*";
+		$range_example = implode('.', $range_example);
+		$cidr_v4_example = $current_ip . "/20";
 
         $this->blacklist_elements = $blacklist_elements;
         $this->dynamic_blacklist_elements = $dynamic_blacklist_elements;
@@ -83,6 +121,9 @@ class HtmlView extends BaseHtmlView {
         $this->priority1 = $items['priority1'];
         $this->priority2 = $items['priority2'];
         $this->priority3 = $items['priority3'];
+		$this->current_ip = $current_ip;
+		$this->range_example = $range_example;
+		$this->cidr_v4_example = $cidr_v4_example;
         
         // Pestaña methods
         $methods= null;
@@ -145,7 +186,7 @@ class HtmlView extends BaseHtmlView {
         $custom_code = $items['custom_code'];
 
         if (is_null($custom_code)) {
-            $custom_code = "<h1 style=\"text-align:center;\">" . JText::_('COM_SECURITYCHECKPRO_403_ERROR') . "</h1>";
+            $custom_code = "<h1 style=\"text-align:center;\">" . Text::_('COM_SECURITYCHECKPRO_403_ERROR') . "</h1>";
         }
 
         $this->redirect_after_attack = $redirect_after_attack;
@@ -534,6 +575,12 @@ class HtmlView extends BaseHtmlView {
         } else if (!is_null($pagination_whitelist)) {
             $this->pagination = $pagination_whitelist;    
         }
+		
+		// Also comes common data from SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\DisplayController
+		
+		// Pass parameters to the cpanel.js script using Joomla's script options API
+		$this->document->addScriptOptions('securitycheckpro.Firewallconfig.currentip', $this->current_ip);
+		$this->document->addScriptOptions('securitycheckpro.Firewallconfig.dynamicblacklistText', addslashes(Text::_('COM_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_MESSAGE')));
 			
         
         parent::display($tpl);  

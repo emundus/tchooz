@@ -34,6 +34,12 @@ class HtmlView extends BaseHtmlView {
 		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CPANEL_CONTROLCENTER_TEXT'), 'securitycheckpro');
 		ToolBarHelper::apply();
 		ToolbarHelper::save();
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common')
+		  ->useScript('bootstrap.toast')  
+		  ->useScript('com_securitycheckpro.Controlcenter');
 
         // Obtenemos el modelo
         $model = $this->getModel();

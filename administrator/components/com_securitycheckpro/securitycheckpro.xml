@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="3.6" method="upgrade">
 <name>Securitycheck Pro</name>
-<creationDate>12-06-2023</creationDate>
+<creationDate>03-01-2024</creationDate>
 <author>Jose A. Luque</author>
 <authorEmail>contacto@protegetuordenador.com</authorEmail>
 <authorUrl>securitycheck.protegetuordenador.com</authorUrl>
 <copyright>Copyright www.protegetuordenador.com</copyright>
 <license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
-<version>4.0</version>
+<version>4.1</version>
 <description>COM_SECURITYCHECKPRO_DESCRIPTION</description>
 <namespace path="src">SecuritycheckExtensions\Component\SecuritycheckPro</namespace>
 <dlid prefix="dlid=" suffix=""/>
@@ -18,11 +18,10 @@
 </files>
 
 <media destination="com_securitycheckpro" folder="media">
-	<filename>index.html</filename>
 	<folder>images</folder>
-	<folder>stylesheets</folder>
-	<folder>fonts</folder>	
-	<folder>new</folder>
+	<folder>css</folder>		
+	<folder>js</folder>
+	<filename>joomla.asset.json</filename>
 </media> 
 
 <administration>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -2106,22 +2106,21 @@ class ProductViewProduct extends hikashopView
 		$pageInfo->limit = new stdClass();
 		$config = hikashop_config();
 
-		$pageInfo->filter->order->value = $app->getUserStateFromRequest($this->paramBase.".filter_order", 'filter_order', $config->get('default_order_column_on_variants_listing', ''), 'cmd');
-		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest($this->paramBase.".filter_order_Dir", 'filter_order_Dir', $config->get('default_order_direction_on_variants_listing', ''), 'word');
+		$pageInfo->filter->order->value = $config->get('default_order_column_on_variants_listing', '');
+		$pageInfo->filter->order->dir	= $config->get('default_order_direction_on_variants_listing', '');
 
-		$pageInfo->search = $app->getUserStateFromRequest($this->paramBase.".search", 'search', '', 'string');
+		$pageInfo->search = $app->getUserStateFromRequest($this->paramBase.".search", 'variants_search', '', 'string');
 		$pageInfo->search = HikaStringHelper::strtolower(trim($pageInfo->search));
+		$pageInfo->filter->filter_variants_published = $app->getUserStateFromRequest( $this->paramBase.".filter_variants_published", 'filter_variants_published', 0, 'int');
 
-		$pageInfo->filter->filter_published = $app->getUserStateFromRequest( $this->paramBase.".filter_published", 'filter_published', 0, 'int');
-
-		$this->searchOptions = array('published' => 0);
+		$this->searchOptions = array('variants_published' => 0);
 		$this->openfeatures_class = "hidden-features";
 
 		$database = JFactory::getDBO();
 
-		if($pageInfo->filter->filter_published==2){
+		if($pageInfo->filter->filter_variants_published==2){
 			$filters[]='p.product_published=1';
-		}elseif($pageInfo->filter->filter_published==1){
+		}elseif($pageInfo->filter->filter_variants_published==1){
 			$filters[]='p.product_published=0';
 		}
 
@@ -2130,7 +2129,7 @@ class ProductViewProduct extends hikashopView
 		$this->assignRef('pageInfo',$pageInfo);
 		$this->processFilters($filters, $order, $searchMap, array('p.'));
 		$publishDisplay = hikashop_get('type.published');
-		$publish = $publishDisplay->display('filter_published',$pageInfo->filter->filter_published);
+		$publish = $publishDisplay->display('filter_variants_published',$pageInfo->filter->filter_variants_published);
 		$this->assignRef('publishDisplay',$publish);
 	}
 

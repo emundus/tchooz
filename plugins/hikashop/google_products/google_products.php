@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -179,7 +179,6 @@ class plgHikashopGoogle_products extends JPlugin {
 
 		$db->setQuery($query);
 		$products = $db->loadObjectList();
-
 		if(empty($products)){
 			return true;
 		}
@@ -262,7 +261,6 @@ class plgHikashopGoogle_products extends JPlugin {
 			$category_path[$id]['path'] = substr($path,0,-3);
 		}
 
-
 		$queryImage = 'SELECT * FROM '.hikashop_table('file').' WHERE file_ref_id IN ('.implode(',',$ids).') AND file_type=\'product\' ORDER BY file_ordering ASC, file_id ASC';
 		$db->setQuery($queryImage);
 		$images = $db->loadObjectList();
@@ -279,19 +277,6 @@ class plgHikashopGoogle_products extends JPlugin {
 				$i++;
 			}
 		}
-		$db->setQuery('SELECT * FROM '.hikashop_table('variant').' WHERE variant_product_id IN ('.implode(',',$ids).')');
-		$variants = $db->loadObjectList();
-		if(!empty($variants)){
-			foreach($products as $k => $product){
-				foreach($variants as $variant){
-					if($product->product_id == $variant->variant_product_id){
-						$products[$k]->has_options = true;
-						break;
-					}
-				}
-			}
-		}
-
 
 		$currencyClass = hikashop_get('class.currency');
 		$config =& hikashop_config();
@@ -321,6 +306,126 @@ class plgHikashopGoogle_products extends JPlugin {
 			}
 		}else{
 			$currencyClass->getProductsPrices($products, array('currency_id' => $main_currency, 'price_display_type' => $plugin->params['price_displayed'], 'no_discount' => (int)@$plugin->params['no_discount']));
+		}
+
+		$db->setQuery('SELECT * FROM '.hikashop_table('variant').' WHERE variant_product_id IN ('.implode(',',$ids).')');
+		$variants = $db->loadObjectList();
+
+		if(!empty($variants)){
+			$product_ids_with_variants = array();
+			foreach($products as $k => $product){
+				foreach($variants as $variant){
+					if($product->product_id == $variant->variant_product_id){
+						$products[$k]->has_options = true;
+						$product_ids_with_variants[] = (int)$product->product_id;
+						break;
+					}
+				}
+			}
+			if(!empty($plugin->params['include_variants']) && count($product_ids_with_variants)) {
+				$plugin->params['item_group_id'] = 'item_group_id';
+
+				$query = 'SELECT * FROM '.hikashop_table('product').' WHERE product_published > 0 AND product_parent_id IN ('.implode(',',$product_ids_with_variants).')';
+				if(!empty($plugin->params['in_stock_only'])){
+					$query .= ' AND product_quantity!=0';
+				}
+				$db->setQuery($query);
+				$variantsData = $db->loadObjectList();
+				$variantsIds = array();
+				foreach($variantsData as $variant) {
+					$variantsIds[] = (int)$variant->product_id;
+				}
+				if(!empty($variantsIds)) {
+					$query = 'SELECT variant.variant_product_id, characteristic.characteristic_value FROM '.hikashop_table('variant').' as variant LEFT JOIN '.hikashop_table('characteristic').' AS characteristic ON variant.variant_characteristic_id = characteristic.characteristic_id WHERE variant.variant_product_id IN ('.implode(',',$variantsIds).')';
+					$db->setQuery($query);
+					$characteristics = $db->loadObjectList();
+					if(!empty($characteristics)) {
+						foreach($variantsData as $k => $variant) {
+							$variant->characteristics = array();
+							foreach($characteristics as $characteristic) {
+								if($variant->product_id == $characteristic->variant_product_id)
+									$variantsData[$k]->characteristics[] = $characteristic;
+							}
+						}
+					}
+					$queryImage = 'SELECT * FROM '.hikashop_table('file').' WHERE file_ref_id IN ('.implode(',',$variantsIds).') AND file_type=\'product\' ORDER BY file_ordering ASC, file_id ASC';
+					$db->setQuery($queryImage);
+					$images = $db->loadObjectList();
+					foreach($variantsData as $k => $row){
+						$variantsData[$k]->images = array();
+						$i=0;
+						foreach($images as $image){
+							if($row->product_id == $image->file_ref_id){
+								$variantsData[$k]->images[$i] = new stdClass();
+								foreach(get_object_vars($image) as $key => $name){
+									$variantsData[$k]->images[$i]->$key = $name;
+								}
+							}
+							$i++;
+						}
+					}
+
+					if($plugin->params['price_displayed'] == 'average'){
+						$currencyClass->getProductsPrices($variantsData, array('currency_id' => $main_currency, 'price_display_type' => 'range', 'no_discount' => (int)@$plugin->params['no_discount']));
+						$tmpPrice = 0;
+						$tmpTaxPrice = 0;
+						foreach($variantsData as $product){
+							if(isset($product->prices[0]->price_value)){
+								if(count($product->prices) > 1){
+									for($i=0;$i<count($product->prices);$i++){
+										if($product->prices[$i]->price_value > $tmpPrice){
+											$tmpPrice += $product->prices[$i]->price_value;
+											$tmpTaxPrice += @$product->prices[$i]->price_value_with_tax;
+										}
+									}
+									$product->prices[0]->price_value = $tmpPrice/count($product->prices);
+									$product->prices[0]->price_value_with_tax = $tmpTaxPrice/count($product->prices);
+									for($i=1;$i<count($product->prices);$i++){
+										unset($product->prices[$i]);
+									}
+								}
+							}
+						}
+					}else{
+						$currencyClass->getProductsPrices($variantsData, array('currency_id' => $main_currency, 'price_display_type' => $plugin->params['price_displayed'], 'no_discount' => (int)@$plugin->params['no_discount']));
+					}
+				}
+				$productClass = hikashop_get('class.product');
+				$newProducts = array();
+				$unsetProducts = array();
+				foreach($products as $k => $product) {
+					$products[$k]->item_group_id = '';
+					$unsetVariants = array();
+					foreach($variantsData as $j => $variant) {
+						if($variant->product_parent_id == $product->product_id) {
+							$productClass->checkVariant($variant, $product, array(), true);
+
+							$variant->has_options = false;
+							$variant->item_group_id = $product->product_id;
+							$variant->product_name = strip_tags($variant->product_name);
+							$newProducts[] = hikashop_copy($variant);
+							$unsetVariants[] = $j;
+							$unsetProducts[] = $k;
+						}
+					}
+					if(count($unsetVariants)) {
+						foreach($unsetVariants as $u) {
+							unset($variantsData[$u]);
+						}
+					}
+				}
+				if(count($unsetProducts)) {
+					foreach($unsetProducts as $u) {
+						unset($products[$u]);
+					}
+				}
+				if(count($newProducts)) {
+					foreach($newProducts as $p) {
+						$products[] = $p;
+					}
+					unset($newProducts);
+				}
+			}
 		}
 
 		if(!empty($plugin->params['use_brand'])){
@@ -452,6 +557,8 @@ class plgHikashopGoogle_products extends JPlugin {
 				}
 				$xml .= $this->_additionalParameter($product,$plugin,'condition','condition');
 
+				$xml .= $this->_additionalParameter($product,$plugin,'item_group_id','item_group_id');
+
 				$xml .= $this->_additionalParameter($product,$plugin,'gender','gender');
 
 				$column = @$plugin->params['identifier_exists'];
@@ -521,8 +628,12 @@ class plgHikashopGoogle_products extends JPlugin {
 				else{
 					$xml .= "\t".'<g:availability>in stock</g:availability>'."\n";
 				}
-				if( $product->product_weight > 0 && (($product->product_weight < 1000000 && $product->product_weight_unit == 'g')
-					|| ($product->product_weight < 2000000 && $product->product_weight_unit == 'lb' )))
+				if( $product->product_weight > 0 && 
+					(
+						($product->product_weight < 1000000 && $product->product_weight_unit == 'g') ||
+						($product->product_weight < 1000 && $product->product_weight_unit == 'kg') ||
+						($product->product_weight < 2000000 && $product->product_weight_unit == 'lb' )
+					))
 					$xml .= "\t".'<g:shipping_weight>'.ceil($product->product_weight).' '.$product->product_weight_unit.'</g:shipping_weight>'."\n";
 
 				if( (

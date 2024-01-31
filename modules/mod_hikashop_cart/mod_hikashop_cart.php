@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -32,10 +32,13 @@ if(HIKASHOP_J30 && (empty($data) || !is_object($data))){
 	$db = JFactory::getDBO();
 	$query = 'SELECT params FROM '.hikashop_table('modules',false).' WHERE id = '.(int)$module->id;
 	$db->setQuery($query);
-	$itemData = json_decode($db->loadResult());
-	if(!empty($itemData->hikashopcartmodule) && is_object($itemData->hikashopcartmodule)){
-		$data = $itemData->hikashopcartmodule;
-		$params->set('hikashopcartmodule',$data);
+	$dbParams = $db->loadResult();
+	if(!empty($dbParams)) {
+		$itemData = json_decode($dbParams);
+		if(!empty($itemData->hikashopcartmodule) && is_object($itemData->hikashopcartmodule)){
+			$data = $itemData->hikashopcartmodule;
+			$params->set('hikashopcartmodule',$data);
+		}
 	}
 }
 if(!empty($data) && is_object($data)){

@@ -16,6 +16,7 @@
    <field Field="shipping_params" Type="text" Null="NO" Key="" Extra="" />
    <field Field="shipping_images" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
    <field Field="shipping_access" Type="varchar(255)" Null="NO" Key="" Default="all" Extra="" />
+   <field Field="shipping_alias" Type="varchar(255)" Null="NO" Key="" Extra="" />
    <key Table="#__hikashop_shipping" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="shipping_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
  </database>

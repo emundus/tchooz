@@ -35,38 +35,8 @@ function xframeoptions( $name, $attribs = null, $selected = null, $id=false )
     return HTMLHelper::_('select.genericlist',  $arr, $name, 'class="form-select"', 'value', 'text', $selected, $id);
 }
 
-// Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
-
-// styles ('data-xxx' for J3 and 'data-bs-xxxx' for J4)
-$data_dismiss = "data-dismiss";
-
-if (version_compare(JVERSION, '4.0', 'ge')) {	
-	$data_dismiss = "data-bs-dismiss";
-}
-
-$document->addScript(Uri::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
-
-// Add style declaration
-$media_url = "media/com_securitycheckpro/stylesheets/cpanelui.css";
-HTMLHelper::stylesheet($media_url);
-
+$data_dismiss = "data-bs-dismiss";
 $site_url = Uri::base();
-
-$sweet = "media/com_securitycheckpro/stylesheets/sweetalert.css";
-HTMLHelper::stylesheet($sweet);
-
-?>
-
-<?php 
-// Cargamos el contenido común...
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/common.php';
-
-// ... y el contenido específico
-require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/protection.php';
-
-echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/tab.min.js"></script>';
-echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/toast.min.js"></script>';
 ?>
 
 <form action="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=protection&view=protection&'. Session::getFormToken() .'=1');?>" method="post" name="adminForm" id="adminForm" class="margin-left-10 margin-right-10">
@@ -144,7 +114,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="prevent_access_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_PREVENT_ACCESS_TEXT'); ?></span>
 							<?php echo booleanlist('prevent_access', array(), $this->protection_config['prevent_access']) ?>                                
 							<?php if ($this->config_applied['prevent_access']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 
@@ -153,7 +123,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="own_banned_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_PREVENT_UNAUTHORIZED_BROWSING_TEXT'); ?></span>
 							<?php echo booleanlist('prevent_unauthorized_browsing', array(), $this->protection_config['prevent_unauthorized_browsing']) ?>                                
 							<?php if ($this->config_applied['prevent_unauthorized_browsing']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>	
 						
@@ -162,7 +132,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="file_injection_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_FILE_INJECTION_PROTECTION_TEXT'); ?></span>
 							<?php echo booleanlist('file_injection_protection', array(), $this->protection_config['file_injection_protection']) ?>                                
 							<?php if ($this->config_applied['file_injection_protection']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>	
 						
@@ -171,7 +141,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="self_environ_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_SELF_ENVIRON_TEXT'); ?></span>
 							<?php echo booleanlist('self_environ', array(), $this->protection_config['self_environ']) ?>                                
 							<?php if ($this->config_applied['self_environ']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>						
                     <!-- autoprotection tab end -->
@@ -187,7 +157,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="xframe_options_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_XFRAME_OPTIONS_TEXT'); ?></span>
 							 <?php echo xframeoptions('xframe_options', array(), $this->protection_config['xframe_options']) ?>                         
 							<?php if ($this->config_applied['xframe_options']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 						
@@ -196,7 +166,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="prevent_mime_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_PREVENT_MIME_ATTACKS_TEXT'); ?></span>
 							<?php echo booleanlist('prevent_mime_attacks', array(), $this->protection_config['prevent_mime_attacks']) ?>           
 							<?php if ($this->config_applied['prevent_mime_attacks']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 						
@@ -205,7 +175,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="sts_options_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_STS_OPTIONS_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_STS_OPTIONS_TEXT'); ?></span>
 							<?php echo booleanlist('sts_options', array(), $this->protection_config['sts_options']) ?>           
 							<?php if ($this->config_applied['sts_options']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 						
@@ -214,7 +184,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="xss_options_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_XSS_OPTIONS_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_XSS_OPTIONS_TEXT'); ?></span>
 							<?php echo booleanlist('xss_options', array(), $this->protection_config['xss_options']) ?>           
 							<?php if ($this->config_applied['xss_options']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 						
@@ -223,7 +193,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="csp_policy_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_CSP_OPTIONS_TEXT'); ?></span>
 							<input type="text" class="form-control width_560" id="csp_policy" name="csp_policy" aria-describedby="csp_policy" placeholder="<?php echo Text::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['csp_policy']); ?>">         
 							<?php if ($this->config_applied['csp_policy']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 						
@@ -232,7 +202,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="referrer_policy_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_REFERRER_POLICY_TEXT'); ?></span>
 							<input type="text" class="form-control width_560" id="referrer_policy" name="referrer_policy" aria-describedby="referrer_policy" placeholder="<?php echo Text::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['referrer_policy']); ?>"> 
 							<?php if ($this->config_applied['referrer_policy']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 						
@@ -241,7 +211,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="permissions_policy_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_PERMISSIONS_POLICY_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_PERMISSIONS_POLICY_TEXT'); ?></span>
 							 <input type="text" class="form-control width_560" id="permissions_policy" name="permissions_policy" aria-describedby="permissions_policy" placeholder="<?php echo Text::_('COM_SECURITYCHECKPRO_ENTER_POLICY') ?>" value="<?php echo htmlentities($this->protection_config['permissions_policy']); ?>">        
 							<?php if ($this->config_applied['permissions_policy']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>					
                     <!-- headers_protection tab end -->
@@ -275,11 +245,11 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 						
 						<div class="input-group mb-3">
 							<input class="btn btn-info" type="button" onclick="configure_toast('<?php echo Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_EXPLAIN') ?>','<?php echo Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_TEXT') ?>');" value="<?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?>" />
-							<input class="btn btn-warning" type="button" id="boton_default_user_agent" value="<?php echo JText::_('COM_SECURITYCHECKPRO_EDIT_DEFAULT_USER_AGENTS'); ?>" />
+							<input class="btn btn-warning" type="button" id="boton_default_user_agent" value="<?php echo Text::_('COM_SECURITYCHECKPRO_EDIT_DEFAULT_USER_AGENTS'); ?>" />
 							<span class="input-group-text" id="default_banned_list_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_DEFAULT_BANNED_LIST_TEXT'); ?></span>
 							<?php echo booleanlist('default_banned_list', array(), $this->protection_config['default_banned_list']) ?>           
 							<?php if ($this->config_applied['default_banned_list']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 						
@@ -288,7 +258,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="own_banned_list_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_OWN_BANNED_LIST_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_OWN_BANNED_LIST_TEXT'); ?></span>
 							<textarea class="form-control" name="own_banned_list" id="own_banned_list"><?php echo $this->protection_config['own_banned_list'] ?></textarea>           
 							<?php if ($this->config_applied['own_banned_list']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 						
@@ -297,7 +267,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="own_code_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_OWN_CODE_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_OWN_CODE_TEXT'); ?></span>
 							<textarea class="form-control" name="own_code" id="own_code"><?php echo $this->protection_config['own_code'] ?></textarea>           
 							<?php if ($this->config_applied['own_code']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>						
                     <!-- headers_protection tab end -->
@@ -313,7 +283,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="disable_server_signature_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_DISABLE_SERVER_SIGNATURE_TEXT'); ?></span>
 							<?php echo booleanlist('disable_server_signature', array(), $this->protection_config['disable_server_signature']) ?>                                
 							<?php if ($this->config_applied['disable_server_signature']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 						
@@ -322,7 +292,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="disallow_php_eggs_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_DISALLOW_PHP_EGGS_TEXT'); ?></span>
 							<?php echo booleanlist('disallow_php_eggs', array(), $this->protection_config['disallow_php_eggs']) ?>                                
 							<?php if ($this->config_applied['disallow_php_eggs']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 						
@@ -334,7 +304,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="disallow_sensible_files_access_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_DISALLOW_SENSIBLE_FILES_ACCESS_TEXT'); ?></span>
 							 <textarea class="form-control" name="disallow_sensible_files_access" id="disallow_sensible_files_access"><?php echo $this->protection_config['disallow_sensible_files_access'] ?></textarea>
 							<?php if ($this->config_applied['disallow_sensible_files_access']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>						
                     <!-- fingerprinting tab end -->
@@ -361,7 +331,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 								<input type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" name="hide_backend_url" id="hide_backend_url" value="<?php echo $this->protection_config['hide_backend_url']?>" placeholder="<?php echo $this->protection_config['hide_backend_url'] ?>"> 
 								<input type='button' id="hide_backend_url_button" class="btn btn-primary" class="margin-left-10" value='<?php echo Text::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_GENERATE_KEY_TEXT') ?>' />
 								<?php if ($this->config_applied['hide_backend_url']) {?>
-									<span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+									<span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
 								<?php } ?>
 							</div>						
                         </div>
@@ -373,7 +343,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 								<span class="input-group-text background-D0F5A9" id="inputGroup-sizing-lg"><?php echo "/" ?></span>
 								<input type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" name="hide_backend_url_redirection" id="hide_backend_url_redirection" value="<?php echo $this->protection_config['hide_backend_url_redirection']?>" placeholder="not_found">
 								<?php if ($this->config_applied['hide_backend_url_redirection']) {?>
-									<span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+									<span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
 								<?php } ?>
 							</div>
 						</div>                        
@@ -391,7 +361,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
                                     <a class="dropdown-item" id="delete_all_button" href="#backend_exceptions"><?php echo Text::_('COM_SECURITYCHECKPRO_DELETE_ALL') ?></a>          
 								</ul>                                               
 								<?php if ($this->config_applied['backend_exceptions']) {?>
-									<span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+									<span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
 								<?php } ?>
 							</div>							
                         </div>                       
@@ -404,7 +374,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="optimal_expiration_time_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_OPTIMAL_EXPIRATION_TIME_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_OPTIMAL_EXPIRATION_TIME_TEXT'); ?></span>
 							<?php echo booleanlist('optimal_expiration_time', array(), $this->protection_config['optimal_expiration_time']) ?>                                
 							<?php if ($this->config_applied['optimal_expiration_time']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 						
@@ -413,7 +383,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="compress_content_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_COMPRESS_CONTENT_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_COMPRESS_CONTENT_TEXT'); ?></span>
 							<?php echo booleanlist('compress_content', array(), $this->protection_config['compress_content']) ?>                                
 							<?php if ($this->config_applied['compress_content']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 					
@@ -422,7 +392,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="redirect_to_www_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_REDIRECT_TO_WWW_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_REDIRECT_TO_WWW_TEXT'); ?></span>
 							<?php echo booleanlist('redirect_to_www', array(), $this->protection_config['redirect_to_www']) ?>                                
 							<?php if ($this->config_applied['redirect_to_www']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>
 					
@@ -431,7 +401,7 @@ echo '<script type="module" src="' . URI::root() . 'media/vendor/bootstrap/js/to
 							<span class="input-group-text" id="redirect_to_non_www_label" title="<?php echo Text::_('COM_SECURITYCHECKPRO_REDIRECT_TO_NON_WWW_EXPLAIN') ?>"><?php echo Text::_('COM_SECURITYCHECKPRO_REDIRECT_TO_NON_WWW_TEXT'); ?></span>
 							<?php echo booleanlist('redirect_to_non_www', array(), $this->protection_config['redirect_to_non_www']) ?>                                
 							<?php if ($this->config_applied['redirect_to_non_www']) {?>
-                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fapro fa-check"></i></span>		
+                                <span class="input-group-text text-white bg-success" title="<?php echo Text::_('COM_SECURITYCHECKPRO_APPLIED') ?>"><i class="fa fa-check"></i></span>		
                             <?php } ?>							
 						</div>					
                     <!-- performance tab end -->

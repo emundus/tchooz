@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\MVC\Model\ListModel;
+use Joomla\CMS\Language\Text;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 
 /**
@@ -231,7 +232,7 @@ class Trackactions_logsModel extends ListModel
     
         // Chequeamos si se ha seleccionado algún elemento
         if (empty($uids)) {
-            Factory::getApplication()->enqueueMessage(JText::_("COM_SECURITYCHECKPRO_NO_ELEMENTS_SELECTED"), 'warning');
+            Factory::getApplication()->enqueueMessage(Text::_("COM_SECURITYCHECKPRO_NO_ELEMENTS_SELECTED"), 'warning');
             return false;
         }
     

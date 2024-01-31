@@ -10,6 +10,7 @@
    <field Field="plugin_description" Type="text" Null="YES" Key="" Extra="" />
    <field Field="plugin_params" Type="text" Null="YES" Key="" Extra="" />
    <field Field="plugin_access" Type="varchar(255)" Null="NO" Key="" Default="all" Extra="" />
+   <field Field="plugin_alias" Type="varchar(255)" Null="NO" Key="" Extra="" />
    <key Table="#__hikashop_plugin" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="plugin_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
  </database>

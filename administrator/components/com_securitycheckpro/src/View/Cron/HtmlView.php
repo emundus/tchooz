@@ -34,9 +34,14 @@ class HtmlView extends BaseHtmlView {
      */
     function display($tpl = null) {
 		 
-		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('PLG_SECURITYCHECKPRO_CRON_SCHEDULE_LABEL'), 'securitycheckpro');
-		
+		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('PLG_SECURITYCHECKPRO_CRON_SCHEDULE_LABEL'), 'securitycheckpro');		
 		ToolBarHelper::apply();
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common')
+		  ->useScript('bootstrap.toast')		  
+		  ->useScript('com_securitycheckpro.Cron');
 		 
 		// Filtro
         $this->state= $this->get('State');

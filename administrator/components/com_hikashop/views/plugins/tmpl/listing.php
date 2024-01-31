@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -40,6 +40,7 @@ defined('_JEXEC') or die('Restricted access');
 				<input type="checkbox" name="toggle" value="" onclick="hikashop.checkAll(this);" />
 			</th>
 			<th class="title"><?php echo JText::_('HIKA_NAME');?></th>
+			<th class="title default" data-alias="alias"><?php echo JText::_('HIKA_ALIAS');?></th>
 <?php
 	if(!empty($this->listing_columns)) {
 		foreach($this->listing_columns as $key => $column) {
@@ -79,6 +80,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 $p_id = $this->plugin_type.'_id';
 $p_name = $this->plugin_type.'_name';
+$p_alias = $this->plugin_type.'_alias';
 $p_order = $this->plugin_type.'_ordering';
 $p_published = $this->plugin_type.'_published';
 $p_type = $this->plugin_type.'_type';
@@ -112,6 +114,11 @@ if(!empty($this->rows)) {
 					echo $plugin->$p_name;
 					if(empty($plugin->$p_name))
 						echo '<em>' . JText::_('NO_NAME') . '</em>';
+				?></a>
+			</td>
+			<td>
+				<a href="<?php echo hikashop_completeLink('plugins&plugin_type='.$this->plugin_type.'&task=edit&name='. $plugin->$p_type .'&subtask='.$this->plugin_type.'_edit&'.$p_id.'='.$plugin->$p_id);?>"><?php
+					echo $plugin->$p_alias;
 				?></a>
 			</td>
 <?php

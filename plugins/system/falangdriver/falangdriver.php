@@ -52,6 +52,10 @@ final class plgSystemFalangdriver extends CMSPlugin
      */
     protected $autoloadLanguage = true;
 
+    /*
+     * @from 1.0
+     * @update 5.4 test site and not administrator
+     * */
     public function __construct(DispatcherInterface $dispatcher, $config = array())
     {
         parent::__construct($dispatcher, $config);
@@ -68,7 +72,8 @@ final class plgSystemFalangdriver extends CMSPlugin
         $this->displayInfoMessage();
 
         // This plugin is only relevant for use within the frontend!
-        if (Factory::getApplication()->isClient('administrator')) {
+        // need to test site
+        if (!Factory::getApplication()->isClient('site')) {
             return;
         }
 
@@ -582,6 +587,8 @@ final class plgSystemFalangdriver extends CMSPlugin
     * actually can't work perfectly because fields_values table don't have id key
     *
     * @since 4.0.5 load publish/unpublish custom field translation
+    * @update 5.3 fix bug with extra plugin showtime, create model need to be done for content in Admin mode and not Site
+    * @update 5.4 the context for category custom fields translation was not set correctly fix it
     *
     */
 	private function loadCustomFields($form, $data){
@@ -599,9 +606,9 @@ final class plgSystemFalangdriver extends CMSPlugin
 
 			$context = $form->getName();
 
-			// When a category is edited, the context is com_categories.categorycom_content
+			// When a category is edited, the context is not set correctly => fix it
 			if (strpos($context, 'com_categories.category') === 0) {
-				$context = str_replace('com_categories.category', '', $context) . '.categories';
+                $context = 'com_content.categories';
 			}
 
 			$parts = FieldsHelper::extract($context, $form);
@@ -618,7 +625,7 @@ final class plgSystemFalangdriver extends CMSPlugin
 			//necessary to load the related custom fields even if a translation for them don't exist.
     			if ( !empty($reference_id) && $catid == 'content'){
                 $mvcFactory = Factory::getApplication()->bootComponent('com_content')->getMVCFactory();
-                $articleModel = $mvcFactory->createModel('Article', 'Site', ['ignore_request' => true]);
+                $articleModel = $mvcFactory->createModel('Article', 'Administrator', ['ignore_request' => true]);
                 $contentParams = ComponentHelper::getParams('com_content');
                 $articleModel->setState('params', $contentParams);
                 $item =  $articleModel->getItem($reference_id);
@@ -718,6 +725,7 @@ final class plgSystemFalangdriver extends CMSPlugin
      * @since 4.0.5 add cateogry custom fields support
      * @update 4.12 save original text (null not accepted)
      * @update 5.0 original value is empty
+     * @update 5.4 add showtime support use original gallery (the gallery can't be removed or changed)
      *
      * @param $post
      * @return bool|void
@@ -772,9 +780,13 @@ final class plgSystemFalangdriver extends CMSPlugin
 		$values = array();
 		// Loop over the fields
 		foreach ($fields as $field) {
-			// Determine the value if it is available from the data
-			$value = key_exists($field->name, $fieldsData) ? $fieldsData[$field->name] : null;
-			$values[$field->name] = $value;
+            if ($field->type == 'showtime'){
+                $values[$field->name] = $field->value;
+            } else {
+                // Determine the value if it is available from the data
+                $value = key_exists($field->name, $fieldsData) ? $fieldsData[$field->name] : null;
+                $values[$field->name] = $value;
+            }
 		}
 
 

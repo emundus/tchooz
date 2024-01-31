@@ -32,6 +32,11 @@ class HtmlView extends BaseHtmlView {
 		   
 		ToolBarHelper::title(Text::_('Securitycheck Pro').' | '.Text::_('COM_SECURITYCHECKPRO_VULNERABILITIES'), 'securitycheckpro');
         ToolBarHelper::custom('mostrar', 'database', 'database', 'COM_SECURITYCHECKPRO_LIST', false);
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common')		  
+		  ->useScript('com_securitycheckpro.Securitycheckpros');
 
         $jinput = Factory::getApplication()->input;
 
@@ -50,7 +55,7 @@ class HtmlView extends BaseHtmlView {
             $last_update = $model->get_last_update();    
         } else 
         {
-            $last_update = 'Jun 12 2023';
+            $last_update = 'Jan 10 2024';
         }
 
         // Filtro por tipo de extensión

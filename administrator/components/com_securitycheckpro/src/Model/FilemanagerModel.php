@@ -800,9 +800,7 @@ class FileManagerModel extends BaseModel
 		// Contendrá la información que se escribe en el archivo resultado:
 		/*{"files_folders":[{"path":"\/var\/www\/administrator\/components\/com_securitycheckpro\/models\/protection.php","hash":"Not calculated","notes":"In exceptions List","new_file":0,"safe_integrity":2},{"path":"\/var\/www\/Joomla_4.0.3-Stable-Full_Package.zip","hash":"e3901e4e1474c9a285ee0414cbe6f782d25711b3","notes":"Integrity OK","new_file":0,"safe_integrity":1},... */
 		$files = array();
-        
-        jimport('joomla.filesystem.folder');
-    
+            
         // ¿Debemos escanear todos los archivos o sólo los ejecutables?
         $params = ComponentHelper::getParams('com_securitycheckpro');
         $scan_executables_only = $params->get('scan_executables_only', 0);
@@ -951,7 +949,7 @@ class FileManagerModel extends BaseModel
             // Actualizamos la BBDD para mostrar información del estado del chequeo
             $this->set_campo_filemanager('estado_integrity', 'CHECKING_DELETED_FILES');
 									
-			if (empty($stack))
+			if ((empty($stack)) || (empty($this->Stack_Integrity)) )
 			{				
 				$this->Stack_Integrity = $files_name;
 				$this->Stack_Integrity = array_merge($this->Stack_Integrity, $files);				
@@ -1511,7 +1509,13 @@ class FileManagerModel extends BaseModel
             $filename = $this->generateKey();
             try
             {
-                $content_permissions = utf8_encode(json_encode(array('files_folders'    => $this->Stack)));
+				$this->Stack = mb_convert_encoding($this->Stack,'UTF-8', 'UTF-8');
+                $content_permissions = json_encode(array('files_folders'    => $this->Stack));
+				if (json_last_error() != JSON_ERROR_NONE) {
+					$this->set_campo_filemanager('estado', 'DATABASE_ERROR');
+					$result_permissions = false;
+					$result_permissions = File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_permissions_scan.php', json_last_error_msg());
+				}
                 $content_permissions = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_permissions;
                 $result_permissions = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_permissions);        
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
@@ -1534,17 +1538,15 @@ class FileManagerModel extends BaseModel
 			        
             $object = (object)array(
             'storage_key'    => 'filemanager_resume',
-            'storage_value'    => utf8_encode(
-                json_encode(
+            'storage_value'    => json_encode(
                     array(
                     'files_scanned'        => $this->files_scanned,
                     'files_with_incorrect_permissions'    => $this->files_with_incorrect_permissions,
                     'last_check'    => $timestamp,
-                    'filename'        => $filename,
+                    'filename'        => mb_convert_encoding($filename,'UTF-8', 'UTF-8'),
 					'time_taken'	=>	$this->time_taken
                     )
-                )
-            )
+                )           
             );
         
             try 
@@ -1577,7 +1579,13 @@ class FileManagerModel extends BaseModel
         
             try
             {
-                $content_integrity = utf8_encode(json_encode(array('files_folders'    => $this->Stack_Integrity)));            
+				$this->Stack_Integrity = mb_convert_encoding($this->Stack_Integrity,'UTF-8', 'UTF-8');
+                $content_integrity = json_encode(array('files_folders'    => $this->Stack_Integrity));
+				if (json_last_error() != JSON_ERROR_NONE) {
+					 $this->set_campo_filemanager('estado_integrity', 'DATABASE_ERROR');
+					$result_integrity = false;
+					$result_permissions = File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_integrity_scan.php', json_last_error_msg());
+				}                           
                 $content_integrity = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_integrity;
                 $result_integrity = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_integrity);    
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
@@ -1600,18 +1608,16 @@ class FileManagerModel extends BaseModel
 						        
             $object = (object)array(
             'storage_key'    => 'fileintegrity_resume',
-            'storage_value'    => utf8_encode(
-                json_encode(
+            'storage_value'    => json_encode(
                     array(
                     'files_scanned_integrity'        => $this->files_scanned_integrity,
                     'files_with_incorrect_integrity'    => $this->files_with_incorrect_integrity,
                     'last_check_integrity'    => $timestamp,
-                    'filename'        => $filename,
+                    'filename'        =>  mb_convert_encoding($filename,'UTF-8', 'UTF-8'),
 					'time_taken'	=>	$this->time_taken,
 					'last_scan_info'	=>	$this->last_scan_info
                     )
                 )
-            )
             );
         
             try 
@@ -1645,7 +1651,13 @@ class FileManagerModel extends BaseModel
         
             try 
             {
-                $content_malwarescan = utf8_encode(json_encode(array('files_folders'    => $this->Stack)));
+				$this->Stack = mb_convert_encoding($this->Stack,'UTF-8', 'UTF-8');
+                 $content_malwarescan = json_encode(array('files_folders'    => $this->Stack));
+				if (json_last_error() != JSON_ERROR_NONE) {
+					$this->set_campo_filemanager('estado_malwarescan', 'DATABASE_ERROR');
+					$result_malwarescan_resume = false;
+					$result_permissions = File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_malware_scan.php', json_last_error_msg());
+				}                 
                 $content_malwarescan = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_malwarescan;
                 $result_malwarescan = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_malwarescan);
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
@@ -1668,17 +1680,15 @@ class FileManagerModel extends BaseModel
 			        
             $object = (object)array(
             'storage_key'    => 'malwarescan_resume',
-            'storage_value'    => utf8_encode(
-                json_encode(
+            'storage_value'    => json_encode(
                     array(
                     'files_scanned_malwarescan'        => $this->files_scanned_malwarescan,
                     'suspicious_files'    => $this->suspicious_files,
                     'last_check_malwarescan'    => $timestamp,
-                    'filename'        => $filename,
+                    'filename'        =>  mb_convert_encoding($filename,'UTF-8', 'UTF-8'),
 					'time_taken'	=>	$this->time_taken
                     )
-                )
-            )
+                )           
             );
         
             try
@@ -2177,7 +2187,7 @@ class FileManagerModel extends BaseModel
     
     
         // ... y borramos los ficheros
-		try{	
+		try{		
 			if ( (!empty($this->filemanager_name)) && (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name)) ){
 				$delete_permissions_file = File::delete($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name);
 			}
@@ -3498,7 +3508,8 @@ class FileManagerModel extends BaseModel
         // ... y almacenamos el nuevo contenido
         try
         {
-            $content_malwarescan = utf8_encode(json_encode(array('files_folders'    => $malwarescan_data)));
+			$malwarescan_data = mb_convert_encoding($malwarescan_data,'UTF-8', 'UTF-8');
+            $content_malwarescan = json_encode(array('files_folders'    => $malwarescan_data));
             $content_malwarescan = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_malwarescan;
             $result_malwarescan = File::write($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name, $content_malwarescan);
         } catch (Exception $e)
@@ -3835,7 +3846,8 @@ class FileManagerModel extends BaseModel
     
         try 
         {
-            $malware_content = utf8_encode(json_encode(array('files_folders'    => $data)));
+			$data = mb_convert_encoding($data,'UTF-8', 'UTF-8');
+            $malware_content = json_encode(array('files_folders'    => $data));
             $malware_content = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $malware_content;
             $result_malware = File::write($this->folder_path.DIRECTORY_SEPARATOR.$malwarescan_name, $malware_content);            
             

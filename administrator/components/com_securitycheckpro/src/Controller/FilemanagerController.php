@@ -128,7 +128,7 @@ class FilemanagerController extends SecuritycheckproBaseController
     
         $message = Text::_('COM_SECURITYCHECKPRO_CLEAR_DATA_DELETING_ENTRIES');
         echo $message;  
-		$this->initialize_database();
+		$this->initialize_database();		
         $model = $this->getModel("filemanager");
         $model->set_campo_filemanager('estado_clear_data', 'ENDED');
     }

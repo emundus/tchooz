@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -189,17 +189,8 @@ class CartViewCart extends HikaShopView {
 		}
 		$pathway->addItem(JText::_($title), hikashop_completeLink('cart&task=show&cid='.$cart_id.'&Itemid='.$Itemid));
 
-		if(empty($cart) || empty($cart->products)) {
-			$this->checkbox_column = false;
-			$this->productFields = null;
-			if($type == 'wishlist')
-				$app->enqueueMessage(JText::_('WISHLIST_EMPTY'));
-			else
-				$app->enqueueMessage(JText::_('CART_EMPTY'));
-			return false;
-		}
 
-		if($cart->cart_type == 'wishlist') {
+		if(!empty($cart) && $cart->cart_type == 'wishlist') {
 			if($cart->user_id != $user_id) {
 				$user = !empty($cart->user->username) ? $cart->user->username : $cart->user->user_email;
 				hikashop_setPageTitle( JText::sprintf('HIKASHOP_USER_WISHLIST', $user) );
@@ -210,11 +201,61 @@ class CartViewCart extends HikaShopView {
 			));
 		}
 
-		$manage = ($cart->cart_type == 'cart' || $cart->user_id == $user_id);
+		$manage = !empty($cart) && ($cart->cart_type == 'cart' || $cart->user_id == $user_id);
 		$this->assignRef('manage', $manage);
+
+		$user_wishlists = array();
+		if(!empty($cart) && (int)$config->get('enable_wishlist')) {
+			$query = 'SELECT cart_id, cart_name, cart_modified, cart_current '.
+					' FROM '.hikashop_table('cart').' AS cart WHERE cart.user_id = '.(int)$user_id.' AND cart.cart_type = '.$db->Quote('wishlist').' AND cart.cart_id != '.(int)$cart->cart_id;
+			$db->setQuery($query);
+			$user_wishlists = $db->loadObjectList();
+		}
+		$this->assignRef('user_wishlists', $user_wishlists);
+
+		$multi_wishlist = (int)$config->get('enable_multiwishlist', 1);
+		$this->assignRef('multi_wishlist', $multi_wishlist);
+
 
 		$juser = JFactory::getUser();
 		$this->assignRef('guest', $juser->guest);
+
+		if(empty($cart) || empty($cart->products)) {
+			$this->checkbox_column = false;
+			$this->productFields = null;
+			if($type == 'wishlist') {
+				$app->enqueueMessage(JText::_('WISHLIST_EMPTY'));
+
+				$toolbar = array();
+				if(!empty($manage) && !empty($cart)) {
+					$toolbar['save'] = array(
+						'icon' => 'save',
+						'name' => JText::_('HIKA_SAVE'),
+						'javascript' => "return window.hikashop.submitform('apply','hikashop_show_cart_form');",
+						'fa' => array('html' => '<i class="far fa-save"></i>')
+					);
+				}
+				if(!$juser->guest) {
+					$multi_cart = (int)$config->get('enable_multiwishlist', 1);
+					$link = hikashop_completeLink('user&task=cpanel&Itemid='.$Itemid);
+					if($multi_cart) {
+						$link = hikashop_completeLink('cart&task=listing&cart_type=wishlist&Itemid='.$Itemid);
+					}
+					$toolbar['back'] = array(
+						'icon' => 'back',
+						'name' => JText::_('HIKA_BACK'),
+						'url' => $link,
+						'fa' => array('html' => '<i class="fas fa-arrow-circle-left"></i>')
+					);
+				}
+				$this->toolbar = $toolbar;
+
+			} else
+				$app->enqueueMessage(JText::_('CART_EMPTY'));
+			return false;
+		}
+
+
 
 		$print_cart = (hikaInput::get()->getBool('print_cart', false) === true) && $config->get('print_cart');
 		if($print_cart)
@@ -348,17 +389,6 @@ class CartViewCart extends HikaShopView {
 		}
 		$this->assignRef('user_carts', $user_carts);
 
-		$user_wishlists = array();
-		if((int)$config->get('enable_wishlist')) {
-			$query = 'SELECT cart_id, cart_name, cart_modified, cart_current '.
-					' FROM '.hikashop_table('cart').' AS cart WHERE cart.user_id = '.(int)$user_id.' AND cart.cart_type = '.$db->Quote('wishlist').' AND cart.cart_id != '.(int)$cart->cart_id;
-			$db->setQuery($query);
-			$user_wishlists = $db->loadObjectList();
-		}
-		$this->assignRef('user_wishlists', $user_wishlists);
-
-		$multi_wishlist = (int)$config->get('enable_multiwishlist', 1);
-		$this->assignRef('multi_wishlist', $multi_wishlist);
 
 		$checkbox_column = ((int)$config->get('enable_multicart') || (int)$config->get('enable_wishlist')) && empty($print_cart);
 		$this->assignRef('checkbox_column', $checkbox_column);

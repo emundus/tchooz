@@ -154,7 +154,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         $mainframe = Factory::getApplication();
 		
 		// This is needed to avoid errors getting the file from cli
-		if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {
+		if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {	
 			$jinput = $mainframe->input;
 	 
 			// Obtenemos las variables de paginación de la petición

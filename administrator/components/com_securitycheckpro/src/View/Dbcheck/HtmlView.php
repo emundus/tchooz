@@ -49,6 +49,11 @@ class HtmlView extends BaseHtmlView {
     function display($tpl = null) {
 		  
 		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_DB_OPTIMIZATION'), 'securitycheckpro');
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common')
+		  ->useScript('com_securitycheckpro.Dbcheck');
 
         // Extraemos el tipo de tablas que serán mostradas
         $params = ComponentHelper::getParams('com_securitycheckpro');
@@ -67,6 +72,9 @@ class HtmlView extends BaseHtmlView {
         $this->tables      = $this->get('Tables');
         $this->show_tables = $show_tables;
         $this->last_check_database = $last_check_database;
+				
+		// Pass parameters to the cpanel.js script using Joomla's script options API
+		$this->document->addScriptOptions('securitycheckpro.Dbcheck.tables', $this->tables);
         
         parent::display($tpl);  
     }

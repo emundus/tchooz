@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.2
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,6 +24,8 @@ $stock = $this->row->product_quantity;
 if($stock == -1 && !empty($this->element->main) && isset($this->element->main->product_quantity))
 	$stock = $this->element->main->product_quantity;
 $in_stock = $stock != 0;
+$threshold_stock_message = (int)$this->config->get('threshold_stock_message', 1);
+
 $is_free = empty($this->row->prices);
 $display_free_cart = (int)$this->config->get('display_add_to_cart_for_free_products', 0);
 $display_free_wishlist = (int)$this->config->get('display_add_to_wishlist_for_free_products', 1);
@@ -101,7 +103,7 @@ $stock_class = ($stock != 0) ? "" : " hikashop_product_no_stock";
 	if(!empty($this->row->product_stock_message))
 		echo JText::sprintf($this->row->product_stock_message, $stock);
 	elseif($stock > 0)
-		echo (($stock == 1 && JText::_('X_ITEM_IN_STOCK') != 'X_ITEM_IN_STOCK') ? JText::sprintf('X_ITEM_IN_STOCK', $stock) : JText::sprintf('X_ITEMS_IN_STOCK', $stock));
+		echo (($stock <= $threshold_stock_message && JText::_('X_ITEM_IN_STOCK') != 'X_ITEM_IN_STOCK') ? JText::sprintf('X_ITEM_IN_STOCK', $stock) : JText::sprintf('X_ITEMS_IN_STOCK', $stock));
 	elseif(!$in_stock)
 		echo JText::_('NO_STOCK');
 ?>

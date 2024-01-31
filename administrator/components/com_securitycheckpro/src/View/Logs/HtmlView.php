@@ -47,6 +47,10 @@ class HtmlView extends BaseHtmlView {
         ToolBarHelper::custom('add_to_blacklist', 'plus_blacklist', 'plus', 'COM_SECURITYCHECKPRO_ADD_TO_BLACKLIST');
         ToolBarHelper::custom('add_to_whitelist', 'plus', 'plus', 'COM_SECURITYCHECKPRO_ADD_TO_WHITELIST');
 		ToolBarHelper::custom('add_exception', 'plus', 'plus', 'COM_SECURITYCHECKPRO_ADD_EXCEPTION');
+		
+		// Load css and js
+		$this->document->getWebAssetManager()
+		  ->usePreset('com_securitycheckpro.common');
 
         // Obtenemos los datos del modelo		
 		$model               = $this->getModel();
