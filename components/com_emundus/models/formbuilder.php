@@ -1956,6 +1956,15 @@ class EmundusModelFormbuilder extends JModelList
 					unset($element['params']['validations']['validate_hidden'][$key]);
 					unset($element['params']['validations']['must_validate'][$key]);
 					unset($element['params']['validations']['show_icon'][$key]);
+
+					// Reindex validations
+					$element['params']['validations']['plugin'] = array_values($element['params']['validations']['plugin']);
+					$element['params']['validations']['plugin_published'] = array_values($element['params']['validations']['plugin_published']);
+					$element['params']['validations']['validate_in'] = array_values($element['params']['validations']['validate_in']);
+					$element['params']['validations']['validation_on'] = array_values($element['params']['validations']['validation_on']);
+					$element['params']['validations']['validate_hidden'] = array_values($element['params']['validations']['validate_hidden']);
+					$element['params']['validations']['must_validate'] = array_values($element['params']['validations']['must_validate']);
+					$element['params']['validations']['show_icon'] = array_values($element['params']['validations']['show_icon']);
 				}
 			}
 			else {

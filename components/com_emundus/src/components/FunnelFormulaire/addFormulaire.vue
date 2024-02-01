@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a class="em-pointer em-profile-color" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
+    <a class="em-pointer em-profile-color em-text-underline" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
 
     <div class="em-mb-4 em-mt-16 em-text-color">{{ ChooseForm }} :</div>
     <div class="em-mb-4">

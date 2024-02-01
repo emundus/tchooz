@@ -10,6 +10,8 @@
 
 // No direct access
 
+use PhpOffice\PhpWord\TemplateProcessor;
+
 defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
 
@@ -381,8 +383,8 @@ class EmundusModelEvaluation extends JModelList
 		$jinput  = JFactory::getApplication()->input;
 		$fnums   = $jinput->getString('cfnums', null);
 
-		if ($session->has('filt_params')) {
-			//var_dump($session->get('filt_params'));
+        if ($session->has('filt_params'))
+        {
 			$element_id  = array();
 			$filt_params = $session->get('filt_params');
 
@@ -423,8 +425,7 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
-//die(var_dump($elements_id));
-		return @$elements_id;
+		return $elements_id;
 	}
 
 	/**
@@ -488,15 +489,14 @@ class EmundusModelEvaluation extends JModelList
 	 * @return array list of Fabrik element ID used in evaluation form
 	 * @throws Exception
 	 */
-	public function getAllEvaluationElements($show_in_list_summary, $programme_code)
-	{
+    public function getAllEvaluationElements($show_in_list_summary=1, $programme_code) {
 		$session = JFactory::getSession();
 
 		$jinput = JFactory::getApplication()->input;
 		$fnums  = $jinput->getString('cfnums', null);
+		$get_all = false;
 
 		if ($session->has('filt_params')) {
-			//var_dump($session->get('filt_params'));
 			$elements_id = array();
 			$filt_params = $session->get('filt_params');
 
@@ -514,8 +514,14 @@ class EmundusModelEvaluation extends JModelList
 						}
 					}
 				}
+            } else {
+				$get_all = true;
 			}
-			else {
+        } else {
+			$get_all = true;
+        }
+
+		if ($get_all) {
 				$groups = $this->getGroupsEvalByProgramme($programme_code);
 				if (!empty($groups)) {
 					$eval_elt_list = $this->getAllElementsByGroups($groups); // $show_in_list_summary
@@ -526,9 +532,8 @@ class EmundusModelEvaluation extends JModelList
 					}
 				}
 			}
-		}
 
-		return @$elements_id;
+		return $elements_id;
 	}
 
 	/**
@@ -540,15 +545,14 @@ class EmundusModelEvaluation extends JModelList
 	 * @return    array list of Fabrik element ID used in evaluation form
 	 **@throws Exception
 	 */
-	public function getAllDecisionElements($show_in_list_summary, $programme_code)
-	{
+    public function getAllDecisionElements($show_in_list_summary=1, $programme_code) {
 		$session = JFactory::getSession();
 
 		$jinput = JFactory::getApplication()->input;
 		//$fnums = $jinput->getString('cfnums', null);
 
-		if ($session->has('filt_params')) {
-			//var_dump($session->get('filt_params'));
+        if ($session->has('filt_params'))
+        {
 			$elements_id = array();
 			$filt_params = $session->get('filt_params');
 
@@ -2320,7 +2324,7 @@ class EmundusModelEvaluation extends JModelList
 								if ($escape_ampersand) {
 									\PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
 								}
-								$preprocess = $phpWord->loadTemplate($letter_file);
+								$preprocess = new \PhpOffice\PhpWord\TemplateProcessor($letter_file);
 								$tags       = $preprocess->getVariables();
 
 								$idFabrik  = [];

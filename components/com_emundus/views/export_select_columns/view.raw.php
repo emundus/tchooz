@@ -69,7 +69,11 @@ class EmundusViewExport_select_columns extends JViewLegacy
 		elseif ($this->form === 'admission') {
 			require_once(JPATH_ROOT . '/components/com_emundus/models/admission.php');
 			$m_admission = new EmundusModelAdmission;
-			$this->elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code, $all);
+
+			$applicant_elements = $m_admission->getApplicantAdmissionElementsName(0, 0, $code, $all);
+			$evaluator_elements = $m_admission->getAdmissionElementsName(0, 0, $code, $all);
+
+			$this->elements = array_merge($applicant_elements, $evaluator_elements);
 		}
 		elseif ($this->form === 'evaluation') {
 			require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');

@@ -1521,6 +1521,7 @@ form.fabrikForm .plg-fileupload .fabrikSubElementContainer {
         flex-direction: column-reverse;
         padding: var(--em-form-fileupload-padding);
         background-color: var(--em-form-fileupload-bgc);
+        border-radius: var(--em-form-br);
       }
 form.fabrikForm .plg-fileupload .fabrikSubElementContainer input[type='file'] {
           height: auto;
@@ -6381,9 +6382,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   --tw-text-opacity: 1;
   color: rgb(234 179 8 / var(--tw-text-opacity));
 }
-.tw-underline {
-  text-decoration-line: underline;
-}
 .tw-shadow-sm {
   --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
@@ -6818,7 +6816,7 @@ button.swal2-cancel.goback-btn:hover,
 .alert a:hover {
         font-weight: normal;
         text-decoration: underline;
-        color: var(--blue-500);
+        color: inherit;
     }
 .has-error .help-block,
     .has-error .control-label,
@@ -7198,7 +7196,7 @@ body {
     min-height: 150px;
 }
 /* Connexion */
-.login > #g-page-surround {
+.view-login.gantry > #g-page-surround {
     background-image: var(--display-digital-testing), var(--display-candidate-button);
     background-position: top 120px left 20px, bottom 50px right 20px;
     background-repeat : no-repeat, no-repeat;

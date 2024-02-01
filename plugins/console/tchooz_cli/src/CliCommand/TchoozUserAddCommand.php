@@ -143,8 +143,8 @@ class TchoozUserAddCommand extends AbstractCommand
         $this->configureIO($input, $output);
         $this->ioStyle->title('Add User');
         $this->user       = $this->getStringFromOption('username', 'Please enter a username');
-        $this->firstname  = $this->getStringFromOption('name', 'Please enter a firstname');
-        $this->lastname   = $this->getStringFromOption('name', 'Please enter a lastname');
+        $this->firstname  = $this->getStringFromOption('firstname', 'Please enter a firstname');
+        $this->lastname   = $this->getStringFromOption('lastname', 'Please enter a lastname');
         $this->email      = $this->getStringFromOption('email', 'Please enter an email address');
         $this->password   = $this->getStringFromOption('password', 'Please enter a password');
         $this->userGroups = $this->getUserGroups();
@@ -533,7 +533,8 @@ class TchoozUserAddCommand extends AbstractCommand
 		\nUsage: <info>php %command.full_name%</info>";
 
         $this->addOption('username', null, InputOption::VALUE_OPTIONAL, 'username');
-        $this->addOption('name', null, InputOption::VALUE_OPTIONAL, 'full name of user');
+        $this->addOption('firstname', null, InputOption::VALUE_OPTIONAL, 'firstname of user');
+        $this->addOption('lastname', null, InputOption::VALUE_OPTIONAL, 'lastname of user');
         $this->addOption('password', null, InputOption::VALUE_OPTIONAL, 'password');
         $this->addOption('email', null, InputOption::VALUE_OPTIONAL, 'email address');
         $this->addOption('usergroup', null, InputOption::VALUE_OPTIONAL, 'usergroup (separate multiple groups with comma ",")');

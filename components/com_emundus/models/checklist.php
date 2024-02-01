@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 
@@ -295,6 +296,9 @@ class EmundusModelChecklist extends JModelList
 
 	function setDelete($status = 0, $student = null)
 	{
+		$eMConfig = ComponentHelper::getParams('com_emundus');
+
+		$attachment_id = $eMConfig->get('attachment_to_keep_non_deletable');
 
 		if (empty($student)) {
 			if (version_compare(JVERSION, '4.0', '>')) {
@@ -316,7 +320,8 @@ class EmundusModelChecklist extends JModelList
 		$query->update($this->_db->quoteName('#__emundus_uploads'))
 			->set($this->_db->quoteName('can_be_deleted') . ' = ' . $this->_db->quote($status))
 			->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($student->id))
-			->andWhere($this->_db->quoteName('fnum') . ' like ' . $this->_db->quote($student->fnum));
+			->andWhere($this->_db->quoteName('fnum') . ' like ' . $this->_db->quote($student->fnum))
+			->andWhere($this->_db->quoteName('attachment_id') . ' NOT IN (' . $attachment_id .')');
 		$this->_db->setQuery($query);
 
 		try {

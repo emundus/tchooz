@@ -2079,7 +2079,7 @@ class EmundusModelApplication extends JModelList
 											}
 
 											// Do not display elements with no value inside them.
-											if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1)) {
+											if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1) && $element->plugin != 'emundus_fileupload') {
 												continue;
 											}
 
@@ -5124,77 +5124,80 @@ class EmundusModelApplication extends JModelList
 	 * @return bool
 	 *
 	 */
-	public function checkEmptyGroups($elements, $parent_table, $fnum)
-	{
-		$db    = $this->_db;
-		$query = $this->_db->getQuery(true);
+	public function checkEmptyGroups($elements, $parent_table, $fnum) {
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
 
-		$eMConfig          = JComponentHelper::getParams('com_emundus');
+		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
 
 		$databases_join_params = [];
-		$elements_name         = array_map(function ($obj) use ($db, $parent_table, &$databases_join_params) {
-			if ($obj->plugin == 'databasejoin') {
+		$elements_name = array_map(function($obj) use ($db,$parent_table,&$databases_join_params) {
+			if($obj->plugin == 'databasejoin'){
 				$params = json_decode($obj->params);
-				if ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist') {
-					$databases_join_params[] = $db->quoteName($parent_table . '_repeat_' . $obj->name) . ' ON ' . $db->quoteName($parent_table . '_repeat_' . $obj->name) . '.parent_id = t.id';
+				if($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist'){
+					$databases_join_params[] = $db->quoteName($parent_table.'_repeat_' . $obj->name).' ON '.$db->quoteName($parent_table.'_repeat_' . $obj->name).'.parent_id = t.id';
 
-					return $parent_table . '_repeat_' . $obj->name . '.' . $obj->name;
+					return $parent_table.'_repeat_' . $obj->name.'.'.$obj->name;
 				}
 			}
-
-			return 't.' . $obj->name;
+			return 't.'.$obj->name;
 		}, $elements);
 
-		$query->select(implode(',', $this->_db->quoteName($elements_name)))
-			->from($this->_db->quoteName($parent_table, 't'));
-		if (!empty($databases_join_params)) {
-			foreach ($databases_join_params as $db_join) {
+		$query->select(implode(',', $db->quoteName($elements_name)))
+			->from($db->quoteName($parent_table,'t'));
+		if(!empty($databases_join_params)){
+			foreach ($databases_join_params as $db_join)
+			{
 				$query->leftJoin($db_join);
 			}
 		}
-		$query->where($this->_db->quoteName('t.fnum') . ' LIKE ' . $this->_db->quote($fnum));
+		$query->where($db->quoteName('t.fnum') . ' LIKE ' . $db->quote($fnum));
 
 		try {
-			$this->_db->setQuery($query);
-			$this->_db->execute();
-			if ($this->_db->getNumRows() == 1) {
-				$res = $this->_db->loadAssoc();
+			$db->setQuery($query);
+			$db->execute();
+			if ($db->getNumRows() == 1)
+			{
+				$res = $db->loadAssoc();
 
-				$elements = array_map(function ($arr) {
-					if (is_numeric($arr)) {
-						return (empty(floatval($arr)));
-					}
-					else {
-						if ($arr == "0000-00-00 00:00:00") {
-							return true;
+				$at_least_one_visible = false;
+				foreach($res as $element_name => $element_value) {
+					$current_fb_element = array_filter($elements, function($el) use ($element_name) {return $el->name === $element_name;});
+					$current_fb_element = current($current_fb_element);
+
+					if (!empty($current_fb_element)) {
+						if ($current_fb_element->plugin === 'yesno' && !is_null($element_value) && $element_value !== '') {
+							$at_least_one_visible = true;
 						}
 
-						return empty($arr);
+						if (is_numeric($element_value)) {
+							if (!empty(floatval($element_value))) {
+								$at_least_one_visible = true;
+							}
+						} else if ($element_value !== "0000-00-00 00:00:00" && !empty($element_value)) {
+							$at_least_one_visible = true;
+						}
 					}
-				}, $res);
+				}
 
-				$elements = array_filter($elements, function ($el) {
-					return $el === false;
-				});
-
-				return !empty($elements);
+				return $at_least_one_visible;
 			}
-			elseif ($this->_db->getNumRows() > 1) {
+			elseif ($db->getNumRows() > 1)
+			{
 				return true;
 			}
-			else {
-				if ($show_empty_fields == 0) {
+			else
+			{
+				if($show_empty_fields == 0){
 					return false;
 				}
 			}
 
 			return true;
 
-		}
-		catch (Exception $e) {
-			JLog::add('Error checking if group is empty at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
-
+		} catch (Exception $e ) {
+			JLog::add('Error checking if group is empty at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
 		}
 	}

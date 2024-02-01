@@ -449,7 +449,6 @@ class EmundusHelperFilters
 				ORDER BY group_id';
 		$db->setQuery($query);
 
-//		die(str_replace("#_", "jos", $query));
 		return $db->loadObjectList();
 	}
 

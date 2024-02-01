@@ -517,7 +517,7 @@ class EmundusModelMessages extends JModelList
 		try {
 
 			$phpWord    = new \PhpOffice\PhpWord\PhpWord();
-			$preprocess = $phpWord->loadTemplate(JPATH_SITE . $letter->file);
+			$preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE.$letter->file);
 			$tags       = $preprocess->getVariables();
 
 			$idFabrik  = array();

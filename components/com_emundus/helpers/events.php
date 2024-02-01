@@ -1188,8 +1188,17 @@ class EmundusHelperEvents
 		$redirect_message = !empty($params['plugin_options']) && !empty($params['plugin_options']->get('trigger_confirmpost_success_msg')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_success_msg')) : JText::_('APPLICATION_SENT');
 
 		if (!empty($params['plugin_options'])) {
-
+			$go_to_next_step = false;
 			if (intval($params['plugin_options']->get('trigger_confirmpost_redirect_to_next_step_first_page_url')) === 1) {
+
+				$current_phase = $mCampaign->getCurrentCampaignWorkflow($student->fnum);
+
+				if (!empty($current_phase->id)) {
+					$go_to_next_step = true;
+				}
+			}
+
+			if ($go_to_next_step) {
 				$redirect_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $student->fnum;
 			}
 			else {

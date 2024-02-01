@@ -3810,6 +3810,10 @@ class EmundusHelperFiles
 					$sql_code = ' sp.code in ("' . implode('","', $filt_menu['programme']) . '") ';
 				}
 			}
+		} elseif (!empty($caller_params['code'])) {
+			// ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
+			$sql_code = ' sp.code IN ("'.implode('","', $caller_params['code']).'") ';
+			$and = ' OR ';
 		}
 
 		$sql_fnum = '';

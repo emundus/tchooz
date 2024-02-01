@@ -130,13 +130,17 @@ class EmundusControllerFile extends JControllerLegacy
 	public function getevaluationformbyfnum()
 	{
 		$results = ['status' => 1, 'msg' => '', 'data' => []];
+		$fnum = $this->input->getString('fnum', null);
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id)) {
-			$fnum = $this->input->getString('fnum', null);
-
-			$results['data'] = $this->files->getEvaluationFormByFnum($fnum);
-		}
-		else {
+		if (!empty($fnum)) {
+			if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id, $fnum) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id, $fnum)) {
+				$results['data'] = $this->files->getEvaluationFormByFnum($fnum);
+			}
+			else {
+				$results['status'] = 0;
+				$results['msg']    = JText::_('ACCESS_DENIED');
+			}
+		} else {
 			$results['status'] = 0;
 			$results['msg']    = JText::_('ACCESS_DENIED');
 		}
@@ -184,17 +188,23 @@ class EmundusControllerFile extends JControllerLegacy
 	public function getfile()
 	{
 		$results = ['status' => 1, 'msg' => '', 'data' => [], 'rights' => []];
+		$fnum = $this->input->getString('fnum', null);
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id)) {
-			$fnum = $this->input->getString('fnum', null);
 
-			$access = $this->files->checkAccess($fnum);
-			if ($access) {
-				$results['data']   = $this->files->getFile($fnum);
-				$results['rights'] = $this->files->getAccess($fnum);
+		if(!empty($fnum)) {
+			if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id, $fnum) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id, $fnum)) {
+				$access = $this->files->checkAccess($fnum);
+				if ($access) {
+					$results['data']   = $this->files->getFile($fnum);
+					$results['rights'] = $this->files->getAccess($fnum);
+				}
+				else {
+					$results['status'] = 0;
+				}
 			}
 			else {
 				$results['status'] = 0;
+				$results['msg']    = JText::_('ACCESS_DENIED');
 			}
 		}
 		else {

@@ -414,6 +414,7 @@ class EmundusModelDecision extends JModelList
 			$session = Factory::getSession();
 		}
 
+		$get_all = false;
 		if ($session->has('filt_params')) {
 			$elements_id = array();
 			$filt_params = $session->get('filt_params');
@@ -432,8 +433,14 @@ class EmundusModelDecision extends JModelList
 						}
 					}
 				}
+            } else {
+				$get_all = true;
 			}
-			else {
+		} else {
+	        $get_all = true;
+        }
+
+		if ($get_all) {
 				$groups = $this->getGroupsDecisionByProgramme($programme_code);
 				if (!empty($groups)) {
 					$eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary); // $show_in_list_summary
@@ -444,7 +451,6 @@ class EmundusModelDecision extends JModelList
 					}
 				}
 			}
-		}
 
 		return $elements_id;
 	}
