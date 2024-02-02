@@ -1413,7 +1413,7 @@
    </row>
    <row>
     <field name="id">374</field>
-    <field name="label">Espace profil</field>
+    <field name="label">ACCOUNT_FORM</field>
     <field name="record_in_database">1</field>
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>

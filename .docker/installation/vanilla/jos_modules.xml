@@ -824,7 +824,7 @@
     <field name="module">mod_emundus_profile</field>
     <field name="access">2</field>
     <field name="showtitle">0</field>
-    <field name="params">{&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;update_profile_picture&quot;:&quot;1&quot;,&quot;show_name&quot;:&quot;1&quot;,&quot;show_account_edit_button&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;update_profile_picture&quot;:&quot;1&quot;,&quot;show_name&quot;:&quot;1&quot;,&quot;show_account_edit_button&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;\u00c9ditez votre photo de profil et vos informations personnelles. Attention votre photo de profil sera visible sur tous vos dossiers de candidature.&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>

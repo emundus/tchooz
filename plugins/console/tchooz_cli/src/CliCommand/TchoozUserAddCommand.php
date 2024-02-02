@@ -143,7 +143,7 @@ class TchoozUserAddCommand extends AbstractCommand
         $this->configureIO($input, $output);
         $this->ioStyle->title('Add User');
         $this->user       = $this->getStringFromOption('username', 'Please enter a username');
-        $this->firstname  = $this->getStringFromOption('firstname', 'Please enter a firstname');
+        $this->firstname  = $this->getStringFromOption('firstname', 'Please enter a firstname', false);
         $this->lastname   = $this->getStringFromOption('lastname', 'Please enter a lastname');
         $this->email      = $this->getStringFromOption('email', 'Please enter an email address');
         $this->password   = $this->getStringFromOption('password', 'Please enter a password');
@@ -276,11 +276,11 @@ class TchoozUserAddCommand extends AbstractCommand
      *
      * @since   4.0.0
      */
-    public function getStringFromOption($option, $question): string
+    public function getStringFromOption($option, $question, $mandatory = true): string
     {
         $answer = (string) $this->cliInput->getOption($option);
 
-        while (!$answer) {
+        while (!$answer && $mandatory) {
             if ($option === 'password') {
                 $answer = (string) $this->ioStyle->askHidden($question);
             } else {
