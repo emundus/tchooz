@@ -7,17 +7,23 @@
  */
 
 // no direct access
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die;
 
 class modemundusApplicationsHelper
 {
 
-	// get users sorted by activation date
 	static function getApplications($layout, $order_by, $params = null)
 	{
 		$applications = [];
-		$user         = JFactory::getUser();
-		$db           = JFactory::getDbo();
+		$app = Factory::getApplication();
+		$user         = $app->getIdentity();
+		$db           = Factory::getContainer()->get('DatabaseDriver');
 		$query        = $db->getQuery(true);
 
 		// Test if the table used for showing the title exists.
@@ -107,7 +113,7 @@ class modemundusApplicationsHelper
 			}
 		}
 
-		$order_by_session = JFactory::getSession()->get('applications_order_by');
+		$order_by_session = $app->getSession()->get('applications_order_by');
 		switch ($order_by_session) {
 			case 'status':
 				$query->order('ess.ordering ASC,ecc.date_time DESC');
@@ -134,21 +140,22 @@ class modemundusApplicationsHelper
 			$applications = $db->loadObjectList('fnum');
 		}
 		catch (Exception $e) {
-			JLog::add('Module emundus applications failed to get applications for user ' . $user->id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Module emundus applications failed to get applications for user ' . $user->id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $applications;
 	}
 
-	// get State of the files (published, removed, archived)
 	static function getStatusFiles()
 	{
 		$states = [];
-		$user   = JFactory::getUser();
+		$app = Factory::getApplication();
+		$user   = $app->getIdentity();
 
 		if (!empty($user->id)) {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
+
 			$query->select([$db->quoteName('published'), $db->quoteName('fnum')])
 				->from($db->quoteName('#__emundus_campaign_candidature'))
 				->where($db->quoteName('applicant_id') . '=' . $user->id);
@@ -158,53 +165,54 @@ class modemundusApplicationsHelper
 				$states = $db->loadAssocList('fnum');
 			}
 			catch (Exception $e) {
-				JLog::add('Module emundus applications failed to get state of files for user ' . $user->id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Module emundus applications failed to get state of files for user ' . $user->id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
 		return $states;
 	}
 
-	// get poll id of the appllicant
 	static function getPoll()
 	{
-		$user = JFactory::getUser();
-		$db   = JFactory::getDbo();
+		$app = Factory::getApplication();
+		$user = $app->getIdentity();
+		$db   = Factory::getContainer()->get('DatabaseDriver');
 
-		$query = 'SELECT id
-					FROM #__emundus_survey AS es
-					WHERE es.user =' . $user->id;
+		$query = $db->getQuery(true);
 
+		$query->select($db->quoteName('id'))
+			->from($db->quoteName('#__emundus_survey'))
+			->where($db->quoteName('user') . ' = ' . $user->id);
 		$db->setQuery($query);
 		$id = $db->loadResult();
 
-		return $id > 0 ? $id : 0;
+		return max($id, 0);
 	}
 
 	static function getOtherCampaigns($uid)
 	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
 
-		$db = JFactory::getDbo();
-
-		$query = 'SELECT c.id,c.label
-					FROM #__emundus_setup_campaigns AS c
-					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
-					WHERE c.published = 1
-					AND p.apply_online = 1
-					AND c.end_date >= NOW()
-					AND c.start_date <= NOW()
-					AND c.id NOT IN (
-						select campaign_id
-						from #__emundus_campaign_candidature
-						where applicant_id=' . $uid . '
-					)';
+		$query->select(['c.id', 'c.label'])
+			->from($db->quoteName('#__emundus_setup_campaigns', 'c'))
+			->leftJoin($db->quoteName('#__emundus_setup_programmes', 'p') . ' ON p.code LIKE c.training')
+			->where($db->quoteName('c.published') . ' = 1')
+			->where($db->quoteName('p.apply_online') . ' = 1')
+			->where($db->quoteName('c.end_date') . ' >= NOW()')
+			->where($db->quoteName('c.start_date') . ' <= NOW()')
+			->where($db->quoteName('c.id') . ' NOT IN (
+				SELECT ' . $db->quoteName('campaign_id') . '
+				FROM ' . $db->quoteName('#__emundus_campaign_candidature') . '
+				WHERE ' . $db->quoteName('applicant_id') . ' = ' . $uid . '
+			)');
 		try {
 			$db->setQuery($query);
 
 			return $db->loadAssocList();
 		}
 		catch (Exception $e) {
-			JLog::add("Error at query : " . $query, JLog::ERROR, 'com_emundus');
+			Log::add("Error at query : " . $query->__toString(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -212,22 +220,21 @@ class modemundusApplicationsHelper
 
 	static function getFutureYearCampaigns($uid)
 	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
 
-		$db = JFactory::getDbo();
-
-		$query = 'SELECT c.id,c.label
-					FROM #__emundus_setup_campaigns AS c
-					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
-					WHERE c.published = 1
-				  	AND p.apply_online = 1
-					AND c.end_date >= NOW()
-					AND c.start_date <= NOW()
-					AND c.year NOT IN (
-						select sc.year
-						from #__emundus_campaign_candidature as cc
-						LEFT JOIN #__emundus_setup_campaigns as sc ON sc.id = cc.campaign_id
-						where applicant_id=' . $uid . '
-					)';
+		$query->select(['c.id', 'c.label'])
+			->from($db->quoteName('#__emundus_setup_campaigns', 'c'))
+			->leftJoin($db->quoteName('#__emundus_setup_programmes', 'p') . ' ON p.code LIKE c.training')
+			->where($db->quoteName('c.published') . ' = 1')
+			->where($db->quoteName('p.apply_online') . ' = 1')
+			->where($db->quoteName('c.end_date') . ' >= NOW()')
+			->where($db->quoteName('c.start_date') . ' <= NOW()')
+			->where($db->quoteName('c.year') . ' NOT IN (
+				SELECT ' . $db->quoteName('year') . '
+				FROM ' . $db->quoteName('#__emundus_campaign_candidature') . '
+				WHERE ' . $db->quoteName('applicant_id') . ' = ' . $uid . '
+			)');
 
 		try {
 			$db->setQuery($query);
@@ -235,7 +242,7 @@ class modemundusApplicationsHelper
 			return $db->loadAssocList();
 		}
 		catch (Exception $e) {
-			JLog::add("Error at query : " . $query, JLog::ERROR, 'com_emundus');
+			Log::add("Error at query : " . $query, Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -243,16 +250,16 @@ class modemundusApplicationsHelper
 
 	static function getAvailableCampaigns()
 	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
 
-		$db = JFactory::getDbo();
-
-		$query = 'SELECT c.id,c.label
-					FROM #__emundus_setup_campaigns AS c
-					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
-					WHERE c.published = 1
-					AND p.apply_online = 1
-					AND c.end_date >= NOW()
-					AND c.start_date <= NOW()';
+		$query->select(['c.id', 'c.label'])
+			->from($db->quoteName('#__emundus_setup_campaigns', 'c'))
+			->leftJoin($db->quoteName('#__emundus_setup_programmes', 'p') . ' ON p.code LIKE c.training')
+			->where($db->quoteName('c.published') . ' = 1')
+			->where($db->quoteName('p.apply_online') . ' = 1')
+			->where($db->quoteName('c.end_date') . ' >= NOW()')
+			->where($db->quoteName('c.start_date') . ' <= NOW()');
 
 		try {
 			$db->setQuery($query);
@@ -260,7 +267,7 @@ class modemundusApplicationsHelper
 			return $db->loadAssocList();
 		}
 		catch (Exception $e) {
-			JLog::add("Error at query : " . $query, JLog::ERROR, 'com_emundus');
+			Log::add("Error at query : " . $query, Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -268,10 +275,11 @@ class modemundusApplicationsHelper
 
 	static function getDrhApplications()
 	{
-		$user = JFactory::getUser();
-		$db   = JFactory::getDbo();
-
+		$app = Factory::getApplication();
+		$user = $app->getIdentity();
+		$db   = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
+
 		$query->select(['ecc.*', 'esc.*', $db->quoteName('ess.step'), $db->quoteName('ess.value'), $db->quoteName('ess.class'), $db->quoteName('t.date_start', 'date_start'), $db->quoteName('t.date_end', 'date_end'), $db->quoteName('p.id', 'pid'), $db->quoteName('p.url', 'url')])
 			->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
@@ -295,7 +303,7 @@ class modemundusApplicationsHelper
 			return $db->loadAssocList('fnum');
 		}
 		catch (Exception $e) {
-			JLog::add("Error at query : " . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add("Error at query : " . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -373,11 +381,10 @@ class modemundusApplicationsHelper
 	 */
 	static function getDeliveryData($fnum)
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
-		$query
-			->select([$db->quoteName('tracking_number'), $db->quoteName('tracking_link')])
+		$query->select([$db->quoteName('tracking_number'), $db->quoteName('tracking_link')])
 			->from($db->quoteName('#__emundus_admission'))
 			->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
@@ -387,7 +394,7 @@ class modemundusApplicationsHelper
 			return $db->loadObject();
 		}
 		catch (Exception $e) {
-			JLog::add("Error at query : " . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add("Error at query : " . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return null;
 		}
@@ -395,11 +402,9 @@ class modemundusApplicationsHelper
 
 	static function getHikashopOrder($fnumInfos, $cancelled = false)
 	{
+		$eMConfig = ComponentHelper::getParams('com_emundus');
 
-
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$em_application_payment = $eMConfig->get('application_payment', 'user');
@@ -411,10 +416,10 @@ class modemundusApplicationsHelper
 			$order_status = array('confirmed');
 			switch ($eMConfig->get('accept_other_payments', 0)) {
 				case 1:
-					array_push($order_status, 'created');
+					$order_status[] = 'created';
 					break;
 				case 3:
-					array_push($order_status, 'pending');
+					$order_status[] = 'pending';
 					break;
 				case 4:
 					array_push($order_status, 'created', 'pending');
@@ -426,8 +431,7 @@ class modemundusApplicationsHelper
 			}
 		}
 
-		$query
-			->select([$db->quoteName('jhos.orderstatus_namekey'), $db->quoteName('jhos.orderstatus_color'), $db->quoteName('eh.order_id')])
+		$query->select([$db->quoteName('jhos.orderstatus_namekey'), $db->quoteName('jhos.orderstatus_color'), $db->quoteName('eh.order_id')])
 			->from($db->quoteName('#__emundus_hikashop', 'eh'))
 			->leftJoin($db->quoteName('#__hikashop_order', 'ho') . ' ON ' . $db->quoteName('ho.order_id') . ' = ' . $db->quoteName('eh.order_id'))
 			->leftJoin($db->quoteName('#__hikashop_orderstatus', 'jhos') . ' ON ' . $db->quoteName('jhos.orderstatus_namekey') . ' = ' . $db->quoteName('ho.order_status'))
@@ -438,18 +442,15 @@ class modemundusApplicationsHelper
 
 			default :
 			case 'fnum' :
-				$query
-					->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
+				$query->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
 				break;
 
 			case 'user' :
-				$query
-					->where($db->quoteName('eh.user') . ' = ' . $fnumInfos->applicant_id);
+				$query->where($db->quoteName('eh.user') . ' = ' . $fnumInfos->applicant_id);
 				break;
 
 			case 'campaign' :
-				$query
-					->where($db->quoteName('eh.campaign_id') . ' = ' . $fnumInfos->id)
+				$query->where($db->quoteName('eh.campaign_id') . ' = ' . $fnumInfos->id)
 					->where($db->quoteName('eh.user') . ' = ' . $fnumInfos->applicant_id);
 				break;
 
@@ -458,13 +459,11 @@ class modemundusApplicationsHelper
 				$payment_status                = explode(',', $em_application_payment_status);
 
 				if (in_array($fnumInfos->status, $payment_status)) {
-					$query
-						->where($db->quoteName('eh.status') . ' = ' . $fnumInfos->status)
+					$query->where($db->quoteName('eh.status') . ' = ' . $fnumInfos->status)
 						->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
 				}
 				else {
-					$query
-						->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
+					$query->where($db->quoteName('eh.fnum') . ' = ' . $fnumInfos->fnum);
 				}
 				break;
 		}
@@ -475,7 +474,7 @@ class modemundusApplicationsHelper
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . Factory::getApplication()->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -505,7 +504,7 @@ class modemundusApplicationsHelper
 						}
 					}
 					catch (Exception $e) {
-						JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+						Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 						continue;
 					}
 				}
@@ -521,7 +520,7 @@ class modemundusApplicationsHelper
                                     class="em-text-neutral-900 em-pointer em-custom-action-launch-action" 
                                     data-text="' . $custom_action->mod_em_application_custom_action_new_status_message . '"
                                     data-fnum="' . $application->fnum . '"  
-                                  >' . JText::_($custom_action->mod_em_application_custom_action_label) . '</span>';
+                                  >' . Text::_($custom_action->mod_em_application_custom_action_label) . '</span>';
 						$html .= '</div>';
 					}
 					else {
@@ -537,7 +536,7 @@ class modemundusApplicationsHelper
 								$html .= '<span class="material-icons-outlined em-font-size-16 em-mr-8">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
 							}
 
-							$html .= JText::_($custom_action->mod_em_application_custom_action_label) . '</a>';
+							$html .= Text::_($custom_action->mod_em_application_custom_action_label) . '</a>';
 						}
 					}
 				}

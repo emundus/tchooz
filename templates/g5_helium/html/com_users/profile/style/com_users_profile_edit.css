@@ -20,7 +20,7 @@
     align-items: center;
 }
 
-.com-users-profile__edit-form#member-profile fieldset:nth-child(2) {
+.com-users-profile__edit-form#member-profile fieldset:nth-child(3) {
     display: none;
 }
 

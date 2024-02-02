@@ -934,6 +934,9 @@ class EmundusControllersettings extends JControllerLegacy
 				$ext      = pathinfo($path, PATHINFO_EXTENSION);
 				$filename = pathinfo($path, PATHINFO_FILENAME);
 
+				if(!file_exists('media/com_dropfiles') || !is_dir('media/com_dropfiles')) {
+					mkdir('media/com_dropfiles');
+				}
 				$target_dir = "media/com_dropfiles/$campaign_category/";
 				if (!file_exists($target_dir)) {
 					$created = mkdir($target_dir);

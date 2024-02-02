@@ -184,11 +184,6 @@ if (!empty($attachment_types)) :?>
                 $("#mail_to").css("border", "2px solid red");
                 $("html, body").animate({scrollTop: 0}, "slow");
             } else {
-
-                var btn = document.getElementsByName(document.pressed);
-                btn[0].disabled = true;
-                btn[0].value = "<?= JText::_('COM_EMUNDUS_EMAILS_SENDING_EMAIL'); ?>";
-
                 var delete_attachment = 0;
                 if (document.getElementById('delete_attachment_box').checked) {
                     document.getElementById("delete_attachment").value = 1;

@@ -928,7 +928,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 // Create an date object
                 $date_printed = new Date();
                 //Use helper date function to set timezone an format
-                $date_printed = HtmlHelper::date($date_printed, Text::_('DATE_FORMAT_LC2'));
+	            $date_printed = EmundusHelperDate::displayDate($date_printed, 'DATE_FORMAT_LC2', 0);
 
 	            if (!$anonymize_data) {
 		            $htmldata .= '<p><b>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . ' :</b> ' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</p>';
@@ -1262,17 +1262,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 
     // Get form HTML
     $htmldata = '';
-
-    // Create PDF object
-	/*if (!class_exists('Fpdi')) {
-		require_once(JPATH_ROOT . '/libraries/emundus/fpdf.php');
-		require_once(JPATH_ROOT . '/libraries/emundus/fpdi.php');
-	}
-    $pdf = new Fpdi();
-
-	$pdf->SetCreator(PDF_CREATOR);
-	$pdf->SetAuthor('eMundus');
-	$pdf->SetTitle('Application Form');*/
 
 	// replace fpdi with dompdf
 	$pdf_options = new Options();

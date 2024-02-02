@@ -20,64 +20,99 @@
     <field name="id">1</field>
     <field name="parent_id">0</field>
     <field name="lft">1</field>
-    <field name="rgt">18</field>
+    <field name="rgt">28</field>
     <field name="title">Public</field>
    </row>
    <row>
     <field name="id">2</field>
     <field name="parent_id">1</field>
-    <field name="lft">8</field>
-    <field name="rgt">15</field>
+    <field name="lft">2</field>
+    <field name="rgt">11</field>
     <field name="title">Registered</field>
    </row>
    <row>
     <field name="id">3</field>
     <field name="parent_id">2</field>
-    <field name="lft">9</field>
-    <field name="rgt">14</field>
+    <field name="lft">5</field>
+    <field name="rgt">10</field>
     <field name="title">Author</field>
    </row>
    <row>
     <field name="id">4</field>
     <field name="parent_id">3</field>
-    <field name="lft">10</field>
-    <field name="rgt">13</field>
+    <field name="lft">6</field>
+    <field name="rgt">9</field>
     <field name="title">Editor</field>
    </row>
    <row>
     <field name="id">5</field>
     <field name="parent_id">4</field>
-    <field name="lft">11</field>
-    <field name="rgt">12</field>
+    <field name="lft">7</field>
+    <field name="rgt">8</field>
     <field name="title">Publisher</field>
    </row>
    <row>
     <field name="id">6</field>
     <field name="parent_id">1</field>
-    <field name="lft">4</field>
-    <field name="rgt">7</field>
+    <field name="lft">16</field>
+    <field name="rgt">19</field>
     <field name="title">Manager</field>
    </row>
    <row>
     <field name="id">7</field>
     <field name="parent_id">6</field>
-    <field name="lft">5</field>
-    <field name="rgt">6</field>
+    <field name="lft">17</field>
+    <field name="rgt">18</field>
     <field name="title">Administrator</field>
    </row>
    <row>
     <field name="id">8</field>
     <field name="parent_id">1</field>
-    <field name="lft">16</field>
-    <field name="rgt">17</field>
+    <field name="lft">26</field>
+    <field name="rgt">27</field>
     <field name="title">Super Users</field>
    </row>
    <row>
     <field name="id">9</field>
     <field name="parent_id">1</field>
-    <field name="lft">2</field>
-    <field name="rgt">3</field>
+    <field name="lft">20</field>
+    <field name="rgt">21</field>
     <field name="title">Guest</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="parent_id">1</field>
+    <field name="lft">22</field>
+    <field name="rgt">23</field>
+    <field name="title">Nobody</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="parent_id">2</field>
+    <field name="lft">3</field>
+    <field name="rgt">4</field>
+    <field name="title">Applicant</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="parent_id">1</field>
+    <field name="lft">12</field>
+    <field name="rgt">13</field>
+    <field name="title">Evaluator</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="parent_id">1</field>
+    <field name="lft">14</field>
+    <field name="rgt">15</field>
+    <field name="title">Expert</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="parent_id">1</field>
+    <field name="lft">24</field>
+    <field name="rgt">25</field>
+    <field name="title">Partner</field>
    </row>
   </table_data>
  </database>

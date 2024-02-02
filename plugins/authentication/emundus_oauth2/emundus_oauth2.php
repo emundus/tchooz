@@ -9,7 +9,19 @@
  * @author      eMundus SAS - Hugo Moracchini
  */
 
-// No direct access
+use Joomla\CMS\Authentication\Authentication;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserHelper;
+use Joomla\Utilities\ArrayHelper;
+use Joomla\OAuth2;
+use Joomla\CMS\User\User;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.plugin.plugin');
@@ -21,34 +33,47 @@ jimport('joomla.plugin.plugin');
  * @subpackage  User.emundus
  * @since       3.8.13
  */
-class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
+class plgAuthenticationEmundus_Oauth2 extends CMSPlugin
 {
-
-
     /**
      * @var  string  The authorisation url.
      */
     protected $authUrl;
+	
     /**
      * @var  string  The access token url.
      */
     protected $tokenUrl;
+	
     /**
      * @var  string  The REST request domain.
      */
     protected $domain;
+	
     /**
      * @var  string[]  Scopes available based on mode settings.
      */
     protected $scopes;
+	
     /**
      * @var  string  The authorisation url.
      */
     protected $logoutUrl;
+	
     /**
      * @var  object  OpenID attributes.
      */
     protected $attributes;
+
+	/**
+	 * @var mixed Database driver
+	 */
+	private $db;
+	
+	/**
+	 * @var mixed Application
+	 */
+	private $app;
 
 
     public function __construct(&$subject, $config)
@@ -60,9 +85,12 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
         $this->domain = $this->params->get('domain');
         $this->tokenUrl = $this->params->get('token_url');
         $this->logoutUrl = $this->params->get('logout_url');
+		
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		$this->app = Factory::getApplication();
 
         jimport('joomla.log.log');
-        JLog::addLogger(array('text_file' => 'com_emundus.oauth2.php'), JLog::ALL, array('com_emundus'));
+        Log::addLogger(array('text_file' => 'com_emundus.oauth2.php'), Log::ALL, array('com_emundus'));
     }
 
     /**
@@ -82,20 +110,20 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
 
         $response->type = 'OAuth2';
 
-        if (\Joomla\Utilities\ArrayHelper::getValue($options, 'action') == 'core.login.site') {
+        if (ArrayHelper::getValue($options, 'action') == 'core.login.site') {
 
-            $username = \Joomla\Utilities\ArrayHelper::getValue($credentials, 'username');
+            $username = ArrayHelper::getValue($credentials, 'username');
             if (!$username) {
-                $response->status = JAuthentication::STATUS_FAILURE;
-                $response->error_message = JText::_('JGLOBAL_AUTH_NO_USER');
+                $response->status = Authentication::STATUS_FAILURE;
+                $response->error_message = Text::_('JGLOBAL_AUTH_NO_USER');
             } else {
                 try {
-                    $token = \Joomla\Utilities\ArrayHelper::getValue($options, 'token');
+                    $token = ArrayHelper::getValue($options, 'token');
 					if(empty($token)) {
 						return true;
 					}
                     $url = $this->params->get('sso_account_url');
-                    $oauth2 = new JOAuth2Client;
+                    $oauth2 = new OAuth2\Client();
                     $oauth2->setToken($token);
                     $oauth2->setOption('scope', $this->scopes);
                     $result = $oauth2->query($url);
@@ -128,20 +156,19 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
                     }
 
                     if (!empty($response->username)) {
-                        $db = JFactory::getDbo();
-                        $query = $db->getQuery(true);
+                        $query = $this->db->getQuery(true);
 
-                        if (empty(JUserHelper::getUserId($response->username)) && !empty($response->email)) {
+                        if (empty(UserHelper::getUserId($response->username)) && !empty($response->email)) {
                             $query->select('username')
                                 ->from('#__users')
-                                ->where('email = ' . $db->quote($response->email));
+                                ->where('email = ' . $this->db->quote($response->email));
 
-                            $db->setQuery($query);
+                            $this->db->setQuery($query);
 
                             try {
-                                $existing_username = $db->loadResult();
+                                $existing_username = $this->db->loadResult();
                             } catch (Exception $e) {
-                                JLog::add('Failed to check if user exists from mail but with another username ' .$e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                                Log::add('Failed to check if user exists from mail but with another username ' .$e->getMessage(), Log::ERROR, 'com_emundus.error');
                             }
 
                             if (!empty($existing_username)) {
@@ -156,14 +183,14 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
                         }
 
                         $response->profile = $this->params->get('emundus_profile', 9);
-                        $response->status = JAuthentication::STATUS_SUCCESS;
-                        $response->isnew = empty(JUserHelper::getUserId($response->username));
+                        $response->status = Authentication::STATUS_SUCCESS;
+                        $response->isnew = empty(UserHelper::getUserId($response->username));
                         $response->error_message = '';
-                        $user = new JUser(JUserHelper::getUserId($response->username));
+                        $user = new User(UserHelper::getUserId($response->username));
 
 	                    if ($user->get('block')) {
-		                    $response->status = JAuthentication::STATUS_FAILURE;
-		                    $response->error_message = JText::_('JGLOBAL_AUTH_ACCESS_DENIED');
+		                    $response->status = Authentication::STATUS_FAILURE;
+		                    $response->error_message = Text::_('JGLOBAL_AUTH_ACCESS_DENIED');
 	                    } else {
 		                    $authenticate = true;
 
@@ -182,10 +209,9 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
 
 		                    if (!$response->is_new) {
 			                    if (!empty($response->annex_data)) {
-				                    $db    = JFactory::getDBO();
-				                    $query = $db->getQuery(true);
+				                    $query = $this->db->getQuery(true);
 
-				                    $user_id = JUserHelper::getUserId($response->username);
+				                    $user_id = UserHelper::getUserId($response->username);
 
 				                    foreach ($response->annex_data as $data) {
 					                    if (is_array($data['value'])) {
@@ -193,15 +219,15 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
 					                    }
 					                    $query->clear()
 						                    ->update($data['table'])
-						                    ->set($db->quoteName($data['column']) . ' = ' . $db->quote($data['value']))
-						                    ->where($db->quoteName($data['column_join_user_id']) . ' = ' . $user_id);
-					                    $db->setQuery($query);
+						                    ->set($this->db->quoteName($data['column']) . ' = ' . $this->db->quote($data['value']))
+						                    ->where($this->db->quoteName($data['column_join_user_id']) . ' = ' . $user_id);
+					                    $this->db->setQuery($query);
 
 					                    try {
-						                    $db->execute();
+						                    $this->db->execute();
 					                    }
 					                    catch (Exception $e) {
-						                    JLog::add('Failed to execute update query ' . $e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
+						                    Log::add('Failed to execute update query ' . $e->getMessage(), Log::ERROR, 'com_emundus.oauth2');
 					                    }
 				                    }
 			                    }
@@ -209,11 +235,11 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
 	                    }
 
                     } else {
-                        $response->status = JAuthentication::STATUS_FAILURE;
-                        $response->error_message = JText::_('JGLOBAL_AUTH_NO_USER');
+                        $response->status = Authentication::STATUS_FAILURE;
+                        $response->error_message = Text::_('JGLOBAL_AUTH_NO_USER');
                     }
                 } catch (Exception $e) {
-                    $response->status = JAuthentication::STATUS_FAILURE;
+                    $response->status = Authentication::STATUS_FAILURE;
                 }
             }
         }
@@ -227,7 +253,7 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
      */
     public function onOauth2Authenticate()
     {
-        $oauth2 = new JOAuth2Client;
+        $oauth2 = new OAuth2\Client();
         $oauth2->setOption('authurl', $this->authUrl);
         $oauth2->setOption('clientid', $this->params->get('client_id'));
         $oauth2->setOption('scope', $this->scopes);
@@ -237,9 +263,10 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
         try {
             $oauth2->authenticate();
         } catch (Exception $e) {
-            $app = JFactory::getApplication();
-            $app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_CONNECT_DOWN'));
-            $app->redirect('connexion');
+            $this->app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_CONNECT_DOWN'));
+
+			//TODO: Get login url from menu helper
+            $this->app->redirect('connexion');
         }
     }
 
@@ -253,21 +280,21 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
     public function onOauth2Authorise()
     {
 
-        // Build HTTP POST query requesting token.
-        $oauth2 = new JOAuth2Client;
+        $oauth2 = new OAuth2\Client();
         $oauth2->setOption('tokenurl', $this->tokenUrl);
         $oauth2->setOption('clientid', $this->params->get('client_id'));
         $oauth2->setOption('clientsecret', $this->params->get('client_secret'));
         $oauth2->setOption('redirecturi', $this->params->get('redirect_url'));
+
         try {
             $result = $oauth2->authenticate();
         } catch (Exception $e) {
-            $app = JFactory::getApplication();
+            Log::add('Error when try to connect with oauth2 : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
-            JLog::add('Error when try to connect with oauth2 : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            $this->app->enqueueMessage(Text::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CONNECT_DOWN'), 'error');
 
-            $app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CONNECT_DOWN'), 'error');
-            $app->redirect(JRoute::_('connexion'));
+	        //TODO: Get login url from menu helper
+            $this->app->redirect(Route::_('connexion'));
         }
 
         // We insert a temporary username, it will be replaced by the username retrieved from the OAuth system.
@@ -281,17 +308,15 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
             'remember' => true
         ];
 
-        $app = JFactory::getApplication();
-
         // Perform the log in.
-        return ($app->login($credentials, $options) === true);
+        return ($this->app->login($credentials, $options) === true);
     }
 
     // After the login has been executed, we need to send the user an email.
     public function onOAuthAfterRegister($user)
     {
         if ($user['type'] == 'OAuth2') {
-            $user_id = JUserHelper::getUserId($user['username']);
+            $user_id = UserHelper::getUserId($user['username']);
 
             // check if there is a email template to send
             if ($this->params->get('email_id')) {
@@ -302,13 +327,11 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
                 $m_messages = new EmundusModelMessages();
                 $m_emails = new EmundusModelEmails();
 
-                $config = JFactory::getConfig();
-
                 $template = $m_messages->getEmail($this->params->get('email_id'));
 
                 // Get default mail sender info
-                $mail_from_sys = $config->get('mailfrom');
-                $mail_from_sys_name = $config->get('fromname');
+                $mail_from_sys = $this->app->get('mailfrom');
+                $mail_from_sys_name = $this->app->get('fromname');
 
                 // If no mail sender info is provided, we use the system global config.
                 $mail_from_name = $mail_from_sys;
@@ -330,7 +353,7 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
 
                 $post = [
                     'USER_NAME' => $user['fullname'],
-                    'SITE_URL' => JURI::base(),
+                    'SITE_URL' => Uri::base(),
                     'USER_EMAIL' => $user['email'],
                     'USER_PASS' => $user['password'],
                     'USERNAME' => $user['username']
@@ -347,7 +370,7 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
                 $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
                 // Configure email sender
-                $mailer = JFactory::getMailer();
+                $mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
                 $mailer->setSender($sender);
                 $mailer->addReplyTo($mail_from, $mail_from_name);
                 $mailer->addRecipient($user['email']);
@@ -361,27 +384,25 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
 
                 if ($send !== true) {
 
-                    JLog::add($send, JLog::ERROR, 'com_emundus');
+                    Log::add($send, Log::ERROR, 'com_emundus');
                     return false;
 
                 } else {
                     $log = [
                         'user_id_to' => $user_id,
                         'subject' => $subject,
-                        'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user['email'] . '</i><br>' . $body,
+                        'message' => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('SENT') . ' ' . Text::_('TO') . ' ' . $user['email'] . '</i><br>' . $body,
                         'type' => $template->type
                     ];
                     $m_emails->logEmail($log);
 
-                    $app = JFactory::getApplication();
-                    $app->enqueueMessage(JText::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_SIGNED_IN'));
+                    $this->app->enqueueMessage(Text::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CCI_SIGNED_IN'));
                     return true;
                 }
             }
 
 	        if (!empty($user['annex_data'])) {
-		        $db = JFactory::getDBO();
-		        $query = $db->getQuery(true);
+		        $query = $this->db->getQuery(true);
 
 		        foreach($user['annex_data'] as $data) {
 			        if(is_array($data['value'])) {
@@ -390,15 +411,15 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
 
 			        $query->clear()
 				        ->update($data['table'])
-				        ->set($db->quoteName($data['column']) . ' = ' . $db->quote($data['value']))
-				        ->where($db->quoteName($data['column_join_user_id']) . ' = ' . $user_id);
+				        ->set($this->db->quoteName($data['column']) . ' = ' . $this->db->quote($data['value']))
+				        ->where($this->db->quoteName($data['column_join_user_id']) . ' = ' . $user_id);
 
-			        $db->setQuery($query);
+			        $this->db->setQuery($query);
 
 			        try {
-				        $db->execute();
+				        $this->db->execute();
 			        } catch (Exception $e) {
-				        JLog::add('Failed to execute update query ' . $e->getMessage(), JLog::ERROR, 'com_emundus.oauth2');
+				        Log::add('Failed to execute update query ' . $e->getMessage(), Log::ERROR, 'com_emundus.oauth2');
 			        }
 		        }
 	        }
@@ -407,8 +428,6 @@ class plgAuthenticationEmundus_Oauth2 extends \Joomla\CMS\Plugin\CMSPlugin
 
     public function onUserAfterLogout()
     {
-        $app = JFactory::getApplication();
-        $app->redirect($this->logoutUrl);
+        $this->app->redirect($this->logoutUrl);
     }
-
 }

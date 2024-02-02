@@ -73,7 +73,8 @@ $user = JFactory::getUser();
      user=<?= $user->id ?>
      ratio=<?= $params->ratio_modal ?>
      type="evaluation"
-     fnum=<?= $fnum ?>
+     base=<?= JURI::base(); ?>
+     fnum=<?= $fnum; ?>
 >
 </div>
 
