@@ -232,10 +232,10 @@
     div:where(.swal2-container) {
         div:where(.swal2-popup) {
             padding: var(--em-alert-modal-padding) !important;
+            align-items: flex-start;
 
             .swal2-title {
                 @apply tw-em-default-title-3;
-                @apply tw-m-0;
                 padding: 0;
                 font-weight: 600;
                 @apply tw-text-start;

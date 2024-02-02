@@ -66,7 +66,7 @@ font-size: 16px;
 	height: min-content;
 }
 
-.view-list .table .fabrik___heading th.heading span{
+.view-list .table .fabrik___heading th.heading span:not([class*="material-icons"]){
 	font-weight: 600;
 }
 
@@ -111,6 +111,7 @@ font-size: 16px;
 	display: flex;
 	justify-content: end;
 	gap: 8px;
+	margin-bottom: 12px;
 }
 .view-list .fabrikForm .fabrikButtonsContainer .em-action-buttons li a{
 	background: #FFFFFF;
@@ -250,8 +251,7 @@ font-size: 16px;
 /** **/
 
 /** FILTRES **/
-.view-list .fabrikForm .fabrikFilterContainer{
-	margin-top: 12px;
+.view-list .fabrikForm .fabrikFilterContainer .row-fluid .filtertable{
 	padding-left: 4px;
 }
 .view-list .fabrikForm .fabrikFilterContainer table.filtertable tbody tr td:nth-child(2n){

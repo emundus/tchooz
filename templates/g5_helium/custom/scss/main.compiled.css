@@ -6623,6 +6623,7 @@ legend {
 /* SWEET ALERT */
 div:where(.swal2-container) div:where(.swal2-popup) {
             padding: var(--em-alert-modal-padding) !important;
+            align-items: flex-start;
         }
 div:where(.swal2-container) div:where(.swal2-popup) .swal2-title {
   color: var(--em-default-title-color-1);
@@ -6630,7 +6631,6 @@ div:where(.swal2-container) div:where(.swal2-popup) .swal2-title {
   font-size: var(--em-coordinator-h3);
   font-style: normal;
   line-height: 24.2px;
-  margin: 0px;
                 padding: 0;
                 font-weight: 600;
                 text-align: start;

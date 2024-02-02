@@ -136,6 +136,10 @@ defined('_JEXEC') or die;
         border-bottom: unset !important;
     }
 
+    #g-navigation .g-main-nav .g-sublevel > li:hover > .g-menu-item-container {
+        color: var(--neutral-900);
+    }
+
     .tchooz-vertical-item a {
         display: flex;
         align-items: center;

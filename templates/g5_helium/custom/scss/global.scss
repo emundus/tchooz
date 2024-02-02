@@ -1533,10 +1533,6 @@ footer#g-footer > .g-container {
   }
 }
 
-.gantry.view-list #g-container-main .g-container .page-header {
-  margin-top: 50px;
-}
-
 .gantry.view-list #g-container-main .g-container .page-header h1 {
   margin-bottom: 8px;
 }
@@ -1576,6 +1572,11 @@ footer#g-footer > .g-container {
   }
 }
 
+.view-list #g-container-main .g-container {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
 .row .span3 {
   display: flex;
   align-items: center;
@@ -1595,8 +1596,8 @@ footer#g-footer > .g-container {
 }
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
-  width: auto;
   position: relative;
+  width: calc(100% - 76px);
 }
 
 .view-list, .g-back-office-emundus-tableau {
