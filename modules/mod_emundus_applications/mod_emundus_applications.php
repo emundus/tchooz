@@ -9,7 +9,11 @@
 // no direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
 
 include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 $m_profile = new EmundusModelProfile();
@@ -56,7 +60,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$Itemid = $app->input->getInt('Itemid', null, 'int');
 	$layout = $params->get('layout', 'default');
 
-	$eMConfig = JComponentHelper::getParams('com_emundus');
+	$eMConfig = ComponentHelper::getParams('com_emundus');
 
 	// Vérifier si il s'agit d'une session  anonyme et ci celles ci sont autorisés
 	$is_anonym_user     = $user->anonym;
@@ -84,7 +88,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 		$id_profiles = [];
 	}
 
-	$description                             = JText::_($params->get('description', ''));
+	$description                             = Text::_($params->get('description', ''));
 	$show_fnum                               = $params->get('show_fnum', 0);
 	$mod_emundus_applications_show_programme = $params->get('mod_emundus_applications_show_programme', 1);
 	$mod_emundus_applications_show_end_date  = $params->get('mod_emundus_applications_show_end_date', 1);
@@ -128,7 +132,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$query_order_by       = $order_applications . ' ' . $applications_as_desc;
 
 	$file_status = $params->get('file_status', 1);
-	$file_tags   = JText::_($params->get('tags', ''));
+	$file_tags   = Text::_($params->get('tags', ''));
 	$cc_list_url = $params->get('cc_list_url', 'index.php?option=com_fabrik&view=form&formid=102');
 
 	$groups                              = $params->get('mod_em_application_group', null);
@@ -267,10 +271,10 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
 	$status = $m_files->getStatus();
 
-	JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-	\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeRenderApplications', ['applications' => $applications, 'layout' => $layout, 'params' => $params, 'user' => $user]]);
+	PluginHelper::importPlugin('emundus', 'custom_event_handler');
+	Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeRenderApplications', ['applications' => $applications, 'layout' => $layout, 'params' => $params, 'user' => $user]]);
 
-	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
+	require ModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
 }
 
 

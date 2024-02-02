@@ -1263,17 +1263,6 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     // Get form HTML
     $htmldata = '';
 
-    // Create PDF object
-	/*if (!class_exists('Fpdi')) {
-		require_once(JPATH_ROOT . '/libraries/emundus/fpdf.php');
-		require_once(JPATH_ROOT . '/libraries/emundus/fpdi.php');
-	}
-    $pdf = new Fpdi();
-
-	$pdf->SetCreator(PDF_CREATOR);
-	$pdf->SetAuthor('eMundus');
-	$pdf->SetTitle('Application Form');*/
-
 	// replace fpdi with dompdf
 	$pdf_options = new Options();
 	$pdf_options->set('defaultFont', 'freeserif');

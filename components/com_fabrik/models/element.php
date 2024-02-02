@@ -2252,6 +2252,9 @@ class PlgFabrik_Element extends FabrikPlugin
 	public function preRender($c, $elCount, $tmpl)
 	{
 		$model      = $this->getFormModel();
+		if(!is_array($model->data)) {
+			$model->data = array();
+		}
 		$groupModel = $this->getGroup();
 		$group      = $groupModel->getGroupProperties($model);
 

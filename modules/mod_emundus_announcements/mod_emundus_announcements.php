@@ -7,8 +7,10 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
+use Joomla\CMS\Helper\ModuleHelper;
+
 defined('_JEXEC') or die;
 
 $announcement_content = $params->get('announcement_content', '');
 
-require JModuleHelper::getLayoutPath('mod_emundus_announcements', 'default');
+require ModuleHelper::getLayoutPath('mod_emundus_announcements', 'default');
