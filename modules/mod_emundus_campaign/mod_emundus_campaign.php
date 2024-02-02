@@ -2,6 +2,7 @@
 defined('_JEXEC') or die('Access Deny');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
 
 // INCLUDES
 require_once(dirname(__FILE__) . DS . 'helper.php');
@@ -34,10 +35,10 @@ $e_user   = $session->get('emundusUser');
 $app_prof = $m_profiles->getApplicantsProfilesArray();
 
 if ($user->guest || in_array($e_user->profile, $app_prof)) {
-	JHtml::script('media/com_emundus/js/jquery.cookie.js');
-	JHtml::script('media/jui/js/bootstrap.min.js');
+	$wa->registerAndUseScript('jquery-cookie', 'media/com_emundus/js/jquery.cookie.js');
+
 	if (!in_array($params->get('mod_em_campaign_layout'), ['default_tchooz', 'tchooz_single_campaign'])) {
-		JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
+		$wa->registerAndUseStyle('mod_emundus_campaign_media', 'media/com_emundus/css/mod_emundus_campaign.css');
 		$wa->registerAndUseStyle('mod_emundus_campaign', 'modules/mod_emundus_campaign/css/mod_emundus_campaign.css');
 	}
 	else {
@@ -265,7 +266,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 
 
 	$show_registration = 0;
-	$modules           = JModuleHelper::getModules('header-c');
+	$modules           = ModuleHelper::getModules('header-c');
 	foreach ($modules as $module) {
 		if ($module->module == 'mod_emundus_user_dropdown') {
 			$show_registration = json_decode($module->params)->show_registration;
@@ -284,6 +285,6 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	$paginationFutur   = new JPagination($helper->getTotalFutur(), $session->get('limitstartFutur'), $session->get('limit'));
 	$paginationTotal   = new JPagination($helper->getTotal(), $session->get('limitstart'), $session->get('limit'));
 
-	require(JModuleHelper::getLayoutPath('mod_emundus_campaign', $params->get('mod_em_campaign_layout')));
+	require(ModuleHelper::getLayoutPath('mod_emundus_campaign', $params->get('mod_em_campaign_layout')));
 }
 ?>

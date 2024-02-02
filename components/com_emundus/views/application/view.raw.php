@@ -201,6 +201,7 @@ class EmundusViewApplication extends JViewLegacy
 						$this->attachmentsProgress = $m_application->getAttachmentsProgress($fnum);
 						$this->nameCategory        = $m_files->getAttachmentCategories();
 						$this->student_id          = $fnumInfos['applicant_id'];
+						$this->columns = ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
 					}
 					else {
 						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
