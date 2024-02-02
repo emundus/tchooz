@@ -413,12 +413,13 @@ class EmundusModelUsers extends JModelList
 
 	public function getProfiles()
 	{
-		
-		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, esp.published, caag.lft
-        FROM #__emundus_setup_profiles esp
-        INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-        where esp.status=1 AND esp.id > 1
-        ORDER BY esp.acl_aro_groups, esp.label';
+		$query = $this->db->getQuery(true);
+
+		$query->select('esp.id, esp.label, esp.acl_aro_groups, esp.published, caag.lft')
+			->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
+			->innerJoin($this->db->quoteName('#__usergroups', 'caag') . ' on esp.acl_aro_groups=caag.id')
+			->where('esp.status=1 AND esp.id > 1')
+			->order('esp.acl_aro_groups, esp.label');
 		$this->db->setQuery($query);
 
 		return $this->db->loadObjectList('id');
