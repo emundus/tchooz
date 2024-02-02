@@ -378,14 +378,14 @@ class SmartAgenda
 					} else {
 						JLog::add('User invitation succeeded for user with mail ' . $params['mail'] . ' and fnum ' . $params['id_interne_candidat'], JLog::INFO, 'com_emundus.smart_agenda');
 
-						require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+						require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 						$m_files = new EmundusModelFiles();
 						$fnum_infos = $m_files->getFnumInfos($params['id_interne_candidat']);
 
 						if (!empty($fnum_infos) && !empty($fnum_infos['applicant_id'])) {
-							require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
+							require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
 							$applicant_id = $fnum_infos['applicant_id'];
-							$user         = JFactory::getUser();
+							$user         = Factory::getApp()->getIdentity();
 							EmundusModelLogs::log($user->id, $applicant_id, $params['id_interne_candidat'], 9, 'c', 'SMART_AGENDA_USER_INVITATION_SENT', json_encode(['created' => ['details' => 'SMART_AGENDA_USER_INVITATION_SENT']]));
 						}
 					}
