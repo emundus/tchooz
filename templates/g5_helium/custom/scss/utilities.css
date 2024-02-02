@@ -302,7 +302,7 @@
     }*/
 
     .swal2-popup {
-        border-radius: calc(var(--em-default-br) * 2) !important;
+        border-radius: var(--em-default-br) !important;
     }
 
     button.swal2-styled.swal2-confirm {

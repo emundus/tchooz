@@ -5,7 +5,7 @@
     text-decoration: none;
 }
 
-#header-b #em_user_menu a.item span.image-title {
+#header-b .g-main-nav a.item span.image-title {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

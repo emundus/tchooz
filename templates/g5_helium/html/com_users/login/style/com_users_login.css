@@ -90,7 +90,7 @@ button.btn-primary:hover{
     font-family: var(--em-applicant-font);
     font-size: 16px;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 19px;
     letter-spacing: 0.0015em;
     text-align: left;
@@ -163,6 +163,11 @@ ul.nav.nav-tabs.nav-stacked {
 
 .login form.form-horizontal .control-group {
     flex-direction: column;
+}
+
+.login form.form-horizontal .control-group:last-child{
+    margin-top: 0;
+    margin-bottom: 32px;
 }
 
 .login form.form-horizontal .control-label {
