@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Language;
 use Joomla\CMS\Language\Transliterate;
 use Joomla\CMS\Table\Table;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Cache\Administrator\Model\CacheModel;
 use Joomla\CMS\Language\LanguageHelper;
 
@@ -3377,35 +3378,37 @@ class EmundusHelperUpdate
 
 	public static function checkHealth()
 	{
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		// Check back button
 		$query->select('id,content')
 			->from($db->quoteName('#__modules'))
-			->where($db->quoteName('title') . ' LIKE ' . $db->quote('eMundus - Back button'))
+			->where($db->quoteName('title') . ' LIKE ' . $db->quote('[GUEST] Back button'))
 			->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_custom'));
 		$db->setQuery($query);
 		$back_button = $db->loadObject();
 
-		$back_button->content = str_replace('https://vanilla.tchooz.io/','/',$back_button->content);
-		$back_button->content = str_replace(JURI::base().'/','/',$back_button->content);
+		if($back_button) {
+			$back_button->content = str_replace(['https://vanilla.tchooz.io/', 'http://localhost:8383/'], '/', $back_button->content);
+			$back_button->content = str_replace(Uri::base() . '/', '/', $back_button->content);
 
-		$query->clear()
-			->update($db->quoteName('#__modules'))
-			->set($db->quoteName('content') . ' = ' . $db->quote($back_button->content))
-			->where($db->quoteName('id') . ' = ' . $db->quote($back_button->id));
-		$db->setQuery($query);
-		$db->execute();
+			$query->clear()
+				->update($db->quoteName('#__modules'))
+				->set($db->quoteName('content') . ' = ' . $db->quote($back_button->content))
+				->where($db->quoteName('id') . ' = ' . $db->quote($back_button->id));
+			$db->setQuery($query);
+			$db->execute();
 
-		$query->clear()
-			->update($db->quoteName('#__falang_content'))
-			->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
-			->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
-			->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
-			->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'));
-		$db->setQuery($query);
-		$db->execute();
+			$query->clear()
+				->update($db->quoteName('#__falang_content'))
+				->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
+				->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
+				->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
+				->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'));
+			$db->setQuery($query);
+			$db->execute();
+		}
 		//
 
 		// Remove appli emundus yaml assets
@@ -3421,15 +3424,17 @@ class EmundusHelperUpdate
 		$db->setQuery($query);
 		$registration_form = $db->loadObject();
 
-		$params = json_decode($registration_form->params, true);
-		$params['ajax_validations'] = 0;
+		if($registration_form) {
+			$params                     = json_decode($registration_form->params, true);
+			$params['ajax_validations'] = 0;
 
-		$query->clear()
-			->update($db->quoteName('#__fabrik_forms'))
-			->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-			->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
-		$db->setQuery($query);
-		$db->execute();
+			$query->clear()
+				->update($db->quoteName('#__fabrik_forms'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
+			$db->setQuery($query);
+			$db->execute();
+		}
 		//
 
 		// Check if profile menu translations is good
@@ -3628,7 +3633,7 @@ class EmundusHelperUpdate
 			$storage_value['second_level_exceptions'] = '';
 
 			// Session
-			$storage_value['session_protection_active'] = 1;
+			$storage_value['session_protection_active'] = 0;
 			$storage_value['session_hijack_protection'] = 0;
 			$storage_value['session_hijack_protection_what_to_check'] = 2;
 			$storage_value['session_protection_groups'] = ["11","3","5","2","10","1"];

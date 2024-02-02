@@ -733,7 +733,7 @@
     <field name="asset_id">126</field>
     <field name="title">[GUEST] Back button</field>
     <field name="note">Back button available on login and register views</field>
-    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button em-pointer&quot; href=&quot;http://localhost:8383/&quot;&gt;&lt;span class=&quot;material-icons em-mr-4&quot;&gt;navigate_before&lt;/span&gt;Retour à la page d'accueil&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="content">&lt;p&gt;&lt;a class=&quot;em-back-button em-pointer&quot; href=&quot;/&quot;&gt;&lt;span class=&quot;material-icons em-mr-4&quot;&gt;navigate_before&lt;/span&gt;Retour à la page d'accueil&lt;/a&gt;&lt;/p&gt;</field>
     <field name="ordering">1</field>
     <field name="position">header-a</field>
     <field name="checked_out" value_is_null="true"></field>

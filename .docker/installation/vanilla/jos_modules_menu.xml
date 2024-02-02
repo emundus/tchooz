@@ -169,6 +169,10 @@
     <field name="menuid">135</field>
    </row>
    <row>
+    <field name="moduleid">117</field>
+    <field name="menuid">137</field>
+   </row>
+   <row>
     <field name="moduleid">118</field>
     <field name="menuid">0</field>
    </row>

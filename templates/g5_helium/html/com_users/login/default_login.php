@@ -46,8 +46,9 @@ else {
                 </a>
 	        <?php endif; ?>
             <h1 class="tw-mb-4">
-				<?php echo JText::_('JLOGIN'); ?>
+				<?php echo Text::_('JLOGIN'); ?>
             </h1>
+            <p class="em-applicant-text-color em-applicant-default-font"><?php echo Text::_('JLOGIN_DESC'); ?></p>
         </div>
 	<?php endif; ?>
 
