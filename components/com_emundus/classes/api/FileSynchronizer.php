@@ -18,7 +18,7 @@ use JLog;
 
 defined('_JEXEC') or die('Restricted access');
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
 
 class FileSynchronizer
 {
