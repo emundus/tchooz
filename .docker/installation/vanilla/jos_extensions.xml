@@ -9904,7 +9904,7 @@
     <field name="protected">0</field>
     <field name="locked">0</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;com_emundus&quot;,&quot;type&quot;:&quot;component&quot;,&quot;creationDate&quot;:&quot;2023-03-31&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2005-2023 eMundus - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;https:\/\/emundus.fr&quot;,&quot;version&quot;:&quot;2.0.0&quot;,&quot;description&quot;:&quot;COM_TCHOOZ_COMPONENT_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;emundus&quot;}</field>
-    <field name="params">{&quot;logged_homepage_link&quot;:&quot;1&quot;,&quot;logs&quot;:&quot;1&quot;,&quot;emundus_email&quot;:&quot;support@emundus.fr&quot;,&quot;log_actions&quot;:&quot;1,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37&quot;,&quot;log_actions_exclude&quot;:&quot;&quot;,&quot;log_actions_exclude_user&quot;:&quot;62&quot;,&quot;log_forms_update&quot;:&quot;1&quot;,&quot;com_emundus_show_tags_category&quot;:&quot;1&quot;,&quot;log_show_timeformat&quot;:&quot;0&quot;,&quot;log_show_timeorder&quot;:&quot;DESC&quot;,&quot;display_other_user_editing_same_file&quot;:&quot;0&quot;,&quot;alert_editing_time&quot;:&quot;2&quot;,&quot;block_user&quot;:&quot;1&quot;,&quot;reveal_password&quot;:&quot;1&quot;,&quot;allow_pinned_campaign&quot;:&quot;0&quot;,&quot;use_cdn&quot;:&quot;1&quot;,&quot;display_required_icon&quot;:&quot;1&quot;,&quot;required_icon_position&quot;:&quot;1&quot;,&quot;repeat_icon&quot;:&quot;clear&quot;,&quot;photo_attachment&quot;:&quot;&quot;,&quot;display_registration_link&quot;:&quot;1&quot;,&quot;registration_link&quot;:&quot;&quot;,&quot;display_forgotten_password_link&quot;:&quot;1&quot;,&quot;forgotten_password_link&quot;:&quot;&quot;,&quot;multi_eval&quot;:&quot;0&quot;,&quot;evaluators_can_see&quot;:&quot;0&quot;,&quot;evaluators_can_evaluate&quot;:&quot;0&quot;,&quot;evaluators_can_see_other_eval&quot;:&quot;0&quot;,&quot;can_copy_evaluations&quot;:&quot;0&quot;,&quot;default_actions&quot;:&quot;{    \&quot;1\&quot;:{\&quot;id\&quot;:1, \&quot;c\&quot;:0, \&quot;r\&quot;:1, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;4\&quot;:{\&quot;id\&quot;:4, \&quot;c\&quot;:1, \&quot;r\&quot;:1, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;5\&quot;:{\&quot;id\&quot;:5, \&quot;c\&quot;:1, \&quot;r\&quot;:1, \&quot;u\&quot;:1, \&quot;d\&quot;:0},    \&quot;6\&quot;:{\&quot;id\&quot;:6, \&quot;c\&quot;:1, \&quot;r\&quot;:0, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;7\&quot;:{\&quot;id\&quot;:7, \&quot;c\&quot;:1, \&quot;r\&quot;:0, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;8\&quot;:{\&quot;id\&quot;:8, \&quot;c\&quot;:1, \&quot;r\&quot;:0, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;9\&quot;:{\&quot;id\&quot;:9, \&quot;c\&quot;:0, \&quot;r\&quot;:0, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;10\&quot;:{\&quot;id\&quot;:10, \&quot;c\&quot;:1, \&quot;r\&quot;:1, \&quot;u\&quot;:1, \&quot;d\&quot;:0},    \&quot;13\&quot;:{\&quot;id\&quot;:10, \&quot;c\&quot;:0, \&quot;r\&quot;:1, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;14\&quot;:{\&quot;id\&quot;:14, \&quot;c\&quot;:1, \&quot;r\&quot;:1, \&quot;u\&quot;:1, \&quot;d\&quot;:0}    }&quot;,&quot;hide_default_actions&quot;:&quot;0&quot;,&quot;show_related_files&quot;:&quot;0&quot;,&quot;id_applicants&quot;:&quot;&quot;,&quot;applicant_files_path&quot;:&quot;images\/emundus\/files\/&quot;,&quot;applicant_can_renew&quot;:&quot;1&quot;,&quot;id_profiles&quot;:&quot;&quot;,&quot;can_edit_until_deadline&quot;:&quot;0&quot;,&quot;can_edit_after_deadline&quot;:&quot;0&quot;,&quot;referent_can_edit_after_deadline&quot;:&quot;1&quot;,&quot;copy_application_form&quot;:&quot;0&quot;,&quot;copy_application_form_type&quot;:&quot;0&quot;,&quot;display_poll&quot;:&quot;0&quot;,&quot;display_poll_id&quot;:&quot;&quot;,&quot;can_submit_encrypted&quot;:&quot;0&quot;,&quot;status_for_send&quot;:&quot;0&quot;,&quot;status_for_delete&quot;:&quot;&quot;,&quot;allow_anonym_files&quot;:&quot;0&quot;,&quot;collaborate_link&quot;:&quot;index.php?option=com_fabrik&amp;view=form&amp;formid=378&quot;,&quot;form_builder_page_creation_modules&quot;:[&quot;123&quot;,&quot;124&quot;],&quot;application_fee&quot;:&quot;0&quot;,&quot;accept_other_payments&quot;:&quot;0&quot;,&quot;application_payment_status&quot;:&quot;0&quot;,&quot;status_after_payment&quot;:&quot;1&quot;,&quot;redirect_after_payment&quot;:&quot;0&quot;,&quot;scholarship_document_id&quot;:&quot;&quot;,&quot;pay_scholarship&quot;:&quot;0&quot;,&quot;scholarship_product&quot;:&quot;0&quot;,&quot;application_payment&quot;:&quot;user&quot;,&quot;hikashop_session&quot;:&quot;0&quot;,&quot;export_application_pdf&quot;:&quot;0&quot;,&quot;export_application_pdf_breaker&quot;:&quot;0&quot;,&quot;show_empty_fields&quot;:&quot;1&quot;,&quot;export_application_pdf_title_color&quot;:&quot;#000000&quot;,&quot;export_path&quot;:&quot;&quot;,&quot;application_form_order&quot;:&quot;&quot;,&quot;attachment_order&quot;:&quot;&quot;,&quot;export_replace_doc&quot;:&quot;0&quot;,&quot;generate_letter_pdf_margins&quot;:&quot;5,20,5&quot;,&quot;generate_letter_logo_width&quot;:&quot;25&quot;,&quot;generate_letter_display_header&quot;:&quot;1&quot;,&quot;generate_letter_display_footer&quot;:&quot;1&quot;,&quot;generate_letter_display_pages_number&quot;:&quot;1&quot;,&quot;generate_letter_use_default_font&quot;:&quot;0&quot;,&quot;generate_letter_font_size&quot;:&quot;10&quot;,&quot;generate_letter_font&quot;:&quot;helvetica&quot;,&quot;generate_letter_escape_ampersand&quot;:&quot;0&quot;,&quot;generate_letter_whitespace_textarea&quot;:&quot;0&quot;,&quot;application_form_name&quot;:&quot;application_form_pdf&quot;,&quot;applicant_file_name&quot;:&quot;&quot;,&quot;generated_doc_name&quot;:&quot;&quot;,&quot;application_admission_name&quot;:&quot;&quot;,&quot;nb_email_per_batch&quot;:&quot;50&quot;,&quot;time_sleep_per_batch&quot;:&quot;1000&quot;,&quot;email_custom_tag&quot;:&quot;&quot;,&quot;expert_fabrikformid&quot;:&quot;110&quot;,&quot;expert_document_id&quot;:&quot;36&quot;,&quot;default_email_tmpl&quot;:&quot;expert&quot;,&quot;ldapFiltersImport&quot;:&quot;&quot;,&quot;fabrik_elements_title&quot;:&quot;2113&quot;,&quot;fabrik_elements_pdf&quot;:&quot;2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127, 2116, 2118, 2122&quot;,&quot;fabrik_elements_html&quot;:&quot;2111, 2113, 2134, 2135, 2112, 2116, 2114, 2117, 2128, 2121, 2133, 2124, 2125, 2126&quot;,&quot;category_note&quot;:&quot;emplois-su&quot;,&quot;program_code&quot;:&quot;utc-dfp-dri&quot;,&quot;validation&quot;:&quot;0&quot;,&quot;useGoogle&quot;:&quot;0&quot;,&quot;clientId&quot;:&quot;&quot;,&quot;clientSecret&quot;:&quot;&quot;,&quot;refreshToken&quot;:&quot;&quot;,&quot;parentCalId&quot;:&quot;&quot;,&quot;mailRecipients&quot;:&quot;5&quot;,&quot;bookedPrefix&quot;:&quot;BOOKED&quot;,&quot;GoogleMaps&quot;:&quot;&quot;,&quot;showUniversities&quot;:&quot;0&quot;,&quot;showNewsletter&quot;:&quot;0&quot;,&quot;showJoomlagroups&quot;:&quot;0&quot;,&quot;ldapFilters&quot;:&quot;&quot;,&quot;ldapElements&quot;:&quot;uid, mail, givenName, sn, telephoneNumber&quot;,&quot;logUserEmail&quot;:&quot;0&quot;,&quot;allowed_non_applicant_profiles&quot;:&quot;&quot;,&quot;automated_task_user&quot;:&quot;&quot;,&quot;all_rights_group&quot;:&quot;1&quot;,&quot;evaluator_group&quot;:&quot;2&quot;,&quot;program_manager_group&quot;:&quot;3&quot;,&quot;create_program_groups&quot;:&quot;1&quot;,&quot;messenger_anonymous_coordinator&quot;:&quot;0&quot;,&quot;messenger_notifications_on_send&quot;:&quot;1&quot;,&quot;messenger_notify_users_programs&quot;:&quot;0&quot;,&quot;messenger_notify_groups&quot;:&quot;&quot;,&quot;messenger_notify_users&quot;:&quot;&quot;,&quot;style&quot;:&quot;1&quot;,&quot;content&quot;:&quot;1&quot;,&quot;translations&quot;:&quot;1&quot;,&quot;attachment_storage&quot;:&quot;0&quot;,&quot;display_expires_date&quot;:&quot;0&quot;}</field>
+    <field name="params">{&quot;logged_homepage_link&quot;:&quot;1&quot;,&quot;logs&quot;:&quot;1&quot;,&quot;emundus_email&quot;:&quot;support@emundus.fr&quot;,&quot;log_actions&quot;:&quot;1,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37&quot;,&quot;log_actions_exclude&quot;:&quot;&quot;,&quot;log_actions_exclude_user&quot;:&quot;62&quot;,&quot;log_forms_update&quot;:&quot;1&quot;,&quot;com_emundus_show_tags_category&quot;:&quot;1&quot;,&quot;log_show_timeformat&quot;:&quot;0&quot;,&quot;log_show_timeorder&quot;:&quot;DESC&quot;,&quot;display_other_user_editing_same_file&quot;:&quot;0&quot;,&quot;alert_editing_time&quot;:&quot;2&quot;,&quot;block_user&quot;:&quot;1&quot;,&quot;reveal_password&quot;:&quot;1&quot;,&quot;allow_pinned_campaign&quot;:&quot;0&quot;,&quot;use_cdn&quot;:&quot;1&quot;,&quot;display_required_icon&quot;:&quot;1&quot;,&quot;required_icon_position&quot;:&quot;1&quot;,&quot;repeat_icon&quot;:&quot;clear&quot;,&quot;photo_attachment&quot;:&quot;&quot;,&quot;display_registration_link&quot;:&quot;1&quot;,&quot;registration_link&quot;:&quot;&quot;,&quot;display_forgotten_password_link&quot;:&quot;1&quot;,&quot;forgotten_password_link&quot;:&quot;&quot;,&quot;multi_eval&quot;:&quot;0&quot;,&quot;evaluators_can_see&quot;:&quot;0&quot;,&quot;evaluators_can_evaluate&quot;:&quot;0&quot;,&quot;evaluators_can_see_other_eval&quot;:&quot;0&quot;,&quot;can_copy_evaluations&quot;:&quot;0&quot;,&quot;default_actions&quot;:&quot;{    \&quot;1\&quot;:{\&quot;id\&quot;:1, \&quot;c\&quot;:0, \&quot;r\&quot;:1, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;4\&quot;:{\&quot;id\&quot;:4, \&quot;c\&quot;:1, \&quot;r\&quot;:1, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;5\&quot;:{\&quot;id\&quot;:5, \&quot;c\&quot;:1, \&quot;r\&quot;:1, \&quot;u\&quot;:1, \&quot;d\&quot;:0},    \&quot;6\&quot;:{\&quot;id\&quot;:6, \&quot;c\&quot;:1, \&quot;r\&quot;:0, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;7\&quot;:{\&quot;id\&quot;:7, \&quot;c\&quot;:1, \&quot;r\&quot;:0, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;8\&quot;:{\&quot;id\&quot;:8, \&quot;c\&quot;:1, \&quot;r\&quot;:0, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;9\&quot;:{\&quot;id\&quot;:9, \&quot;c\&quot;:0, \&quot;r\&quot;:0, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;10\&quot;:{\&quot;id\&quot;:10, \&quot;c\&quot;:1, \&quot;r\&quot;:1, \&quot;u\&quot;:1, \&quot;d\&quot;:0},    \&quot;13\&quot;:{\&quot;id\&quot;:10, \&quot;c\&quot;:0, \&quot;r\&quot;:1, \&quot;u\&quot;:0, \&quot;d\&quot;:0},    \&quot;14\&quot;:{\&quot;id\&quot;:14, \&quot;c\&quot;:1, \&quot;r\&quot;:1, \&quot;u\&quot;:1, \&quot;d\&quot;:0}    }&quot;,&quot;hide_default_actions&quot;:&quot;0&quot;,&quot;show_related_files&quot;:&quot;0&quot;,&quot;id_applicants&quot;:&quot;&quot;,&quot;applicant_files_path&quot;:&quot;images\/emundus\/files\/&quot;,&quot;applicant_can_renew&quot;:&quot;1&quot;,&quot;id_profiles&quot;:&quot;&quot;,&quot;can_edit_until_deadline&quot;:&quot;0&quot;,&quot;can_edit_after_deadline&quot;:&quot;0&quot;,&quot;referent_can_edit_after_deadline&quot;:&quot;1&quot;,&quot;copy_application_form&quot;:&quot;0&quot;,&quot;copy_application_form_type&quot;:&quot;0&quot;,&quot;display_poll&quot;:&quot;0&quot;,&quot;display_poll_id&quot;:&quot;&quot;,&quot;can_submit_encrypted&quot;:&quot;1&quot;,&quot;status_for_send&quot;:&quot;0&quot;,&quot;status_for_delete&quot;:&quot;&quot;,&quot;allow_anonym_files&quot;:&quot;0&quot;,&quot;collaborate_link&quot;:&quot;index.php?option=com_fabrik&amp;view=form&amp;formid=378&quot;,&quot;form_builder_page_creation_modules&quot;:[&quot;123&quot;,&quot;124&quot;],&quot;application_fee&quot;:&quot;0&quot;,&quot;accept_other_payments&quot;:&quot;0&quot;,&quot;application_payment_status&quot;:&quot;0&quot;,&quot;status_after_payment&quot;:&quot;1&quot;,&quot;redirect_after_payment&quot;:&quot;0&quot;,&quot;scholarship_document_id&quot;:&quot;&quot;,&quot;pay_scholarship&quot;:&quot;0&quot;,&quot;scholarship_product&quot;:&quot;0&quot;,&quot;application_payment&quot;:&quot;user&quot;,&quot;hikashop_session&quot;:&quot;0&quot;,&quot;export_application_pdf&quot;:&quot;0&quot;,&quot;export_application_pdf_breaker&quot;:&quot;0&quot;,&quot;show_empty_fields&quot;:&quot;1&quot;,&quot;export_application_pdf_title_color&quot;:&quot;#000000&quot;,&quot;export_path&quot;:&quot;&quot;,&quot;application_form_order&quot;:&quot;&quot;,&quot;attachment_order&quot;:&quot;&quot;,&quot;export_replace_doc&quot;:&quot;0&quot;,&quot;generate_letter_pdf_margins&quot;:&quot;5,20,5&quot;,&quot;generate_letter_logo_width&quot;:&quot;25&quot;,&quot;generate_letter_display_header&quot;:&quot;1&quot;,&quot;generate_letter_display_footer&quot;:&quot;1&quot;,&quot;generate_letter_display_pages_number&quot;:&quot;1&quot;,&quot;generate_letter_use_default_font&quot;:&quot;0&quot;,&quot;generate_letter_font_size&quot;:&quot;10&quot;,&quot;generate_letter_font&quot;:&quot;helvetica&quot;,&quot;generate_letter_escape_ampersand&quot;:&quot;0&quot;,&quot;generate_letter_whitespace_textarea&quot;:&quot;0&quot;,&quot;application_form_name&quot;:&quot;application_form_pdf&quot;,&quot;applicant_file_name&quot;:&quot;&quot;,&quot;generated_doc_name&quot;:&quot;&quot;,&quot;application_admission_name&quot;:&quot;&quot;,&quot;nb_email_per_batch&quot;:&quot;50&quot;,&quot;time_sleep_per_batch&quot;:&quot;1000&quot;,&quot;email_custom_tag&quot;:&quot;&quot;,&quot;expert_fabrikformid&quot;:&quot;110&quot;,&quot;expert_document_id&quot;:&quot;36&quot;,&quot;default_email_tmpl&quot;:&quot;expert&quot;,&quot;ldapFiltersImport&quot;:&quot;&quot;,&quot;fabrik_elements_title&quot;:&quot;2113&quot;,&quot;fabrik_elements_pdf&quot;:&quot;2111, 2112, 2114, 2117, 2133, 2119, 2120, 2121, 2123, 2124, 2125, 2126, 2127, 2116, 2118, 2122&quot;,&quot;fabrik_elements_html&quot;:&quot;2111, 2113, 2134, 2135, 2112, 2116, 2114, 2117, 2128, 2121, 2133, 2124, 2125, 2126&quot;,&quot;category_note&quot;:&quot;emplois-su&quot;,&quot;program_code&quot;:&quot;utc-dfp-dri&quot;,&quot;validation&quot;:&quot;0&quot;,&quot;useGoogle&quot;:&quot;0&quot;,&quot;clientId&quot;:&quot;&quot;,&quot;clientSecret&quot;:&quot;&quot;,&quot;refreshToken&quot;:&quot;&quot;,&quot;parentCalId&quot;:&quot;&quot;,&quot;mailRecipients&quot;:&quot;5&quot;,&quot;bookedPrefix&quot;:&quot;BOOKED&quot;,&quot;GoogleMaps&quot;:&quot;&quot;,&quot;showUniversities&quot;:&quot;0&quot;,&quot;showNewsletter&quot;:&quot;0&quot;,&quot;showJoomlagroups&quot;:&quot;0&quot;,&quot;ldapFilters&quot;:&quot;&quot;,&quot;ldapElements&quot;:&quot;uid, mail, givenName, sn, telephoneNumber&quot;,&quot;logUserEmail&quot;:&quot;0&quot;,&quot;allowed_non_applicant_profiles&quot;:&quot;&quot;,&quot;automated_task_user&quot;:&quot;&quot;,&quot;all_rights_group&quot;:&quot;1&quot;,&quot;evaluator_group&quot;:&quot;2&quot;,&quot;program_manager_group&quot;:&quot;3&quot;,&quot;create_program_groups&quot;:&quot;1&quot;,&quot;messenger_anonymous_coordinator&quot;:&quot;0&quot;,&quot;messenger_notifications_on_send&quot;:&quot;1&quot;,&quot;messenger_notify_users_programs&quot;:&quot;0&quot;,&quot;messenger_notify_groups&quot;:&quot;&quot;,&quot;messenger_notify_users&quot;:&quot;&quot;,&quot;style&quot;:&quot;1&quot;,&quot;content&quot;:&quot;1&quot;,&quot;translations&quot;:&quot;1&quot;,&quot;attachment_storage&quot;:&quot;0&quot;,&quot;display_expires_date&quot;:&quot;0&quot;}</field>
     <field name="custom_data">{&quot;sitename&quot;:&quot;Tchooz&quot;}</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -11549,7 +11549,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_element</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -11571,7 +11571,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_element</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -13331,7 +13331,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_element</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -13353,7 +13353,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_element</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -13375,7 +13375,7 @@
     <field name="changelogurl"></field>
     <field name="folder">fabrik_element</field>
     <field name="client_id">0</field>
-    <field name="enabled">0</field>
+    <field name="enabled">1</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
@@ -14357,7 +14357,29 @@
     <field name="note" value_is_null="true"></field>
    </row>
    <row>
-    <field name="extension_id">702</field>
+    <field name="extension_id">707</field>
+    <field name="package_id">0</field>
+    <field name="name">Fabrik Quick Icon</field>
+    <field name="type">plugin</field>
+    <field name="element">fabrik</field>
+    <field name="changelogurl"></field>
+    <field name="folder">quickicon</field>
+    <field name="client_id">0</field>
+    <field name="enabled">1</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Fabrik Quick Icon&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;03 Novembre 2023&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;(C) 2019 eMundus All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.io&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.emundus.fr&quot;,&quot;version&quot;:&quot;2.0.0&quot;,&quot;description&quot;:&quot;Fabrik Quick Icon&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;fabrik&quot;}</field>
+    <field name="params">{&quot;context&quot;:&quot;mod_quickicon&quot;}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">708</field>
     <field name="package_id">0</field>
     <field name="name">mod_emundusuniv</field>
     <field name="type">module</field>
@@ -14379,7 +14401,183 @@
     <field name="note" value_is_null="true"></field>
    </row>
    <row>
-    <field name="extension_id">703</field>
+    <field name="extension_id">709</field>
+    <field name="package_id">0</field>
+    <field name="name">PLG_AUTHENTICATION_EXTERNALLOGIN</field>
+    <field name="type">plugin</field>
+    <field name="element">externallogin</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">authentication</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;PLG_AUTHENTICATION_EXTERNALLOGIN&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;July 2008&quot;,&quot;author&quot;:&quot;Christophe Demko, Ioannis Barounis, Alexandre Gandois&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2008-2018 Christophe Demko, Ioannis Barounis, Alexandre Gandois.&quot;,&quot;authorEmail&quot;:&quot;external-login@chdemko.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.chdemko.com&quot;,&quot;version&quot;:&quot;3.1.2.2&quot;,&quot;description&quot;:&quot;PLG_AUTHENTICATION_EXTERNALLOGIN_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;externallogin&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">710</field>
+    <field name="package_id">0</field>
+    <field name="name">plg_extension_emundus</field>
+    <field name="type">plugin</field>
+    <field name="element">emundus</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">extension</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_extension_emundus&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;November 2023&quot;,&quot;author&quot;:&quot;J\u00e9r\u00e9my LEGENDRE&quot;,&quot;copyright&quot;:&quot;(C) 2010 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;jeremy.legendre@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;1.0.0&quot;,&quot;description&quot;:&quot;PLG_EXTENSION_EMUNDUS_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;emundus&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">711</field>
+    <field name="package_id">0</field>
+    <field name="name">plg_fabrik_cron_emundusdeleteoldfiles</field>
+    <field name="type">plugin</field>
+    <field name="element">emundusdeleteoldfiles</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_cron</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_fabrik_cron_emundusdeleteoldfiles&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;November 2023&quot;,&quot;author&quot;:&quot;Bazile Binson&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2015 emundus.fr - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;6.1&quot;,&quot;description&quot;:&quot;PLG_FABRIK_CRON_EMUNDUSDELETEOLDFILES_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;emundusdeleteoldfiles&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">712</field>
+    <field name="package_id">0</field>
+    <field name="name">plg_fabrik_cron_emundusupdatestatusendcampaign</field>
+    <field name="type">plugin</field>
+    <field name="element">emundusupdatestatusendcampaign</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_cron</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_fabrik_cron_emundusupdatestatusendcampaign&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;October 2023&quot;,&quot;author&quot;:&quot;Bazile Binson&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2015 emundus.fr - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;6.1&quot;,&quot;description&quot;:&quot;PLG_FABRIK_CRON_EMUNDUSUPDATESTATUSENDCAMPAIGN_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;emundusupdatestatusendcampaign&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">713</field>
+    <field name="package_id">0</field>
+    <field name="name">plg_fabrik_cron_gcalsync</field>
+    <field name="type">plugin</field>
+    <field name="element">gcalsync</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_cron</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_fabrik_cron_gcalsync&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;August 2021&quot;,&quot;author&quot;:&quot;Media A-Team, Inc.&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2005-2021 Media A-Team, Inc. - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;hugh.messenger@gmail.com&quot;,&quot;authorUrl&quot;:&quot;www.fabrikar.com&quot;,&quot;version&quot;:&quot;3.10&quot;,&quot;description&quot;:&quot;PLG_CRON_GCALSYNC_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;gcalsync&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">714</field>
+    <field name="package_id">0</field>
+    <field name="name">plg_fabrik_cron_migalFTP</field>
+    <field name="type">plugin</field>
+    <field name="element">migal_ftp</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_cron</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_fabrik_cron_migalFTP&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;August 2018&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2005-2018 eMundus. - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;hugo.moracchini@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;3.8.1&quot;,&quot;description&quot;:&quot;PLG_FABRIK_CRON_MIGALFTP_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;migal_ftp&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">715</field>
+    <field name="package_id">0</field>
+    <field name="name">plg_fabrik_element_insee</field>
+    <field name="type">plugin</field>
+    <field name="element">insee</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_element</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_fabrik_element_insee&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;August 2023&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2005-2023 eMundus - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;3.10&quot;,&quot;description&quot;:&quot;PLG_ELEMENT_INSEE_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;insee&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">716</field>
+    <field name="package_id">0</field>
+    <field name="name">PLG_FABRIK_ELEMENT_YEAR</field>
+    <field name="type">plugin</field>
+    <field name="element">years</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_element</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;PLG_FABRIK_ELEMENT_YEAR&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;July 2019&quot;,&quot;author&quot;:&quot;James Dean&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2019 eMundus - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;james@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;3.9.11&quot;,&quot;description&quot;:&quot;PLG_FABRIK_ELEMENT_YEAR_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;years&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">717</field>
     <field name="package_id">0</field>
     <field name="name">eMundus - Authorize empty fields</field>
     <field name="type">plugin</field>
@@ -14401,7 +14599,29 @@
     <field name="note" value_is_null="true"></field>
    </row>
    <row>
-    <field name="extension_id">704</field>
+    <field name="extension_id">718</field>
+    <field name="package_id">0</field>
+    <field name="name">eMundus - Check that other forms are filled</field>
+    <field name="type">plugin</field>
+    <field name="element">emunduscheckformsfilled</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_form</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;eMundus - Check that other forms are filled&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;November 2023&quot;,&quot;author&quot;:&quot;LEGENDRE J\u00e9r\u00e9my&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2023 eMundus.fr - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;jeremy.legendre@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;3.10&quot;,&quot;description&quot;:&quot;PLG_FABRIK_FORM_EMUNDUS_CHECKFORMSFILLED_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;emunduscheckformsfilled&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">719</field>
     <field name="package_id">0</field>
     <field name="name">emunduszoommeeting</field>
     <field name="type">plugin</field>
@@ -14423,7 +14643,73 @@
     <field name="note" value_is_null="true"></field>
    </row>
    <row>
-    <field name="extension_id">705</field>
+    <field name="extension_id">720</field>
+    <field name="package_id">0</field>
+    <field name="name">plg_fabrik_form_juseremundus</field>
+    <field name="type">plugin</field>
+    <field name="element">juseremundus</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_form</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_fabrik_form_juseremundus&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;April 2015&quot;,&quot;author&quot;:&quot;Rob Clayburn&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2005-2015 fabrikar.com - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;rob@pollen-8.co.uk&quot;,&quot;authorUrl&quot;:&quot;www.fabrikar.com&quot;,&quot;version&quot;:&quot;3.3.2&quot;,&quot;description&quot;:&quot;PLG_FORM_JUSEREMUNDUS_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;juseremundus&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">721</field>
+    <field name="package_id">0</field>
+    <field name="name">plg_fabrik_form_stripe</field>
+    <field name="type">plugin</field>
+    <field name="element">stripe</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_form</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_fabrik_form_stripe&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;August 2021&quot;,&quot;author&quot;:&quot;Media A-Team, Inc.&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2005-2021 Media A-Team, Inc. - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;hugh.messenger@gmail.com&quot;,&quot;authorUrl&quot;:&quot;www.fabrikar.com&quot;,&quot;version&quot;:&quot;3.10&quot;,&quot;description&quot;:&quot;PLG_FORM_STRIPE_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;stripe&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">722</field>
+    <field name="package_id">0</field>
+    <field name="name">plg_fabrik_list_runcron</field>
+    <field name="type">plugin</field>
+    <field name="element">runcron</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_list</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_fabrik_list_runcron&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;January 2024&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2005-2024 eMundus - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;3.10&quot;,&quot;description&quot;:&quot;PLG_LIST_RUNCRON_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;runcron&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">723</field>
     <field name="package_id">0</field>
     <field name="name">plg_fabrik_list_su_copy_fiche_emplois</field>
     <field name="type">plugin</field>
@@ -14445,7 +14731,7 @@
     <field name="note" value_is_null="true"></field>
    </row>
    <row>
-    <field name="extension_id">706</field>
+    <field name="extension_id">724</field>
     <field name="package_id">0</field>
     <field name="name">plg_fabrik_list_zoom_meeting</field>
     <field name="type">plugin</field>
@@ -14467,25 +14753,69 @@
     <field name="note" value_is_null="true"></field>
    </row>
    <row>
-    <field name="extension_id">707</field>
+    <field name="extension_id">725</field>
     <field name="package_id">0</field>
-    <field name="name">Fabrik Quick Icon</field>
+    <field name="name">plg_fabrik_visualization_fusioncharts</field>
     <field name="type">plugin</field>
-    <field name="element">fabrik</field>
-    <field name="changelogurl"></field>
-    <field name="folder">quickicon</field>
+    <field name="element">fusionchart</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_visualization</field>
     <field name="client_id">0</field>
-    <field name="enabled">1</field>
+    <field name="enabled">0</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Fabrik Quick Icon&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;03 Novembre 2023&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;(C) 2019 eMundus All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.io&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.emundus.fr&quot;,&quot;version&quot;:&quot;2.0.0&quot;,&quot;description&quot;:&quot;Fabrik Quick Icon&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;fabrik&quot;}</field>
-    <field name="params">{&quot;context&quot;:&quot;mod_quickicon&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_fabrik_visualization_fusioncharts&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;August 2021&quot;,&quot;author&quot;:&quot;Media A-Team, Inc.&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2005-2021 Media A-Team, Inc. - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;rob@pollen-8.co.uk&quot;,&quot;authorUrl&quot;:&quot;www.fabrikar.com&quot;,&quot;version&quot;:&quot;3.10&quot;,&quot;description&quot;:&quot;PLG_VISUALIZATION_FUSIONCHARTS_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;fusionchart&quot;}</field>
+    <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
     <field name="ordering">0</field>
-    <field name="state">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">726</field>
+    <field name="package_id">0</field>
+    <field name="name">Excelia - Price</field>
+    <field name="type">plugin</field>
+    <field name="element">exceliaprice</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">hikashop</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Excelia - Price&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;30 October 2019&quot;,&quot;author&quot;:&quot;James&quot;,&quot;copyright&quot;:&quot;(C) 2010-${year} eMundus SAS. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;james@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.emundus.fr&quot;,&quot;version&quot;:&quot;4.0.1&quot;,&quot;description&quot;:&quot;This plugin sets the cart price to 0 if the user's email address is found in the excelia user table&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;exceliaprice&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">727</field>
+    <field name="package_id">0</field>
+    <field name="name">plg_system_emundusproxyredirect</field>
+    <field name="type">plugin</field>
+    <field name="element">emundusproxyredirect</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">system</field>
+    <field name="client_id">0</field>
+    <field name="enabled">0</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;plg_system_emundusproxyredirect&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;2023-12&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;(C) 2023 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;1.39.0&quot;,&quot;description&quot;:&quot;PLG_SYSTEM_EMUNDUSPROXYREDIRECT_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Emundus\\Plugin\\System\\EmundusProxyRedirect&quot;,&quot;filename&quot;:&quot;emundusproxyredirect&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">-1</field>
     <field name="note" value_is_null="true"></field>
    </row>
   </table_data>

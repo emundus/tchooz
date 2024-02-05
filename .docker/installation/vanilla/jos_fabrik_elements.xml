@@ -2092,12 +2092,12 @@
     <field name="plugin">databasejoin</field>
     <field name="label">PROFILE_ID</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2011-11-02 11:14:20</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified">2017-06-12 13:12:14</field>
-    <field name="modified_by">63</field>
+    <field name="modified">2024-02-02 15:34:56</field>
+    <field name="modified_by">1</field>
     <field name="width">40</field>
     <field name="height">6</field>
     <field name="default"></field>
@@ -2114,7 +2114,7 @@
     <field name="access">6</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;database_join_display_type&quot;:&quot;dropdown&quot;,&quot;join_conn_id&quot;:&quot;1&quot;,&quot;join_db_name&quot;:&quot;jos_emundus_setup_profiles&quot;,&quot;join_key_column&quot;:&quot;id&quot;,&quot;join_val_column&quot;:&quot;label&quot;,&quot;join_val_column_concat&quot;:&quot;&quot;,&quot;database_join_where_sql&quot;:&quot;where {thistable}.published=1 order by {thistable}.label ASC&quot;,&quot;database_join_where_access&quot;:&quot;1&quot;,&quot;database_join_where_when&quot;:&quot;3&quot;,&quot;databasejoin_where_ajax&quot;:&quot;0&quot;,&quot;database_join_filter_where_sql&quot;:&quot;&quot;,&quot;database_join_show_please_select&quot;:&quot;1&quot;,&quot;database_join_noselectionvalue&quot;:&quot;&quot;,&quot;database_join_noselectionlabel&quot;:&quot;&quot;,&quot;placeholder&quot;:&quot;&quot;,&quot;databasejoin_popupform&quot;:&quot;64&quot;,&quot;fabrikdatabasejoin_frontend_add&quot;:&quot;0&quot;,&quot;join_popupwidth&quot;:&quot;0&quot;,&quot;databasejoin_readonly_link&quot;:&quot;0&quot;,&quot;fabrikdatabasejoin_frontend_select&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;dbjoin_options_per_row&quot;:&quot;4&quot;,&quot;dbjoin_multilist_size&quot;:&quot;6&quot;,&quot;dbjoin_autocomplete_size&quot;:&quot;20&quot;,&quot;bootstrap_class&quot;:&quot;input-large&quot;,&quot;dabase_join_label_eval&quot;:&quot;&quot;,&quot;join_desc_column&quot;:&quot;&quot;,&quot;dbjoin_autocomplete_how&quot;:&quot;contains&quot;,&quot;clean_concat&quot;:&quot;0&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;8&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
+    <field name="params">{&quot;database_join_display_type&quot;:&quot;dropdown&quot;,&quot;join_conn_id&quot;:&quot;1&quot;,&quot;join_db_name&quot;:&quot;jos_emundus_setup_profiles&quot;,&quot;join_key_column&quot;:&quot;id&quot;,&quot;join_val_column&quot;:&quot;label&quot;,&quot;join_val_column_concat&quot;:&quot;&quot;,&quot;database_join_where_sql&quot;:&quot;where {thistable}.published=1 order by {thistable}.label ASC&quot;,&quot;database_join_where_access&quot;:&quot;1&quot;,&quot;database_join_where_access_invert&quot;:&quot;0&quot;,&quot;database_join_where_when&quot;:&quot;3&quot;,&quot;databasejoin_where_ajax&quot;:&quot;0&quot;,&quot;databasejoin_where_ajax_on_load&quot;:&quot;0&quot;,&quot;databasejoin_where_ajax_default_eval&quot;:&quot;&quot;,&quot;database_join_filter_where_sql&quot;:&quot;&quot;,&quot;database_join_show_please_select&quot;:&quot;1&quot;,&quot;database_join_noselectionvalue&quot;:&quot;&quot;,&quot;database_join_noselectionlabel&quot;:&quot;&quot;,&quot;placeholder&quot;:&quot;&quot;,&quot;databasejoin_popupform&quot;:&quot;64&quot;,&quot;fabrikdatabasejoin_frontend_add&quot;:&quot;0&quot;,&quot;join_popupwidth&quot;:&quot;0&quot;,&quot;databasejoin_readonly_link&quot;:&quot;0&quot;,&quot;fabrikdatabasejoin_frontend_select&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;1&quot;,&quot;dbjoin_options_per_row&quot;:&quot;4&quot;,&quot;dbjoin_multiselect_max&quot;:&quot;0&quot;,&quot;dbjoin_multilist_size&quot;:&quot;6&quot;,&quot;dbjoin_autocomplete_size&quot;:&quot;20&quot;,&quot;dbjoin_autocomplete_rows&quot;:&quot;10&quot;,&quot;bootstrap_class&quot;:&quot;col-sm-8&quot;,&quot;dabase_join_label_eval&quot;:&quot;&quot;,&quot;join_desc_column&quot;:&quot;&quot;,&quot;dbjoin_autocomplete_how&quot;:&quot;contains&quot;,&quot;clean_concat&quot;:&quot;0&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;8&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
    </row>
    <row>
     <field name="id">1545</field>
@@ -3253,7 +3253,7 @@ if($app-&gt;getInput()-&gt;get('cid', '', 'UINT') != ''){
     <field name="plugin">databasejoin</field>
     <field name="label">COURSE</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2013-06-07 16:56:37</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -6716,7 +6716,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="plugin">field</field>
     <field name="label">fnum</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2017-06-05 14:54:12</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -6747,7 +6747,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="plugin">field</field>
     <field name="label">student id</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2017-06-05 14:54:12</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -6778,7 +6778,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="plugin">databasejoin</field>
     <field name="label">EVALUATOR</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2017-06-05 14:54:12</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -6809,7 +6809,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="plugin">dropdown</field>
     <field name="label">EVAL_PREVIOUS_RESULTS</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2017-06-05 14:54:12</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -6840,7 +6840,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="plugin">dropdown</field>
     <field name="label">EVAL_TRAINING_COHERENCE</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2017-06-05 14:54:12</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -6871,7 +6871,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="plugin">dropdown</field>
     <field name="label">COVER_LETTER</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2017-06-05 14:54:12</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -6902,7 +6902,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="plugin">dropdown</field>
     <field name="label">REFEREE_LETTERS</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2017-06-05 14:54:12</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -6933,7 +6933,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="plugin">field</field>
     <field name="label">EVAL_ENGLISH_LEVEL</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2017-06-05 14:54:12</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -6948,7 +6948,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">0</field>
-    <field name="published">0</field>
+    <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
     <field name="auto_increment">0</field>
@@ -6964,7 +6964,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="plugin">calc</field>
     <field name="label">AVERAGE</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2017-06-05 14:54:12</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -7212,7 +7212,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="plugin">dropdown</field>
     <field name="label">EVAL_INSTITUTION_EXCELLENCE</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2017-10-16 21:54:44</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
@@ -8034,7 +8034,7 @@ return $db-&gt;loadResult()+1;</field>
 return $user-&gt;firstname;</field>
     <field name="hidden">0</field>
     <field name="eval">1</field>
-    <field name="ordering">4</field>
+    <field name="ordering">3</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">1</field>
@@ -8097,7 +8097,7 @@ return $user-&gt;lastname;</field>
     <field name="default">65</field>
     <field name="hidden">0</field>
     <field name="eval">0</field>
-    <field name="ordering">8</field>
+    <field name="ordering">7</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">1</field>
@@ -8144,7 +8144,7 @@ try {
 }</field>
     <field name="hidden">0</field>
     <field name="eval">1</field>
-    <field name="ordering">5</field>
+    <field name="ordering">4</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">1</field>
@@ -8606,29 +8606,29 @@ elseif ($db-&gt;loadResult() == &quot;Madame&quot;) {
     <field name="plugin">field</field>
     <field name="label">EVAL_ESSAY</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2018-07-18 15:03:06</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified">2019-08-07 09:18:53</field>
-    <field name="modified_by">62</field>
+    <field name="modified">2024-02-02 12:33:56</field>
+    <field name="modified_by">1</field>
     <field name="width">30</field>
     <field name="height">6</field>
-    <field name="default">0</field>
+    <field name="default"></field>
     <field name="hidden">0</field>
     <field name="eval">0</field>
     <field name="ordering">11</field>
     <field name="show_in_list_summary">1</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">0</field>
-    <field name="published">0</field>
+    <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
     <field name="auto_increment">0</field>
     <field name="access">1</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;input-medium&quot;,&quot;text_format&quot;:&quot;decimal&quot;,&quot;integer_length&quot;:&quot;4&quot;,&quot;decimal_length&quot;:&quot;1&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;2&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;isgreaterorlessthan-message&quot;:[&quot;&quot;],&quot;isgreaterorlessthan-greaterthan&quot;:[&quot;2&quot;],&quot;isgreaterorlessthan-comparewith&quot;:[&quot;&quot;],&quot;compare_value&quot;:[&quot;10&quot;],&quot;isgreaterorlessthan-allow_empty&quot;:[&quot;0&quot;],&quot;isgreaterorlessthan-validation_condition&quot;:[&quot;&quot;],&quot;tip_text&quot;:[&quot;Max. 10&quot;],&quot;icon&quot;:[&quot;&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;isgreaterorlessthan&quot;],&quot;plugin_published&quot;:[&quot;1&quot;],&quot;validate_in&quot;:[&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;1&quot;],&quot;must_validate&quot;:[&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;]}}</field>
+    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;col-sm-6&quot;,&quot;text_format&quot;:&quot;decimal&quot;,&quot;integer_length&quot;:&quot;4&quot;,&quot;decimal_length&quot;:&quot;1&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top&quot;,&quot;labelindetails&quot;:&quot;1&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;2&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;isgreaterorlessthan-message&quot;:[&quot;&quot;],&quot;isgreaterorlessthan-greaterthan&quot;:[&quot;2&quot;],&quot;isgreaterorlessthan-comparewith&quot;:[&quot;&quot;],&quot;compare_value&quot;:[&quot;10&quot;],&quot;isgreaterorlessthan-allow_empty&quot;:[&quot;0&quot;],&quot;isgreaterorlessthan-validation_condition&quot;:[&quot;&quot;],&quot;tip_text&quot;:[&quot;Max. 10&quot;],&quot;icon&quot;:[&quot;&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;isgreaterorlessthan&quot;],&quot;plugin_published&quot;:[&quot;0&quot;],&quot;validate_in&quot;:[&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;1&quot;],&quot;must_validate&quot;:[&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;]}}</field>
    </row>
    <row>
     <field name="id">6914</field>
@@ -10320,7 +10320,7 @@ return $cid;</field>
     <field name="plugin">field</field>
     <field name="label">BIRTH_PLACE</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2019-07-17 08:09:42</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">sysadmin_mamaself</field>
@@ -10331,7 +10331,7 @@ return $cid;</field>
     <field name="default"></field>
     <field name="hidden">0</field>
     <field name="eval">1</field>
-    <field name="ordering">6</field>
+    <field name="ordering">5</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>
     <field name="filter_exact_match">1</field>
@@ -12118,7 +12118,7 @@ return $cid;</field>
     <field name="plugin">textarea</field>
     <field name="label">COMMENT</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2019-07-18 09:47:02</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">sysadmin_mamaself</field>
@@ -14545,12 +14545,12 @@ return $email_from_sys;</field>
     <field name="plugin">databasejoin</field>
     <field name="label">BIRTH_COUNTRY</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2021-02-22 11:43:21</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">sysadmin</field>
-    <field name="modified">2022-10-17 08:24:45</field>
-    <field name="modified_by">62</field>
+    <field name="modified">2024-02-05 09:52:48</field>
+    <field name="modified_by">1</field>
     <field name="width">0</field>
     <field name="height">0</field>
     <field name="default"></field>
@@ -14567,7 +14567,7 @@ return $email_from_sys;</field>
     <field name="access">1</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;database_join_display_type&quot;:&quot;dropdown&quot;,&quot;join_conn_id&quot;:&quot;1&quot;,&quot;join_db_name&quot;:&quot;data_country&quot;,&quot;join_key_column&quot;:&quot;id&quot;,&quot;join_val_column&quot;:&quot;label_fr&quot;,&quot;join_val_column_concat&quot;:&quot;{thistable}.label_{shortlang}&quot;,&quot;database_join_where_sql&quot;:&quot;&quot;,&quot;database_join_where_access&quot;:&quot;1&quot;,&quot;database_join_where_access_invert&quot;:&quot;0&quot;,&quot;database_join_where_when&quot;:&quot;3&quot;,&quot;databasejoin_where_ajax&quot;:&quot;0&quot;,&quot;databasejoin_where_ajax_default_eval&quot;:&quot;&quot;,&quot;database_join_filter_where_sql&quot;:&quot;&quot;,&quot;database_join_show_please_select&quot;:&quot;1&quot;,&quot;database_join_noselectionvalue&quot;:&quot;&quot;,&quot;database_join_noselectionlabel&quot;:&quot;&quot;,&quot;placeholder&quot;:&quot;&quot;,&quot;databasejoin_popupform&quot;:&quot;&quot;,&quot;fabrikdatabasejoin_frontend_add&quot;:&quot;0&quot;,&quot;join_popupwidth&quot;:&quot;&quot;,&quot;databasejoin_readonly_link&quot;:&quot;0&quot;,&quot;fabrikdatabasejoin_frontend_select&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;dbjoin_options_per_row&quot;:&quot;4&quot;,&quot;dbjoin_multiselect_max&quot;:&quot;0&quot;,&quot;dbjoin_multilist_size&quot;:&quot;6&quot;,&quot;dbjoin_autocomplete_size&quot;:&quot;20&quot;,&quot;dbjoin_autocomplete_rows&quot;:&quot;10&quot;,&quot;bootstrap_class&quot;:&quot;input-xlarge&quot;,&quot;dabase_join_label_eval&quot;:&quot;&quot;,&quot;join_desc_column&quot;:&quot;&quot;,&quot;dbjoin_autocomplete_how&quot;:&quot;contains&quot;,&quot;clean_concat&quot;:&quot;0&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;notempty-message&quot;:[&quot;&quot;],&quot;notempty-validation_condition&quot;:[&quot;&quot;],&quot;tip_text&quot;:[&quot;&quot;],&quot;icon&quot;:[&quot;&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;notempty&quot;],&quot;plugin_published&quot;:[&quot;1&quot;],&quot;validate_in&quot;:[&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;0&quot;],&quot;must_validate&quot;:[&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;]}}</field>
+    <field name="params">{&quot;database_join_display_type&quot;:&quot;dropdown&quot;,&quot;join_conn_id&quot;:&quot;1&quot;,&quot;join_db_name&quot;:&quot;data_country&quot;,&quot;join_key_column&quot;:&quot;id&quot;,&quot;join_val_column&quot;:&quot;label_fr&quot;,&quot;join_val_column_concat&quot;:&quot;{thistable}.label_{shortlang}&quot;,&quot;database_join_where_sql&quot;:&quot;&quot;,&quot;database_join_where_access&quot;:&quot;1&quot;,&quot;database_join_where_access_invert&quot;:&quot;0&quot;,&quot;database_join_where_when&quot;:&quot;3&quot;,&quot;databasejoin_where_ajax&quot;:&quot;0&quot;,&quot;databasejoin_where_ajax_on_load&quot;:&quot;0&quot;,&quot;databasejoin_where_ajax_default_eval&quot;:&quot;&quot;,&quot;database_join_filter_where_sql&quot;:&quot;&quot;,&quot;database_join_show_please_select&quot;:&quot;1&quot;,&quot;database_join_noselectionvalue&quot;:&quot;&quot;,&quot;database_join_noselectionlabel&quot;:&quot;&quot;,&quot;placeholder&quot;:&quot;&quot;,&quot;databasejoin_popupform&quot;:&quot;377&quot;,&quot;fabrikdatabasejoin_frontend_add&quot;:&quot;0&quot;,&quot;join_popupwidth&quot;:&quot;&quot;,&quot;databasejoin_readonly_link&quot;:&quot;0&quot;,&quot;fabrikdatabasejoin_frontend_select&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;1&quot;,&quot;dbjoin_options_per_row&quot;:&quot;4&quot;,&quot;dbjoin_multiselect_max&quot;:&quot;0&quot;,&quot;dbjoin_multilist_size&quot;:&quot;6&quot;,&quot;dbjoin_autocomplete_size&quot;:&quot;20&quot;,&quot;dbjoin_autocomplete_rows&quot;:&quot;10&quot;,&quot;bootstrap_class&quot;:&quot;col-sm-10&quot;,&quot;dabase_join_label_eval&quot;:&quot;&quot;,&quot;join_desc_column&quot;:&quot;&quot;,&quot;dbjoin_autocomplete_how&quot;:&quot;contains&quot;,&quot;clean_concat&quot;:&quot;0&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;notempty-message&quot;:[&quot;&quot;],&quot;notempty-validation_condition&quot;:[&quot;&quot;],&quot;tip_text&quot;:[&quot;&quot;],&quot;icon&quot;:[&quot;&quot;],&quot;validations&quot;:{&quot;plugin&quot;:[&quot;notempty&quot;],&quot;plugin_published&quot;:[&quot;1&quot;],&quot;validate_in&quot;:[&quot;both&quot;],&quot;validation_on&quot;:[&quot;both&quot;],&quot;validate_hidden&quot;:[&quot;0&quot;],&quot;must_validate&quot;:[&quot;0&quot;],&quot;show_icon&quot;:[&quot;1&quot;]}}</field>
    </row>
    <row>
     <field name="id">7726</field>
@@ -17147,15 +17147,15 @@ return $email_from_sys;</field>
     <field name="id">7913</field>
     <field name="name">tel</field>
     <field name="group_id">789</field>
-    <field name="plugin">field</field>
+    <field name="plugin">emundus_phonenumber</field>
     <field name="label">PHONE_NUMBER</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="created">2022-05-10 14:37:14</field>
     <field name="created_by">62</field>
     <field name="created_by_alias">sysadmin</field>
-    <field name="modified">2023-02-27 12:54:35</field>
-    <field name="modified_by">62</field>
+    <field name="modified">2024-02-05 10:03:40</field>
+    <field name="modified_by">1</field>
     <field name="width">30</field>
     <field name="height">6</field>
     <field name="default"></field>
@@ -17172,7 +17172,7 @@ return $email_from_sys;</field>
     <field name="access">1</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
-    <field name="params">{&quot;placeholder&quot;:&quot;&quot;,&quot;password&quot;:&quot;0&quot;,&quot;maxlength&quot;:&quot;255&quot;,&quot;disable&quot;:&quot;0&quot;,&quot;readonly&quot;:&quot;0&quot;,&quot;autocomplete&quot;:&quot;1&quot;,&quot;speech&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;input-medium&quot;,&quot;text_format&quot;:&quot;text&quot;,&quot;integer_length&quot;:&quot;6&quot;,&quot;decimal_length&quot;:&quot;2&quot;,&quot;field_use_number_format&quot;:&quot;0&quot;,&quot;field_thousand_sep&quot;:&quot;,&quot;,&quot;field_decimal_sep&quot;:&quot;.&quot;,&quot;text_format_string&quot;:&quot;&quot;,&quot;field_format_string_blank&quot;:&quot;1&quot;,&quot;text_input_mask&quot;:&quot;9999999999&quot;,&quot;text_input_mask_autoclear&quot;:&quot;0&quot;,&quot;text_input_mask_definitions&quot;:&quot;&quot;,&quot;render_as_qrcode&quot;:&quot;0&quot;,&quot;scan_qrcode&quot;:&quot;0&quot;,&quot;guess_linktype&quot;:&quot;0&quot;,&quot;link_target_options&quot;:&quot;default&quot;,&quot;rel&quot;:&quot;&quot;,&quot;link_title&quot;:&quot;&quot;,&quot;link_attributes&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
+    <field name="params">{&quot;default_country&quot;:&quot;FR&quot;,&quot;countries_options&quot;:&quot;&quot;,&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;8&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;8&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;8&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;8&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[]}</field>
    </row>
    <row>
     <field name="id">7914</field>

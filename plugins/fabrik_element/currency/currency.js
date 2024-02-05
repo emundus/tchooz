@@ -56,7 +56,7 @@ define(['jquery', 'fab/element'],
                     search_contains: true,
                 });
 
-                const element = document.querySelector('#' + this.element.id + ' .chzn-single span');
+                const element = document.querySelector('#' + this.element.id + ' .chosen-single span');
                 this.changeElement(element);
 
                 jQuery(this.HTMLSelectElement).on('change', () => { // sadly mandatory
@@ -74,7 +74,7 @@ define(['jquery', 'fab/element'],
             this.addMask();
             this.mask.value = newInputValue;
 
-            const element = document.querySelector('#'+this.element.id+' .chzn-single span');
+            const element = document.querySelector('#'+this.element.id+' .chosen-single span');
             this.changeElement(element);
         },
 

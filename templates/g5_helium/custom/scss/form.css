@@ -293,36 +293,37 @@
       position: absolute;
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container{
+    .fabrikEmundusPhoneNumber .chosen-container{
       width: auto !important;
+      min-width: unset;
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-drop{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-drop{
       width: fit-content;
       border-radius: var(--em-form-br);
       margin-top: var(--m-8);
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-drop .chzn-search{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-drop .chosen-search{
       padding: var(--p-4);
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-drop .chzn-search input{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-drop .chosen-search input{
       height: 35px;
-      background: unset;
+      background-image: unset;
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-drop .chzn-results {
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-drop .chosen-results {
       margin: var(--m-4);
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-drop .chzn-results li{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-drop .chosen-results li{
       font-size: 14px;
       word-spacing: 4px;
       margin-right: var(--m-4);
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-single{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-single{
       display: flex;
       justify-content: center;
       align-items: center;
@@ -341,15 +342,15 @@
       }
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-single span{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-single span{
       font-size: var(--em-form-font-size);
       margin-right: var(--m-16);
     }
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-single span img{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-single span img{
       width: 24px;
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-single div{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-single div{
       height: auto;
       width: 8px;
       position: static;
@@ -357,7 +358,7 @@
       margin-top: -4px;
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-single div b{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-single div b{
       border: solid var(--neutral-900);
       border-width: 0 2px 2px 0;
       display: inline-block;
@@ -783,14 +784,14 @@
     /** CURRENCY **/
     .currencyElement {
       position: relative;
-      select, .chzn-container {
+      select, .chosen-container {
         position: absolute;
         right: 0;
         width: auto !important;
         border-left: 0;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
-        .chzn-single {
+        .chosen-single {
           border-left: 0 !important;
           border-top-left-radius: 0 !important;
           border-bottom-left-radius: 0 !important;
@@ -816,17 +817,17 @@
             }
           }
         }
-        .chzn-drop {
+        .chosen-drop {
           width: max-content;
           margin-top: 6px;
-          .chzn-search{
+          .chosen-search{
             padding: 4px;
             input {
               height: 35px;
               background: unset;
             }
           }
-          .chzn-results {
+          .chosen-results {
             margin: 4px;
             li{
               font-size: 16px;
@@ -839,13 +840,13 @@
           }
         }
       }
-      input:hover + select,input:hover + .chzn-container .chzn-single
+      input:hover + select,input:hover + .chosen-container .chosen-single
       {
         background-color: var(--em-form-bgc-hover);
         border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
-      input:focus + select,input:focus + .chzn-container .chzn-single
+      input:focus + select,input:focus + .chosen-container .chosen-single
       {
         border-radius: var(--em-form-br-focus);
         border-color: var(--em-form-bc-focus);
@@ -1025,6 +1026,7 @@
   .uneditable-input,
   select:not(.profile-select),
   a.chzn-single,
+  a.chosen-single,
   textarea {
     background-color: var(--neutral-0);
     color: var(--neutral-900);
@@ -1121,18 +1123,18 @@
   }
 
   /* CHOSEN */
-  .files-board.com_emundus .chzn-container {
+  .files-board.com_emundus .chzn-container,.files-board.com_emundus .chosen-container {
     width: 100% !important;
   }
-  .chzn-container, .chzn-container.chzn-container-multi, .chzn-container.chzn-container-multi.chzn-container-active {
+  .chzn-container, .chzn-container.chzn-container-multi, .chzn-container.chzn-container-multi.chzn-container-active, .chosen-container, .chosen-container.chosen-container-multi, .chosen-container.chosen-container-multi.chosen-container-active {
     width: auto;
     max-width: unset !important;
 
-    .chzn-drop {
+    .chzn-drop,.chosen-drop {
       border-radius: var(--em-form-br);
     }
 
-    &.chzn-with-drop .chzn-single, &.chzn-with-drop .chzn-choices {
+    &.chzn-with-drop .chzn-single, &.chzn-with-drop .chzn-choices, &.chosen-with-drop .chosen-single, &.chosen-with-drop .chosen-choices {
       background-position-x: 98% !important;
       background-position-y: 54% !important;
       -webkit-appearance: none;
@@ -1152,7 +1154,7 @@
       min-height: var(--em-form-height);
     }
 
-    .chzn-single, .chzn-choices {
+    .chzn-single, .chzn-choices, .chosen-single, .chosen-choices {
       background-position-x: 98% !important;
       background-position-y: 54% !important;
       -webkit-appearance: none;
@@ -1210,7 +1212,7 @@
       }
     }
 
-    .chzn-search {
+    .chzn-search,.chosen-search {
       padding: 4px 12px;
       line-height: 20px;
 
@@ -1220,7 +1222,7 @@
       }
     }
 
-    .chzn-results {
+    .chzn-results,.chosen-results {
       padding: 0;
       margin: 0;
 
@@ -1229,14 +1231,14 @@
       }
     }
 
-    .chzn-results li.highlighted {
+    .chzn-results li.highlighted,.chosen-results li.highlighted {
       background-color: var(--neutral-300);
       background-image: unset !important;
       color: var(--neutral-900);
     }
   }
 
-  .chzn-container-multi:not(.chzn-container-active) .chzn-drop {
+  .chzn-container-multi:not(.chzn-container-active) .chzn-drop,.chosen-container-multi:not(.chosen-container-active) .chosen-drop {
     display: none;
   }
 

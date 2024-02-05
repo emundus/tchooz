@@ -28,7 +28,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             this.element.getElementById('inputValue').value = '';
             this.element.getElementById('countrySelect').setAttribute('selectedValue', this.options.allCountries[0].iso2); // reset with the first one
 
-            this.element.getElementById('countrySelect_chzn').remove();
+            this.element.getElementById('countrySelect_chosen').remove();
 
             this.initChosen();
 
@@ -61,7 +61,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
                 this.watchChange();
 
-                document.querySelector('#'+this.element.id+' .chzn-container .chzn-drop').style.minWidth = document.getElementById(this.element.id).offsetWidth+'px';
+                document.querySelector('#'+this.element.id+' .chosen-container .chosen-drop').style.minWidth = document.getElementById(this.element.id).offsetWidth+'px';
 
                 jQuery('#'+this.element.id+' #countrySelect').on('change', () => {
                     this.watchChange();
@@ -104,7 +104,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
             jQuery(select).val(val);
 
-            jQuery('#'+this.element.id+' #countrySelect_chzn .chzn-single span').html("<img src='/images/emundus/flags/"+flag+"' alt='"+val+"'/>");
+            jQuery('#'+this.element.id+' #countrySelect_chosen .chosen-single span').html("<img src='/images/emundus/flags/"+flag+"' alt='"+val+"'/>");
         },
 
         /**

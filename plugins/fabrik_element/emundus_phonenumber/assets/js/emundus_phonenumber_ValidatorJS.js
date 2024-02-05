@@ -11,7 +11,7 @@ class ValidatorJS {
     {
         this.select = initDiv.getElementById('countrySelect');
         this.select_chosen = '#'+initDiv.id+' #countrySelect';
-        this.select_chosen_block = '#'+initDiv.id+' #countrySelect_chzn .chzn-single';
+        this.select_chosen_block = '#'+initDiv.id+' #countrySelect_chosen .chosen-single';
         this.input = initDiv.getElementById('inputValue');
         this.renderCountryCode = initDiv.getElementById('renderCountryCode');
         this.divError = initDiv.parentNode.parentNode.getElementsByClassName('fabrikErrorMessage')[0]; // awfull but necessary
