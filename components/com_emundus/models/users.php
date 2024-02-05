@@ -1185,12 +1185,15 @@ class EmundusModelUsers extends JModelList
 		$instance->setLastVisit();
 
 		// Trigger OnUserLogin
-		JPluginHelper::importPlugin('user', 'emundus');
+		PluginHelper::importPlugin('user');
+		PluginHelper::importPlugin('emundus');
 
-		$options = array('action' => 'core.login.site', 'remember' => false);
+		$options = array();
+		$options['action'] = 'core.login.site';
 
-		$this->app->triggerEvent('onUserLogin', $instance);
-		$this->app->triggerEvent('onCallEventHandler', ['onUserLogin', ['instance' => $instance]]);
+		$response['username'] = $instance->get('username');
+		$app->triggerEvent('onUserLogin', array($response, $options));
+		$app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
 
 		return $instance;
 
