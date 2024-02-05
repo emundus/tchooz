@@ -472,7 +472,7 @@
       gap: var(--em-form-yesno-gap);
     }
 
-    label.btn-default.btn.btn-success.active {
+    label.btn-outline-secondary.btn.btn-success.active {
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
@@ -491,12 +491,12 @@
       letter-spacing: 0.0015em;
     }
 
-    label.btn-default.btn.btn-success.active:hover {
+    label.btn-outline-secondary.btn.btn-success.active:hover {
       background-color: var(--em-form-yesno-bgc-yes-hover);
       border-color: var(--em-form-yesno-bc-yes-hover) !important;
     }
 
-    label.btn-default.btn.btn-success.active:hover span {
+    label.btn-outline-secondary.btn.btn-success.active:hover span {
       font-family: var(--em-default-font);
       font-size: 16px;
       font-style: normal;
@@ -506,7 +506,7 @@
       word-wrap: break-word;
     }
 
-    label.btn-default.btn.btn-success.active span {
+    label.btn-outline-secondary.btn.btn-success.active span {
       font-family: var(--em-default-font);
       font-size: 16px;
       font-style: normal;
@@ -516,7 +516,7 @@
       word-wrap: break-word;
     }
 
-    label.btn-default.btn.btn-danger.active {
+    label.btn-outline-secondary.btn.active:not(.btn-success) {
       height: var(--em-form-yesno-height);
       padding: var(--p-12);
       box-shadow: none;
@@ -536,12 +536,12 @@
     }
 
 
-    label.btn-default.btn.btn-danger.active:hover {
+    label.btn-outline-secondary.btn.active:not(.btn-success):hover {
       background-color: var(--em-form-yesno-bgc-no-hover);
       border-color: var(--em-form-yesno-bc-no-hover)!important;
     }
 
-    label.btn-default.btn.btn-danger.active:hover span {
+    label.btn-outline-secondary.btn.active:not(.btn-success):hover span {
       font-family: var(--em-default-font);
       font-size: 16px;
       font-style: normal;
@@ -551,7 +551,7 @@
       word-wrap: break-word;
     }
 
-    label.btn-default.btn.btn-danger.active span {
+    label.btn-outline-secondary.btn.active:not(.btn-success) span {
       font-family: var(--em-default-font);
       font-size: 16px;
       font-style: normal;
@@ -561,7 +561,7 @@
       word-wrap: break-word;
     }
 
-    label.btn-default.btn:not(.active) {
+    label.btn-outline-secondary.btn:not(.active) {
       height: var(--em-form-yesno-height);
       padding: var(--p-12);
       box-shadow: none;
@@ -579,12 +579,12 @@
       width: var(--em-form-yesno-width) !important;
     }
 
-    label.btn-default.btn:not(.active):hover {
+    label.btn-outline-secondary.btn:not(.active):hover {
       background-color: var(--em-form-yesno-bgc-not-active-hover);
       border-color: var(--em-form-yesno-bc-not-active-hover) !important;
     }
 
-    label.btn-default.btn:not(.active):hover span {
+    label.btn-outline-secondary.btn:not(.active):hover span {
       font-family: var(--em-default-font);
       font-size: 16px;
       font-style: normal;
@@ -594,7 +594,7 @@
       word-wrap: break-word;
     }
 
-    label.btn-default.btn:not(.active) span {
+    label.btn-outline-secondary.btn:not(.active) span {
       font-family: var(--em-default-font);
       font-size: 16px;
       font-style: normal;
