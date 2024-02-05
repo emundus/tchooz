@@ -355,6 +355,604 @@
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
+   <row>
+    <field name="id">26</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">121</field>
+    <field name="reference_table">modules</field>
+    <field name="reference_field">title</field>
+    <field name="value">[PROFILE] Edit my profile</field>
+    <field name="original_value">5ec2397db370226ee8496e2d0bc1501f</field>
+    <field name="original_text">[PROFILE] Edit my profile</field>
+    <field name="modified">2024-02-02 15:39:28</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">121</field>
+    <field name="reference_table">modules</field>
+    <field name="reference_field">params</field>
+    <field name="value">{&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;update_profile_picture&quot;:&quot;1&quot;,&quot;show_name&quot;:&quot;1&quot;,&quot;show_account_edit_button&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;Edit your profile photo and personal details. Please note that your profile photo will be visible on all your applications.&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="original_value">8c913fac9a8550506b3c095d44058e90</field>
+    <field name="original_text">{&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;update_profile_picture&quot;:&quot;1&quot;,&quot;show_name&quot;:&quot;1&quot;,&quot;show_account_edit_button&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;\u00c9ditez votre photo de profil et vos informations personnelles. Attention votre photo de profil sera visible sur tous vos dossiers de candidature.&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="modified">2024-02-02 15:39:28</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">28</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">25</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">File archive</field>
+    <field name="original_value">bfde1625647de51f70066642d2c7148d</field>
+    <field name="original_text">Archive du dossier</field>
+    <field name="modified">2024-02-05 10:47:28</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">29</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">20</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Other document(s)</field>
+    <field name="original_value">46484acb54b6e11c6ba1dd200c5bd843</field>
+    <field name="original_text">Autre document(s)</field>
+    <field name="modified">2024-02-05 10:47:38</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">30</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">27</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Letter</field>
+    <field name="original_value">33f426f8d4bee7661dd818950dee978b</field>
+    <field name="original_text">Courrier</field>
+    <field name="modified">2024-02-05 10:47:44</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">31</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">12</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">CV</field>
+    <field name="original_value">a5c8c3544bc49ebacde4ffe04bf34de0</field>
+    <field name="original_text">CV</field>
+    <field name="modified">2024-02-05 10:47:52</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">32</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">12</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">description</field>
+    <field name="value">Curriculum vitae</field>
+    <field name="original_value">9078cbd826293aabaa0098e2ef32fb99</field>
+    <field name="original_text">Curriculum vitae</field>
+    <field name="modified">2024-02-05 10:47:52</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">33</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">3</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">University degrees</field>
+    <field name="original_value">526d404118a9c0bf20393da8d69fb671</field>
+    <field name="original_text">Diplômes universitaires</field>
+    <field name="modified">2024-02-05 10:48:18</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">34</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">3</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">description</field>
+    <field name="value">Copies of your university degrees</field>
+    <field name="original_value">3698516fe69b5878809418b5c0e825d1</field>
+    <field name="original_text">Copie de vos diplômes universitaires</field>
+    <field name="modified">2024-02-05 10:48:18</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">35</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">37</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Messenger documents</field>
+    <field name="original_value">b28b1942984568861474b7ffb8812628</field>
+    <field name="original_text">Documents de la messagerie</field>
+    <field name="modified">2024-02-05 10:48:39</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">36</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">26</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Application form</field>
+    <field name="original_value">981c39d165f857ff7b649647082d874f</field>
+    <field name="original_text">Dossier de candidature</field>
+    <field name="modified">2024-02-05 10:48:52</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">37</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">36</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Commitment to confidentiality</field>
+    <field name="original_value">603e22c582f816f35451bb4a5b8f20fd</field>
+    <field name="original_text">Engagement de confidentialité</field>
+    <field name="modified">2024-02-05 10:49:02</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">38</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">8</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Cover letter</field>
+    <field name="original_value">1a55fde03dbd1cdbb52cfd40d2f28f2e</field>
+    <field name="original_text">Lettre de motivation</field>
+    <field name="modified">2024-02-05 10:49:11</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">39</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">4</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Reference letter 1</field>
+    <field name="original_value">1df38ec9e10fb6e5d757c4666908c4e9</field>
+    <field name="original_text">Lettre de recommendation 1</field>
+    <field name="modified">2024-02-05 10:49:37</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">40</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">4</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">description</field>
+    <field name="value">Letter submitted by a referee</field>
+    <field name="original_value">3e0159b86cc99178f4089712ab1dc76a</field>
+    <field name="original_text">Lettre déposé par un référent</field>
+    <field name="modified">2024-02-05 10:49:37</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">41</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">6</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Reference letter 2</field>
+    <field name="original_value">3bbb0f47d9abda246c25c78a04a24fd7</field>
+    <field name="original_text">Lettre de recommendation 2</field>
+    <field name="modified">2024-02-05 10:49:47</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">42</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">6</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">description</field>
+    <field name="value">Letter submitted by a referee</field>
+    <field name="original_value">3e0159b86cc99178f4089712ab1dc76a</field>
+    <field name="original_text">Lettre déposé par un référent</field>
+    <field name="modified">2024-02-05 10:49:47</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">43</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">21</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Optionnal reference letter</field>
+    <field name="original_value">c66bf871eb421eb10dd42bda24c3dc09</field>
+    <field name="original_text">Lettre de recommendation optionnelle</field>
+    <field name="modified">2024-02-05 10:49:58</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">44</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">21</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">description</field>
+    <field name="value">Letter submitted by a referee</field>
+    <field name="original_value">3e0159b86cc99178f4089712ab1dc76a</field>
+    <field name="original_text">Lettre déposé par un référent</field>
+    <field name="modified">2024-02-05 10:49:58</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">45</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">1</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Passport / ID Card</field>
+    <field name="original_value">0207288910225d35f5f9e3105794f998</field>
+    <field name="original_text">Passeport / Carte d'identité</field>
+    <field name="modified">2024-02-05 10:50:11</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">46</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">1</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">description</field>
+    <field name="value">Copy of an identity document</field>
+    <field name="original_value">9539caa106f9e5ff8c93b35be4f30012</field>
+    <field name="original_text">Copie d'un document d'identité</field>
+    <field name="modified">2024-02-05 10:50:11</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">47</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">10</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Photo</field>
+    <field name="original_value">c03d53b70feba4ea842510abecd6c45e</field>
+    <field name="original_text">Photo</field>
+    <field name="modified">2024-02-05 10:50:16</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">48</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">2</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">Transcripts</field>
+    <field name="original_value">b6579476e0656b69c64bfe50bbccb023</field>
+    <field name="original_text">Relevés de notes</field>
+    <field name="modified">2024-02-05 10:50:33</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">49</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">2</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">description</field>
+    <field name="value">Copy of your transcripts</field>
+    <field name="original_value">2275cafd67a368106715106e77f01339</field>
+    <field name="original_text">Copie de vos relevés de notes</field>
+    <field name="modified">2024-02-05 10:50:33</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">50</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">11</field>
+    <field name="reference_table">emundus_setup_attachments</field>
+    <field name="reference_field">value</field>
+    <field name="value">RIB</field>
+    <field name="original_value">969dfd176e67b221d6389edcaeb08efc</field>
+    <field name="original_text">RIB</field>
+    <field name="modified">2024-02-05 10:50:40</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">51</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">7</field>
+    <field name="reference_table">emundus_setup_status</field>
+    <field name="reference_field">value</field>
+    <field name="value">To evaluate</field>
+    <field name="original_value">ba6c3ca652c50bc38bc743c99982568a</field>
+    <field name="original_text">A évaluer</field>
+    <field name="modified">2024-02-05 10:51:03</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">52</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">3</field>
+    <field name="reference_table">emundus_setup_status</field>
+    <field name="reference_field">value</field>
+    <field name="value">Accepted</field>
+    <field name="original_value">925e3f110c6c68286fc895821f303aa6</field>
+    <field name="original_text">Accepté</field>
+    <field name="modified">2024-02-05 10:51:36</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">53</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">4</field>
+    <field name="reference_table">emundus_setup_status</field>
+    <field name="reference_field">value</field>
+    <field name="value">Admitted</field>
+    <field name="original_value">5b1a1ca4d3bf1d8600a62af6e7dda1d3</field>
+    <field name="original_text">Admis</field>
+    <field name="modified">2024-02-05 10:51:42</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">54</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">6</field>
+    <field name="reference_table">emundus_setup_status</field>
+    <field name="reference_field">value</field>
+    <field name="value">In assessment</field>
+    <field name="original_value">a61ba122ca95dbf04b9ccc0f145a99ae</field>
+    <field name="original_text">En évaluation</field>
+    <field name="modified">2024-02-05 10:52:17</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">55</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">1</field>
+    <field name="reference_table">emundus_setup_status</field>
+    <field name="reference_field">value</field>
+    <field name="value">Sent</field>
+    <field name="original_value">3fda1d2fab723a4928fd034d6125875c</field>
+    <field name="original_text">Envoyé</field>
+    <field name="modified">2024-02-05 10:52:24</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">56</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">5</field>
+    <field name="reference_table">emundus_setup_status</field>
+    <field name="reference_field">value</field>
+    <field name="value">Waiting list</field>
+    <field name="original_value">0b541a97fbd6fc3e5efd0fc2ed0e5c3a</field>
+    <field name="original_text">Liste d'attente</field>
+    <field name="modified">2024-02-05 10:52:33</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">57</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">2</field>
+    <field name="reference_table">emundus_setup_status</field>
+    <field name="reference_field">value</field>
+    <field name="value">Rejected</field>
+    <field name="original_value">4367ab64a2b2ba88afc6dbf765f8ba80</field>
+    <field name="original_text">Refusé</field>
+    <field name="modified">2024-02-05 10:52:39</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">58</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">0</field>
+    <field name="reference_table">emundus_setup_status</field>
+    <field name="reference_field">value</field>
+    <field name="value">In progress</field>
+    <field name="original_value">3fda1d2fab723a4928fd034d6125875c</field>
+    <field name="original_text">En cours</field>
+    <field name="modified">2024-02-05 10:52:24</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">59</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">3</field>
+    <field name="reference_table">emundus_setup_action_tag</field>
+    <field name="reference_field">label</field>
+    <field name="value">Missing documents</field>
+    <field name="original_value">1c9b47fbb77a08afe6863872deb482af</field>
+    <field name="original_text">Documents manquants</field>
+    <field name="modified">2024-02-05 10:54:16</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">60</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">2</field>
+    <field name="reference_table">emundus_setup_action_tag</field>
+    <field name="reference_field">label</field>
+    <field name="value">File evaluated</field>
+    <field name="original_value">e241335e93e26c03c8a1d1a0ca31bb82</field>
+    <field name="original_text">Dossier évalué</field>
+    <field name="modified">2024-02-05 10:54:25</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">61</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">1</field>
+    <field name="reference_table">emundus_setup_action_tag</field>
+    <field name="reference_field">label</field>
+    <field name="value">Non-compliant proof of identity</field>
+    <field name="original_value">974218ce3eda223a50b40dc47636ceaf</field>
+    <field name="original_text">Justificatif d'identité non conforme</field>
+    <field name="modified">2024-02-05 10:54:43</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">62</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">2</field>
+    <field name="reference_table">emundus_setup_groups</field>
+    <field name="reference_field">label</field>
+    <field name="value">Evaluator</field>
+    <field name="original_value">b23f181c22c072efa7df72a7990d561c</field>
+    <field name="original_text">Evaluateur</field>
+    <field name="modified">2024-02-05 10:55:38</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">63</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">2</field>
+    <field name="reference_table">emundus_setup_groups</field>
+    <field name="reference_field">description</field>
+    <field name="value">Evaluators's group</field>
+    <field name="original_value">87c960cb7ed7ef43df319de1fc641184</field>
+    <field name="original_text">Groupe des évaluateurs</field>
+    <field name="modified">2024-02-05 10:55:38</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">64</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">1</field>
+    <field name="reference_table">emundus_setup_groups</field>
+    <field name="reference_field">label</field>
+    <field name="value">All rights</field>
+    <field name="original_value">a03027798fc898a3f56a87e54af2a61d</field>
+    <field name="original_text">Tous les droits</field>
+    <field name="modified">2024-02-05 10:56:02</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">65</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">1</field>
+    <field name="reference_table">emundus_setup_groups</field>
+    <field name="reference_field">description</field>
+    <field name="value">All actions on all programmes</field>
+    <field name="original_value">1f4db28e381548329457fd3f13af940f</field>
+    <field name="original_text">Toutes les actions sur tous les programmes</field>
+    <field name="modified">2024-02-05 10:56:02</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">66</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">6</field>
+    <field name="reference_table">emundus_setup_profiles</field>
+    <field name="reference_field">label</field>
+    <field name="value">Evaluator</field>
+    <field name="original_value">b23f181c22c072efa7df72a7990d561c</field>
+    <field name="original_text">Evaluateur</field>
+    <field name="modified">2024-02-05 10:56:50</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">67</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">6</field>
+    <field name="reference_table">emundus_setup_profiles</field>
+    <field name="reference_field">description</field>
+    <field name="value">Role of file assessor</field>
+    <field name="original_value">dd86c20d2cac05e7d2b7d2c4a8836354</field>
+    <field name="original_text">Rôle d'évaluateur de dossier</field>
+    <field name="modified">2024-02-05 10:56:50</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">68</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">2</field>
+    <field name="reference_table">emundus_setup_profiles</field>
+    <field name="reference_field">label</field>
+    <field name="value">Platform manager</field>
+    <field name="original_value">483f7de06d3c318c504cea7c7d2221bd</field>
+    <field name="original_text">Gestionnaire de plateforme</field>
+    <field name="modified">2024-02-05 10:57:10</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">69</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">2</field>
+    <field name="reference_table">emundus_setup_profiles</field>
+    <field name="reference_field">description</field>
+    <field name="value">Parameter setting and management of the platform with all accesses</field>
+    <field name="original_value">3c89715f0405057f9f97fb7e0df6c8df</field>
+    <field name="original_text">Rôle de paramétrage de gestion de la plateforme avec tous les accès</field>
+    <field name="modified">2024-02-05 10:57:10</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">70</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">1</field>
+    <field name="reference_table">emundus_setup_profiles</field>
+    <field name="reference_field">label</field>
+    <field name="value">System administrator</field>
+    <field name="original_value">762ba3d1a99ed7de47ba853365dcf688</field>
+    <field name="original_text">System administrator</field>
+    <field name="modified">2024-02-05 10:57:17</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">71</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">1</field>
+    <field name="reference_table">emundus_setup_profiles</field>
+    <field name="reference_field">description</field>
+    <field name="value">Team member allowed to change the system's parameters.</field>
+    <field name="original_value">696c23b4e923d70d8f593e29ce7a7cbd</field>
+    <field name="original_text">Team member allowed to change the system's parameters.</field>
+    <field name="modified">2024-02-05 10:57:17</field>
+    <field name="modified_by">1</field>
+    <field name="published">1</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>
