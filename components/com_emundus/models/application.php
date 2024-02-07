@@ -645,6 +645,68 @@ class EmundusModelApplication extends JModelList
 	}
 
 	/**
+	 * Check if forms of a profile are filled, even partially
+	 * @param $profile_id
+	 * @param $fnum
+	 *
+	 * @return false
+	 */
+	public function isFormFilled($profile_id, $fnum)
+	{
+		$is_filled = false;
+
+		if (!empty($profile_id) && !empty($fnum)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('jm.link')
+				->from($db->quoteName('#__menu', 'jm'))
+				->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON esp.menutype = jm.menutype')
+				->where('esp.id = ' . $profile_id)
+				->andWhere('jm.type = ' . $db->quote('component'))
+				->andWhere('jm.published = 1')
+				->andWhere('jm.level > 1')
+				->andWhere('jm.link LIKE ' . $db->quote('%index.php?option=com_fabrik&view=form&formid%'));
+
+			try {
+				$db->setQuery($query);
+				$links = $db->loadColumn();
+
+				if (!empty($links)) {
+					$form_ids = [];
+					foreach($links as $link) {
+						$form_ids[] = preg_match('/formid=([0-9]+)/', $link, $matches) ? $matches[1] : null;
+					}
+
+					$query->clear()
+						->select('db_table_name')
+						->from($db->quoteName('#__fabrik_lists'))
+						->where('form_id IN (' . implode(',', $form_ids) . ')');
+
+					$db->setQuery($query);
+					$tables = $db->loadColumn();
+
+					while(!$is_filled && !empty($tables)) {
+						$table = array_pop($tables);
+						$query->clear()
+							->select('COUNT(*)')
+							->from($db->quoteName($table))
+							->where('fnum = ' . $db->quote($fnum));
+
+						$db->setQuery($query);
+						$is_filled = $db->loadResult() > 0;
+					}
+				}
+			}
+			catch (Exception $e) {
+				JLog::add('Error trying to check if at least one of the form of the profile is filled: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $is_filled;
+	}
+
+	/**
 	 * @param   string  $fnum
 	 *
 	 * @return array|bool|false|float

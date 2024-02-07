@@ -421,6 +421,8 @@ class EmundusViewApplication extends JViewLegacy
 
 				case 'form':
 					if (EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum)) {
+						$emundus_config = ComponentHelper::getParams('com_emundus');
+						$see_only_filled_workflows = $emundus_config->get('see_only_filled_workflows', 0);
 						$this->header = $jinput->getString('header', 1);
 
 						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FORM_READ');
@@ -449,13 +451,18 @@ class EmundusViewApplication extends JViewLegacy
 
 						$noPhasePids  = array();
 						$hasPhasePids = array();
-
 						foreach ($pidsRaw as $pidRaw) {
                             if (!empty($pidsStep)) {
                                 if (!in_array($pidRaw->pid, $pidsStep)) {
                                     continue;
                                 }
                             }
+
+							if ($see_only_filled_workflows) {
+								if (!$m_application->isFormFilled($pidRaw->pid, $fnum)) {
+									continue;
+								}
+							}
 
 							if ($pidRaw->pid === $pid) {
 								$this->defaultpid = $pidRaw;
