@@ -47,6 +47,12 @@ form#member-profile .control-group {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    margin: 0;
+}
+
+form#member-profile .control-group:nth-child(5),
+form#member-profile .control-group:nth-child(6),
+form#member-profile .control-group:nth-child(7){
     margin: 24px 0 0 0;
 }
 
@@ -93,16 +99,33 @@ form#member-profile.form-validate.form-horizontal.well input:focus {
 
 form#member-profile .control-group .control-label label {
     font-family: var(--em-applicant-font);
-    font-size: 14px;
+    font-size: var(--em-form-label-size);
     font-style: normal;
-    font-weight: 500;
+    font-weight: var(--em-form-label-weight);
     line-height: 17px;
     letter-spacing: 0.0025em;
     text-align: left;
-    color: var(--neutral-800);
+    color: var(--neutral-900);
     margin-bottom: 0 !important;
     padding-top: 0 !important;
 }
+
+form#member-profile .control-group .controls div.text-muted {
+    color: var(--em-form-tip-color) !important;
+}
+
+form#member-profile .control-group .controls div.text-muted strong {
+    font-weight: 400;
+}
+
+form#member-profile button.btn-secondary span {
+    color: var(--neutral-500) !important;
+}
+
+form#member-profile button.btn-secondary:hover span {
+    color: var(--neutral-700) !important;
+}
+
 form#member-profile.form-validate.form-horizontal.well button.btn {
     text-transform: capitalize;
     border-radius: var(--em-applicant-br);
@@ -111,6 +134,11 @@ form#member-profile.form-validate.form-horizontal.well button.btn {
     align-items: center;
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     height: 38px;
+}
+
+form#member-profile.form-validate.form-horizontal.well button.input-password-toggle {
+    height: 48px;
+    margin-top: 6px;
 }
 form#member-profile.form-validate.form-horizontal.well a.btn {
     font-weight: 300;
@@ -126,8 +154,8 @@ form#member-profile.form-validate.form-horizontal.well fieldset:nth-child(2) {
     margin-top: 20px;
 }
 form#member-profile.form-validate.form-horizontal.well label {
-    font-size: 14px;
-    color: var(--neutral-800);
+    font-size: var(--em-form-label-size);
+    color: var(--neutral-900);
     font-family: var(--em-applicant-font);
 }
 
