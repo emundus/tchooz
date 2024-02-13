@@ -4,7 +4,7 @@
 
 .password-group .input-group .input-password-toggle {
     position: absolute;
-    right: 16px;
+    right: 4px;
     padding: 0;
     margin-bottom: 0;
     background: transparent;
@@ -26,7 +26,7 @@
 
 .com-users-profile__edit-form#member-profile {
     background: #fff;
-    margin: 0px auto 50px auto;
+    margin: 0 auto 50px auto;
     padding: 32px 32px 24px 32px;
     border-radius: var(--em-form-br-block) !important;
     width: 84%;
@@ -74,16 +74,20 @@ form#member-profile.well legend {
 
 form#member-profile.form-validate.form-horizontal.well input {
     width: 100%;
-    color: var(--neutral-600);
+    color: var(--em-default-text-color-1);
     font-family: var(--em-applicant-font);
-    height: 48px;
-    border-radius: 8px;
-    padding: 0 12px 0 12px;
-    border: 1px solid var(--neutral-400);
+    height: var(--em-form-height);
+    border-radius: var(--em-form-br);
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+    padding-top: var(--em-spacing-2);
+    padding-bottom: var(--em-spacing-2);
+    border: 1px solid var(--em-form-bc);
     box-shadow: none;
     margin-top: 6px;
     margin-bottom: 0;
-    background-color: #fff;
+    font-size: var(--em-form-font-size);
+    background-color: var(--em-form-bgc);
 }
 
 form#member-profile.form-validate.form-horizontal.well input:hover {
@@ -110,19 +114,19 @@ form#member-profile .control-group .control-label label {
     padding-top: 0 !important;
 }
 
-form#member-profile .control-group .controls div.text-muted {
+form#member-profile .control-group .controls .text-muted {
     color: var(--em-form-tip-color) !important;
 }
 
-form#member-profile .control-group .controls div.text-muted strong {
+form#member-profile .control-group .controls .text-muted strong {
     font-weight: 400;
 }
 
-form#member-profile button.btn-secondary span {
+.password-group .input-group .input-password-toggle span {
     color: var(--neutral-500) !important;
 }
 
-form#member-profile button.btn-secondary:hover span {
+.password-group .input-group .input-password-toggle:hover span {
     color: var(--neutral-700) !important;
 }
 
@@ -137,9 +141,10 @@ form#member-profile.form-validate.form-horizontal.well button.btn {
 }
 
 form#member-profile.form-validate.form-horizontal.well button.input-password-toggle {
-    height: 48px;
+    height: var(--em-form-height);
     margin-top: 6px;
 }
+
 form#member-profile.form-validate.form-horizontal.well a.btn {
     font-weight: 300;
     margin-right: 16px !important;
