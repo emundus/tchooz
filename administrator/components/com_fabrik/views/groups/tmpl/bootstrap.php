@@ -40,7 +40,8 @@ $editIcon = '<span class="fa fa-pen-square me-2" aria-hidden="true"></span>';
 						<?= Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
 					</div>
 				<?php else : ?>
-					<table class="table table-striped">
+                    <div class="table-div-wrapper">
+                        <table class="table table-striped">
 						<thead>
 							<tr>
 								<td class="w-1 text-center">
@@ -98,7 +99,7 @@ $editIcon = '<span class="fa fa-pen-square me-2" aria-hidden="true"></span>';
 										<?= $this->escape($item->name); ?>
 									</a>
 									<?php endif; ?>
-								</th>
+                                </td>
 								<td class="">
 									<?= Text::_($item->label); ?>
 								</td>
@@ -118,11 +119,10 @@ $editIcon = '<span class="fa fa-pen-square me-2" aria-hidden="true"></span>';
 									<?= HTMLHelper::_('jgrid.published', $item->published, $i, 'groups.', $canChange); ?>
 								</td>
 							</tr>
-							</tr>
 							<?php endforeach; ?>
 						</tbody>
 					</table>
-
+                    </div>
 					<?php // load the pagination. ?>
 					<?= $this->pagination->getListFooter(); ?>
 
