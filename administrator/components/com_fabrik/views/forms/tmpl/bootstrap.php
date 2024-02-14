@@ -48,128 +48,130 @@ $listDirn  = $this->state->get('list.direction');
 				</div>
 			<?php else : ?>
 
-			<table class="table table-striped">
-				<thead>
-				<tr>
-					<td class="w-1 text-center">
-						<?= HTMLHelper::_('grid.checkall'); ?>
-					</td>
-					<th scope="col" class="w-1 text-center d-none d-md-table-cell">
-                        <?= HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'f.id', $listDirn, $listOrder); ?>
-					</th>
-                    <th scope="col">
-                        <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_LABEL', 'f.label', $listDirn, $listOrder); ?>
-					</th>
-					<th scope="col" class="w-10 d-none d-md-table-cell">
-						<?= Text::_('COM_FABRIK_ELEMENT'); ?>
-					</th>
-					<th scope="col" class="w-10 d-none d-md-table-cell">
-						<?= Text::_('COM_FABRIK_CONTENT_TYPE'); ?>
-					</th>
-					<th scope="col" class="w-10 d-none d-md-table-cell">
-						<?= Text::_('COM_FABRIK_UPDATE_DATABASE'); ?>
-					</th>
-					<th scope="col" class="w-10 d-none d-md-table-cell">
-						<?= Text::_('COM_FABRIK_VIEW_DATA'); ?>
-					</th>
-					<th scope="col" class="w-3 d-none d-md-table-cell">
-                        <?= HTMLHelper::_('searchtools.sort', 'JPUBLISHED', 'f.published', $listDirn, $listOrder); ?>
-					</th>
-				</tr>
-				</thead>
-				<tfoot>
-				<tr>
-					<td colspan="6">
-						<?= $this->pagination->getListFooter(); ?>
-					</td>
-				</tr>
-				</tfoot>
-				<tbody>
-				<?php foreach ($this->items as $i => $item) :
-					$ordering    = ($listOrder == 'ordering');
-					$link       = Route::_('index.php?option=com_fabrik&task=form.edit&id=' . (int) $item->id);
-					$canCreate  = $user->authorise('core.create', 'com_fabrik.form.1');
-					$canEdit    = $user->authorise('core.edit', 'com_fabrik.form.1');
-					$canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
-					$canChange  = $user->authorise('core.edit.state', 'com_fabrik.form.1') && $canCheckin;
-					$params     = new Registry($item->params);
+                <div class="table-div-wrapper">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <td class="w-1 text-center">
+                                <?= HTMLHelper::_('grid.checkall'); ?>
+                            </td>
+                            <th scope="col" class="w-1 text-center d-none d-md-table-cell">
+                                <?= HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'f.id', $listDirn, $listOrder); ?>
+                            </th>
+                            <th scope="col">
+                                <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_LABEL', 'f.label', $listDirn, $listOrder); ?>
+                            </th>
+                            <th scope="col" class="w-10 d-none d-md-table-cell">
+                                <?= Text::_('COM_FABRIK_ELEMENT'); ?>
+                            </th>
+                            <th scope="col" class="w-10 d-none d-md-table-cell">
+                                <?= Text::_('COM_FABRIK_CONTENT_TYPE'); ?>
+                            </th>
+                            <th scope="col" class="w-10 d-none d-md-table-cell">
+                                <?= Text::_('COM_FABRIK_UPDATE_DATABASE'); ?>
+                            </th>
+                            <th scope="col" class="w-10 d-none d-md-table-cell">
+                                <?= Text::_('COM_FABRIK_VIEW_DATA'); ?>
+                            </th>
+                            <th scope="col" class="w-3 d-none d-md-table-cell">
+                                <?= HTMLHelper::_('searchtools.sort', 'JPUBLISHED', 'f.published', $listDirn, $listOrder); ?>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <td colspan="6">
+                                <?= $this->pagination->getListFooter(); ?>
+                            </td>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        <?php foreach ($this->items as $i => $item) :
+                            $ordering    = ($listOrder == 'ordering');
+                            $link       = Route::_('index.php?option=com_fabrik&task=form.edit&id=' . (int) $item->id);
+                            $canCreate  = $user->authorise('core.create', 'com_fabrik.form.1');
+                            $canEdit    = $user->authorise('core.edit', 'com_fabrik.form.1');
+                            $canCheckin = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->get('id') || $item->checked_out == 0;
+                            $canChange  = $user->authorise('core.edit.state', 'com_fabrik.form.1') && $canCheckin;
+                            $params     = new Registry($item->params);
 
-					$elementLink = Route::_('index.php?option=com_fabrik&task=element.edit&id=0&filter_groupId=' . $item->group_id);
-					?>
-					<tr class="row<?= $i % 2; ?>">
-						<td><?= HTMLHelper::_('grid.id', $i, $item->id); ?></td>
-						<td><?= $item->id; ?></td>
-						<td>
-							<?php if ($item->checked_out) : ?>
-								<?= HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'forms.', $canCheckin); ?>
-							<?php endif; ?>
-							<?php
-							if ($item->checked_out && ($item->checked_out != $user->get('id')))
-							{ ?>
-								<span class="editlinktip hasTip"
-									title="foo <?= Text::_($item->label) . "::" . $params->get('note'); ?>"> <?= Text::_($item->label); ?>
-								</span>
-							<?php }
-							else
-							{
-								?>
-								<a href="<?= $link; ?>">
-									<span class="editlinktip hasTip" title="<?= Text::_($item->label) . "::" . $params->get('note'); ?>">
-										<?= Text::_($item->label); ?>
-									</span>
-								</a>
-							<?php } ?>
-						</td>
-						<td>
-							<a href="<?= $elementLink ?>">
-								<i class="icon-plus"></i> <?= Text::_('COM_FABRIK_ADD'); ?>
-							</a>
-						</td>
-						<td>
-							<div class="btn-group">
-								
-								<button data-bs-toggle="dropdown" class="dropdown-toggle btn btn-sm">
-									<span class="caret"></span>
-									<span class="element-invisible">Actions for: COM_FABRIK_EXPORT_CONTENT_TYPE</span>
-								</button>
-								<ul class="dropdown-menu">
-									<li>
-										<a href="javascript://" onclick="Joomla.listItemTask('cb<?= $i; ?>', 'form.createContentType')">
-											<span class="icon-upload text-nowrap"> <?= Text::_('COM_FABRIK_CONTENT_TYPE_EXPORT'); ?></span>
-										</a>
-									</li>
-									<?php
-									if ($params->get('content_type_path', '') !== '') :?>
-										<li>
-											<a href="index.php?option=com_fabrik&task=form.downloadContentType&cid=<?= $item->id; ?>">
-												<span class="icon-download text-nowrap"> <?= Text::_('COM_FABRIK_CONTENT_TYPE_DOWNLOAD'); ?></span>
-											</a>
-										</li>
-										<?php
+                            $elementLink = Route::_('index.php?option=com_fabrik&task=element.edit&id=0&filter_groupId=' . $item->group_id);
+                            ?>
+                            <tr class="row<?= $i % 2; ?>">
+                                <td><?= HTMLHelper::_('grid.id', $i, $item->id); ?></td>
+                                <td><?= $item->id; ?></td>
+                                <td>
+                                    <?php if ($item->checked_out) : ?>
+                                        <?= HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'forms.', $canCheckin); ?>
+                                    <?php endif; ?>
+                                    <?php
+                                    if ($item->checked_out && ($item->checked_out != $user->get('id')))
+                                    { ?>
+                                        <span class="editlinktip hasTip"
+                                              title="foo <?= Text::_($item->label) . "::" . $params->get('note'); ?>"> <?= Text::_($item->label); ?>
+                                        </span>
+                                    <?php }
+                                    else
+                                    {
+                                        ?>
+                                        <a href="<?= $link; ?>">
+                                            <span class="editlinktip hasTip" title="<?= Text::_($item->label) . "::" . $params->get('note'); ?>">
+                                                <?= Text::_($item->label); ?>
+                                            </span>
+                                        </a>
+                                    <?php } ?>
+                                </td>
+                                <td>
+                                    <a href="<?= $elementLink ?>">
+                                        <i class="icon-plus"></i> <?= Text::_('COM_FABRIK_ADD'); ?>
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
 
-									endif;
-									?>
-								</ul>
-							</div>
-						</td>
-						<td>
-							<a href="#edit" onclick="return Joomla.listItemTask('cb<?= $i; ?>','forms.updateDatabase')">
-								<i class="icon-refresh"></i> <?= Text::_('COM_FABRIK_UPDATE_DATABASE'); ?>
-							</a>
-						</td>
-						<td>
-							<a href="index.php?option=com_fabrik&task=list.view&listid=<?= $item->list_id ?>">
-								<i class="icon-list-view"></i> <?= Text::_('COM_FABRIK_VIEW_DATA'); ?>
-							</a>
-						</td>
-						<td class="text-center">
-							<?= HTMLHelper::_('jgrid.published', $item->published, $i, 'forms.', $canChange); ?>
-						</td>
-					</tr>
+                                        <button data-bs-toggle="dropdown" class="dropdown-toggle btn btn-sm">
+                                            <span class="caret"></span>
+                                            <span class="element-invisible">Actions for: COM_FABRIK_EXPORT_CONTENT_TYPE</span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="javascript://" onclick="Joomla.listItemTask('cb<?= $i; ?>', 'form.createContentType')">
+                                                    <span class="icon-upload text-nowrap"> <?= Text::_('COM_FABRIK_CONTENT_TYPE_EXPORT'); ?></span>
+                                                </a>
+                                            </li>
+                                            <?php
+                                            if ($params->get('content_type_path', '') !== '') :?>
+                                                <li>
+                                                    <a href="index.php?option=com_fabrik&task=form.downloadContentType&cid=<?= $item->id; ?>">
+                                                        <span class="icon-download text-nowrap"> <?= Text::_('COM_FABRIK_CONTENT_TYPE_DOWNLOAD'); ?></span>
+                                                    </a>
+                                                </li>
+                                            <?php
 
-				<?php endforeach; ?>
-				</tbody>
-			</table>
+                                            endif;
+                                            ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="#edit" onclick="return Joomla.listItemTask('cb<?= $i; ?>','forms.updateDatabase')">
+                                        <i class="icon-refresh"></i> <?= Text::_('COM_FABRIK_UPDATE_DATABASE'); ?>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="index.php?option=com_fabrik&task=list.view&listid=<?= $item->list_id ?>">
+                                        <i class="icon-list-view"></i> <?= Text::_('COM_FABRIK_VIEW_DATA'); ?>
+                                    </a>
+                                </td>
+                                <td class="text-center">
+                                    <?= HTMLHelper::_('jgrid.published', $item->published, $i, 'forms.', $canChange); ?>
+                                </td>
+                            </tr>
+
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
 			<?php endif; ?>
 
 			<input type="hidden" name="task" value="" />

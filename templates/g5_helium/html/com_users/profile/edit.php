@@ -54,7 +54,7 @@ if(!empty($user_module->id)) {
     <form id="member-profile" action="<?php echo Route::_('index.php?option=com_users'); ?>" method="post" class="com-users-profile__edit-form form-validate form-horizontal well" enctype="multipart/form-data">
 
         <div>
-            <a class="em-back-button em-pointer" style="justify-content: start; padding: 20px 0" href="<?php echo $back_url ?>">
+            <a class="em-back-button em-pointer" style="justify-content: start; padding: 0;" href="<?php echo $back_url ?>">
                 <span class="material-icons em-mr-4">navigate_before</span>
 			    <?php echo Text::_('GO_BACK'); ?>
             </a>
