@@ -709,6 +709,8 @@ defined('_JEXEC') or die;
         }
     });
 
-    this.enableTitles(localStorage.getItem('menu'));
+    window.onload = function () {
+        this.enableTitles(localStorage.getItem('menu'));
+    }
 
 </script>
