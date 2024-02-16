@@ -71,8 +71,13 @@
                   {{ operator.label }}
                 </option>
               </select>
-              <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text"
-                     :placeholder="filter.label" v-model="filter.selectedValue"/>
+              <input v-if="filter.type == 'field'"
+                     :name="filter.id + '-' + filter.key"
+                     type="text"
+                     :placeholder="filter.label"
+                     v-model="filter.selectedValue"
+                     @keyup.enter="applyFilters"
+              />
               <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date"
                      v-model="filter.selectedValue">
               <multiselect

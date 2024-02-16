@@ -1468,8 +1468,10 @@ class EmundusModelFormbuilder extends JModelList
 				$dbtype  = $this->h_fabrik->getDBType($plugin);
 				$dbnull  = 'NULL';
 				$default = '';
+				$eval = 1;
 
 				if ($plugin === 'display' || $plugin === 'panel') {
+					$eval = 0;
 					$default = 'Ajoutez du texte personnalisé pour vos candidats';
 				}
 
@@ -1511,7 +1513,7 @@ class EmundusModelFormbuilder extends JModelList
 					->set($this->db->quoteName('width') . ' = 0')
 					->set($this->db->quoteName('default') . ' = ' . $this->db->quote($default))
 					->set($this->db->quoteName('hidden') . ' = 0')
-					->set($this->db->quoteName('eval') . ' = 1')
+					->set($this->db->quoteName('eval') . ' = ' . $eval)
 					->set($this->db->quoteName('ordering') . ' = ' . $this->db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
 					->set($this->db->quoteName('parent_id') . ' = 0')
 					->set($this->db->quoteName('published') . ' = 1')
@@ -2084,6 +2086,7 @@ class EmundusModelFormbuilder extends JModelList
 			$fields = array(
 				$this->db->quoteName('plugin') . ' = ' . $this->db->quote($element['plugin']),
 				$this->db->quoteName('default') . ' = ' . $this->db->quote($element['default']),
+				$this->db->quoteName('eval') . ' = ' . $this->db->quote($element['eval']),
 				$this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($element['params'])),
 				$this->db->quoteName('modified_by') . ' = ' . $this->db->quote($user),
 				$this->db->quoteName('modified') . ' = ' . $this->db->quote($date),
@@ -2130,10 +2133,10 @@ class EmundusModelFormbuilder extends JModelList
 			return false;
 		}
 
-		if ($group_params['repeat_group_button'] == 1 && $params['repeat_group_button'] == 0) {
+		if ($group_params['repeat_group_button'] == 1 && (isset($params['repeat_group_button']) && $params['repeat_group_button'] == 0)) {
 			$this->disableRepeatGroup($group_id);
 		}
-		if ($group_params['repeat_group_button'] == 0 && $params['repeat_group_button'] == 1) {
+		if ($group_params['repeat_group_button'] == 0 && (isset($params['repeat_group_button']) && $params['repeat_group_button'] == 1)) {
 			$this->enableRepeatGroup($group_id);
 		}
 

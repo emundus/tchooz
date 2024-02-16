@@ -329,7 +329,7 @@
   background : gray;
   border: 3px solid yellow;
 }*/
-/* ! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.3.5 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
@@ -353,19 +353,16 @@
 4. Use the user's configured `sans` font-family by default.
 5. Use the user's configured `sans` font-feature-settings by default.
 6. Use the user's configured `sans` font-variation-settings by default.
-7. Disable tap highlights on iOS
 */
-html,
-:host {
+html {
   line-height: 1.5; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
   -moz-tab-size: 4; /* 3 */
   -o-tab-size: 4;
      tab-size: 4; /* 3 */
-  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
   font-feature-settings: normal; /* 5 */
   font-variation-settings: normal; /* 6 */
-  -webkit-tap-highlight-color: transparent; /* 7 */
 }
 /*
 1. Remove the margin in all browsers.
@@ -419,19 +416,15 @@ strong {
   font-weight: bolder;
 }
 /*
-1. Use the user's configured `mono` font-family by default.
-2. Use the user's configured `mono` font-feature-settings by default.
-3. Use the user's configured `mono` font-variation-settings by default.
-4. Correct the odd `em` font sizing in all browsers.
+1. Use the user's configured `mono` font family by default.
+2. Correct the odd `em` font sizing in all browsers.
 */
 code,
 kbd,
 samp,
 pre {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
-  font-feature-settings: normal; /* 2 */
-  font-variation-settings: normal; /* 3 */
-  font-size: 1em; /* 4 */
+  font-size: 1em; /* 2 */
 }
 /*
 Add the correct font size in all browsers.
@@ -949,6 +942,9 @@ form.fabrikForm .fabrikElement {
       margin-top: var(--em-form-label-margin-bottom);
       position: relative;
     }
+form.fabrikForm .fabrikElement div li {
+        list-style-position: inside;
+      }
 form.fabrikForm .fabrikElementContainer:not(.fabrikHide) {
       margin-bottom: var(--em-form-field-margin-bottom);
     }
@@ -4100,9 +4096,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-hidden {
   display: none;
 }
-.tw-h-0 {
-  height: 0px;
-}
 .tw-h-10 {
   height: var(--em-spacing-10);
 }
@@ -4115,6 +4108,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-w-64 {
   width: 16rem;
+}
+.tw-w-auto {
+  width: auto;
 }
 .tw-w-fit {
   width: -moz-fit-content;
@@ -6284,6 +6280,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-gap-y-0 {
   row-gap: 0px;
 }
+.tw-self-center {
+  align-self: center;
+}
 .tw-overflow-hidden {
   overflow: hidden;
 }
@@ -6298,6 +6297,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-bg-neutral-100 {
   background-color: var(--neutral-100);
+}
+.tw-bg-red-500 {
+  background-color: var(--red-500);
 }
 .tw-bg-transparent {
   background-color: transparent;
@@ -6365,6 +6367,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
+.tw-text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
 .tw-font-bold {
   font-weight: 700;
 }
@@ -6399,14 +6405,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-outline-green-500 {
   outline-color: #22c55e;
-}
-.tw-transition-transform {
-  transition-property: transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-.tw-duration-300 {
-  transition-duration: 300ms;
 }
 h1 {
   color: var(--em-default-title-color-1);
