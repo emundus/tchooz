@@ -16,6 +16,10 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\Registry\Registry;
 
 class EmundusModelEmails extends JModelList
@@ -282,30 +286,29 @@ class EmundusModelEmails extends JModelList
 	 */
 	public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null)
 	{
-		$app            = JFactory::getApplication();
-		$config         = JFactory::getConfig();
-		$email_from_sys = $config->get('mailfrom');
+		$app            = Factory::getApplication();
+		$email_from_sys = $app->get('mailfrom');
+		$email_from_name = $app->get('fromname');
 
 		jimport('joomla.log.log');
-		JLog::addLogger(array('text_file' => 'com_emundus.email.php'), JLog::ALL, array('com_emundus'));
+		Log::addLogger(array('text_file' => 'com_emundus.email.php'), Log::ALL, array('com_emundus'));
 
 		$trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant, $to_current_user, $student);
 
 		if (count($trigger_emails) > 0) {
-			// get current applicant course
 			include_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
 			$m_campaign = new EmundusModelCampaign;
 			$campaign   = $m_campaign->getCampaignByID($student->campaign_id);
 			$post       = array(
 				'APPLICANT_ID'    => $student->id,
-				'DEADLINE'        => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+				'DEADLINE'        => HTMLHelper::_('date', $campaign['end_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
 				'APPLICANTS_LIST' => '',
 				'EVAL_CRITERIAS'  => '',
 				'EVAL_PERIOD'     => '',
 				'CAMPAIGN_LABEL'  => $campaign['label'],
 				'CAMPAIGN_YEAR'   => $campaign['year'],
-				'CAMPAIGN_START'  => JHTML::_('date', $campaign['start_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
-				'CAMPAIGN_END'    => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_OFFSET1'), null),
+				'CAMPAIGN_START'  => HTMLHelper::_('date', $campaign['start_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
+				'CAMPAIGN_END'    => HTMLHelper::_('date', $campaign['end_date'], Text::_('DATE_FORMAT_OFFSET1'), null),
 				'CAMPAIGN_CODE'   => $campaign['training'],
 				'FNUM'            => $student->fnum,
 				'COURSE_NAME'     => $campaign['label']
@@ -327,18 +330,18 @@ class EmundusModelEmails extends JModelList
 						continue;
 					}
 
-					$mailer = JFactory::getMailer();
+					$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
 
 					$tags = $this->setTags($student->id, $post, $student->fnum, '', $trigger_email[$student->code]['tmpl']['emailfrom'] . $trigger_email[$student->code]['tmpl']['name'] . $trigger_email[$student->code]['tmpl']['subject'] . $trigger_email[$student->code]['tmpl']['message']);
 
 					$from     = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
-					$from_id  = JFactory::getUser()->id;
-					$from_id  = empty($from_id) ? 62 : $from_id;
 					$fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
+					$from_id  = empty($app->getIdentity()->id) ? 62 : $app->getIdentity()->id;
+
 					$to       = $recipient['email'];
 					$to_id    = $recipient['id'];
-					$subject  = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
 
+					$subject  = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
 					$body = $trigger_email[$student->code]['tmpl']['message'];
 					if ($trigger_email[$student->code]['tmpl']['template']) {
 						$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->code]['tmpl']['template']);
@@ -346,8 +349,10 @@ class EmundusModelEmails extends JModelList
 					$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 					$body = $this->setTagsFabrik($body, array($student->fnum));
 
-
 					$mail_from_address = $email_from_sys;
+					if(empty($fromname)) {
+						$fromname = $email_from_name;
+					}
 
 					// Set sender
 					$sender = [
@@ -367,6 +372,7 @@ class EmundusModelEmails extends JModelList
 							}
 						}
 					}
+
 					if (!empty($trigger_email[$student->code]['tmpl']['attachments'])) {
 						require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 						$m_application = new EmundusModelApplication();
@@ -379,13 +385,18 @@ class EmundusModelEmails extends JModelList
 						}
 					}
 
-					$mailer->setSender($sender);
-					$mailer->addReplyTo($from, $fromname);
-					$mailer->addRecipient($to);
-					$mailer->addAttachment($toAttach);
-					$mailer->setSubject($subject);
 					$mailer->isHTML(true);
 					$mailer->Encoding = 'base64';
+					$mailer->setSender($sender);
+					if(!empty($from) && !empty($fromname)) {
+						$mailer->addReplyTo($from, $fromname);
+					}
+					$mailer->addRecipient($to);
+					if(!empty($toAttach))
+					{
+						$mailer->addAttachment($toAttach);
+					}
+					$mailer->setSubject($subject);
 					$mailer->setBody($body);
 
 					$custom_email_tag = EmundusHelperEmails::getCustomHeader();
@@ -397,21 +408,22 @@ class EmundusModelEmails extends JModelList
 						$send = $mailer->Send();
 					}
 					catch (Exception $e) {
-						JLog::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
+						Log::add('eMundus Triggers - PHP Mailer send failed ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
 					}
 
 					if ($send !== true) {
 						echo 'Error sending email: ' . $send;
-						JLog::add($send, JLog::ERROR, 'com_emundus');
+						Log::add($send, JLog::ERROR, 'com_emundus');
 					}
 					else {
 						$message = array(
 							'user_id_from' => $from_id,
 							'user_id_to'   => $to_id,
 							'subject'      => $subject,
-							'message'      => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . '</i><br>' . $body,
+							'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('SENT') . ' ' . Text::_('TO') . ' ' . $to . '</i><br>' . $body,
 							'email_id'     => $trigger_email_id
 						);
+
 						$this->logEmail($message, $student->fnum);
 					}
 				}
