@@ -192,7 +192,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	}
 
 	if (!empty($program_code)) {
-		$condition .= ' AND pr.code IN(' . implode(',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
+		$condition .= ' AND pr.code IN(' . implode(',', $db->quote(array_map('trim', explode(',', $program_code)))) . ')';
 	}
 
 	if (!empty($codes)) {
