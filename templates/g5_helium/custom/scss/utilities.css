@@ -61,6 +61,10 @@
         font-size: var(--em-applicant-font-size);
     }
 
+    ul, ol {
+        padding-left: 20px;
+    }
+
     .hidden {
         display: none;
     }
