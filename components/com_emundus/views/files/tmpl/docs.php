@@ -55,7 +55,7 @@ $template_type = array(
 
 <script type="text/javascript">
     addLoader();
-    let fnums = document.querySelector('input[name="em-doc-fnums"]').value;
+    var fnums = document.querySelector('input[name="em-doc-fnums"]').value;
 
     if (fnums.split(',').length === 1) {
         document.getElementById('merge-div').remove();

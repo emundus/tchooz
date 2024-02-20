@@ -22,6 +22,7 @@ require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Log\Log;
 
 /**
  * Class EmundusModelFiles
@@ -3982,71 +3983,99 @@ class EmundusModelFiles extends JModelLegacy
 			$fnums = [$fnums];
 		}
 
+		$query = $this->_db->getQuery(true);
+
 		$tableName      = $elt['db_table_name'];
 		$tableJoin      = $elt['table_join'];
 		$name           = $elt['name'];
 		$plugin         = $elt['plugin'];
 		$isFnumsNull    = ($fnums === null);
 		$isDatabaseJoin = ($plugin === 'databasejoin');
-		$isMulti        = (@$params->database_join_display_type == "multilist" || @$params->database_join_display_type == "checkbox");
+		$isMulti        = ($params->database_join_display_type == "multilist" || $params->database_join_display_type == "checkbox");
 
 
+		$select = '';
+		$from = '';
+		$leftJoin = [];
+		$where = '';
+		$group = '';
 		if ($plugin === 'date') {
 			$date_form_format = $this->dateFormatToMysql($params->date_form_format);
-			$query            = 'select GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
+
+			$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
 		}
 		elseif ($isDatabaseJoin) {
 			if ($groupRepeat) {
-				$query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
+				$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
 			}
 			else {
 				if ($isMulti) {
-					$query = 'select GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
+					$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
 				}
 				else {
-					$query = 'select t_origin.' . $params->join_val_column . ' as val, t_elt.fnum ';
+					$select = 't_origin.' . $params->join_val_column . ' as val, t_elt.fnum ';
 				}
 			}
 		}
 		else {
-			$query = 'SELECT  GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
+			$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
 		}
 
 		if ($isDatabaseJoin) {
 			if ($groupRepeat) {
 				$tableName2 = $tableJoin;
 				if ($isMulti) {
-					$query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join ' . $tableName . '_repeat_' . $name . ' as t_repeat on t_repeat.' . $name . " = t_origin." . $params->join_key_column . ' left join ' . $tableName2 . ' as t_elt on t_elt.id = t_repeat.parent_id left join ' . $tableName . ' as t_table on t_table.id = t_elt.parent_id ';
+					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
+					$leftJoin[] = $this->_db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $params->join_key_column;
+					$leftJoin[] = $this->_db->quoteName($tableName2, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
+					$leftJoin[] = $this->_db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
 				}
 				else {
-					$query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join ' . $tableName2 . ' as t_elt on t_elt.' . $name . " = t_origin." . $params->join_key_column . " left join $tableName as t_table on t_table.id = t_elt.parent_id ";
+					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
+					$leftJoin[] = $this->_db->quoteName($tableName2, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $params->join_key_column;
+					$leftJoin[] = $this->_db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
 				}
 			}
 			else {
 				if ($isMulti) {
-					$query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join ' . $tableName . '_repeat_' . $name . ' as t_repeat on t_repeat.' . $name . " = t_origin." . $params->join_key_column . ' left join ' . $tableName . ' as t_elt on t_elt.id = t_repeat.parent_id ';
+					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
+					$leftJoin[] = $this->_db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $params->join_key_column;
+					$leftJoin[] = $this->_db->quoteName($tableName, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
 				}
 				else {
-					$query .= ' FROM ' . $params->join_db_name . ' as  t_origin left join ' . $tableName . ' as t_elt on t_elt.' . $name . " = t_origin." . $params->join_key_column;
+					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
+					$leftJoin[] = $this->_db->quoteName($tableName, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $params->join_key_column;
 				}
 			}
 
 		}
 		else {
-			$query .= ' FROM ' . $tableJoin . ' as t_repeat  left join ' . $tableName . ' as t_origin on t_origin.id = t_repeat.parent_id';
+			$from = $this->_db->quoteName($tableJoin, 't_repeat');
+			$leftJoin[] = $this->_db->quoteName($tableName, 't_origin') . ' ON t_origin.id = t_repeat.parent_id';
 		}
 
 		if ($isMulti || $isDatabaseJoin) {
 			if ($groupRepeat) {
-				$query .= ' where t_table.fnum in ("' . implode('","', $fnums) . '") group by t_table.fnum';
+				$where = $this->_db->quoteName('t_table.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')';
+				$group = $this->_db->quoteName('t_table.fnum');
 			}
 			else {
-				$query .= ' where t_elt.fnum in ("' . implode('","', $fnums) . '") group by t_elt.fnum';
+				$where = $this->_db->quoteName('t_elt.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')';
+				$group = $this->_db->quoteName('t_elt.fnum');
 			}
 		}
 		else {
-			$query .= ' where t_origin.fnum in ("' . implode('","', $fnums) . '") group by t_origin.fnum';
+			$where = $this->_db->quoteName('t_origin.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')';
+			$group = $this->_db->quoteName('t_origin.fnum');
 		}
+
+		$query->select($select)
+			->from($from);
+		foreach ($leftJoin as $join) {
+			$query->leftJoin($join);
+		}
+		$query->where($where)
+			->group($group);
 
 		try {
 			$this->_db->setQuery($query);
@@ -4077,15 +4106,23 @@ class EmundusModelFiles extends JModelLegacy
 	{
 
 		if (!is_array($fnums))
+		{
 			$fnums = [$fnums];
+		}
 
-		$this->_db = JFactory::getDbo();
+		$query = $this->_db->getQuery(true);
+
 		if ($dateFormat !== null) {
 			$dateFormat = $this->dateFormatToMysql($dateFormat);
-			$query      = "select fnum, DATE_FORMAT({$name}, " . $this->_db->quote($dateFormat) . ") as val from {$tableName} where fnum in ('" . implode("','", $fnums) . "')";
+
+			$query->select('fnum, DATE_FORMAT(' . $name . ', ' . $this->_db->quote($dateFormat) . ') as val')
+				->from($this->_db->quoteName($tableName))
+				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
 		}
 		else {
-			$query = "select fnum, $this->_db->quote({$name}) as val from {$tableName} where fnum in ('" . implode("','", $fnums) . "')";
+			$query->select('fnum, ' . $this->_db->quoteName($name) . ' as val')
+				->from($this->_db->quoteName($tableName))
+				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
 		}
 
 		try {
@@ -4706,10 +4743,11 @@ class EmundusModelFiles extends JModelLegacy
 		$fnum = '';
 
 		if (!empty($campaign_id)) {
+
 			if (empty($user_id)) {
-				$current_user = JFactory::getUser();
+				$current_user = $this->app->getIdentity();
 				if ($current_user->guest == 1) {
-					JLog::add('Error, trying to create file for guest user. Action unauthorized', JLog::WARNING, 'com_emundus.logs');
+					Log::add('Error, trying to create file for guest user. Action unauthorized', Log::WARNING, 'com_emundus.logs');
 
 					return '';
 				}
@@ -4722,31 +4760,30 @@ class EmundusModelFiles extends JModelLegacy
 			}
 
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
-			$h_files = new EmundusHelperFiles();
 			$fnum    = EmundusHelperFiles::createFnum($campaign_id, $user_id);
 
 			if (!empty($fnum)) {
-				$config   = JFactory::getConfig();
-				$timezone = new DateTimeZone($config->get('offset'));
-				$now      = JFactory::getDate()->setTimezone($timezone);
+				$timezone = new DateTimeZone($this->app->get('offset'));
+				$now      = Factory::getDate()->setTimezone($timezone);
 
-				$this->_db = JFactory::getDbo();
 				$query     = $this->_db->getQuery(true);
 
-				$query->clear()
-					->insert($this->_db->quoteName('#__emundus_campaign_candidature'))
-					->columns($this->_db->quoteName(['date_time', 'applicant_id', 'user_id', 'campaign_id', 'fnum']))
-					->values($this->_db->quote($now) . ', ' . $user_id . ', ' . $user_id . ', ' . $campaign_id . ', ' . $this->_db->quote($fnum));
-
-				$this->_db->setQuery($query);
+				$insert = [
+					'date_time'   => $now->toSql(),
+					'applicant_id' => $user_id,
+					'user_id'     => $user_id,
+					'campaign_id' => $campaign_id,
+					'fnum'        => $fnum
+				];
+				$insert = (object) $insert;
 
 				try {
-					$inserted = $this->_db->execute();
+					$inserted = $this->_db->insertObject('#__emundus_campaign_candidature', $insert);
 				}
 				catch (Exception $e) {
 					$fnum     = '';
 					$inserted = false;
-					JLog::add("Failed to create file $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add("Failed to create file $fnum - $user_id" . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 
 				if (!$inserted) {

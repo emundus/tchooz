@@ -1752,20 +1752,29 @@ class EmundusModelApplication extends JModelList
 						$this->_db->setQuery($query);
 						$rowid = $this->_db->loadResult();
 
+						$link = 'index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id;
+						$menu_item = Factory::getApplication()->getMenu()->getItems('link', $link, true);
+
+						$url = $menu_item->route;
+						$url .= '?fnum='.$fnum;
+						if(!empty($rowid)) {
+							$url .= '&rowid=' . $rowid;
+						}
+
 						if (!empty($rowid)) {
 							if ($allowEmbed) {
-								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&rowid=' . $rowid . '&fnum='.$fnum.'&tmpl=component" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><i> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</i></button>';
+								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm em-actions-form" url="'.$url.'" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><i> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</i></button>';
 							}
 							else {
-								$forms .= ' <a id="' . $itemt->form_id . '" class="em-link" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&rowid=' . $rowid . '&fnum=' . $fnum . '" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</span></a>';
+								$forms .= ' <a id="' . $itemt->form_id . '" class="em-link" href="'.$url.'" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</span></a>';
 							}
 						}
 						else {
 							if ($allowEmbed) {
-								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&' . $itemt->db_table_name . '___fnum=' . $fnum . '&' . $itemt->db_table_name . '___user_raw=' . $aid . '&' . $itemt->db_table_name . '___user=' . $aid . '&sid=' . $aid . '&tmpl=component" title="' . JText::_('COM_EMUNDUS_ADD') . '"><i> ' . JText::_('COM_EMUNDUS_ADD') . '</i></button>';
+								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm em-actions-form" url="'.$url.'" title="' . JText::_('COM_EMUNDUS_ADD') . '"><i> ' . JText::_('COM_EMUNDUS_ADD') . '</i></button>';
 							}
 							else {
-								$forms .= ' <a type="button" id="' . $itemt->form_id . '" class="em-link" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&' . $itemt->db_table_name . '___fnum=' . $fnum . '&' . $itemt->db_table_name . '___user_raw=' . $aid . '&' . $itemt->db_table_name . '___user=' . $aid . '&sid=' . $aid . '" title="' . JText::_('COM_EMUNDUS_ADD') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ADD') . '</span></a>';
+								$forms .= ' <a type="button" id="' . $itemt->form_id . '" class="em-link" href="'.$url.'" title="' . JText::_('COM_EMUNDUS_ADD') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ADD') . '</span></a>';
 							}
 						}
 					}
