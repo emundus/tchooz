@@ -704,12 +704,14 @@
 
             .fabrikgrid_checkbox {
               @apply tw-flex;
-              @apply tw-items-center;
+              @apply tw-items-start;
               input {
                 @apply tw-cursor-pointer;
                 accent-color: var(--em-form-checkbox-color-checked);
                 transform: scale(var(--em-form-checkbox-scale));
                 margin: 0;
+                width: auto;
+                height: auto;
               }
               label {
                 @apply tw-cursor-pointer;
@@ -869,8 +871,10 @@
             width: auto;
             tbody td {
               width: auto;
+              padding: 0;
               select {
                 min-width: 85px;
+                background-position-x: 92%;
               }
             }
           }
