@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 
@@ -441,7 +442,7 @@ class EmundusModelFormbuilder extends JModelList
 				'link'         => 'index.php?option=com_fabrik&view=form&formid=' . $formid,
 				'path'         => $menu_parent->path . '/' . preg_replace('/\s+/', '-', strtolower($this->replaceAccents($label['fr']))) . '-form-' . $formid,
 				'type'         => 'component',
-				'component_id' => 10041,
+				'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
 				'params'       => $params
 			];
 			$result = EmundusHelperUpdate::addJoomlaMenu($datas, $menu_parent->id, 1, 'last-child', $modules);
@@ -883,7 +884,7 @@ class EmundusModelFormbuilder extends JModelList
 				'link'         => 'index.php?option=com_fabrik&view=form&formid=' . $formid,
 				'path'         => preg_replace('/\s+/', '-', strtolower($this->replaceAccents($label['fr']))) . '-form-' . $formid,
 				'type'         => 'component',
-				'component_id' => 10041,
+				'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
 				'params'       => $params
 			];
 			$result = EmundusHelperUpdate::addJoomlaMenu($datas, 1, 1, 'last-child', $modules);
@@ -2975,7 +2976,7 @@ class EmundusModelFormbuilder extends JModelList
 										'path'         => $menu_parent->path . '/' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])) . '-' . $newformid,
 										'alias'        => 'form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])),
 										'type'         => 'component',
-										'component_id' => 10041,
+										'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
 										'params'       => $params
 									];
 									$parent_id = 1;

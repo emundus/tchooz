@@ -218,6 +218,9 @@
         display: none;
       }
     }
+    .fabrikElementTipAbove span.fa.fa-question-circle{
+      display: none;
+    }
 
 
     /** INPUT **/

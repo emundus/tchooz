@@ -591,7 +591,6 @@ defined('_JEXEC') or die;
                 jQuery("#footer-rgpd").css("padding-left", "280px");
                 jQuery("#g-container-main").css("padding-left", "280px");
                 jQuery("#header-a").css("opacity", "1");
-                jQuery(".logo").css("position", "absolute");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
             }
             setTimeout(() => {
