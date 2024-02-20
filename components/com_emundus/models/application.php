@@ -5870,7 +5870,7 @@ class EmundusModelApplication extends JModelList
 					$index = array_search($value, $params->sub_options->sub_values, false);
 
 					if ($index !== false) {
-						if ($value == 0) {
+						if ($value == '0') {
 							$elt = '';
 						}
 						else {

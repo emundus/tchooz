@@ -54,6 +54,7 @@ workspace.xml
 images/emundus/import/*
 images/emundus/photo/*
 images/stories/*
+/images/emundus/carriere/*
 /images/emundus/files/*
 /images/emundus/letters/*
 /images/emundus/phases/*

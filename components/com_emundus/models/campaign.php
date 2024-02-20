@@ -2171,7 +2171,8 @@ class EmundusModelCampaign extends JModelList
 			try {
 				$query->select('id')
 					->from($this->_db->quoteName('#__categories'))
-					->where('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"' . $cid . '"'))
+					->where('json_valid(`params`)')
+					->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
 					->andWhere($this->_db->quoteName('extension') . ' = ' . $this->_db->quote('com_dropfiles'));
 				$this->_db->setQuery($query);
 				$campaign_dropfile_cat = $this->_db->loadResult();
@@ -2356,6 +2357,7 @@ class EmundusModelCampaign extends JModelList
 		try {
 			$query->select('*')
 				->from($this->_db->quoteName('#__modules'))
+				->where('json_valid(`note`)')
 				->where('json_extract(`note`, "$.pid") LIKE ' . $this->_db->quote('"' . $pid . '"'));
 			$this->_db->setQuery($query);
 			$form_module = $this->_db->loadObject();
@@ -2407,6 +2409,7 @@ class EmundusModelCampaign extends JModelList
 		try {
 			$query->select('*')
 				->from($this->_db->quoteName('#__modules'))
+				->where('json_valid(`note`)')
 				->where('json_extract(`note`, "$.pid") LIKE ' . $this->_db->quote('"' . $pid . '"'));
 			$this->_db->setQuery($query);
 			$form_module = $this->_db->loadObject();
@@ -2458,6 +2461,7 @@ class EmundusModelCampaign extends JModelList
 		try {
 			$query->select('*')
 				->from($this->_db->quoteName('#__modules'))
+				->where('json_valid(`note`)')
 				->where('json_extract(`note`, "$.pid") LIKE ' . $this->_db->quote('"' . $pid . '"'));
 			$this->_db->setQuery($query);
 			$form_module = $this->_db->loadObject();

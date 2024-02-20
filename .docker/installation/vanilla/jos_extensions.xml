@@ -2221,7 +2221,7 @@
     <field name="changelogurl"></field>
     <field name="folder">content</field>
     <field name="client_id">0</field>
-    <field name="enabled">1</field>
+    <field name="enabled">0</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">1</field>
@@ -2595,7 +2595,7 @@
     <field name="changelogurl"></field>
     <field name="folder">extension</field>
     <field name="client_id">0</field>
-    <field name="enabled">1</field>
+    <field name="enabled">0</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">1</field>
@@ -3123,7 +3123,7 @@
     <field name="changelogurl"></field>
     <field name="folder">finder</field>
     <field name="client_id">0</field>
-    <field name="enabled">1</field>
+    <field name="enabled">0</field>
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">1</field>

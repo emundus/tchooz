@@ -54,6 +54,7 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 				->select($this->db->quoteName('id'))
 				->from($this->db->quoteName('#__categories'))
 				->where($this->db->quoteName('extension') . ' LIKE ' . $this->db->quote('com_dropfiles'))
+				->andWhere('json_valid(`params`)')
 				->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->db->quote('"' . $id . '"'));
 			$this->db->setQuery($this->query);
 			$cat_id = $this->db->loadResult();
@@ -107,6 +108,7 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 
 				// Conditions for which records should be updated.
 				$conditions = array(
+					'json_valid(`params`)',
 					'json_extract(`params`, "$.idCampaign") LIKE ' . $this->db->quote('"' . $id . '"'),
 					$this->db->quoteName('extension') . ' LIKE ' . $this->db->quote('com_dropfiles')
 				);
@@ -116,15 +118,6 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 					->update($this->db->quoteName('#__categories'))
 					->set($fields)
 					->where($conditions);
-
-				$this->db->setQuery($this->query);
-				$this->db->execute();
-
-				$this->query
-					->clear()
-					->update($this->db->quoteName('#__categories'))
-					->set($this->db->quoteName('title') . ' = ' . $this->db->quote($label))
-					->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('com_dropfiles.category' . $cat_id));
 
 				$this->db->setQuery($this->query);
 				$this->db->execute();
@@ -156,7 +149,8 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 					->clear()
 					->select($this->db->quoteName('id'))
 					->from($this->db->quoteName('jos_categories'))
-					->where('json_extract(`params`, "$.idCampaign") LIKE ' . $this->db->quote('"' . $id . '"'));
+					->where('json_valid(`params`)')
+					->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->db->quote('"'.$id.'"'));
 
 				$this->db->setQuery($this->query);
 				$idCategory = $this->db->loadResult();
