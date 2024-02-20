@@ -829,7 +829,7 @@ class EmundusHelperEvents
 
 		$link = 'index.php';
 
-		if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asApplicantAccessLevel($user->id)) {
+		if (in_array($user->profile, $applicant_profiles)) {
 			$levels = Access::getAuthorisedViewLevels($user->id);
 
 			if (isset($user->fnum)) {
