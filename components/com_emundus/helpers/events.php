@@ -949,6 +949,10 @@ class EmundusHelperEvents
             </script>");
 		}
 
+		if(empty($link)) {
+			$link = $_SERVER['REQUEST_URI'];
+		}
+
 		$link = EmundusHelperAccess::buildFormUrl($link, $fnum);
 		$mainframe->redirect(Route::_($link));
 
