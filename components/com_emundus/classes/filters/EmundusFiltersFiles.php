@@ -371,8 +371,18 @@ class EmundusFiltersFiles extends EmundusFilters
 						->select('id as value, label, 0 as count')
 						->from('#__emundus_setup_programmes')
 						->where('published = 1')
-						->andWhere('id IN (' . implode(',', $this->user_programs) . ')')
-						->order('ordering ASC');
+						->andWhere('id IN (' . implode(',', $this->user_programs) . ')');
+
+					if (!$filter_menu_values_are_empty) {
+						$position = array_search('programme', $filter_names);
+
+						if ($position !== false && isset($filter_menu_values[$position])) {
+							$programs = explode('|', $filter_menu_values[$position]);
+							$query->where('code IN ('. implode(',', $db->quote($programs)) .')');
+						}
+					}
+
+					$query->order('ordering ASC');
 
 					$db->setQuery($query);
 					$programs = $db->loadAssocList();
