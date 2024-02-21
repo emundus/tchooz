@@ -4909,7 +4909,7 @@
     <field name="access">1</field>
     <field name="protected">1</field>
     <field name="locked">1</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;files_joomla&quot;,&quot;type&quot;:&quot;file&quot;,&quot;creationDate&quot;:&quot;2023-11&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2019 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;5.0.2&quot;,&quot;description&quot;:&quot;FILES_JOOMLA_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;files_joomla&quot;,&quot;type&quot;:&quot;file&quot;,&quot;creationDate&quot;:&quot;2024-02&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2019 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;5.0.3&quot;,&quot;description&quot;:&quot;FILES_JOOMLA_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -4931,7 +4931,7 @@
     <field name="access">1</field>
     <field name="protected">1</field>
     <field name="locked">1</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;English (en-GB) Language Pack&quot;,&quot;type&quot;:&quot;package&quot;,&quot;creationDate&quot;:&quot;2023-11&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2019 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;5.0.1.1&quot;,&quot;description&quot;:&quot;en-GB language pack&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pkg_en-GB&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;English (en-GB) Language Pack&quot;,&quot;type&quot;:&quot;package&quot;,&quot;creationDate&quot;:&quot;2024-02&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2019 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;5.0.3.1&quot;,&quot;description&quot;:&quot;en-GB language pack&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pkg_en-GB&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -4953,7 +4953,7 @@
     <field name="access">1</field>
     <field name="protected">1</field>
     <field name="locked">1</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;English (en-GB)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;2023-11&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2006 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;5.0.1&quot;,&quot;description&quot;:&quot;en-GB site language&quot;,&quot;group&quot;:&quot;&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;English (en-GB)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;2024-02&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2006 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;5.0.3&quot;,&quot;description&quot;:&quot;en-GB site language&quot;,&quot;group&quot;:&quot;&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -4975,7 +4975,7 @@
     <field name="access">1</field>
     <field name="protected">1</field>
     <field name="locked">1</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;English (en-GB)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;2023-11&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2005 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;5.0.1&quot;,&quot;description&quot;:&quot;en-GB administrator language&quot;,&quot;group&quot;:&quot;&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;English (en-GB)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;2024-02&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2005 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;5.0.3&quot;,&quot;description&quot;:&quot;en-GB administrator language&quot;,&quot;group&quot;:&quot;&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -4997,7 +4997,7 @@
     <field name="access">1</field>
     <field name="protected">1</field>
     <field name="locked">1</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;English (en-GB)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;2023-11&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2020 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;5.0.1&quot;,&quot;description&quot;:&quot;en-GB api language&quot;,&quot;group&quot;:&quot;&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;English (en-GB)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;2024-02&quot;,&quot;author&quot;:&quot;Joomla! Project&quot;,&quot;copyright&quot;:&quot;(C) 2020 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;admin@joomla.org&quot;,&quot;authorUrl&quot;:&quot;www.joomla.org&quot;,&quot;version&quot;:&quot;5.0.3&quot;,&quot;description&quot;:&quot;en-GB api language&quot;,&quot;group&quot;:&quot;&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -13071,7 +13071,7 @@
     <field name="access">0</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;09-01-2024&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2013 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;5.0.2&quot;,&quot;description&quot;:&quot;fr-FR site language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;20.02.2024&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2013 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;5.0.3&quot;,&quot;description&quot;:&quot;fr-FR site language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -13093,7 +13093,7 @@
     <field name="access">0</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;09-01-2024&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2013 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;5.0.2&quot;,&quot;description&quot;:&quot;fr-FR Administrator language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;20.02.2024&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2013 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;5.0.3&quot;,&quot;description&quot;:&quot;fr-FR Administrator language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -13115,7 +13115,7 @@
     <field name="access">0</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;09-01-2024&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2020 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;5.0.2&quot;,&quot;description&quot;:&quot;fr-FR api language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR)&quot;,&quot;type&quot;:&quot;language&quot;,&quot;creationDate&quot;:&quot;20.02.2024&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;(C) 2020 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;5.0.3&quot;,&quot;description&quot;:&quot;fr-FR api language&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;install&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -13137,7 +13137,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR) Language pack&quot;,&quot;type&quot;:&quot;package&quot;,&quot;creationDate&quot;:&quot;09-01-2024&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2019 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;5.0.2.1&quot;,&quot;description&quot;:&quot;&lt;div style=\&quot;text-align: left;\&quot;&gt;\n&lt;h3&gt;Joomla! Full French (fr-FR) Language Package - Version 5.0.2 v1&lt;\/h3&gt;\n&lt;h3&gt;Pack de langue Joomla! fran\u00e7ais (fr-FR) complet - Version 5.0.2 v1&lt;\/h3&gt;\n&lt;p&gt;&lt;a href=\&quot;https:\/www.joomla.fr\&quot; target=\&quot;_blank\&quot;&gt;www.joomla.fr&lt;\/a&gt; - &lt;a href=\&quot;mailto:traduction@joomla.fr\&quot;&gt;traduction@joomla.fr&lt;\/a&gt;&lt;\/p&gt;\n&lt;\/div&gt;&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pkg_fr-FR&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;French (fr-FR) Language pack&quot;,&quot;type&quot;:&quot;package&quot;,&quot;creationDate&quot;:&quot;20.02.2024&quot;,&quot;author&quot;:&quot;Joomla! Project - French translation team&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2019 Open Source Matters, Inc.&quot;,&quot;authorEmail&quot;:&quot;traduction@joomla.fr&quot;,&quot;authorUrl&quot;:&quot;www.joomla.fr&quot;,&quot;version&quot;:&quot;5.0.3.1&quot;,&quot;description&quot;:&quot;&lt;div style=\&quot;text-align: left;\&quot;&gt;\n&lt;h3&gt;Joomla! Full French (fr-FR) Language Package - Version 5.0.3 v1&lt;\/h3&gt;\n&lt;h3&gt;Pack de langue Joomla! fran\u00e7ais (fr-FR) complet - Version 5.0.3 v1&lt;\/h3&gt;\n&lt;p&gt;&lt;a href=\&quot;https:\/www.joomla.fr\&quot; target=\&quot;_blank\&quot;&gt;www.joomla.fr&lt;\/a&gt; - &lt;a href=\&quot;mailto:traduction@joomla.fr\&quot;&gt;traduction@joomla.fr&lt;\/a&gt;&lt;\/p&gt;\n&lt;\/div&gt;&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pkg_fr-FR&quot;}</field>
     <field name="params">{}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
