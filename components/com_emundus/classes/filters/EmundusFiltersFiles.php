@@ -325,46 +325,9 @@ class EmundusFiltersFiles extends EmundusFilters
 				];
 			}
 
-			if ($config['filter_campaign']) {
-
-				$campaigns = [];
-				if(!empty($this->user_campaigns)) {
-					$query->clear()
-						->select('id as value, label, 0 as count')
-						->from('#__emundus_setup_campaigns')
-						->where('published = 1')
-						->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
-
-					if (!$filter_menu_values_are_empty) {
-						$position = array_search('campaign', $filter_names);
-
-						if ($position !== false && isset($filter_menu_values[$position])) {
-							$campaigns = explode('|', $filter_menu_values[$position]);
-							$query->where('id IN (' . implode(',', $campaigns) . ')');
-						}
-					}
-
-					$query->order('id DESC');
-
-					$db->setQuery($query);
-					$campaigns = $db->loadAssocList();
-				}
-
-				$this->applied_filters[] = [
-					'uid'       => 'campaigns',
-					'id'        => 'campaigns',
-					'label'     => Text::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
-					'type'      => 'select',
-					'values'    => $campaigns,
-					'value'     => ['all'],
-					'default'   => true,
-					'available' => true,
-					'order'     => $config['filter_campaigns_order']
-				];
-			}
-
 			if ($config['filter_programs']) {
 				$programs = [];
+				$programs_codes = [];
 
 				if(!empty($this->user_programs)) {
 					$query->clear()
@@ -376,9 +339,12 @@ class EmundusFiltersFiles extends EmundusFilters
 					if (!$filter_menu_values_are_empty) {
 						$position = array_search('programme', $filter_names);
 
-						if ($position !== false && isset($filter_menu_values[$position])) {
-							$programs = explode('|', $filter_menu_values[$position]);
-							$query->where('code IN ('. implode(',', $db->quote($programs)) .')');
+						if ($position !== false && !empty($filter_menu_values[$position])) {
+							$programs_codes = explode('|', $filter_menu_values[$position]);
+							if(!empty($programs_codes))
+							{
+								$query->where('code IN (' . implode(',', $db->quote($programs_codes)) . ')');
+							}
 						}
 					}
 
@@ -400,6 +366,53 @@ class EmundusFiltersFiles extends EmundusFilters
 					'order'     => $config['filter_programs_order']
 				];
 			}
+
+			if ($config['filter_campaign']) {
+				$campaigns = [];
+
+				if(!empty($this->user_campaigns)) {
+					$query->clear()
+						->select('id as value, label, 0 as count')
+						->from('#__emundus_setup_campaigns')
+						->where('published = 1')
+						->andWhere('id IN (' . implode(',', $this->user_campaigns) . ')');
+
+					if (!$filter_menu_values_are_empty) {
+						$position = array_search('campaign', $filter_names);
+
+						if ($position !== false && !empty($filter_menu_values[$position])) {
+							$campaigns = explode('|', $filter_menu_values[$position]);
+							if(!empty($campaigns))
+							{
+								$query->andWhere('id IN (' . implode(',', $campaigns) . ')');
+							}
+						}
+					}
+
+					if(!empty($programs_codes)) {
+						$query->andWhere('training IN ('. implode(',', $db->quote($programs_codes)) .')');
+					}
+
+					$query->order('id DESC');
+
+					$db->setQuery($query);
+					$campaigns = $db->loadAssocList();
+				}
+
+				$this->applied_filters[] = [
+					'uid'       => 'campaigns',
+					'id'        => 'campaigns',
+					'label'     => Text::_('MOD_EMUNDUS_FILTERS_CAMPAIGNS'),
+					'type'      => 'select',
+					'values'    => $campaigns,
+					'value'     => ['all'],
+					'default'   => true,
+					'available' => true,
+					'order'     => $config['filter_campaigns_order']
+				];
+			}
+
+
 
 			if ($config['filter_years']) {
 				$years = [];

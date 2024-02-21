@@ -4544,7 +4544,7 @@ $(document).ready(function() {
                 title = 'COM_EMUNDUS_COMMENTS_ADD_COMMENT';
                 html = '<form>' +
                     '<input placeholder="'+Joomla.Text._('TITLE')+'" class="form-control" id="comment-title" type="text" value="" name="comment-title"/>' +
-                    '<textarea placeholder="'+Joomla.Text._('ENTER_COMMENT')+'" class="form-control" style="height:250px !important; margin-left:0px !important;"  id="comment-body"></textarea>' +
+                    '<textarea placeholder="'+Joomla.Text._('COM_EMUNDUS_COMMENTS_ENTER_COMMENT')+'" class="form-control" style="height:250px !important; margin-left:0px !important;"  id="comment-body"></textarea>' +
                     '</form>';
 
                 preconfirm = "var comment = $('#comment-body').val();if (comment.length == 0) {Swal.showValidationMessage(Joomla.Text._('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE'))}"
