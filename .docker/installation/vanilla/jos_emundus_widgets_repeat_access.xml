@@ -13,53 +13,53 @@
   </table_structure>
   <table_data name="#__emundus_widgets_repeat_access">
    <row>
-    <field name="id">1</field>
-    <field name="parent_id">5</field>
+    <field name="id">2</field>
+    <field name="parent_id">6</field>
     <field name="profile">2</field>
     <field name="default">1</field>
     <field name="position">2</field>
    </row>
    <row>
-    <field name="id">2</field>
-    <field name="parent_id">6</field>
-    <field name="profile">2</field>
-    <field name="default">1</field>
-    <field name="position">3</field>
-   </row>
-   <row>
     <field name="id">4</field>
     <field name="parent_id">7</field>
     <field name="profile">2</field>
-    <field name="default">0</field>
-    <field name="position" value_is_null="true"></field>
+    <field name="default">1</field>
+    <field name="position">1</field>
    </row>
    <row>
     <field name="id">5</field>
     <field name="parent_id">7</field>
     <field name="profile">6</field>
     <field name="default">1</field>
-    <field name="position">2</field>
-   </row>
-   <row>
-    <field name="id">7</field>
-    <field name="parent_id">8</field>
-    <field name="profile">6</field>
-    <field name="default">0</field>
-    <field name="position" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">8</field>
-    <field name="parent_id">8</field>
-    <field name="profile">2</field>
-    <field name="default">0</field>
-    <field name="position" value_is_null="true"></field>
+    <field name="position">1</field>
    </row>
    <row>
     <field name="id">9</field>
     <field name="parent_id">9</field>
     <field name="profile">2</field>
-    <field name="default">0</field>
-    <field name="position" value_is_null="true"></field>
+    <field name="default">1</field>
+    <field name="position">3</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="parent_id">6</field>
+    <field name="profile">5</field>
+    <field name="default">1</field>
+    <field name="position">2</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="parent_id">7</field>
+    <field name="profile">5</field>
+    <field name="default">1</field>
+    <field name="position">1</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="parent_id">9</field>
+    <field name="profile">5</field>
+    <field name="default">1</field>
+    <field name="position">3</field>
    </row>
   </table_data>
  </database>

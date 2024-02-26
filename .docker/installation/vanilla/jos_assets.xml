@@ -845,7 +845,7 @@
     <field name="level">2</field>
     <field name="name">com_modules.module.112</field>
     <field name="title">[CAMPAIGNS] Guest</field>
-    <field name="rules">{&quot;core.delete&quot;:{&quot;6&quot;:1},&quot;core.edit&quot;:{&quot;6&quot;:1,&quot;4&quot;:1},&quot;core.edit.state&quot;:{&quot;6&quot;:1,&quot;5&quot;:1}}</field>
+    <field name="rules">{&quot;core.delete&quot;:{&quot;6&quot;:1},&quot;core.edit&quot;:{&quot;4&quot;:1,&quot;6&quot;:1},&quot;core.edit.state&quot;:{&quot;5&quot;:1,&quot;6&quot;:1}}</field>
    </row>
    <row>
     <field name="id">99</field>
@@ -945,7 +945,7 @@
     <field name="level">2</field>
     <field name="name">com_modules.module.119</field>
     <field name="title">[CAMPAIGNS] Logged</field>
-    <field name="rules">{&quot;core.delete&quot;:{&quot;6&quot;:1},&quot;core.edit&quot;:{&quot;6&quot;:1,&quot;4&quot;:1},&quot;core.edit.state&quot;:{&quot;6&quot;:1,&quot;5&quot;:1}}</field>
+    <field name="rules">{&quot;core.delete&quot;:{&quot;6&quot;:1},&quot;core.edit&quot;:{&quot;4&quot;:1,&quot;6&quot;:1},&quot;core.edit.state&quot;:{&quot;5&quot;:1,&quot;6&quot;:1}}</field>
    </row>
    <row>
     <field name="id">109</field>
@@ -1204,7 +1204,7 @@
     <field name="rgt">58</field>
     <field name="level">3</field>
     <field name="name">com_content.article.60</field>
-    <field name="title">Fiche deja envoyée</field>
+    <field name="title">Fiche déjà envoyée</field>
     <field name="rules">{}</field>
    </row>
    <row>
