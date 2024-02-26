@@ -20,7 +20,7 @@
     <field name="type">collection</field>
     <field name="location">https://update.joomla.org/core/list.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1708522287</field>
+    <field name="last_check_timestamp">1708935092</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -31,7 +31,7 @@
     <field name="type">collection</field>
     <field name="location">https://update.joomla.org/language/translationlist_5.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1708522288</field>
+    <field name="last_check_timestamp">1708935092</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -42,18 +42,7 @@
     <field name="type">extension</field>
     <field name="location">https://update.joomla.org/core/extensions/com_joomlaupdate.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1708522288</field>
-    <field name="extra_query"></field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="update_site_id">4</field>
-    <field name="name">Fabrik</field>
-    <field name="type">package</field>
-    <field name="location">http://skurvishenterprises.com/fabrik/update/fabrik4/pkg_fabrik.xml</field>
-    <field name="enabled">1</field>
-    <field name="last_check_timestamp">1708522288</field>
+    <field name="last_check_timestamp">1708935092</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -64,7 +53,7 @@
     <field name="type">extension</field>
     <field name="location">http://updates.gantry.org/5.0/joomla/pkg_gantry5.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1708522288</field>
+    <field name="last_check_timestamp">1708935093</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -75,7 +64,7 @@
     <field name="type">collection</field>
     <field name="location">http://updates.gantry.org/5.0/joomla/list.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1708522289</field>
+    <field name="last_check_timestamp">1708935093</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -86,7 +75,7 @@
     <field name="type">extension</field>
     <field name="location">https://updates.gantry.org/5.0/joomla/tpl_g5_helium.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1708522289</field>
+    <field name="last_check_timestamp">1708935093</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -97,7 +86,7 @@
     <field name="type">extension</field>
     <field name="location">http://www.hikashop.com/component/updateme/updatexml/component-hikashop/version-5.0.3/level-Business/li-aHR0cDovL2xvY2FsaG9zdDo4MzgzLw%3D%3D/file-extension.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1708522289</field>
+    <field name="last_check_timestamp">1708935093</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -108,7 +97,7 @@
     <field name="type">extension</field>
     <field name="location">https://www.joomunited.com/juupdater_files/dropfiles-update.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1708522289</field>
+    <field name="last_check_timestamp">1708935094</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -119,7 +108,7 @@
     <field name="type">extension</field>
     <field name="location">https://securitycheck.protegetuordenador.com/update/updates_securitycheckpro.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1708522290</field>
+    <field name="last_check_timestamp">1708935094</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -130,7 +119,18 @@
     <field name="type">extension</field>
     <field name="location">https://www.faboba.com/update/falang/pkgfalangstd.xml</field>
     <field name="enabled">1</field>
-    <field name="last_check_timestamp">1708522291</field>
+    <field name="last_check_timestamp">1708935095</field>
+    <field name="extra_query"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="update_site_id">13</field>
+    <field name="name">Fabrik</field>
+    <field name="type">extension</field>
+    <field name="location">https://fabrikar.com/index.php?option=com_ochsubscriptions&amp;view=updater&amp;format=xml&amp;element=Fabrik</field>
+    <field name="enabled">1</field>
+    <field name="last_check_timestamp">0</field>
     <field name="extra_query"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
