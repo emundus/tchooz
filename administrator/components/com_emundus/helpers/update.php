@@ -272,14 +272,14 @@ class EmundusHelperUpdate
                     $db->setQuery($query);
                     $installed = $db->execute();
                 } else {
-                    echo " - " . $element . " already installed." . PHP_EOL ;
+					self::displayMessage('L\'extension ' . $element . ' est déjà installée.');
                     $installed = true;
                 }
             } catch (Exception $e) {
                 echo $e->getMessage();
             }
         } else {
-            echo 'Impossible to install extension without element specified';
+			self::displayMessage('Impossible d\'installer l\'extensions sans élément spécifié.', 'error');
         }
 
         return $installed;
