@@ -101,6 +101,12 @@ define(['jquery', 'fab/elementlist'], function (jQuery, FbElementList) {
                 if (typeOf(fabchecked) === 'null') {
                     input.set('fabchecked', 1);
                 }
+            } else {
+                // remove any active and btn-xxx classes
+                label.removeClass('active');
+                label.removeClass('btn-primary');
+                label.removeClass('btn-danger');
+                label.removeClass('btn-success');
             }
         },
 
@@ -188,7 +194,7 @@ define(['jquery', 'fab/elementlist'], function (jQuery, FbElementList) {
             }
             this._getSubElements().each(function (sub, i) {
                 sub.id = this.options.element + '_input_' + i;
-                var label = sub.nextSibling;
+                var label = sub.getParent('label');
                 if (label) {
                     label.htmlFor = sub.id;
                 }

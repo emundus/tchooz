@@ -382,7 +382,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 
 			if ($logDelete === '2' && !empty($logId))
 			{
-				$db    = Factory::getDbo();
+				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery($db);
 
 				foreach ($changes as $change)
@@ -644,7 +644,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 		/** @var FabrikFEModelForm $formModel */
 		$formModel = $this->getModel();
 		$date = new Date();
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery($db);
 
 		$query->insert('#__fabrik_change_log')
@@ -706,7 +706,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 
 			if (!empty($logId))
 			{
-				$db    = Factory::getDbo();
+				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery($db);
 
 				foreach ($changes as $change)

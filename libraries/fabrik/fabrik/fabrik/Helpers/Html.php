@@ -870,7 +870,7 @@ EOD;
 		$document = Factory::getDocument();
 		$tag      = Factory::getApplication()->getLanguage()->getTag();
 		$attribs  = array('title' => Text::_('JLIB_HTML_BEHAVIOR_GREEN'), 'media' => 'all');
-		HTMLHelper::_('stylesheet', 'system/calendar-jos.css', array('version' => 'auto', 'relative' => true), $attribs);
+		HTMLHelper::_('stylesheet', 'com_fabrik/calendar-jos.css', array('version' => 'auto', 'relative' => true), $attribs);
 		HTMLHelper::_('script', 'media/com_fabrik/js/dist/calendar.js');
 		HTMLHelper::_('script', 'media/com_fabrik/js/dist/calendar-setup.js');
 		$translation = static::calendartranslation();
@@ -2596,7 +2596,7 @@ EOT;
 
 		if ($app->isClient('administrator'))
 		{
-			$db    = Factory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 			$query->select('introtext, ' . $db->quoteName('fulltext'))->from('#__content')->where('id = ' . (int) $contentTemplate);
 			$db->setQuery($query);

@@ -2459,7 +2459,7 @@ class Worker
 			{
 				if (!array_key_exists($listId, $listIds))
 				{
-					$db         = Factory::getDbo();
+					$db         = Factory::getContainer()->get('DatabaseDriver');
 					$myLanguage = Factory::getApplication()->getLanguage();
 					$myTag      = $myLanguage->getTag();
 					$qLanguage  = !empty($myTag) ? ' AND ' . $db->q($myTag) . ' = ' . $db->qn('m.language') : '';

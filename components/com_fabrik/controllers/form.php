@@ -32,6 +32,7 @@ use Fabrik\Helpers\Worker;
  * @subpackage  Fabrik
  * @since       1.5
  */
+#[\AllowDynamicProperties]
 class FabrikControllerForm extends BaseController
 {
 	/**

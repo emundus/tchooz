@@ -2423,7 +2423,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
 
                     // Table group
                     var add = group.getElement('.addGroup');
-                    add.inject(sub.getElement('div.fabrikGroupRepeater'),'top');
+                    add.inject(sub.getElement('.fabrikGroupRepeater'),'top');
                     sub.setStyle('display', '');
                 } else {
                     subgroups[0].getElement('.fabrikNotice').dispose();
@@ -2493,8 +2493,13 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                             // $$$ hugh - sanity check in case we have an element which has no input
                             if (document.id(testid).getElement('input')) {
                                 input.cloneEvents(document.id(testid).getElement('input'));
+                                // Note: Radio's etc. now have their events delegated from the form - so no need to duplicate them
+                                // Update labels for sub elements
+                                var l = subElementContainer.getParent('.fabrikElementContainer').getElement('label');
+                                if (l) {
+                                    l.setProperty('for', subElementContainer.id);
+                               }
                             }
-                            // Note: Radio's etc. now have their events delegated from the form - so no need to duplicate them
 
                         } else {
                             input.cloneEvents(el.element);
@@ -2546,6 +2551,25 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                         newEl.cloneUpdateIds(subElementContainer.id);
                         newEl.options.element = subElementContainer.id;
                         newEl._getSubElements();
+                        // update the labels
+                        newEl.subElements.each(function (subEl) {
+                            l = subEl.nextElementSibling;
+                            while (l) {
+                                if (l.nodeName == "LABEL") {
+                                    let lBits = l.htmlFor.split('_');
+                                    let eBits = newEl.options.element.split('_');
+                                    lBits[6] = eBits[6];
+                                    l.htmlFor = lBits.join('_');
+                                    break;
+                                }
+                                l = l.nextElementSibling;
+                            }
+                        });
+                        // Update the id on the fieldset if there is one
+                        let fs = subElementContainer.getElement('fieldset');
+                        if (fs) {
+                            fs.setAttribute('id', subElementContainer.id);
+                        }
                     } else {
                         newEl.cloneUpdateIds(lastinput.id);
                     }
@@ -2576,6 +2600,10 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     newEl.resetEvents();
                 }
             }.bind(this));
+            
+            // Update the element container label
+            lastinput.getParent('.fabrikElementContainer').getElement('label').htmlFor = container.id;
+
             var o = {};
             o[i] = newElementControllers;
             this.addElements(o);

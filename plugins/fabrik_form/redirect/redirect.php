@@ -59,7 +59,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 		$this->data['append_jump_url'] = $params->get('append_jump_url');
 		$this->data['save_and_next'] = $params->get('save_and_next', '0');
 		$this->data['save_in_session'] = $params->get('save_insession');
-		$this->data['jump_page'] = $w->parseMessageForPlaceHolder($params->get('jump_page'), $this->data);
+		$this->data['jump_page'] = $w->parseMessageForPlaceHolder(Route::_($params->get('jump_page')), $this->data);
 		$this->data['thanks_message'] = Text::_($w->parseMessageForPlaceHolder($params->get('thanks_message'), $this->data));
 
 		if (!$this->shouldRedirect($params))
@@ -121,9 +121,7 @@ isClient('administrator'))
 		else
 		{
 			// Redirect not working in admin.
-			if (!$this->app->
-
-isClient('administrator'))
+			if (!$this->app->isClient('administrator'))
 			{
 				$sshowsystemmsg[$this->renderOrder] = false;
 				$this->session->set($context . 'showsystemmsg', $sshowsystemmsg);
@@ -306,9 +304,7 @@ isClient('administrator'))
 			$queryvars['isMambot'] = 'isMambot=1';
 		}
 
-		if ($this->app->
-
-isClient('administrator') && substr($jumpPage, 0, 10) === 'index.php?')
+		if ($this->app->isClient('administrator') && substr($jumpPage, 0, 10) === 'index.php?')
 		{
 			$jumpPage = preg_replace('/&view=(\w+)/', '&task=$1.view', $jumpPage);
 			$jumpPage = preg_replace('/&Itemid=(\d*)/', '', $jumpPage);

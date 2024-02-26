@@ -153,7 +153,7 @@ class PlgFabrik_FormConsent extends PlgFabrik_Form
 		if($params->get('consent_juser', '0') === '1')
 		{
 			$userIdField = $this->getFieldName('consent_field_userid');
-			$userId 	 = $data[$userIdField];
+			$userId 	 = $data[$userIdField . '_raw'];
 		}
 
 		// If consent is missing for contact, do nothing
@@ -221,12 +221,13 @@ class PlgFabrik_FormConsent extends PlgFabrik_Form
 					$userId = 0;
 					if($params->get('consent_juser', '0') === '1')
 					{
-						$userIdField = $this->getFieldName('consent_field_userid');				
+						$userIdField = $this->getFieldName('consent_field_userid');	
+						$userIdField .= '_raw';						
 						$userId 	 = $row->$userIdField;
 					}
 					$data['listid'] = $listModel->getId();
 					$data['formid'] = $formModel->getid();
-					$data['rowid']  = $row->id;
+					$data['rowid']  = (int)$row->id;
 					
 					$this->savePrivacy($data, $userId, 2);
 				}

@@ -304,7 +304,7 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 
 		if ($this->isEditable() === false || $this->inDetailedView === true) {
 			$value = $this->getValue($data, $repeatCounter);
-			$label = $options[$value]->text;
+			$label = !empty($value) ? $options[$value]->text : "";
 			return self::getReadOnlyOutput($value, $label);
 		}
 

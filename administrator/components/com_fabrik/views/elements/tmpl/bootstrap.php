@@ -80,165 +80,163 @@ $states	= array(
 			</div>
 		<?php else : ?>
 
-    <div class="table-div-wrapper">
-        <table class="table table-striped" id="elementList">
-            <thead>
-            <tr>
-                <td class="w-1 text-center">
-				    <?= HTMLHelper::_('grid.checkall'); ?>
-                </td>
-                <th scope="col" class="w-1 d-none d-md-table-cell">
-				    <?= HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'e.id', $listDirn, $listOrder); ?>
+	<table class="table table-striped" id="elementList">
+		<thead>
+			<tr>
+				<td class="w-1 text-center">
+					<?= HTMLHelper::_('grid.checkall'); ?>
+				</td>
+				<th scope="col" class="w-1 d-none d-md-table-cell">
+                    <?= HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'e.id', $listDirn, $listOrder); ?>
+				</th>
+
+                <th scope="col" class="w-3 d-none d-md-table-cell">
+                    <?= HTMLHelper::_('searchtools.sort', '', 'e.ordering', $listDirn, $listOrder); ?>
                 </th>
 
                 <th scope="col" class="w-3 d-none d-md-table-cell">
-				    <?= HTMLHelper::_('searchtools.sort', '', 'e.ordering', $listDirn, $listOrder); ?>
-                </th>
-
-                <th scope="col" class="w-3 d-none d-md-table-cell">
-				    <?= Text::_('COM_FABRIK_LINK');?>
+					<?= Text::_('COM_FABRIK_LINK');?>
                 </th>
 
                 <th scope="col" class="w-8 d-none d-md-table-cell">
-				    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_NAME', 'e.name', $listDirn, $listOrder); ?>
-                </th>
+                    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_NAME', 'e.name', $listDirn, $listOrder); ?>
+				</th>
                 <th scope="col" class="w-8 d-none d-md-table-cell">
-				    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_LABEL', 'e.label', $listDirn, $listOrder); ?>
-                </th>
+                    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_LABEL', 'e.label', $listDirn, $listOrder); ?>
+				</th>
                 <th scope="col" class="w-8 d-none d-md-table-cell">
-				    <?= Text::_('COM_FABRIK_FULL_ELEMENT_NAME');?>
-                </th>
+					<?= Text::_('COM_FABRIK_FULL_ELEMENT_NAME');?>
+				</th>
                 <th scope="col" class="w-3 d-none d-md-table-cell">
-				    <?= Text::_('COM_FABRIK_VALIDATIONS'); ?>
-                </th>
+					<?= Text::_('COM_FABRIK_VALIDATIONS'); ?>
+				</th>
                 <th scope="col" class="w-8 d-none d-md-table-cell">
-				    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_GROUP', 'g.name', $listDirn, $listOrder); ?>
-                </th>
+                    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_GROUP', 'g.name', $listDirn, $listOrder); ?>
+				</th>
                 <th scope="col" class="w-8 d-none d-md-table-cell">
-				    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_PLUGIN', 'e.plugin', $listDirn, $listOrder); ?>
-                </th>
+                    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_PLUGIN', 'e.plugin', $listDirn, $listOrder); ?>
+				</th>
                 <th scope="col"class="w-3 d-none d-md-table-cell">
-				    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_SHOW_IN_LIST', 'e.show_in_list_summary', $listDirn, $listOrder); ?>
-                </th>
+                    <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_SHOW_IN_LIST', 'e.show_in_list_summary', $listDirn, $listOrder); ?>
+				</th>
                 <th scope="col"class="w-3 d-none d-md-table-cell">
-				    <?= HTMLHelper::_('searchtools.sort', 'JPUBLISHED', 'e.published', $listDirn, $listOrder); ?>
-                </th>
-            </tr>
-            </thead>
-            <tfoot>
-            <tr>
-                <td colspan="12">
-				    <?= $this->pagination->getListFooter(); ?>
-                </td>
-            </tr>
-            </tfoot>
-            <tbody>
-		    <?php foreach ($this->items as $i => $item) :
-			    $ordering	= ($listOrder == 'e.ordering');
-			    $link = Route::_('index.php?option=com_fabrik&task=element.edit&id='.(int) $item->id);
-			    $canCreate	= $user->authorise('core.create',		'com_fabrik.element.'.$item->group_id);
-			    $canEdit	= $user->authorise('core.edit',			'com_fabrik.element.'.$item->group_id);
-			    $canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out==$user->get('id') || $item->checked_out==0;
-			    $canChange	= $user->authorise('core.edit.state',	'com_fabrik.element.'.$item->group_id) && $canCheckin;
-			    $extraTip = '<strong>' . $item->numValidations . ' ' . Text::_('COM_FABRIK_VALIDATIONS') . '</strong><br />'
-				    . implode('<br />', $item->validationTip)
-				    . '<br/><br/><strong>' . $item->numJs . ' ' . Text::_('COM_FABRIK_JAVASCRIPT') . '</strong>';
-			    ?>
+                    <?= HTMLHelper::_('searchtools.sort', 'JPUBLISHED', 'e.published', $listDirn, $listOrder); ?>
+				</th>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<td colspan="12">
+					<?= $this->pagination->getListFooter(); ?>
+				</td>
+			</tr>
+		</tfoot>
+		<tbody>
+		<?php foreach ($this->items as $i => $item) :
+			$ordering	= ($listOrder == 'e.ordering');
+			$link = Route::_('index.php?option=com_fabrik&task=element.edit&id='.(int) $item->id);
+			$canCreate	= $user->authorise('core.create',		'com_fabrik.element.'.$item->group_id);
+			$canEdit	= $user->authorise('core.edit',			'com_fabrik.element.'.$item->group_id);
+			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out==$user->get('id') || $item->checked_out==0;
+			$canChange	= $user->authorise('core.edit.state',	'com_fabrik.element.'.$item->group_id) && $canCheckin;
+			$extraTip = '<strong>' . $item->numValidations . ' ' . Text::_('COM_FABRIK_VALIDATIONS') . '</strong><br />'
+				. implode('<br />', $item->validationTip)
+				. '<br/><br/><strong>' . $item->numJs . ' ' . Text::_('COM_FABRIK_JAVASCRIPT') . '</strong>';
+			?>
 
-                <tr class="row<?= $i % 2; ?>">
-                    <td>
-					    <?= HTMLHelper::_('grid.id', $i, $item->id); ?>
-                    </td>
+			<tr class="row<?= $i % 2; ?>">
+				<td>
+					<?= HTMLHelper::_('grid.id', $i, $item->id); ?>
+				</td>
 
-                    <td>
-					    <?= $item->id; ?>
-                    </td>
-                    <td>
-					    <?php if ($canChange) :
-						    $disableClassName = '';
-						    $disabledLabel	  = '';
+				<td>
+					<?= $item->id; ?>
+				</td>
+				<td>
+				<?php if ($canChange) :
+						$disableClassName = '';
+						$disabledLabel	  = '';
 
-						    if (!$saveOrder) :
-							    $disabledLabel    = Text::_('JORDERINGDISABLED');
-							    $disableClassName = 'inactive tip-top';
-						    endif; ?>
-                            <span class="sortable-handler hasTooltip <?= $disableClassName?>" title="<?= $disabledLabel?>">
+						if (!$saveOrder) :
+							$disabledLabel    = Text::_('JORDERINGDISABLED');
+							$disableClassName = 'inactive tip-top';
+						endif; ?>
+						<span class="sortable-handler hasTooltip <?= $disableClassName?>" title="<?= $disabledLabel?>">
 							<i class="icon-menu"></i>
 						</span>
-                            <input type="text" style="display:none" name="order[]" size="5" value="<?= $item->ordering;?>" class="width-20 text-area-order " />
-					    <?php else : ?>
-                            <span class="sortable-handler inactive" >
+						<input type="text" style="display:none" name="order[]" size="5" value="<?= $item->ordering;?>" class="width-20 text-area-order " />
+					<?php else : ?>
+						<span class="sortable-handler inactive" >
 							<i class="icon-menu"></i>
 						</span>
-					    <?php endif; ?>
-                    </td>
-                    <td>
-					    <?php if ($item->parent_id != 0) :
-						    echo "<a href='index.php?option=com_fabrik&task=element.edit&id=" . $item->parent_id . "'>"
-							    . HTMLHelper::image('media/com_fabrik/images/child_element.png', Text::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id),
-								    ['title' => Text::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id),'class'=>'hasTooltip'])
-							    . '</a>&nbsp;';
-					    else :
-						    if (!empty($item->child_ids)) :
-							    echo HTMLHelper::image('media/com_fabrik/images/parent_element.png', Text::sprintf('COM_FABRIK_PARENT_ELEMENT', $item->child_ids),
-								    ['title' =>Text::sprintf('COM_FABRIK_PARENT_ELEMENT', $item->child_ids),'class'=>'hasTooltip' ]);
-						    else :
-							    // Trying out removing the icon all together if it isn't linked
-							    // echo HTMLHelper::image('media/com_fabrik/images/element.png', Text::_('COM_FABRIK_NONLINKED_ELEMENT'), 'title="' . Text::_('COM_FABRIK_NONLINKED_ELEMENT') . '"');
-						    endif;
-					    endif;
-					    ?>
-                    </td>
-                    <td>
-					    <?php if ($item->checked_out) : ?>
-						    <?= HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time??'', 'elements.', $canCheckin); ?>
-					    <?php endif; ?>
-					    <?php
-					    if ($item->checked_out && ($item->checked_out != $user->get('id'))) :
-						    echo  $item->name;
-					    else :
-						    ?>
-                            <a href="<?= $link; ?>">
-							    <?= $item->name; ?>
-                            </a>
-					    <?php endif;
-					    ?>
-                    </td>
-                    <td>
-					    <?= str_replace(' ', '&nbsp;', Text::_(FabrikString::truncate($item->label, $truncateOpts))); ?>
-                    </td>
-                    <td>
+				<?php endif; ?>
+				</td>
+				<td>
+				<?php if ($item->parent_id != 0) :
+					echo "<a href='index.php?option=com_fabrik&task=element.edit&id=" . $item->parent_id . "'>"
+					. HTMLHelper::image('media/com_fabrik/images/child_element.png', Text::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id), 
+					['title' => Text::sprintf('COM_FABRIK_LINKED_ELEMENT', $item->parent_id),'class'=>'hasTooltip'])
+					. '</a>&nbsp;';
+				else :
+					if (!empty($item->child_ids)) :
+						echo HTMLHelper::image('media/com_fabrik/images/parent_element.png', Text::sprintf('COM_FABRIK_PARENT_ELEMENT', $item->child_ids), 
+						['title' =>Text::sprintf('COM_FABRIK_PARENT_ELEMENT', $item->child_ids),'class'=>'hasTooltip' ]);
+					else :
+						// Trying out removing the icon all together if it isn't linked
+						// echo HTMLHelper::image('media/com_fabrik/images/element.png', Text::_('COM_FABRIK_NONLINKED_ELEMENT'), 'title="' . Text::_('COM_FABRIK_NONLINKED_ELEMENT') . '"');
+					endif;
+				endif;
+				?>
+				</td>
+				<td>
+					<?php if ($item->checked_out) : ?>
+						<?= HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time??'', 'elements.', $canCheckin); ?>
+					<?php endif; ?>
+					<?php
+					if ($item->checked_out && ($item->checked_out != $user->get('id'))) :
+						echo  $item->name;
+					else :
+					?>
+					<a href="<?= $link; ?>">
+						<?= $item->name; ?>
+					</a>
+				<?php endif;
+				?>
+				</td>
+				<td>
+					<?= str_replace(' ', '&nbsp;', Text::_(FabrikString::truncate($item->label, $truncateOpts))); ?>
+				</td>
+				<td>
 					<span class="hasTooltip" title="<?= '<strong>' . $item->name . "</strong><br />" . $item->tip; ?>">
 						<?= $item->full_element_name; ?>
 					</span>
-                    </td>
-                    <td class="center">
+				</td>
+				<td class="center">
 					<span class="hasTooltip" title="<?= $extraTip ?>">
 						<?= $item->numValidations . '/' . $item->numJs; ?>
 					</span>
-                    </td>
-                    <td>
-                        <a href="index.php?option=com_fabrik&task=group.edit&id=<?= $item->group_id?>">
-						    <?= $item->group_name; ?>
-                        </a>
-                    </td>
-                    <td>
-					    <?= $item->plugin; ?>
-                    </td>
-                    <td class="text-center">
-					    <?php
-					    echo HTMLHelper::_('jgrid.state', $states, $item->show_in_list_summary, $i, 'elements.', true, true);
-					    ?>
-                    </td>
-                    <td class="text-center">
-					    <?= HTMLHelper::_('jgrid.published', $item->published, $i, 'elements.', $canChange);?>
-                    </td>
-                </tr>
+				</td>
+				<td>
+					<a href="index.php?option=com_fabrik&task=group.edit&id=<?= $item->group_id?>">
+						<?= $item->group_name; ?>
+					</a>
+				</td>
+				<td>
+					<?= $item->plugin; ?>
+				</td>
+				<td class="text-center">
+					<?php
+					echo HTMLHelper::_('jgrid.state', $states, $item->show_in_list_summary, $i, 'elements.', true, true);
+					?>
+				</td>
+				<td class="text-center">
+					<?= HTMLHelper::_('jgrid.published', $item->published, $i, 'elements.', $canChange);?>
+				</td>
+			</tr>
 
-		    <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
+			<?php endforeach; ?>
+		</tbody>
+	</table>
 	<?php endif; ?>
 
 	<input type="hidden" name="task" value="" />
