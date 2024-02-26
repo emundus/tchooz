@@ -58,7 +58,7 @@ class ModulesRenderer extends DocumentRenderer
 			$buffer .= $moduleHtml;
 		}
 
-		Factory::getApplication()->triggerEvent('onAfterRenderModules', array(&$buffer, &$params));
+		Factory::getApplication()->getDispatcher()->dispatch('onAfterRenderModules', array(&$buffer, &$params));
 
 		return $buffer;
 	}

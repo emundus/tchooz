@@ -64,6 +64,10 @@
     <field name="update_site_id">12</field>
     <field name="extension_id">347</field>
    </row>
+   <row>
+    <field name="update_site_id">13</field>
+    <field name="extension_id">731</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

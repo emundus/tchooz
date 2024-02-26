@@ -2723,7 +2723,7 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 	public function getFrontDefaultValue($data = array())
 	{
 		$params       = $this->getParams();
-		$db           = Factory::getDbo();
+		$db           = Factory::getContainer()->get('DatabaseDriver');
 		$alwaysToday  = $params->get('date_alwaystoday', false);
 		$defaultToday = $params->get('date_defaulttotoday', false);
 

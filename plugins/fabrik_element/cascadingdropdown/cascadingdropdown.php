@@ -425,7 +425,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			if (is_array($ids))
 			{
 				array_walk($ids, function(&$val) {
-					$db = Factory::getDbo();
+					$db = Factory::getContainer()->get('DatabaseDriver');
 					$val = $db->quote($val);
 				});
 				$this->autocomplete_where = empty($ids) ? '1 = -1' : $key . ' IN (' . implode(',', $ids) . ')';

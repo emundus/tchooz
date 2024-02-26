@@ -49,6 +49,7 @@ class FabrikViewList extends FabrikViewListBase
 			$this->emptyLink = false;
 			//$this->filters = array();
 			$this->showFilters = false;
+			$this->filterMode = 0;
 			$this->hasButtons = false;
 
 			if ($this->app->getInput()->get('pdf_include_bootstrap', $params->get('pdf_include_bootstrap', '0')) === '1')

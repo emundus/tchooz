@@ -33,6 +33,10 @@ use \stdClass;
 
 jimport('joomla.html.pagination');
 
+class FabrikPaginationObject extends \Joomla\CMS\Pagination\PaginationObject {
+	public $key = null;
+}
+
 /**
  * Extension to the normal page-nav functions
  * $total, $limitstart, $limit
@@ -90,6 +94,13 @@ class Pagination extends \Joomla\CMS\Pagination\Pagination
 	 * @var bool
 	 */
 	public $viewAll = false;
+
+
+	/* dynamic properties to make php8.2 happy */
+	public $showNav  = null;
+	public $startLimit  = null;
+	public $tmpl  = null;
+//	public $key  = null;
 
 	/**
 	 * Set the pagination ID
@@ -173,7 +184,7 @@ class Pagination extends \Joomla\CMS\Pagination\Pagination
 	 *
 	 * @return   string  HTML link
 	 */
-	protected function _item_active(\Joomla\CMS\Pagination\PaginationObject $item)
+	protected function _item_active($item)
 	{
 		$displayData       = new stdClass;
 		$displayData->item = $item;
@@ -191,7 +202,7 @@ class Pagination extends \Joomla\CMS\Pagination\Pagination
 	 *
 	 * @since   1.5
 	 */
-	protected function _item_inactive(\Joomla\CMS\Pagination\PaginationObject $item)
+	protected function _item_inactive( $item)
 	{
 		$displayData       = new stdClass;
 		$displayData->item = $item;
@@ -305,7 +316,7 @@ class Pagination extends \Joomla\CMS\Pagination\Pagination
 
 		// $$$ hugh - need to work out if we need & or ?
 		$sepchar        = strstr($this->url, '?') ? '&amp;' : '?';
-		$data->all      = new PaginationObject(Text::_('COM_FABRIK_VIEW_ALL'));
+		$data->all      = new FabrikPaginationObject(Text::_('COM_FABRIK_VIEW_ALL'));
 		$data->all->key = 'all';
 
 		if (!$this->viewAll)
@@ -315,9 +326,9 @@ class Pagination extends \Joomla\CMS\Pagination\Pagination
 		}
 
 		// Set the start and previous data objects
-		$data->start         = new PaginationObject(Text::_('COM_FABRIK_START'));
+		$data->start         = new FabrikPaginationObject(Text::_('COM_FABRIK_START'));
 		$data->start->key    = 'start';
-		$data->previous      = new PaginationObject(Text::_('COM_FABRIK_PREV'));
+		$data->previous      = new FabrikPaginationObject(Text::_('COM_FABRIK_PREV'));
 		$data->previous->key = 'previous';
 
 		if ($this->get('pages.current') > 1)
@@ -334,9 +345,9 @@ class Pagination extends \Joomla\CMS\Pagination\Pagination
 		}
 
 		// Set the next and end data objects
-		$data->next      = new PaginationObject(Text::_('COM_FABRIK_NEXT'));
+		$data->next      = new FabrikPaginationObject(Text::_('COM_FABRIK_NEXT'));
 		$data->next->key = 'next';
-		$data->end       = new PaginationObject(Text::_('COM_FABRIK_END'));
+		$data->end       = new FabrikPaginationObject(Text::_('COM_FABRIK_END'));
 		$data->end->key  = 'end';
 
 		if ($this->get('pages.current') <= $this->get('pages.total'))
@@ -359,7 +370,7 @@ class Pagination extends \Joomla\CMS\Pagination\Pagination
 		for ($i = $this->get('pages.start'); $i <= $stop; $i++)
 		{
 			$offset               = ($i - 1) * $this->limit;
-			$data->pages[$i]      = new PaginationObject($i);
+			$data->pages[$i]      = new FabrikPaginationObject($i);
 			$data->pages[$i]->key = $i;
 
 			if ($i != $this->get('pages.current') || $this->viewAll)

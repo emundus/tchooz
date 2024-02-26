@@ -316,6 +316,8 @@ class PlgFabrik_ListUpdate_col extends PlgFabrik_List
 		{
 			foreach ($update->coltoupdate as $i => $col)
 			{
+				//update-col (user select) uses element's list view filter settings for input, which creates issues; fetch at least the "Range" filter
+				$update->update_value[$i] = is_array($update->update_value[$i]) ? $update->update_value[$i][0] : $update->update_value[$i];
 				$this->_process($model, $col, $update->update_value[$i], $update->update_eval[$i]);
 			}
 		}

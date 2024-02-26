@@ -182,6 +182,7 @@ class PlgFabrik_ElementField extends PlgFabrik_Element
 		 * so add false flag to ensure its encoded once only
 		 * $$$ hugh - the 'double encode' arg was only added in 5.2.3, so this is blowing some sites up
 		 */
+		$value = $value ?? "";
 		if (version_compare(phpversion(), '5.2.3', '<'))
 		{
 			$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8');

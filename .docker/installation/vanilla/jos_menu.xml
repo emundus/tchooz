@@ -66,7 +66,7 @@
     <field name="template_style_id">0</field>
     <field name="params"></field>
     <field name="lft">0</field>
-    <field name="rgt">395</field>
+    <field name="rgt">383</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4274,258 +4274,6 @@
     <field name="publish_down" value_is_null="true"></field>
    </row>
    <row>
-    <field name="id">308</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik</field>
-    <field name="alias">com-fabrik</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=home</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">1</field>
-    <field name="level">1</field>
-    <field name="component_id">332</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/fabrik.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">303</field>
-    <field name="rgt">320</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">309</field>
-    <field name="menutype">main</field>
-    <field name="title">Home</field>
-    <field name="alias">home</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/home</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=home</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">308</field>
-    <field name="level">2</field>
-    <field name="component_id">332</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/fabrik.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">304</field>
-    <field name="rgt">305</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">310</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_lists</field>
-    <field name="alias">com-fabrik-lists</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-lists</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=lists</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">308</field>
-    <field name="level">2</field>
-    <field name="component_id">332</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/lists.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">306</field>
-    <field name="rgt">307</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">311</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_forms</field>
-    <field name="alias">com-fabrik-forms</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-forms</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=forms</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">308</field>
-    <field name="level">2</field>
-    <field name="component_id">332</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/forms.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">308</field>
-    <field name="rgt">309</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">312</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_groups</field>
-    <field name="alias">com-fabrik-groups</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-groups</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=groups</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">308</field>
-    <field name="level">2</field>
-    <field name="component_id">332</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/groups.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">310</field>
-    <field name="rgt">311</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">313</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_elements</field>
-    <field name="alias">com-fabrik-elements</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-elements</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=elements</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">308</field>
-    <field name="level">2</field>
-    <field name="component_id">332</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/elements.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">312</field>
-    <field name="rgt">313</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">314</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_visualizations</field>
-    <field name="alias">com-fabrik-visualizations</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-visualizations</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=visualizations</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">308</field>
-    <field name="level">2</field>
-    <field name="component_id">332</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/visualizations.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">314</field>
-    <field name="rgt">315</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">315</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_connections</field>
-    <field name="alias">com-fabrik-connections</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-connections</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=connections</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">308</field>
-    <field name="level">2</field>
-    <field name="component_id">332</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/connections.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">316</field>
-    <field name="rgt">317</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">316</field>
-    <field name="menutype">main</field>
-    <field name="title">com_fabrik_schedule</field>
-    <field name="alias">com-fabrik-schedule</field>
-    <field name="note"></field>
-    <field name="path">com-fabrik/com-fabrik-schedule</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=crons</field>
-    <field name="type">component</field>
-    <field name="published">1</field>
-    <field name="parent_id">308</field>
-    <field name="level">2</field>
-    <field name="component_id">332</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="browserNav">0</field>
-    <field name="access">1</field>
-    <field name="img">../administrator/components/com_fabrik/images/schedules.png</field>
-    <field name="template_style_id">0</field>
-    <field name="params">{}</field>
-    <field name="lft">318</field>
-    <field name="rgt">319</field>
-    <field name="home">0</field>
-    <field name="language"></field>
-    <field name="client_id">1</field>
-    <field name="publish_up" value_is_null="true"></field>
-    <field name="publish_down" value_is_null="true"></field>
-   </row>
-   <row>
     <field name="id">346</field>
     <field name="menutype">mainmenu</field>
     <field name="title">Fiche déjà envoyée</field>
@@ -4545,8 +4293,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:0,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
-    <field name="lft">321</field>
-    <field name="rgt">322</field>
+    <field name="lft">303</field>
+    <field name="rgt">304</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4573,8 +4321,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:0,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
-    <field name="lft">323</field>
-    <field name="rgt">324</field>
+    <field name="lft">305</field>
+    <field name="rgt">306</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4601,8 +4349,8 @@
     <field name="img"> </field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:0,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
-    <field name="lft">325</field>
-    <field name="rgt">326</field>
+    <field name="lft">307</field>
+    <field name="rgt">308</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4629,8 +4377,8 @@
     <field name="img"></field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;hk_category&quot;:{&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;inherit&quot;,&quot;columns&quot;:3,&quot;limit&quot;:&quot;21&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;modules&quot;:&quot;&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;use_module_name&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;random&quot;:0,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;1&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;nochild&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;div_custom_fields&quot;:&quot;&quot;,&quot;height&quot;:&quot;150&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;links_on_main_categories&quot;:&quot;0&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;enable_carousel&quot;:&quot;0&quot;},&quot;hk_product&quot;:{&quot;border_visible&quot;:&quot;2&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;inherit&quot;,&quot;columns&quot;:&quot;3&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;modules&quot;:&quot;&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;use_module_name&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;random&quot;:&quot;0&quot;,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;1&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;nochild&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;div_custom_fields&quot;:&quot;&quot;,&quot;height&quot;:&quot;150&quot;,&quot;background_color&quot;:&quot;#FFFFFF&quot;,&quot;margin&quot;:&quot;10&quot;,&quot;rounded_corners&quot;:&quot;1&quot;,&quot;text_center&quot;:&quot;1&quot;,&quot;links_on_main_categories&quot;:&quot;0&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;display_badges&quot;:&quot;1&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
-    <field name="lft">327</field>
-    <field name="rgt">328</field>
+    <field name="lft">309</field>
+    <field name="rgt">310</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4657,8 +4405,8 @@
     <field name="img"></field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;hk_product&quot;:{&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;inherit&quot;,&quot;columns&quot;:3,&quot;limit&quot;:&quot;21&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;modules&quot;:&quot;&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;use_module_name&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;random&quot;:0,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;1&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;nochild&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;div_custom_fields&quot;:&quot;&quot;,&quot;height&quot;:&quot;150&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;links_on_main_categories&quot;:&quot;0&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
-    <field name="lft">329</field>
-    <field name="rgt">330</field>
+    <field name="lft">311</field>
+    <field name="rgt">312</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4685,8 +4433,8 @@
     <field name="img"></field>
     <field name="template_style_id">0</field>
     <field name="params">show_page_title=1</field>
-    <field name="lft">331</field>
-    <field name="rgt">332</field>
+    <field name="lft">313</field>
+    <field name="rgt">314</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4713,8 +4461,8 @@
     <field name="img"></field>
     <field name="template_style_id">0</field>
     <field name="params">show_page_title=1</field>
-    <field name="lft">333</field>
-    <field name="rgt">334</field>
+    <field name="lft">315</field>
+    <field name="rgt">316</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4741,8 +4489,8 @@
     <field name="img"></field>
     <field name="template_style_id">0</field>
     <field name="params">{&quot;hk_category&quot;:{&quot;show_image&quot;:&quot;0&quot;,&quot;show_description&quot;:&quot;1&quot;,&quot;layout_type&quot;:&quot;inherit&quot;,&quot;columns&quot;:&quot;3&quot;,&quot;limit&quot;:&quot;21&quot;,&quot;random&quot;:&quot;0&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;0&quot;,&quot;selectparentlisting&quot;:&quot;10&quot;,&quot;modules&quot;:&quot;&quot;,&quot;use_module_name&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;recently_viewed&quot;:&quot;0&quot;,&quot;add_to_cart&quot;:&quot;1&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;show_vote_product&quot;:&quot;0&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;3&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;nochild&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;number_of_products&quot;:&quot;0&quot;,&quot;only_if_products&quot;:&quot;0&quot;,&quot;image_width&quot;:&quot;&quot;,&quot;image_height&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;pane_height&quot;:&quot;&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;border_visible&quot;:&quot;-1&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;ul_class_name&quot;:&quot;&quot;,&quot;content_type&quot;:&quot;manufacturer&quot;,&quot;enable_carousel&quot;:&quot;0&quot;},&quot;hk_product&quot;:{&quot;content_type&quot;:&quot;product&quot;,&quot;layout_type&quot;:&quot;inherit&quot;,&quot;columns&quot;:3,&quot;limit&quot;:&quot;21&quot;,&quot;order_dir&quot;:&quot;ASC&quot;,&quot;filter_type&quot;:&quot;1&quot;,&quot;selectparentlisting&quot;:&quot;2&quot;,&quot;moduleclass_sfx&quot;:&quot;&quot;,&quot;modules&quot;:&quot;&quot;,&quot;content_synchronize&quot;:&quot;1&quot;,&quot;use_module_name&quot;:&quot;0&quot;,&quot;product_order&quot;:&quot;ordering&quot;,&quot;random&quot;:0,&quot;product_synchronize&quot;:&quot;1&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;price_with_tax&quot;:&quot;1&quot;,&quot;show_original_price&quot;:&quot;1&quot;,&quot;show_discount&quot;:&quot;1&quot;,&quot;price_display_type&quot;:&quot;cheapest&quot;,&quot;category_order&quot;:&quot;category_ordering&quot;,&quot;child_display_type&quot;:&quot;nochild&quot;,&quot;child_limit&quot;:&quot;&quot;,&quot;div_item_layout_type&quot;:&quot;img_title&quot;,&quot;div_custom_fields&quot;:&quot;&quot;,&quot;height&quot;:&quot;150&quot;,&quot;background_color&quot;:&quot;&quot;,&quot;margin&quot;:&quot;&quot;,&quot;rounded_corners&quot;:&quot;-1&quot;,&quot;text_center&quot;:&quot;-1&quot;,&quot;links_on_main_categories&quot;:&quot;0&quot;,&quot;link_to_product_page&quot;:&quot;1&quot;,&quot;enable_carousel&quot;:&quot;0&quot;}}</field>
-    <field name="lft">335</field>
-    <field name="rgt">336</field>
+    <field name="lft">317</field>
+    <field name="rgt">318</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -4769,8 +4517,8 @@
     <field name="img">../media/com_hikashop/images/icons/icon-16-hikashop.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">341</field>
-    <field name="rgt">358</field>
+    <field name="lft">319</field>
+    <field name="rgt">336</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -4797,8 +4545,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-article.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">342</field>
-    <field name="rgt">343</field>
+    <field name="lft">320</field>
+    <field name="rgt">321</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -4825,8 +4573,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-category.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">344</field>
-    <field name="rgt">345</field>
+    <field name="lft">322</field>
+    <field name="rgt">323</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -4853,8 +4601,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-user.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">346</field>
-    <field name="rgt">347</field>
+    <field name="lft">324</field>
+    <field name="rgt">325</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -4881,8 +4629,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-content.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">348</field>
-    <field name="rgt">349</field>
+    <field name="lft">326</field>
+    <field name="rgt">327</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -4909,8 +4657,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-config.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">350</field>
-    <field name="rgt">351</field>
+    <field name="lft">328</field>
+    <field name="rgt">329</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -4937,8 +4685,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-default.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">352</field>
-    <field name="rgt">353</field>
+    <field name="lft">330</field>
+    <field name="rgt">331</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -4965,8 +4713,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-help.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">354</field>
-    <field name="rgt">355</field>
+    <field name="lft">332</field>
+    <field name="rgt">333</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -4993,8 +4741,8 @@
     <field name="img">./templates/bluestork/images/menu/icon-16-help-jrd.png</field>
     <field name="template_style_id">0</field>
     <field name="params"></field>
-    <field name="lft">356</field>
-    <field name="rgt">357</field>
+    <field name="lft">334</field>
+    <field name="rgt">335</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">1</field>
@@ -5021,8 +4769,8 @@
     <field name="img">components/com_falang/assets/images/icon-16-falang.png</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">359</field>
-    <field name="rgt">370</field>
+    <field name="lft">337</field>
+    <field name="rgt">348</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5049,8 +4797,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">360</field>
-    <field name="rgt">361</field>
+    <field name="lft">338</field>
+    <field name="rgt">339</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5077,8 +4825,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">362</field>
-    <field name="rgt">363</field>
+    <field name="lft">340</field>
+    <field name="rgt">341</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5105,8 +4853,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">364</field>
-    <field name="rgt">365</field>
+    <field name="lft">342</field>
+    <field name="rgt">343</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5133,8 +4881,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">366</field>
-    <field name="rgt">367</field>
+    <field name="lft">344</field>
+    <field name="rgt">345</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5161,8 +4909,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">368</field>
-    <field name="rgt">369</field>
+    <field name="lft">346</field>
+    <field name="rgt">347</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5189,8 +4937,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">371</field>
-    <field name="rgt">386</field>
+    <field name="lft">349</field>
+    <field name="rgt">364</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5217,8 +4965,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">372</field>
-    <field name="rgt">373</field>
+    <field name="lft">350</field>
+    <field name="rgt">351</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5245,8 +4993,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">374</field>
-    <field name="rgt">375</field>
+    <field name="lft">352</field>
+    <field name="rgt">353</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5273,8 +5021,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">376</field>
-    <field name="rgt">377</field>
+    <field name="lft">354</field>
+    <field name="rgt">355</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5301,8 +5049,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">378</field>
-    <field name="rgt">379</field>
+    <field name="lft">356</field>
+    <field name="rgt">357</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5329,8 +5077,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">380</field>
-    <field name="rgt">381</field>
+    <field name="lft">358</field>
+    <field name="rgt">359</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5357,8 +5105,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">382</field>
-    <field name="rgt">383</field>
+    <field name="lft">360</field>
+    <field name="rgt">361</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5385,8 +5133,8 @@
     <field name="img">class:component</field>
     <field name="template_style_id">0</field>
     <field name="params">{}</field>
-    <field name="lft">384</field>
-    <field name="rgt">385</field>
+    <field name="lft">362</field>
+    <field name="rgt">363</field>
     <field name="home">0</field>
     <field name="language"></field>
     <field name="client_id">1</field>
@@ -5418,6 +5166,258 @@
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">412</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik</field>
+    <field name="alias">com-fabrik</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=home</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">332</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/fabrik.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">365</field>
+    <field name="rgt">382</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">413</field>
+    <field name="menutype">main</field>
+    <field name="title">Home</field>
+    <field name="alias">home</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/home</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=home</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">412</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/fabrik.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">366</field>
+    <field name="rgt">367</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">414</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_lists</field>
+    <field name="alias">com-fabrik-lists</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-lists</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=lists</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">412</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/lists.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">368</field>
+    <field name="rgt">369</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">415</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_forms</field>
+    <field name="alias">com-fabrik-forms</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-forms</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=forms</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">412</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/forms.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">370</field>
+    <field name="rgt">371</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">416</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_groups</field>
+    <field name="alias">com-fabrik-groups</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-groups</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=groups</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">412</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/groups.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">372</field>
+    <field name="rgt">373</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">417</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_elements</field>
+    <field name="alias">com-fabrik-elements</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-elements</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=elements</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">412</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/elements.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">374</field>
+    <field name="rgt">375</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">418</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_visualizations</field>
+    <field name="alias">com-fabrik-visualizations</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-visualizations</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=visualizations</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">412</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/visualizations.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">376</field>
+    <field name="rgt">377</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">419</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_connections</field>
+    <field name="alias">com-fabrik-connections</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-connections</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=connections</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">412</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/connections.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">378</field>
+    <field name="rgt">379</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">420</field>
+    <field name="menutype">main</field>
+    <field name="title">com_fabrik_schedule</field>
+    <field name="alias">com-fabrik-schedule</field>
+    <field name="note"></field>
+    <field name="path">com-fabrik/com-fabrik-schedule</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=crons</field>
+    <field name="type">component</field>
+    <field name="published">1</field>
+    <field name="parent_id">412</field>
+    <field name="level">2</field>
+    <field name="component_id">332</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img">../administrator/components/com_fabrik/images/schedules.png</field>
+    <field name="template_style_id">0</field>
+    <field name="params">{}</field>
+    <field name="lft">380</field>
+    <field name="rgt">381</field>
+    <field name="home">0</field>
+    <field name="language"></field>
+    <field name="client_id">1</field>
     <field name="publish_up" value_is_null="true"></field>
     <field name="publish_down" value_is_null="true"></field>
    </row>

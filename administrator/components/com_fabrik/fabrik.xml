@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension client="site" method="upgrade" type="component" version="4">
 	<name>com_fabrik</name>
-    <author>Henk van Klinken</author>
-    <creationDate>October 2023</creationDate>
-    <copyright>Copyright (C) 2005-2023 Media A-Team, Inc. - All rights reserved.</copyright>
-    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
-	<version>4.0Zeta</version>
+    <author>Fabrikar</author>
+    <creationDate>February 2024</creationDate>
+    <copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
+    <license>GNU General Public License version 3 or later; see software_license.txt</license>
+	<version>4.0</version>
+	<gitdate>2024/01/3</gitdate>
 	<description>COM_FABRIK_XML_DESCRIPTION</description>
 
 	<scriptfile>com_fabrik.manifest.class.php</scriptfile>

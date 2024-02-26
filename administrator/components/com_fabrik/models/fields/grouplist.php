@@ -48,8 +48,6 @@ class JFormFieldGroupList extends GroupedlistField
 			$this->value = $app->getUserStateFromRequest('com_fabrik.elements.filter.group', 'filter_groupId', $this->value);
 		}
 
-		$sql_where   = (string) $this->element['sql_where'];
-
 		// Initialize variables.
 		$groups = array();
 		$db = Factory::getDbo(true);
@@ -61,10 +59,6 @@ class JFormFieldGroupList extends GroupedlistField
 		->join('INNER', '#__fabrik_formgroup AS fg ON fg.group_id = g.id')
 		->join('INNER', '#__fabrik_forms AS f on fg.form_id = f.id');
 		$query->order('f.label, g.name');
-
-		if(!empty($sql_where)) {
-			$query->where($sql_where);
-		}
 
 		// Get the options.
 		$db->setQuery($query);
