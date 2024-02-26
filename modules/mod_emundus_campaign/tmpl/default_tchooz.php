@@ -57,14 +57,15 @@ if (sizeof($tmp_campaigns) > 0) {
 			return (int) $a->{$order} - (int) $b->{$order};
 		});
 
-		foreach ($tmp_campaigns as $campaign) {
-			$month                                = explode('-', $campaign->month_name);
-			$month_name                           = JText::_(strtoupper($month[0]));
-			$month_year                           = $month[1];
+	    foreach ($tmp_campaigns as $campaign)
+	    {
+		    $month                                = explode('-', $campaign->month_name);
+		    $month_name                           = JText::_(strtoupper($month[0]));
+		    $month_year                           = $month[1];
 
-			$campaigns[$campaign->month.'_'.$month_year][]        = $campaign;
-			$campaigns[$campaign->month.'_'.$month_year]['label'] = $month_name . ' - ' . $month_year;
-		}
+		    $campaigns[$campaign->month.'_'.$month_year][]        = $campaign;
+		    $campaigns[$campaign->month.'_'.$month_year]['label'] = $month_name . ' - ' . $month_year;
+	    }
 	}
 	else {
 		$campaigns ['campaigns'] = $tmp_campaigns;
