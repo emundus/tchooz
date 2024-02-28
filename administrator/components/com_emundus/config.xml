@@ -39,6 +39,7 @@
                name="log_forms_update_forms"
                label="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS"
                description="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS_DESC"
+               class="advancedSelect"
                type="sql"
                query="SELECT id, CONCAT(id, ' - ', label) as label FROM jos_fabrik_forms WHERE published = 1"
                key_field="id"
@@ -237,6 +238,7 @@
                multiple="true"
                default='["4", "6", "21"]'
                label="COM_EMUNDUS_ATTACHCHMENT_NON_DELETABLE"
+               class="advancedSelect"
         />
         <field name="referent_can_edit_after_deadline" menu="hide" type="list" default="1"
                label="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE"
@@ -320,7 +322,8 @@
                 value_field="title"
                 multiple="true"
                 default="[93,102,103,104,168,170]"
-        ></field>
+                class="advancedSelect"
+        />
     </fieldset>
     <fieldset label="COM_EMUNDUS_PAYMENT" name="payment" description="COM_EMUNDUS_PAYMENT_DESC">
         <field name="application_fee" menu="hide" type="list" default="0" label="COM_EMUNDUS_APPLICATION_FEES"

@@ -983,8 +983,14 @@ class EmundusControllerUsers extends JControllerLegacy
 			if ($return->status === false) {
 				// The request failed.
 				// Go back to the request form.
-				$message = JText::sprintf('COM_USERS_RESET_REQUEST_FAILED', $return->message);
-				$this->setRedirect('index.php?option=com_users&view=reset', $message, 'notice');
+				$message = Text::sprintf('COM_USERS_RESET_REQUEST_FAILED', $return->message);
+				$menu = $this->app->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
+				if(!empty($menu)) {
+					$this->setRedirect($menu->alias, $message, 'notice');
+				}
+				else {
+					$this->setRedirect(Route('index.php?option=com_users&view=reset&layout=confirm'), $message, 'notice');
+				}
 
 			}
 			else {
