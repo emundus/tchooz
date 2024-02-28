@@ -26,6 +26,9 @@ module.exports = {
         },
         {
             pattern: /tw-w-/
+        },
+        {
+            pattern: /tw-p(y|x|l|r|t|b)-/
         }
     ],
     theme: {
