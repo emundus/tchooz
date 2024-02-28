@@ -3617,6 +3617,30 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-w-screen {
   width: 100vw;
 }
+.tw-flex-1 {
+  flex: 1 1 0%;
+}
+.tw-flex-auto {
+  flex: 1 1 auto;
+}
+.tw-flex-initial {
+  flex: 0 1 auto;
+}
+.tw-flex-none {
+  flex: none;
+}
+.tw-flex-shrink {
+  flex-shrink: 1;
+}
+.tw-flex-shrink-0 {
+  flex-shrink: 0;
+}
+.tw-flex-grow {
+  flex-grow: 1;
+}
+.tw-flex-grow-0 {
+  flex-grow: 0;
+}
 .tw-cursor-pointer {
   cursor: pointer;
 }
@@ -3632,11 +3656,26 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-grid-cols-5 {
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
+.tw-flex-row {
+  flex-direction: row;
+}
+.tw-flex-row-reverse {
+  flex-direction: row-reverse;
+}
 .tw-flex-col {
   flex-direction: column;
 }
+.tw-flex-col-reverse {
+  flex-direction: column-reverse;
+}
 .tw-flex-wrap {
   flex-wrap: wrap;
+}
+.tw-flex-wrap-reverse {
+  flex-wrap: wrap-reverse;
+}
+.tw-flex-nowrap {
+  flex-wrap: nowrap;
 }
 .tw-items-start {
   align-items: flex-start;

@@ -29,6 +29,9 @@ module.exports = {
         },
         {
             pattern: /tw-p(y|x|l|r|t|b)-/
+        },
+        {
+            pattern: /tw-flex-/
         }
     ],
     theme: {
