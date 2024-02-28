@@ -22,7 +22,10 @@ module.exports = {
             pattern: /label-/
         },
         {
-            pattern: /m(l|r|t|b|x|y)-/
+            pattern: /tw-m(l|r|t|b|x|y)-/
+        },
+        {
+            pattern: /tw-w-/
         }
     ],
     theme: {
