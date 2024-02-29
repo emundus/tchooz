@@ -58,7 +58,7 @@
     <field name="evaluation_end">0000-00-00 00:00:00</field>
     <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
-    <field name="class">label-green</field>
+    <field name="class">label-green-2</field>
    </row>
    <row>
     <field name="id">5</field>
@@ -76,7 +76,7 @@
     <field name="evaluation_end">0000-00-00 00:00:00</field>
     <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
-    <field name="class">label-lightpurple</field>
+    <field name="class">label-orange-2</field>
    </row>
    <row>
     <field name="id">6</field>
@@ -94,7 +94,7 @@
     <field name="evaluation_end">2011-02-28 00:00:00</field>
     <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
-    <field name="class">label-lightblue</field>
+    <field name="class">label-light-blue-2</field>
    </row>
    <row>
     <field name="id">9</field>
@@ -112,7 +112,7 @@
     <field name="evaluation_end" value_is_null="true"></field>
     <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
-    <field name="class">label-default</field>
+    <field name="class">label-blue-2</field>
    </row>
    <row>
     <field name="id">1000</field>

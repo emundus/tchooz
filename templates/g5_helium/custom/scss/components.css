@@ -52,4 +52,91 @@
         }
     }
 
+    /** DROPFILES **/
+    #pwrapper #preview .restableMenu {
+        display: none;
+    }
+    .dropfiles-page {
+        .dropfiles-content-multi {
+            border-radius: 8px;
+            margin-top: 0;
+        }
+        .breadcrumbs {
+            display: none;
+        }
+        .dropfiles-container {
+            margin-top: 0;
+            .dropfiles-categories {
+                padding: 8px 4px;
+                h2 {
+                    color: var(--neutral-900);
+                }
+            }
+            .dropfiles_list {
+                .file {
+                    a.downloadlink {
+                        margin-top: 0 !important;
+                    }
+                    .filecontent > div.ext.pdf {
+                        background-image: url(media/com_emundus/images/icones/filetype/pdf.png);
+                        color: transparent;
+                        background-size: contain;
+                    }
+                    .file-size {
+                        display: none;
+                    }
+                    .file-hits {
+                        display: none;
+                    }
+                    .file-dated {
+                        display: none;
+                    }
+                }
+                .dropfileslightbox {
+                    display: none;
+                }
+            }
+        }
+    }
+    .com_dropfiles.view-manage {
+        .g-container {
+            width: 100%;
+        }
+        #mybootstrap #rightcol .dropfiles-save-submit:nth-child(1) {
+            left: 70% !important;
+        }
+        #mybootstrap #rightcol .dropfiles-save-submit {
+            float: right;
+        }
+        .managebootstrap {
+            border-radius: var(--em-default-br);
+            margin-bottom: 36px !important;
+            #mycategories {
+                border-radius: var(--em-default-br);
+                div.btn-categories#newcategory {
+                    z-index: 1;
+                    width: 100% !important;
+                }
+                #categorieslist {
+                    flex-direction: column;
+                }
+            }
+            #pwrapper {
+                border-radius: var(--em-default-br);
+                #wpreview {
+                    height: 100%;
+                    .dropfiles-flip-btn {
+                        right: 18px;
+                    }
+                    #preview {
+                        height: 100%;
+                        #dropbox {
+                            height: auto !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
