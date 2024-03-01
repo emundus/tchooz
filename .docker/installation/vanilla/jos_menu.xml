@@ -1212,7 +1212,7 @@
     <field name="access">2</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;show_title&quot;:&quot;0&quot;,&quot;link_titles&quot;:&quot;0&quot;,&quot;show_intro&quot;:&quot;0&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;0&quot;,&quot;show_category&quot;:&quot;0&quot;,&quot;link_category&quot;:&quot;0&quot;,&quot;show_parent_category&quot;:&quot;0&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;0&quot;,&quot;link_author&quot;:&quot;0&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;0&quot;,&quot;show_item_navigation&quot;:&quot;0&quot;,&quot;show_hits&quot;:&quot;0&quot;,&quot;show_tags&quot;:&quot;0&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;show_title&quot;:&quot;0&quot;,&quot;link_titles&quot;:&quot;0&quot;,&quot;show_intro&quot;:&quot;0&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;0&quot;,&quot;show_category&quot;:&quot;0&quot;,&quot;link_category&quot;:&quot;0&quot;,&quot;show_parent_category&quot;:&quot;0&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;0&quot;,&quot;link_author&quot;:&quot;0&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;0&quot;,&quot;show_item_navigation&quot;:&quot;0&quot;,&quot;show_hits&quot;:&quot;0&quot;,&quot;show_tags&quot;:&quot;0&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;homepage&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">121</field>
     <field name="rgt">122</field>
     <field name="home">0</field>
@@ -3004,7 +3004,7 @@
     <field name="access">1</field>
     <field name="img"> </field>
     <field name="template_style_id">22</field>
-    <field name="params">{&quot;layout_type&quot;:&quot;blog&quot;,&quot;num_leading_articles&quot;:&quot;&quot;,&quot;blog_class_leading&quot;:&quot;&quot;,&quot;num_intro_articles&quot;:&quot;&quot;,&quot;blog_class&quot;:&quot;&quot;,&quot;num_columns&quot;:&quot;&quot;,&quot;multi_column_order&quot;:&quot;&quot;,&quot;num_links&quot;:&quot;&quot;,&quot;link_intro_image&quot;:&quot;&quot;,&quot;orderby_pri&quot;:&quot;&quot;,&quot;orderby_sec&quot;:&quot;&quot;,&quot;order_date&quot;:&quot;&quot;,&quot;show_pagination&quot;:&quot;&quot;,&quot;show_pagination_results&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_readmore&quot;:&quot;&quot;,&quot;show_readmore_title&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;show_feed_link&quot;:&quot;&quot;,&quot;feed_summary&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;homepage&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="params">{&quot;featured_categories&quot;:[&quot;&quot;],&quot;layout_type&quot;:&quot;blog&quot;,&quot;num_leading_articles&quot;:&quot;&quot;,&quot;blog_class_leading&quot;:&quot;&quot;,&quot;num_intro_articles&quot;:&quot;&quot;,&quot;blog_class&quot;:&quot;&quot;,&quot;num_columns&quot;:&quot;&quot;,&quot;multi_column_order&quot;:&quot;&quot;,&quot;num_links&quot;:&quot;&quot;,&quot;link_intro_image&quot;:&quot;&quot;,&quot;orderby_pri&quot;:&quot;&quot;,&quot;orderby_sec&quot;:&quot;&quot;,&quot;order_date&quot;:&quot;&quot;,&quot;show_pagination&quot;:&quot;&quot;,&quot;show_pagination_results&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_readmore&quot;:&quot;&quot;,&quot;show_readmore_title&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;show_feed_link&quot;:&quot;&quot;,&quot;feed_summary&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;homepage&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
     <field name="lft">219</field>
     <field name="rgt">220</field>
     <field name="home">1</field>
@@ -3356,7 +3356,7 @@
     <field name="alias">profils-utilisateurs</field>
     <field name="note"></field>
     <field name="path">parametres-2/profils-utilisateurs</field>
-    <field name="link">index.php?option=com_fabrik&amp;view=list</field>
+    <field name="link">index.php?option=com_fabrik&amp;view=list&amp;listid=67</field>
     <field name="type">component</field>
     <field name="published">1</field>
     <field name="parent_id">254</field>
@@ -3367,8 +3367,8 @@
     <field name="browserNav">0</field>
     <field name="access">7</field>
     <field name="img"> </field>
-    <field name="template_style_id">0</field>
-    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="template_style_id">22</field>
+    <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">266</field>
     <field name="rgt">267</field>
     <field name="home">0</field>
@@ -3592,7 +3592,7 @@
     <field name="access">1</field>
     <field name="img"> </field>
     <field name="template_style_id">22</field>
-    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;huge circular inverted blue user outline icon&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;Personal Details&quot;,&quot;show_page_heading&quot;:&quot;0&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;huge circular inverted blue user outline icon&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;Personal Details&quot;,&quot;show_page_heading&quot;:&quot;0&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
     <field name="lft">242</field>
     <field name="rgt">243</field>
     <field name="home">0</field>
@@ -3660,7 +3660,7 @@
    <row>
     <field name="id">276</field>
     <field name="menutype">menu-profile9</field>
-    <field name="title">Previous Higher Education Records</field>
+    <field name="title">Diplômes et formations</field>
     <field name="alias">previous-higher-education-records</field>
     <field name="note"></field>
     <field name="path">formulaire-de-base-candidat-9/previous-higher-education-records</field>
@@ -3676,7 +3676,7 @@
     <field name="access">1</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
     <field name="lft">244</field>
     <field name="rgt">245</field>
     <field name="home">0</field>
@@ -3688,7 +3688,7 @@
    <row>
     <field name="id">277</field>
     <field name="menutype">menu-profile9</field>
-    <field name="title">Employment History</field>
+    <field name="title">Expériences professionnelles</field>
     <field name="alias">employment-history</field>
     <field name="note"></field>
     <field name="path">formulaire-de-base-candidat-9/employment-history</field>
@@ -3704,7 +3704,7 @@
     <field name="access">1</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
     <field name="lft">246</field>
     <field name="rgt">247</field>
     <field name="home">0</field>
@@ -3716,7 +3716,7 @@
    <row>
     <field name="id">278</field>
     <field name="menutype">menu-profile9</field>
-    <field name="title">Language Proficiency</field>
+    <field name="title"> Compétences linguistiques</field>
     <field name="alias">language-proficiency</field>
     <field name="note"></field>
     <field name="path">formulaire-de-base-candidat-9/language-proficiency</field>
@@ -3732,7 +3732,7 @@
     <field name="access">1</field>
     <field name="img"> </field>
     <field name="template_style_id">0</field>
-    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="params">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
     <field name="lft">248</field>
     <field name="rgt">249</field>
     <field name="home">0</field>
@@ -3778,7 +3778,7 @@
     <field name="path">formulaire-de-base-candidat-9/references</field>
     <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=256</field>
     <field name="type">component</field>
-    <field name="published">1</field>
+    <field name="published">-2</field>
     <field name="parent_id">272</field>
     <field name="level">2</field>
     <field name="component_id">332</field>

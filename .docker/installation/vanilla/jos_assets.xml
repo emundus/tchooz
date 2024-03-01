@@ -21,7 +21,7 @@
     <field name="id">1</field>
     <field name="parent_id">0</field>
     <field name="lft">0</field>
-    <field name="rgt">297</field>
+    <field name="rgt">299</field>
     <field name="level">0</field>
     <field name="name">root.1</field>
     <field name="title">Root Asset</field>
@@ -1041,7 +1041,7 @@
     <field name="id">121</field>
     <field name="parent_id">1</field>
     <field name="lft">245</field>
-    <field name="rgt">284</field>
+    <field name="rgt">286</field>
     <field name="level">1</field>
     <field name="name">com_dropfiles</field>
     <field name="title">Dropfiles</field>
@@ -1080,8 +1080,8 @@
    <row>
     <field name="id">129</field>
     <field name="parent_id">1</field>
-    <field name="lft">285</field>
-    <field name="rgt">286</field>
+    <field name="lft">287</field>
+    <field name="rgt">288</field>
     <field name="level">1</field>
     <field name="name">com_hikashop</field>
     <field name="title">HikaShop</field>
@@ -1160,8 +1160,8 @@
    <row>
     <field name="id">137</field>
     <field name="parent_id">1</field>
-    <field name="lft">287</field>
-    <field name="rgt">288</field>
+    <field name="lft">289</field>
+    <field name="rgt">290</field>
     <field name="level">1</field>
     <field name="name">com_scheduler.task.1</field>
     <field name="title">com_scheduler.task.1</field>
@@ -1170,8 +1170,8 @@
    <row>
     <field name="id">138</field>
     <field name="parent_id">1</field>
-    <field name="lft">289</field>
-    <field name="rgt">290</field>
+    <field name="lft">291</field>
+    <field name="rgt">292</field>
     <field name="level">1</field>
     <field name="name">com_scheduler.task.2</field>
     <field name="title">com_scheduler.task.2</field>
@@ -1250,8 +1250,8 @@
    <row>
     <field name="id">161</field>
     <field name="parent_id">1</field>
-    <field name="lft">291</field>
-    <field name="rgt">292</field>
+    <field name="lft">293</field>
+    <field name="rgt">294</field>
     <field name="level">1</field>
     <field name="name">com_guidedtours</field>
     <field name="title">com_guidedtours</field>
@@ -1260,8 +1260,8 @@
    <row>
     <field name="id">162</field>
     <field name="parent_id">1</field>
-    <field name="lft">293</field>
-    <field name="rgt">294</field>
+    <field name="lft">295</field>
+    <field name="rgt">296</field>
     <field name="level">1</field>
     <field name="name">com_mails</field>
     <field name="title">com_mails</field>
@@ -1270,8 +1270,8 @@
    <row>
     <field name="id">163</field>
     <field name="parent_id">1</field>
-    <field name="lft">295</field>
-    <field name="rgt">296</field>
+    <field name="lft">297</field>
+    <field name="rgt">298</field>
     <field name="level">1</field>
     <field name="name">com_workflow</field>
     <field name="title">com_workflow</field>

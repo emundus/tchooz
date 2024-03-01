@@ -801,7 +801,7 @@
     <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="publish_up">2018-09-16 20:43:45</field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="reset_button_label">Remise à zéro</field>
@@ -1417,22 +1417,22 @@
     <field name="record_in_database">1</field>
     <field name="error">FORM_ERROR</field>
     <field name="intro"></field>
-    <field name="created">2022-05-10 14:37:14</field>
+    <field name="created">2022-05-10 00:00:00</field>
     <field name="created_by">1</field>
     <field name="created_by_alias">admin</field>
-    <field name="modified">2022-05-10 14:37:14</field>
-    <field name="modified_by">0</field>
+    <field name="modified">2024-03-01 09:18:39</field>
+    <field name="modified_by">1</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="publish_up">2022-05-10 14:37:14</field>
     <field name="publish_down">2099-12-31 00:00:00</field>
-    <field name="reset_button_label"></field>
-    <field name="submit_button_label">Sauvegarder</field>
+    <field name="reset_button_label">Réinitialiser</field>
+    <field name="submit_button_label">SAVE</field>
     <field name="form_template">emundus</field>
     <field name="view_only_template">bootstrap</field>
     <field name="published">1</field>
     <field name="private">0</field>
-    <field name="params">{&quot;pdf&quot;:&quot;&quot;,&quot;note&quot;:&quot;&quot;,&quot;email&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;print&quot;:&quot;&quot;,&quot;pdf_size&quot;:&quot;letter&quot;,&quot;copy_icon&quot;:&quot;&quot;,&quot;save_icon&quot;:&quot;&quot;,&quot;apply_icon&quot;:&quot;&quot;,&quot;reset_icon&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;1&quot;,&quot;copy_button&quot;:&quot;0&quot;,&quot;delete_icon&quot;:&quot;&quot;,&quot;goback_icon&quot;:&quot;&quot;,&quot;spoof_check&quot;:&quot;1&quot;,&quot;tiplocation&quot;:&quot;tip&quot;,&quot;apply_button&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;1&quot;,&quot;pdf_template&quot;:&quot;admin&quot;,&quot;reset_button&quot;:&quot;0&quot;,&quot;delete_button&quot;:&quot;0&quot;,&quot;goback_button&quot;:&quot;0&quot;,&quot;submit_button&quot;:&quot;1&quot;,&quot;suppress_msgs&quot;:&quot;0&quot;,&quot;multipage_save&quot;:&quot;0&quot;,&quot;pdf_orientation&quot;:&quot;portrait&quot;,&quot;submit_on_enter&quot;:&quot;0&quot;,&quot;ajax_validations&quot;:&quot;0&quot;,&quot;process_jplugins&quot;:&quot;2&quot;,&quot;copy_button_class&quot;:&quot;&quot;,&quot;copy_button_label&quot;:&quot;Enregistrer comme copie&quot;,&quot;save_button_class&quot;:&quot;btn-primary&quot;,&quot;apply_button_class&quot;:&quot;&quot;,&quot;apply_button_label&quot;:&quot;Appliquer&quot;,&quot;copy_icon_location&quot;:&quot;before&quot;,&quot;reset_button_class&quot;:&quot;btn-warning&quot;,&quot;reset_button_label&quot;:&quot;R\u00e9initialiser&quot;,&quot;save_icon_location&quot;:&quot;before&quot;,&quot;submit_success_msg&quot;:&quot;&quot;,&quot;admin_form_template&quot;:&quot;&quot;,&quot;apply_icon_location&quot;:&quot;before&quot;,&quot;delete_button_class&quot;:&quot;btn-danger&quot;,&quot;delete_button_label&quot;:&quot;Effacer&quot;,&quot;goback_button_class&quot;:&quot;&quot;,&quot;goback_button_label&quot;:&quot;Retour&quot;,&quot;reset_icon_location&quot;:&quot;before&quot;,&quot;submit_button_label&quot;:&quot;Sauvegarder&quot;,&quot;delete_icon_location&quot;:&quot;before&quot;,&quot;goback_icon_location&quot;:&quot;before&quot;,&quot;labels_above_details&quot;:&quot;1&quot;,&quot;pdf_include_bootstrap&quot;:&quot;1&quot;,&quot;show_loader_on_submit&quot;:&quot;0&quot;,&quot;admin_details_template&quot;:&quot;&quot;,&quot;ajax_validations_toggle_submit&quot;:&quot;0&quot;,&quot;show_referring_table_releated_data&quot;:&quot;0&quot;,&quot;plugin_state&quot;:[1],&quot;only_process_curl&quot;:[&quot;onAfterProcess&quot;],&quot;form_php_file&quot;:[&quot;emundus-updatesession.php&quot;],&quot;form_php_require_once&quot;:[0],&quot;curl_code&quot;:[&quot;&quot;],&quot;plugins&quot;:[&quot;php&quot;],&quot;plugin_locations&quot;:[&quot;both&quot;],&quot;plugin_events&quot;:[&quot;both&quot;],&quot;plugin_description&quot;:[&quot;Update eMundus session&quot;]}</field>
+    <field name="params">{&quot;outro&quot;:&quot;&quot;,&quot;copy_button&quot;:&quot;0&quot;,&quot;copy_button_label&quot;:&quot;Enregistrer comme copie&quot;,&quot;copy_button_class&quot;:&quot;&quot;,&quot;copy_icon&quot;:&quot;&quot;,&quot;copy_icon_location&quot;:&quot;before&quot;,&quot;reset_button&quot;:&quot;0&quot;,&quot;reset_button_label&quot;:&quot;R\u00e9initialiser&quot;,&quot;reset_button_class&quot;:&quot;btn-warning&quot;,&quot;reset_icon&quot;:&quot;&quot;,&quot;reset_icon_location&quot;:&quot;before&quot;,&quot;apply_button&quot;:&quot;0&quot;,&quot;apply_button_label&quot;:&quot;Appliquer&quot;,&quot;apply_button_class&quot;:&quot;&quot;,&quot;apply_icon&quot;:&quot;&quot;,&quot;apply_icon_location&quot;:&quot;before&quot;,&quot;goback_button&quot;:&quot;0&quot;,&quot;goback_button_label&quot;:&quot;Retour&quot;,&quot;goback_button_class&quot;:&quot;&quot;,&quot;goback_icon&quot;:&quot;&quot;,&quot;goback_icon_location&quot;:&quot;before&quot;,&quot;submit_button&quot;:&quot;1&quot;,&quot;submit_button_label&quot;:&quot;SAVE&quot;,&quot;save_button_class&quot;:&quot;btn-primary&quot;,&quot;save_icon&quot;:&quot;&quot;,&quot;save_icon_location&quot;:&quot;before&quot;,&quot;submit_on_enter&quot;:&quot;0&quot;,&quot;delete_button&quot;:&quot;0&quot;,&quot;delete_button_label&quot;:&quot;Effacer&quot;,&quot;delete_button_class&quot;:&quot;btn-danger&quot;,&quot;delete_icon&quot;:&quot;&quot;,&quot;delete_icon_location&quot;:&quot;before&quot;,&quot;ajax_validations&quot;:&quot;0&quot;,&quot;ajax_validations_toggle_submit&quot;:&quot;0&quot;,&quot;submit-success-msg&quot;:&quot;&quot;,&quot;suppress_msgs&quot;:&quot;0&quot;,&quot;show_loader_on_submit&quot;:&quot;0&quot;,&quot;spoof_check&quot;:&quot;1&quot;,&quot;multipage_save&quot;:&quot;0&quot;,&quot;note&quot;:&quot;&quot;,&quot;labels_above&quot;:&quot;1&quot;,&quot;labels_above_details&quot;:&quot;1&quot;,&quot;pdf_template&quot;:&quot;&quot;,&quot;pdf_orientation&quot;:&quot;portrait&quot;,&quot;pdf_size&quot;:&quot;letter&quot;,&quot;pdf_include_bootstrap&quot;:&quot;1&quot;,&quot;admin_form_template&quot;:&quot;&quot;,&quot;admin_details_template&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;print&quot;:&quot;&quot;,&quot;email&quot;:&quot;&quot;,&quot;pdf&quot;:&quot;&quot;,&quot;show-referring-table-releated-data&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;tip&quot;,&quot;process-jplugins&quot;:&quot;2&quot;,&quot;plugin_state&quot;:[&quot;1&quot;],&quot;only_process_curl&quot;:[&quot;onAfterProcess&quot;],&quot;form_php_file&quot;:[&quot;emundus-updatesession.php&quot;],&quot;form_php_require_once&quot;:[&quot;0&quot;],&quot;curl_code&quot;:[&quot;&quot;],&quot;plugins&quot;:[&quot;php&quot;],&quot;plugin_locations&quot;:[&quot;both&quot;],&quot;plugin_events&quot;:[&quot;both&quot;],&quot;plugin_description&quot;:[&quot;Update eMundus session&quot;]}</field>
    </row>
    <row>
     <field name="id">375</field>
