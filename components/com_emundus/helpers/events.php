@@ -303,15 +303,14 @@ class EmundusHelperEvents
 				$fnumDetail = $mProfile->getFnumDetails($fnum);
 
 				$isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id);
-				
-				
+
 				if ($fnum == $user->fnum) {
 					//try to access edit view
 					if ($view == 'form') {
 						if (in_array($user->id, $applicants)
 							|| ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true)
 							|| ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true)
-							|| (!$is_app_sent)) {
+							|| (!$is_dead_line_passed && !$is_app_sent)) {
 							$reload_url = false;
 						}
 					}
