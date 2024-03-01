@@ -531,6 +531,11 @@ footer#g-footer {
   transition: all 0.3s ease-in-out;
 }
 
+footer#g-footer .g-content {
+ margin: 0;
+}
+
+
 footer#g-footer img {
   max-width: 35%;
 }
