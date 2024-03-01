@@ -740,7 +740,7 @@ $current_tab = 0;
 																<?php if (empty($application->updated)) : ?>
 																	<?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?>
 																<?php else : ?>
-																	<?php echo EmundusHelperDate::displayDate($application->updated, 'd/m/Y H:i', 0); ?>
+																	<?php echo EmundusHelperDate::displayDate($application->updated, 'DATE_FORMAT_LC2', 0); ?>
 																<?php endif; ?>
                                                             </p>
                                                         </div>
