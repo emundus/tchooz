@@ -494,29 +494,6 @@ defined('_JEXEC') or die;
 
 
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".g-sublevel > li").forEach(function (el) {
-            el.addEventListener("mouseenter", function (e) {
-                if (this.querySelector("ul")) {
-                    var elm = this.querySelector("ul:first-child");
-                    var off = elm.getBoundingClientRect();
-                    var l = off.left;
-                    var w = elm.offsetWidth;
-                    var docH = document.querySelector("#g-page-surround").offsetHeight;
-                    var docW = document.querySelector("#g-page-surround").offsetWidth;
-                    var isEntirelyVisible = (l + w <= docW);
-
-                    if (!isEntirelyVisible) {
-                        this.classList.add("edge");
-                    } else {
-                        this.classList.remove("edge");
-                    }
-                }
-            });
-        });
-    });
-
-
     //Keep original tooltip margin to reposition after mouse out (usefull in case of window resizing)
     const originalMargin = parseInt(document.querySelector("[id^=tooltip-]:first-of-type").style.marginTop, 10);
 
@@ -695,9 +672,33 @@ defined('_JEXEC') or die;
         });
     }
 
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".g-sublevel > li").forEach(function (el) {
+            el.addEventListener("mouseenter", function (e) {
+                if (this.querySelector("ul")) {
+                    var elm = this.querySelector("ul:first-child");
+                    var off = elm.getBoundingClientRect();
+                    var l = off.left;
+                    var w = elm.offsetWidth;
+                    var docH = document.querySelector("#g-page-surround").offsetHeight;
+                    var docW = document.querySelector("#g-page-surround").offsetWidth;
+                    var isEntirelyVisible = (l + w <= docW);
+
+                    if (!isEntirelyVisible) {
+                        this.classList.add("edge");
+                    } else {
+                        this.classList.remove("edge");
+                    }
+                }
+            });
+        });
+    });
+
     document.addEventListener('click', function (e) {
         e.stopPropagation();
-        if (document.querySelector(".image-title").style.display == 'block') {
+        const imageTitle = document.querySelector(".image-title");
+
+        if (imageTitle && imageTitle.style.display == 'block') {
             enableTitles();
         }
     });

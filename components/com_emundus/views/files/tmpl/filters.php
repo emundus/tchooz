@@ -12,15 +12,21 @@
  * details.
  */
 
+defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Factory;
+
 if ($this->use_module_for_filters === null) {
-	$menu                         = JFactory::getApplication()->getMenu();
-	$current_menu                 = $menu->getActive();
-	$menu_params                  = $menu->getParams(@$current_menu->id);
-	$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+	$menu                         = Factory::getApplication()->getMenu();
+	if (!empty($menu)) {
+		$current_menu                 = $menu->getActive();
+		if (!empty($current_menu)) {
+			$menu_params                  = $menu->getParams($current_menu->id);
+			$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+		}
+	}
 }
 
-
-defined('_JEXEC') or die('Restricted access');
 ?>
 
 <div id="em_filters">
@@ -29,7 +35,6 @@ defined('_JEXEC') or die('Restricted access');
 	echo @$this->filters;
 
 	?>
-</div>
     <script>
         var data = {};
 
@@ -50,13 +55,11 @@ defined('_JEXEC') or die('Restricted access');
                 if (option.selected) {
                     newValues.push(option.value);
                 }
-                ;
             });
 
             let differences = newValues
                 .filter(newValue => !data[event.target.name].includes(newValue))
                 .concat(data[event.target.name].filter(oldVal => !newValues.includes(oldVal)));
-            ;
 
             if (differences.length > 0) {
                 setFiltersSumo(event);
@@ -71,3 +74,4 @@ else {
 	echo JHtml::_('content.prepare', '{loadposition emundus_filters}');
 }
 ?>
+</div>

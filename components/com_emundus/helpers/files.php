@@ -872,8 +872,11 @@ class EmundusHelperFiles
 	 **/
 	function getElementsByGroups($groups, $show_in_list_summary = 1, $hidden = 0)
 	{
-		$db    = JFactory::getDBO();
-		$query = 'SELECT element.name, element.label, element.plugin, element.id as element_id, groupe.id, groupe.label AS group_label, element.params,
+		$elements = [];
+
+		if (!empty($groups)) {
+			$db    = JFactory::getDBO();
+			$query = 'SELECT element.name, element.label, element.plugin, element.id as element_id, groupe.id, groupe.label AS group_label, element.params,
                 INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias
                 FROM #__fabrik_elements element
                 INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
@@ -882,17 +885,23 @@ class EmundusHelperFiles
                 INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
                 WHERE tab.published = 1 ';
 
-		$query .= $show_in_list_summary == 1 ? ' AND element.show_in_list_summary = 1 ' : '';
-		$query .= $hidden == 0 ? ' AND element.hidden = 0 ' : '';
-		$query .= ' AND element.published=1
+			$query .= $show_in_list_summary == 1 ? ' AND element.show_in_list_summary = 1 ' : '';
+			$query .= $hidden == 0 ? ' AND element.hidden = 0 ' : '';
+			$query .= ' AND element.published=1
                     AND groupe.id IN (' . $groups . ')
                     AND element.label!=" "
                     AND element.label!=""
                 ORDER BY formgroup.ordering, groupe.id, element.ordering';
-		//die(str_replace("#_", "jos", $query));
-		$db->setQuery($query);
 
-		return $db->loadObjectList();
+			try {
+				$db->setQuery($query);
+				$elements = $db->loadObjectList();
+			} catch (Exception $e) {
+				JLog::add('Could not get Evaluation elements in query -> ' . $query, JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $elements;
 	}
 
 	public function getElementsOther($tables)
@@ -1034,18 +1043,34 @@ class EmundusHelperFiles
      */
 	function getElementsDetailsByID($elements)
 	{
-		$db = JFactory::getDBO();
+		$element_details = [];
 
-		$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
+		if (!empty($elements)) {
+			$db = JFactory::getDBO();
+
+			$query = 'SELECT element.name AS element_name, element.label AS element_label, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
                 element.params AS params, element.params, tab.group_by AS tab_group_by
                 FROM #__fabrik_elements element
                 INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id
                 INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
                 INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                 WHERE element.id IN (' . $elements . ')';
-		$db->setQuery($query);
 
-		return @EmundusHelperFilters::insertValuesInQueryResult($db->loadObjectList(), array("sub_values", "sub_labels", "element_value"));
+			try
+			{
+				$db->setQuery($query);
+				$result = $db->loadObjectList();
+
+				if (!empty($result))
+				{
+					$element_details = EmundusHelperFilters::insertValuesInQueryResult($result, array("sub_values", "sub_labels", "element_value"));
+				}
+			} catch (Exception $e) {
+				JLog::add('Could not get Evaluation elements details in query -> ' . $query, JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $element_details;
 	}
 
 	public function buildOptions($element_name, $params)
@@ -4096,6 +4121,51 @@ class EmundusHelperFiles
 								case 'tags':
 									$where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
 									break;
+								case 'group_assoc':
+									if (!in_array('jos_emundus_group_assoc', $already_joined)) {
+										$jecc_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
+										$already_joined['ga'] = 'jos_emundus_group_assoc';
+										$group_assoc_alias = 'ga';
+										$where['join'] .= ' LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = ' . $jecc_alias . '.fnum ';
+									} else {
+										$group_assoc_alias = array_search('jos_emundus_group_assoc', $already_joined);
+									}
+
+									if (!in_array('jos_emundus_setup_groups_repeat_course', $already_joined)) {
+										$esc_alias = array_search('jos_emundus_setup_campaigns', $already_joined);
+										$already_joined['grc'] = 'jos_emundus_setup_groups_repeat_course';
+										$where['join'] .= ' LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course = ' . $esc_alias . '.training ';
+									}
+
+									if (!in_array('jos_emundus_setup_groups', $already_joined)) {
+										$jesgrc_alias = array_search('jos_emundus_setup_groups_repeat_course', $already_joined);
+										$already_joined['sg'] = 'jos_emundus_setup_groups';
+										$setup_groups_alias = 'sg';
+										$where['join'] .= ' LEFT JOIN #__emundus_setup_groups as sg on ' . $jesgrc_alias . '.parent_id = sg.id ';
+									} else {
+										$setup_groups_alias = array_search('jos_emundus_setup_groups_repeat_course', $already_joined);
+									}
+
+									if ($filter['operator'] === 'NOT IN') {
+										// not in necessits a different approach, because ther is a one to many relationship
+										// one jecc.id can have many group_assoc.id
+										$where['q'] .= 'AND (jecc.fnum NOT IN (
+												SELECT jos_emundus_group_assoc.fnum
+										        FROM jos_emundus_group_assoc
+										        WHERE ' . $this->writeQueryWithOperator('jos_emundus_group_assoc.group_id', $filter['value'], 'IN') . '
+									        )
+									        AND esc.training NOT IN (
+									            SELECT jos_emundus_setup_groups_repeat_course.course
+									            FROM jos_emundus_setup_groups_repeat_course
+									            WHERE ' . $this->writeQueryWithOperator('jos_emundus_setup_groups_repeat_course.parent_id', $filter['value'], 'IN') . '
+									        )
+									    )';
+
+									} else {
+										$where['q'] .= ' AND (' . $this->writeQueryWithOperator($group_assoc_alias . '.group_id', $filter['value'], $filter['operator']) . ' OR ' . $this->writeQueryWithOperator($setup_groups_alias . '.id', $filter['value'], $filter['operator']). ')';
+									}
+
+									break;
 								default:
 									break;
 							}
@@ -4471,6 +4541,18 @@ class EmundusHelperFiles
 							$query = '(' . $element . ' != ' . $db->quote($values) . ' OR ' . $element . ' IS NULL ) ';
 						}
 						break;
+					case 'superior':
+						$query = $element . ' > ' . $db->quote($values);
+						break;
+					case 'superior_or_equal':
+						$query = $element . ' >= ' . $db->quote($values);
+						break;
+					case 'inferior':
+						$query = $element . ' < ' . $db->quote($values);
+						break;
+					case 'inferior_or_equal':
+						$query = $element . ' <= ' . $db->quote($values);
+						break;
 					case 'LIKE':
 						if (is_array($values)) {
 							$_values = implode(',', $db->quote($values));
@@ -4642,9 +4724,13 @@ class EmundusHelperFiles
 						'sp' => 'jos_emundus_setup_programmes',
 						'u' => 'jos_users',
 						'eu' => 'jos_emundus_users',
-						'eta' => 'jos_emundus_tag_assoc'
+						'eta' => 'jos_emundus_tag_assoc',
+						'ga' => 'jos_emundus_group_assoc',
+						'grc' => 'jos_emundus_setup_groups_repeat_course',
+						'sg' => 'jos_emundus_setup_groups'
 					];
 
+					$available_values = [];
 					$table_column_to_count = null;
 					if (!is_numeric($applied_filter['id'])) {
 						switch ($applied_filter['uid']) {
@@ -4795,7 +4881,10 @@ class EmundusHelperFiles
                             LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
                             LEFT JOIN #__users as u on u.id = jecc.applicant_id
                             LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
-                            LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
+                            LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum
+                            LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = jecc.fnum 
+                            LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course = esc.training
+                            LEFT JOIN #__emundus_setup_groups as sg on grc.parent_id = sg.id';
 
 							if (!empty($leftJoins)) {
 								$query .= $leftJoins;

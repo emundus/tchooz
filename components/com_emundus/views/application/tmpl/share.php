@@ -217,7 +217,7 @@
 <?php endif;?>
 
 <script type="text/javascript">
-    const fnum = "<?= $this->fnum?>";
+    var fnum = "<?= $this->fnum?>";
     const iconArray = [
         {icon: "block", class: "em-red-500-color"},
         {icon: "check_box_outline_blank", class: ""},

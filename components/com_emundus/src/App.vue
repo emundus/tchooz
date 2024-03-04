@@ -21,6 +21,7 @@
         :type="data.type"
         :user="data.user"
         :ratio="data.ratio"
+        :context="data.context || ''"
     ></ApplicationSingle>
 
     <transition v-else name="slide-right">

@@ -320,6 +320,10 @@
     <field name="moduleid">149</field>
     <field name="menuid">243</field>
    </row>
+   <row>
+    <field name="moduleid">150</field>
+    <field name="menuid">142</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

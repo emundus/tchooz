@@ -1168,6 +1168,26 @@
     <field name="client_id">0</field>
     <field name="language">*</field>
    </row>
+   <row>
+    <field name="id">150</field>
+    <field name="asset_id">0</field>
+    <field name="title">Filtres avancés - évaluations</field>
+    <field name="note"></field>
+    <field name="content" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="position">emundus_filters</field>
+    <field name="checked_out" value_is_null="true">1</field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+    <field name="published">1</field>
+    <field name="module">mod_emundus_filters</field>
+    <field name="access">5</field>
+    <field name="showtitle">0</field>
+    <field name="params">{&quot;filter_on_fnums&quot;:&quot;1&quot;,&quot;element_id&quot;:&quot;0&quot;,&quot;default_filter_element_ids&quot;:{&quot;default_filter_element_ids0&quot;:{&quot;id&quot;:&quot;0&quot;,&quot;join_table&quot;:&quot;&quot;,&quot;join_column_from&quot;:&quot;&quot;,&quot;join_column_to&quot;:&quot;&quot;}},&quot;count_filter_values&quot;:&quot;1&quot;,&quot;filter_status&quot;:&quot;1&quot;,&quot;filter_status_order&quot;:&quot;0&quot;,&quot;filter_campaign&quot;:&quot;1&quot;,&quot;filter_campaigns_order&quot;:&quot;0&quot;,&quot;filter_programs&quot;:&quot;1&quot;,&quot;filter_programs_order&quot;:&quot;0&quot;,&quot;filter_years&quot;:&quot;0&quot;,&quot;filter_years_order&quot;:&quot;0&quot;,&quot;filter_tags&quot;:&quot;1&quot;,&quot;filter_tags_order&quot;:&quot;0&quot;,&quot;filter_published&quot;:&quot;0&quot;,&quot;filter_published_order&quot;:&quot;0&quot;,&quot;more_filter_elements&quot;:{&quot;more_filter_elements0&quot;:{&quot;fabrik_element_id&quot;:&quot;6082&quot;,&quot;order&quot;:&quot;9&quot;}},&quot;more_fabrik_forms&quot;:[&quot;270&quot;],&quot;layout&quot;:&quot;_:vue&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="client_id">0</field>
+    <field name="language">*</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

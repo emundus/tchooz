@@ -147,7 +147,11 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2
     echo >&2 "========================================================================"
 
-    mv /core/logo.png images/custom/logo.png
+    # if core/logo.png exists, we copy it to images/custom/logo.png
+    if [ -f /core/logo.png ]; then
+      echo >&2 "Copy of Tchooz logo in progress..."
+      mv /core/logo.png images/custom/logo.png
+    fi
 
     echo >&2 "Init configuration variables..."
     cp configuration.php.dist configuration.php

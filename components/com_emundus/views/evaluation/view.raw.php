@@ -42,25 +42,47 @@ class EmundusViewEvaluation extends JViewLegacy
 	protected $formid;
 	protected $lists;
 	protected $pagination;
+	protected $use_module_for_filters = 0;
+	protected bool $open_file_in_modal = false;
+	protected string $modal_ratio = '66/33';
 
 	public function __construct($config = array())
 	{
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/list.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/export.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/filters.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 
 		$this->app   = Factory::getApplication();
-		$this->_user = Factory::getUser();
+		$this->_user = $this->app->getIdentity();
+
+		$menu                         = $this->app->getMenu();
+		if (!empty($menu)) {
+			$current_menu                 = $menu->getActive();
+			if (!empty($current_menu)) {
+				$menu_params                  = $menu->getParams($current_menu->id);
+				$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+				$this->open_file_in_modal     = boolval($menu_params->get('em_open_file_in_modal', 0));
+
+				if ($this->open_file_in_modal) {
+					$this->modal_ratio = $menu_params->get('em_modal_ratio', '66/33');
+				}
+			}
+		}
 
 		parent::__construct($config);
 	}
 
 	public function display($tpl = null)
 	{
+		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) {
+			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
+
+
 		$jinput       = $this->app->getInput();
 		$this->itemId = $jinput->getInt('Itemid', null);
 
@@ -99,6 +121,26 @@ class EmundusViewEvaluation extends JViewLegacy
 				$this->items = $menuActions;
 				break;
 
+			case 'filters':
+				if (!$this->use_module_for_filters) {
+					$m_evaluation = $this->getModel('Evaluation');
+					$m_user       = new EmundusModelUsers();
+
+					$m_evaluation->code = $m_user->getUserGroupsProgrammeAssoc($this->_user->id);
+
+					// get all fnums manually associated to user
+					$groups                   = $m_user->getUserGroups($this->_user->id, 'Column');
+					$fnum_assoc_to_groups     = $m_user->getApplicationsAssocToGroups($groups);
+					$fnum_assoc               = $m_user->getApplicantsAssoc($this->_user->id);
+					$m_evaluation->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+					$this->code               = $m_evaluation->code;
+					$this->fnum_assoc         = $m_evaluation->fnum_assoc;
+
+					// reset filter
+					$this->filters = EmundusHelperFiles::resetFilter();
+				}
+				break;
+
 			default :
 				$this->cfnum = $jinput->getString('cfnum', null);
 
@@ -126,11 +168,11 @@ class EmundusViewEvaluation extends JViewLegacy
 				// Do not display photos unless specified in params
 				$displayPhoto = false;
 
-				if(!empty($m_evaluation->fnum_assoc) || !empty($m_evaluation->code)) {
+				if (!empty($m_evaluation->fnum_assoc) || !empty($m_evaluation->code)) {
 					// get applications files
-					$users = $m_evaluation->getUsers($this->cfnum);
+					$this->users = $m_evaluation->getUsers($this->cfnum);
 				} else {
-					$users = array();
+					$this->users = array();
 				}
 
 				// Get elements from model and proccess them to get an easy to use array containing the element type
@@ -356,12 +398,13 @@ class EmundusViewEvaluation extends JViewLegacy
 				}
 
 				/* Get the values from the state object that were inserted in the model's construct function */
-				$this->lists['order_dir'] = JFactory::getSession()->get('filter_order_Dir');
-				$this->lists['order']     = JFactory::getSession()->get('filter_order');
+				$this->lists['order_dir'] = $this->app->getSession()->get('filter_order_Dir');
+				$this->lists['order']     = $this->app->getSession()->get('filter_order');
 				$this->pagination         = $this->get('Pagination');
 				$this->pageNavigation     = $this->get('PageNavigation');
 				break;
 		}
+
 		parent::display($tpl);
 	}
 
