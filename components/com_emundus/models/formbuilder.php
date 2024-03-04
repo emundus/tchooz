@@ -599,7 +599,7 @@ class EmundusModelFormbuilder extends JModelList
 		
 		$query = $this->db->getQuery(true);
 
-		$user = JFactory::getUser();
+		$user =  $this->app->getIdentity();
 
 		try {
 			// Create core table
@@ -4234,13 +4234,13 @@ class EmundusModelFormbuilder extends JModelList
 				if ($key == 'form_id') {
 					$query->set($key . ' = ' . $this->db->quote($form_id));
 				}
-				elseif ($key != 'id') {
+				elseif (!in_array($key, ['id', 'checked_out_time', 'publish_up'])) {
 					$query->set($key . ' = ' . $this->db->quote($val));
 				}
 			}
-			$this->db->setQuery($query);
 
 			try {
+				$this->db->setQuery($query);
 				$inserted = $this->db->execute();
 				if ($inserted) {
 					$new_list_id = $this->db->insertid();
@@ -4256,9 +4256,9 @@ class EmundusModelFormbuilder extends JModelList
 				$query->set('label = ' . $this->db->quote('FORM_MODEL_' . $form_id));
 				$query->set('introduction = ' . $this->db->quote('<p>' . 'FORM_MODEL_INTRO_' . $form_id . '</p>'));
 				$query->where('id = ' . $this->db->quote($new_list_id));
-				$this->db->setQuery($query);
 
 				try {
+					$this->db->setQuery($query);
 					$this->db->execute();
 				}
 				catch (Exception $e) {

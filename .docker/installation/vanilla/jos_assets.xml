@@ -1287,6 +1287,16 @@
     <field name="title">[HELP] Coordinators</field>
     <field name="rules">{&quot;core.delete&quot;:{&quot;6&quot;:1},&quot;core.edit&quot;:{&quot;6&quot;:1,&quot;4&quot;:1},&quot;core.edit.state&quot;:{&quot;6&quot;:1,&quot;5&quot;:1}}</field>
    </row>
+   <row>
+    <field name="id">165</field>
+    <field name="parent_id">18</field>
+    <field name="lft">194</field>
+    <field name="rgt">195</field>
+    <field name="level">2</field>
+    <field name="name">com_modules.module.149</field>
+    <field name="title">Filtres avancés - évaluations</field>
+    <field name="rules">{}</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

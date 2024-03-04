@@ -1008,6 +1008,8 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getElements()
 	{
+		$elements = [];
+
 		$this->_db = JFactory::getDBO();
 		$query     = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
                  groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
@@ -1020,10 +1022,16 @@ class EmundusModelFiles extends JModelLegacy
                  INNER JOIN jos_emundus_setup_profiles AS profile ON profile.menutype = menu.menutype
             WHERE tab.published = 1 AND element.published=1 AND element.hidden=0 AND element.label!=" " AND element.label!=""
             ORDER BY menu.ordering, formgroup.ordering, element.ordering';
-		$this->_db->setQuery($query);
 
-		//die(print_r($this->_db->loadObjectList('id')));
-		return $this->_db->loadObjectList('id');
+		try {
+			$this->_db->setQuery($query);
+			$elements = $this->_db->loadObjectList('id');
+		} catch (Exception $e) {
+			$this->app->enqueueMessage(Text::_('COM_EMUNDUS_GET_ELEMENTS_NAME_ERROR') . ' ' . $e->getMessage(), 'error');
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' ' . $e->getMessage() . ' -> ' . $query, JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $elements;
 	}
 
 	/**
@@ -1031,8 +1039,10 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getElementsName()
 	{
+		$elements_name = array();
+
 		$this->_db = JFactory::getDBO();
-		$query     = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
+		$query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
                  groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
                  tab.db_table_name AS table_name, tab.label AS table_label
             FROM jos_fabrik_elements element
@@ -1043,20 +1053,18 @@ class EmundusModelFiles extends JModelLegacy
                  INNER JOIN jos_emundus_setup_profiles AS profile ON profile.menutype = menu.menutype
             WHERE tab.published = 1 AND element.published=1 AND element.hidden=0 AND element.label!=" " AND element.label!=""
             ORDER BY menu.ordering, formgroup.ordering, element.ordering';
-		$this->_db->setQuery($query);
 
-		return $this->_db->loadObjectList('element_name');
+		try {
+			$this->_db->setQuery($query);
+			$elements_name = $this->_db->loadObjectList('element_name');
+		} catch (Exception $e) {
+			$this->app->enqueueMessage(Text::_('COM_EMUNDUS_GET_ELEMENTS_NAME_ERROR') . ' ' . $e->getMessage(), 'error');
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' ' . $e->getMessage() . ' -> ' . $query, JLog::ERROR, 'com_emundus.error');
+		}
+
+		return $elements_name;
 	}
 
-	/*public function getTotal()
-    {
-        // Load the content if it doesn't already exist
-        if (empty($this->_total)) {
-            $query = $this->_buildQuery();
-            $this->_total = $this->_getListCount($query);
-        }
-        return $this->_total;
-    }*/
 	/**
 	 * @return int|null
 	 */
