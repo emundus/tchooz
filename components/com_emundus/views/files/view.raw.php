@@ -95,6 +95,7 @@ class EmundusViewFiles extends JViewLegacy
 			}
 		}
 
+		$session = $this->app->getSession();
 		if ($this->use_module_for_filters) {
 			$session->set('last-filters-use-advanced', true);
 		} else {
