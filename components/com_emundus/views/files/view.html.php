@@ -35,10 +35,23 @@ class EmundusViewFiles extends HtmlView
 	{
 		parent::__construct($config);
 
-		$menu                         = Factory::getApplication()->getMenu();
+		$app = Factory::getApplication();
+		$menu                         = $app->getMenu();
 		$current_menu                 = $menu->getActive();
 		$menu_params                  = $menu->getParams($current_menu->id);
-		$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+		$session = $app->getSession();
+
+		if (!empty($menu_params)) {
+			$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+		} else {
+			$this->use_module_for_filters = false;
+		}
+
+		if ($this->use_module_for_filters) {
+			$session->set('last-filters-use-advanced', true);
+		} else {
+			$session->set('last-filters-use-advanced', false);
+		}
 	}
 
 	public function display($tpl = null)
