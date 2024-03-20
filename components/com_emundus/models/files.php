@@ -639,7 +639,10 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$h_files = new EmundusHelperFiles();
 
-		if ($this->use_module_filters) {
+		$session = Factory::getApplication()->getSession();
+		$last_filters_use_advanced = $session->get('last-filters-use-advanced', false);
+
+		if ($this->use_module_filters || $last_filters_use_advanced) {
 			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
 				'fnum_assoc' => $this->fnum_assoc,
 				'code'       => $this->code

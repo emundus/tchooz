@@ -73,7 +73,7 @@ export default {
         let deleted = false;
 
         if (filterId) {
-            client.delete('deletefilters', {id: filterId}).then(data => {
+            client.post('deletefilters', {id: filterId}).then(data => {
                if (data.status) {
                    deleted = true;
                }
