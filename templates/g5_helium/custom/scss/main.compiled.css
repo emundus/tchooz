@@ -329,7 +329,7 @@
   background : gray;
   border: 3px solid yellow;
 }*/
-/* ! tailwindcss v3.3.5 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
@@ -353,16 +353,19 @@
 4. Use the user's configured `sans` font-family by default.
 5. Use the user's configured `sans` font-feature-settings by default.
 6. Use the user's configured `sans` font-variation-settings by default.
+7. Disable tap highlights on iOS
 */
-html {
+html,
+:host {
   line-height: 1.5; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
   -moz-tab-size: 4; /* 3 */
   -o-tab-size: 4;
      tab-size: 4; /* 3 */
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
   font-feature-settings: normal; /* 5 */
   font-variation-settings: normal; /* 6 */
+  -webkit-tap-highlight-color: transparent; /* 7 */
 }
 /*
 1. Remove the margin in all browsers.
@@ -416,15 +419,19 @@ strong {
   font-weight: bolder;
 }
 /*
-1. Use the user's configured `mono` font family by default.
-2. Correct the odd `em` font sizing in all browsers.
+1. Use the user's configured `mono` font-family by default.
+2. Use the user's configured `mono` font-feature-settings by default.
+3. Use the user's configured `mono` font-variation-settings by default.
+4. Correct the odd `em` font sizing in all browsers.
 */
 code,
 kbd,
 samp,
 pre {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
-  font-size: 1em; /* 2 */
+  font-feature-settings: normal; /* 2 */
+  font-variation-settings: normal; /* 3 */
+  font-size: 1em; /* 4 */
 }
 /*
 Add the correct font size in all browsers.
@@ -790,6 +797,85 @@ video {
 .btn-tertiary:hover p,.btn-tertiary:hover span,.btn-tertiary:focus p,.btn-tertiary:focus span,.btn-tertiary:active p,.btn-tertiary:active span {
                 color: var(--neutral-0);
             }
+/** DROPFILES **/
+.dropfiles-page .breadcrumbs {
+            display: none;
+        }
+.dropfiles-page .dropfiles-container .dropfiles_list .\!file a.downloadlink {
+                        margin-top: 0 !important;
+                    }
+.dropfiles-page .dropfiles-container .dropfiles_list .file a.downloadlink {
+                        margin-top: 0 !important;
+                    }
+.dropfiles-page .dropfiles-container .dropfiles_list .\!file .filecontent > div.ext.pdf {
+                        background-image: url(media/com_emundus/images/icones/filetype/pdf.png) !important;
+                        color: transparent !important;
+                        background-size: contain !important;
+                    }
+.dropfiles-page .dropfiles-container .dropfiles_list .file .filecontent > div.ext.pdf {
+                        background-image: url(media/com_emundus/images/icones/filetype/pdf.png);
+                        color: transparent;
+                        background-size: contain;
+                    }
+.dropfiles-page .dropfiles-container .dropfiles_list .\!file .file-size {
+                        display: none !important;
+                    }
+.dropfiles-page .dropfiles-container .dropfiles_list .file .file-size {
+                        display: none;
+                    }
+.dropfiles-page .dropfiles-container .dropfiles_list .\!file .file-hits {
+                        display: none !important;
+                    }
+.dropfiles-page .dropfiles-container .dropfiles_list .file .file-hits {
+                        display: none;
+                    }
+.dropfiles-page .dropfiles-container .dropfiles_list .\!file .file-dated {
+                        display: none !important;
+                    }
+.dropfiles-page .dropfiles-container .dropfiles_list .file .file-dated {
+                        display: none;
+                    }
+.dropfiles-page .dropfiles-container .dropfiles_list .dropfileslightbox {
+                    display: none;
+                }
+.com_dropfiles.view-manage .g-container {
+            width: 100%;
+        }
+.com_dropfiles.view-manage #mybootstrap #rightcol .dropfiles-save-submit:nth-child(1) {
+            left: 70% !important;
+        }
+.com_dropfiles.view-manage #mybootstrap #rightcol .dropfiles-save-submit {
+            float: right;
+        }
+.com_dropfiles.view-manage .managebootstrap {
+            border-radius: var(--em-default-br);
+            margin-bottom: 36px !important;
+        }
+.com_dropfiles.view-manage .managebootstrap #mycategories {
+                border-radius: var(--em-default-br);
+            }
+.com_dropfiles.view-manage .managebootstrap #mycategories div.btn-categories#newcategory {
+                    z-index: 1;
+                    width: 100% !important;
+                }
+.com_dropfiles.view-manage .managebootstrap #mycategories #categorieslist {
+                    flex-direction: column;
+                }
+.com_dropfiles.view-manage .managebootstrap #pwrapper {
+                border-radius: var(--em-default-br);
+            }
+.com_dropfiles.view-manage .managebootstrap #pwrapper #wpreview {
+                    height: 100%;
+                }
+.com_dropfiles.view-manage .managebootstrap #pwrapper #wpreview .dropfiles-flip-btn {
+                        right: 18px;
+                    }
+.com_dropfiles.view-manage .managebootstrap #pwrapper #wpreview #preview {
+                        height: 100%;
+                    }
+.com_dropfiles.view-manage .managebootstrap #pwrapper #wpreview #preview #dropbox {
+                            height: auto !important;
+                        }
 /** APPLICANT **/
 .emundus-form .page-header h1 {
   color: var(--em-default-title-color-1);
@@ -3596,12 +3682,18 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-w-auto {
   width: auto;
 }
+.tw-w-dvw {
+  width: 100dvw;
+}
 .tw-w-fit {
   width: -moz-fit-content;
   width: fit-content;
 }
 .tw-w-full {
   width: 100%;
+}
+.tw-w-lvw {
+  width: 100lvw;
 }
 .tw-w-max {
   width: -moz-max-content;
@@ -3616,6 +3708,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-w-screen {
   width: 100vw;
+}
+.tw-w-svw {
+  width: 100svw;
 }
 .tw-flex-1 {
   flex: 1 1 0%;
