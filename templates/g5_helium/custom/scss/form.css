@@ -335,7 +335,7 @@
       justify-content: center;
       align-items: center;
       border-radius: var(--em-form-br) 0 0 var(--em-form-br) !important;
-      height: calc(var(--em-form-height) + 2px);
+      height: var(--em-form-height);
       background-position-x: 90% !important;
       background-position-y: 54% !important;
       background-image: url(/images/emundus/arrow.svg) !important;
