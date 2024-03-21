@@ -229,21 +229,21 @@ export default {
     .switcher {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 8px;
+      width: fit-content;
     }
     input{
       display: none;
     }
     input[value="0"] + label {
-      padding: 12px;
+      align-items: center;
       -webkit-box-shadow: none;
       box-shadow: none;
       cursor: pointer;
-      border: 1px solid var(--red-500);
-      background: var(--red-500);
+      border: 1px solid var(--neutral-500);
+      background: var(--red-700);
       border-radius: var(--em-coordinator-br) !important;
-      width: 100% !important;
-      max-width: 200px;
+      padding: 10px 50px;
       display: -webkit-box;
       display: -ms-flexbox;
       display: flex;
@@ -251,23 +251,24 @@ export default {
       -ms-flex-pack: center;
       justify-content: center;
       color: var(--neutral-0);
+      height: var(--em-form-height);
     }
     input[value="1"] + label {
-      padding: 12px;
+      align-items: center;
       -webkit-box-shadow: none;
       box-shadow: none;
       cursor: pointer;
-      border: 1px solid var(--main-600);
-      color: var(--main-600);
+      border: 1px solid var(--neutral-500);
+      color: var(--em-green-2);
       border-radius: var(--em-coordinator-br) !important;
-      width: 100% !important;
-      max-width: 200px;
+      padding: 10px 50px;
       display: -webkit-box;
       display: -ms-flexbox;
       display: flex;
       -webkit-box-pack: center;
       -ms-flex-pack: center;
       justify-content: center;
+      height: var(--em-form-height);
     }
   }
 

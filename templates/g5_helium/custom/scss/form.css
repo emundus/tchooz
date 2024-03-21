@@ -479,136 +479,192 @@
       gap: var(--em-form-yesno-gap);
     }
 
-    label.btn-outline-secondary.btn.btn-success.active {
+  .plg-yesno .switcher  {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    height: fit-content;
+  }
+
+  .switcher .toggle-outside,
+  .plg-yesno .switcher input{
+    display: none;
+  }
+
+  .plg-yesno .switcher label {
+    opacity: 1 !important;
+    position: relative !important;
+    margin-inline-start: 0;
+  }
+
+    .plg-yesno .switcher input[value="1"] + label {
+    align-items: center;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    cursor: pointer;
+    border: 1px solid var(--neutral-500);
+    background: var(--neutral-0);
+    color: var(--em-green-2);
+    border-radius: var(--em-coordinator-br) !important;
+    width: 200px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    height: var(--em-form-height);
+    }
+
+    .plg-yesno .switcher  input[value="1"] + label:hover {
+      color: var(--em-green-2);
+      border: 1px solid var(--em-green-2);
+      background: var(--neutral-0);
+    }
+
+    .plg-yesno .switcher  input[value="1"]:checked + label {
+      color: var(--neutral-0);
+      border: 1px solid var(--em-green-2);
+      background: var(--em-green-2);
+    }
+
+    .plg-yesno .switcher input[value="0"] + label {
+      align-items: center;
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      background-color: var(--em-form-yesno-bgc-yes);
-      border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-yes);
-      color: var(--neutral-900);
-      border-radius: var(--em-applicant-br) !important;
-      width: var(--em-form-yesno-width) !important;
+      border: 1px solid var(--neutral-500);
+      background: var(--neutral-0);
+      border-radius: var(--em-coordinator-br) !important;
+      width: 200px;
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
-      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
       justify-content: center;
-      height: var(--em-form-yesno-height);
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
+      color: var(--red-700);
+      height: var(--em-form-height);
     }
 
-    label.btn-outline-secondary.btn.btn-success.active:hover {
-      background-color: var(--em-form-yesno-bgc-yes-hover);
-      border-color: var(--em-form-yesno-bc-yes-hover) !important;
+    .plg-yesno .switcher  input[value="0"] + label:hover {
+      color: var(--red-700);
+      border: 1px solid var(--red-700);
+      background: var(--neutral-0);
     }
 
-    label.btn-outline-secondary.btn.btn-success.active:hover span {
-      font-family: var(--em-default-font);
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-yes-hover);
-      word-wrap: break-word;
+    .plg-yesno .switcher  input[value="0"]:checked + label {
+      color: var(--neutral-0);
+      border: 1px solid var(--red-700);
+      background: var(--red-700);
     }
 
-    label.btn-outline-secondary.btn.btn-success.active span {
-      font-family: var(--em-default-font);
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-yes);
-      word-wrap: break-word;
+
+    /* RADIO GROUPE */
+
+    .plg-radiobutton .btn-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px !important;
+      width: fit-content !important;
+      height: fit-content;
     }
 
-    label.btn-outline-secondary.btn.active:not(.btn-success) {
-      height: var(--em-form-yesno-height);
+    .plg-radiobutton .btn-group  label.btn-outline-secondary.btn:not(.active)[for*="input_1"]{
+      align-items: center;
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      background-color: var(--em-form-yesno-bgc-no);
-      border-color: var(--em-form-yesno-bc-no);
-      color: var(--em-form-yesno-color-no);
-      border-radius: var(--em-applicant-br) !important;
+      border: 1px solid var(--neutral-500);
+      background: var(--neutral-0);
+      border-radius: var(--em-coordinator-br) !important;
+      width: 200px !important;
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
-      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
       justify-content: center;
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
-      width: var(--em-form-yesno-width) !important;
+      height: var(--em-form-height);
     }
 
-
-    label.btn-outline-secondary.btn.active:not(.btn-success):hover {
-      background-color: var(--em-form-yesno-bgc-no-hover);
-      border-color: var(--em-form-yesno-bc-no-hover)!important;
-    }
-
-    label.btn-outline-secondary.btn.active:not(.btn-success):hover span {
+    .plg-radiobutton .btn-group  label.btn-outline-secondary.btn:not(.active)[for*="input_1"] span {
       font-family: var(--em-default-font);
       font-size: 16px;
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-no-hover);
+      color: var(--em-green-2);
       word-wrap: break-word;
     }
 
-    label.btn-outline-secondary.btn.active:not(.btn-success) span {
-      font-family: var(--em-default-font);
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-no);
-      word-wrap: break-word;
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn.active[for*="input_1"]{
+      border: 1px solid var(--neutral-500) !important;
+      background: var(--em-green-2);
+      width: 200px !important;
     }
 
-    label.btn-outline-secondary.btn:not(.active) {
-      height: var(--em-form-yesno-height);
+    .plg-radiobutton .btn-group  label.btn-outline-secondary.btn.active[for*="input_1"] span{
+      color: var(--neutral-0);
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_1"]:hover {
+      border: 1px solid var(--em-green-2);
+      background: var(--neutral-0);
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_1"]:hover span {
+      color: var(--em-green-2);
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_0"]{
+      align-items: center;
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-not-active);
-      background: var(--em-form-yesno-bgc-not-active);
-      color: var(--em-form-yesno-color-not-active);
+      border: 1px solid var(--neutral-500);
+      background: var(--neutral-0);
+      border-radius: var(--em-coordinator-br) !important;
+      width: 200px !important;
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
-      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
       justify-content: center;
-      font-size: 16px;
-      line-height: 24px;
-      font-style: normal;
-      letter-spacing: 0.0015em;
-      width: var(--em-form-yesno-width) !important;
+      height: var(--em-form-height);
     }
 
-    label.btn-outline-secondary.btn:not(.active):hover {
-      background-color: var(--em-form-yesno-bgc-not-active-hover);
-      border-color: var(--em-form-yesno-bc-not-active-hover) !important;
-    }
-
-    label.btn-outline-secondary.btn:not(.active):hover span {
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_0"] span {
       font-family: var(--em-default-font);
       font-size: 16px;
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-not-active-hover);
+      color: var(--red-700);
       word-wrap: break-word;
     }
 
-    label.btn-outline-secondary.btn:not(.active) span {
-      font-family: var(--em-default-font);
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-not-active);
-      word-wrap: break-word;
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn.active[for*="input_0"]{
+      border: 1px solid var(--neutral-500) !important;
+      background: var(--red-700);
+      width: 200px !important;
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn.active[for*="input_0"] span{
+      color: var(--neutral-0);
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_0"]:hover {
+      border: 1px solid var(--red-700);
+      background: var(--neutral-0);
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_0"]:hover span {
+      color: var(--red-700);
     }
 
 
@@ -707,7 +763,7 @@
 
             .fabrikgrid_checkbox {
               @apply tw-flex;
-              @apply tw-items-start;
+              @apply tw-items-center;
               input {
                 @apply tw-cursor-pointer;
                 accent-color: var(--em-form-checkbox-color-checked);
