@@ -120,7 +120,7 @@ if ($just_logged && !$only_applicant) {
             Swal.fire({
                 position: 'center',
                 iconHtml: '',
-                title: "<h1 class='em-main-500-color'><?php echo JText::_('MOD_EMUNDUS_SWITCH_PROFILE_WELCOME') . ' ' . $user->name ?></h1>",
+                title: "<h1 class='em-main-500-color'><?php echo JText::_('MOD_EMUNDUS_SWITCH_PROFILE_WELCOME') . ' ' . $user->firstname . ' ' . $user->lastname; ?></h1>",
                 html: "<?php echo $text ?>",
                 showConfirmButton: false,
                 reverseButtons: true,
