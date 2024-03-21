@@ -1360,6 +1360,10 @@ form.fabrikForm .plg-yesno .switcher  input[value="0"]:checked + label {
       background: var(--red-700);
     }
 /* RADIO GROUPE */
+form.fabrikForm .plg-radiobutton .btn-group .btn:focus,
+    form.fabrikForm .plg-radiobutton .btn-group  .btn-check:focus + .btn {
+      box-shadow: none;
+    }
 form.fabrikForm .plg-radiobutton .btn-group {
       display: flex;
       justify-content: space-between;
@@ -1485,18 +1489,19 @@ form.fabrikForm select[size] {
           width: 100%
       }
         }
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .row {
+          padding: 4px 0;
+        }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
   padding-top: var(--em-spacing-1);
   padding-bottom: var(--em-spacing-1);
   margin-bottom: var(--em-spacing-1);
-          width: auto;
-          margin-left: 0px;
-          display: flex;
-          align-items: center;
+  margin-left: 0px;
+  display: flex;
+  align-items: flex-start;
           padding: var(--em-form-radio-padding);
           border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
           border-radius: var(--em-form-radio-br);
-          margin-right: var(--em-form-radio-margin-right);
 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio input {
             accent-color: var(--em-form-radio-color-checked);
@@ -1526,6 +1531,9 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
             }
           }
 /** CHECKBOX **/
+form.fabrikForm .form-check-input:focus {
+      box-shadow: none;
+    }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-top: solid var(--em-form-checkbox-bw) var(--em-form-checkbox-bc);
           padding: var(--em-form-checkbox-padding) 0 0 0;
@@ -1542,19 +1550,18 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row:las
               }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox input {
   cursor: pointer;
                 accent-color: var(--em-form-checkbox-color-checked);
                 transform: scale(var(--em-form-checkbox-scale));
                 margin: 0;
-                width: auto;
-                height: auto;
 }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox label {
   cursor: pointer;
                 margin-bottom: 0;
+                margin-top: -2px;
 }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row .fabrikgrid_checkbox label span {
                   box-decoration-break: clone;

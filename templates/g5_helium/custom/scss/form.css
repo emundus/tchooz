@@ -572,6 +572,11 @@
 
     /* RADIO GROUPE */
 
+    .plg-radiobutton .btn-group .btn:focus ,
+    .plg-radiobutton .btn-group  .btn-check:focus + .btn {
+      box-shadow: none;
+    }
+
     .plg-radiobutton .btn-group {
       display: flex;
       justify-content: space-between;
@@ -704,18 +709,19 @@
           width: 100%;
         }
 
+        .row {
+          padding: 4px 0;
+        }
+
         .fabrikgrid_radio {
           @apply tw-py-1;
           @apply tw-mb-1;
-          @apply tw-items-center;
-          width: auto;
           @apply tw-ml-0;
           @apply tw-flex;
-          @apply tw-items-center;
+          @apply tw-items-start;
           padding: var(--em-form-radio-padding);
           border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
           border-radius: var(--em-form-radio-br);
-          margin-right: var(--em-form-radio-margin-right);
 
           input {
             accent-color: var(--em-form-radio-color-checked);
@@ -753,6 +759,11 @@
 
 
     /** CHECKBOX **/
+
+    .form-check-input:focus {
+      box-shadow: none;
+    }
+
     .plg-checkbox {
       .fabrikElement {
         .fabrikSubElementContainer {
@@ -771,18 +782,17 @@
 
             .fabrikgrid_checkbox {
               @apply tw-flex;
-              @apply tw-items-center;
+              @apply tw-items-start;
               input {
                 @apply tw-cursor-pointer;
                 accent-color: var(--em-form-checkbox-color-checked);
                 transform: scale(var(--em-form-checkbox-scale));
                 margin: 0;
-                width: auto;
-                height: auto;
               }
               label {
                 @apply tw-cursor-pointer;
                 margin-bottom: 0;
+                margin-top: -2px;
                 span {
                   box-decoration-break: clone;
                   -webkit-box-decoration-break: clone;
