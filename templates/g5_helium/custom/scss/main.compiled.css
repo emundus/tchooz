@@ -896,6 +896,13 @@ video {
       margin-top: unset !important
   }
     }
+/* DATE ELEMENT - CALENDAR */
+.calendar thead .button {
+    font-weight: normal;
+    border: 1px solid transparent;
+    color: #000 !important;
+    background: inherit;
+  }
 /** REGISTRATION FORM **/
 @media all and (min-width: 768px) {
     .view-registration.em-formRegistrationCenter .emundus-form {
@@ -1236,15 +1243,10 @@ form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer {
           display: flex;
           border-radius: var(--em-form-br);
         }
-form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer .input-append {
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer input[type="text"] {
             position: relative;
             display: flex;
-            width: -moz-fit-content;
-            width: fit-content;
-            min-width: 20%;
-          }
-form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer input[type="text"] {
-            border-radius: var(--em-form-br);
+            border-radius: var(--em-form-br)
           }
 form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton {
             display: inline-flex;

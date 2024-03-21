@@ -18,6 +18,15 @@
     }
   }
 
+  /* DATE ELEMENT - CALENDAR */
+
+  .calendar thead .button {
+    font-weight: normal;
+    border: 1px solid transparent;
+    color: #000 !important;
+    background: inherit;
+  }
+
   /** REGISTRATION FORM **/
   .view-registration.em-formRegistrationCenter {
     @apply tw-flex;
@@ -416,11 +425,11 @@
       .fabrikElement {
         .fabrikSubElementContainer {
           display: flex;
-          .input-append {
+          border-radius: var(--em-form-br);
+          input[type="text"] {
             position: relative;
             display: flex;
-            width: fit-content;
-            min-width: 20%;
+            border-radius: var(--em-form-br)
           }
 
           button.calendarbutton, button.timeButton {
@@ -449,7 +458,6 @@
         }
       }
     }
-
 
     /* YES / NO */
     /* And radio buttons grouped together */
