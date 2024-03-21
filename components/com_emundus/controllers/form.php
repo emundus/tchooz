@@ -240,20 +240,23 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function createformeval()
 	{
-		$tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$form_id = $this->m_form->createFormEval();
+			try {
+				$form_id = $this->m_form->createFormEval();
 
-			if ($form_id) {
-				$tab = array('status' => true, 'msg' => JText::_('FORM_ADDED'), 'data' => $form_id, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' . $form_id . '&mode=eval');
-			}
-			else {
-				$tab['msg'] = JText::_('ERROR_CANNOT_ADD_FORM');
+				if ($form_id > 0) {
+					$response = array('status' => true, 'msg' => JText::_('FORM_ADDED'), 'data' => $form_id, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' . $form_id . '&mode=eval');
+				} else {
+					$response['msg'] = JText::_('ERROR_CANNOT_ADD_FORM');
+				}
+			} catch (Exception $e) {
+				$response['msg'] = $e->getMessage();
 			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 

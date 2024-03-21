@@ -14,7 +14,6 @@
 defined('_JEXEC') or die('Restricted access');
 ?>
 
-
 <div>
     <div>
         <div class="col-md-3 side-panel" style="height: calc(100vh - 72px);overflow-y: auto;">
@@ -136,9 +135,7 @@ defined('_JEXEC') or die('Restricted access');
     var loadingLine = '<?php echo JURI::base() . 'media/com_emundus/images/icones/loader-line.gif'; ?>';
     $(document).ready(function () {
         $('.chzn-select').chosen({width: '75%'});
-        // reloadData();
         refreshFilter();
-        // search();
         reloadActions();
     })
 

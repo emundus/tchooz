@@ -4,7 +4,7 @@
        v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
        :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened == element.id}">
     <div class="tw-flex tw-items-start tw-justify-between tw-w-full tw-mb-2">
-      <div class="w-11/12">
+      <div class="tw-w-11/12">
         <label class="em-w-100 tw-flex tw-items-center fabrikLabel control-label tw-mb-0" @click="triggerElementProperties">
           <span v-if="element.FRequire" class="material-icons !tw-text-xs tw-text-red-500 tw-mr-0" style="top: -5px;position: relative">emergency</span>
         <input
@@ -203,9 +203,72 @@ export default {
   .element-title {
     border: none !important;
     width: 100% !important;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 
     &:hover {
       border: none !important;
+    }
+  }
+
+  .element-field.fabrikElementbirthday  {
+    table {
+      border: none;
+      width: auto;
+      tr td  {
+        padding: 0;
+        select {
+          min-width: 90px;
+        }
+      }
+    }
+  }
+
+  .element-field.fabrikElementyesno  {
+    .switcher {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+    }
+    input{
+      display: none;
+    }
+    input[value="0"] + label {
+      align-items: center;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+      cursor: pointer;
+      border: 1px solid var(--neutral-500);
+      background: var(--red-700);
+      border-radius: var(--em-coordinator-br) !important;
+      padding: 10px 50px;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      color: var(--neutral-0);
+      height: var(--em-form-height);
+    }
+    input[value="1"] + label {
+      align-items: center;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+      cursor: pointer;
+      border: 1px solid var(--neutral-500);
+      color: var(--em-green-2);
+      border-radius: var(--em-coordinator-br) !important;
+      padding: 10px 50px;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      height: var(--em-form-height);
     }
   }
 

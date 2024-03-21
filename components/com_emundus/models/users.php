@@ -22,8 +22,10 @@ use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
+use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Site\Model\ResetModel;
 
@@ -1185,12 +1187,15 @@ class EmundusModelUsers extends JModelList
 		$instance->setLastVisit();
 
 		// Trigger OnUserLogin
-		JPluginHelper::importPlugin('user', 'emundus');
+		PluginHelper::importPlugin('user');
+		PluginHelper::importPlugin('emundus');
 
-		$options = array('action' => 'core.login.site', 'remember' => false);
+		$options = array();
+		$options['action'] = 'core.login.site';
 
-		$this->app->triggerEvent('onUserLogin', $instance);
-		$this->app->triggerEvent('onCallEventHandler', ['onUserLogin', ['instance' => $instance]]);
+		$response['username'] = $instance->get('username');
+		$app->triggerEvent('onUserLogin', array($response, $options));
+		$app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
 
 		return $instance;
 
@@ -2727,13 +2732,13 @@ class EmundusModelUsers extends JModelList
 	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY')
 	{
 
-		$config = Factory::getConfig();
+		$config = Factory::getApplication()->getConfig();
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
 		$m_emails = new EmundusModelEmails();
 
 		// Load the com_users language tags in order to call the Joomla user JText.
-		$language     = Factory::getLanguage();
+		$language     = Factory::getApplication()->getLanguage();
 		$extension    = 'com_users';
 		$base_dir     = JPATH_SITE;
 		$language_tag = $language->getTag(); // loads the current language-tag
@@ -2824,16 +2829,23 @@ class EmundusModelUsers extends JModelList
 
 		// Assemble the password reset confirmation link.
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
-		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
+		$menu_item = Factory::getApplication()->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
+
+		if(!empty($menu_item)) {
+			$link = $menu_item->alias.'?layout=confirm&token=' . $token . '&username=' . $user->get('username');
+		}
+		else {
+			$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
+		}
 		$link = str_replace('+', '%2B', $link);
 
-		$mailer = Factory::getMailer();
+		$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
 
 		// Put together the email template data.
 		$data              = $user->getProperties();
 		$data['sitename']  = $config->get('sitename');
-		$data['link_text'] = JURI::base() . $link;
-		$data['link_html'] = '<a href=' . JURI::base() . $link . '> ' . JURI::base() . $link . '</a>';
+		$data['link_text'] = Uri::base() . $link;
+		$data['link_html'] = '<a href=' . Uri::base() . $link . '> ' . Uri::base() . $link . '</a>';
 		$data['token']     = $token;
 
 		// Build the translated email.

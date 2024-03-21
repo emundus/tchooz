@@ -272,14 +272,14 @@ class EmundusHelperUpdate
                     $db->setQuery($query);
                     $installed = $db->execute();
                 } else {
-                    echo " - " . $element . " already installed." . PHP_EOL ;
+					self::displayMessage('L\'extension ' . $element . ' est déjà installée.');
                     $installed = true;
                 }
             } catch (Exception $e) {
                 echo $e->getMessage();
             }
         } else {
-            echo 'Impossible to install extension without element specified';
+			self::displayMessage('Impossible d\'installer l\'extensions sans élément spécifié.', 'error');
         }
 
         return $installed;
@@ -3643,7 +3643,7 @@ class EmundusHelperUpdate
 			$storage_value['actions_failed_login'] = 1;
 			$storage_value['email_on_admin_login'] = 0;
 			$storage_value['forbid_admin_frontend_login'] = 0;
-			$storage_value['forbid_new_admins'] = 1;
+			$storage_value['forbid_new_admins'] = 0;
 
 			// Upload scanner
 			$storage_value['upload_scanner_enabled'] = 1;

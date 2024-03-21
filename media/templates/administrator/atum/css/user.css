@@ -1,0 +1,12 @@
+.admin.com_fabrik .wrapper:not(.closed) .container-main {
+  width: calc(100% - 288px);
+}
+
+.admin.com_fabrik .wrapper.closed .container-main {
+  width: calc(100% - 48px);
+}
+
+.table-div-wrapper {
+  width: 100%;
+  overflow: auto;
+}

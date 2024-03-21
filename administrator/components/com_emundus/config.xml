@@ -39,6 +39,7 @@
                name="log_forms_update_forms"
                label="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS"
                description="COM_EMUNDUS_LOG_FORMS_UPDATE_FORMS_DESC"
+               class="advancedSelect"
                type="sql"
                query="SELECT id, CONCAT(id, ' - ', label) as label FROM jos_fabrik_forms WHERE published = 1"
                key_field="id"
@@ -118,6 +119,11 @@
 		>
 			<option value="">Please select your option</option>
 		</field>
+
+        <field name="see_only_filled_workflows" type="radio" default="0" label="COM_EMUNDUS_SEE_ONLY_FILLED_WORKFLOWS">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
 
 		<field
 				name="spacer0"
@@ -226,12 +232,13 @@
         </field>
         <field name="attachment_to_keep_non_deletable"
                type="sql"
-               query="SELECT id, value FROM jos_emundus_setup_attachments WHERE published = 1"
+               query="SELECT id, CONCAT(id,' - ',value) as value FROM jos_emundus_setup_attachments"
                key_field="id"
                value_field="value"
                multiple="true"
                default='["4", "6", "21"]'
                label="COM_EMUNDUS_ATTACHCHMENT_NON_DELETABLE"
+               class="advancedSelect"
         />
         <field name="referent_can_edit_after_deadline" menu="hide" type="list" default="1"
                label="COM_EMUNDUS_REFERENT_CAN_EDIT_AFTER_DEADLINE"
@@ -303,7 +310,6 @@
                key_field="link"
                value_field="label"
 		/>
-
     </fieldset>
     <fieldset label="COM_EMUNDUS_FORM_BUILDER" name="form_builder" description="COM_EMUNDUS_FORM_BUILDER_DESC">
         <field
@@ -316,7 +322,8 @@
                 value_field="title"
                 multiple="true"
                 default="[93,102,103,104,168,170]"
-        ></field>
+                class="advancedSelect"
+        />
     </fieldset>
     <fieldset label="COM_EMUNDUS_PAYMENT" name="payment" description="COM_EMUNDUS_PAYMENT_DESC">
         <field name="application_fee" menu="hide" type="list" default="0" label="COM_EMUNDUS_APPLICATION_FEES"
@@ -607,7 +614,8 @@
             <option value="1">JYES</option>
         </field>
     </fieldset>
-    <fieldset label="COM_EMUNDUS_INTEGRATION" name="ametys" description="COM_EMUNDUS_INTEGRATION_DESC">
+
+    <fieldset label="COM_EMUNDUS_INTEGRATION" name="integration" description="COM_EMUNDUS_INTEGRATION_DESC">
 
         <field name="callback_whitelist_ip" type="text" default="" label="COM_EMUNDUS_INTEGRATION_WHITELIST_IP"
                description="COM_EMUNDUS_INTEGRATION_WHITELIST_IP_DESC"/>
@@ -802,13 +810,11 @@
                 type="note"
                 label="COM_EMUNDUS_PAYMENT_FLYWIRE"
         />
-        <fieldset label="COM_EMUNDUS_PAYMENT_FLYWIRE">
-            <field name="flywire_recipient" label="COM_EMUNDUS_PAYMENT_FLYWIRE_RECIPIENT_LABEL" type="text"></field>
+            <field name="flywire_recipient" label="COM_EMUNDUS_PAYMENT_FLYWIRE_RECIPIENT_LABEL" type="text"/>
             <field name="flywire_mode" label="COM_EMUNDUS_PAYMENT_FLYWIRE_MODE_LABEL" type="list">
                 <option value="demo">Démo</option>
                 <option value="production">Production</option>
             </field>
-        </fieldset>
 
         <field name="spacer9" type="spacer" hr="true"/>
 
@@ -817,58 +823,47 @@
                 type="note"
                 label="COM_EMUNDUS_PAYMENT_AXEPTA"
         />
-        <fieldset label="COM_EMUNDUS_PAYMENT_AXEPTA">
             <field name="axepta_merchant_id" label="COM_EMUNDUS_PAYMENT_AXEPTA_MERCHANT_ID" type="text"/>
             <field name="axepta_hmac_key" label="COM_EMUNDUS_PAYMENT_AXEPTA_HMAC_KEY" type="text"/>
             <field name="axepta_blowfish_key" label="COM_EMUNDUS_PAYMENT_AXEPTA_BLOWFISH_KEY" type="text"/>
             <field name="axepta_success_mail" label="MOD_EMUNDUS_AXEPTA_SUCCESS_MAIL" type="text" default=""></field>
             <field name="axepta_failed_mail" label="MOD_EMUNDUS_AXEPTA_FAILED_MAIL" type="text" default=""></field>
-        </fieldset>
 
 
         <field name="spacer10" type="spacer" hr="true"/>
         <field name="saml_integration" type="note" label="COM_EMUNDUS_SAML_INTEGRATION"/>
-        <fieldset label="COM_EMUNDUS_SAML_INTEGRATION">
             <field name="saml_default_profile" label="COM_EMUNDUS_SAML_INTEGRATION_DEFAULT_PROFILE" type="text"></field>
-        </fieldset>
 
 
         <field name="spacer11" type="spacer" hr="true"/>
         <field name="smart_agenda" type="note" label="COM_EMUNDUS_SMART_AGENDA"/>
-        <fieldset label="COM_EMUNDUS_SMART_AGENDA">
             <field name="smart_agenda_login" type="text" label="COM_EMUNDUS_SMART_AGENDA_LOGIN"/>
             <field name="smart_agenda_pwd" type="password" label="COM_EMUNDUS_SMART_AGENDA_PWD"/>
             <field name="smart_agenda_api_id" type="text" label="COM_EMUNDUS_SMART_AGENDA_API_ID"/>
             <field name="smart_agenda_api_key" type="password" label="COM_EMUNDUS_SMART_AGENDA_API_KEY"/>
             <field name="smart_agenda_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL"/>
             <field name="smart_agenda_ws_base_url" type="text" label="COM_EMUNDUS_SMART_AGENDA_BASE_URL_WS"/>
-        </fieldset>
 
         <field name="spacer12" type="spacer" hr="true"/>
         <field name="postgrest" type="note" label="COM_EMUNDUS_POSTGREST_API"/>
-        <fieldset label="COM_EMUNDUS_POSTGREST_API">
             <field name="postgrest_api_base_url" type="text" label="COM_EMUNDUS_POSTGREST_BASE_URL"/>
             <field name="postgrest_api_bearer_token" type="text" label="COM_EMUNDUS_POSTGREST_BEARER_TOKEN"/>
-        </fieldset>
 
         <field name="spacer13" type="spacer" hr="true"/>
         <field name="glpi" type="note" label="COM_EMUNDUS_GLPI_API"/>
-        <fieldset label="COM_EMUNDUS_GLPI_API">
             <field name="glpi_api_base_url" type="text" label="COM_EMUNDUS_GLPI_BASE_URL"/>
             <field name="glpi_api_app_token" type="text" label="COM_EMUNDUS_GLPI_APP_TOKEN"/>
             <field name="glpi_api_user_token" type="text" label="COM_EMUNDUS_GLPI_USER_TOKEN"/>
-        </fieldset>
 
         <field name="spacer13" type="spacer" hr="true"/>
         <field name="insee" type="note" label="COM_EMUNDUS_INSEE_API"/>
-        <fieldset label="COM_EMUNDUS_INSEE_API">
             <field name="insee_api_base_url" type="text" label="COM_EMUNDUS_INSEE_BASE_URL"
                    default="https://api.insee.fr"/>
             <field name="insee_api_consumer_key" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_KEY"/>
             <field name="insee_api_consumer_secret" type="text" label="COM_EMUNDUS_INSEE_CONSUMER_SECRET"/>
-        </fieldset>
 
     </fieldset>
+
     <fieldset
             name="permissions"
             description="JCONFIG_PERMISSIONS_DESC"
@@ -880,6 +875,7 @@
                 label="JCONFIG_PERMISSIONS_LABEL"
                 section="component"/>
     </fieldset>
+
     <fieldset label="COM_EMUNDUS_MESSENGER" name="messenger" description="COM_EMUNDUS_MESSENGER_DESC">
         <field name="messenger_anonymous_coordinator" type="list" default="0" label="COM_EMUNDUS_MESSENGER_ANONYMOUS"
                description="COM_EMUNDUS_MESSENGER_ANONYMOUS_DESC">

@@ -225,10 +225,6 @@
     <field name="menuid">285</field>
    </row>
    <row>
-    <field name="moduleid">123</field>
-    <field name="menuid">370</field>
-   </row>
-   <row>
     <field name="moduleid">124</field>
     <field name="menuid">273</field>
    </row>
@@ -251,10 +247,6 @@
    <row>
     <field name="moduleid">124</field>
     <field name="menuid">278</field>
-   </row>
-   <row>
-    <field name="moduleid">124</field>
-    <field name="menuid">280</field>
    </row>
    <row>
     <field name="moduleid">124</field>
@@ -327,6 +319,10 @@
    <row>
     <field name="moduleid">149</field>
     <field name="menuid">243</field>
+   </row>
+   <row>
+    <field name="moduleid">150</field>
+    <field name="menuid">142</field>
    </row>
   </table_data>
  </database>

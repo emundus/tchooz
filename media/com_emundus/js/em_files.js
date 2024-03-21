@@ -6,11 +6,16 @@
  * @author     EMUNDUS SAS
  */
 
+if ('undefined' === typeof jQuery) throw new Error('eMundus\'s JavaScript requires jQuery');
+
 var loading;
 var moduleFilters = null;
 var refreshModuleFiltersEvent = new Event('refresh-emundus-module-filters');
 
-var $ = jQuery.noConflict();
+// if $ is not already defined, create it
+if (typeof $ === 'undefined') {
+    var $ = jQuery.noConflict();
+}
 
 var show = function (elem) {
     elem.style.display = 'block';
@@ -498,7 +503,7 @@ function openFiles(fnum, page = 0, vue = false) {
                         var numMenu = 0;
 
                         while (numMenu <= menus.length) {
-                            if (menus[numMenu].link.indexOf('layout=' + page) != -1) {
+                            if (menus[numMenu] && menus[numMenu].link && menus[numMenu].link.indexOf('layout=' + page) != -1) {
                                 break;
                             }
                             numMenu++;
@@ -4544,7 +4549,7 @@ $(document).ready(function() {
                 title = 'COM_EMUNDUS_COMMENTS_ADD_COMMENT';
                 html = '<form>' +
                     '<input placeholder="'+Joomla.Text._('TITLE')+'" class="form-control" id="comment-title" type="text" value="" name="comment-title"/>' +
-                    '<textarea placeholder="'+Joomla.Text._('ENTER_COMMENT')+'" class="form-control" style="height:250px !important; margin-left:0px !important;"  id="comment-body"></textarea>' +
+                    '<textarea placeholder="'+Joomla.Text._('COM_EMUNDUS_COMMENTS_ENTER_COMMENT')+'" class="form-control" style="height:250px !important; margin-left:0px !important;"  id="comment-body"></textarea>' +
                     '</form>';
 
                 preconfirm = "var comment = $('#comment-body').val();if (comment.length == 0) {Swal.showValidationMessage(Joomla.Text._('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE'))}"
@@ -5412,8 +5417,13 @@ $(document).ready(function() {
                 var fnumUsed = urlUsed.searchParams.get('fnum');
 
                 checkIfSomeoneIsEditing(fnumUsed);
-                $('#em-appli-block').empty();
-                $('#em-appli-block').append(result);
+
+                const appBlock = $('#em-appli-block');
+
+                if (appBlock) {
+                    appBlock.empty();
+                    appBlock.append(result);
+                }
             },
             error: function (jqXHR) {
                 console.log(jqXHR.responseText);

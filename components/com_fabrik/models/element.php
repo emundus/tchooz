@@ -43,6 +43,7 @@ jimport('joomla.filesystem.file');
  * @package  Fabrik
  * @since    3.0
  */
+#[\AllowDynamicProperties]
 class PlgFabrik_Element extends FabrikPlugin
 {
 	/**
@@ -310,6 +311,14 @@ class PlgFabrik_Element extends FabrikPlugin
 	 * @var null|array
 	 */
 	protected $subOptionLabels = null;
+
+	/* dynamic properties to make php8.2 happy */
+	public $tmpl = null;
+	public $_foreignKey = null;
+	public $_repeatGroupTotal = null;
+	public $_inJoin  = null;
+	public $elementHTMLName  = null;
+	public $_default = null;
 
 	/**
 	 * Constructor
@@ -2252,9 +2261,6 @@ class PlgFabrik_Element extends FabrikPlugin
 	public function preRender($c, $elCount, $tmpl)
 	{
 		$model      = $this->getFormModel();
-		if(!is_array($model->data)) {
-			$model->data = array();
-		}
 		$groupModel = $this->getGroup();
 		$group      = $groupModel->getGroupProperties($model);
 

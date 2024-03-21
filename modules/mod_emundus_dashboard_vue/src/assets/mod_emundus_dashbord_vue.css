@@ -232,6 +232,7 @@
     mask-size: 500px;
     -webkit-mask-size: 500px;
     mask-origin: border-box;
+    -webkit-mask-origin: border-box;
     mask-position: center;
     -webkit-mask-position: center;
     z-index: 3;
@@ -259,6 +260,7 @@
     mask-position: center;
     -webkit-mask-position: center;
     mask-origin: border-box;
+    -webkit-mask-origin: border-box;
     z-index: 3;
     position: absolute;
     height: 100%;

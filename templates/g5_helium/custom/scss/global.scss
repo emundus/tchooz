@@ -226,7 +226,7 @@ div#frame.outline {
   background: var(--main-500);
 }
 .view-article.com_content:not(.indicateurs-page) {
-  .page-header h2[itemprop="headline"] {
+  .page-header h1 {
     margin-bottom: 16px;
   }
 
@@ -530,6 +530,11 @@ footer#g-footer {
   padding: 20px !important;
   transition: all 0.3s ease-in-out;
 }
+
+footer#g-footer .g-content {
+ margin: 0;
+}
+
 
 footer#g-footer img {
   max-width: 35%;

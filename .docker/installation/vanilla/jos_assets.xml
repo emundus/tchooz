@@ -21,7 +21,7 @@
     <field name="id">1</field>
     <field name="parent_id">0</field>
     <field name="lft">0</field>
-    <field name="rgt">297</field>
+    <field name="rgt">299</field>
     <field name="level">0</field>
     <field name="name">root.1</field>
     <field name="title">Root Asset</field>
@@ -845,7 +845,7 @@
     <field name="level">2</field>
     <field name="name">com_modules.module.112</field>
     <field name="title">[CAMPAIGNS] Guest</field>
-    <field name="rules">{&quot;core.delete&quot;:{&quot;6&quot;:1},&quot;core.edit&quot;:{&quot;6&quot;:1,&quot;4&quot;:1},&quot;core.edit.state&quot;:{&quot;6&quot;:1,&quot;5&quot;:1}}</field>
+    <field name="rules">{&quot;core.delete&quot;:{&quot;6&quot;:1},&quot;core.edit&quot;:{&quot;4&quot;:1,&quot;6&quot;:1},&quot;core.edit.state&quot;:{&quot;5&quot;:1,&quot;6&quot;:1}}</field>
    </row>
    <row>
     <field name="id">99</field>
@@ -945,7 +945,7 @@
     <field name="level">2</field>
     <field name="name">com_modules.module.119</field>
     <field name="title">[CAMPAIGNS] Logged</field>
-    <field name="rules">{&quot;core.delete&quot;:{&quot;6&quot;:1},&quot;core.edit&quot;:{&quot;6&quot;:1,&quot;4&quot;:1},&quot;core.edit.state&quot;:{&quot;6&quot;:1,&quot;5&quot;:1}}</field>
+    <field name="rules">{&quot;core.delete&quot;:{&quot;6&quot;:1},&quot;core.edit&quot;:{&quot;4&quot;:1,&quot;6&quot;:1},&quot;core.edit.state&quot;:{&quot;5&quot;:1,&quot;6&quot;:1}}</field>
    </row>
    <row>
     <field name="id">109</field>
@@ -1041,7 +1041,7 @@
     <field name="id">121</field>
     <field name="parent_id">1</field>
     <field name="lft">245</field>
-    <field name="rgt">284</field>
+    <field name="rgt">286</field>
     <field name="level">1</field>
     <field name="name">com_dropfiles</field>
     <field name="title">Dropfiles</field>
@@ -1080,8 +1080,8 @@
    <row>
     <field name="id">129</field>
     <field name="parent_id">1</field>
-    <field name="lft">285</field>
-    <field name="rgt">286</field>
+    <field name="lft">287</field>
+    <field name="rgt">288</field>
     <field name="level">1</field>
     <field name="name">com_hikashop</field>
     <field name="title">HikaShop</field>
@@ -1160,8 +1160,8 @@
    <row>
     <field name="id">137</field>
     <field name="parent_id">1</field>
-    <field name="lft">287</field>
-    <field name="rgt">288</field>
+    <field name="lft">289</field>
+    <field name="rgt">290</field>
     <field name="level">1</field>
     <field name="name">com_scheduler.task.1</field>
     <field name="title">com_scheduler.task.1</field>
@@ -1170,8 +1170,8 @@
    <row>
     <field name="id">138</field>
     <field name="parent_id">1</field>
-    <field name="lft">289</field>
-    <field name="rgt">290</field>
+    <field name="lft">291</field>
+    <field name="rgt">292</field>
     <field name="level">1</field>
     <field name="name">com_scheduler.task.2</field>
     <field name="title">com_scheduler.task.2</field>
@@ -1204,7 +1204,7 @@
     <field name="rgt">58</field>
     <field name="level">3</field>
     <field name="name">com_content.article.60</field>
-    <field name="title">Fiche deja envoyée</field>
+    <field name="title">Fiche déjà envoyée</field>
     <field name="rules">{}</field>
    </row>
    <row>
@@ -1250,8 +1250,8 @@
    <row>
     <field name="id">161</field>
     <field name="parent_id">1</field>
-    <field name="lft">291</field>
-    <field name="rgt">292</field>
+    <field name="lft">293</field>
+    <field name="rgt">294</field>
     <field name="level">1</field>
     <field name="name">com_guidedtours</field>
     <field name="title">com_guidedtours</field>
@@ -1260,8 +1260,8 @@
    <row>
     <field name="id">162</field>
     <field name="parent_id">1</field>
-    <field name="lft">293</field>
-    <field name="rgt">294</field>
+    <field name="lft">295</field>
+    <field name="rgt">296</field>
     <field name="level">1</field>
     <field name="name">com_mails</field>
     <field name="title">com_mails</field>
@@ -1270,8 +1270,8 @@
    <row>
     <field name="id">163</field>
     <field name="parent_id">1</field>
-    <field name="lft">295</field>
-    <field name="rgt">296</field>
+    <field name="lft">297</field>
+    <field name="rgt">298</field>
     <field name="level">1</field>
     <field name="name">com_workflow</field>
     <field name="title">com_workflow</field>
@@ -1286,6 +1286,16 @@
     <field name="name">com_modules.module.110</field>
     <field name="title">[HELP] Coordinators</field>
     <field name="rules">{&quot;core.delete&quot;:{&quot;6&quot;:1},&quot;core.edit&quot;:{&quot;6&quot;:1,&quot;4&quot;:1},&quot;core.edit.state&quot;:{&quot;6&quot;:1,&quot;5&quot;:1}}</field>
+   </row>
+   <row>
+    <field name="id">165</field>
+    <field name="parent_id">18</field>
+    <field name="lft">194</field>
+    <field name="rgt">195</field>
+    <field name="level">2</field>
+    <field name="name">com_modules.module.149</field>
+    <field name="title">Filtres avancés - évaluations</field>
+    <field name="rules">{}</field>
    </row>
   </table_data>
  </database>

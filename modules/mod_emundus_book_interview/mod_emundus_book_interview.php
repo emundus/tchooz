@@ -17,8 +17,12 @@ $helper           = new modEmundusBookInterviewHelper;
 $evaluated_status = $params->get('evaluated_status');
 
 $interview = $helper->getLastFileInterviewStatus($user->id);
-$status    = $interview->status;
-$fnum      = $interview->fnum;
+$jinput = $app->input;
+$fnum = $jinput->get->get('fnum');
+
+if(empty($fnum)){
+	$fnum = $user->fnum;
+}
 
 if (!empty($fnum)) {
 	// First we need to check if the user has booked.
@@ -39,7 +43,7 @@ if (!empty($fnum)) {
 
 		$layout = 'showInterview_' . $layout;
 	}
-	elseif ($status == $evaluated_status) {
+	elseif ($user->status == $evaluated_status) {
 
 		$available_events = $helper->getEvents($user, $fnum);
 

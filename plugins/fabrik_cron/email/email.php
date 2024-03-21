@@ -85,7 +85,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 						$this_condition = $w->parseMessageForPlaceHolder($condition, $row);
 
 						FabrikWorker::clearEval();
-						if (Php::Eval(['code' => $this_condition, 'vars'=>['data'=>$data]]) === false)
+						if (Php::Eval(['code' => $this_condition, 'vars'=>['row'=>$row]]) === false)
 						{
 							if ($testMode)
 							{
@@ -124,7 +124,7 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 							if ($eval)
 							{
 								FabrikWorker::clearEval();
-								$thisMsg = Php::Eval(['code' => $thisMsg, 'vars'=>['data'=>$data]]);
+								$thisMsg = Php::Eval(['code' => $thisMsg, 'vars'=>['data'=>$row]]);
 								FabrikWorker::logEval($thisMsg, 'Caught exception on eval of fabrik_cron/email message: %s');
 							}
 

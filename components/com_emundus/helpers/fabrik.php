@@ -244,11 +244,18 @@ class EmundusHelperFabrik
 			if ($type == 'eval') {
 				$plugins = [
 					'curl_code'             => [
-						1 => '$student_id=JRequest::getVar(\'student_id\', null,\'get\');
-$student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInstance(\'{jos_emundus_evaluations___student_id}\');
-echo \'<h2>\'.$student->name.\'</h2>\';
-JHtml::styleSheet(JURI::base() . \'media/jui/css/chosen.css\');
-JHTML::stylesheet(JURI::Base().\'media/com_fabrik/css/fabrik.css\');',
+						1 => 'use Joomla\CMS\Factory;
+
+$app = Factory::getApplication();
+$input = $app->getInput();
+
+$student_id = $input->getInt("student_id", null);
+$student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInstance("{jos_emundus_evaluations___student_id}");
+
+
+echo "<h2>".$student->name."</h2>";
+JHtml::styleSheet(JURI::base() . "media/jui/css/chosen.css");
+JHTML::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");',
 						2 => 'echo \'<script>window.parent.ScrollToTop();</script>\';
 echo \'<style>.em-swal-title{
   margin: 8px 8px 32px 8px !important;
@@ -698,6 +705,7 @@ die("<script>
 		    $params['type'] = '1';
 		    $params['accordion'] = '0';
 		    $params['title'] = '';
+		    $params['store_in_db'] = 0;
 	    }
 
 		return $params;

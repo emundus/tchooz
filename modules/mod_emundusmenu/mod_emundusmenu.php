@@ -42,6 +42,9 @@ $layout     = $params->get('layout', $layout);
 
 if ($params->get('menu_style') == 'tchooz_vertical') {
 	$layout = $menu_style;
+} else {
+	$layout = 'default';
+	$wa->registerAndUseStyle('mod_emundusmenu_applicant', 'modules/mod_emundusmenu/style/mod_emundusmenu_applicant.css');
 }
 
 $display_applicant_menu = $params->get('display_applicant_menu', 1);

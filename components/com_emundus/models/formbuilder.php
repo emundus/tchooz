@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 
@@ -441,7 +442,7 @@ class EmundusModelFormbuilder extends JModelList
 				'link'         => 'index.php?option=com_fabrik&view=form&formid=' . $formid,
 				'path'         => $menu_parent->path . '/' . preg_replace('/\s+/', '-', strtolower($this->replaceAccents($label['fr']))) . '-form-' . $formid,
 				'type'         => 'component',
-				'component_id' => 10041,
+				'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
 				'params'       => $params
 			];
 			$result = EmundusHelperUpdate::addJoomlaMenu($datas, $menu_parent->id, 1, 'last-child', $modules);
@@ -598,7 +599,7 @@ class EmundusModelFormbuilder extends JModelList
 		
 		$query = $this->db->getQuery(true);
 
-		$user = JFactory::getUser();
+		$user =  $this->app->getIdentity();
 
 		try {
 			// Create core table
@@ -883,7 +884,7 @@ class EmundusModelFormbuilder extends JModelList
 				'link'         => 'index.php?option=com_fabrik&view=form&formid=' . $formid,
 				'path'         => preg_replace('/\s+/', '-', strtolower($this->replaceAccents($label['fr']))) . '-form-' . $formid,
 				'type'         => 'component',
-				'component_id' => 10041,
+				'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
 				'params'       => $params
 			];
 			$result = EmundusHelperUpdate::addJoomlaMenu($datas, 1, 1, 'last-child', $modules);
@@ -1468,8 +1469,10 @@ class EmundusModelFormbuilder extends JModelList
 				$dbtype  = $this->h_fabrik->getDBType($plugin);
 				$dbnull  = 'NULL';
 				$default = '';
+				$eval = 1;
 
 				if ($plugin === 'display' || $plugin === 'panel') {
+					$eval = 0;
 					$default = 'Ajoutez du texte personnalisé pour vos candidats';
 				}
 
@@ -1511,7 +1514,7 @@ class EmundusModelFormbuilder extends JModelList
 					->set($this->db->quoteName('width') . ' = 0')
 					->set($this->db->quoteName('default') . ' = ' . $this->db->quote($default))
 					->set($this->db->quoteName('hidden') . ' = 0')
-					->set($this->db->quoteName('eval') . ' = 1')
+					->set($this->db->quoteName('eval') . ' = ' . $eval)
 					->set($this->db->quoteName('ordering') . ' = ' . $this->db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
 					->set($this->db->quoteName('parent_id') . ' = 0')
 					->set($this->db->quoteName('published') . ' = 1')
@@ -2084,6 +2087,7 @@ class EmundusModelFormbuilder extends JModelList
 			$fields = array(
 				$this->db->quoteName('plugin') . ' = ' . $this->db->quote($element['plugin']),
 				$this->db->quoteName('default') . ' = ' . $this->db->quote($element['default']),
+				$this->db->quoteName('eval') . ' = ' . $this->db->quote($element['eval']),
 				$this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($element['params'])),
 				$this->db->quoteName('modified_by') . ' = ' . $this->db->quote($user),
 				$this->db->quoteName('modified') . ' = ' . $this->db->quote($date),
@@ -2130,10 +2134,10 @@ class EmundusModelFormbuilder extends JModelList
 			return false;
 		}
 
-		if ($group_params['repeat_group_button'] == 1 && $params['repeat_group_button'] == 0) {
+		if ($group_params['repeat_group_button'] == 1 && (isset($params['repeat_group_button']) && $params['repeat_group_button'] == 0)) {
 			$this->disableRepeatGroup($group_id);
 		}
-		if ($group_params['repeat_group_button'] == 0 && $params['repeat_group_button'] == 1) {
+		if ($group_params['repeat_group_button'] == 0 && (isset($params['repeat_group_button']) && $params['repeat_group_button'] == 1)) {
 			$this->enableRepeatGroup($group_id);
 		}
 
@@ -2972,7 +2976,7 @@ class EmundusModelFormbuilder extends JModelList
 										'path'         => $menu_parent->path . '/' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])) . '-' . $newformid,
 										'alias'        => 'form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])),
 										'type'         => 'component',
-										'component_id' => 10041,
+										'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
 										'params'       => $params
 									];
 									$parent_id = 1;
@@ -4230,13 +4234,13 @@ class EmundusModelFormbuilder extends JModelList
 				if ($key == 'form_id') {
 					$query->set($key . ' = ' . $this->db->quote($form_id));
 				}
-				elseif ($key != 'id') {
+				elseif (!in_array($key, ['id', 'checked_out_time', 'publish_up'])) {
 					$query->set($key . ' = ' . $this->db->quote($val));
 				}
 			}
-			$this->db->setQuery($query);
 
 			try {
+				$this->db->setQuery($query);
 				$inserted = $this->db->execute();
 				if ($inserted) {
 					$new_list_id = $this->db->insertid();
@@ -4252,9 +4256,9 @@ class EmundusModelFormbuilder extends JModelList
 				$query->set('label = ' . $this->db->quote('FORM_MODEL_' . $form_id));
 				$query->set('introduction = ' . $this->db->quote('<p>' . 'FORM_MODEL_INTRO_' . $form_id . '</p>'));
 				$query->where('id = ' . $this->db->quote($new_list_id));
-				$this->db->setQuery($query);
 
 				try {
+					$this->db->setQuery($query);
 					$this->db->execute();
 				}
 				catch (Exception $e) {

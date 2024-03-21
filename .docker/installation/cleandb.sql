@@ -81,6 +81,7 @@ TRUNCATE TABLE jos_finder_terms;
 TRUNCATE TABLE jos_finder_terms_common;
 TRUNCATE TABLE jos_finder_tokens;
 TRUNCATE TABLE jos_finder_tokens_aggregate;
+TRUNCATE TABLE jos_history;
 TRUNCATE TABLE jos_hikashop_order;
 TRUNCATE TABLE jos_hikashop_user;
 TRUNCATE TABLE `jos_hikashop_payment` ;

@@ -78,7 +78,7 @@ class HeadRenderer extends DocumentRenderer
 
 		// Trigger the onBeforeCompileHead event
 		$app = Factory::getApplication();
-		$app->triggerEvent('onBeforeCompileHead');
+		$app->getDispatcher()->dispatch('onBeforeCompileHead');
 
 		// Get line endings
 		$lnEnd        = $document->_getLineEnd();

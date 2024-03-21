@@ -413,7 +413,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 .dropdown #background-shapes {
     mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
     -webkit-mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
-    height: 67px;
+    height: 72px;
     background: var(--em-profile-color);
     position: absolute;
     width: 300px;
@@ -426,7 +426,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
     mask-origin: border-box;
     -webkit-mask-origin: border-box;
     right: -10px;
-    top: 0;
+    top: -6px;
 }
 
 /* Déconnecté */

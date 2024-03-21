@@ -9,6 +9,8 @@
  */
 
 // Check to ensure this file is included in Joomla!
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die();
 
 /**
@@ -125,7 +127,7 @@ class PlgFabrik_ElementYears extends PlgFabrik_Element {
             JHTML::_(
                 'select.option',
                 '',
-                FText::_($params->get('birthday_yearlabel', 'PLG_ELEMENT_BIRTHDAY_YEAR')),
+                Text::_($params->get('birthday_yearlabel', 'PLG_ELEMENT_BIRTHDAY_YEAR')),
                 'value',
                 'text',
                 false

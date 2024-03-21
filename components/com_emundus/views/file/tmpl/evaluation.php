@@ -53,28 +53,38 @@ JText::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
 
 JHtml::styleSheet('components/com_emundus/src/assets/css/element-ui/theme-chalk/index.css');
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
-$menu         = JFactory::getApplication()->getMenu();
-$current_menu = $menu->getActive();
-$params       = $menu->getParams($current_menu->id)->get('params');
-if (empty($params->ratio_modal)) {
-	$params->ratio_modal = '66/33';
+$app = Factory::getApplication();
+$menu = $app->getMenu();
+if (!empty($menu)) {
+	$current_menu = $menu->getActive();
+    if (!empty($current_menu)) {
+	    $app->getSession()->set('current_menu_id', $current_menu->id);
+	    $params = $menu->getParams($current_menu->id)->get('params');
+	    if (!empty($params) && empty($params->ratio_modal)) {
+		    $params->ratio_modal = '66/33';
+	    }
+    }
+}
+
+if (!isset($params)) {
+    $params = new stdClass();
+    $params->ratio_modal = '66/33';
 }
 
 $app  = Factory::getApplication();
 $fnum = $app->input->getString('fnum', '');
 
-JFactory::getSession()->set('current_menu_id', $current_menu->id);
-$user = JFactory::getUser();
+$user = $app->getIdentity();
 ?>
 <div id="em-files"
-     user=<?= $user->id ?>
-     ratio=<?= $params->ratio_modal ?>
+     user="<?= $user->id ?>"
+     ratio="<?= $params->ratio_modal ?>"
      type="evaluation"
-     base=<?= JURI::base(); ?>
-     fnum=<?= $fnum; ?>
+     base="<?= JURI::base(); ?>"
+     fnum="<?= $fnum; ?>"
 >
 </div>
 

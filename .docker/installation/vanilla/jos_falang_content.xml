@@ -39,7 +39,7 @@
     <field name="value">Campagne 3</field>
     <field name="original_value"></field>
     <field name="original_text"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -52,7 +52,7 @@
     <field name="value">Campagne 2</field>
     <field name="original_value"></field>
     <field name="original_text"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -65,7 +65,7 @@
     <field name="value">Identifiant du candidat</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -78,7 +78,7 @@
     <field name="value">Identifiant du candidat</field>
     <field name="original_value">Identifiant du candidat</field>
     <field name="original_text">Identifiant du candidat</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -91,7 +91,7 @@
     <field name="value">Email du candidat</field>
     <field name="original_value">Email du candidat</field>
     <field name="original_text">Email du candidat</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -104,7 +104,7 @@
     <field name="value">Identifiant du candidat</field>
     <field name="original_value">Identifiant du candidat</field>
     <field name="original_text">Identifiant du candidat</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -117,7 +117,7 @@
     <field name="value">Nom complet du candidat</field>
     <field name="original_value">Nom complet du candidat</field>
     <field name="original_text">Nom complet du candidat</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -130,7 +130,7 @@
     <field name="value">Email de l'utilisateur actif</field>
     <field name="original_value">Email de l'utilisateur actif</field>
     <field name="original_text">Email de l'utilisateur actif</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -143,7 +143,7 @@
     <field name="value">Numéro de dossier</field>
     <field name="original_value">Numéro de dossier</field>
     <field name="original_text">Numéro de dossier</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -156,7 +156,7 @@
     <field name="value">Nom de l'utilisateur actif</field>
     <field name="original_value">Nom de l'utilisateur actif</field>
     <field name="original_text">Nom de l'utilisateur actif</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -169,7 +169,7 @@
     <field name="value">Applicant's identifier</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -182,7 +182,7 @@
     <field name="value">Identifiant de l'utilisateur</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -195,7 +195,7 @@
     <field name="value">User's identifier</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -208,7 +208,7 @@
     <field name="value">Nom du candidat</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -221,7 +221,7 @@
     <field name="value">Applicant's name</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -234,7 +234,7 @@
     <field name="value">Date du jour à l'envoi du mail</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -247,7 +247,7 @@
     <field name="value">Current date at mail sending</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -260,7 +260,7 @@
     <field name="value">Date de naissance du candidat</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -273,7 +273,7 @@
     <field name="value">Birthday's applicant</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -286,7 +286,7 @@
     <field name="value">Lien de votre application Tchooz</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -299,7 +299,7 @@
     <field name="value">Tchooz application url</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -312,7 +312,7 @@
     <field name="value">Nom de la campagne</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -325,7 +325,7 @@
     <field name="value">Campaign's name</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -338,7 +338,7 @@
     <field name="value">Statut du dossier</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -351,7 +351,7 @@
     <field name="value">File's status</field>
     <field name="original_value" value_is_null="true"></field>
     <field name="original_text">''</field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
@@ -364,8 +364,8 @@
     <field name="value">[PROFILE] Edit my profile</field>
     <field name="original_value">5ec2397db370226ee8496e2d0bc1501f</field>
     <field name="original_text">[PROFILE] Edit my profile</field>
-    <field name="modified">2024-02-02 15:39:28</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -377,8 +377,8 @@
     <field name="value">{&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;update_profile_picture&quot;:&quot;1&quot;,&quot;show_name&quot;:&quot;1&quot;,&quot;show_account_edit_button&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;Edit your profile photo and personal details. Please note that your profile photo will be visible on all your applications.&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
     <field name="original_value">8c913fac9a8550506b3c095d44058e90</field>
     <field name="original_text">{&quot;show_profile_picture&quot;:&quot;1&quot;,&quot;update_profile_picture&quot;:&quot;1&quot;,&quot;show_name&quot;:&quot;1&quot;,&quot;show_account_edit_button&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;\u00c9ditez votre photo de profil et vos informations personnelles. Attention votre photo de profil sera visible sur tous vos dossiers de candidature.&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
-    <field name="modified">2024-02-02 15:39:28</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -390,8 +390,8 @@
     <field name="value">File archive</field>
     <field name="original_value">bfde1625647de51f70066642d2c7148d</field>
     <field name="original_text">Archive du dossier</field>
-    <field name="modified">2024-02-05 10:47:28</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -403,8 +403,8 @@
     <field name="value">Other document(s)</field>
     <field name="original_value">46484acb54b6e11c6ba1dd200c5bd843</field>
     <field name="original_text">Autre document(s)</field>
-    <field name="modified">2024-02-05 10:47:38</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -416,8 +416,8 @@
     <field name="value">Letter</field>
     <field name="original_value">33f426f8d4bee7661dd818950dee978b</field>
     <field name="original_text">Courrier</field>
-    <field name="modified">2024-02-05 10:47:44</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -429,8 +429,8 @@
     <field name="value">CV</field>
     <field name="original_value">a5c8c3544bc49ebacde4ffe04bf34de0</field>
     <field name="original_text">CV</field>
-    <field name="modified">2024-02-05 10:47:52</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -442,8 +442,8 @@
     <field name="value">Curriculum vitae</field>
     <field name="original_value">9078cbd826293aabaa0098e2ef32fb99</field>
     <field name="original_text">Curriculum vitae</field>
-    <field name="modified">2024-02-05 10:47:52</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -455,8 +455,8 @@
     <field name="value">University degrees</field>
     <field name="original_value">526d404118a9c0bf20393da8d69fb671</field>
     <field name="original_text">Diplômes universitaires</field>
-    <field name="modified">2024-02-05 10:48:18</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -468,8 +468,8 @@
     <field name="value">Copies of your university degrees</field>
     <field name="original_value">3698516fe69b5878809418b5c0e825d1</field>
     <field name="original_text">Copie de vos diplômes universitaires</field>
-    <field name="modified">2024-02-05 10:48:18</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -481,8 +481,8 @@
     <field name="value">Messenger documents</field>
     <field name="original_value">b28b1942984568861474b7ffb8812628</field>
     <field name="original_text">Documents de la messagerie</field>
-    <field name="modified">2024-02-05 10:48:39</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -494,8 +494,8 @@
     <field name="value">Application form</field>
     <field name="original_value">981c39d165f857ff7b649647082d874f</field>
     <field name="original_text">Dossier de candidature</field>
-    <field name="modified">2024-02-05 10:48:52</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -507,8 +507,8 @@
     <field name="value">Commitment to confidentiality</field>
     <field name="original_value">603e22c582f816f35451bb4a5b8f20fd</field>
     <field name="original_text">Engagement de confidentialité</field>
-    <field name="modified">2024-02-05 10:49:02</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -520,8 +520,8 @@
     <field name="value">Cover letter</field>
     <field name="original_value">1a55fde03dbd1cdbb52cfd40d2f28f2e</field>
     <field name="original_text">Lettre de motivation</field>
-    <field name="modified">2024-02-05 10:49:11</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -533,8 +533,8 @@
     <field name="value">Reference letter 1</field>
     <field name="original_value">1df38ec9e10fb6e5d757c4666908c4e9</field>
     <field name="original_text">Lettre de recommendation 1</field>
-    <field name="modified">2024-02-05 10:49:37</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -546,8 +546,8 @@
     <field name="value">Letter submitted by a referee</field>
     <field name="original_value">3e0159b86cc99178f4089712ab1dc76a</field>
     <field name="original_text">Lettre déposé par un référent</field>
-    <field name="modified">2024-02-05 10:49:37</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -559,8 +559,8 @@
     <field name="value">Reference letter 2</field>
     <field name="original_value">3bbb0f47d9abda246c25c78a04a24fd7</field>
     <field name="original_text">Lettre de recommendation 2</field>
-    <field name="modified">2024-02-05 10:49:47</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -572,8 +572,8 @@
     <field name="value">Letter submitted by a referee</field>
     <field name="original_value">3e0159b86cc99178f4089712ab1dc76a</field>
     <field name="original_text">Lettre déposé par un référent</field>
-    <field name="modified">2024-02-05 10:49:47</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -585,8 +585,8 @@
     <field name="value">Optionnal reference letter</field>
     <field name="original_value">c66bf871eb421eb10dd42bda24c3dc09</field>
     <field name="original_text">Lettre de recommendation optionnelle</field>
-    <field name="modified">2024-02-05 10:49:58</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -598,8 +598,8 @@
     <field name="value">Letter submitted by a referee</field>
     <field name="original_value">3e0159b86cc99178f4089712ab1dc76a</field>
     <field name="original_text">Lettre déposé par un référent</field>
-    <field name="modified">2024-02-05 10:49:58</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -611,8 +611,8 @@
     <field name="value">Passport / ID Card</field>
     <field name="original_value">0207288910225d35f5f9e3105794f998</field>
     <field name="original_text">Passeport / Carte d'identité</field>
-    <field name="modified">2024-02-05 10:50:11</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -624,8 +624,8 @@
     <field name="value">Copy of an identity document</field>
     <field name="original_value">9539caa106f9e5ff8c93b35be4f30012</field>
     <field name="original_text">Copie d'un document d'identité</field>
-    <field name="modified">2024-02-05 10:50:11</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -637,8 +637,8 @@
     <field name="value">Photo</field>
     <field name="original_value">c03d53b70feba4ea842510abecd6c45e</field>
     <field name="original_text">Photo</field>
-    <field name="modified">2024-02-05 10:50:16</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -650,8 +650,8 @@
     <field name="value">Transcripts</field>
     <field name="original_value">b6579476e0656b69c64bfe50bbccb023</field>
     <field name="original_text">Relevés de notes</field>
-    <field name="modified">2024-02-05 10:50:33</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -663,8 +663,8 @@
     <field name="value">Copy of your transcripts</field>
     <field name="original_value">2275cafd67a368106715106e77f01339</field>
     <field name="original_text">Copie de vos relevés de notes</field>
-    <field name="modified">2024-02-05 10:50:33</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -676,8 +676,8 @@
     <field name="value">RIB</field>
     <field name="original_value">969dfd176e67b221d6389edcaeb08efc</field>
     <field name="original_text">RIB</field>
-    <field name="modified">2024-02-05 10:50:40</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -689,8 +689,8 @@
     <field name="value">To evaluate</field>
     <field name="original_value">ba6c3ca652c50bc38bc743c99982568a</field>
     <field name="original_text">A évaluer</field>
-    <field name="modified">2024-02-05 10:51:03</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -702,8 +702,8 @@
     <field name="value">Accepted</field>
     <field name="original_value">925e3f110c6c68286fc895821f303aa6</field>
     <field name="original_text">Accepté</field>
-    <field name="modified">2024-02-05 10:51:36</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -715,8 +715,8 @@
     <field name="value">Admitted</field>
     <field name="original_value">5b1a1ca4d3bf1d8600a62af6e7dda1d3</field>
     <field name="original_text">Admis</field>
-    <field name="modified">2024-02-05 10:51:42</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -728,8 +728,8 @@
     <field name="value">In assessment</field>
     <field name="original_value">a61ba122ca95dbf04b9ccc0f145a99ae</field>
     <field name="original_text">En évaluation</field>
-    <field name="modified">2024-02-05 10:52:17</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -741,8 +741,8 @@
     <field name="value">Sent</field>
     <field name="original_value">3fda1d2fab723a4928fd034d6125875c</field>
     <field name="original_text">Envoyé</field>
-    <field name="modified">2024-02-05 10:52:24</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -754,8 +754,8 @@
     <field name="value">Waiting list</field>
     <field name="original_value">0b541a97fbd6fc3e5efd0fc2ed0e5c3a</field>
     <field name="original_text">Liste d'attente</field>
-    <field name="modified">2024-02-05 10:52:33</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -767,8 +767,8 @@
     <field name="value">Rejected</field>
     <field name="original_value">4367ab64a2b2ba88afc6dbf765f8ba80</field>
     <field name="original_text">Refusé</field>
-    <field name="modified">2024-02-05 10:52:39</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -780,8 +780,8 @@
     <field name="value">In progress</field>
     <field name="original_value">3fda1d2fab723a4928fd034d6125875c</field>
     <field name="original_text">En cours</field>
-    <field name="modified">2024-02-05 10:52:24</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -793,8 +793,8 @@
     <field name="value">Missing documents</field>
     <field name="original_value">1c9b47fbb77a08afe6863872deb482af</field>
     <field name="original_text">Documents manquants</field>
-    <field name="modified">2024-02-05 10:54:16</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -806,8 +806,8 @@
     <field name="value">File evaluated</field>
     <field name="original_value">e241335e93e26c03c8a1d1a0ca31bb82</field>
     <field name="original_text">Dossier évalué</field>
-    <field name="modified">2024-02-05 10:54:25</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -819,8 +819,8 @@
     <field name="value">Non-compliant proof of identity</field>
     <field name="original_value">974218ce3eda223a50b40dc47636ceaf</field>
     <field name="original_text">Justificatif d'identité non conforme</field>
-    <field name="modified">2024-02-05 10:54:43</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -832,8 +832,8 @@
     <field name="value">Evaluator</field>
     <field name="original_value">b23f181c22c072efa7df72a7990d561c</field>
     <field name="original_text">Evaluateur</field>
-    <field name="modified">2024-02-05 10:55:38</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -845,8 +845,8 @@
     <field name="value">Evaluators's group</field>
     <field name="original_value">87c960cb7ed7ef43df319de1fc641184</field>
     <field name="original_text">Groupe des évaluateurs</field>
-    <field name="modified">2024-02-05 10:55:38</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -858,8 +858,8 @@
     <field name="value">All rights</field>
     <field name="original_value">a03027798fc898a3f56a87e54af2a61d</field>
     <field name="original_text">Tous les droits</field>
-    <field name="modified">2024-02-05 10:56:02</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -871,8 +871,8 @@
     <field name="value">All actions on all programmes</field>
     <field name="original_value">1f4db28e381548329457fd3f13af940f</field>
     <field name="original_text">Toutes les actions sur tous les programmes</field>
-    <field name="modified">2024-02-05 10:56:02</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -884,8 +884,8 @@
     <field name="value">Evaluator</field>
     <field name="original_value">b23f181c22c072efa7df72a7990d561c</field>
     <field name="original_text">Evaluateur</field>
-    <field name="modified">2024-02-05 10:56:50</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -897,8 +897,8 @@
     <field name="value">Role of file assessor</field>
     <field name="original_value">dd86c20d2cac05e7d2b7d2c4a8836354</field>
     <field name="original_text">Rôle d'évaluateur de dossier</field>
-    <field name="modified">2024-02-05 10:56:50</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -910,8 +910,8 @@
     <field name="value">Platform manager</field>
     <field name="original_value">483f7de06d3c318c504cea7c7d2221bd</field>
     <field name="original_text">Gestionnaire de plateforme</field>
-    <field name="modified">2024-02-05 10:57:10</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -923,8 +923,8 @@
     <field name="value">Parameter setting and management of the platform with all accesses</field>
     <field name="original_value">3c89715f0405057f9f97fb7e0df6c8df</field>
     <field name="original_text">Rôle de paramétrage de gestion de la plateforme avec tous les accès</field>
-    <field name="modified">2024-02-05 10:57:10</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -936,8 +936,8 @@
     <field name="value">System administrator</field>
     <field name="original_value">762ba3d1a99ed7de47ba853365dcf688</field>
     <field name="original_text">System administrator</field>
-    <field name="modified">2024-02-05 10:57:17</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
    <row>
@@ -949,8 +949,1612 @@
     <field name="value">Team member allowed to change the system's parameters.</field>
     <field name="original_value">696c23b4e923d70d8f593e29ce7a7cbd</field>
     <field name="original_text">Team member allowed to change the system's parameters.</field>
-    <field name="modified">2024-02-05 10:57:17</field>
-    <field name="modified_by">1</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">72</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">59</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">title</field>
+    <field name="value">Legal notices</field>
+    <field name="original_value">6ba68484be023d7a6dbb170dce31deb3</field>
+    <field name="original_text">Mentions légales</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">73</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">59</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">alias</field>
+    <field name="value">mentions-legales</field>
+    <field name="original_value">19a51ec9ca14f0dcfcb3ef708610507e</field>
+    <field name="original_text">mentions-legales</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">74</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">59</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">introtext</field>
+    <field name="value">&lt;p&gt;&lt;strong&gt;Purpose of the information on this website :&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The purpose of this website is to present to visitors &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Company name :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Legal status :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Headquarters / Head office :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Share capital :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Company registration number :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Data Universal Numbering System (D-U-N-S number) :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;VAT number :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;E-mail address :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Responsible for publication :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Responsible for the editorial team :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Creation of content : &lt;/strong&gt;content creation by &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Software publisher : &lt;/strong&gt;EMUNDUS SAS – 10 passage du Drakkar, 17000 La Rochelle&lt;/p&gt;
+&lt;p&gt;e-mail address : info[@]emundus.fr&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Technical, ergonomic and graphical design : &lt;/strong&gt;EMUNDUS SAS – 10 passage du Drakkar, 17000 La Rochelle&lt;/p&gt;
+&lt;p&gt;e-mail address : info[@]emundus.fr&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Hosting and outsourcing : &lt;/strong&gt;SCALEWAY SAS – BP 438 – 75366 PARIS CEDEX 08 FRANCE - &lt;strong&gt;&lt;a href=&quot;https://scaleway.com&quot;&gt;website : scaleway.com&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</field>
+    <field name="original_value">cf434461b95a5631859622e18b31690d</field>
+    <field name="original_text">&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Objectif de l’information diffusée de ce site :&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Ce site a pour objet de présenter aux visiteurs &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Raison sociale :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Forme juridique :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Siège social :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Capital social :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Numéro d’inscription au registre du commerce et des sociétés (RCS) :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Numéro de SIRET :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Code APE / NAF :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Numéro de TVA intracommunautaire :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Adresse électronique :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Responsable de la publication :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Responsable de la rédaction :&lt;/strong&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Création de contenu :&lt;/strong&gt; création de contenu par &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Éditeur de la solution : &lt;/strong&gt;EMUNDUS SAS – 10 passage du Drakkar, 17000 La Rochelle&lt;/p&gt;
+&lt;p&gt;Adresse e-mail : info[@]emundus.fr&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Conception Technique, Ergonomique et Graphique : &lt;/strong&gt;EMUNDUS SAS – 10 passage du Drakkar, 17000 La Rochelle&lt;/p&gt;
+&lt;p&gt;Adresse e-mail : info[@]emundus.fr&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Hébergement et Infogérance : &lt;/strong&gt;SCALEWAY SAS – BP 438 – 75366 PARIS CEDEX 08 FRANCE &lt;a href=&quot;https://www.scaleway.com&quot;&gt;France Website : www.scaleway.com&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">75</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">59</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">fulltext</field>
+    <field name="value"></field>
+    <field name="original_value">d41d8cd98f00b204e9800998ecf8427e</field>
+    <field name="original_text"></field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">76</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">59</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">attribs</field>
+    <field name="value">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="original_value">821f1d924e48e055ff7b9342a3139e6f</field>
+    <field name="original_text">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">77</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">59</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">images</field>
+    <field name="value">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="original_value">eeece57125004306bd90d2b77224f290</field>
+    <field name="original_text">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">78</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">59</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">urls</field>
+    <field name="value">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="original_value">f6b88977a26be0ad1c9557f9495b6e1e</field>
+    <field name="original_text">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">79</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">56</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">title</field>
+    <field name="value">Data Privacy Policy</field>
+    <field name="original_value">c9f73374e4b0ced357e53518154a654d</field>
+    <field name="original_text">Politique de confidentialité des données</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">80</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">56</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">alias</field>
+    <field name="value">politique-de-confidentialite-des-donnees</field>
+    <field name="original_value">6a59c82785a5cfc2514541151d7af4da</field>
+    <field name="original_text">politique-de-confidentialite-des-donnees</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">81</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">56</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">introtext</field>
+    <field name="value">&lt;p&gt;&lt;strong&gt;Preamble&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER COMPANY NAME]&lt;/span&gt; undertakes to ensure that the processing of personal data carried out on &lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER WEBSITE URL]&lt;/span&gt; complies with the General Data Protection Regulation (GDPR) and with the French Data Protection Act of 6 January 1978 as amended. &lt;br /&gt;&lt;br /&gt;This data protection policy applies to the processing of data carried out via the website &lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER SITE URL]&lt;/span&gt;.&lt;br /&gt;&lt;br /&gt;It informs you about the purposes of the processing carried out, the legal basis for the processing, the recipients of the data as well as their retention period, the security measures, the possible existence of data transfers outside the European Union or automated decision-making, the use and management of cookies. &lt;br /&gt;&lt;br /&gt;For information on your rights and how to exercise them, please consult the Rights Management page.&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;Who is responsible for the processing of data carried out by this website?&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;The person responsible for the processing of data carried out by the website &lt;span style=&quot;color: #ff0000;&quot;&gt;[URL CLIENT SITE]&lt;/span&gt; is the company &lt;span style=&quot;color: #ff0000;&quot;&gt;[COMPANY NAME CLIENT]&lt;/span&gt;, located at &lt;span style=&quot;color: #ff0000;&quot;&gt;[HEAD OFFICE OF CLIENT]&lt;/span&gt;.&lt;br /&gt;&lt;br /&gt;For more information, see the legal notice.&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;Does this site collect personal data?&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;According to Article 4.1 of the GDPR, personal data is any information that can identify you either directly or indirectly. This site collects personal data via its various forms &lt;span style=&quot;color: #ff0000;&quot;&gt;[SPECIFY NATURE OF FORM]&lt;/span&gt; - &lt;em&gt;examples: contact form, application form, demonstration request form, grant request form, etc.&lt;/em&gt;]. &lt;br /&gt;Personal data are freely communicated to &lt;span style=&quot;color: #ff0000;&quot;&gt;[COMPANY NAME CUSTOMER]&lt;/span&gt; by the persons concerned by consenting to the processing and by taking note of the information displayed under the various forms. The data collected is adequate, useful, necessary and limited to the strict minimum.&lt;br /&gt;&lt;br /&gt;This includes data :&lt;br /&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[QUALIFY THE DATA COLLECTED]&lt;/span&gt;&lt;br /&gt;&lt;em&gt;&lt;u&gt;Examples&lt;/u&gt;&lt;/em&gt;: &lt;br /&gt;- &lt;em&gt;identification data (civil status, identity, e-mail address, postal address, images, etc.), &lt;br /&gt;- professional (CV, cover letter, etc.).&lt;/em&gt; &lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;What are the purposes of data collection?&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;The processing of personal data collected from the platform in the context of the various forms has the following purposes:&lt;/p&gt;
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Why do we process your Personal Data?&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;strong&gt;What data do we collect?&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;Example 1: Application form: study of applications submitted on the platform&lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;Example 1: Professional data (CV, covering letter, etc.). &lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;Example 2: Application form: contact with candidates&lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;Example 2: Identification data: surname, first name, e-mail address, etc.&lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[to be completed by the client]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[to be completed by the client]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[to be completed by the client]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[to be completed by the client]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;What is the legal basis for the processing carried out by this site?&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE MODIFIED / COMPLETED BY THE CLIENT] &lt;/span&gt;&lt;br /&gt;&lt;br /&gt;The processing of your personal data by &lt;span style=&quot;color: #ff0000;&quot;&gt;[COMPANY NAME]&lt;/span&gt; is based on :&lt;br /&gt;&lt;br /&gt;- Either on your consent in all cases where you yourself entrust your personal data to &lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER COMPANY NAME]&lt;/span&gt;. &lt;br /&gt;- The performance of a contract to which you are a party or the execution of pre-contractual measures taken at your request.  &lt;br /&gt;- Or to comply with a legal obligation, in particular with regard to the exercise of your rights under the RGPD and the Data Protection Act.&lt;br /&gt;- Or on the basis of legitimate interests pursued by &lt;span style=&quot;color: #ff0000;&quot;&gt;[COMPANY NAME]&lt;/span&gt;.&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;Who are the recipients of the data processed by this site?&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;Your personal data is primarily intended for &lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER BUSINESS NAME]&lt;/span&gt;, &lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER ACTIVITY]&lt;/span&gt;. It is processed by the staff of the various departments concerned by your requests &lt;span style=&quot;color: #ff0000;&quot;&gt;[QUOTE THE DEPARTMENTS CONCERNED]&lt;/span&gt;.&lt;br /&gt;They are processed solely for the purposes indicated above. Your personal data is hosted exclusively in France by a subcontractor of our Service Provider (within the meaning of Article 4.8 of the RGPD) in a strictly controlled manner. They are never communicated to third parties for commercial purposes.&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;Is personal data transferred outside the European Union?&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;Personal data collected by this site is not transferred to actors located outside the European Union. In case of contractual transfer of personal data, [COMPANY NAME] ensures that the recipients are based in the European Union.&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;How is personal data processed by this site secured?&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER COMPANY NAME]&lt;/span&gt; is committed to protecting the personal data processed on this site in accordance with the state of the art.&lt;br /&gt;&lt;br /&gt;The indications below are the main security measures to protect your personal data:&lt;br /&gt;&lt;br /&gt;- all the pages of the site are under the hhtps protocol;&lt;br /&gt;- logging of connections;&lt;br /&gt;- user blocking when a hacking attempt is detected;&lt;br /&gt;- erasure of Personal Data is carried out at the request of the person concerned or at the end of the retention period;&lt;br /&gt;- the data is stored on data servers respecting the maximum technical security; &lt;br /&gt;- &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;br /&gt;- &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;br /&gt;- &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;- &lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt; &lt;br /&gt;&lt;br /&gt;&lt;strong&gt;How long will personal data processed by this site be kept?&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[TO BE COMPLETED BY THE CLIENT]&lt;/span&gt; &lt;br /&gt;&lt;br /&gt;&lt;strong&gt;Does this site use cookies?&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;When you visit this site, two (2) session cookies are placed on your computer, tablet or mobile phone.&lt;br /&gt;These allow the site to function properly and greatly improve your user experience.&lt;br /&gt;&lt;br /&gt;The session identifier has a major advantage: if you open several windows of the same web page, they are attributed to a single session.&lt;br /&gt;This makes it possible to launch several requests at the same time without losing important personal information.&lt;br /&gt;&lt;br /&gt;Session cookies are therefore used to store information about the current session.&lt;br /&gt;&lt;br /&gt;Other information, such as login details or previously completed online forms, is also stored during the session.&lt;br /&gt;&lt;br /&gt;However, if you end your browsing session, the session ID and all other stored data will be deleted. This means that when you open the same web page in a new browser window, you will be considered a new visitor.&lt;br /&gt;&lt;br /&gt;For more information on cookies, you can consult our cookie policy or visit the CNIL website.&lt;br /&gt;&lt;br /&gt;Can I object to these cookies?&lt;br /&gt;&lt;br /&gt;Yes, and in several ways. If you do not want this site to place cookies on your computer, you can block them:&lt;br /&gt;&lt;br /&gt;- by using a browser which, by default, refuses cookies;&lt;br /&gt;- by configuring your browser appropriately or by installing an additional component on your browser specifically designed to manage cookies.&lt;br /&gt;&lt;br /&gt;This website respects your choice.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</field>
+    <field name="original_value">f07cd5047d78e822184cd0997bc19358</field>
+    <field name="original_text">&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Préambule&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; s’engage à ce que les traitements de données personnelles effectués sur &lt;span style=&quot;color: #ff0000;&quot;&gt;[URL SITE CLIENT]&lt;/span&gt; soient conformes au Règlement Général sur la Protection des Données (RGPD) et à la Loi Informatique et Libertés du 06 janvier 1978 modifiée.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;La présente politique de protection des données s’applique au traitement de donnés effectué via le site internet &lt;span style=&quot;color: #ff0000;&quot;&gt;[URL SITE CLIENT]&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Elle vous informe sur les finalités des traitements effectués, la base légale des traitements, les destinataires des données ainsi que leur durée de conservation, les mesures de sécurité, l’existence éventuelle de transferts de données hors de l’Union Européenne ou de prises de décisions automatisées, l’utilisation et la gestion des cookies.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Concernant vos droits informatiques et libertés et la façon de les exercer, nous vous invitons à consulter la page &lt;a href=&quot;gestion-de-vos-droits&quot;&gt;Gestion des Droits&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Qui est le responsable de traitement des données effectués par ce site Internet ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Le responsable du traitement des données effectué par le site Internet &lt;span style=&quot;color: #ff0000;&quot;&gt;[URL SITE CLIENT]&lt;/span&gt; est la société &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt;, située &lt;span style=&quot;color: #ff0000;&quot;&gt;[ADRESSE SIÈGE SOCIAL DU CLIENT]&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Pour en savoir plus, voir les &lt;a href=&quot;mentions-legales&quot;&gt;mentions légales.&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Ce site collecte-t-il des données à caractère personnel ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Suivant l’article 4.1 du RGPD, une donnée à caractère personnel est toute information qui permet de vous identifier soit directement soit indirectement. Ce site collecte des données à caractère personnel via ses différents formulaires &lt;span style=&quot;color: #ff0000;&quot;&gt;[PRÉCISER LA NATURE DES FORMULAIRES]&lt;/span&gt; - &lt;em&gt;exemples : formulaire de contact, formulaire de dépôt de candidature, formulaire de demande de démonstration, formulaire de demande de subvention,&lt;/em&gt; &lt;em&gt;etc.&lt;/em&gt;].&lt;/p&gt;
+&lt;p&gt;Les données personnelles sont librement communiquées à &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; par les personnes concernées en consentant au traitement et en prenant connaissance de la mention d’information affichée sous les différents formulaires. Les données collectées sont adéquates, utiles, nécessaires et limitées au strict minimum.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Il s’agit notamment de données :&lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[QUALIFIER LES DONNÉES COLLECTÉES]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemples&lt;/u&gt;&lt;/em&gt; :&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;d’identification (état-civil, identité, adresse e-mail, adresse postale, images, etc.), &lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;professionnelles (CV, lettre de motivation, etc.). &lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Quelles sont les finalités de la collecte des données ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Les traitements des données à caractère personnel, collectées depuis la plateforme dans le cadre des différents formulaires, poursuivent les finalités suivantes :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Pourquoi traitons-nous vos Données personnelles ?&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Quelles données collectons-nous ?&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemple 1&lt;/u&gt;&lt;/em&gt; &lt;em&gt;: formulaire de dépôt de candidatures : étude des candidatures déposées sur la plateforme &lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemple 1&lt;/u&gt;&lt;/em&gt; &lt;em&gt;: Données professionnelles (CV, lettre de motivation, etc.). &lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemple 2&lt;/u&gt;&lt;/em&gt; &lt;em&gt;: formulaire de dépôt de candidatures : prise de contact avec les candidats&lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemple 2&lt;/u&gt;&lt;/em&gt; &lt;em&gt;: Données d’identification : nom, prénom, adresse e-mail, etc.&lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Quel est le fondement juridique du traitement effectué par ce site ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À MODIFIER / COMPLÉTER PAR LE CLIENT] &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Le traitement de vos données personnelles par &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; est fondé :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Soit sur votre consentement pour tous les cas où vous confiez vous-même vos données personnelles à [RAISON SOCIALE CLIENT].&lt;/li&gt;
+&lt;li&gt;Soit sur l’exécution d’un contrat auquel vous êtes partie ou à l’exécution de mesures précontractuelles prises à votre demande.&lt;/li&gt;
+&lt;li&gt;Soit sur le respect d’une obligation légale notamment en matière d’exercice de vos droits au titre du RGPD et de la loi Informatique et Libertés.&lt;/li&gt;
+&lt;li&gt;Soit sur des intérêts légitimes poursuivis par &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Quels sont les destinataires des données traitées par ce site ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Vos données à caractère personnel sont avant tout destinées à &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt;, &lt;span style=&quot;color: #ff0000;&quot;&gt;[ACTIVITÉ DU CLIENT]&lt;/span&gt;. Elles sont traitées par le personnel des différents services concernés par vos demandes &lt;span style=&quot;color: #ff0000;&quot;&gt;[CITER LES SERVICES CONCERNÉS]&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Elles sont traitées uniquement pour les finalités indiquées précédemment. Les données à caractère personnel vous concernant sont hébergées exclusivement en France par un sous-traitant de notre Prestataire (au sens de l’article 4.8 du RGPD) de façon encadrée strictement. Elles ne sont jamais communiquées à des tiers à des fins commerciales.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Les données personnelles sont-elles transférées en dehors de l’Union européenne ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Les données à caractère personnel collectées par ce site ne sont pas transférées à des acteurs situés en dehors de l’Union Européenne. En cas de transfert contractuel des données personnelles, &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; veille à ce que les destinataires soient basés dans l’Union Européenne.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Comment sont sécurisées les données personnelles traitées par ce site ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; s’engage à protéger les données personnelles traitées dans le cadre de ce site, dans le respect de l’état de l’art.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Les indications ci-dessous sont les principales mesures sécuritaires pour protéger vos données personnelles :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;toutes les pages du site sont sous le protocole hhtps ;&lt;/li&gt;
+&lt;li&gt;une journalisation des connexions ;&lt;/li&gt;
+&lt;li&gt;blocage d’utilisateur lorsqu’il y a détection d’une tentative de piratage ;&lt;/li&gt;
+&lt;li&gt;l’effacement de Données à Caractère Personnel est effectué à la demande de la personne concernée ou à l’échéance de la durée de conservation ;&lt;/li&gt;
+&lt;li&gt;les données sont stockées sur des data serveurs respectant les sécurités techniques maximales ;&lt;/li&gt;
+&lt;li&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Quelle est la durée de conservation des données personnelles traitées par ce site ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Ce site utilise-t-il des cookies ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Lors de la consultation de ce site, deux (2) cookies de session sont déposés sur votre ordinateur, votre tablette ou votre ordiphone.&lt;/p&gt;
+&lt;p&gt;Ces derniers permettent le bon fonctionnement du site et d’améliorer grandement votre expérience utilisateur.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;L’identifiant de session présente un avantage majeur : si vous ouvrez plusieurs fenêtres de la même page web, elles sont attribuées à une seule session.&lt;/p&gt;
+&lt;p&gt;Cela permet ainsi de lancer plusieurs demandes en même temps sans perdre d’importantes informations personnelles.&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;Les cookies de session sont donc utilisés pour stocker des informations sur la session en cours.&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;D'autres informations, telles que les données de connexion ou les formulaires en ligne déjà remplis, sont également conservées pendant la session.&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;Toutefois, si vous mettez fin à votre session de navigation, l’identifiant de session et toutes les autres données stockées seront effacés. Cela signifie que lorsque vous ouvrez la même page web dans une nouvelle fenêtre de navigateur, vous serez considéré comme un nouveau visiteur.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Pour plus d’information sur les cookies, vous pouvez consulter notre &lt;a href=&quot;gestion-des-cookies&quot;&gt;politique de cookies&lt;/a&gt; ou vous rendre sur &lt;a href=&quot;https://www.cnil.fr/&quot;&gt;le site de la CNIL&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Puis-je m’opposer à ces cookies ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Oui et de plusieurs façons. Si vous ne souhaitez pas que ce site place des cookies sur votre ordinateur, vous pouvez les bloquer :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;en utilisant un navigateur qui, par défaut, refuse les cookies ;&lt;/li&gt;
+&lt;li&gt;en configurant de façon adéquate votre navigateur ou en installant un composant additionnel sur votre navigateur, spécifiquement conçus pour une gestion des cookies.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Ce site web respecte votre choix.&lt;/p&gt;</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">82</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">56</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">fulltext</field>
+    <field name="value"></field>
+    <field name="original_value">d41d8cd98f00b204e9800998ecf8427e</field>
+    <field name="original_text"></field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">83</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">56</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">attribs</field>
+    <field name="value">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="original_value">821f1d924e48e055ff7b9342a3139e6f</field>
+    <field name="original_text">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">84</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">56</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">images</field>
+    <field name="value">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="original_value">eeece57125004306bd90d2b77224f290</field>
+    <field name="original_text">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">85</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">56</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">urls</field>
+    <field name="value">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="original_value">f6b88977a26be0ad1c9557f9495b6e1e</field>
+    <field name="original_text">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">86</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">58</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">title</field>
+    <field name="value">Cookie policy</field>
+    <field name="original_value">272616e9a5d20435a23981bfbbcc91e9</field>
+    <field name="original_text">Politique de cookies</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">87</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">58</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">alias</field>
+    <field name="value">politique-de-cookies</field>
+    <field name="original_value">bd9ad6587c15930a10b9ff1c3ad05d3f</field>
+    <field name="original_text">politique-de-cookies</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">88</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">58</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">introtext</field>
+    <field name="value">&lt;p&gt;&lt;strong&gt;&lt;u&gt;Object : &lt;/u&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The purpose of this Cookies Policy is to inform you precisely about the processing of your personal data.&lt;/p&gt;
+&lt;p&gt;All our staff and operators who have access to individual data and are involved in its processing are required to respect its confidentiality.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;&lt;u&gt; Definition : what is a cookie ?&lt;/u&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;A cookie is a small text file placed on your terminal (computer, tablet, etc.) when you visit a website. It allows its issuer to identify your terminal in which it is stored, for the duration of the validity of the cookie concerned. Only the sender of the cookie is likely to read or modify the information contained therein.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;&lt;strong&gt;&lt;u&gt; Does this website use cookies ?&lt;/u&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Yes, we use session cookies to better serve visitors to the platform.&lt;/p&gt;
+&lt;p&gt;However, no personal data is collected via a cookie.&lt;/p&gt;
+&lt;p&gt;The cookies issued on our site are used for the purposes described below.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;&lt;strong&gt;&lt;u&gt; Cookies issued on the website :&lt;/u&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;We use two (2) types of cookies :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The visitor session cookie (joomla_user_state) ;&lt;/li&gt;
+&lt;li&gt;The user session cookie which allows us to detect if a visitor is connected or not on the platform (example: 2b421cd06d0c5618c3f7257fed0db040 - the name of this cookie is different for each user).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;As the name suggests, session cookies are temporary and expire as soon as you leave the session. They are only used to assign a specific session to the user. A major advantage of the session ID is that if you open several windows of the same web page, they are assigned to a single session.&lt;/p&gt;
+&lt;p&gt;This makes it possible to run several applications at the same time without losing important personal information.&lt;/p&gt;
+&lt;p&gt;Session cookies are therefore used to store information about the current session.&lt;/p&gt;
+&lt;p&gt;Other information, such as login details or previously completed online forms, is also retained during the session.&lt;/p&gt;
+&lt;p&gt;However, if you end your browsing session, the session ID and all other stored data will be deleted. This means that when you open the same web page in a new browser window, you will be considered as &lt;strong&gt;a new visitor&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ol start=&quot;4&quot;&gt;
+&lt;li&gt;&lt;strong&gt;&lt;u&gt; Retention period&lt;/u&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;As previously stated, the cookies we place on your terminals are automatically deleted when the session ends.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ol start=&quot;5&quot;&gt;
+&lt;li&gt;&lt;strong&gt;&lt;u&gt; How do you manage your cookie choices ?&lt;/u&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Several options are available to you to manage and modify the use of cookies at any time. It should be noted that the settings you make may modify your Internet browsing and your conditions of access to and use of certain services on our site that require the use of cookies. You can configure the deposit of cookies through your Internet browser. The settings made in this way can also be changed at any time.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Depending on the type of browser, you have the following options : accept or reject cookies from any source or from a given source, or program the display of a message asking for your consent each time a cookie is placed on your terminal. To express or change your choices, please refer to the help menu or the dedicated section of your browser.&lt;/p&gt;
+&lt;p&gt;&lt;u&gt; &lt;/u&gt;&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;For example :&lt;/u&gt;&lt;/p&gt;
+&lt;p&gt;Edge™ : https://support.microsoft.com/en-us/microsoft-edge/view-cookies-in-microsoft-edge-a7d95376-f2cd-8e4a-25dc-1de753474879&lt;/p&gt;
+&lt;p&gt;Safari™ : &lt;a href=&quot;https://support.apple.com/en-gb/guide/safari/sfri11471/mac&quot;&gt;https://support.apple.com/en-gb/guide/safari/sfri11471/mac&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Chrome™ : &lt;a href=&quot;https://support.google.com/chrome/answer/95647?hl=en&amp;amp;co=GENIE.Platform%3DDesktop&quot;&gt;https://support.google.com/chrome/answer/95647?hl=en&amp;amp;co=GENIE.Platform%3DDesktop&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Firefox™: &lt;a href=&quot;https://support.mozilla.org/en-US/products/firefox/protect-your-privacy/cookies&quot;&gt;https://support.mozilla.org/en-US/products/firefox/protect-your-privacy/cookies&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Opera™ : https://help.opera.com/en/latest/web-preferences/&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;u&gt;Please note :&lt;/u&gt;&lt;/strong&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Cookies improve your browsing comfort on our site and are essential to access certain secure areas. If you decide to block all cookies through your internet browser, you will only be able to visit the public part of our site and will no longer be able to access your secure customer area.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</field>
+    <field name="original_value">dca61adae17fa3af81f70dcfaf6dbbab</field>
+    <field name="original_text">&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;Objet :&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;La présente politique de Gestion des cookies a pour but de vous informer précisément sur le traitement de vos données à caractère personnel. &lt;br /&gt;L’ensemble de notre personnel et des opérateurs qui ont accès aux données individuelles interviennent dans leur traitement est tenu de respecter leur confidentialité.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;1. Définition : qu’est-ce qu’un cookie ?&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Un cookie est un petit fichier texte déposé sur votre terminal (ordinateur, tablette, ordiphone, etc.) à l’occasion de la consultation d’un site Internet. Il permet à son émetteur d’identifier votre terminal dans lequel il est enregistré, pendant la durée de validité du cookie concerné. Seul l’émetteur du cookie est susceptible de lire ou de modifier les informations qui y sont contenues.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;2. Ce site utilise-t-il des cookies ? &lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Oui, nous utilisons des cookies de session qui permettent de mieux servir les visiteurs de la plateforme. &lt;br /&gt;En revanche, aucune collecte de données à caractère personnel n’est réalisée par un témoin de connexion.&lt;br /&gt;Les cookies émis sur notre site sont utilisés aux fins décrites ci-dessous.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;3. Les cookies émis sur le site :&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt; &lt;br /&gt;Nous utilisons deux (2) types de cookies, à savoir : &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Le cookie de session visiteur (joomla_user_state) ;&lt;/li&gt;
+&lt;li&gt;Le cookie de session utilisateur qui permet de suivre si un visiteur est connecté ou non sur la plateforme (exemple : 2b421cd06d0c5618c3f7257fed0db040 – le nom de ce cookie est différent pour chaque utilisateur).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Comme leur nom l’indique, les cookies de session sont temporaires et expirent dès que vous quittez la session. Ils sont uniquement utilisés pour attribuer une session spécifique à l’utilisateur. L’identifiant de session présente un avantage majeur : si vous ouvrez plusieurs fenêtres de la même page Web, elles sont attribuées à une seule session. &lt;br /&gt;Cela permet ainsi de lancer plusieurs demandes en même temps sans perdre d’importantes informations personnelles.&lt;br /&gt;Les cookies de session sont donc utilisés pour stocker des informations sur la session en cours.&lt;br /&gt;D'autres informations, telles que les données de connexion ou les formulaires en ligne déjà remplis, sont également conservées pendant la session.&lt;/p&gt;
+&lt;p&gt;Toutefois, si vous mettez fin à votre session de navigation, l’identifiant de session et toutes les autres données stockées seront effacés. Cela signifie que lorsque vous ouvrez la même page Web dans une nouvelle fenêtre de navigateur, vous serez considéré comme &lt;strong&gt;un nouveau visiteur&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;4. Durée de conservation&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Comme dit précédemment, les cookies que nous déposons sur vos terminaux sont automatiquement supprimés lorsque la session se termine.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;5. Comment paramétrer vos choix en matière de cookies ?&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Plusieurs possibilités vous sont offertes pour gérer et modifier à tout moment l’utilisation des cookies. Étant rappelé que les paramétrages que vous effectuerez sont susceptibles de modifier votre navigation sur internet et vos conditions d’accès et d’utilisation de certains services de notre site qui nécessitent l’utilisation de cookies. Vous pouvez paramétrer le dépôt de cookies par le biais de votre navigateur Internet. Le paramétrage effectué par ce biais est également modifiable à tout moment.&lt;/p&gt;
+&lt;p&gt;Selon le type de navigateur, vous disposez des options suivantes : accepter ou rejeter les cookies de toute origine ou d’une provenance donnée ou encore programmer l’affichage d’un message vous demandant votre accord à chaque fois qu’un cookie est déposé sur votre terminal. Pour exprimer ou revenir sur vos choix, reportez-vous au menu d’aide ou à la rubrique dédiée de votre navigateur.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;À titre d’exemple :&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;Edge™ : &lt;a href=&quot;https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09&quot;&gt;https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09&lt;/a&gt;&lt;br /&gt;Safari™ : &lt;a href=&quot;https://apple.co/3gL5sDd&quot;&gt;https://apple.co/3gL5sDd&lt;/a&gt;&lt;br /&gt;Chrome™ : &lt;a href=&quot;https://bit.ly/3iqnMSj&quot;&gt;https://bit.ly/3iqnMSj&lt;/a&gt;&lt;br /&gt;Firefox™: &lt;a href=&quot;https://mzl.la/3iq71GV&quot;&gt;https://mzl.la/3iq71GV&lt;/a&gt;&lt;br /&gt;Opera™ : &lt;a href=&quot;https://bit.ly/3aiU2Eb&quot;&gt;https://bit.ly/3aiU2Eb&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;À noter :&lt;/strong&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Les cookies améliorent votre confort de navigation sur notre site et sont indispensables pour accéder à certains espaces sécurisés. Si vous décidez de bloquer tous les cookies par l’intermédiaire de votre navigateur internet, vous ne pourrez visiter que la partie publique de notre site et ne pourrez plus accéder à votre espace client sécurisé.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">89</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">58</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">fulltext</field>
+    <field name="value"></field>
+    <field name="original_value">d41d8cd98f00b204e9800998ecf8427e</field>
+    <field name="original_text"></field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">90</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">58</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">attribs</field>
+    <field name="value">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="original_value">821f1d924e48e055ff7b9342a3139e6f</field>
+    <field name="original_text">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">91</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">58</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">images</field>
+    <field name="value">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="original_value">eeece57125004306bd90d2b77224f290</field>
+    <field name="original_text">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">92</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">58</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">urls</field>
+    <field name="value">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="original_value">f6b88977a26be0ad1c9557f9495b6e1e</field>
+    <field name="original_text">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">93</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">57</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">title</field>
+    <field name="value">Rights management</field>
+    <field name="original_value">764e157a237bd428e9288ef3addbb0c3</field>
+    <field name="original_text">Gestion des droits</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">94</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">57</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">alias</field>
+    <field name="value">gestion-des-droits</field>
+    <field name="original_value">8ff9ec056bf29b1fb430d9876bf1b714</field>
+    <field name="original_text">gestion-des-droits</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">95</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">57</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">introtext</field>
+    <field name="value">&lt;p&gt;&lt;strong&gt;What are the rights of the data subjects of the processing carried out by this site?&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt; &lt;br /&gt;&lt;br /&gt;We collect the individual data that you provide us in the context of these contacts, as well as in the emails you send us.&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;&lt;br /&gt;In accordance with the General Regulation on the Protection of Personal Data (RGPD) which came into force on 25 May 2018 and by the LAW n° 2018-493 of 20 June 2018 relating to the protection of personal data, known as LIL3, and Order n° 2018-1125 of 12 December 2018 taken in application of Article 32 of Law n° 2018-493 of 20 June 2018 relating to the protection of personal data and amending Law n° 78-17 of 6 January 1978 relating to information technology, files and freedoms, you have the following rights:&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&quot;background: #ccc;&quot; width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Rights at your disposal&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td style=&quot;background: #ccc;&quot; width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Usefulness&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Right of access&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Right to know whether we hold Personal Data about you and to obtain a copy of it, including the following information:&lt;br /&gt;&lt;br /&gt;The purpose of the processing, the categories of Personal Data processed, the categories of recipients of the data, the retention period where possible (or the criteria used to determine this period), the rights you have.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Right to erasure (right to be forgotten)&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Right to obtain the deletion of your Personal Data in the cases provided for by the GDPR (Article 17), including:&lt;br /&gt;&lt;br /&gt;When the data we process is no longer necessary for us; when you object to commercial prospecting and request deletion in addition to the cessation of processing; when the processing is unlawful.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Right to object&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;This right applies when we process your data in order to pursue one of our legitimate interests, such as advertising on your social network pages. If you request to object, we will analyze the reasons for your particular situation and investigate whether we have a legitimate and compelling reason to continue processing your data. If not, we will stop the processing concerned.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;p&gt;Right to oppose commercial prospecting&lt;/p&gt;
+&lt;/td&gt;
+&lt;td&gt;
+&lt;p&gt;If you object to commercial prospecting, we will simply cease processing the Data concerned.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Withdrawal of consent&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Where the processing of your Personal Data is based on your consent, the withdrawal of your consent prevents us from continuing to process the data in question.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Right to rectification and right to limitation&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;You may request the update or rectification of any Personal Data that you believe to be inaccurate or obsolete.&lt;br /&gt;&lt;br /&gt;You may also request that processing be suspended, with the exception of the retention of Personal Data when:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;you dispute the accuracy of the data (this limitation lasts as long as it takes for us to verify the possible inaccuracy);&lt;/li&gt;
+&lt;li&gt;the processing is unlawful and you prefer to obtain the limitation of the processing rather than the erasure of the data;&lt;/li&gt;
+&lt;li&gt;we no longer need the data but you consider that they are still necessary for the establishment, exercise or defense of legal claims;&lt;/li&gt;
+&lt;li&gt;you have formulated a request for opposition due to your particular situation and this limitation is obtained during the time of checking the balance of interests between our legitimate interests and your rights and freedoms.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Where processing has been restricted, your Data may only be processed with your consent or for the exercise, establishment and defence of legal claims.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Right to portability&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;You have the right to receive the Personal Data you have directly provided to us in a structured, commonly used and machine-readable format.&lt;br /&gt;&lt;br /&gt; &lt;br /&gt;&lt;br /&gt;You also have the right to transmit this data or to request that we transmit it to another controller.&lt;br /&gt;&lt;br /&gt;This right applies only to processing based on the consent of the individual, or on the performance of the contract and which is carried out by means of an automated process.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Fate of Data in case of death&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;In accordance with the provisions of Article 85 of the Data Protection Act, we inform you that, as an individual :&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You have the right to provide us with instructions regarding the retention, deletion and disclosure of your Personal Information after your death;&lt;/li&gt;
+&lt;li&gt;You may change or revoke these instructions with us at any time;&lt;/li&gt;
+&lt;li&gt;You will be able to designate a person to carry out these instructions, who will have the authority after your death to review these instructions and to request their implementation from us.&lt;/li&gt;
+&lt;li&gt;You are also informed that if you do not provide &lt;span style=&quot;color: #ff0000;&quot;&gt;[COMPANY CUSTOMER]&lt;/span&gt; with specific instructions on what to do with your Personal Data, your heirs may exercise the rights to retain, delete and disclose your Personal Data after your death to the extent necessary to organize and settle your estate and for &lt;span style=&quot;color: #ff0000;&quot;&gt;[COMPANY CUSTOMER]&lt;/span&gt; to take account of your death.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;You also have the right (where applicable) to formulate general or specific directives relating to the conservation, deletion and communication of your personal data after your death or right to be forgotten.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;How can I exercise my rights under the RGPD and the Data Protection Act?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Your requests can be formulated in different ways:&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;By email by writing to : &lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER EMAIL ADDRESS]&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;In person at the reception of &lt;span style=&quot;color: #ff0000;&quot;&gt;[COMPANY NAME + CLIENT ADDRESS]&lt;/span&gt;.&lt;/li&gt;
+&lt;li&gt;By mail by writing to &lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER MAILING ADDRESS]&lt;/span&gt;.&lt;/li&gt;
+&lt;li&gt;Through an agent who will use one of the above channels to make the request.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Please submit each of your requests by one of the above means and attach a copy of your identification. &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;For a right of access request:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Please specify in your request which data or processing operations it relates to.&lt;/p&gt;
+&lt;p&gt;Your data will be sent to you electronically or by post, by registered mail with acknowledgement of receipt.&lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER'S BUSINESS NAME]&lt;/span&gt; may require payment of a reasonable fee based on administrative costs for any additional copies requested (Article 15.3 of the GDPR).&lt;/p&gt;
+&lt;p&gt;In case of manifestly unfounded or excessive requests, &lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER BUSINESS NAME]&lt;/span&gt; may require payment of a reasonable fee that takes into account the administrative costs incurred in providing the information or refuse to comply with such requests (Article 12.5 GDPR).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;For a right of rectification request:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;If you believe that information about you is inaccurate and should be corrected, please indicate precisely which data about you is inaccurate or incomplete, and provide any information that would allow it to be corrected or completed (Article 15 of the GDPR).&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;For a request for the right to erasure:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Please indicate precisely the data concerning you that you are requesting to be deleted, and the reasons for your request (article 17 of the RGPD).&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;Please note&lt;/span&gt;: this right is not absolute,&lt;span style=&quot;color: #ff0000;&quot;&gt; [COMPANY NAME CUSTOMER]&lt;/span&gt; may be obliged to keep information about you, in particular in the context of the management of the commercial relationship (management of invoices, management of disputes) and in the context of documentation and the provision of evidence relating to the exercise of your rights.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;For a request to limit processing:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Please indicate precisely which data about you you are requesting to limit the processing of, and the reasons for your request.&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;Please note&lt;/span&gt;: this right is not absolute, &lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER BUSINESS NAME]&lt;/span&gt; may decide to continue processing your data (Article 18.3 of the GDPR). Limitation, if implemented, may result in the suspension of services provided by &lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER BUSINESS NAME]&lt;/span&gt; (access to work and deliverables, receipt of information, etc.). These effects will be described to you in the letter acknowledging receipt of your request to limit processing.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;For an objection request:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Please indicate precisely which data processing you wish to object to, and the reasons for your request.&lt;br /&gt;&lt;br /&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;Please note&lt;/span&gt;: this right is not absolute. Please indicate precisely the processing for which you object to the handling of your personal data, and the reasons for your request (Article 21 of the GDPR).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;To apply for the right to portability:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Each user may at any time make a request for data portability in order to recover the personal data that &lt;span style=&quot;color: #ff0000;&quot;&gt;[CUSTOMER'S BUSINESS NAME]&lt;/span&gt; has collected about him/her in the context of processing based on consent and on a contractual basis.&lt;br /&gt;&lt;br /&gt;If you would like the data to be transferred to another controller in a standard format, please specify this and provide the contact details of the other controller.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;How to contact the DPO?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;You can contact the DPO of &lt;span style=&quot;color: #ff0000;&quot;&gt;[COMPANY NAME CUSTOMER]&lt;/span&gt; by e-mail at the following address&lt;span style=&quot;color: #ff0000;&quot;&gt; [CUSTOMER DPO E-MAIL ADDRESS]&lt;/span&gt; or by post by sending your mail to the following address: &lt;span style=&quot;color: #ff0000;&quot;&gt;[POSTAL ADDRESS DPO CLIENT]&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;You can make a request to the CNIL at the following address&lt;/p&gt;
+&lt;p&gt;3 Place de Fontenoy - TSA 80715 - 75334 PARIS CEDEX 07&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Updated on May 07, 2021.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</field>
+    <field name="original_value">415646b19208f3ab27b3c70644488715</field>
+    <field name="original_text">&lt;p&gt; &lt;strong&gt;Quels sont les droits des personnes concernées par le traitement effectué par ce site ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Nous collectons les données individuelles que vous nous fournissez dans le cadre de ces prises de contact, ainsi que dans les courriers électroniques que vous nous envoyez.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Conformément au Règlement Général sur la Protection des données à caractère personnel (RGPD) entré en vigueur le 25 mai 2018 et par la LOI n° 2018-493 du 20 juin 2018 relative à la protection des données personnelles dite LIL3 et de l’ordonnance n° 2018-1125 du 12 décembre 2018 prise en application de l’article 32 de la loi n° 2018-493 du 20 juin 2018 relative à la protection des données personnelles et portant modification de la loi n° 78-17 du 6 janvier 1978 relative à l’informatique, aux fichiers et aux libertés, vous disposez des droits suivants :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&quot;background: #ccc;&quot; width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Droits dont vous disposez&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td style=&quot;background: #ccc;&quot; width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Utilité&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Droit d’accès&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Droit de savoir si nous détenons des Données Personnelles vous concernant et d’en obtenir une copie, ainsi que, notamment, les informations suivantes :&lt;/p&gt;
+&lt;p&gt;La finalité du traitement, les catégories de Données Personnelles traitées, les catégories de destinataires des données, la durée de conservation lorsque cela est possible (ou les critères utilisés pour déterminer cette durée), les droits dont vous bénéficiez.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Droit à l’effacement (droit à l’oubli)&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Droit d’obtenir la suppression de vos Données Personnelles dans les cas prévus par le RGPD (article 17), notamment :&lt;/p&gt;
+&lt;p&gt;Lorsque les données que nous traitons ne nous sont plus nécessaires ; lorsque vous vous opposez à la prospection commerciale et demandez la suppression en plus de l’arrêt du traitement ; lorsque le traitement est illicite.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Droit d’opposition&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Ce droit s’applique lorsque nous traitons vos données afin de poursuivre un de nos intérêts légitimes, tel que par exemple la publicité sur vos pages de réseaux sociaux. En cas de demande d’opposition de votre part, nous analyserons les raisons tenant à votre situation particulière et rechercherons si nous avons un motif légitime et impérieux pour continuer à traiter vos données. Dans le cas contraire, nous cesserons le traitement concerné.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;p&gt;Droit d’opposition à la prospection commerciale&lt;/p&gt;
+&lt;/td&gt;
+&lt;td&gt;
+&lt;p&gt;En cas d’opposition à la prospection commerciale, nous cesserons purement et simplement le traitement de Données concerné.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Retrait du consentement&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Lorsque le traitement de vos Données Personnelles repose sur votre consentement, le retrait de votre consentement nous empêche de continuer à traiter les données en question.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Droit à la rectification et droit à la limitation&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Vous pouvez demander la mise à jour ou la rectification de toute Donnée Personnelle que vous jugez inexacte ou obsolète.&lt;/p&gt;
+&lt;p&gt;Vous pouvez également demander que le traitement soit suspendu, à l’exception de la conservation des Données Personnelles lorsque :&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;vous contestez l’exactitude des données (cette limitation dure le temps de notre vérification de cette éventuelle inexactitude) ;&lt;/li&gt;
+&lt;li&gt;le traitement est illicite et vous préférez obtenir la limitation du traitement plutôt que l’effacement des données ;&lt;/li&gt;
+&lt;li&gt;nous n’avons plus besoin des données mais vous considérez qu’elles sont encore nécessaires pour la constatation, l’exercice ou la défense des droits en justice ;&lt;/li&gt;
+&lt;li&gt;vous avez formulé une demande d’opposition due à votre situation particulière et cette limitation est obtenue pendant le temps de vérification de la balance des intérêts entre nos intérêts légitimes et vos droits et libertés.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Lorsqu’un traitement a été limité, vos Données ne peuvent être traitées qu’avec votre consentement ou pour l’exercice, la constatation et la défense des droits en Justice.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Droit à la portabilité&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;Vous avez le droit de recevoir les données Personnelles que vous nous avez directement fournies, dans un format structuré, couramment utilisé et lisible par machine.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Vous avez également le droit de transmettre ces données ou de demander que nous les transmettions à un autre responsable du traitement.&lt;/p&gt;
+&lt;p&gt;Ce droit ne s’applique que pour les traitements fondés sur le consentement de la personne, ou sur l’exécution du contrat et qui sont effectués à l’aide d’un procédé automatisé.&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Sort des Données en cas de décès&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Conformément aux dispositions de l’article 85 la Loi Informatique et Libertés, nous vous informons que, en tant que personne physique :&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Vous disposez du droit de définir auprès de nous des directives relatives à la conservation, à l’effacement et à la communication de vos Données Personnelles après votre décès ;&lt;/li&gt;
+&lt;li&gt;Vous pourrez à tout moment modifier ou révoquer auprès de nous lesdites directives ;&lt;/li&gt;
+&lt;li&gt;Vous pourrez désigner une personne chargée de l’exécution de ces directives, qui aura qualité après votre décès, pour prendre connaissance desdites directives et pour demander leur mise en œuvre auprès de nous.&lt;/li&gt;
+&lt;li&gt;Vous êtes également informé(e) qu’à défaut de transmission à &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; de directives spécifiques sur le sort de vos Données Personnelles, vos héritiers pourront exercer après votre décès les droits relatifs à la conservation, à l’effacement et à la communication de vos Données Personnelles dans la mesure nécessaire à l’organisation et au règlement de votre succession ainsi qu’à la prise en compte par &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; de votre décès.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Vous disposez également (lorsque c’est applicable), du droit de formuler des directives générales ou particulières relatives à la conservation, à l’effacement et à la communication de vos données à caractère personnel après votre décès ou droit à l’oubli.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Comment puis-je exercer mes droits prévus par le RGPD et par la loi Informatique et Libertés ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Vos demandes peuvent être formulées de différentes façons :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Par courriel en écrivant à : &lt;span style=&quot;color: #ff0000;&quot;&gt;[ADRESSE MAIL CLIENT]&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;En présentiel en vous présentant à l’accueil de&lt;span style=&quot;color: #ff0000;&quot;&gt; [RAISON SOCIALE + ADRESSE CLIENT]&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;Par courrier postal en écrivant à &lt;span style=&quot;color: #ff0000;&quot;&gt;[ADRESSE POSTALE CLIENT]&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;Par l’intermédiaire d’un mandataire qui utilisera l’un des canaux ci-dessus pour formuler la demande.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Veuillez formuler chacune de vos demandes par l’un des moyens ci-dessus en en joignant la copie d’une pièce d’identité. &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Pour une demande de droit d’accès :&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Veuillez préciser dans votre demande sur quelles données ou quelles opérations de traitement elle porte.&lt;/p&gt;
+&lt;p&gt;Vos données vous seront transmises par voie électronique ou par courrier postal, en recommandé avec accusé de réception.&lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; peut exiger le paiement de frais raisonnables basés sur les coûts administratifs pour toute copie supplémentaire demandée (article 15.3 du RGPD).&lt;/p&gt;
+&lt;p&gt;En cas de demandes manifestement infondées ou excessives, &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; peut exiger le paiement de frais raisonnables qui tiennent compte des coûts administratifs supportés pour fournir les informations ou refuser de donner suite à ces demandes (article 12.5 du RGPD).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Pour une demande de droit de rectification&lt;/strong&gt; :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Si vous estimez que des informations vous concernant sont erronées et devraient être rectifiées, merci d’indiquer précisément les données inexactes ou incomplètes vous concernant, et de fournir toutes informations permettant de les corriger ou de les compléter (article 15 du RGPD).&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Pour une demande de droit d’effacement&lt;/strong&gt; :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Veuillez indiquer précisément les données vous concernant dont vous demandez l’effacement, et les raisons de votre demande (article 17 du RGPD).&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;À noter&lt;/u&gt; : ce droit n’est pas absolu, &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; peut être dans l’obligation de conserver des informations vous concernant, notamment dans le cadre, notamment, de la gestion de la relation commerciale (gestion des factures, gestion du contentieux) et dans le cadre de la documentation et de la fourniture de preuve relative à l’exercice de vos droits.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Pour une demande de limitation du traitement&lt;/strong&gt; :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Veuillez indiquer précisément les données vous concernant dont vous demandez la limitation du traitement, et les raisons de votre demande.&lt;/p&gt;
+&lt;p&gt;&lt;u&gt;À noter&lt;/u&gt; : ce droit n’est pas absolu, &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; peut décider de poursuivre le traitement de vos données (article 18.3 du RGPD). La limitation, si elle est mise en œuvre, peut se traduire par la suspension de services assurés par &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; (accès aux travaux et livrables, réception d’information, etc.). Ces incidences vous seront décrites dans le courrier accusant réception de votre demande de limitation du traitement.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Pour une demande de droit d’opposition&lt;/strong&gt; :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Veuillez indiquer précisément le traitement de données vous concernant auquel vous souhaitez vous opposer, et les raisons de votre demande.&lt;/p&gt;
+&lt;p&gt;À noter : ce droit n’est pas absolu. Veuillez indiquer précisément le traitement pour lequel vous vous opposez à la gestion de vos données personnelles, et les raisons de votre demande (article 21 du RGPD).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Pour une demande de droit à la portabilité&lt;/strong&gt; :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Chaque utilisateur peut à tout moment faire une demande de portabilité des données afin de récupérer les données personnelles que &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; a collecté sur lui dans le cadre des traitements fondés sur le consentement et sur la base d’un contrat.&lt;/p&gt;
+&lt;p&gt;Si vous souhaitez que les données soit transmises à un autre responsable de traitement sous un format standard, merci de le préciser et d’indiquer les coordonnées de cet autre responsable de traitement.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Comment contacter le DPO ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Vous pouvez contacter le DPO de &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; par voie électronique à l’adresse suivante : &lt;span style=&quot;color: #ff0000;&quot;&gt;[ADRESSE MAIL DPO CLIENT]&lt;/span&gt; ou par voie postale en envoyant votre courrier à l’adresse suivante : &lt;span style=&quot;color: #ff0000;&quot;&gt;[ADRESSE POSTALE DPO CLIENT]&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Vous pouvez effectuer une demande auprès de la CNIL à l’adresse suivante :&lt;/p&gt;
+&lt;p&gt;3 Place de Fontenoy - TSA 80715 - 75334 PARIS CEDEX 07&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Mise à jour le 07 mai 2021.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">96</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">57</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">fulltext</field>
+    <field name="value"></field>
+    <field name="original_value">d41d8cd98f00b204e9800998ecf8427e</field>
+    <field name="original_text"></field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">97</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">57</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">attribs</field>
+    <field name="value">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="original_value">821f1d924e48e055ff7b9342a3139e6f</field>
+    <field name="original_text">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">98</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">57</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">images</field>
+    <field name="value">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="original_value">eeece57125004306bd90d2b77224f290</field>
+    <field name="original_text">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">99</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">57</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">urls</field>
+    <field name="value">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="original_value">f6b88977a26be0ad1c9557f9495b6e1e</field>
+    <field name="original_text">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">100</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">112</field>
+    <field name="reference_table">modules</field>
+    <field name="reference_field">params</field>
+    <field name="value">{&quot;mod_em_campaign_layout&quot;:&quot;default_tchooz&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;133&quot;,&quot;mod_em_campaign_link&quot;:&quot;connexion&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;&quot;,&quot;mod_em_campaign_groupby_closed&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;start_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;desc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;1&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;1&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="original_value">dd86e205c466263bfa68e15471625e6c</field>
+    <field name="original_text">{&quot;mod_em_campaign_layout&quot;:&quot;default_tchooz&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;133&quot;,&quot;mod_em_campaign_link&quot;:&quot;connexion&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H\\hi&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;month&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;start_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;desc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;1&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;1&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">101</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">119</field>
+    <field name="reference_table">modules</field>
+    <field name="reference_field">params</field>
+    <field name="value">{&quot;mod_em_campaign_layout&quot;:&quot;default_tchooz&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;133&quot;,&quot;mod_em_campaign_link&quot;:&quot;apply&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \\a\\t H:i&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;,&quot;past&quot;,&quot;all&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;&quot;,&quot;mod_em_campaign_groupby_closed&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;end_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;desc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;1&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;1&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="original_value">031abb5ace40f2680b5c7d0ba06c691b</field>
+    <field name="original_text">{&quot;mod_em_campaign_layout&quot;:&quot;default_tchooz&quot;,&quot;mod_em_campaign_itemid&quot;:&quot;&quot;,&quot;mod_em_campaign_itemid2&quot;:&quot;133&quot;,&quot;mod_em_campaign_link&quot;:&quot;apply&quot;,&quot;mod_em_campaign_date_format&quot;:&quot;d\/m\/Y \u00e0 H:i&quot;,&quot;mod_em_campaign_display_svg&quot;:&quot;1&quot;,&quot;mod_em_campaign_display_hover_offset&quot;:&quot;1&quot;,&quot;mod_em_campaign_get_link&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_camp_start_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_camp_end_date&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_formation_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_formation_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_start_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_admission_end_date&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_timezone&quot;:&quot;1&quot;,&quot;mod_em_campaign_list_sections&quot;:[&quot;intro&quot;],&quot;mod_em_campaign_intro&quot;:&quot;&quot;,&quot;mod_em_campaign_show_search&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_results&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_filters_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_show_sort&quot;:&quot;1&quot;,&quot;mod_em_campaign_sort_list&quot;:[&quot;programme&quot;],&quot;mod_em_campaign_list_tab&quot;:[&quot;current&quot;,&quot;futur&quot;,&quot;past&quot;,&quot;all&quot;],&quot;mod_em_campaign_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_programme_logo&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_pinned_campaign&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_apply_button&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby&quot;:&quot;0&quot;,&quot;mod_em_campaign_groupby_closed&quot;:&quot;0&quot;,&quot;mod_em_campaign_orderby&quot;:&quot;end_date&quot;,&quot;mod_em_campaign_order_type&quot;:&quot;desc&quot;,&quot;mod_em_campaign_get_teaching_unity&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_nav_order&quot;:&quot;1&quot;,&quot;mod_em_program_code&quot;:&quot;&quot;,&quot;mod_em_ignored_program_code&quot;:&quot;&quot;,&quot;mod_em_campaign_details_show_programme&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_faq&quot;:&quot;0&quot;,&quot;mod_em_campaign_show_documents&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_contact&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration&quot;:&quot;1&quot;,&quot;mod_em_campaign_show_registration_steps&quot;:{&quot;mod_em_campaign_show_registration_steps0&quot;:{&quot;mod_em_campaign_show_registration_steps_text&quot;:&quot;&quot;}},&quot;mod_em_campaign_allow_alerting&quot;:&quot;1&quot;,&quot;mod_em_campaign_google_schema&quot;:&quot;1&quot;,&quot;mod_em_campaign_class&quot;:&quot;&quot;,&quot;mod_em_campaign_show_localedate&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">102</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">60</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">introtext</field>
+    <field name="value">&lt;p&gt;You have already submitted your reference letter.&lt;/p&gt;</field>
+    <field name="original_value">7e762a797f99224e23fa6365a066a9c9</field>
+    <field name="original_text">&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Vous avez déja soumis votre fiche d'appréciation individuelle&lt;/p&gt;</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">103</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">60</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">fulltext</field>
+    <field name="value"></field>
+    <field name="original_value">d41d8cd98f00b204e9800998ecf8427e</field>
+    <field name="original_text"></field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">104</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">60</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">attribs</field>
+    <field name="value">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="original_value">25a334e34be3e63fb8bc6ab07d252aa8</field>
+    <field name="original_text">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">105</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">60</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">images</field>
+    <field name="value">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="original_value">eeece57125004306bd90d2b77224f290</field>
+    <field name="original_text">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">106</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">60</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">urls</field>
+    <field name="value">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="original_value">f6b88977a26be0ad1c9557f9495b6e1e</field>
+    <field name="original_text">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">107</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">61</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">introtext</field>
+    <field name="value">&lt;p&gt;Your file has been uploaded, thank you for your contribution.&lt;/p&gt;</field>
+    <field name="original_value">8f8fc2382aa409ddeddebd3ce5d49ee0</field>
+    <field name="original_text">&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Votre formulaire a bien été envoyé, merci pour votre contribution.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;em class=&quot;huge circular inverted green check icon&quot;&gt; -&lt;/em&gt;&lt;/p&gt;</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">108</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">61</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">fulltext</field>
+    <field name="value"></field>
+    <field name="original_value">d41d8cd98f00b204e9800998ecf8427e</field>
+    <field name="original_text"></field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">109</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">61</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">attribs</field>
+    <field name="value">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="original_value">25a334e34be3e63fb8bc6ab07d252aa8</field>
+    <field name="original_text">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">110</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">61</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">images</field>
+    <field name="value">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="original_value">eeece57125004306bd90d2b77224f290</field>
+    <field name="original_text">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">111</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">61</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">urls</field>
+    <field name="value">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="original_value">f6b88977a26be0ad1c9557f9495b6e1e</field>
+    <field name="original_text">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">112</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">123</field>
+    <field name="reference_table">modules</field>
+    <field name="reference_field">params</field>
+    <field name="value">{&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;show_programme&quot;:&quot;1&quot;,&quot;show_deadline&quot;:&quot;1&quot;,&quot;show_back_button&quot;:&quot;1&quot;,&quot;show_form_step&quot;:&quot;1&quot;,&quot;show_document_step&quot;:&quot;1&quot;,&quot;show_status&quot;:&quot;1&quot;,&quot;show_hikashop&quot;:&quot;1&quot;,&quot;admission&quot;:&quot;0&quot;,&quot;home_link&quot;:&quot;index.php&quot;,&quot;add_to_cart_icon&quot;:&quot;large add to cart icon&quot;,&quot;scholarship_icon&quot;:&quot;large student icon&quot;,&quot;tags&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="original_value">1181e275166169d37f63b3ba09c9cf48</field>
+    <field name="original_text">{&quot;layout&quot;:&quot;_:tchooz&quot;,&quot;show_programme&quot;:&quot;1&quot;,&quot;show_deadline&quot;:&quot;0&quot;,&quot;show_back_button&quot;:&quot;1&quot;,&quot;show_form_step&quot;:&quot;1&quot;,&quot;show_document_step&quot;:&quot;1&quot;,&quot;show_status&quot;:&quot;1&quot;,&quot;show_hikashop&quot;:&quot;1&quot;,&quot;admission&quot;:&quot;0&quot;,&quot;home_link&quot;:&quot;index.php&quot;,&quot;add_to_cart_icon&quot;:&quot;large add to cart icon&quot;,&quot;scholarship_icon&quot;:&quot;large student icon&quot;,&quot;tags&quot;:&quot;&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">113</field>
+    <field name="language_id">2</field>
+    <field name="reference_id">1</field>
+    <field name="reference_table">emundus_setup_campaigns</field>
+    <field name="reference_field">label</field>
+    <field name="value">Test</field>
+    <field name="original_value" value_is_null="true"></field>
+    <field name="original_text"></field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">114</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">1</field>
+    <field name="reference_table">emundus_setup_campaigns</field>
+    <field name="reference_field">label</field>
+    <field name="value">Test</field>
+    <field name="original_value" value_is_null="true"></field>
+    <field name="original_text"></field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">115</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">52</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">introtext</field>
+    <field name="value">&lt;h1&gt;Welcome&lt;/h1&gt;
+&lt;p&gt;To see all the campaigns available on the platform, look below in the &quot;Campaigns&quot; section.&lt;br /&gt;To create an account and apply, click on &quot;Register&quot; in the top right.&lt;br /&gt;If you have already applied to a call for projects in the past and would like to re-apply, log in with your credentials and click on &quot;Submit a new application&quot;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</field>
+    <field name="original_value">19d6a9d6ca75db467e1d64e5ed996642</field>
+    <field name="original_text">&lt;h1&gt;Bienvenue sur votre espace de candidature&lt;/h1&gt;
+&lt;p&gt;Pour voir toutes les campagnes disponibles sur la plateforme, regardez ci-dessous la section « Campagnes » .&lt;br /&gt;Pour créer un compte et postuler, cliquez sur « Créer son compte »  en haut à droite.&lt;br /&gt;Si vous avez déjà participé à une campagne dans le passé et que vous souhaitez postuler à nouveau, connectez-vous avec vos identifiants et cliquez sur « Déposer un nouveau dossier ».&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">116</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">52</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">fulltext</field>
+    <field name="value"></field>
+    <field name="original_value">d41d8cd98f00b204e9800998ecf8427e</field>
+    <field name="original_text"></field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">117</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">52</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">attribs</field>
+    <field name="value">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;1&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="original_value">fe09abd425c1d69d92f9933f4677f58d</field>
+    <field name="original_text">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;1&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">118</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">52</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">images</field>
+    <field name="value">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="original_value">eeece57125004306bd90d2b77224f290</field>
+    <field name="original_text">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">119</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">52</field>
+    <field name="reference_table">content</field>
+    <field name="reference_field">urls</field>
+    <field name="value">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="original_value">f6b88977a26be0ad1c9557f9495b6e1e</field>
+    <field name="original_text">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">120</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">243</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">link</field>
+    <field name="value">index.php?option=com_content&amp;view=featured</field>
+    <field name="original_value">30ec0e2c217f5e85ac06262fc102e9fd</field>
+    <field name="original_text">index.php?option=com_content&amp;view=featured</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">121</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">243</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">path</field>
+    <field name="value">home</field>
+    <field name="original_value">106a6c241b8797f52e1e77317b96a201</field>
+    <field name="original_text">home</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">122</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">243</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">params</field>
+    <field name="value">{&quot;featured_categories&quot;:[&quot;&quot;],&quot;layout_type&quot;:&quot;blog&quot;,&quot;num_leading_articles&quot;:&quot;&quot;,&quot;blog_class_leading&quot;:&quot;&quot;,&quot;num_intro_articles&quot;:&quot;&quot;,&quot;blog_class&quot;:&quot;&quot;,&quot;num_columns&quot;:&quot;&quot;,&quot;multi_column_order&quot;:&quot;&quot;,&quot;num_links&quot;:&quot;&quot;,&quot;link_intro_image&quot;:&quot;&quot;,&quot;orderby_pri&quot;:&quot;&quot;,&quot;orderby_sec&quot;:&quot;&quot;,&quot;order_date&quot;:&quot;&quot;,&quot;show_pagination&quot;:&quot;&quot;,&quot;show_pagination_results&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_readmore&quot;:&quot;&quot;,&quot;show_readmore_title&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;show_feed_link&quot;:&quot;&quot;,&quot;feed_summary&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:&quot;1&quot;,&quot;menu_show&quot;:&quot;1&quot;,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;homepage&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="original_value">e031b660737ae90c334ebf34ab089f2c</field>
+    <field name="original_text">{&quot;layout_type&quot;:&quot;blog&quot;,&quot;num_leading_articles&quot;:&quot;&quot;,&quot;blog_class_leading&quot;:&quot;&quot;,&quot;num_intro_articles&quot;:&quot;&quot;,&quot;blog_class&quot;:&quot;&quot;,&quot;num_columns&quot;:&quot;&quot;,&quot;multi_column_order&quot;:&quot;&quot;,&quot;num_links&quot;:&quot;&quot;,&quot;link_intro_image&quot;:&quot;&quot;,&quot;orderby_pri&quot;:&quot;&quot;,&quot;orderby_sec&quot;:&quot;&quot;,&quot;order_date&quot;:&quot;&quot;,&quot;show_pagination&quot;:&quot;&quot;,&quot;show_pagination_results&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_readmore&quot;:&quot;&quot;,&quot;show_readmore_title&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;show_feed_link&quot;:&quot;&quot;,&quot;feed_summary&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;homepage&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">123</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">153</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">link</field>
+    <field name="value">index.php?option=com_content&amp;view=article&amp;id=54</field>
+    <field name="original_value">937308659b04de6b0f107d3eafbf0329</field>
+    <field name="original_text">index.php?option=com_content&amp;view=article&amp;id=54</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">124</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">153</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">path</field>
+    <field name="value">liste-des-campagnes</field>
+    <field name="original_value">5172b2755d1e778c07b7ddb0a899f381</field>
+    <field name="original_text">liste-des-campagnes</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">125</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">153</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">params</field>
+    <field name="value">{&quot;show_title&quot;:&quot;0&quot;,&quot;link_titles&quot;:&quot;0&quot;,&quot;show_intro&quot;:&quot;0&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;0&quot;,&quot;show_category&quot;:&quot;0&quot;,&quot;link_category&quot;:&quot;0&quot;,&quot;show_parent_category&quot;:&quot;0&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;0&quot;,&quot;link_author&quot;:&quot;0&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;0&quot;,&quot;show_item_navigation&quot;:&quot;0&quot;,&quot;show_hits&quot;:&quot;0&quot;,&quot;show_tags&quot;:&quot;0&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:&quot;1&quot;,&quot;menu_show&quot;:&quot;1&quot;,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;homepage&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:&quot;1&quot;,&quot;gantry-attributes&quot;:&quot;&quot;,&quot;gantry-link_attributes&quot;:&quot;&quot;,&quot;gantry-hash&quot;:&quot;&quot;,&quot;gantry-dropdown&quot;:&quot;&quot;,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-class&quot;:&quot;&quot;,&quot;gantry-icon&quot;:&quot;&quot;,&quot;gantry-subtitle&quot;:&quot;&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:&quot;1&quot;,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-particle&quot;:&quot;&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="original_value">a8bf8c51eb3c756c120efdf05f8c159e</field>
+    <field name="original_text">{&quot;show_title&quot;:&quot;0&quot;,&quot;link_titles&quot;:&quot;0&quot;,&quot;show_intro&quot;:&quot;0&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;0&quot;,&quot;show_category&quot;:&quot;0&quot;,&quot;link_category&quot;:&quot;0&quot;,&quot;show_parent_category&quot;:&quot;0&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;0&quot;,&quot;link_author&quot;:&quot;0&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;0&quot;,&quot;show_item_navigation&quot;:&quot;0&quot;,&quot;show_hits&quot;:&quot;0&quot;,&quot;show_tags&quot;:&quot;0&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">126</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">124</field>
+    <field name="reference_table">modules</field>
+    <field name="reference_field">params</field>
+    <field name="value">{&quot;show_forms&quot;:&quot;1&quot;,&quot;forms_title&quot;:&quot;Steps&quot;,&quot;show_mandatory_documents&quot;:&quot;1&quot;,&quot;mandatory_documents_title&quot;:&quot;Attachments&quot;,&quot;show_optional_documents&quot;:&quot;0&quot;,&quot;optional_documents_title&quot;:&quot;Additional attachments&quot;,&quot;show_duplicate_documents&quot;:&quot;-1&quot;,&quot;preliminary_documents_title&quot;:&quot;PRELIMINARY_DOCUMENTS&quot;,&quot;show_preliminary_documents&quot;:&quot;0&quot;,&quot;showsend&quot;:&quot;1&quot;,&quot;admission&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="original_value">8e2161799cf214da1409b699237ef64c</field>
+    <field name="original_text">{&quot;show_forms&quot;:&quot;1&quot;,&quot;forms_title&quot;:&quot;\u00c9tapes&quot;,&quot;show_mandatory_documents&quot;:&quot;1&quot;,&quot;mandatory_documents_title&quot;:&quot;Documents obligatoires&quot;,&quot;show_optional_documents&quot;:&quot;0&quot;,&quot;optional_documents_title&quot;:&quot;Documents optionnels&quot;,&quot;show_duplicate_documents&quot;:&quot;1&quot;,&quot;preliminary_documents_title&quot;:&quot;PRELIMINARY_DOCUMENTS&quot;,&quot;show_preliminary_documents&quot;:&quot;0&quot;,&quot;showsend&quot;:&quot;1&quot;,&quot;admission&quot;:&quot;0&quot;,&quot;module_tag&quot;:&quot;div&quot;,&quot;bootstrap_size&quot;:&quot;0&quot;,&quot;header_tag&quot;:&quot;h3&quot;,&quot;header_class&quot;:&quot;&quot;,&quot;style&quot;:&quot;0&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">127</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">273</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">title</field>
+    <field name="value">Personal Details</field>
+    <field name="original_value">e3d64d4df01932be93de4192038a7282</field>
+    <field name="original_text">Informations personnelles</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">128</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">273</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">link</field>
+    <field name="value">index.php?option=com_fabrik&amp;view=form&amp;formid=287</field>
+    <field name="original_value">fe1bf1ae0ab279dd4aa690bce010167d</field>
+    <field name="original_text">index.php?option=com_fabrik&amp;view=form&amp;formid=287</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">129</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">273</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">path</field>
+    <field name="value">formulaire-de-base-candidat-9/personal-details</field>
+    <field name="original_value">7929808af8febec3e5a076144da11d57</field>
+    <field name="original_text">formulaire-de-base-candidat-9/personal-details</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">130</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">273</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">params</field>
+    <field name="value">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;huge circular inverted blue user outline icon&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:&quot;1&quot;,&quot;menu_show&quot;:&quot;1&quot;,&quot;page_title&quot;:&quot;Personal Details&quot;,&quot;show_page_heading&quot;:&quot;0&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="original_value">a086dfd3ed4a6dcf33631d7d18ececcc</field>
+    <field name="original_text">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;huge circular inverted blue user outline icon&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;Personal Details&quot;,&quot;show_page_heading&quot;:&quot;0&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">131</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">276</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">title</field>
+    <field name="value">Diplomas and training</field>
+    <field name="original_value">c5720f85a689dd6a7cba58bad857289b</field>
+    <field name="original_text">Previous Higher Education Records</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">132</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">276</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">link</field>
+    <field name="value">index.php?option=com_fabrik&amp;view=form&amp;formid=324</field>
+    <field name="original_value">4744f16d77c104fbe77283d1584a934c</field>
+    <field name="original_text">index.php?option=com_fabrik&amp;view=form&amp;formid=324</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">133</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">276</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">path</field>
+    <field name="value">formulaire-de-base-candidat-9/previous-higher-education-records</field>
+    <field name="original_value">c13e8468ec1593332c29666c7c019b82</field>
+    <field name="original_text">formulaire-de-base-candidat-9/previous-higher-education-records</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">134</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">276</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">params</field>
+    <field name="value">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:&quot;1&quot;,&quot;menu_show&quot;:&quot;1&quot;,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="original_value">0e724d40089adf46f57e5ebe75b6cfbe</field>
+    <field name="original_text">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">135</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">277</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">title</field>
+    <field name="value">Work experience</field>
+    <field name="original_value">6bc4ddb42131444cdc6bff85abada038</field>
+    <field name="original_text">Employment History</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">136</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">277</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">link</field>
+    <field name="value">index.php?option=com_fabrik&amp;view=form&amp;formid=325</field>
+    <field name="original_value">18e9b9720545c4017b7da46327435a33</field>
+    <field name="original_text">index.php?option=com_fabrik&amp;view=form&amp;formid=325</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">137</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">277</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">path</field>
+    <field name="value">formulaire-de-base-candidat-9/employment-history</field>
+    <field name="original_value">2a9c6103c6e56064e0da622f6b0c04df</field>
+    <field name="original_text">formulaire-de-base-candidat-9/employment-history</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">138</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">277</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">params</field>
+    <field name="value">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:&quot;1&quot;,&quot;menu_show&quot;:&quot;1&quot;,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="original_value">0e724d40089adf46f57e5ebe75b6cfbe</field>
+    <field name="original_text">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;menu-meta_keywords&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;secure&quot;:0}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">139</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">278</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">title</field>
+    <field name="value">Language proficiency</field>
+    <field name="original_value">7474e4e4290377e8afd0e8a891912e22</field>
+    <field name="original_text"> Compétences linguistiques</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">140</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">278</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">link</field>
+    <field name="value">index.php?option=com_fabrik&amp;view=form&amp;formid=254</field>
+    <field name="original_value">331a48eeda97b1ab53fe35fad67b5639</field>
+    <field name="original_text">index.php?option=com_fabrik&amp;view=form&amp;formid=254</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">141</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">278</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">path</field>
+    <field name="value">formulaire-de-base-candidat-9/language-proficiency</field>
+    <field name="original_value">711f13ba881286c48cf9c7bb469abd0e</field>
+    <field name="original_text">formulaire-de-base-candidat-9/language-proficiency</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">142</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">278</field>
+    <field name="reference_table">menu</field>
+    <field name="reference_field">params</field>
+    <field name="value">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:&quot;1&quot;,&quot;menu_show&quot;:&quot;1&quot;,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="original_value">34527977dab5199fe8ebc49402de2e2f</field>
+    <field name="original_text">{&quot;rowid&quot;:&quot;&quot;,&quot;usekey&quot;:&quot;&quot;,&quot;random&quot;:&quot;0&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;applicant-form&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
   </table_data>

@@ -645,6 +645,68 @@ class EmundusModelApplication extends JModelList
 	}
 
 	/**
+	 * Check if forms of a profile are filled, even partially
+	 * @param $profile_id
+	 * @param $fnum
+	 *
+	 * @return false
+	 */
+	public function isFormFilled($profile_id, $fnum)
+	{
+		$is_filled = false;
+
+		if (!empty($profile_id) && !empty($fnum)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('jm.link')
+				->from($db->quoteName('#__menu', 'jm'))
+				->leftJoin($db->quoteName('#__emundus_setup_profiles', 'esp') . ' ON esp.menutype = jm.menutype')
+				->where('esp.id = ' . $profile_id)
+				->andWhere('jm.type = ' . $db->quote('component'))
+				->andWhere('jm.published = 1')
+				->andWhere('jm.level > 1')
+				->andWhere('jm.link LIKE ' . $db->quote('%index.php?option=com_fabrik&view=form&formid%'));
+
+			try {
+				$db->setQuery($query);
+				$links = $db->loadColumn();
+
+				if (!empty($links)) {
+					$form_ids = [];
+					foreach($links as $link) {
+						$form_ids[] = preg_match('/formid=([0-9]+)/', $link, $matches) ? $matches[1] : null;
+					}
+
+					$query->clear()
+						->select('db_table_name')
+						->from($db->quoteName('#__fabrik_lists'))
+						->where('form_id IN (' . implode(',', $form_ids) . ')');
+
+					$db->setQuery($query);
+					$tables = $db->loadColumn();
+
+					while(!$is_filled && !empty($tables)) {
+						$table = array_pop($tables);
+						$query->clear()
+							->select('COUNT(*)')
+							->from($db->quoteName($table))
+							->where('fnum = ' . $db->quote($fnum));
+
+						$db->setQuery($query);
+						$is_filled = $db->loadResult() > 0;
+					}
+				}
+			}
+			catch (Exception $e) {
+				JLog::add('Error trying to check if at least one of the form of the profile is filled: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $is_filled;
+	}
+
+	/**
 	 * @param   string  $fnum
 	 *
 	 * @return array|bool|false|float
@@ -1690,20 +1752,29 @@ class EmundusModelApplication extends JModelList
 						$this->_db->setQuery($query);
 						$rowid = $this->_db->loadResult();
 
+						$link = 'index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id;
+						$menu_item = Factory::getApplication()->getMenu()->getItems('link', $link, true);
+
+						$url = $menu_item->route;
+						$url .= '?fnum='.$fnum;
+						if(!empty($rowid)) {
+							$url .= '&rowid=' . $rowid;
+						}
+
 						if (!empty($rowid)) {
 							if ($allowEmbed) {
-								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&rowid=' . $rowid . '&fnum='.$fnum.'&tmpl=component" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><i> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</i></button>';
+								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm em-actions-form" url="'.$url.'" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><i> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</i></button>';
 							}
 							else {
-								$forms .= ' <a id="' . $itemt->form_id . '" class="em-link" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&rowid=' . $rowid . '&fnum=' . $fnum . '" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</span></a>';
+								$forms .= ' <a id="' . $itemt->form_id . '" class="em-link" href="'.$url.'" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</span></a>';
 							}
 						}
 						else {
 							if ($allowEmbed) {
-								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&' . $itemt->db_table_name . '___fnum=' . $fnum . '&' . $itemt->db_table_name . '___user_raw=' . $aid . '&' . $itemt->db_table_name . '___user=' . $aid . '&sid=' . $aid . '&tmpl=component" title="' . JText::_('COM_EMUNDUS_ADD') . '"><i> ' . JText::_('COM_EMUNDUS_ADD') . '</i></button>';
+								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm em-actions-form" url="'.$url.'" title="' . JText::_('COM_EMUNDUS_ADD') . '"><i> ' . JText::_('COM_EMUNDUS_ADD') . '</i></button>';
 							}
 							else {
-								$forms .= ' <a type="button" id="' . $itemt->form_id . '" class="em-link" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&' . $itemt->db_table_name . '___fnum=' . $fnum . '&' . $itemt->db_table_name . '___user_raw=' . $aid . '&' . $itemt->db_table_name . '___user=' . $aid . '&sid=' . $aid . '" title="' . JText::_('COM_EMUNDUS_ADD') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ADD') . '</span></a>';
+								$forms .= ' <a type="button" id="' . $itemt->form_id . '" class="em-link" href="'.$url.'" title="' . JText::_('COM_EMUNDUS_ADD') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ADD') . '</span></a>';
 							}
 						}
 					}
@@ -3109,7 +3180,12 @@ class EmundusModelApplication extends JModelList
 												$forms .= '<tr><td colspan="2"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
 											}
 											elseif ($element->plugin == 'textarea') {
-												$forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
+												$forms .= '</table>';
+												$forms .= '<div style="width: 93.5%;padding: 8px 16px;">';
+												$forms .= '<div style="width: 100%; padding: 4px 8px;background-color: #F3F3F3;color: #000000;border: solid 1px #A4A4A4;border-bottom: unset;font-size: 12px">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</div>';
+												$forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4">' . JText::_($elt) . '</div>';
+												$forms .= '</div>';
+												$forms .= '<table class="pdf-forms">';
 											}
 											else {
 												$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
@@ -3601,9 +3677,7 @@ class EmundusModelApplication extends JModelList
 			$query = "SELECT DISTINCT eu.*, sa.value 
                         FROM #__emundus_uploads as eu
                         LEFT JOIN #__emundus_setup_attachments as sa ON sa.id = eu.attachment_id
-                        LEFT JOIN #__emundus_setup_attachment_profiles as sap ON sap.id  = (
-                        SELECT id FROM #__emundus_setup_attachment_profiles sap2 WHERE sap2.attachment_id = sa.id and sap2.profile_id IN (" . implode(',', $profiles_by_campaign) . ")
-                        )
+                        LEFT JOIN #__emundus_setup_attachment_profiles as sap ON sap.attachment_id = sa.id AND sap.profile_id IN (".implode(',',$profiles_by_campaign).")
                         WHERE fnum like " . $this->_db->quote($fnum);
 
 			if (isset($attachment_id) && !empty($attachment_id)) {
@@ -5808,7 +5882,7 @@ class EmundusModelApplication extends JModelList
 					$index = array_search($value, $params->sub_options->sub_values, false);
 
 					if ($index !== false) {
-						if ($value == 0) {
+						if ($value == '0') {
 							$elt = '';
 						}
 						else {

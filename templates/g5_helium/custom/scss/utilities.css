@@ -61,6 +61,10 @@
         font-size: var(--em-applicant-font-size);
     }
 
+    ul, ol {
+        padding-left: 20px;
+    }
+
     .hidden {
         display: none;
     }
@@ -534,9 +538,10 @@
         display: inline-block;
         border-radius: var(--em-status-br);
         font-size: 14px;
-        font-weight: 400;
+        font-weight: 600;
         box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
-        padding: 6px 10px;
+        padding: 5px 12px;
+        color: var(--neutral-0);
     }
 
     .circle {
@@ -862,6 +867,7 @@
     .label-black {
         background-color: var(--em-black);
         text-shadow: none;
+        color: var(--neutral-0);
     }
 
     .label-text-black {

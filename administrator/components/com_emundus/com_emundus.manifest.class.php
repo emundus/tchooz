@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
+use scripts\Release2_0_0Installer;
 
 class Com_EmundusInstallerScript
 {
@@ -20,7 +21,6 @@ class Com_EmundusInstallerScript
 
 	protected $manifest_cache;
 	protected $schema_version;
-	protected EmundusHelperUpdate $h_update;
 
 	public function __construct()
 	{
@@ -43,7 +43,6 @@ class Com_EmundusInstallerScript
 		$this->schema_version = $this->db->loadResult();
 
 		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
-		$this->h_update = new EmundusHelperUpdate();
 	}
 
     /**
@@ -100,39 +99,27 @@ class Com_EmundusInstallerScript
             $firstrun      = true;
         }
 
+		require_once JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/release.php';
+
+		$releases_path = JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/releases/';
+
 		$query = $this->db->getQuery(true);
 
         if ($this->manifest_cache) {
             if (version_compare($cache_version, '2.0.0', '<=') || $firstrun) {
 	            EmundusHelperUpdate::displayMessage('Installation de la version 2.0.0...');
 
-				$disabled = EmundusHelperUpdate::disableEmundusPlugins('webauthn');
-				if($disabled) {
-					EmundusHelperUpdate::displayMessage('Le plugin WebAuthn a été désactivé.', 'success');
-				}
+	            require_once $releases_path . '2_0_0.php';
 
-				$query->update($this->db->quoteName('#__fabrik_elements'))
-					->set($this->db->quoteName('eval') . ' = 0')
-					->set($this->db->quoteName('default') . ' = ' . $this->db->quote(''))
-					->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('fnum'))
-					->where($this->db->quoteName('eval') . ' = 1');
-				$this->db->setQuery($query);
-				if($this->db->execute()) {
-					EmundusHelperUpdate::displayMessage('Les valeurs par défaut des champs fnums ont été retirées, ces valeurs sont désormais pré-remplis via le plugin emundus_events', 'success');
-				}
-				else {
-					EmundusHelperUpdate::displayMessage('Erreur lors de la modification des champs fnums', 'error');
-					$succeed = false;
-				}
-
-	            $column_added = EmundusHelperUpdate::addColumn('jos_emundus_setup_attachments', 'max_filesize', 'DOUBLE(6,2)');
-				if($column_added['status']) {
-					EmundusHelperUpdate::displayMessage('La colonne max_filesize a été ajoutée à la table jos_emundus_setup_attachments', 'success');
-				}
-				else {
-					EmundusHelperUpdate::displayMessage('Erreur lors de l\'ajout de la colonne max_filesize à la table jos_emundus_setup_attachments', 'error');
-					$succeed = false;
-				}
+	            $release_installer = new Release2_0_0Installer();
+	            $release_installed = $release_installer->install();
+	            if($release_installed['status']) {
+					EmundusHelperUpdate::displayMessage('Installation de la version 2.0.0 réussi.', 'success');
+	            }
+	            else {
+		            EmundusHelperUpdate::displayMessage($release_installed['message'], 'error');
+		            $succeed = false;
+	            }
             }
         }
 

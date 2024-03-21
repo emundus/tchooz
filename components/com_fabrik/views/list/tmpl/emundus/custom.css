@@ -146,6 +146,11 @@ font-size: 16px;
 .view-list .table-hover tbody tr:nth-child(2n) > td, .table-hover tbody tr:nth-child(2n) > th {
 	background: transparent;
 }
+.view-list .fabrikDataContainer .fabrik___heading .fabrikorder-desc,.view-list .fabrikDataContainer .fabrik___heading .fabrikorder-asc {
+	display: flex;
+	gap: 4px;
+	align-items: center;
+}
 /** **/
 
 /** PAGINATION **/

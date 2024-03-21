@@ -103,8 +103,8 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
                                                   class="ctext"><?php echo htmlspecialchars($comment->comment, ENT_QUOTES, 'UTF-8'); ?></textarea>
 										<?php if (($this->_user->id == $comment->user_id && EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum)) || EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum)) : ?>
                                             <div class="action em-list-status-action">
-                                                <div class="edit-comment-container">
-                                                    <button type="button" class="btn btn-info btn-xs edit-comment"
+                                                <div class="edit-comment-container tw-flex tw-items-center tw-gap-1">
+                                                    <button type="button" class="edit-comment"
                                                             onclick="editComment('<?php echo $comment->id; ?>')"
                                                             title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT'); ?>">
 
@@ -112,9 +112,9 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
                                                         <span class="material-icons">edit</span>
                                                     </button>
 													<?php if (($this->_user->id == $comment->user_id && EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum)) || EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum)) : ?>
-                                                        <div class="action">
+                                                        <div>
                                                             <button type="button"
-                                                                    class="btn btn-danger btn-xs delete-comment"
+                                                                    class="delete-comment"
                                                                     onclick="deleteComment('<?php echo $comment->id; ?>')"
                                                                     title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE'); ?>">
                                                                 <span class="material-icons">delete_outline</span>
@@ -174,20 +174,27 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
     function deleteComment(id) {
         url = 'index.php?option=com_emundus&controller=application&task=deletecomment';
 
-        $.ajax({
-            type: 'GET',
-            url: url,
-            dataType: 'json',
-            data: ({comment_id: id}),
-            success: function (result) {
-
-                if (result.status) {
-
-                    $('.comments li#' + id).empty();
-                    $('.comments li#' + id).append('<p class="text-danger" id="comment_deleted"><strong>' + result.msg + '</strong></p>');
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                comment_id: id
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    var comment_block = document.querySelector('.comments li[id="'+id+'"]');
+                    if(comment_block) {
+                        comment_block.innerHTML = '<p class="text-danger" id="comment_deleted"><strong>' + data.msg + '</strong></p>';
+                    }
 
                     setTimeout(() => {
-                        $('.comments li#' + id).remove();
+                        if(comment_block) {
+                            comment_block.remove();
+                        }
                     }, 3000);
 
                     const notifications_counter = document.querySelector('a[href*="layout=comment"] span.notifications-counter')
@@ -200,15 +207,15 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
                     var nbCom = parseInt($('.panel-default.widget .panel-heading .label.label-info').text().trim());
                     nbCom--;
                     $('.panel-default.widget .panel-heading .label.label-info').html(nbCom);
-
                 } else {
-                    $('.comments li#' + id).append('<p class="text-danger"><strong>' + result.msg + '</strong></p>');
+                    if(comment_block) {
+                        comment_block.innerHTML = '<p class="text-danger"><strong>' + data.msg + '</strong></p>';
+                    }
                 }
-            },
-            error: function (jqXHR) {
-                console.log(jqXHR.responseText);
-            }
-        });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     }
 
     var textArea = '<hr><div id="form" class="em-decision-form-content">' +
@@ -272,7 +279,7 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
                         '<div class="comment-text">' + escapeHtml(comment).replace(/(?:\r\n|\r|\n)/g, '<br>') + '</div>' +
                         '<textarea style="display: none;" class="ctext">' + escapeHtml(comment) + '</textarea>' +
                         '<div class="action">' +
-                        '<div class="edit-comment-container">' +
+                        '<div class="edit-comment-container tw-flex tw-items-center tw-gap-1">' +
                         '<button type="button" class="btn btn-info btn-xs edit-comment" onclick="editComment(' + result.id + ')" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT');?>" >' +
                         '<span class="material-icons">edit</span>' +
                         '<div class="hidden cid">' + result.id + '</div>' +

@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 jimport('joomla.database.table');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 
 class EmundusModelForm extends JModelList
@@ -1135,14 +1136,18 @@ class EmundusModelForm extends JModelList
 
 				if (empty($list_id)) {
 					JLog::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations', JLog::WARNING, 'com_emundus.error');
+
+					throw new Exception('Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations');
 				}
 			}
 			else {
 				JLog::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not find list with jos_emundus_evaluations', JLog::WARNING, 'com_emundus.error');
+				throw new Exception('Error when create a list for evaluation form, could not find list with jos_emundus_evaluations');
 			}
 		}
 		else {
 			JLog::add('component/com_emundus/models/form | Error when create a form for evaluation form', JLog::WARNING, 'com_emundus.error');
+			throw new Exception('Error when create a form for evaluation form');
 		}
 
 		return $form_id;
@@ -1305,10 +1310,6 @@ class EmundusModelForm extends JModelList
 		$results = [];
 
 		if (!empty($prid)) {
-			require_once(JPATH_SITE . '/components/com_emundus/models/formbuilder.php');
-			$formbuilder = new EmundusModelFormbuilder;
-
-
 			$query = $this->db->getQuery(true);
 
 			$query->update($this->db->quoteName('#__menu_types'))
@@ -1807,7 +1808,7 @@ class EmundusModelForm extends JModelList
 				'path'         => 'checklist-' . $prid,
 				'link'         => 'index.php?option=com_emundus&view=checklist',
 				'type'         => 'component',
-				'component_id' => 11369,
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
 				'params'       => $params
 			];
 			$checklist_menu = EmundusHelperUpdate::addJoomlaMenu($datas, $submittion_page->id, 1, 'before', $modules);

@@ -13,37 +13,94 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.4.1/css/all.css');
+use Joomla\CMS\Language\Text;
+
+if ($this->open_file_in_modal) {
+	Text::script('COM_EMUNDUS_FILES_EVALUATION');
+	Text::script('COM_EMUNDUS_FILES_TO_EVALUATE');
+	Text::script('COM_EMUNDUS_FILES_EVALUATED');
+	Text::script('COM_EMUNDUS_ONBOARD_FILE');
+	Text::script('COM_EMUNDUS_ONBOARD_STATUS');
+	Text::script('COM_EMUNDUS_FILES_APPLICANT_FILE');
+	Text::script('COM_EMUNDUS_FILES_ATTACHMENTS');
+	Text::script('COM_EMUNDUS_FILES_COMMENTS');
+	Text::script('COM_EMUNDUS_ONBOARD_NOFILES');
+	Text::script('COM_EMUNDUS_FILES_ELEMENT_SELECTED');
+	Text::script('COM_EMUNDUS_FILES_ELEMENTS_SELECTED');
+	Text::script('COM_EMUNDUS_FILES_UNSELECT');
+	Text::script('COM_EMUNDUS_FILES_OPEN_IN_NEW_TAB');
+	Text::script('COM_EMUNDUS_FILES_CANNOT_ACCESS');
+	Text::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC');
+	Text::script('COM_EMUNDUS_FILES_DISPLAY_PAGE');
+	Text::script('COM_EMUNDUS_FILES_NEXT_PAGE');
+	Text::script('COM_EMUNDUS_FILES_PAGE');
+	Text::script('COM_EMUNDUS_FILES_TOTAL');
+	Text::script('COM_EMUNDUS_FILES_ALL');
+	Text::script('COM_EMUNDUS_FILES_ADD_COMMENT');
+	Text::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS');
+	Text::script('COM_EMUNDUS_FILES_CANNOT_ACCESS_COMMENTS_DESC');
+	Text::script('COM_EMUNDUS_FILES_COMMENT_TITLE');
+	Text::script('COM_EMUNDUS_FILES_COMMENT_BODY');
+	Text::script('COM_EMUNDUS_FILES_VALIDATE_COMMENT');
+	Text::script('COM_EMUNDUS_FILES_COMMENT_DELETE');
+	Text::script('COM_EMUNDUS_FILES_ASSOCS');
+	Text::script('COM_EMUNDUS_FILES_TAGS');
+	Text::script('COM_EMUNDUS_FILES_PAGE_ON');
+	Text::script('COM_EMUNDUS_ERROR_OCCURED');
+	Text::script('COM_EMUNDUS_ACTIONS_CANCEL');
+	Text::script('COM_EMUNDUS_OK');
+	Text::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
+}
 ?>
 
 <input type="hidden" id="view" name="view" value="evaluation">
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3 side-panel">
+<div>
+    <div>
+        <div class="col-md-3 side-panel" style="height: calc(100vh - 72px);overflow-y: auto;">
             <div class="panel panel-info em-containerFilter" id="em-files-filters">
                 <div class="panel-heading em-containerFilter-heading">
                     <div>
-                        <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_FILTERS') ?></h3> &ensp;&ensp;
+                        <h3 class="panel-title"><?php echo Text::_('COM_EMUNDUS_FILTERS') ?></h3> &ensp;&ensp;
                     </div>
                     <div class="buttons" style="float:right; margin-top:0px">
-                        <label for="clear-search">
-                            <img src="<?= JURI::base(); ?>media/com_emundus/images/icones/clear-filters.png"
-                                 style="width: 25px;filter: invert(1);"/>
-                        </label>
-
-                        <input type="button" style="display: none" id="clear-search"
-                               title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>"/>
+                        <div class="em-flex-row">
+							<?php
+							if ($this->use_module_for_filters) {
+								?>
+                                <label for="save-filter" class="em-mr-8 em-flex-row" style="margin-bottom: 0;">
+                                    <span class="material-icons-outlined em-pointer em-color-white"
+                                          title="<?php echo Text::_('COM_EMUNDUS_ACTIONS_SAVE_BTN'); ?>">save</span>
+                                </label>
+                                <input type="button" style="display: none" id="save-filter"
+                                       title="<?php echo Text::_('COM_EMUNDUS_ACTIONS_SAVE_BTN'); ?>"/>
+								<?php
+							}
+							?>
+                            <label for="clear-search" class="em-flex-row">
+                                <span class="material-icons-outlined em-pointer em-color-white"
+                                      title="<?php echo Text::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>">filter_alt_off</span>
+                            </label>
+                            <input type="button" style="display: none" id="clear-search"
+                                   title="<?php echo Text::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>"/>
+                        </div>
                     </div>
                 </div>
 
                 <div class="panel-body em-containerFilter-body">
-					<?php echo @$this->filters ?>
+					<?php
+					if (!$this->use_module_for_filters) {
+						echo @$this->filters;
+					}
+					else {
+						echo JHtml::_('content.prepare', '{loadposition emundus_filters}');
+					}
+					?>
                 </div>
             </div>
 
             <div class="panel panel-info em-hide" id="em-appli-menu">
                 <div class="panel-heading em-hide-heading">
-                    <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_ACTIONS') ?></h3>
+                    <h3 class="panel-title"><?php echo Text::_('COM_EMUNDUS_APPLICATION_ACTIONS') ?></h3>
                 </div>
                 <div class="panel-body em-hide-body">
                     <div class="list-group">
@@ -53,7 +110,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
             <div class="panel panel-info em-hide" id="em-synthesis">
                 <div class="panel-heading em-hide-heading">
-                    <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_SYNTHESIS') ?></h3>
+                    <h3 class="panel-title"><?php echo Text::_('COM_EMUNDUS_APPLICATION_SYNTHESIS') ?></h3>
                 </div>
                 <div class="panel-body em-hide-body">
                 </div>
@@ -61,10 +118,9 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
             <div class="panel panel-info em-hide" id="em-assoc-files">
                 <div class="panel-heading em-hide-heading">
-                    <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_ACCESS_LINKED_APPLICATION_FILES') ?></h3>
+                    <h3 class="panel-title"><?php echo Text::_('COM_EMUNDUS_ACCESS_LINKED_APPLICATION_FILES'); ?></h3>
                 </div>
                 <div class="panel-body em-hide-body">
-
                 </div>
             </div>
 
@@ -72,7 +128,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
             <div class="clearfix"></div>
             <div class="panel panel-info em-hide" id="em-last-open">
                 <div class="panel-heading em-hide-heading">
-                    <h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_LAST_OPEN_FILES') ?></h3>
+                    <h3 class="panel-title"><?php echo Text::_('COM_EMUNDUS_APPLICATION_LAST_OPEN_FILES'); ?></h3>
                 </div>
                 <div class="panel-body em-hide-body">
                     <div class="list-group">
@@ -83,9 +139,8 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
         <div class="col-md-9 main-panel">
             <div id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="top"
-                 title=<?php echo JText::_('COM_EMUNDUS_FILTERS_HIDE_FILTER'); ?>">
-				<span class=" glyphicon glyphicon-chevron-left
-            "></span>
+                 title=<?php echo Text::_('COM_EMUNDUS_FILTERS_HIDE_FILTER'); ?>">
+				<span class="glyphicon glyphicon-chevron-left"></span>
         </div>
         <div class="navbar navbar-inverse em-menuaction">
             <div class="navbar-header em-menuaction-header">
@@ -95,7 +150,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand" href="#"><?php echo JText::_('COM_EMUNDUS_ACTIONS') ?></span>
+                <span class="navbar-brand" href="#"><?php echo Text::_('COM_EMUNDUS_ACTIONS'); ?></span>
             </div>
 
         </div>
@@ -106,79 +161,26 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 
 <script type="text/javascript">
-
     var $ = jQuery.noConflict();
 
-    var itemId = <?php echo $this->itemId;?>;
+    var itemId = '<?php echo $this->itemId;?>';
     var cfnum = '<?php echo $this->cfnum;?>';
-    var filterName = '<?php echo JText::_('COM_EMUNDUS_FILTERS_FILTER_NAME');?>';
-    var filterEmpty = '<?php echo JText::_('COM_EMUNDUS_FILTERS_ALERT_EMPTY_FILTER');?>';
-    var nodelete = '<?php echo JText::_('COM_EMUNDUS_FILTERS_CAN_NOT_DELETE_FILTER');?>';
-    var jtextArray = ['<?php echo JText::_('COM_EMUNDUS_COMMENTS_ENTER_COMMENT')?>',
-        '<?php echo JText::_('COM_EMUNDUS_FORM_TITLE')?>',
-        '<?php echo JText::_('COM_EMUNDUS_COMMENTS_SENT')?>'];
-    var loading = '<?php echo JURI::base() . 'media/com_emundus/images/icones/loader.gif'?>';
-    var loadingLine = '<?php echo JURI::base() . 'media/com_emundus/images/icones/loader-line.gif'?>';
-
-    function checkurl() {
-        var url = $(location).attr('href');
-        url = url.split("#");
-        $('.alert.alert-warning').remove();
-        if (url[1] != null && url[1].length >= 20) {
-            url = url[1].split("|");
-            var fnum = new Object();
-            fnum.fnum = url[0];
-            if (fnum != null && fnum.fnum != "close") {
-                addLoader();
-                $.ajax({
-                    type: 'get',
-                    url: 'index.php?option=com_emundus&controller=files&task=getfnuminfos',
-                    dataType: "json",
-                    data: ({fnum: fnum.fnum}),
-                    success: function (result) {
-                        if (result.status && result.fnumInfos != null) {
-                            var fnumInfos = result.fnumInfos;
-                            fnum.name = fnumInfos.name;
-                            fnum.label = fnumInfos.label;
-                            openFiles(fnum);
-                        } else {
-                            removeLoader();
-                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>");
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        removeLoader();
-                        $("<div class=\"alert alert-warning\"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
-                        console.log(jqXHR.responseText);
-                    }
-                })
-            }
-        }
-    }
-
+    var filterName = '<?php echo Text::_('COM_EMUNDUS_FILTERS_FILTER_NAME'); ?>';
+    var filterEmpty = '<?php echo Text::_('COM_EMUNDUS_FILTERS_ALERT_EMPTY_FILTER'); ?>';
+    var nodelete = '<?php echo Text::_('COM_EMUNDUS_FILTERS_CAN_NOT_DELETE_FILTER'); ?>';
+    var jtextArray = ['<?php echo Text::_('COM_EMUNDUS_COMMENTS_ENTER_COMMENT'); ?>',
+        '<?php echo Text::_('COM_EMUNDUS_FORM_TITLE'); ?>',
+        '<?php echo Text::_('COM_EMUNDUS_COMMENTS_SENT'); ?>'];
+    var loading = '<?php echo JURI::base() . 'media/com_emundus/images/icones/loader.gif'; ?>';
+    var loadingLine = '<?php echo JURI::base() . 'media/com_emundus/images/icones/loader-line.gif'; ?>';
     $(document).ready(function () {
         $('.chzn-select').chosen({width: '75%'});
-        checkurl();
         refreshFilter();
         reloadActions();
-
-        //search();
-        //reloadData('evaluation');
-
-        $('#rt-mainbody-surround').children().addClass('mainemundus');
-        $('#rt-main').children().addClass('mainemundus');
-        $('#rt-main').children().children().addClass('mainemundus');
-
-        $(document).on("hidden.bs.modal", function (e) {
-            $(e.target).removeData("bs.modal").find("#basicModal .modal-content").empty();
-            $('#basicModal .modal-content').replaceWith('<div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><?php echo JText::_("COM_EMUNDUS_LOADING");?></h4></div><div class="modal-body"><img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif"></div><div class="modal-footer"><button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_("COM_EMUNDUS_ACTIONS_CANCEL")?></button></div></div>');
-        });
-
     })
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     })
-
 
 </script>

@@ -21,7 +21,7 @@ foreach ($d->items as $i => $s)
     $endLine = ($i !== 0 && (($i) % $d->columns == 0));
     $newLine = ($i % $d->columns == 0);
 	if (is_object($s) ) {
-		$id   = isset($s->spanId) ? '' : ' id="' . $s->spanId . '"';
+		$id   = isset($s->spanId) ? ' id="' . $s->spanId . '"' : '';
 		$rowdata = $s->rowdata;
 	}
 	else {

@@ -240,10 +240,10 @@ class Files
 							}
 							else if ($type == 'field') {
 								$operators = [
-									['label' => \JText::_('COM_EMUNDUS_FILES_EQUALS'), 'value' => '='],
-									['label' => \JText::_('COM_EMUNDUS_FILES_NOT_EQUALS'), 'value' => '!='],
 									['label' => \JText::_('COM_EMUNDUS_FILES_LIKE'), 'value' => 'LIKE'],
-									['label' => \JText::_('COM_EMUNDUS_FILES_NOT_LIKE'), 'value' => 'NOT LIKE']
+									['label' => \JText::_('COM_EMUNDUS_FILES_NOT_LIKE'), 'value' => 'NOT LIKE'],
+									['label' => \JText::_('COM_EMUNDUS_FILES_EQUALS'), 'value' => '='],
+									['label' => \JText::_('COM_EMUNDUS_FILES_NOT_EQUALS'), 'value' => '!=']
 								];
 							}
 							else if ($type == 'select') {
@@ -263,7 +263,8 @@ class Files
 								'type'      => $type,
 								'label'     => $column->label,
 								'values'    => $values,
-								'operators' => $operators
+								'operators' => $operators,
+								'selectedOperator' => $operators[0]['value']
 							];
 						}
 					}
@@ -333,13 +334,8 @@ class Files
 	{
 		$can_access = false;
 
-		if (empty($this->files['fnums'])) {
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-
-			$can_access = \EmundusHelperAccess::asAccessAction(1, 'r', $this->current_user->id, $fnum);
-		}
-
-		if (in_array($fnum, $this->files['fnums'])) {
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+		if ((!empty($this->files['fnums']) && in_array($fnum, $this->files['fnums'])) || \EmundusHelperAccess::asAccessAction(1, 'r', $this->current_user->id, $fnum)) {
 			$can_access = true;
 		}
 

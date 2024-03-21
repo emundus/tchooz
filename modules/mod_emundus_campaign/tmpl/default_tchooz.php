@@ -57,13 +57,15 @@ if (sizeof($tmp_campaigns) > 0) {
 			return (int) $a->{$order} - (int) $b->{$order};
 		});
 
-		foreach ($tmp_campaigns as $campaign) {
-			$campaigns[$campaign->month][]        = $campaign;
-			$month                                = explode('-', $campaign->month_name);
-			$month_name                           = JText::_(strtoupper($month[0]));
-			$month_year                           = $month[1];
-			$campaigns[$campaign->month]['label'] = $month_name . ' - ' . $month_year;
-		}
+	    foreach ($tmp_campaigns as $campaign)
+	    {
+		    $month                                = explode('-', $campaign->month_name);
+		    $month_name                           = JText::_(strtoupper($month[0]));
+		    $month_year                           = $month[1];
+
+		    $campaigns[$campaign->month.'_'.$month_year][]        = $campaign;
+		    $campaigns[$campaign->month.'_'.$month_year]['label'] = $month_name . ' - ' . $month_year;
+	    }
 	}
 	else {
 		$campaigns ['campaigns'] = $tmp_campaigns;
@@ -138,11 +140,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         <!-- PINNED CAMPAIGN -->
 		<?php if (!empty($campaigns_pinned) && $mod_em_campaign_show_pinned_campaign == 1) : ?>
         <h3><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></h3>
-        <div class="<?php if (sizeof($campaigns_pinned) > 1) : ?> mod_emundus_campaign__list_items<?php endif; ?>">
+        <div class="tw-mt-9 tw-mb-9<?php if (sizeof($campaigns_pinned) > 1) : ?> mod_emundus_campaign__list_items<?php endif; ?>">
 			<?php foreach ($campaigns_pinned
 
 			               as $campaign_pinned) : ?>
-            <div class="mod_emundus_campaign__pinned_campaign em-mt-32 em-mb-24"
+            <div class="mod_emundus_campaign__pinned_campaign"
 			     <?php if (sizeof($campaigns_pinned) == 1) : ?>style="width: 60%"<?php endif; ?>>
                 <div class="hover-and-tile-container">
 
@@ -563,7 +565,13 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             <h3 class="mod_emundus_campaign__programme_cat_title"><?php echo $campaign['label'] ?: JText::_('MOD_EM_CAMPAIGN_LIST_CAMPAIGNS') ?></h3>
 							<?php if (sizeof($campaigns) > 1) : ?>
                                 <span class="material-icons-outlined"
-                                      id="group_icon_<?php echo $key ?>">expand_more</span>
+                                  id="group_icon_<?php echo $key ?>">
+					            <?php if($mod_em_campaign_groupby_closed == 1) : ?>
+                                    expand_less
+                                <?php else : ?>
+                                    expand_more
+                                <?php endif; ?>
+                            </span>
 							<?php endif; ?>
                         </div>
                         <hr style="margin-top: 8px">
@@ -571,7 +579,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 				<?php endif; ?>
 
 				<?php if (!empty($campaign)) : ?>
-                <div id="current_<?php echo $key ?>" class="mod_emundus_campaign__list_items">
+                <div id="current_<?php echo $key ?>" class="mod_emundus_campaign__list_items<?php if($mod_em_campaign_groupby_closed == 1) : ?> em-display-none<?php endif; ?>">
 					<?php
 					foreach ($campaign
 
@@ -582,8 +590,9 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 					}
 					?>
 
-				<?php if (strtotime($now) > strtotime($result->end_date)) : ?>
                     <div class="hover-and-tile-container">
+						<?php if (strtotime($now) > strtotime($result->end_date)) : ?>
+
 						<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                             <div id="tile-hover-offset-procedure" class="tile-hover-offset-procedure--closed"></div>
 						<?php endif; ?>
@@ -594,7 +603,6 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 							<?php endif; ?>
 
 							<?php else : ?>
-                            <div class="hover-and-tile-container">
 
 								<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                                     <div id="tile-hover-offset-procedure"></div>
@@ -791,14 +799,9 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             </div>
 							<?php }
 							} ?>
-
-                            <!--</div>-->
-                            <div class="pagination"></div>
-							<?php endif; ?>
-                        </div>
                     </div>
+							<?php endif; ?>
 					<?php endforeach; ?>
-                </div>
                 <!-- Close tab-content -->
             </div>
 			<?php endif; ?>
@@ -1020,7 +1023,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         let group = document.getElementById('current_' + key);
         let icon = document.getElementById('group_icon_' + key);
 
-        if (group.style.display === 'none') {
+        if (group.style.display === 'none' || getComputedStyle(group).display === 'none') {
             group.style.display = 'grid';
             icon.innerHTML = 'expand_more';
         } else {

@@ -33,6 +33,7 @@
    <field Field="birth_date" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="email_cc" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <field Field="data_privacy_link" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="password" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_users" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_users" Non_unique="0" Key_name="fb_join_user_id_INDEX" Seq_in_index="1" Column_name="user_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_users" Non_unique="1" Key_name="university_id" Seq_in_index="1" Column_name="university_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />

@@ -790,7 +790,7 @@ class EmundusControllersettings extends JControllerLegacy
 		$segments       = explode('?', $current_link);
 		$segments       = explode('&', $segments[1]);
 
-		$exceptions = ['view', 'layout', 'option', 'format'];
+		$exceptions = ['view', 'layout', 'option', 'format', 'formid'];
 		foreach ($segments as $key => $segment) {
 			$segment = explode('=', $segment);
 
@@ -803,10 +803,9 @@ class EmundusControllersettings extends JControllerLegacy
 
 		$response = array('status' => true, 'msg' => 'SUCCESS', 'data' => $current_link);
 
-		$itemId = $this->m_settings->getMenuId($link);
+		$menu = Factory::getApplication()->getMenu()->getItems('link', $link, true);
 
-		if (!empty($itemId)) {
-			$menu             = $this->app->getMenu()->getItem($itemId);
+		if (!empty($menu)) {
 			$response['data'] = $menu->route;
 
 			if (!empty($options_to_set)) {

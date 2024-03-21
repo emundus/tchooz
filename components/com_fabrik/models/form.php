@@ -39,6 +39,7 @@ require_once 'fabrikmodelform.php';
  * @subpackage  Fabrik
  * @since       3.0
  */
+#[\AllowDynamicProperties]
 class FabrikFEModelForm extends FabModelForm
 {
 	/**

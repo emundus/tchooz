@@ -12,6 +12,15 @@ $props = isset($d->properties) ? $d->properties : '';
  * uses "icon-clock timeButton".  Also handle multiple icon-foo, like "icon-spinner icon-spin"
  */
 
+if(strpos($d->icon, 'sort-down') !== false)
+{
+    $d->icon = 'icon-expand_more';
+}
+
+if(strpos($d->icon, 'sort-up') !== false)
+{
+	$d->icon = 'icon-expand_less';
+}
 
 $iconParts  = explode(' ', trim($d->icon));
 $spareParts = array();

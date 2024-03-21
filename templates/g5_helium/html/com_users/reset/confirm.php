@@ -28,7 +28,7 @@ $favicon = $m_settings->getFavicon();
 
 		<div class="page-header">
             <?php if (file_exists($favicon)) : ?>
-                <a href="index.php" alt="Logo" class="em-profile-picture mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $favicon ?>)">
+                <a href="index.php" alt="Logo" class="em-profile-picture tw-mb-4" style="width: 50px;height: 50px;background-image: url(<?php echo $favicon ?>)">
                 </a>
             <?php endif; ?>
             <h1 class="em-mb-8">

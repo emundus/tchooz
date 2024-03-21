@@ -55,10 +55,10 @@
     <field name="fulltext"></field>
     <field name="state">0</field>
     <field name="catid">2</field>
-    <field name="created">2024-01-31 15:59:31</field>
+    <field name="created">2024-03-01 10:41:09</field>
     <field name="created_by">762</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">762</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -87,10 +87,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">2</field>
-    <field name="created">2024-01-31 15:59:31</field>
+    <field name="created">2024-03-01 10:41:09</field>
     <field name="created_by">762</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">762</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -119,10 +119,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">2</field>
-    <field name="created">2024-01-31 15:59:31</field>
+    <field name="created">2024-03-01 10:41:09</field>
     <field name="created_by">762</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">762</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -147,58 +147,197 @@
     <field name="asset_id">102</field>
     <field name="title">Accessibilité</field>
     <field name="alias">accessibilite</field>
-    <field name="introtext">&lt;p&gt; &lt;/p&gt;
-&lt;p&gt;L'article 47 de la loi n° 2005-102 du 11 février 2005 pour l’égalité des droits et des chances, la participation et la citoyenneté des personnes handicapées fait de l’accessibilité une exigence pour tous les services de communication publique en ligne de l’État, les collectivités territoriales et les établissements publics qui en dépendent. Il stipule que les informations diffusées par ces services doivent être accessibles à tous.&lt;/p&gt;
+    <field name="introtext">&lt;div&gt;
+&lt;div id=&quot;content&quot; class=&quot;highlighter-context page view&quot; data-inline-comments-target=&quot;true&quot; data-testid=&quot;page-content-only&quot;&gt;
+&lt;div class=&quot;_1bsb1osq _19pkidpf _2hwx1wug _otyridpf _18u01wug&quot;&gt;
+&lt;div id=&quot;main-content&quot; class=&quot;wiki-content css-eeuxyb e5xcnr80&quot; data-testid=&quot;pageContentRendererTestId&quot; data-test-appearance=&quot;full-page&quot;&gt;
+&lt;div class=&quot;renderer-overrides&quot;&gt;
+&lt;div class=&quot;ak-renderer-wrapper css-2c6ch1&quot;&gt;
+&lt;div class=&quot;css-1tfuwmm&quot;&gt;
+&lt;div class=&quot;ak-renderer-document&quot;&gt;
+&lt;p data-renderer-start-pos=&quot;12&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Déclaration RGAA version 4.1 (La version en vigueur du RGAA est la &lt;strong data-renderer-mark=&quot;true&quot;&gt;4.1&lt;/strong&gt; et a été publiée le 18 février 2021)&lt;/em&gt;&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;12&quot;&gt; &lt;/p&gt;
+&lt;h1 id=&quot;Accessibilité&quot; data-renderer-start-pos=&quot;121&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Accessibilité&lt;/strong&gt;&lt;/h1&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;h2&gt; &lt;/h2&gt;
-&lt;h3&gt;Schéma pluriannuel et plan annuel de [CLIENT]&lt;/h3&gt;
+&lt;p data-renderer-start-pos=&quot;138&quot;&gt;L'article 47 de la Loi N°2005-102 du 11 février 2005 établit que tous les services publics de communication en ligne de l'État, des autorités locales et des institutions publiques doivent être accessibles à tous les utilisateurs.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;369&quot;&gt;De même, toutes les organisations publiques et privées entreprenant une activité d'intérêt général sont tenues de se conformer au Référentiel Général d'Accessibilité pour les Administrations (RGAA).&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;569&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;572&quot;&gt;Cette législation met en évidence l'importance de rendre les services en ligne accessibles, indépendamment des capacités des utilisateurs. Les sites web, applications, etc. doivent respecter les principes d'accessibilité, se conformer aux normes en vigueur et être compatibles avec les technologies d'assistance utilisées par les personnes en situation de handicap.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;939&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;942&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[NOM DE L’ENTITE]&lt;/span&gt;, reconnait pleinement l'impact de cette loi et s’engage à remplir ses obligations en matière d'accessibilité numérique. &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[NOM DE L’ENTITE] &lt;/span&gt;est déterminé(e) à se conformer au RGAA et à offrir des services en ligne accessibles à tous les utilisateurs.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;1210&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;1213&quot;&gt;Dans cette déclaration d'accessibilité, &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[NOM DE L’ENTITE]&lt;/span&gt; souhaite présenter ses efforts continus pour rendre ses services en ligne accessibles à tous. &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[NOM DE L’ENTITE] &lt;/span&gt;met en place des mesures spécifiques pour se conformer à l'article 47 de la Loi N°2005-102 du 11 février 2005, ainsi qu'au RGAA, afin de garantir une expérience équitable pour chacun de ses utilisateurs, quelles que soient leurs capacités.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;1624&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;1624&quot;&gt; &lt;/p&gt;
+&lt;h2 id=&quot;Schéma-pluriannuel-et-plan-annuel-de-[NOM-DE-L’ENTITE]&quot; data-renderer-start-pos=&quot;1627&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Schéma pluriannuel et plan annuel de &lt;/strong&gt;&lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[NOM DE L’ENTITE]&lt;/span&gt;&lt;/h2&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;[CLIENT] s’engage à rendre ses sites internet, intranet, extranet et ses applications mobiles, etc. accessibles conformément à l’article 47 de la loi &lt;abbr&gt;n°&lt;/abbr&gt;2005-102 du 11 février 2005.&lt;/p&gt;
-&lt;p&gt;À cette fin, il met en œuvre la stratégie et les actions suivantes :&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;1683&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[NOM DE L’ENTITE]&lt;/span&gt; s’engage dans un processus d’amélioration de l’accessibilité de l’ensemble de ses sites.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;1791&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;1794&quot;&gt;Le schéma pluriannuel décrit les points importants sur lesquels &lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[NOM DE L’ENTITE]&lt;/span&gt; &lt;/span&gt;s’appuiera pour améliorer l’accessibilité numérique de l’ensemble de ses sites web et applications.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;1794&quot;&gt; &lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;consulter le schéma pluriannuel d'accessibilité 2021-2023,&lt;/li&gt;
-&lt;li&gt;consulter le plan d’action de l’année 2021.&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;1977&quot;&gt; &lt;u data-renderer-mark=&quot;true&quot;&gt;Consulter le schéma pluriannuel d’accessibilité 2023 – 2025&lt;/u&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;(Les utilisateurs doivent avoir accès au schéma pluriannuel - [insérer un lien cliquable vers le schéma pluriannuel]) – Exemple de schéma pluriannuel : &lt;/span&gt;&lt;a class=&quot;css-tgpl01&quot; style=&quot;color: #ff0000;&quot; title=&quot;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&quot; href=&quot;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&quot; data-testid=&quot;link-with-safety&quot; data-renderer-mark=&quot;true&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;https://www.numerique.gouv.fr/uploads/DINUM_SchemaPluriannuel_2020.pdf&lt;/span&gt;&lt;/a&gt;&lt;/span&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2&gt; &lt;/h2&gt;
-&lt;h3&gt;Déclaration de conformité - RGAA 4.0&lt;/h3&gt;
-&lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Le site &lt;strong&gt;[URL SITE]&lt;/strong&gt; est actuellement non conforme car il n’existe aucun résultat d’audit permettant de mesurer le respect des critères. L’audit de conformité est en cours de planification. Des travaux d’amélioration seront planifiés à la suite d’un premier diagnostic.&lt;/p&gt;
-&lt;h2&gt; &lt;/h2&gt;
-&lt;h3&gt;Retour d'information et contact&lt;/h3&gt;
-&lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable du site internet pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;2268&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;2271&quot;&gt;Il s’accompagne d’un plan d’action annuel qui détaille les opérations programmées et mises en œuvre, ainsi que l’état de suivi de ces actions :&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;2271&quot;&gt; &lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;Envoyez un courriel à la Direction de la communication&lt;/li&gt;
-&lt;li&gt;&lt;span id=&quot;cloak1bb657d26429be5f133bb92dd98a7420&quot;&gt;Contacter le webmaster en charge du site Internet par courriel&lt;/span&gt; - &lt;span id=&quot;cloakc0d4ac52b9d93f892ae00d9392091907&quot;&gt;[ADRESSE EMAIL]&lt;/span&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;2416&quot;&gt; &lt;u data-renderer-mark=&quot;true&quot;&gt;Consulter plan annuel d’accessibilité 2023&lt;/u&gt; &lt;span style=&quot;color: #ff0000;&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;(Les utilisateurs doivent avoir accès au plan annuel - [insérer un lien cliquable vers le plan annuel]) – Exemple de plan annuel : &lt;/span&gt;&lt;a class=&quot;css-tgpl01&quot; style=&quot;color: #ff0000;&quot; title=&quot;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&quot; href=&quot;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&quot; data-testid=&quot;link-with-safety&quot; data-renderer-mark=&quot;true&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;https://www.numerique.gouv.fr/uploads/DINUM-plan-annuel-2021.pdf&lt;/span&gt;&lt;/a&gt;&lt;/span&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3&gt; &lt;/h3&gt;
-&lt;h4&gt;Voies de recours&lt;/h4&gt;
+&lt;p data-renderer-start-pos=&quot;2663&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;2663&quot;&gt; &lt;/p&gt;
+&lt;h2 id=&quot;État-de-conformité&quot; data-renderer-start-pos=&quot;2666&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;État de conformité&lt;/strong&gt;&lt;/h2&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Cette procédure est à utiliser dans le cas suivant.&lt;/p&gt;
-&lt;p&gt;Vous avez signalé au responsable du site internet un défaut d’accessibilité qui vous empêche d’accéder à un contenu ou à un des services du portail et vous n’avez pas obtenu de réponse satisfaisante.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;2686&quot;&gt;Le site &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[URL SITE] &lt;/span&gt;est &lt;strong&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;non/partiellement/totalement&lt;/span&gt;&lt;/span&gt;&lt;/strong&gt; conforme avec le référentiel général d’amélioration de l’accessibilité (RGAA), version 4.1.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;2686&quot;&gt; &lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;a title=&quot;Écrire un message au Défenseur des droits - Nouvelle fenêtre&quot; href=&quot;https://formulaire.defenseurdesdroits.fr/&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;Écrire un message au Défenseur des droits&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a title=&quot;Contacter le délégué du Défenseur des droits dans votre région - Nouvelle fenêtre&quot; href=&quot;https://www.defenseurdesdroits.fr/saisir/delegues&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;Contacter le délégué du Défenseur des droits dans votre région&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre) Défenseur des droits Libre réponse 71120 75342 Paris CEDEX 07&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;2686&quot;&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[SI NON]&lt;/span&gt; : &lt;em data-renderer-mark=&quot;true&quot;&gt;&lt;u data-renderer-mark=&quot;true&quot;&gt;Exemple&lt;/u&gt;&lt;/em&gt; &lt;em data-renderer-mark=&quot;true&quot;&gt;: Étant donné qu'il n'existe aucun résultat d'audit permettant de mesurer l'atteinte des critères, un audit de conformité sera planifié, et des travaux d'amélioration seront entrepris à la suite d'un premier diagnostic.&lt;/em&gt;&lt;/span&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;3075&quot;&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[SI PARTIELLEMENT]&lt;/span&gt; : &lt;em data-renderer-mark=&quot;true&quot;&gt;&lt;u data-renderer-mark=&quot;true&quot;&gt;Exemple&lt;/u&gt;&lt;/em&gt; &lt;em data-renderer-mark=&quot;true&quot;&gt;: en raison des non-conformités et des dérogations énumérées ci-dessous.&lt;/em&gt;&lt;/span&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;3180&quot;&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[SI TOTALEMENT]&lt;/span&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt; &lt;/span&gt;&lt;/strong&gt;: &lt;em data-renderer-mark=&quot;true&quot;&gt;&lt;u data-renderer-mark=&quot;true&quot;&gt;Exemple&lt;/u&gt;&lt;/em&gt; &lt;em data-renderer-mark=&quot;true&quot;&gt;: Voir section « Résultats des tests ».&lt;/em&gt;&lt;/span&gt;&lt;/li&gt;
 &lt;/ul&gt;
+&lt;p data-renderer-start-pos=&quot;3249&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;3252&quot;&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;Quel que soit votre état de conformité par suite d’un audit ou un diagnostic, vous êtes tenu de remplir la partie suivante en fonction de votre situation.&lt;/span&gt;&lt;/strong&gt;&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;3408&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;3408&quot;&gt; &lt;/p&gt;
+&lt;h2 id=&quot;Résultats-des-tests&quot; data-renderer-start-pos=&quot;3410&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Résultats des tests&lt;/strong&gt;&lt;/h2&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt; &lt;/p&gt;</field>
+&lt;p data-renderer-start-pos=&quot;3431&quot;&gt;L’audit de conformité finalisé le &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[DATE DE L’AUDIT]&lt;/span&gt; par la société &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[NOM DE L’ENTITÉ QUI A RÉALISÉ L’AUDIT]&lt;/span&gt; révèle que le site est conforme à&lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt; [INDIQUER LE POURCENTAGE DE CONFORMITÉ]&lt;/span&gt; au RGAA version 4.1.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;3634&quot;&gt; &lt;/p&gt;
+&lt;h2 data-renderer-start-pos=&quot;3637&quot;&gt; &lt;/h2&gt;
+&lt;h2 id=&quot;Contenus-non-accessibles&quot; data-renderer-start-pos=&quot;3637&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Contenus non accessibles&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;3663&quot;&gt;Malgré le travail de mise en accessibilité effectué, certains contenus, listés ci-dessous, ne peuvent être rendus à 100% accessibles pour les raisons suivantes :&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;3826&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;3829&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;&lt;u data-renderer-mark=&quot;true&quot;&gt;Exemples&lt;/u&gt; :&lt;/em&gt;&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;3829&quot;&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li data-renderer-start-pos=&quot;3829&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Le bouton d’envoi du formulaire de déclaration contient un intitulé « Retour » au lieu de « Envoi ». Cette erreur sera corrigée avant le &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[DATE DE LA CORRECTION]&lt;/span&gt;&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;4007&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;La connexion au compte personnel contient une vérification que vous n’êtes pas un robot avec un captcha visuel. Il est possible d’effectuer sa démarche par téléphone ou au guichet pour les personnes empêchées d’accéder à leur compte…&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p data-renderer-start-pos=&quot;4244&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;4244&quot;&gt; &lt;/p&gt;
+&lt;h2 id=&quot;Dérogations-pour-charge-disproportionnée&quot; data-renderer-start-pos=&quot;4246&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Dérogations pour charge disproportionnée&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;4288&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;&lt;u data-renderer-mark=&quot;true&quot;&gt;Exemples&lt;/u&gt; :&lt;/em&gt;&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;4288&quot;&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li data-renderer-start-pos=&quot;4288&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Certains termes anglais ne peuvent pas être signalés comme tels (par exemple « meetup ») à certains endroits comme les titres, car le code html est alors visible dans le title de la page. La correction de ce point nécessiterait des travaux correctifs importants pour un impact utilisateur ici assez faible.&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;4612&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Le CMS génère parfois automatiquement quelques balises paragraphes vides superflues. Après des essais infructueux, il a été conclu que corriger ce point ne pourrait être réalisé aisément pour un impact utilisateur très faible, le contenu restant accessible et compréhensible…&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p data-renderer-start-pos=&quot;4891&quot;&gt; &lt;/p&gt;
+&lt;h2 data-renderer-start-pos=&quot;4893&quot;&gt; &lt;/h2&gt;
+&lt;h2 id=&quot;Contenus-non-soumis-à-l’obligation-d’accessibilité&quot; data-renderer-start-pos=&quot;4893&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Contenus non soumis à l’obligation d’accessibilité&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;4945&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;&lt;u data-renderer-mark=&quot;true&quot;&gt;Exemples&lt;/u&gt; :&lt;/em&gt;&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;4945&quot;&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li data-renderer-start-pos=&quot;4945&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Le fil d’actualité Twitter sur la page d’Accueil&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5011&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Player vidéo (Youtube, Dailymotion)&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5050&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Reproduction du manuscrit du Moyen-Âge&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p data-renderer-start-pos=&quot;5092&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt; &lt;/em&gt;&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5092&quot;&gt; &lt;/p&gt;
+&lt;h2 id=&quot;Établissement-de-cette-déclaration-d’accessibilité&quot; data-renderer-start-pos=&quot;5095&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Établissement de cette déclaration d’accessibilité&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5147&quot;&gt;Cette déclaration a été établie le &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[DATE]&lt;/span&gt;.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5191&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5191&quot;&gt; &lt;/p&gt;
+&lt;h2 id=&quot;Technologies-utilisées-pour-la-réalisation-du-site&quot; data-renderer-start-pos=&quot;5194&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Technologies utilisées pour la réalisation du site&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;HTML5&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5257&quot;&gt;CSS&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5264&quot;&gt;JavaScript&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p data-renderer-start-pos=&quot;5278&quot;&gt; &lt;/p&gt;
+&lt;h2 data-renderer-start-pos=&quot;5280&quot;&gt; &lt;/h2&gt;
+&lt;h2 id=&quot;Environnement-de-test&quot; data-renderer-start-pos=&quot;5280&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Environnement de test&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt; &lt;/strong&gt;&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5303&quot;&gt;Les vérifications de restitution de contenus ont été réalisées sur la base de la combinaison fournie par la base de référence du RGAA, avec les versions suivantes :&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5469&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5471&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;&lt;u data-renderer-mark=&quot;true&quot;&gt;Exemples&lt;/u&gt; :&lt;/em&gt;&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5471&quot;&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li data-renderer-start-pos=&quot;5471&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Firefox et NVDA&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5504&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Safari et VoiceOver&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5527&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Chrome…&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p data-renderer-start-pos=&quot;5538&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5538&quot;&gt; &lt;/p&gt;
+&lt;h2 id=&quot;Outils-pour-évaluer-l’accessibilité&quot; data-renderer-start-pos=&quot;5540&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Outils pour évaluer l’accessibilité&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5577&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;&lt;u data-renderer-mark=&quot;true&quot;&gt;Exemples&lt;/u&gt; :&lt;/em&gt;&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5577&quot;&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li data-renderer-start-pos=&quot;5577&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Color Contrast Analyzer&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5618&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;WCAG Contrat checker (Firefox)&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5652&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Web Developer Toolbar pour Firefox&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5690&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;Web Developer Toolbar pour Chrome…&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p data-renderer-start-pos=&quot;5728&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5728&quot;&gt; &lt;/p&gt;
+&lt;h2 id=&quot;Pages-du-site-ayant-fait-l’objet-de-la-vérification-de-conformité&quot; data-renderer-start-pos=&quot;5730&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Pages du site ayant fait l’objet de la vérification de conformité&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5730&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;&lt;u data-renderer-mark=&quot;true&quot;&gt;Exemples&lt;/u&gt; :&lt;/em&gt;&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5730&quot;&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li data-renderer-start-pos=&quot;5730&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;page d’accueil &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[url]&lt;/span&gt;&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5835&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;page contact &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[url]&lt;/span&gt;&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5857&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;page mentions légales &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[url]&lt;/span&gt;&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5888&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;page accessibilité &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[url]&lt;/span&gt;&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5916&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;page plan du site &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[url]&lt;/span&gt;&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5943&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;page d’aide &lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;[url]&lt;/span&gt;&lt;/em&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;5964&quot;&gt;&lt;em data-renderer-mark=&quot;true&quot;&gt;...&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p data-renderer-start-pos=&quot;5971&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;5971&quot;&gt; &lt;/p&gt;
+&lt;h2 id=&quot;Retour-d’information-et-contact&quot; data-renderer-start-pos=&quot;5974&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Retour d’information et contact&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;6007&quot;&gt;Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable du site pour être orienté vers une alternative accessible ou obtenir le contenu sous une autre forme.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;6007&quot;&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li data-renderer-start-pos=&quot;6007&quot;&gt;Envoyer un message &lt;span style=&quot;color: #ff0000;&quot;&gt;[&lt;span class=&quot;fabric-text-color-mark&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt;URL D’UN FORMULAIRE EN LIGNE OU ADRESSE E-MAIL DU SERVICE CONCERNÉ]&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;6302&quot;&gt;Contacter&lt;span class=&quot;fabric-text-color-mark&quot; style=&quot;color: #ff0000;&quot; data-renderer-mark=&quot;true&quot; data-text-custom-color=&quot;#ff5630&quot;&gt; [NOM DE L’ENTITE OU DE LA PERSONNE RESPONSABLE DU SERVICE EN LIGNE ET COORDONNÉES]&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p data-renderer-start-pos=&quot;6398&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;6398&quot;&gt; &lt;/p&gt;
+&lt;h2 id=&quot;Voies-de-recours&quot; data-renderer-start-pos=&quot;6400&quot;&gt;&lt;strong data-renderer-mark=&quot;true&quot;&gt;Voies de recours&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;6418&quot;&gt;Si vous constatez un défaut d’accessibilité vous empêchant d’accéder à un contenu ou une fonctionnalité du site, que vous nous le signalez et que vous ne parvenez pas à obtenir une réponse de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits.&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;6725&quot;&gt; &lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;6728&quot;&gt;Plusieurs moyens sont à votre disposition :&lt;/p&gt;
+&lt;p data-renderer-start-pos=&quot;6728&quot;&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li data-renderer-start-pos=&quot;6728&quot;&gt;&lt;a class=&quot;css-tgpl01&quot; title=&quot;https://formulaire.defenseurdesdroits.fr/code/afficher.php?ETAPE=accueil_2016&quot; href=&quot;https://formulaire.defenseurdesdroits.fr/code/afficher.php?ETAPE=accueil_2016&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; data-testid=&quot;link-with-safety&quot; data-renderer-mark=&quot;true&quot;&gt;Écrire un message au Défenseur des droits&lt;/a&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;6820&quot;&gt;&lt;a class=&quot;css-tgpl01&quot; title=&quot;https://www.defenseurdesdroits.fr/saisir/delegues&quot; href=&quot;https://www.defenseurdesdroits.fr/saisir/delegues&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; data-testid=&quot;link-with-safety&quot; data-renderer-mark=&quot;true&quot;&gt;Contacter le délégué du Défenseur des droits dans votre région&lt;/a&gt;&lt;/li&gt;
+&lt;li data-renderer-start-pos=&quot;6886&quot;&gt;Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre) Défenseur des droits Libre réponse 71120 75342 Paris CEDEX 07.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&quot;comment-container&quot; class=&quot;css-1ir3mhg e3p9ckn0&quot; data-testid=&quot;comment-container&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;_19pkj186 _2hwx1wug _otyr25va _18u01wug _1bsb1osq _p12fukw8&quot; data-testid=&quot;view-page-labels-container&quot;&gt; &lt;/div&gt;</field>
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-01-31 15:59:31</field>
-    <field name="created_by">762</field>
+    <field name="created">2024-03-01 10:41:09</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
-    <field name="modified_by">762</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">1</field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2024-02-23 10:45:18</field>
     <field name="publish_up">2023-05-10 09:07:50</field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
-    <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">1</field>
+    <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="version">2</field>
     <field name="ordering">4</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -214,9 +353,7 @@
     <field name="asset_id">103</field>
     <field name="title">Politique de confidentialité des données</field>
     <field name="alias">politique-de-confidentialite-des-donnees</field>
-    <field name="introtext">&lt;p&gt; &lt;/p&gt;
-&lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Préambule&lt;/strong&gt;&lt;/p&gt;
+    <field name="introtext">&lt;p&gt;&lt;strong&gt;Préambule&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; s’engage à ce que les traitements de données personnelles effectués sur &lt;span style=&quot;color: #ff0000;&quot;&gt;[URL SITE CLIENT]&lt;/span&gt; soient conformes au Règlement Général sur la Protection des Données (RGPD) et à la Loi Informatique et Libertés du 06 janvier 1978 modifiée.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
@@ -345,9 +482,9 @@
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt;L’identifiant de session présente un avantage majeur : si vous ouvrez plusieurs fenêtres de la même page web, elles sont attribuées à une seule session.&lt;/p&gt;
 &lt;p&gt;Cela permet ainsi de lancer plusieurs demandes en même temps sans perdre d’importantes informations personnelles.&lt;/p&gt;
-&lt;p&gt;&lt;br /&gt;Les cookies de session sont donc utilisés pour stocker des informations sur la session en cours.&lt;/p&gt;
-&lt;p&gt;&lt;br /&gt;D'autres informations, telles que les données de connexion ou les formulaires en ligne déjà remplis, sont également conservées pendant la session.&lt;/p&gt;
-&lt;p&gt;&lt;br /&gt;Toutefois, si vous mettez fin à votre session de navigation, l’identifiant de session et toutes les autres données stockées seront effacés. Cela signifie que lorsque vous ouvrez la même page web dans une nouvelle fenêtre de navigateur, vous serez considéré comme un nouveau visiteur.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;Les cookies de session sont donc utilisés pour stocker des informations sur la session en cours.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;D'autres informations, telles que les données de connexion ou les formulaires en ligne déjà remplis, sont également conservées pendant la session.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;Toutefois, si vous mettez fin à votre session de navigation, l’identifiant de session et toutes les autres données stockées seront effacés. Cela signifie que lorsque vous ouvrez la même page web dans une nouvelle fenêtre de navigateur, vous serez considéré comme un nouveau visiteur.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt;Pour plus d’information sur les cookies, vous pouvez consulter notre &lt;a href=&quot;gestion-des-cookies&quot;&gt;politique de cookies&lt;/a&gt; ou vous rendre sur &lt;a href=&quot;https://www.cnil.fr/&quot;&gt;le site de la CNIL&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
@@ -360,23 +497,24 @@
 &lt;li&gt;en configurant de façon adéquate votre navigateur ou en installant un composant additionnel sur votre navigateur, spécifiquement conçus pour une gestion des cookies.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Ce site web respecte votre choix.&lt;/p&gt;</field>
+&lt;p&gt;Ce site web respecte votre choix.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</field>
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-01-31 15:59:31</field>
-    <field name="created_by">762</field>
+    <field name="created">2024-03-01 10:41:09</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
-    <field name="modified_by">762</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-05-10 09:08:24</field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
-    <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">1</field>
+    <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="version">3</field>
     <field name="ordering">3</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -392,7 +530,7 @@
     <field name="asset_id">104</field>
     <field name="title">Gestion des droits</field>
     <field name="alias">gestion-des-droits</field>
-    <field name="introtext">&lt;p&gt; &lt;strong&gt;Quels sont les droits des personnes concernées par le traitement effectué par ce site ?&lt;/strong&gt;&lt;/p&gt;
+    <field name="introtext">&lt;p&gt;&lt;strong&gt;Quels sont les droits des personnes concernées par le traitement effectué par ce site ?&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt;Nous collectons les données individuelles que vous nous fournissez dans le cadre de ces prises de contact, ainsi que dans les courriers électroniques que vous nous envoyez.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
@@ -555,24 +693,23 @@
 &lt;p&gt;3 Place de Fontenoy - TSA 80715 - 75334 PARIS CEDEX 07&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt;Mise à jour le 07 mai 2021.&lt;/p&gt;
-&lt;p&gt; &lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;</field>
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-01-31 15:59:31</field>
-    <field name="created_by">762</field>
+    <field name="created">2024-03-01 10:41:09</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
-    <field name="modified_by">762</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-05-10 09:08:46</field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
-    <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">1</field>
+    <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="version">2</field>
     <field name="ordering">2</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -588,61 +725,168 @@
     <field name="asset_id">105</field>
     <field name="title">Politique de cookies</field>
     <field name="alias">politique-de-cookies</field>
-    <field name="introtext">&lt;p&gt; &lt;/p&gt;
-&lt;p&gt; &lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;Objet :&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+    <field name="introtext">&lt;p&gt;&lt;strong&gt;Préambule&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;La présente politique de Gestion des cookies a pour but de vous informer précisément sur le traitement de vos données à caractère personnel. &lt;br /&gt;L’ensemble de notre personnel et des opérateurs qui ont accès aux données individuelles interviennent dans leur traitement est tenu de respecter leur confidentialité.&lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; s’engage à ce que les traitements de données personnelles effectués sur &lt;span style=&quot;color: #ff0000;&quot;&gt;[URL SITE CLIENT]&lt;/span&gt; soient conformes au Règlement Général sur la Protection des Données (RGPD) et à la Loi Informatique et Libertés du 06 janvier 1978 modifiée.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;1. Définition : qu’est-ce qu’un cookie ?&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;La présente politique de protection des données s’applique au traitement de donnés effectué via le site internet &lt;span style=&quot;color: #ff0000;&quot;&gt;[URL SITE CLIENT]&lt;/span&gt;.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Un cookie est un petit fichier texte déposé sur votre terminal (ordinateur, tablette, ordiphone, etc.) à l’occasion de la consultation d’un site Internet. Il permet à son émetteur d’identifier votre terminal dans lequel il est enregistré, pendant la durée de validité du cookie concerné. Seul l’émetteur du cookie est susceptible de lire ou de modifier les informations qui y sont contenues.&lt;/p&gt;
+&lt;p&gt;Elle vous informe sur les finalités des traitements effectués, la base légale des traitements, les destinataires des données ainsi que leur durée de conservation, les mesures de sécurité, l’existence éventuelle de transferts de données hors de l’Union Européenne ou de prises de décisions automatisées, l’utilisation et la gestion des cookies.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;2. Ce site utilise-t-il des cookies ? &lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Concernant vos droits informatiques et libertés et la façon de les exercer, nous vous invitons à consulter la page &lt;a href=&quot;gestion-de-vos-droits&quot;&gt;Gestion des Droits&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Oui, nous utilisons des cookies de session qui permettent de mieux servir les visiteurs de la plateforme. &lt;br /&gt;En revanche, aucune collecte de données à caractère personnel n’est réalisée par un témoin de connexion.&lt;br /&gt;Les cookies émis sur notre site sont utilisés aux fins décrites ci-dessous.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Qui est le responsable de traitement des données effectués par ce site Internet ?&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;3. Les cookies émis sur le site :&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt; &lt;br /&gt;Nous utilisons deux (2) types de cookies, à savoir : &lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Le cookie de session visiteur (joomla_user_state) ;&lt;/li&gt;
-&lt;li&gt;Le cookie de session utilisateur qui permet de suivre si un visiteur est connecté ou non sur la plateforme (exemple : 2b421cd06d0c5618c3f7257fed0db040 – le nom de ce cookie est différent pour chaque utilisateur).&lt;/li&gt;
-&lt;/ol&gt;
+&lt;p&gt;Le responsable du traitement des données effectué par le site Internet &lt;span style=&quot;color: #ff0000;&quot;&gt;[URL SITE CLIENT]&lt;/span&gt; est la société &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt;, située &lt;span style=&quot;color: #ff0000;&quot;&gt;[ADRESSE SIÈGE SOCIAL DU CLIENT]&lt;/span&gt;.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Comme leur nom l’indique, les cookies de session sont temporaires et expirent dès que vous quittez la session. Ils sont uniquement utilisés pour attribuer une session spécifique à l’utilisateur. L’identifiant de session présente un avantage majeur : si vous ouvrez plusieurs fenêtres de la même page Web, elles sont attribuées à une seule session. &lt;br /&gt;Cela permet ainsi de lancer plusieurs demandes en même temps sans perdre d’importantes informations personnelles.&lt;br /&gt;Les cookies de session sont donc utilisés pour stocker des informations sur la session en cours.&lt;br /&gt;D'autres informations, telles que les données de connexion ou les formulaires en ligne déjà remplis, sont également conservées pendant la session.&lt;/p&gt;
-&lt;p&gt;Toutefois, si vous mettez fin à votre session de navigation, l’identifiant de session et toutes les autres données stockées seront effacés. Cela signifie que lorsque vous ouvrez la même page Web dans une nouvelle fenêtre de navigateur, vous serez considéré comme &lt;strong&gt;un nouveau visiteur&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Pour en savoir plus, voir les &lt;a href=&quot;mentions-legales&quot;&gt;mentions légales.&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;4. Durée de conservation&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Ce site collecte-t-il des données à caractère personnel ?&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Comme dit précédemment, les cookies que nous déposons sur vos terminaux sont automatiquement supprimés lorsque la session se termine.&lt;/p&gt;
+&lt;p&gt;Suivant l’article 4.1 du RGPD, une donnée à caractère personnel est toute information qui permet de vous identifier soit directement soit indirectement. Ce site collecte des données à caractère personnel via ses différents formulaires &lt;span style=&quot;color: #ff0000;&quot;&gt;[PRÉCISER LA NATURE DES FORMULAIRES]&lt;/span&gt; - &lt;em&gt;exemples : formulaire de contact, formulaire de dépôt de candidature, formulaire de demande de démonstration, formulaire de demande de subvention,&lt;/em&gt; &lt;em&gt;etc.&lt;/em&gt;].&lt;/p&gt;
+&lt;p&gt;Les données personnelles sont librement communiquées à &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; par les personnes concernées en consentant au traitement et en prenant connaissance de la mention d’information affichée sous les différents formulaires. Les données collectées sont adéquates, utiles, nécessaires et limitées au strict minimum.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;5. Comment paramétrer vos choix en matière de cookies ?&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Il s’agit notamment de données :&lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[QUALIFIER LES DONNÉES COLLECTÉES]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemples&lt;/u&gt;&lt;/em&gt; :&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;d’identification (état-civil, identité, adresse e-mail, adresse postale, images, etc.), &lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;professionnelles (CV, lettre de motivation, etc.). &lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Plusieurs possibilités vous sont offertes pour gérer et modifier à tout moment l’utilisation des cookies. Étant rappelé que les paramétrages que vous effectuerez sont susceptibles de modifier votre navigation sur internet et vos conditions d’accès et d’utilisation de certains services de notre site qui nécessitent l’utilisation de cookies. Vous pouvez paramétrer le dépôt de cookies par le biais de votre navigateur Internet. Le paramétrage effectué par ce biais est également modifiable à tout moment.&lt;/p&gt;
-&lt;p&gt;Selon le type de navigateur, vous disposez des options suivantes : accepter ou rejeter les cookies de toute origine ou d’une provenance donnée ou encore programmer l’affichage d’un message vous demandant votre accord à chaque fois qu’un cookie est déposé sur votre terminal. Pour exprimer ou revenir sur vos choix, reportez-vous au menu d’aide ou à la rubrique dédiée de votre navigateur.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Quelles sont les finalités de la collecte des données ?&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;À titre d’exemple :&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;br /&gt;Edge™ : &lt;a href=&quot;https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09&quot;&gt;https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09&lt;/a&gt;&lt;br /&gt;Safari™ : &lt;a href=&quot;https://apple.co/3gL5sDd&quot;&gt;https://apple.co/3gL5sDd&lt;/a&gt;&lt;br /&gt;Chrome™ : &lt;a href=&quot;https://bit.ly/3iqnMSj&quot;&gt;https://bit.ly/3iqnMSj&lt;/a&gt;&lt;br /&gt;Firefox™: &lt;a href=&quot;https://mzl.la/3iq71GV&quot;&gt;https://mzl.la/3iq71GV&lt;/a&gt;&lt;br /&gt;Opera™ : &lt;a href=&quot;https://bit.ly/3aiU2Eb&quot;&gt;https://bit.ly/3aiU2Eb&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Les traitements des données à caractère personnel, collectées depuis la plateforme dans le cadre des différents formulaires, poursuivent les finalités suivantes :&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;strong&gt;À noter :&lt;/strong&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Pourquoi traitons-nous vos Données personnelles ?&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;strong&gt;Quelles données collectons-nous ?&lt;/strong&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemple 1&lt;/u&gt;&lt;/em&gt; &lt;em&gt;: formulaire de dépôt de candidatures : étude des candidatures déposées sur la plateforme &lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemple 1&lt;/u&gt;&lt;/em&gt; &lt;em&gt;: Données professionnelles (CV, lettre de motivation, etc.). &lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemple 2&lt;/u&gt;&lt;/em&gt; &lt;em&gt;: formulaire de dépôt de candidatures : prise de contact avec les candidats&lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;em&gt;&lt;u&gt;Exemple 2&lt;/u&gt;&lt;/em&gt; &lt;em&gt;: Données d’identification : nom, prénom, adresse e-mail, etc.&lt;/em&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;td width=&quot;302&quot;&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Les cookies améliorent votre confort de navigation sur notre site et sont indispensables pour accéder à certains espaces sécurisés. Si vous décidez de bloquer tous les cookies par l’intermédiaire de votre navigateur internet, vous ne pourrez visiter que la partie publique de notre site et ne pourrez plus accéder à votre espace client sécurisé.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Quel est le fondement juridique du traitement effectué par ce site ?&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À MODIFIER / COMPLÉTER PAR LE CLIENT] &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Le traitement de vos données personnelles par &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; est fondé :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Soit sur votre consentement pour tous les cas où vous confiez vous-même vos données personnelles à [RAISON SOCIALE CLIENT].&lt;/li&gt;
+&lt;li&gt;Soit sur l’exécution d’un contrat auquel vous êtes partie ou à l’exécution de mesures précontractuelles prises à votre demande.&lt;/li&gt;
+&lt;li&gt;Soit sur le respect d’une obligation légale notamment en matière d’exercice de vos droits au titre du RGPD et de la loi Informatique et Libertés.&lt;/li&gt;
+&lt;li&gt;Soit sur des intérêts légitimes poursuivis par &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Quels sont les destinataires des données traitées par ce site ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Vos données à caractère personnel sont avant tout destinées à &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt;, &lt;span style=&quot;color: #ff0000;&quot;&gt;[ACTIVITÉ DU CLIENT]&lt;/span&gt;. Elles sont traitées par le personnel des différents services concernés par vos demandes &lt;span style=&quot;color: #ff0000;&quot;&gt;[CITER LES SERVICES CONCERNÉS]&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Elles sont traitées uniquement pour les finalités indiquées précédemment. Les données à caractère personnel vous concernant sont hébergées exclusivement en France par un sous-traitant de notre Prestataire (au sens de l’article 4.8 du RGPD) de façon encadrée strictement. Elles ne sont jamais communiquées à des tiers à des fins commerciales.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Les données personnelles sont-elles transférées en dehors de l’Union européenne ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Les données à caractère personnel collectées par ce site ne sont pas transférées à des acteurs situés en dehors de l’Union Européenne. En cas de transfert contractuel des données personnelles, &lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; veille à ce que les destinataires soient basés dans l’Union Européenne.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Comment sont sécurisées les données personnelles traitées par ce site ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[RAISON SOCIALE CLIENT]&lt;/span&gt; s’engage à protéger les données personnelles traitées dans le cadre de ce site, dans le respect de l’état de l’art.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Les indications ci-dessous sont les principales mesures sécuritaires pour protéger vos données personnelles :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;toutes les pages du site sont sous le protocole hhtps ;&lt;/li&gt;
+&lt;li&gt;une journalisation des connexions ;&lt;/li&gt;
+&lt;li&gt;blocage d’utilisateur lorsqu’il y a détection d’une tentative de piratage ;&lt;/li&gt;
+&lt;li&gt;l’effacement de Données à Caractère Personnel est effectué à la demande de la personne concernée ou à l’échéance de la durée de conservation ;&lt;/li&gt;
+&lt;li&gt;les données sont stockées sur des data serveurs respectant les sécurités techniques maximales ;&lt;/li&gt;
+&lt;li&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/li&gt;
+&lt;li&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Quelle est la durée de conservation des données personnelles traitées par ce site ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLÉTER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Ce site utilise-t-il des cookies ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Lors de la consultation de ce site, deux (2) cookies de session sont déposés sur votre ordinateur, votre tablette ou votre ordiphone.&lt;/p&gt;
+&lt;p&gt;Ces derniers permettent le bon fonctionnement du site et d’améliorer grandement votre expérience utilisateur.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;L’identifiant de session présente un avantage majeur : si vous ouvrez plusieurs fenêtres de la même page web, elles sont attribuées à une seule session.&lt;/p&gt;
+&lt;p&gt;Cela permet ainsi de lancer plusieurs demandes en même temps sans perdre d’importantes informations personnelles.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;Les cookies de session sont donc utilisés pour stocker des informations sur la session en cours.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;D'autres informations, telles que les données de connexion ou les formulaires en ligne déjà remplis, sont également conservées pendant la session.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;Toutefois, si vous mettez fin à votre session de navigation, l’identifiant de session et toutes les autres données stockées seront effacés. Cela signifie que lorsque vous ouvrez la même page web dans une nouvelle fenêtre de navigateur, vous serez considéré comme un nouveau visiteur.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Pour plus d’information sur les cookies, vous pouvez consulter notre &lt;a href=&quot;gestion-des-cookies&quot;&gt;politique de cookies&lt;/a&gt; ou vous rendre sur &lt;a href=&quot;https://www.cnil.fr/&quot;&gt;le site de la CNIL&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Puis-je m’opposer à ces cookies ?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Oui et de plusieurs façons. Si vous ne souhaitez pas que ce site place des cookies sur votre ordinateur, vous pouvez les bloquer :&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;en utilisant un navigateur qui, par défaut, refuse les cookies ;&lt;/li&gt;
+&lt;li&gt;en configurant de façon adéquate votre navigateur ou en installant un composant additionnel sur votre navigateur, spécifiquement conçus pour une gestion des cookies.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Ce site web respecte votre choix.&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;</field>
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-01-31 15:59:31</field>
-    <field name="created_by">762</field>
+    <field name="created">2024-03-01 10:41:09</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
-    <field name="modified_by">762</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-05-10 09:09:10</field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
-    <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">1</field>
+    <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="version">4</field>
     <field name="ordering">1</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -658,8 +902,7 @@
     <field name="asset_id">106</field>
     <field name="title">Mentions légales</field>
     <field name="alias">mentions-legales</field>
-    <field name="introtext">&lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Objectif de l’information diffusée de ce site :&lt;/strong&gt;&lt;/p&gt;
+    <field name="introtext">&lt;p&gt;&lt;strong&gt;Objectif de l’information diffusée de ce site :&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
 &lt;p&gt;Ce site a pour objet de présenter aux visiteurs &lt;span style=&quot;color: #ff0000;&quot;&gt;[À COMPLETER PAR LE CLIENT]&lt;/span&gt;&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
@@ -693,23 +936,24 @@
 &lt;p&gt;&lt;strong&gt;Conception Technique, Ergonomique et Graphique : &lt;/strong&gt;EMUNDUS SAS – 10 passage du Drakkar, 17000 La Rochelle&lt;/p&gt;
 &lt;p&gt;Adresse e-mail : info[@]emundus.fr&lt;/p&gt;
 &lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Hébergement et Infogérance : &lt;/strong&gt;SCALEWAY SAS – BP 438 – 75366 PARIS CEDEX 08 FRANCE &lt;a href=&quot;https://www.scaleway.com&quot;&gt;France Website : www.scaleway.com&lt;/a&gt;&lt;/p&gt;</field>
+&lt;p&gt;&lt;strong&gt;Hébergement et Infogérance : &lt;/strong&gt;SCALEWAY SAS – BP 438 – 75366 PARIS CEDEX 08 FRANCE - &lt;a href=&quot;https://scaleway.com&quot;&gt;website : scaleway.com&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;</field>
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-01-31 15:59:31</field>
-    <field name="created_by">762</field>
+    <field name="created">2024-03-01 10:41:09</field>
+    <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
-    <field name="modified_by">762</field>
+    <field name="modified">2024-03-01 10:41:09</field>
+    <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-05-10 09:09:33</field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
-    <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">1</field>
+    <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
+    <field name="version">3</field>
     <field name="ordering">0</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -723,17 +967,16 @@
    <row>
     <field name="id">60</field>
     <field name="asset_id">141</field>
-    <field name="title">Fiche deja envoyée</field>
+    <field name="title">Fiche déjà envoyée</field>
     <field name="alias">fiche-deja-envoyee</field>
-    <field name="introtext">&lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Vous avez déja soumis votre fiche d'appréciation individuelle&lt;/p&gt;</field>
+    <field name="introtext">&lt;p&gt;Vous avez déjà soumis votre fiche d'appréciation individuelle&lt;/p&gt;</field>
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">12</field>
-    <field name="created">2024-01-31 15:59:31</field>
+    <field name="created">2024-03-01 10:41:09</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -742,7 +985,7 @@
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
     <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">2</field>
+    <field name="version">3</field>
     <field name="ordering">1</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>
@@ -758,17 +1001,14 @@
     <field name="asset_id">142</field>
     <field name="title">Fiche envoyée</field>
     <field name="alias">fiche-envoyee</field>
-    <field name="introtext">&lt;p&gt; &lt;/p&gt;
-&lt;p&gt;Votre formulaire a bien été envoyé, merci pour votre contribution.&lt;/p&gt;
-&lt;p&gt; &lt;/p&gt;
-&lt;p&gt;&lt;em class=&quot;huge circular inverted green check icon&quot;&gt; -&lt;/em&gt;&lt;/p&gt;</field>
+    <field name="introtext">&lt;p&gt;Votre formulaire a bien été envoyé, merci pour votre contribution.&lt;/p&gt;</field>
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">12</field>
-    <field name="created">2024-01-31 15:59:31</field>
+    <field name="created">2024-03-01 10:41:09</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-01-31 15:59:31</field>
+    <field name="modified">2024-03-01 10:41:09</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -777,7 +1017,7 @@
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
     <field name="urls">{&quot;urla&quot;:&quot;&quot;,&quot;urlatext&quot;:&quot;&quot;,&quot;targeta&quot;:&quot;&quot;,&quot;urlb&quot;:&quot;&quot;,&quot;urlbtext&quot;:&quot;&quot;,&quot;targetb&quot;:&quot;&quot;,&quot;urlc&quot;:&quot;&quot;,&quot;urlctext&quot;:&quot;&quot;,&quot;targetc&quot;:&quot;&quot;}</field>
     <field name="attribs">{&quot;article_layout&quot;:&quot;&quot;,&quot;show_title&quot;:&quot;&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;flags&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;alternative_readmore&quot;:&quot;&quot;,&quot;article_page_title&quot;:&quot;&quot;,&quot;show_publishing_options&quot;:&quot;&quot;,&quot;show_article_options&quot;:&quot;&quot;,&quot;show_urls_images_backend&quot;:&quot;&quot;,&quot;show_urls_images_frontend&quot;:&quot;&quot;}</field>
-    <field name="version">1</field>
+    <field name="version">2</field>
     <field name="ordering">0</field>
     <field name="metakey"></field>
     <field name="metadesc"></field>

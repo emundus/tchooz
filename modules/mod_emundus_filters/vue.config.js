@@ -6,7 +6,7 @@ module.exports = {
     assetsDir: '../mod_emundus_filters',
 
     css: {
-        modules: false,
+        requireModuleExtension: false,
         extract: {
             filename: '[name].css',
             chunkFilename: '[name].css',
