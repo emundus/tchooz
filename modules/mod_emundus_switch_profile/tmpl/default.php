@@ -15,10 +15,12 @@ if ($just_logged && !$only_applicant) {
         .em-switch-profile-img {
             text-align: center;
             justify-content: center;
+            height: 300px;
+            padding: 20px 0 20px 0;
         }
 
         .em-switch-profile-img img {
-            width: 10vw;
+            width: 100%;
         }
 
         .em-switch-profile-swal-container.swal2-shown {
