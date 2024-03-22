@@ -198,7 +198,7 @@ if ($user != null) {
 		<?php if (!empty($profile_picture)): ?>
             <div id="userDropdownLabel">
                 <div class="em-flex-row em-flex-end em-profile-container" onclick="manageHeight()">
-                    <div class="mr-4">
+                    <div class="tw-mr-4">
 						<?php if (!empty($user)) : ?>
                             <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0] . '.'; ?></p>
 						<?php endif; ?>
@@ -215,7 +215,7 @@ if ($user != null) {
 		<?php else : ?>
             <div  id="userDropdownLabel" onclick="manageHeight()">
                 <div class="em-flex-row em-flex-end em-profile-container">
-                    <div class="mr-4">
+                    <div class="tw-mr-4">
 						<?php if (!empty($user)) : ?>
                             <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0] . '.'; ?></p>
 						<?php endif; ?>

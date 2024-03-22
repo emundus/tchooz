@@ -324,18 +324,7 @@ a.btn.btn-danger:not(.btn-creer-compte):hover {
 }
 
 @media screen and (max-width: 479px) {
-    #header-c .platform-content div#userDropdownLabel {
-        position: fixed;
-        right: 12px;
-        top: 3px;
-        width: 208px;
-    }
-
-    #header-c .platform-content div#userDropdownLabel div {
-        width: 100%;
-    }
-
-    #header-c .platform-content div#userDropdownLabel .em-flex-row .mr-4 p {
+      #header-c .platform-content div#userDropdownLabel .em-flex-row .tw-mr-4 p {
         text-align: left;
     }
 }
