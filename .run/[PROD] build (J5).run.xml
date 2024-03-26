@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="[PROD] build (J5)" type="js.build_tools.npm" folderName="J5">
+    <package-json value="$PROJECT_DIR$/package.json" />
+    <command value="run" />
+    <scripts />
+    <node-interpreter value="project" />
+    <package-manager value="yarn" />
+    <envs />
+    <method v="2" />
+  </configuration>
+</component>

@@ -329,7 +329,7 @@
   background : gray;
   border: 3px solid yellow;
 }*/
-/* ! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com */
+/* ! tailwindcss v3.3.2 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
@@ -353,19 +353,16 @@
 4. Use the user's configured `sans` font-family by default.
 5. Use the user's configured `sans` font-feature-settings by default.
 6. Use the user's configured `sans` font-variation-settings by default.
-7. Disable tap highlights on iOS
 */
-html,
-:host {
+html {
   line-height: 1.5; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
   -moz-tab-size: 4; /* 3 */
   -o-tab-size: 4;
      tab-size: 4; /* 3 */
-  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; /* 4 */
   font-feature-settings: normal; /* 5 */
   font-variation-settings: normal; /* 6 */
-  -webkit-tap-highlight-color: transparent; /* 7 */
 }
 /*
 1. Remove the margin in all browsers.
@@ -419,19 +416,15 @@ strong {
   font-weight: bolder;
 }
 /*
-1. Use the user's configured `mono` font-family by default.
-2. Use the user's configured `mono` font-feature-settings by default.
-3. Use the user's configured `mono` font-variation-settings by default.
-4. Correct the odd `em` font sizing in all browsers.
+1. Use the user's configured `mono` font family by default.
+2. Correct the odd `em` font sizing in all browsers.
 */
 code,
 kbd,
 samp,
 pre {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* 1 */
-  font-feature-settings: normal; /* 2 */
-  font-variation-settings: normal; /* 3 */
-  font-size: 1em; /* 4 */
+  font-size: 1em; /* 2 */
 }
 /*
 Add the correct font size in all browsers.
@@ -476,8 +469,6 @@ optgroup,
 select,
 textarea {
   font-family: inherit; /* 1 */
-  font-feature-settings: inherit; /* 1 */
-  font-variation-settings: inherit; /* 1 */
   font-size: 100%; /* 1 */
   font-weight: inherit; /* 1 */
   line-height: inherit; /* 1 */
@@ -587,12 +578,6 @@ ul,
 menu {
   list-style: none;
   margin: 0;
-  padding: 0;
-}
-/*
-Reset default styling for dialogs.
-*/
-dialog {
   padding: 0;
 }
 /*
@@ -1310,7 +1295,8 @@ form.fabrikForm .switcher .toggle-outside,
 form.fabrikForm .plg-yesno .switcher label {
     opacity: 1 !important;
     position: relative !important;
-    margin-inline-start: 0;
+    -webkit-margin-start: 0;
+            margin-inline-start: 0;
   }
 form.fabrikForm .plg-yesno .switcher input[value="1"] + label {
     align-items: center;
@@ -1706,16 +1692,9 @@ form.fabrikForm .plg-birthday .fabrikElement .fabrikSubElementContainer table tb
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
       }
-form.fabrikForm .control-group.\!error label {
-        color: var(--em-form-label-color-error) !important;
-      }
 form.fabrikForm .control-group.error input,form.fabrikForm .control-group.error textarea,form.fabrikForm .control-group.error select {
         border-color: var(--em-form-bc-error);
         color: var(--em-default-text-color-1);
-      }
-form.fabrikForm .control-group.\!error input,form.fabrikForm .control-group.\!error textarea,form.fabrikForm .control-group.\!error select {
-        border-color: var(--em-form-bc-error) !important;
-        color: var(--em-default-text-color-1) !important;
       }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-bc-error);
@@ -3663,18 +3642,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-w-auto {
   width: auto;
 }
-.tw-w-dvw {
-  width: 100dvw;
-}
 .tw-w-fit {
   width: -moz-fit-content;
   width: fit-content;
 }
 .tw-w-full {
   width: 100%;
-}
-.tw-w-lvw {
-  width: 100lvw;
 }
 .tw-w-max {
   width: -moz-max-content;
@@ -3689,9 +3662,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-w-screen {
   width: 100vw;
-}
-.tw-w-svw {
-  width: 100svw;
 }
 .tw-flex-1 {
   flex: 1 1 0%;
@@ -5400,10 +5370,10 @@ body {
 }
 /* Connexion */
 .view-login.gantry > #g-page-surround {
-    background-image: var(--display-digital-testing), var(--display-candidate-button);
-    background-position: top 120px left 20px, bottom 50px right 20px;
-    background-repeat : no-repeat, no-repeat;
-    background-size : 25%, 25%;
+    background-image: var(--display-digital-testing), var(--display-candidate-button), url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg"), url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
+    background-position: top 120px left 20px, bottom 50px right 20px, bottom 0 left 0, top 0 right 0;
+    background-repeat : no-repeat, no-repeat, no-repeat, no-repeat;
+    background-size : 25%, 25%, 50%, 50%;
     overflow: hidden;
 }
 .login #g-navigation .g-container {

@@ -27,19 +27,19 @@ form:
     corner-bottom-left-background:
       type: select.select
       label: Login page background (bottom left)
-      default: block
+      default: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg")
       description: Fond formes coin bas gauche
       options:
-        block: Enabled
+        url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg"): Enabled
         none: Disabled
 
     corner-top-right-background:
       type: select.select
       label: Login page background (top right)
-      default: block
+      default: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg")
       description: Fond formes coin haut droite
       options:
-        block: Enabled
+        url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg"): Enabled
         none: Disabled
 
     candidate-button:

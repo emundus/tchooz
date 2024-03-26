@@ -36,8 +36,6 @@ else {
 	$session->clear('login_campaign_id');
 }
 ?>
-<iframe id="background-shapes2" class="background-shaped-top" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-<iframe id="background-shapes2" class="background-shaped-bottom" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
 <div class="com-users-login login">
 	<?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header tw-flex tw-flex-col tw-items-center">
