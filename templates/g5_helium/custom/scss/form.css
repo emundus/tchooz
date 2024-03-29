@@ -874,11 +874,14 @@
         border-left: 0;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
+        min-width: unset;
         .chosen-single {
           border-left: 0 !important;
           border-top-left-radius: 0 !important;
           border-bottom-left-radius: 0 !important;
           border-color: var(--em-form-bc);
+          justify-content: end;
+          background-image: none !important;
           span{
             font-size: 16px;
             margin-right: 16px;
@@ -889,13 +892,14 @@
             position: static;
             margin-right: 4px;
             b{
+              position: relative;
+              top: -3px;
               border: solid var(--neutral-900);
               border-width: 0 2px 2px 0;
               display: inline-block;
               transform: rotate(45deg);
               -webkit-transform: rotate(45deg);
               background: unset;
-              position: static;
               padding: 3px;
             }
           }
@@ -903,6 +907,9 @@
         .chosen-drop {
           width: max-content;
           margin-top: 6px;
+          right: 0;
+          box-shadow: unset;
+          border: solid 1px var(--neutral-400);
           .chosen-search{
             padding: 4px;
             input {
@@ -911,11 +918,10 @@
             }
           }
           .chosen-results {
-            margin: 4px;
+            border-radius: 4px;
             li{
               font-size: 16px;
               word-spacing: 4px;
-              margin-right: 4px;
             }
             li.highlighted{
               background-color: #D1E9FF;
@@ -1230,8 +1236,8 @@
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
       box-shadow: unset;
-      border-color: var(--em-form-bc) !important;
-      border-radius: var(--em-form-br) !important;
+      border-color: var(--em-form-bc);
+      border-radius: var(--em-form-br);
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -1250,8 +1256,8 @@
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
       box-shadow: unset;
-      border-color: var(--em-form-bc) !important;
-      border-radius: var(--em-form-br) !important;
+      border-color: var(--em-form-bc);
+      border-radius: var(--em-form-br);
       display: flex;
       align-items: center;
       justify-content: flex-start;
