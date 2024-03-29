@@ -277,7 +277,7 @@
     #renderCountryCode
     {
       height: var(--em-form-height);
-      width: 40px;
+      width: 50px;
       text-align: center;
       padding: 0 6px 0 6px;
       border-radius: unset;
