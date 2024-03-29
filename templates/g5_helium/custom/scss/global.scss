@@ -127,6 +127,11 @@ p,
   padding-top: 40px !important;
 }
 
+
+.mon-profil .plg-databasejoin .chosen-container.chosen-container-single {
+  width: 100% !important;
+}
+
 #g-container-main .g-container {
   padding: 0 20px;
 }
@@ -5555,7 +5560,7 @@ screen and (max-height: 769px) {
   #g-container-main {
     padding: 20px 20px 20px 20px;
   }
-  .gantry.view-form:not(.applicant-form) #g-container-main {
+  .gantry.view-form:not(.applicant-form):not(.mon-profil) #g-container-main {
     padding-right: 0;
   }
 }
