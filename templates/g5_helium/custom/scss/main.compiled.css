@@ -3670,6 +3670,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-w-screen {
   width: 100vw;
 }
+.tw-max-w-\[100px\] {
+  max-width: 100px;
+}
+.tw-max-w-\[200px\] {
+  max-width: 200px;
+}
 .tw-flex-1 {
   flex: 1 1 0%;
 }
@@ -3775,6 +3781,11 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-overflow-hidden {
   overflow: hidden;
+}
+.tw-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .tw-text-ellipsis {
   text-overflow: ellipsis;
@@ -4544,6 +4555,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-font-normal {
   font-weight: 400;
 }
+.tw-font-semibold {
+  font-weight: 600;
+}
 .\!tw-text-neutral-600 {
   color: var(--neutral-600) !important;
 }
@@ -5037,14 +5051,11 @@ button.swal2-cancel.goback-btn:hover,
         flex-basis: 8px;
         height: 8px;
         border-radius: 50%;
-        margin-right: 8px;
         flex-grow: 0;
-        margin-top: 4px;
         flex-shrink: 0;
     }
 .sticker {
-        border: solid 1px;
-        border-radius: 4px 8px 8px 4px;
+        border-radius: 20px 8px 8px 20px;
         padding: 4px 8px;
         margin: 4px 0;
         font-size: 14px;

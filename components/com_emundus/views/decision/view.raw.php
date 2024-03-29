@@ -163,11 +163,6 @@ class EmundusViewDecision extends JViewLegacy
 					$users = array();
 				}
 
-				// get evaluation form ID
-				$this->formid        = $m_decision->getDecisionFormByProgramme();
-				$form_url_view       = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $this->formid . '&tmpl=component&iframe=1&rowid=';
-				$this->form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $this->formid . '&tmpl=component&iframe=1&rowid=';
-
 				if (!empty($this->users)) {
 					$taggedFile = $m_decision->getTaggedFile();
 
@@ -235,6 +230,12 @@ class EmundusViewDecision extends JViewLegacy
 						$usObj->val  = 'X';
 						$fnumArray[] = $user['fnum'];
 						$line        = array('check' => $usObj);
+
+						// Get decision formid
+						$training = $m_files->getFnumInfos($user['fnum'])['training'];
+						$this->formid = $m_decision->getDecisionFormByProgramme($training);
+						$form_url_view = 'index.php?option=com_fabrik&c=form&view=details&formid='.$this->formid.'&tmpl=component&iframe=1&rowid=';
+						$form_url_edit = 'index.php?option=com_fabrik&c=form&view=form&formid='.$this->formid.'&tmpl=component&iframe=1&rowid=';
 
 						if (array_key_exists($user['fnum'], $taggedFile)) {
 

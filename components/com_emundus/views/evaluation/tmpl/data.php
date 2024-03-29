@@ -23,7 +23,30 @@ if (is_array($this->datas)) {
         }
     }
 }
+
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$fix_header = $eMConfig->get('fix_file_header', 0);
 ?>
+
+<style>
+    .em-double-scroll-bar {
+        position: sticky;
+        padding: 0 !important;
+        z-index: 999;
+    }
+    div.top-scrollbars::-webkit-scrollbar, .em-double-scroll-bar::-webkit-scrollbar {
+        -webkit-appearance: none;
+        width: 7px;
+        height: 10px;
+        background-color: white !important;
+    }
+
+    div.top-scrollbars::-webkit-scrollbar-thumb, .em-double-scroll-bar::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        background-color: var(--neutral-400);
+        box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+    }
+</style>
 
 <input type="hidden" id="view" name="view" value="evaluation">
 <div class="panel panel-default em-data <?php if(!is_array($this->datas)) : ?>bg-transparent<?php endif; ?>">
@@ -45,7 +68,7 @@ if (is_array($this->datas)) {
 			<?php echo $this->pageNavigation ?>
             <div id="countCheckedCheckbox" class="countCheckedCheckbox" style="display: none"></div>
         </div>
-        <div class="em-data-container" style="padding-bottom: unset">
+        <div class="em-data-container top-scrollbars" style="padding-bottom: unset">
             <table class="table table-striped table-hover" id="em-data">
                 <thead>
                 <tr>
@@ -256,6 +279,7 @@ if ($this->open_file_in_modal) {
         setTimeout(() => {
             if ($('.container-result')) {
                 $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
+                $('.em-double-scroll-bar').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight - 2) + 'px');
             }
             if ($('#em-data th')) {
                 if (containerResult) {
@@ -265,6 +289,11 @@ if ($this->open_file_in_modal) {
                 }
             }
         }, 2000);
+
+        const dataContainer = document.querySelector('.em-data-container')
+        if (dataContainer) {
+            DoubleScroll(document.querySelector('.em-data-container'));
+        }
     });
     window.parent.$("html, body").animate({scrollTop: 0}, 300);
 
@@ -429,4 +458,17 @@ if ($this->open_file_in_modal) {
             countFiles.innerHTML = '';
         }
     });
+
+    <?php if($fix_header == 1): ?>
+    document.addEventListener('scroll', function(e) {
+        if(window.scrollY > document.querySelector('.em-data-container table thead').offsetHeight) {
+            document.querySelector('.em-data-container table thead').style.position = 'relative';
+            let containerResult = document.querySelector('.container-result').offsetHeight;
+            document.querySelector('.em-data-container table thead').style.top = (window.scrollY - containerResult - 4) + 'px';
+        } else {
+            document.querySelector('.em-data-container table thead').style.position = 'static';
+            document.querySelector('.em-data-container table thead').style.top = '0px';
+        }
+    });
+    <?php endif; ?>
 </script>

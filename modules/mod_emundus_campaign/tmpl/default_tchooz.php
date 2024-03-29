@@ -31,6 +31,17 @@ if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign)) {
 }
 
 if (sizeof($tmp_campaigns) > 0) {
+	foreach ($tmp_campaigns as $key => $campaign)
+	{
+		if ($campaign->pinned == 1)
+		{
+			$campaigns_pinned[] = $campaign;
+			unset($tmp_campaigns[$key]);
+		}
+	}
+
+	$tmp_campaigns = array_values($tmp_campaigns);
+
 	if ($group_by == 'program') {
 		usort($tmp_campaigns, function ($a, $b) {
 			return strcmp($a->programme, $b->programme);
@@ -69,12 +80,6 @@ if (sizeof($tmp_campaigns) > 0) {
 	}
 	else {
 		$campaigns ['campaigns'] = $tmp_campaigns;
-	}
-
-	foreach ($tmp_campaigns as $campaign) {
-		if ($campaign->pinned == 1) {
-			$campaigns_pinned[] = $campaign;
-		}
 	}
 }
 

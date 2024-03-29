@@ -75,9 +75,9 @@ else {
                                             </div>
                                         </div>
                                         <div class="comment-text em-tags-action">
-                                            <div class="tw-flex sticker label-border-<?php echo $color ?>">
-                                                <span class="circle label-<?php echo $color ?>"></span>
-                                                <span class="label-text-<?php echo $color; ?>"
+                                            <div class="tw-flex tw-items-center tw-gap-2 sticker label-border-<?php echo $color ?>">
+                                                <span class="circle tw-bg-white"></span>
+                                                <span class="tw-text-white tw-truncate tw-font-semibold"
                                                       style="float:unset"><?php echo $tag['label']; ?></span>
                                             </div>
                                         </div>

@@ -902,11 +902,16 @@ class EmundusHelperEmails
 				JLog::add('Invalid email ' . $email, JLog::INFO, 'com_emundus.email');
 			}
 			else {
-				$domain = substr($email, strpos($email, '@') + 1);
-				if (!checkdnsrr($domain)) {
-					JLog::add('Invalid email domain ' . $email, JLog::INFO, 'com_emundus.email');
-					$is_correct = false;
-				}
+				$emConfig = ComponentHelper::getParams('com_emundus');
+                if ($emConfig->get('email_check_dns', 1) == 1)
+                {
+	                $domain = substr($email, strpos($email, '@') + 1);
+	                if (!checkdnsrr($domain))
+	                {
+		                JLog::add('Invalid email domain ' . $email, JLog::INFO, 'com_emundus.email');
+		                $is_correct = false;
+	                }
+                }
 			}
 		}
 

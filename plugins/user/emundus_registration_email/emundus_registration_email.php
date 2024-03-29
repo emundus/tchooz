@@ -209,19 +209,26 @@ class plgUserEmundus_registration_email extends CMSPlugin
 				$user->setParam('send_mail', false);
 			}
 
-			// Generate the activation token.
-			$activation = md5(mt_rand());
+			if ($user->getParam('skip_activation', false) || JFactory::getSession()->get('skip_activation', false)) {
+				$user->activation = 1;
+			}
+			else
+			{
 
-			// Store token in User's Parameters
-			$user->setParam('emailactivation_token', $activation);
-			$user->save();
+				// Generate the activation token.
+				$activation = md5(mt_rand());
 
-			// Set the user table instance to include the new token.
-			$table = Table::getInstance('user');
-			$table->load($userId);
+				// Store token in User's Parameters
+				$user->setParam('emailactivation_token', $activation);
+				$user->save();
 
-			// Block the user (until he activates).
-			$table->block = $eMConfig->get('block_user', 1);
+				// Set the user table instance to include the new token.
+				$table = Table::getInstance('user');
+				$table->load($userId);
+
+				// Block the user (until he activates).
+				$table->block = $eMConfig->get('block_user', 1);
+			}
 
 			// Save user data
 			if (!$table->store()) {
@@ -324,6 +331,7 @@ class plgUserEmundus_registration_email extends CMSPlugin
 	 */
 	private function sendActivationEmail($data, $token)
 	{
+		define('JPATH_COMPONENT', 'com_emundus');
 
 		$params = json_decode($data['params']);
 		if (isset($params->skip_activation)) {
