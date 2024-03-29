@@ -438,19 +438,25 @@
             height: var(--em-form-height) !important;
             color: var(  --em-form-label-color);
             position: absolute;
-            right: 15px;
+            right: 8px;
             border: unset;
             z-index: 10;
             background: transparent;
             padding: 6px;
             &:focus {
               outline: unset;
+              box-shadow: unset;
             }
             &:active {
               box-shadow: unset;
             }
+            &:hover {
+              .material-icons-outlined,.material-icons {
+                color: var(--em-form-outline-color-focus) !important;
+              }
+            }
 
-            .material-icons-outlined {
+            .material-icons-outlined,.material-icons {
               font-size: 16px;
               color: var(--neutral-600);
             }

@@ -1239,7 +1239,7 @@ form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calen
             height: var(--em-form-height) !important;
             color: var(  --em-form-label-color);
             position: absolute;
-            right: 15px;
+            right: 8px;
             border: unset;
             z-index: 10;
             background: transparent;
@@ -1247,11 +1247,15 @@ form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calen
           }
 form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:focus, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:focus {
               outline: unset;
+              box-shadow: unset;
             }
 form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:active, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:active {
               box-shadow: unset;
             }
-form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons-outlined {
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons-outlined,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons-outlined,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons {
+                color: var(--em-form-outline-color-focus) !important;
+              }
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons-outlined,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons-outlined,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons {
               font-size: 16px;
               color: var(--neutral-600);
             }

@@ -22,6 +22,11 @@ if(strpos($d->icon, 'sort-up') !== false)
 	$d->icon = 'icon-expand_less';
 }
 
+if(strpos($d->icon, 'calendar') !== false)
+{
+	$d->icon = 'icon-event';
+}
+
 $iconParts  = explode(' ', trim($d->icon));
 $spareParts = array();
 
