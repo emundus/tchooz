@@ -85,6 +85,13 @@ body {
 /* TCHOOZY *
  ***********/
 
+.tchoozy-celebrating {
+    background-image: url("/media/com_emundus/images/tchoozy/complex-illustrations/celebrating.svg");
+    background-repeat: no-repeat;
+    height: 150px;
+    width: 200px;
+}
+
 /* Accueil */
 .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
     background-image: var(--display-demonstration);
