@@ -2239,58 +2239,62 @@ p.readmore .btn,
   letter-spacing: normal;
 }
 
-.fabrikActions.form-actions .row {
+.fabrikActions.form-actions {
+  padding: 19px 0;
+  margin: 20px 0;
+  .row-fluid {
 
-  .span4.offset1 button.btn.goback-btn,
-  .span4.offset1 button.btn[name="Goback"] {
-    background: transparent;
-    border: 1px solid var(--em-secondary-color);
-    border-radius: var(--em-applicant-br) !important;
-    color: var(--em-secondary-color);
-    margin-right: 10px;
-    font-weight: normal;
-
-    &:hover,
-    &:active,
-    :focus {
-      background: var(--em-secondary-color);
-      border: 1px solid var(--em-secondary-color);
-      color: var(--neutral-0);
-    }
-  }
-
-  .col button.btn[name="Goback"] {
-    background: transparent;
-    border: 1px solid var(--em-secondary-color);
-    border-radius: var(--em-applicant-br) !important;
-    color: var(--em-secondary-color);
-    margin-right: 10px;
-    font-weight: normal;
-    padding: 8px 35px;
-    text-transform: initial;
-
-    &:hover,
-    &:active,
-    :focus {
-      background: var(--em-secondary-color);
-      border: 1px solid var(--em-secondary-color);
-      color: var(--neutral-0);
-    }
-  }
-
-  .span4 button.btn.save-btn {
-    background: var(--em-primary-color);
-    border: 1px solid var(--em-primary-color);
-    border-radius: var(--em-applicant-br) !important;
-    color: var(--neutral-0);
-    font-size: var(--em-applicant-font-size);
-
-    &:hover,
-    &:active,
-    :focus {
+    .span4.offset1 button.btn.goback-btn,
+    .span4.offset1 button.btn[name="Goback"] {
       background: transparent;
+      border: 1px solid var(--em-secondary-color);
+      border-radius: var(--em-applicant-br) !important;
+      color: var(--em-secondary-color);
+      margin-right: 10px;
+      font-weight: normal;
+
+      &:hover,
+      &:active,
+      :focus {
+        background: var(--em-secondary-color);
+        border: 1px solid var(--em-secondary-color);
+        color: var(--neutral-0);
+      }
+    }
+
+    .col-sm-12 .btn-group button.btn.goback-btn {
+      background: transparent;
+      border: 1px solid var(--em-secondary-color);
+      border-radius: var(--em-applicant-br) !important;
+      color: var(--em-secondary-color);
+      margin-right: 10px;
+      font-weight: normal;
+      padding: 8px 35px;
+      text-transform: initial;
+
+      &:hover,
+      &:active,
+      :focus {
+        background: var(--em-secondary-color);
+        border: 1px solid var(--em-secondary-color);
+        color: var(--neutral-0);
+      }
+    }
+
+    .span4 button.btn.save-btn {
+      background: var(--em-primary-color);
       border: 1px solid var(--em-primary-color);
-      color: var(--em-primary-color);
+      border-radius: var(--em-applicant-br) !important;
+      color: var(--neutral-0);
+      font-size: var(--em-applicant-font-size);
+
+      &:hover,
+      &:active,
+      :focus {
+        background: transparent;
+        border: 1px solid var(--em-primary-color);
+        color: var(--em-primary-color);
+      }
     }
   }
 }
