@@ -80,6 +80,23 @@ class Release2_0_0Installer extends ReleaseInstaller
 			$this->db->setQuery($query);
 			$this->db->execute();
 
+			// JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+			//\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterProgramCreate', ['formModel' => $formModel, 'data' => $formModel->data]]);
+
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_forms'))
+				->where($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('SETUP_PROGRAM'));
+			$this->db->setQuery($query);
+			$setup_program = $this->db->loadObject();
+
+			if(!empty($setup_program)) {
+				$params = json_decode($setup_program->params, true);
+				$params['curl_code'] = 'JPluginHelper::importPlugin(\'emundus\', \'custom_event_handler\');\Joomla\CMS\Factory::getApplication()->triggerEvent(\'onCallEventHandler\', [\'onAfterProgramCreate\', [\'formModel\' => $formModel, \'data\' => $formModel->data]]);';
+				$setup_program->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_forms', $setup_program, 'id');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

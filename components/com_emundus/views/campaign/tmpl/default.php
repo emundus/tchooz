@@ -3,7 +3,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 
-JHTML::_('behavior.modal');
+
 JHTML::stylesheet('emundus.css', 'media/com_emundus/css/');
 
 $app = Factory::getApplication();

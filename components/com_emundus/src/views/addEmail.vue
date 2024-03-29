@@ -43,7 +43,7 @@
               >
               </editor-quill>
               <div class="tw-mt-12">
-                <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
+                <a href="/component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
                    class="em-main-500-color em-hover-main-600 em-text-underline"
                    target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
               </div>
