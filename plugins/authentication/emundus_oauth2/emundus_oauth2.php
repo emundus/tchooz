@@ -231,6 +231,11 @@ class plgAuthenticationEmundus_Oauth2 extends CMSPlugin
 					                    }
 				                    }
 			                    }
+		                    } else {
+			                    JFactory::getSession()->set('skip_activation', true);
+
+			                    $response->params = ['skip_activation' => true];
+			                    $response->activation = 1;
 		                    }
 	                    }
 

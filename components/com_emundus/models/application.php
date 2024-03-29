@@ -2369,7 +2369,12 @@ class EmundusModelApplication extends JModelList
 												$elt = substr($element->content, 2, strlen($element->content));
 											}
 											elseif ($element->plugin == 'textarea') {
-												$elt = nl2br($element->content);
+												if (json_decode($element->params)->use_wysiwyg == 1) {
+													$elt = $element->content;
+												}
+												else {
+													$elt = nl2br($element->content);
+												}
 											}
 											else {
 												$elt = $element->content;
@@ -2941,7 +2946,16 @@ class EmundusModelApplication extends JModelList
 														$forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty($params->display_showlabel) && !empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">' . $elt . '</span></td></tr><br/>';
 													}
 													elseif ($elements[$j]->plugin == 'textarea') {
-														$forms .= '<tr><td colspan="2" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
+														$forms .= '</table>';
+														$forms .= '<div style="width: 93.5%;padding: 8px 16px;">';
+														$forms .= '<div style="width: 100%; padding: 4px 8px;background-color: #F3F3F3;color: #000000;border: solid 1px #A4A4A4;border-bottom: unset;font-size: 12px">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</div>';
+														if (json_decode($elements[$j]->params)->use_wysiwyg == 1) {
+															$forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . preg_replace('/<br\s*\/?>/','',JText::_($elt)) . '</div>';
+														} else {
+															$forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . JText::_($elt) . '</div>';
+														}
+														$forms .= '</div>';
+														$forms .= '<table class="pdf-forms">';
 													}
 													else {
 														$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
@@ -3183,7 +3197,11 @@ class EmundusModelApplication extends JModelList
 												$forms .= '</table>';
 												$forms .= '<div style="width: 93.5%;padding: 8px 16px;">';
 												$forms .= '<div style="width: 100%; padding: 4px 8px;background-color: #F3F3F3;color: #000000;border: solid 1px #A4A4A4;border-bottom: unset;font-size: 12px">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</div>';
-												$forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4">' . JText::_($elt) . '</div>';
+												if (json_decode($element->params)->use_wysiwyg == 1) {
+													$forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . preg_replace('/<br\s*\/?>/','',JText::_($elt)) . '</div>';
+												} else {
+													$forms .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px">' . JText::_($elt) . '</div>';
+												}
 												$forms .= '</div>';
 												$forms .= '<table class="pdf-forms">';
 											}

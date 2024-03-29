@@ -539,6 +539,20 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         JHTML::script('plugins/fabrik_element/emundus_fileupload/emundus_fileupload.js');
 
         $params = $this->getParams();
+	    $attachmentId = $params['attachmentId'];
+	    $attachmentResult = $this->getAttachment($attachmentId);
+	    $label = $attachmentResult->value;
+	    $jinput = JFactory::getApplication()->input;
+	    $fnum = $jinput->get('rowid');
+	    $user = JFactory::getUser()->id;
+	    $files = $this->getUploads($attachmentId, $user, $this->getCampaignId($fnum), $fnum);
+	    $links = array();
+
+	    for($i= 0; $i < count($files); $i++) {
+		    $filename_upload = $files[$i]->filename;
+		    $links[$i + 1] = 'images/emundus/files/'.$user.'/'.$filename_upload;
+	    }
+
         $element = $this->getElement();
         $bits = $this->inputProperties($repeatCounter);
 
@@ -552,11 +566,18 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         }
 
         if (!$this->isEditable()) {
+	        $text = '';
 
-            $value = $this->format($value, false);
-            $value = $this->getReadOnlyOutput($value, $value);
-
-            return ($element->hidden == '1') ? "<!-- ".$value." -->" : $value;
+	        if(count($links) >= 2) {
+		        $text .= '<ul>';
+		        foreach($links as $key=>$link) {
+			        $text .= '<li><a href="'.$link.'" target="_blank">'.$label.' '.$key.'</a></li>';
+		        }
+		        $text .= '</ul>';
+	        } else {
+		        $text .= '<a href="'.$links.'" target="_blank">'.$label.'</a>';
+	        }
+	        return $text;
 
         }
 

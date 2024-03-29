@@ -334,10 +334,14 @@ class Files
 	{
 		$can_access = false;
 
-		require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
-		if ((!empty($this->files['fnums']) && in_array($fnum, $this->files['fnums'])) || \EmundusHelperAccess::asAccessAction(1, 'r', $this->current_user->id, $fnum)) {
-			$can_access = true;
-		}
+        if (empty($this->files['fnums'])) {
+            require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+            $can_access = \EmundusHelperAccess::asAccessAction(1, 'r', $this->current_user->id, $fnum);
+        }
+
+        if (!empty($this->files['fnums']) && in_array($fnum, $this->files['fnums'])) {
+            $can_access = true;
+        }
 
 		return $can_access;
 	}

@@ -2199,10 +2199,10 @@ class EmundusHelperFiles
 			$fnum  = $tag['fnum'];
 			$class = str_replace('label-', '', $tag['class']);
 			if (!isset($tagsList[$fnum])) {
-				$tagsList[$fnum] = '<div class="tw-flex sticker label-border-' . $class . '"><span class="circle ' . $tag['class'] . '"></span><span class="label-text-' . $class . '">' . $tag['label'] . '</span></div>';
+				$tagsList[$fnum] = '<div class="tw-flex tw-items-center tw-gap-2 sticker label-'.$class.'"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-max-w-[100px] tw-text-sm">'.$tag['label'].'</span></div>';
 			}
 			else {
-				$tagsList[$fnum] .= '<div class="tw-flex sticker label-border-' . $class . '"><span class="circle ' . $tag['class'] . '"></span><span class="label-text-' . $class . '">' . $tag['label'] . '</span></div>';
+				$tagsList[$fnum] .= '<div class="tw-flex tw-items-center tw-gap-2 sticker label-'.$class.'"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-max-w-[100px] tw-text-sm">'.$tag['label'].'</span></div>';
 			}
 		}
 
@@ -4119,7 +4119,17 @@ class EmundusHelperFiles
 									$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.published', $filter['value'], $filter['operator']);
 									break;
 								case 'tags':
-									$where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
+									if ($filter['operator'] === 'NOT IN') {
+										$where['q'] .= ' AND jecc.fnum NOT IN (
+                                            SELECT DISTINCT jos_emundus_campaign_candidature.fnum
+                                            FROM jos_emundus_campaign_candidature
+                                            LEFT JOIN jos_emundus_tag_assoc ON jos_emundus_tag_assoc.fnum = jos_emundus_campaign_candidature.fnum
+                                            WHERE ' . $this->writeQueryWithOperator('jos_emundus_tag_assoc.id_tag', $filter['value'], 'IN') . '
+                                        )';
+									} else
+									{
+										$where['q'] .= ' AND ( ' . $this->writeQueryWithOperator('eta.id_tag', $filter['value'], $filter['operator']) . ' )';
+									}
 									break;
 								case 'group_assoc':
 									if (!in_array('jos_emundus_group_assoc', $already_joined)) {

@@ -161,9 +161,10 @@ class EmundusModelFiles extends JModelLegacy
 		$this->_elements         = $h_files->getElementsName($this->elements_id);
 
 		if (!empty($this->_elements)) {
-			$groupAssoc = array_filter($m_users->getUserGroupsProgrammeAssoc($current_user->id));
+			$groupProg = array_filter($m_users->getUserGroupsProgrammeAssoc($current_user->id));
+			$groupAssoc = array_filter($this->getGroupsAssociatedProgrammes($current_user->id));
 			$progAssoc  = array_filter($this->getAssociatedProgrammes($current_user->id));
-			$this->code = array_merge($groupAssoc, $progAssoc);
+			$this->code = array_merge($groupProg, $groupAssoc, $progAssoc);
 
 			foreach ($this->_elements as $def_elmt) {
 				$group_params = json_decode($def_elmt->group_attribs);
@@ -3119,7 +3120,8 @@ class EmundusModelFiles extends JModelLegacy
 						}
 
 						if (is_array($value)) {
-                            $data[$d_key][$r_key] = '"' . implode(', ', $value) . '"';
+							$separator = ComponentHelper::getParams('com_emundus')->get('export_concat_separator', ', ');
+							$data[$d_key][$r_key] = '"' . implode($separator, $value) . '"';
                         } else if (!empty($value) && is_string($value)) {
 							$data[$d_key][$r_key] = str_replace('-', '\-', $value);
 						}
@@ -3332,20 +3334,51 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAssociatedProgrammes($user)
 	{
-		$query = 'select DISTINCT sc.training
-                  from #__emundus_users_assoc as ua
-                  LEFT JOIN #__emundus_campaign_candidature as cc ON cc.fnum=ua.fnum
-                  left join #__emundus_setup_campaigns as sc on sc.id = cc.campaign_id
-                  where ua.user_id=' . $user;
-		try {
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
 
-			$this->_db->setQuery($query);
-
-			return $this->_db->loadColumn();
+		$query->select('DISTINCT sc.training')
+			->from('#__emundus_users_assoc AS ua')
+			->leftJoin('#__emundus_campaign_candidature AS cc ON cc.fnum = ua.fnum')
+			->leftJoin('#__emundus_setup_campaigns AS sc ON sc.id = cc.campaign_id')
+			->where('ua.user_id = '.$db->quote($user));
+		try
+		{
+			$db->setQuery($query);
+			return $db->loadColumn();
 		}
-		catch (Exception $e) {
+		catch(Exception $e)
+		{
 			error_log($e->getMessage(), 0);
+			return false;
+		}
+	}
 
+	/**
+	 * @param $user
+	 * @return array|false
+	 * get list of programmes for groups associated files
+	 */
+	public function getGroupsAssociatedProgrammes($user)
+	{
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->select('DISTINCT sc.training')
+			->from('#__emundus_groups AS g')
+			->leftJoin('#__emundus_group_assoc AS ga ON ga.group_id = g.group_id AND ga.action_id = 1 AND ga.r = 1')
+			->leftJoin('#__emundus_campaign_candidature AS cc ON cc.fnum = ga.fnum')
+			->leftJoin('#__emundus_setup_campaigns AS sc ON sc.id = cc.campaign_id')
+			->where('g.user_id = ' . $db->quote($user));
+		try
+		{
+			$db->setQuery($query);
+
+			return $db->loadColumn();
+		}
+		catch(Exception $e)
+		{
+			error_log($e->getMessage(), 0);
 			return false;
 		}
 	}
@@ -3524,10 +3557,10 @@ class EmundusModelFiles extends JModelLegacy
 			// Write the code to show the results to the user
 			foreach ($res as $r) {
 				if (isset($access[$r['fnum']])) {
-					$access[$r['fnum']] .= '<div class="tw-flex"><span class="circle ' . $r['class'] . '"></span><span>' . $r['uname'] . '</span></div>';
+					$access[$r['fnum']] .= '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$r['class'].'"></span><span class="tw-truncate tw-max-w-[200px] tw-text-sm">'.$r['uname'].'</span></div>';
 				}
 				else {
-					$access[$r['fnum']] = '<div class="tw-flex"><span class="circle ' . $r['class'] . '"></span><span>' . $r['uname'] . '</span></div>';
+					$access[$r['fnum']] = '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$r['class'].'"></span><span class="tw-truncate tw-max-w-[200px] tw-text-sm">'.$r['uname'].'</span></div>';
 				}
 			}
 
@@ -3546,7 +3579,7 @@ class EmundusModelFiles extends JModelLegacy
 
 			// Write the code to show the results to the user
 			foreach ($res as $r) {
-				$assocTaggroup = '<div class="tw-flex"><span class="circle ' . $r['class'] . '"></span><span id="' . $r['id'] . '">' . $r['label'] . '</span></div>';
+				$assocTaggroup = '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$r['class'].'"></span><span id="'.$r['id'].'" class="tw-truncate tw-max-w-[200px] tw-text-sm">'.$r['label'].'</span></div>';
 				if (isset($access[$r['fnum']])) {
 					$access[$r['fnum']] .= '' . $assocTaggroup;
 				}
@@ -3577,7 +3610,7 @@ class EmundusModelFiles extends JModelLegacy
 				$group_labels = explode(',', $r['label']);
 				$class_labels = explode(',', $r['class']);
 				foreach ($group_labels as $key => $g_label) {
-					$assocTagcampaign   = '<div class="tw-flex"><span class="circle ' . $class_labels[$key] . '" id="' . $r['id'] . '"></span><span id="' . $r['id'] . '">' . $g_label . '</span></div>';
+					$assocTagcampaign = '<div class="tw-flex tw-items-center tw-gap-2"><span class="circle '.$class_labels[$key].'" id="'.$r['id'].'"></span><span id="'.$r['id'].'" class="tw-truncate tw-max-w-[200px] tw-text-sm">'.$g_label.'</span></div>';
 					$access[$r['fnum']] .= $assocTagcampaign;
 				}
 			}
@@ -5030,7 +5063,6 @@ class EmundusModelFiles extends JModelLegacy
 								);
 								$logged  = $m_email->logEmail($message, $file['fnum']);
 								$msg     .= Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $to . '<br>';
-								JLog::add($to . ' ' . $body, JLog::INFO, 'com_emundus.email');
 							}
 						}
 					}
@@ -5114,7 +5146,6 @@ class EmundusModelFiles extends JModelLegacy
 							);
 							$m_email->logEmail($message, $file['fnum']);
 							$msg .= Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $to . '<br>';
-							JLog::add($to . ' ' . $body, JLog::INFO, 'com_emundus.email');
 						}
 					}
 				}

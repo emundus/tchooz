@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * campaign Controller
@@ -218,7 +219,7 @@ class EmundusControllerProgramme extends JControllerLegacy
 						],
 						[
 							'key'     => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
-							'value'   => $program->programmes,
+							'value'   => Text::_($program->programmes),
 							'classes' => 'em-font-size-14 em-neutral-700-color',
 							'display' => 'all'
 						],
