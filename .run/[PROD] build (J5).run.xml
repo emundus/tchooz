@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="[PROD] build (J5)" type="js.build_tools.npm" folderName="J5">
-    <package-json value="$PROJECT_DIR$/../tchooz/package.json" />
+    <package-json value="$PROJECT_DIR$/../tchooz/components/com_emundus/package.json" />
     <command value="run" />
     <scripts>
       <script value="build" />

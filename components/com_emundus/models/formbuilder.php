@@ -17,6 +17,7 @@ jimport('joomla.application.component.model');
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
 
 class EmundusModelFormbuilder extends JModelList
 {
@@ -4052,15 +4053,15 @@ class EmundusModelFormbuilder extends JModelList
 							
 							$query = $this->db->getQuery(true);
 
-							$query->clear()
-								->insert('#__emundus_template_form')
-								->columns(['form_id', 'label'])
-								->values($new_form_id . ', ' . $this->db->quote($label));
-
-							$this->db->setQuery($query);
+							$insert = [
+								'form_id' => $new_form_id,
+								'label'   => $label,
+								'created' => date('Y-m-d H:i:s')
+							];
+							$insert = (object) $insert;
 
 							try {
-								$inserted = $this->db->execute();
+								$inserted = $this->db->insertObject('#__emundus_template_form', $insert);
 							}
 							catch (Exception $e) {
 								$inserted = false;
@@ -4294,16 +4295,20 @@ class EmundusModelFormbuilder extends JModelList
 		return $list;
 	}
 
-	public function copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $db_table_name, $label_prefix = '')
+	public function copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $db_table_name, $label_prefix = '', $user = null)
 	{
 		$copied = false;
+
+		if(empty($user)) {
+			$user = Factory::getApplication()->getIdentity();
+		}
 
 		if (!empty($form_id_to_copy) && !empty($new_form_id) && !empty($new_list_id)) {
 			$label = [];
 			
 			$query = $this->db->getQuery(true);
 
-			$languages = JLanguageHelper::getLanguages();
+			$languages = LanguageHelper::getLanguages();
 			JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
 			$form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
 			$form->setId(intval($form_id_to_copy));
@@ -4327,7 +4332,13 @@ class EmundusModelFormbuilder extends JModelList
 					$query->clear();
 					$query->insert($this->db->quoteName('#__fabrik_groups'));
 					foreach ($group_model as $key => $val) {
-						if ($key != 'id') {
+						if(in_array($key, ['created', 'modified', 'checked_out_time'])) {
+							$query->set($key . ' = ' . $this->db->quote(date('Y-m-d H:i:s')));
+						}
+						else if(in_array($key, ['created_by', 'modified_by', 'checked_out'])) {
+							$query->set($key . ' = ' . $this->db->quote($user->id));
+						}
+						else if ($key != 'id') {
 							$query->set($key . ' = ' . $this->db->quote($val));
 						}
 					}
