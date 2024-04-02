@@ -131,7 +131,7 @@
                         :popoverArrowClass="'custom-popover-arrow'">
                       <span class="tooltip-target b3 material-icons">more_vert</span>
                       <template slot="popover">
-                        <ul style="list-style-type: none; margin: 0;">
+                        <ul style="list-style-type: none; margin: 0;padding: 0">
                           <li v-for="action in tabActionsPopover"
                               :key="action.name"
                               :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"

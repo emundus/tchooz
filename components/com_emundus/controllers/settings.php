@@ -334,12 +334,16 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function getlogo()
 	{
-		$logo_module = JModuleHelper::getModuleById('90');
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$logo = EmundusHelperEmails::getLogo();
 
-		$regex = '/logo_custom.{3,4}[png+|jpeg+|jpg+|svg+|gif+]/m';
-		preg_match($regex, $logo_module->content, $matches, PREG_OFFSET_CAPTURE, 0);
+		$filename = '';
+		if(!empty($logo)) {
+			$logo_path = explode('/', $logo);
+			$filename = $logo_path[count($logo_path) - 1];
+		}
 
-		$tab = array('status' => 1, 'msg' => JText::_('LOGO_FOUND'), 'filename' => $matches[0][0]);
+		$tab = array('status' => 1, 'msg' => JText::_('LOGO_FOUND'), 'filename' => $filename);
 
 		echo json_encode((object) $tab);
 		exit;

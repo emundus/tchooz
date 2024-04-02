@@ -1239,7 +1239,7 @@ form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calen
             height: var(--em-form-height) !important;
             color: var(  --em-form-label-color);
             position: absolute;
-            right: 15px;
+            right: 8px;
             border: unset;
             z-index: 10;
             background: transparent;
@@ -1247,11 +1247,15 @@ form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calen
           }
 form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:focus, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:focus {
               outline: unset;
+              box-shadow: unset;
             }
 form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:active, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:active {
               box-shadow: unset;
             }
-form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons-outlined, form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons-outlined {
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons-outlined,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton:hover .material-icons,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons-outlined,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton:hover .material-icons {
+                color: var(--em-form-outline-color-focus) !important;
+              }
+form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons-outlined,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.calendarbutton .material-icons,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons-outlined,form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer button.timeButton .material-icons {
               font-size: 16px;
               color: var(--neutral-600);
             }
@@ -1611,12 +1615,15 @@ form.fabrikForm .currencyElement select, form.fabrikForm .currencyElement .chose
         border-left: 0;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
+        min-width: unset;
       }
 form.fabrikForm .currencyElement select .chosen-single, form.fabrikForm .currencyElement .chosen-container .chosen-single {
           border-left: 0 !important;
           border-top-left-radius: 0 !important;
           border-bottom-left-radius: 0 !important;
           border-color: var(--em-form-bc);
+          justify-content: end;
+          background-image: none !important;
         }
 form.fabrikForm .currencyElement select .chosen-single span,form.fabrikForm .currencyElement .chosen-container .chosen-single span{
             font-size: 16px;
@@ -1629,19 +1636,23 @@ form.fabrikForm .currencyElement select .chosen-single div,form.fabrikForm .curr
             margin-right: 4px;
           }
 form.fabrikForm .currencyElement select .chosen-single div b,form.fabrikForm .currencyElement .chosen-container .chosen-single div b{
+              position: relative;
+              top: -3px;
               border: solid var(--neutral-900);
               border-width: 0 2px 2px 0;
               display: inline-block;
               transform: rotate(45deg);
               -webkit-transform: rotate(45deg);
               background: unset;
-              position: static;
               padding: 3px;
             }
 form.fabrikForm .currencyElement select .chosen-drop, form.fabrikForm .currencyElement .chosen-container .chosen-drop {
           width: -moz-max-content;
           width: max-content;
           margin-top: 6px;
+          right: 0;
+          box-shadow: unset;
+          border: solid 1px var(--neutral-400);
         }
 form.fabrikForm .currencyElement select .chosen-drop .chosen-search,form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-search{
             padding: 4px;
@@ -1651,12 +1662,11 @@ form.fabrikForm .currencyElement select .chosen-drop .chosen-search input, form.
               background: unset;
             }
 form.fabrikForm .currencyElement select .chosen-drop .chosen-results, form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-results {
-            margin: 4px;
+            border-radius: 4px;
           }
 form.fabrikForm .currencyElement select .chosen-drop .chosen-results li,form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-results li{
               font-size: 16px;
               word-spacing: 4px;
-              margin-right: 4px;
             }
 form.fabrikForm .currencyElement select .chosen-drop .chosen-results li.highlighted,form.fabrikForm .currencyElement .chosen-container .chosen-drop .chosen-results li.highlighted{
               background-color: #D1E9FF;
@@ -1692,16 +1702,9 @@ form.fabrikForm .plg-birthday .fabrikElement .fabrikSubElementContainer table tb
 form.fabrikForm .control-group.error label {
         color: var(--em-form-label-color-error);
       }
-form.fabrikForm .control-group.\!error label {
-        color: var(--em-form-label-color-error) !important;
-      }
 form.fabrikForm .control-group.error input,form.fabrikForm .control-group.error textarea,form.fabrikForm .control-group.error select {
         border-color: var(--em-form-bc-error);
         color: var(--em-default-text-color-1);
-      }
-form.fabrikForm .control-group.\!error input,form.fabrikForm .control-group.\!error textarea,form.fabrikForm .control-group.\!error select {
-        border-color: var(--em-form-bc-error) !important;
-        color: var(--em-default-text-color-1) !important;
       }
 form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContainer {
           border-color: var(--em-form-checkbox-bc-error);
@@ -1903,8 +1906,8 @@ input[type="text"],
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
       box-shadow: unset;
-      border-color: var(--em-form-bc) !important;
-      border-radius: var(--em-form-br) !important;
+      border-color: var(--em-form-bc);
+      border-radius: var(--em-form-br);
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -1923,8 +1926,8 @@ input[type="text"],
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
       box-shadow: unset;
-      border-color: var(--em-form-bc) !important;
-      border-radius: var(--em-form-br) !important;
+      border-color: var(--em-form-bc);
+      border-radius: var(--em-form-br);
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -4820,7 +4823,10 @@ div:where(.swal2-container) div:where(.swal2-popup) .swal2-title {
                 text-align: start;
 }
 div:where(.swal2-container) div:where(.swal2-popup) .swal2-icon {
-                margin: 8px auto;
+                margin: 12px auto;
+                border: unset;
+                height: auto;
+                min-height: 80px;
             }
 div:where(.swal2-container) div:where(.swal2-popup) .swal2-close {
   display: flex;
@@ -5376,6 +5382,12 @@ body {
 /***********
 /* TCHOOZY *
  ***********/
+.tchoozy-celebrating {
+    background-image: url("/media/com_emundus/images/tchoozy/complex-illustrations/celebrating.svg");
+    background-repeat: no-repeat;
+    height: 150px;
+    width: 200px;
+}
 /* Accueil */
 .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
     background-image: var(--display-demonstration);

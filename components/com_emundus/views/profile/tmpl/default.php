@@ -1,5 +1,5 @@
 <?php
-JHTML::_('behavior.modal');
+
 JHTML::stylesheet('media/com_emundus/css/emundus.css');
 defined('_JEXEC') or die('Restricted access');
 $Itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);

@@ -1,4 +1,7 @@
 <?php
+
+use Joomla\CMS\Factory;
+
 defined( '_JEXEC' ) or die();
 
 $firstname = $data['jos_emundus_users___firstname'];
@@ -14,7 +17,9 @@ if(!empty($lastname)) {
 	$emundusUser->lastname = $lastname;
 }
 
+$emundusUser->name = $firstname . ' ' . $lastname;
+
 if(!empty($firstname) || !empty($lastname))
 {
-	JFactory::getSession()->set('emundusUser', $emundusUser);
+	Factory::getApplication()->getSession()->set('emundusUser', $emundusUser);
 }

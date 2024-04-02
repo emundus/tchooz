@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * FormBuilder Controller
@@ -1333,7 +1334,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 
 	public function addformmodel()
 	{
-		$user     = JFactory::getUser();
+		$user     = Factory::getApplication()->getIdentity();
 		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -1343,10 +1344,10 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 
 			if (!empty($form_id) && !empty($label)) {
 				$response['status'] = $this->m_formbuilder->addFormModel($form_id, $label);
-				$response['msg']    = $response['status'] ? JText::_('SUCCESS') : JText::_('FAILED');
+				$response['msg']    = $response['status'] ? Text::_('SUCCESS') : Text::_('FAILED');
 			}
 			else {
-				$response['msg'] = JText::_('MISSING_PARAMS');
+				$response['msg'] = Text::_('MISSING_PARAMS');
 			}
 		}
 

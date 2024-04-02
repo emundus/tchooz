@@ -50,6 +50,7 @@
 
 <script>
 import FormCarrousel from "../../components/Form/FormCarrousel";
+import settingsService from '../../../src/services/settings';
 import axios from "axios";
 
 const qs = require("qs");
@@ -136,7 +137,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      window.location.href = link;
+      settingsService.redirectJRoute(link);
     },
 
     addNewForm() {
@@ -151,7 +152,7 @@ export default {
       }).then(response => {
         this.loading = false;
         this.$props.profileId = response.data.data;
-        this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=' + this.campaignId);
+        window.location.href = '/'+response.data.redirect;
       }).catch(error => {
         console.log(error);
       });

@@ -43,7 +43,7 @@
               >
               </editor-quill>
               <div class="tw-mt-12">
-                <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
+                <a href="/component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
                    class="em-main-500-color em-hover-main-600 em-text-underline"
                    target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
               </div>
@@ -234,6 +234,8 @@ import axios from "axios";
 import EditorQuill from "../components/editorQuill";
 import Multiselect from 'vue-multiselect';
 import IncrementalSelect from "@/components/IncrementalSelect.vue";
+import settingsService from '../services/settings';
+
 
 const qs = require("qs");
 
@@ -678,7 +680,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      window.location.href = link;
+      settingsService.redirectJRoute(link);
     },
 
     /**

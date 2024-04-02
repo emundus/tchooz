@@ -1106,7 +1106,7 @@ function runAction(action, url = '', option = '') {
                                             removeLoader();
                                             Swal.fire({
                                                 position: 'center',
-                                                icon: 'success',
+                                                iconHtml: '<div class="tchoozy-celebrating"></div>',
                                                 title: result.msg,
                                                 showConfirmButton: false,
                                                 timer: 1500,
@@ -1164,7 +1164,7 @@ function runAction(action, url = '', option = '') {
                                     removeLoader();
                                     Swal.fire({
                                         position: 'center',
-                                        icon: 'success',
+                                        iconHtml: '<div class="tchoozy-celebrating"></div>',
                                         title: result.msg,
                                         showConfirmButton: false,
                                         timer: 1500,
@@ -1232,7 +1232,6 @@ function runAction(action, url = '', option = '') {
                             icon: 'success',
                             title: result.msg,
                             showConfirmButton: false,
-                            timer: 1500,
                             customClass: {
                                 title: 'text-center',
                             },
@@ -1655,6 +1654,7 @@ $(document).ready(function() {
         var preconfirm = '';
         var preconfirm_value
         var multipleSteps = false;
+        var icon = '';
 
         removeLoader();
 
@@ -4871,6 +4871,7 @@ $(document).ready(function() {
         if (!multipleSteps) {
             Swal.fire({
                 title: Joomla.Text._(title),
+                iconHtml: icon,
                 html: html,
                 allowOutsideClick: false,
                 showCancelButton: true,

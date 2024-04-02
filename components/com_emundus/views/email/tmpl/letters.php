@@ -3,7 +3,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $document = JFactory::getDocument();
 
-JHTML::_('behavior.modal');
+
 
 JHTML::stylesheet('media/com_emundus/cssemundus.css/');
 JHTML::stylesheet('templates/system/css/general.css');
