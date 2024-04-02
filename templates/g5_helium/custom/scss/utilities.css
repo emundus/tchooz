@@ -138,8 +138,8 @@
         margin: 16px 0;
     }
 
-    ul {
-        list-style: initial;
+    ul, ol {
+        list-style: auto;
     }
 
     legend {
