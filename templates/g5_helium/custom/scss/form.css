@@ -452,7 +452,7 @@
             }
             &:hover {
               .material-icons-outlined,.material-icons {
-                color: var(--em-form-outline-color-focus) !important;
+                color: var(--em-form-bc-hover) !important;
               }
             }
 
