@@ -89,7 +89,7 @@ defined('_JEXEC') or die;
         height: 100%;
         content: "";
         position: absolute;
-        left: -18px;
+        left: -20px;
         display: flex;
     }
 
@@ -214,6 +214,13 @@ defined('_JEXEC') or die;
         border-bottom: 1px solid #e0e0e5;
         padding-bottom: 10px;
         color: var(--neutral-900);
+        line-height: normal;
+    }
+
+    .message-tooltip-block a {
+        font-weight: 400;
+        font-style: normal;
+        line-height: normal;
     }
 
     .message-tooltip-block {

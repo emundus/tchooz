@@ -10,6 +10,9 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     width: 100%;
+    font-weight: 400;
+    font-style: normal;
+    line-height: normal;
 }
 
 .g-main-nav .g-sublevel > li.g-parent .g-menu-parent-indicator {
@@ -78,6 +81,7 @@ ul.g-dropdown.g-dropdown-right.g-fade a {
 
 .g-main-nav .g-sublevel > li > .g-menu-item-container > .g-menu-item-content {
     font-weight: 400;
+    font-size: 16px;
 }
 
 .g-main-nav .g-standard > .g-dropdown, .g-main-nav .g-fullwidth > .g-dropdown {
@@ -191,6 +195,10 @@ footer div {
     height: auto;
     color: var(--neutral-900);
     opacity: inherit;
+}
+
+.g-main-nav .g-toplevel > li.g-parent:hover .g-menu-parent-indicator::after {
+    color: var(--em-profile-color);
 }
 
 ul.g-dropdown.g-dropdown-right.g-fade {
