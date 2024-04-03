@@ -445,5 +445,6 @@ export default {
   padding: 8px 12px;
   margin-right: 2px;
   display: block;
+  text-decoration: none;
 }
 </style>
