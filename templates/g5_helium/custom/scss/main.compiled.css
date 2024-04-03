@@ -4735,8 +4735,11 @@ ul, ol {
 hr {
         margin: 16px 0;
     }
-ul, ol {
-        list-style: auto;
+ol {
+        list-style: decimal;
+    }
+ul {
+        list-style: disc;
     }
 legend {
         margin: 10px 0 20px 0;
