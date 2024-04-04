@@ -48,6 +48,22 @@ body {
     box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
     top: -25px !important;
 }
+.popover.show {
+    opacity: 1;
+}
+
+.popover-content{
+    padding: 0;
+}
+
+.popover-content > a:hover {
+    text-decoration: none;
+}
+
+.popover-title:empty {
+    display: none;
+}
+
 .popover-content a:first-child {
     border-radius: 8px 8px 0 0;
 }
