@@ -49,10 +49,21 @@ $current_user = JFactory::getUser();
 		<?php endforeach; ?>
     </div>
 
-    <div class="em-access">
+    <div class="em-access" style="min-height: 282px;">
         <div class="em-access-form">
+            <div class="em-flex-column em-mt-12">
+                <label><?= JText::_('COM_EMUNDUS_SHARE_MESSAGE') ?></label>
+                <div  class="em-mb-6" style="width: 100%;">
+                    <input type="checkbox" id="group-user-choice">
+                    <label for="group-user-choice"><?= JText::_('COM_EMUNDUS_SHARE_MESSAGE_GROUP_USER') ?></label>
+                </div>
+                <div style="width: 100%;">
+                    <input type="checkbox" id="specific-user-choice">
+                    <label for="specific-user-choice"><?= JText::_('COM_EMUNDUS_SHARE_MESSAGE_SPECIFIC_USER') ?></label>
+                </div>
+            </div>
 			<?php if (EmundusHelperAccess::asAccessAction(11, 'c', $current_user->id)) { ?>
-                <div>
+                <div id="group-div" class="em-mt-12 hidden">
                     <label><?= JText::_('COM_EMUNDUS_GROUPS') ?></label>
                     <select class="modal-chzn-select" multiple="true"
                             data-placeholder="<?= JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_GROUP'); ?>"
@@ -63,7 +74,7 @@ $current_user = JFactory::getUser();
                     </select>
                 </div>
 			<?php } ?>
-            <div class="em-mt-12">
+            <div id="specific-div" class="em-mt-12 hidden">
                 <label><?= JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS'); ?></label>
                 <select class="modal-chzn-select" multiple="true"
                         data-placeholder="<?= JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_ASSESSOR'); ?>"
