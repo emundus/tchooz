@@ -50,6 +50,24 @@ $.ajaxQ = (function(){
     };
 })();
 
+var shareModalClick = function(event) {
+    if (event.target.id === 'group-user-choice' ) {
+        let groupDiv = document.getElementById('group-div');
+        if (event.target.checked) {
+            groupDiv.classList.remove('hidden');
+        } else {
+            groupDiv.classList.add('hidden');
+        }
+    } else if (event.target.id === 'specific-user-choice') {
+        let specificDiv = document.getElementById('specific-div');
+        if (event.target.checked) {
+            specificDiv.classList.remove('hidden');
+        } else {
+            specificDiv.classList.add('hidden');
+        }
+    }
+};
+
 function search() {
     const controller = $('#view').val();
 
@@ -4589,6 +4607,7 @@ $(document).ready(function() {
                     dataType:'html',
                     success: function(result) {
                         html = result;
+                        document.addEventListener('click', shareModalClick);
 
                         removeLoader();
                     },
@@ -4893,6 +4912,7 @@ $(document).ready(function() {
                     }
                 },
             }).then((result) => {
+                window.removeEventListener('click', shareModalClick);
                 if (result.value) {
                     runAction(id, url,preconfirm_value);
                 }
