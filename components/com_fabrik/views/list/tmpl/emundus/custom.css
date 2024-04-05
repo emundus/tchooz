@@ -264,6 +264,12 @@ font-size: 16px;
 .view-list .fabrikForm .fabrikFilterContainer table.filtertable .fabrik___heading th{
 	padding-bottom: 2px;
 }
+
+.view-list .fabrikForm .fabrikFilterContainer table.filtertable .fabrik___heading th a.clearFilters {
+	color: var(--em-form-element-color-error);
+	margin-top: 8px;
+	font-weight: 500;
+}
 /** **/
 
 /** SCROLLBAR **/
