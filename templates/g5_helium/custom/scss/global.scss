@@ -1575,16 +1575,21 @@ footer#g-footer > .g-container {
   flex-direction: column;
   justify-content: flex-start;
 
+  h3 {
+    margin-bottom: 24px;
+  }
+
   .btn.btn-success {
     background: var(--main-500);
     border: 1px solid var(--main-500);
-    font-size: var(--em-coordinator-font-size);;
+    font-size: var(--em-coordinator-font-size);
+    text-decoration: none;
 
-    &:hover {
+    &:hover, &:focus, &:active {
       text-decoration: none;
       background: transparent;
-      border: 1px solid var(--main-500);
-      font-size: var(--em-coordinator-font-size);;
+      border: 1px solid var(--main-500) !important;
+      font-size: var(--em-coordinator-font-size);
       color: var(--main-500);
     }
   }
