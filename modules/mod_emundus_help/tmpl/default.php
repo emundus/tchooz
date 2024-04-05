@@ -48,10 +48,7 @@ defined('_JEXEC') or die;
 					<?php if ($current_lang == 'fr') : ?>
                         <a href='https://emundus.atlassian.net/wiki/x/BADPn' target='_blank'
                            class="tw-flex tw-items-center tw-gap-2 tw-py-2 tw-px-3 hover:tw-bg-neutral-300">
-                            <img
-                                    class='icone-aide-tchoozy'
-                                    src='../../../media/com_emundus/images/tchoozy/icons/Tchoozy-icone-videos.svg'
-                                    alt='icone centre aide'>
+                            <span class='material-icons tw-text-black'>smart_display</span>
                             <p><?= JText::_('MOD_EMUNDUS_HELP_VIDEOS'); ?></p>
                         </a>
 					<?php else : ?>

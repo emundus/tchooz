@@ -21,22 +21,3 @@ if (modFilters) {
     app.config.devtools = false;
     app.mount('#em-filters-vue');
 }
-
-/******************************************
-/* Comportement de la barre de recherche  *
- ******************************************/
-
-/* À la saisie dans le champ de recherche */
-const globalSearchDiv = document.getElementById("global-search-values");
-const inputElement = document.querySelector("#current-global-search");
-
-inputElement.addEventListener("input", function () {
-    globalSearchDiv.classList.add("global-search-values-wide");
-});
-
-/* Au clic en dehors de l'input */
-document.addEventListener("click", function(event) {
-    if (event.target !== inputElement && !inputElement.contains(event.target) && document.querySelectorAll("#global-search-values .global-search-tag").length === 0) {
-        globalSearchDiv.classList.remove("global-search-values-wide");
-    }
-});

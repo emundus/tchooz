@@ -452,7 +452,7 @@ export default {
 
 #select-scopes:not(.hidden) {
 	position: absolute;
-	top: 83px;
+	top: 42px;
 	z-index:2;
 	list-style-type: none;
 	margin: 0;
@@ -466,15 +466,6 @@ export default {
 #global-search-values {
 	height: 42px;
 	overflow-y: auto;
-  align-items: flex-start;
-}
-
-.global-search-values-wide {
-  height: 84px !important;
-}
-
-#em-files-filters input[type="text"]:focus, #em-user-filters input[type="text"]:focus {
-  box-shadow: none;
 }
 
 .global-search-scope button {
