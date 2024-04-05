@@ -573,7 +573,7 @@ defined('_JEXEC') or die;
             if (window.innerWidth >= 0) {
                 jQuery("#g-footer").css("padding-left", "280px");
                 jQuery("#footer-rgpd").css("padding-left", "280px");
-                jQuery("#g-container-main").css("padding-left", "280px");
+                jQuery("#g-container-main").css("padding-left", "270px");
                 jQuery("#header-a").css("opacity", "1");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
             }
