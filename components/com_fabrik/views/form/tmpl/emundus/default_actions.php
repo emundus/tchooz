@@ -31,7 +31,7 @@ if ($this->hasActions) : ?>
 <div class="fabrikActions form-actions tw-p-0 tw-m-0">
 	<div
         <?php if ($form->id != 307) : ?>
-            class="tw-flex <?php if($countActions > 1) : ?>tw-justify-between<?php else : ?>tw-justify-end<?php endif; ?>"
+            class="tw-flex <?php if($countActions > 1) : ?>tw-justify-between tw-items-center<?php else : ?>tw-justify-end<?php endif; ?>"
         <?php endif; ?>
     >
         <?php if ( $form->gobackButton || $form->resetButton || $form->deleteButton || $form->clearMultipageSessionButton): ?>
