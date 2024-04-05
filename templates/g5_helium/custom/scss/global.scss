@@ -1276,7 +1276,7 @@ footer#g-footer > .g-container {
     border-radius: var(--applicant-border-radius);
     color: var(--neutral-0);
     height: auto !important;
-   padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
 
     &:hover, &:active, &:focus {
       background: var(--neutral-0);
@@ -1377,7 +1377,7 @@ footer#g-footer > .g-container {
     font-weight: 400;
     letter-spacing: normal;
     font-style: normal;
-    font-size: var(--em-coordinator-font-size);
+    font-size: var(--em-coordinator-font-size) !important;
     height: auto !important;
     &:hover, &:active, &:focus {
       background: var(--neutral-0);
@@ -1854,7 +1854,7 @@ div.fabrikFilterContainer {
         color: var(--neutral-0);
         background-color: var(--main-500);
         transition: all 0.2s ease-in-out;
-        box-sizing: content-box;
+        line-height: normal;
 
         &:hover {
           background-color: var(--neutral-0);
