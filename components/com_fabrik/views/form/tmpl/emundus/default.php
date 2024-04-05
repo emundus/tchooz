@@ -59,7 +59,7 @@ endif;
 		<?php echo $form->error; ?>
     </div>
     <div class="tw-mb-8">
-        <div class="tw-mt-8">
+        <div>
 	        <?php if ($this->params->get('show-title', 1)) : ?>
                 <?php if($display_required_icon == 0) : ?>
                     <p class="tw-mb-5 tw-text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
