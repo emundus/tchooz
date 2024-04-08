@@ -3414,6 +3414,10 @@ fieldset.em_filters_adv_filter .em_save_filter input#save-filter,
   width: 100%;
 }
 
+#application-modal #modal-applicationform .scrollable .em-flex-row.em-flex-center.em-gap-16.em-border-bottom-neutral-300.sticky-tab {
+  z-index: 10;
+}
+
 /* SUPPRIMER EVAL */
 .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
   background: transparent !important;
