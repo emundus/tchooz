@@ -58,7 +58,7 @@
           </div>
           <div class="view-type tw-flex tw-items-center">
 					<span v-for="viewTypeOption in viewTypeOptions" :key="viewTypeOption.value"
-                style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;"
+                style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;background: var(--neutral-0);"
                 class="material-icons-outlined tw-ml-2 tw-cursor-pointer"
                 :class="{
 								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,
