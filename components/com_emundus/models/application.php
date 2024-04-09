@@ -1766,7 +1766,7 @@ class EmundusModelApplication extends JModelList
 								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm em-actions-form" url="'.$url.'" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><i> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</i></button>';
 							}
 							else {
-								$forms .= ' <a id="' . $itemt->form_id . '" class="em-link" href="'.$url.'" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</span></a>';
+								$forms .= ' <a id="' . $itemt->form_id . '" class="em-link em-text-underline" href="'.$url.'" title="' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ACTIONS_EDIT') . '</span></a>';
 							}
 						}
 						else {
@@ -1774,7 +1774,7 @@ class EmundusModelApplication extends JModelList
 								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm em-actions-form" url="'.$url.'" title="' . JText::_('COM_EMUNDUS_ADD') . '"><i> ' . JText::_('COM_EMUNDUS_ADD') . '</i></button>';
 							}
 							else {
-								$forms .= ' <a type="button" id="' . $itemt->form_id . '" class="em-link" href="'.$url.'" title="' . JText::_('COM_EMUNDUS_ADD') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ADD') . '</span></a>';
+								$forms .= ' <a type="button" id="' . $itemt->form_id . '" class="em-link em-text-underline" href="'.$url.'" title="' . JText::_('COM_EMUNDUS_ADD') . '" target="_blank"><span> ' . JText::_('COM_EMUNDUS_ADD') . '</span></a>';
 							}
 						}
 					}
