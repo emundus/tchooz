@@ -113,7 +113,7 @@
                      class="em-primary-button tw-text-sm tw-cursor-pointer em-w-auto">
                     {{ translate(editAction.label) }}
                   </a>
-                  <div class="tw-flex tw-items-center">
+                  <div class="tw-flex tw-items-center em-gap-8">
                     <span v-if="previewAction" class="material-icons-outlined tw-cursor-pointer"
                           @click="onClickPreview(item)">visibility</span>
                     <span v-for="action in iconActions" :key="action.name" class="tw-cursor-pointer"
@@ -136,7 +136,7 @@
                               :key="action.name"
                               :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
                               @click="onClickAction(action, item.id)"
-                              class="tw-cursor-pointer tw-p-2 em-font-size-12"
+                              class="tw-cursor-pointer tw-p-2 em-font-size-16"
                           >
                             {{ translate(action.label) }}
                           </li>

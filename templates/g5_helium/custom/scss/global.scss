@@ -6400,6 +6400,41 @@ fieldset[disabled] .multiselect {
   visibility: visible;
   opacity: 1;
   transition: opacity .15s;
+  top: 0 !important;
+  left: -50px !important;
+}
+
+.tooltip[aria-hidden='false'] ul li {
+  padding: 6px 8px;
+}
+
+.tooltip[aria-hidden='false'] ul li:hover {
+  background: #EBECF0 !important;
+  border-radius: var(--em-default-br) !important;
+}
+
+.tooltip[aria-hidden='false'] .tooltip-inner {
+  padding: var(--p-16);
+}
+
+.table-row {
+  &:hover .trigger {
+    background: var(--em-profile-color);
+    border-radius: var(--em-default-br);
+    transition: transform .3s;
+    padding: 4px;
+
+    .tooltip-target {
+      color: var(--neutral-0);
+    }
+  }
+
+  .trigger {
+    padding: 4px;
+    .tooltip-target {
+      color: var(--em-profile-color);
+    }
+  }
 }
 
 /** END **/
