@@ -492,7 +492,7 @@ button#em-close-file {
 
 .panel-default>div {
     padding-left: 13px;
-    padding-bottom: 24px;
+    padding-bottom: 0;
 }
 
 .panel-default.em-container-comment .form {
@@ -1779,10 +1779,15 @@ thead th:hover {
 }
 
 .em-container-pagination {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
     align-items: center;
+    grid-template-columns: auto auto 1fr;
 }
+
+.em-container-pagination .em-container-pagination-selectPage {
+    place-self: end;
+}
+
 .em-container-pagination-select {
     display: flex;
     align-items: center;
@@ -1790,6 +1795,7 @@ thead th:hover {
 
 .em-container-pagination-label {
     margin-right: 15px;
+    margin-bottom: 0;
 }
 
 .well blockquote {
