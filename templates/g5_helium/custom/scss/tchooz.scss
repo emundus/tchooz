@@ -2171,13 +2171,13 @@ div[id^='current_'] .mod_emundus_campaign__list_content h4 {
 }
 
 #applications_list_view table tbody tr {
-  background: var(--neutral-0);
   box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
   border-radius: 8px;
 
   td {
     padding: var(--p-16) var(--p-32);
     position:relative;
+    background: var(--neutral-0);
 
     p {
       color: var(--neutral-600);
@@ -2196,7 +2196,7 @@ div[id^='current_'] .mod_emundus_campaign__list_content h4 {
 /* Fond formes */
 #applications_list_view table tbody tr td #background-shapes {
   position: absolute;
-  z-index: 0;
+  z-index: 12;
   width: 100%;
   height: 100%;
   top: 0;
@@ -2245,6 +2245,11 @@ div[id^='current_'] .mod_emundus_campaign__list_content h4 {
 .mod_emundus_campaign__details_content .em-disabled-button {
   position: relative;
   z-index: 2;
+}
+
+/* Formes vue liste des cards */
+.em-ml-12 tbody tr td div span.label {
+  z-index: 14;
 }
 
 /****************************
@@ -2314,7 +2319,7 @@ div[id^='current_'] .mod_emundus_campaign__list_content h4 {
   }
 
   #applications_list_view table tbody tr td #background-shapes {
-    left: 662px;
+    left: 658px;
     transform: scale(1.45);
     border-bottom-right-radius: 22px;
   }
@@ -2351,7 +2356,7 @@ div[id^='current_'] .mod_emundus_campaign__list_content h4 {
   }
 
   #applications_list_view table tbody tr td #background-shapes {
-    left: 662px;
+    left: 658px;
     transform: scale(1.45);
     border-bottom-right-radius: 22px;
   }
