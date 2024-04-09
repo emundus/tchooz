@@ -72,6 +72,11 @@ font-size: 16px;
 }
 
 /** ACTIONS **/
+
+.view-list .em-action-buttons .groupBy.btn span.material-icons{
+	margin-right: 4px;
+}
+
 .view-list .table .fabrik___heading th.fabrik_actions span div.btn-group {
 	gap: 6px;
 }
@@ -133,7 +138,7 @@ font-size: 16px;
 }
 .view-list .fabrikForm .fabrikButtonsContainer .em-action-buttons li a b.caret{
 	margin-top: unset;
-	margin-left: 14px;
+	margin-left: 4px;
 }
 /** **/
 
