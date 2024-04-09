@@ -85,12 +85,16 @@ defined('_JEXEC') or die;
     /*** Sublevel parent ***/
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before {
         background: var(--em-profile-color);
-        width: 3px;
+        width: 4px;
         height: 100%;
         content: "";
         position: absolute;
         left: -20px;
         display: flex;
+    }
+
+    ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item span[class*="material-icons"] {
+        color: var(--em-profile-color) !important;
     }
 
     .active .item .image-title {
