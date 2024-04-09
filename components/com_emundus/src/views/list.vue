@@ -696,6 +696,11 @@ export default {
 </script>
 
 <style lang="scss">
+
+#onboarding_list .head  {
+  min-height: 38px;
+}
+
 #list-nav {
   li {
     transition: all .3s;
