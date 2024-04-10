@@ -152,6 +152,7 @@ defined('_JEXEC') or die;
         z-index: 2;
         transition: all 0.3s ease-in-out;
         color: var(--neutral-900);
+        text-decoration: none;
     }
 
     .tchooz-vertical-item a:hover {
