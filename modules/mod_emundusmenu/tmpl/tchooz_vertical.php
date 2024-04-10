@@ -241,7 +241,7 @@ defined('_JEXEC') or die;
         height: 0;
         width: 0;
         right: 100%;
-        top: 10px;
+        top: 12px;
         border: 10px solid transparent;
         border-right-color: transparent;
         border-right-style: solid;
@@ -515,7 +515,7 @@ defined('_JEXEC') or die;
         if (tooltipMenu) {
             if (window.getComputedStyle(document.querySelector('.image-title')).getPropertyValue('display') !== 'none') {
                 if (document.querySelector('#sublevel_list_' + menu)) {
-                    tooltipMenu.style.marginLeft = '200px';
+                    tooltipMenu.style.marginLeft = '0';
                     tooltipMenu.style.display = 'block';
                 }
             } else {
