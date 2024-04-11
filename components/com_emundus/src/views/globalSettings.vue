@@ -8,8 +8,8 @@
           <div style="background: var(--neutral-0);" v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index"
                class="em-shadow-cards em-hover-s-scale" v-wave @click="changeMenu(menu)">
             <span class="material-icons-outlined em-main-500-color em-mb-16">{{ menu.icon }}</span>
-            <h4 class="em-body-16-semibold em-mb-8">{{ translate(menu.title) }}</h4>
-            <p class="em-font-size-14">{{ translate(menu.description) }}</p>
+            <h3 class="em-mb-8">{{ translate(menu.title) }}</h3>
+            <p class="em-font-size-16 em-neutral-700-color">{{ translate(menu.description) }}</p>
           </div>
         </div>
       </transition>

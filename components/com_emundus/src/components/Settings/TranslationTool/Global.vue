@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h1>{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h1>
+    <h1 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h1>
     <div class="em-mb-24 em-flex-row em-flex-space-between">
       <div>
         <p class="em-body-16-semibold em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>
-        <p class="em-font-size-14">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT_DESC') }}</p>
+        <p class="em-font-size-16 em-neutral-700-color">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT_DESC') }}</p>
       </div>
       <div class="em-w-33">
         <multiselect
@@ -29,7 +29,7 @@
     <div class="em-mb-24 em-flex-row em-flex-space-between">
       <div>
         <p class="em-body-16-semibold em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY') }}</p>
-        <p class="em-font-size-14">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC') }}</p>
+        <p class="em-font-size-16 em-neutral-700-color">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC') }}</p>
       </div>
       <div class="em-w-33">
         <multiselect
@@ -48,7 +48,7 @@
             @remove="unpublishLanguage"
             @select="publishLanguage"
         ></multiselect>
-        <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500 em-profile-color em-text-underline"
+        <a class="em-pointer em-mt-16 em-font-size-14 em-profile-color em-text-underline"
            @click="purposeLanguage">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE') }}</a>
       </div>
     </div>

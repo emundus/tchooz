@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELINS') }}</h1>
-    <p class="em-font-size-14 em-mb-24 em-h-25" v-if="!saving && last_save == null">
+    <p class="em-font-size-16 em-neutral-700-color em-mb-24 em-h-25" v-if="!saving && last_save == null">
       {{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
     <div v-if="saving" class="em-mb-24 em-flex-row em-flex-start">
       <div class="em-loader em-mr-8"></div>
@@ -56,7 +56,7 @@
               <div>
                 <input class="mb-0 em-input em-w-100" type="text" :value="translation.override"
                        :ref="'translation-' + translation.id + ''"/>
-                <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500"
+                <a class="em-pointer em-profile-color em-mt-16 em-font-size-14 em-text-underline"
                    @click="saveTranslation(translation)">{{
                     translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELIN_CONFIRM_TRANSLATION')
                   }}</a>

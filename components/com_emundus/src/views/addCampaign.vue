@@ -99,7 +99,7 @@
               <strong class="b em-toggle-switch"></strong>
               <strong class="b em-toggle-track"></strong>
             </div>
-            <span for="published" class="ml-2">{{ translate('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH') }}</span>
+            <span for="published" class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH') }}</span>
           </div>
 
           <div class="tw-mb-4 tw-flex tw-items-center">
