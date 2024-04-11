@@ -154,6 +154,17 @@ export default {
 
       this.loading = false;
     });
+
+    let conteneur = document.querySelector(".view-settings #g-page-surround");
+    let containerDivShapes = document.createElement("div");
+    let divShapes = document.createElement("div");
+    containerDivShapes.id = "container-parameters-background-shapes";
+    divShapes.id = "parameters-background-shapes";
+
+    let firstDiv = conteneur.firstChild;
+
+    conteneur.insertBefore(containerDivShapes, firstDiv);
+    conteneur.insertBefore(divShapes, firstDiv);
   },
 
   methods: {
