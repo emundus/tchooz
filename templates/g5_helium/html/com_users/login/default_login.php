@@ -195,4 +195,15 @@ else {
         document.querySelector(".background-shaped-bottom").style.display = 'none';
     }
 
+    let conteneur = document.querySelector("#g-page-surround");
+    let divShapesLeft = document.createElement("div");
+    let divShapesRight = document.createElement("div");
+    divShapesLeft.id = "login-background-shapes-left";
+    divShapesRight.id = "login-background-shapes-right";
+
+    let firstDiv = conteneur.firstChild;
+
+    conteneur.insertBefore(divShapesLeft, firstDiv);
+    conteneur.insertBefore(divShapesRight, firstDiv);
+
 </script>

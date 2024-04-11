@@ -918,7 +918,7 @@ class EmundusHelperEmails
 		return $is_correct;
 	}
 
-	static function getLogo(): string
+	static function getLogo($only_filename = false): string
 	{
 		$logo = 'images/custom/logo_custom.png';
 
@@ -942,15 +942,13 @@ class EmundusHelperEmails
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
-			$query->select('id')
+			$query->select('id,content')
 				->from($db->quoteName('#__modules'))
 				->where($db->quoteName('module') . ' = ' . $db->quote('mod_custom'))
 				->where($db->quoteName('title') . ' LIKE ' . $db->quote('Logo'));
 			$db->setQuery($query);
-			$module_id = $db->loadResult();
-
-			$logo_module = ModuleHelper::getModuleById($module_id);
-
+			$logo_module = $db->loadObject();
+			
 			preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
 			$pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
         (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
@@ -960,6 +958,11 @@ class EmundusHelperEmails
 			if (preg_match($pattern, $tab[1])) {
 				$logo = parse_url($tab[1], PHP_URL_PATH);
 			}
+		}
+
+		if($only_filename)
+		{
+			return basename($logo);
 		}
 
 		return Uri::base() . $logo;
