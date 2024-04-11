@@ -18,6 +18,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Log\Log;
 
 class EmundusModelFormbuilder extends JModelList
 {
@@ -2727,17 +2728,18 @@ class EmundusModelFormbuilder extends JModelList
 				$this->db->setQuery($query);
 				$form_model = $this->db->loadObject();
 
-				$query->clear();
-				$query->insert($this->db->quoteName('#__fabrik_forms'));
+				$insert = [];
 				foreach ($form_model as $key => $val) {
-					if ($key != 'id') {
-						$query->set($key . ' = ' . $this->db->quote($val));
+					if ($key != 'id' && $key != 'modified' && $key != 'checked_out_time' && $key != 'publish_down') {
+						$insert[$key] = $val;
 					}
 				}
+				$insert['created'] = date('Y-m-d H:i:s');
+				$insert['publish_up'] = date('Y-m-d H:i:s');
+				$insert = (object) $insert;
 
 				try {
-					$this->db->setQuery($query);
-					$form_inserted = $this->db->execute();
+					$form_inserted = $this->db->insertObject('#__fabrik_forms', $insert);
 					$newformid     = $this->db->insertid();
 
 					if ($form_inserted && !empty($newformid)) {
@@ -2745,14 +2747,13 @@ class EmundusModelFormbuilder extends JModelList
 						$this->translate('FORM_' . $prid . '_' . $newformid, $label, 'fabrik_forms', $newformid, 'label');
 						$this->translate('FORM_' . $prid . '_INTRO_' . $newformid, $intro, 'fabrik_forms', $newformid, 'intro');
 
-						$query->clear();
-						$query->update($this->db->quoteName('#__fabrik_forms'));
-						$query->set('label = ' . $this->db->quote('FORM_' . $prid . '_' . $newformid));
-						$query->set('intro = ' . $this->db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $newformid . '</p>'));
-						$query->where('id =' . $newformid);
-						$this->db->setQuery($query);
-
-						$this->db->execute();
+						$update = [
+							'id' => $newformid,
+							'label' => 'FORM_' . $prid . '_' . $newformid,
+							'intro' => 'FORM_' . $prid . '_INTRO_' . $newformid
+						];
+						$update = (object) $update;
+						$updated = $this->db->updateObject('#__fabrik_forms', $update, 'id');
 
 						// Duplicate fabrik list
 						$query->clear()
@@ -2770,41 +2771,41 @@ class EmundusModelFormbuilder extends JModelList
 							$db_table_name = $list_model->db_table_name;
 
 							if (!empty($db_table_name)) {
-								$query->clear();
-								$query->insert($this->db->quoteName('#__fabrik_lists'));
+								$insert = [];
 								foreach ($list_model as $key => $val) {
-									if ($key != 'id' && $key != 'form_id' && $key != 'access') {
-										$query->set($key . ' = ' . $this->db->quote($val));
+									if ($key != 'id' && $key != 'form_id' && $key != 'access' && $key != 'modified' && $key != 'checked_out_time' && $key != 'publish_down') {
+										$insert[$key] = $val;
 									}
 									elseif ($key == 'form_id') {
-										$query->set($key . ' = ' . $this->db->quote($newformid));
+										$insert[$key] = $newformid;
 									}
 									elseif ($key == 'access') {
-										$query->set($key . ' = ' . $this->db->quote($prid));
+										$insert[$key] = $prid;
 									}
 								}
-								$this->db->setQuery($query);
-								$this->db->execute();
+								$insert['created'] = date('Y-m-d H:i:s');
+								$insert['publish_up'] = date('Y-m-d H:i:s');
+								$insert = (object) $insert;
+								$this->db->insertObject('#__fabrik_lists', $insert);
 								$newlistid = $this->db->insertid();
 
 								if (!empty($newlistid)) {
-									$query->clear();
-									$query->update($this->db->quoteName('#__fabrik_lists'));
-									$query->set('label = ' . $this->db->quote('FORM_' . $prid . '_' . $newformid));
-									$query->set('introduction = ' . $this->db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $newformid . '</p>'));
-									$query->where('id = ' . $this->db->quote($newlistid));
-									$this->db->setQuery($query);
-									$this->db->execute();
+									$update = [
+										'id' => $newlistid,
+										'label' => 'FORM_' . $prid . '_' . $newformid,
+										'introduction' => '<p>FORM_' . $prid . '_INTRO_' . $newformid . '</p'
+									];
+									$update = (object) $update;
+									$updated = $this->db->updateObject('#__fabrik_lists', $update, 'id');
 
 									// JOIN LIST AND PROFILE_ID
-									$columns = array('form_id', 'profile_id', 'created');
-									$values  = array($newlistid, $prid, date('Y-m-d H:i:s'));
-									$query->clear()
-										->insert($this->db->quoteName('#__emundus_setup_formlist'))
-										->columns($this->db->quoteName($columns))
-										->values(implode(',', $this->db->quote($values)));
-									$this->db->setQuery($query);
-									$this->db->execute();
+									$insert = [
+										'form_id' => $newlistid,
+										'profile_id' => $prid,
+										'created' => date('Y-m-d H:i:s')
+									];
+									$insert = (object) $insert;
+									$this->db->insertObject('#__emundus_setup_formlist', $insert);
 
 									// Duplicate group
 									$ordering = 0;
@@ -2820,21 +2821,24 @@ class EmundusModelFormbuilder extends JModelList
 										$this->db->setQuery($query);
 										$group_model = $this->db->loadObject();
 
-										$query->clear();
-										$query->insert($this->db->quoteName('#__fabrik_groups'));
+										$insert = [];
 										foreach ($group_model as $key => $val) {
-											if ($key === 'created_by') {
-												$query->set($key . ' = ' . $this->db->quote($user->id));
+											if ($key != 'id' && $key != 'form_id' && $key != 'created_by' && $key != 'created' && $key != 'modified' && $key != 'checked_out_time') {
+												$insert[$key] = $val;
 											}
-											elseif ($key === 'created') {
-												$query->set($key . ' = ' . $this->db->quote(date('Y-m-d H:i:s')));
+											elseif ($key == 'form_id') {
+												$insert[$key] = $newformid;
 											}
-											else if ($key !== 'id') {
-												$query->set($key . ' = ' . $this->db->quote($val));
+											elseif ($key == 'created_by') {
+												$insert[$key] = $user->id;
+											}
+											elseif ($key == 'created') {
+												$insert[$key] = date('Y-m-d H:i:s');
 											}
 										}
-										$this->db->setQuery($query);
-										$this->db->execute();
+										$insert = (object) $insert;
+										$this->db->insertObject('#__fabrik_groups', $insert);
+
 										$newgroupid = $this->db->insertid();
 
 										if ($group_model->is_join == 1) {
@@ -2852,25 +2856,22 @@ class EmundusModelFormbuilder extends JModelList
 
 											$joins_params = '{"type":"group","pk":"`' . $repeat_table_to_copy . '`.`id`"}';
 
-											$query->clear()
-												->insert($this->db->quoteName('#__fabrik_joins'));
-											$query->set($this->db->quoteName('list_id') . ' = ' . $this->db->quote($newlistid))
-												->set($this->db->quoteName('element_id') . ' = ' . $this->db->quote(0))
-												->set($this->db->quoteName('join_from_table') . ' = ' . $this->db->quote($db_table_name))
-												->set($this->db->quoteName('table_join') . ' = ' . $this->db->quote($repeat_table_to_copy))
-												->set($this->db->quoteName('table_key') . ' = ' . $this->db->quote('id'))
-												->set($this->db->quoteName('table_join_key') . ' = ' . $this->db->quote('parent_id'))
-												->set($this->db->quoteName('join_type') . ' = ' . $this->db->quote('left'))
-												->set($this->db->quoteName('group_id') . ' = ' . $this->db->quote($newgroupid))
-												->set($this->db->quoteName('params') . ' = ' . $this->db->quote($joins_params));
-											$this->db->setQuery($query);
-											$this->db->execute();
+											$insert = [
+												'list_id' => $newlistid,
+												'element_id' => 0,
+												'join_from_table' => $db_table_name,
+												'table_join' => $repeat_table_to_copy,
+												'table_key' => 'id',
+												'table_join_key' => 'parent_id',
+												'join_type' => 'left',
+												'group_id' => $newgroupid,
+												'params' => $joins_params
+											];
+											$insert = (object) $insert;
+											$this->db->insertObject('#__fabrik_joins', $insert);
 										}
 
 										// Update translation files
-										$query->clear();
-										$query->update($this->db->quoteName('#__fabrik_groups'));
-
 										if ($formid == 258) {
 											$labels = array(
 												'fr' => "Confirmation d'envoi de dossier",
@@ -2889,19 +2890,21 @@ class EmundusModelFormbuilder extends JModelList
 											$this->translate('GROUP_' . $newformid . '_' . $newgroupid, $labels_to_duplicate, 'fabrik_groups', $newgroupid, 'label');
 										}
 
-										$query->set('label = ' . $this->db->quote('GROUP_' . $newformid . '_' . $newgroupid));
-										$query->set('name = ' . $this->db->quote('GROUP_' . $newformid . '_' . $newgroupid));
-										$query->where('id =' . $newgroupid);
-										$this->db->setQuery($query);
-										$this->db->execute();
+										$update = [
+											'id' => $newgroupid,
+											'label' => 'GROUP_' . $newformid . '_' . $newgroupid,
+											'name' => 'GROUP_' . $newformid . '_' . $newgroupid
+										];
+										$update = (object) $update;
+										$updated = $this->db->updateObject('#__fabrik_groups', $update, 'id');
 
-										$query->clear()
-											->insert($this->db->quoteName('#__fabrik_formgroup'))
-											->set('form_id = ' . $this->db->quote($newformid))
-											->set('group_id = ' . $this->db->quote($newgroupid))
-											->set('ordering = ' . $this->db->quote($ordering));
-										$this->db->setQuery($query);
-										$this->db->execute();
+										$insert = [
+											'form_id' => $newformid,
+											'group_id' => $newgroupid,
+											'ordering' => $ordering
+										];
+										$insert = (object) $insert;
+										$this->db->insertObject('#__fabrik_formgroup', $insert);
 
 										foreach ($elements as $element) {
 											try {
@@ -2926,8 +2929,6 @@ class EmundusModelFormbuilder extends JModelList
 													}
 													$el_params->sub_options->sub_labels = $sub_labels;
 												}
-												$query->clear();
-												$query->update($this->db->quoteName('#__fabrik_elements'));
 
 												$labels_to_duplicate = array();
 												foreach ($languages as $language) {
@@ -2938,15 +2939,17 @@ class EmundusModelFormbuilder extends JModelList
 												}
 												$this->translate('ELEMENT_' . $newgroupid . '_' . $newelementid, $labels_to_duplicate, 'fabrik_elements', $newelementid, 'label');
 
-												$query->set('label = ' . $this->db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
-												$query->set('published = ' . $element->element->published);
-												$query->set('params = ' . $this->db->quote(json_encode($el_params)));
-												$query->where('id =' . $newelementid);
-												$this->db->setQuery($query);
-												$this->db->execute();
+												$update = [
+													'id' => $newelementid,
+													'label' => 'ELEMENT_' . $newgroupid . '_' . $newelementid,
+													'published' => $element->element->published,
+													'params' => json_encode($el_params)
+												];
+												$update = (object) $update;
+												$updated = $this->db->updateObject('#__fabrik_elements', $update, 'id');
 											}
 											catch (Exception $e) {
-												JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+												Log::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 											}
 										}
 									}
@@ -2994,12 +2997,12 @@ class EmundusModelFormbuilder extends JModelList
 									$newmenuid = $result['id'];
 
 									if (!empty($newmenuid)) {
-										$query->clear()
-											->update($this->db->quoteName('#__menu'))
-											->set($this->db->quoteName('alias') . ' = ' . $this->db->quote('menu-profile' . $profile->id . '-form-' . $newmenuid))
-											->where($this->db->quoteName('id') . ' = ' . $this->db->quote($newmenuid));
-										$this->db->setQuery($query);
-										$this->db->execute();
+										$update = [
+											'id' => $newmenuid,
+											'alias' => 'menu-profile' . $profile->id . '-form-' . $newmenuid
+										];
+										$update = (object) $update;
+										$updated = $this->db->updateObject('#__menu', $update, 'id');
 
 										require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
 										$falang = new EmundusModelFalang;
@@ -3031,7 +3034,7 @@ class EmundusModelFormbuilder extends JModelList
 					}
 				}
 				catch (Exception $e) {
-					JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+					Log::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 					$response = array(
 						'status' => false,
 						'msg'    => $e->getMessage(),
