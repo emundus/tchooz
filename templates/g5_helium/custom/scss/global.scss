@@ -2167,8 +2167,8 @@ button.btn-secondary {
 
 a.btn,
 span.btn {
-  background: var(--em-primary-color);
-  border: 1px solid var(--em-primary-color);
+  background: var(--em-profile-color);
+  border: 1px solid var(--em-profile-color);
   border-radius: var(--em-applicant-br) !important;
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal) !important;
   color: var(--neutral-0);
@@ -2180,8 +2180,8 @@ span.btn {
   &:focus,
   &:active {
     background-color: transparent;
-    color: var(--em-primary-color);
-    border: 1px solid var(--em-primary-color);
+    color: var(--em-profile-color);
+    border: 1px solid var(--em-profile-color);
   }
 }
 
@@ -2443,8 +2443,8 @@ a#em-doc-zip,
 .btn.advanced-search-apply,
 .toggle-addoption.btn,
 .choice-statut-btn {
-  background: var(--em-primary-color);
-  border: 1px solid var(--em-primary-color);
+  background: var(--em-profile-color);
+  border: 1px solid var(--em-profile-color);
   text-shadow: none;
   text-transform: initial;
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
@@ -2512,8 +2512,8 @@ a#em-doc-zip:focus,
 .choice-statut-btn:active,
 .choice-statut-btn:focus {
   background-color: transparent;
-  color: var(--em-primary-color);
-  border: 1px solid var(--em-primary-color) !important;
+  color: var(--em-profile-color);
+  border: 1px solid var(--em-profile-color) !important;
 }
 
 .span4.offset1 > .btn-group > button.button {
@@ -5597,9 +5597,6 @@ screen and (max-height: 769px) {
 /**
   VUE Multiselect
  */
-.multiselect__tag-icon::after {
-  color: var(--neutral-900) !important;
-}
 
 .multiselect__tag-icon:focus, .multiselect__tag-icon:hover {
   background: var(--neutral-300) !important;
@@ -5608,19 +5605,6 @@ screen and (max-height: 769px) {
 .multiselect__option--highlight::after, .multiselect__option--highlight {
   background: var(--neutral-100) !important;
   color: var(--neutral-900) !important;
-}
-
-.multiselect__tag {
-  padding: 0 12px;
-  color: var(--neutral-900) !important;
-  border-radius: 30px !important;
-  height: 24px;
-  background: var(--neutral-300) !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: max-content;
-  margin-right: 4px;
 }
 
 fieldset[disabled] .multiselect {
@@ -5689,7 +5673,7 @@ fieldset[disabled] .multiselect {
   width: 100%;
   height: 48px;
   text-align: left;
-  color: #a4a4a4;
+  color: var(--neutral-900);
 }
 
 .multiselect * {
@@ -5819,22 +5803,24 @@ fieldset[disabled] .multiselect {
 
 .multiselect__tag {
   position: relative;
-  display: inline-block;
-  padding: 4px 26px 4px 10px;
-  border-radius: 5px;
-  margin-right: 10px;
-  color: var(--neutral-0);
-  line-height: 1;
-  background: #b5b4b4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   white-space: nowrap;
   overflow: hidden;
   max-width: 100%;
   text-overflow: ellipsis;
-  /*margin-top: 1px;*/
+  padding: var(--p-4) var(--p-24) var(--p-4) var(--p-12) !important;
+  background: var(--neutral-300);
+  border-radius: var(--em-form-br);
+  border: none;
+  color: var(--neutral-900) !important;
+  height: 24px;
+  width: max-content;
 }
 
 .multiselect__tag span {
-  font-weight: bold;
+  font-weight: 400;
 }
 
 .multiselect__tag-icon {
@@ -5853,9 +5839,9 @@ fieldset[disabled] .multiselect {
   border-radius: 5px;
 }
 
-.multiselect__tag-icon:after {
+.multiselect__tag-icon::after {
   content: "×";
-  color: var(--neutral-900);
+  color: var(--neutral-600);
   font-size: var(--em-applicant-font-size);
 }
 

@@ -31,7 +31,7 @@
         <p class="em-body-16-semibold em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY') }}</p>
         <p class="em-font-size-16 em-neutral-700-color">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC') }}</p>
       </div>
-      <div class="em-w-33">
+      <div class="em-w-33 tw-text-right">
         <multiselect
             v-model="secondaryLanguages"
             label="title_native"
@@ -48,7 +48,7 @@
             @remove="unpublishLanguage"
             @select="publishLanguage"
         ></multiselect>
-        <a class="em-pointer em-mt-16 em-font-size-14 em-profile-color em-text-underline"
+        <a class="em-pointer em-mt-16 em-font-size-16 em-profile-color tw-underline"
            @click="purposeLanguage">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE') }}</a>
       </div>
     </div>

@@ -11,7 +11,7 @@
       <form @submit.prevent="submit" class="fabrikForm emundus-form">
         <div>
           <div class="tw-mb-4">
-            <h1>{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
+            <h1 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
             <span class="em-red-500-color em-mb-8">{{ translations.RequiredFieldsIndicate }}</span>
           </div>
 
