@@ -343,7 +343,7 @@ export default {
       this.hideLogo = false;
       this.imageLink = 'images/custom/' + response.filename + '?' + new Date().getTime();
 
-      const oldLogo = document.querySelector('img[src="/images/custom/' + response.old_logo + '"]');
+      const oldLogo = document.querySelector('.logo');
       if (oldLogo) {
         oldLogo.src = '/' + this.imageLink;
       }

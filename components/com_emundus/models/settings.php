@@ -16,6 +16,7 @@ jimport('joomla.application.component.model');
 
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Symfony\Component\Yaml\Yaml;
 
 class EmundusModelsettings extends JModelList
@@ -845,23 +846,50 @@ class EmundusModelsettings extends JModelList
 	 *
 	 * @since 1.0
 	 */
-	function updateLogo($newcontent,$module_id = 90)
+	function updateLogo($target_file,$new_logo,$ext)
 	{
+		$updated = false;
 		$query = $this->db->getQuery(true);
 
 		try {
-			$query->update($this->db->quoteName('#__modules'))
-				->set($this->db->quoteName('content') . ' = ' . $this->db->quote($newcontent))
-				->where($this->db->quoteName('id') . ' = ' . $module_id);
+			$query->select('id,content')
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' = ' . $this->db->quote('mod_custom'))
+				->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote('Logo'));
 			$this->db->setQuery($query);
+			$logo_module = $this->db->loadObject();
 
-			return $this->db->execute();
+			if (move_uploaded_file($new_logo, $target_file))
+			{
+				$regex = '/(logo.(png+|jpeg+|jpg+|svg+|gif+|webp+))|(logo_custom.(png+|jpeg+|jpg+|svg+|gif+|webp+))/m';
+
+				$new_content = preg_replace($regex, 'logo_custom.' . $ext, $logo_module->content);
+
+				$query->clear()
+					->update($this->db->quoteName('#__modules'))
+					->set($this->db->quoteName('content') . ' = ' . $this->db->quote($new_content))
+					->where($this->db->quoteName('id') . ' = ' . $logo_module->id);
+				$this->db->setQuery($query);
+				$updated = $this->db->execute();
+
+				if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml'))
+				{
+					$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml'));
+
+					if (!empty($yaml))
+					{
+						$yaml['image'] = 'gantry-media://custom/logo_custom.' . $ext;
+
+						file_put_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml', Yaml::dump($yaml));
+					}
+				}
+			}
 		}
 		catch (Exception $e) {
-			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-			return false;
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
+
+		return $updated;
 	}
 
 	function onAfterCreateCampaign($user_id = null)
