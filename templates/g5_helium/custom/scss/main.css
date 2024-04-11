@@ -105,11 +105,41 @@ body {
 
 /* Connexion */
 .view-login.gantry > #g-page-surround {
-    background-image: var(--display-digital-testing), var(--display-candidate-button), url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg"), url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
-    background-position: top 120px left 20px, bottom 50px right 20px, bottom 0 left 0, top 0 right 0;
-    background-repeat : no-repeat, no-repeat, no-repeat, no-repeat;
-    background-size : 25%, 25%, 50%, 50%;
+    background-image: var(--display-digital-testing), var(--display-candidate-button);
+    background-position: top 120px left 20px, bottom 50px right 20px;
+    background-repeat : no-repeat, no-repeat;
+    background-size : 25%, 25%;
     overflow: hidden;
+}
+
+.view-login.gantry > #g-page-surround #login-background-shapes-left {
+    mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg");
+    -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg");
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: left bottom;
+    -webkit-mask-position: left bottom;
+    mask-size: 600px;
+    -webkit-mask-size: 600px;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.view-login.gantry > #g-page-surround #login-background-shapes-right {
+    mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
+    -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: right top;
+    -webkit-mask-position: right top;
+    mask-size: 600px;
+    -webkit-mask-size: 600px;
+    position: absolute;
+    height: 100%;
+    width: 100%;
 }
 
 .login #g-navigation .g-container {
@@ -126,11 +156,30 @@ body {
 }
 
 /* Page settings */
-.com_emundus.view-settings #g-page-surround {
-    background-image: var(--display-setting-tools), var(--display-corner-bottom-right-background);
-    background-position: bottom 65px right, bottom 60px right ;
-    background-repeat : no-repeat, no-repeat ;
-    background-size :  30%, 50% ;
+.com_emundus.view-settings #g-page-surround #container-parameters-background-shapes {
+    mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-right-background.svg");
+    -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-right-background.svg");
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: right bottom;
+    -webkit-mask-position: right bottom;
+    mask-size: 60%;
+    -webkit-mask-size: 60%;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    bottom: 58px;
+}
+
+.com_emundus.view-settings #g-page-surround #parameters-background-shapes {
+    background-image: var(--display-setting-tools);
+    background-position: bottom 65px right;
+    background-repeat : no-repeat;
+    background-size :  30%;
+    height: 100%;
+    width: 100%;
+    position: absolute
 }
 
 /* Historique des emails */
@@ -163,20 +212,6 @@ body {
     /* Accueil */
     .homepage #g-container-main .g-container {
         background-image : none;
-    }
-
-    /* Connexion */
-    .login > #g-page-surround {
-        background-position: top 120px left 20px, top 500px right 20px;
-        background-size : 25%, 25%;
-    }
-
-    /* Page settings */
-    .com_emundus.view-settings #g-page-surround {
-        background-image: var(--display-corner-bottom-right-background);
-        background-position: bottom 60px right;
-        background-repeat : no-repeat;
-        background-size : 90%;
     }
 
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
@@ -215,17 +250,17 @@ body {
     }
 
     /* Connexion */
-    .login > #g-page-surround {
+    .view-login.gantry > #g-page-surround {
         background-image : none, none;
-        background-size : 80%, 80%;
     }
 
     /* Page settings */
-    .com_emundus.view-settings #g-page-surround {
-        background-image: var(--display-corner-bottom-right-background);
-        background-position: bottom 60px right;
-        background-repeat : no-repeat;
-        background-size : 100%;
+    .com_emundus.view-settings #g-page-surround #container-parameters-background-shapes{
+        display: none;
+    }
+
+    .com_emundus.view-settings #g-page-surround #parameters-background-shapes{
+        display: none;
     }
 
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
