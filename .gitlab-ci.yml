@@ -89,15 +89,15 @@ test_playwright:
     - job: deployer_test_playwright_in_schedule
       optional: true
 
-deployer_staging:
+deployer_release_candidate:
   stage: deploy
   environment: 
-    name: staging
-    deployment_tier: staging
+    name: release/auto
+    deployment_tier: testing
   extends:
     - deployer
   variables:
     DEPLOY_OPTIONS: 'env=tchooz-v2 -vv'
     DEPLOY_FILE: '-f tchooz.php'
   rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: $CI_COMMIT_BRANCH =~ "/^release\/.*/"
