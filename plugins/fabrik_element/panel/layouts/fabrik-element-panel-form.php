@@ -5,18 +5,18 @@ $d = $displayData;
 <div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>;<?php if ($d->type == 4): ?>padding: 0;<?php endif; ?>">
     <span class="material-icons<?php echo $d->iconType ?>" style="color: <?php echo $d->iconColor ?>"><?php echo $d->icon ?></span>
 
-    <div class="fabrikElementContent w-full" <?php if ($d->type == 4): ?>style="margin-left: 0;"<?php endif; ?>>
+    <div class="fabrikElementContent tw-w-full" <?php if ($d->type == 4): ?>style="margin-left: 0;"<?php endif; ?>>
 	    <?php if ($d->accordion == 1) : ?>
-            <div class="flex items-center justify-between cursor-pointer"
-                 href="#<?php echo $d->id; ?>-content" data-te-collapse-init data-toggle="collapse" aria-expanded="false" aria-controls="<?php echo $d->id; ?>-content" id="<?php echo $d->id; ?>-heading">
+            <div class="tw-flex tw-items-center tw-justify-between tw-cursor-pointer"
+                 href="#<?php echo $d->id; ?>-content" onclick="toggleCollapse(this)" data-te-collapse-init data-toggle="collapse" aria-expanded="false" aria-controls="<?php echo $d->id; ?>-content" id="<?php echo $d->id; ?>-heading">
                 <h3>
                     <?php echo $d->title ?>
                 </h3>
-                <span class="material-icons-outlined transition-transform duration-300" id="<?php echo $d->id; ?>-icon">expand_more</span>
+                <span class="material-icons-outlined tw-transition-transform tw-duration-300" id="<?php echo $d->id; ?>-icon">expand_more</span>
             </div>
 	    <?php endif; ?>
 
-        <div <?php if ($d->accordion == 1) : ?>class="h-0 collapse"<?php endif ?>
+        <div <?php if ($d->accordion == 1) : ?>class="show collapse"<?php endif ?>
              id="<?php echo $d->id; ?>-content"
              data-te-collapse-item>
 		    <?php if (!empty($d->title) && $d->accordion == 0) : ?>
@@ -38,5 +38,17 @@ $d = $displayData;
         else
             icon.css('transform', '');
     });
+
+    function toggleCollapse(event) {
+        let target = event.getAttribute('href');
+        if(target) {
+            let content = document.querySelector(target);
+
+            if(content) {
+                content.classList.toggle('show');
+            }
+        }
+        console.log(target);
+    }
 </script>
 <?php endif; ?>

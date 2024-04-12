@@ -3460,6 +3460,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-hidden {
   display: none;
 }
+.tw-h-0 {
+  height: 0px;
+}
 .tw-h-10 {
   height: var(--em-spacing-10);
 }
@@ -4605,6 +4608,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-outline-green-500 {
   outline-color: #22c55e;
+}
+.tw-transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.tw-duration-300 {
+  transition-duration: 300ms;
 }
 h1 {
   color: var(--em-default-title-color-1);
