@@ -69,10 +69,10 @@
                             <tr>
 								<?php foreach($this->access['groups'] as $gid => $groups) :?>
 									<?php foreach($groups['actions'] as $actions) :?>
-                                        <th><?= JText::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
-                                        <th><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
-                                        <th><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
-                                        <th><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
+                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
+                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
+                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
+                                        <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
 									<?php endforeach;?>
 									<?php break; endforeach;?>
                             </tr>
@@ -165,10 +165,10 @@
                 <tr>
 					<?php foreach($this->access['users'] as $gid => $groups):?>
 						<?php foreach($groups['actions'] as $actions):?>
-                            <th><?= JText::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
-                            <th><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
-                            <th><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
-                            <th><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
+                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_CREATE')?></th>
+                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_RETRIEVE')?></th>
+                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACCESS_UPDATE')?></th>
+                            <th class="tw-font-normal"><?= JText::_('COM_EMUNDUS_ACTIONS_DELETE')?></th>
 						<?php endforeach;?>
 
 						<?php break; endforeach;?>
