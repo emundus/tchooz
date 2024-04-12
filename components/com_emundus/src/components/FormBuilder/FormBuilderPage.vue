@@ -100,7 +100,7 @@ export default {
     }
   },
   methods: {
-    getSections() {
+    getSections(eltid = null) {
       this.loading = true;
       formService.getPageObject(this.page.id).then(response => {
         if (response.status && response.data != '') {
@@ -109,6 +109,18 @@ export default {
           const groups = Object.values(response.data.Groups);
           this.sections = groups.filter(group => group.hidden_group != -1);
           this.getDescription();
+          if(eltid) {
+            setTimeout(() => {
+              document.getElementById('center_content').scrollTo(0, document.getElementById('center_content').scrollHeight);
+              console.log(document.getElementById('element_' + eltid))
+              document.getElementById('element_' + eltid).style.backgroundColor = 'var(--main-50)';
+              document.getElementById('element_' + eltid).style.borderColor = 'var(--main-400)';
+              setTimeout(() => {
+                document.getElementById('element_' + eltid).style.backgroundColor = 'inherit';
+                document.getElementById('element_' + eltid).style.borderColor = '';
+              }, 1500)
+            }, 300)
+          }
         } else {
           this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
         }

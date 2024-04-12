@@ -3704,6 +3704,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-flex-grow-0 {
   flex-grow: 0;
 }
+.tw-cursor-copy {
+  cursor: copy;
+}
+.tw-cursor-grab {
+  cursor: grab;
+}
 .tw-cursor-pointer {
   cursor: pointer;
 }

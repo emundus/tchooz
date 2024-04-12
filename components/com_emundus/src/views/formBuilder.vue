@@ -52,7 +52,7 @@
             </div>
           </div>
           <div class="tab-content em-flex-start">
-            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage">
+            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage" @create-element-lastgroup="createElementLastGroup">
             </form-builder-elements>
             <form-builder-document-formats
                 v-else-if="leftPanelActiveTab === 'Documents'"
@@ -62,7 +62,7 @@
             </form-builder-document-formats>
           </div>
         </aside>
-        <section class="em-flex-column em-w-100 em-h-100">
+        <section class="em-flex-column em-w-100 em-h-100" id="center_content">
           <transition name="fade" mode="out-in">
             <form-builder-page
                 ref="formBuilderPage"
@@ -168,6 +168,10 @@ import FormBuilderDocumentFormats from "../components/FormBuilder/FormBuilderDoc
 // services
 import formService from '../services/form.js';
 import FormBuilderCreateModel from "../components/FormBuilder/FormBuilderCreateModel";
+import formBuilderService from "@/services/formbuilder";
+
+// mixins
+import formBuilderMixin from '../mixins/formbuilder';
 
 export default {
   name: 'FormBuilder',
@@ -184,6 +188,7 @@ export default {
     FormBuilderCreateDocument,
     FormBuilderDocumentFormats
   },
+  mixins: [formBuilderMixin],
   data() {
     return {
       mode: 'forms',
@@ -329,8 +334,30 @@ export default {
     onReorderedPages(reorderedPages) {
       this.pages = reorderedPages;
     },
-    onElementCreated(elementIndex) {
-      this.$refs.formBuilderPage.getSections(elementIndex);
+    onElementCreated(eltid) {
+      this.$refs.formBuilderPage.getSections(eltid);
+    },
+    createElementLastGroup(element) {
+      const groups = Object.values(this.$refs.formBuilderPage.fabrikPage.Groups);
+      const last_group = groups[groups.length - 1].group_id;
+
+      formBuilderService.createSimpleElement({
+        gid: last_group,
+        plugin: element.value,
+        mode: this.mode
+      }).then(response => {
+        if (response.status && response.data > 0) {
+          this.onElementCreated(response.data);
+          this.updateLastSave();
+          this.loading = false;
+        } else {
+          this.displayError(response.msg);
+          this.loading = false;
+        }
+      }).catch((error) => {
+        console.warn(error);
+        this.loading = false;
+      });
     },
     onDocumentCreated() {
       this.$refs.formBuilderDocuments.getDocuments();
@@ -502,6 +529,7 @@ export default {
     section {
       overflow-y: auto;
       background: #f8f8f8;
+      scroll-behavior: smooth;
     }
 
     .right-panel {

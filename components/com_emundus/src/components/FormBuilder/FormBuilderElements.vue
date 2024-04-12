@@ -20,14 +20,15 @@
           <div
               v-for="element in publishedElements"
               :key="element.value"
-              class="form-builder-element tw-flex tw-justify-between tw-items-start tw-gap-3 tw-p-3"
+              class="form-builder-element tw-flex tw-justify-between tw-items-start tw-gap-3 tw-p-3 tw-cursor-copy"
+              @click="$emit('create-element-lastgroup', element)"
           >
             <span class="material-icons-outlined">{{ element.icon }}</span>
             <p class="tw-w-full tw-flex tw-flex-col">
               {{ translate(element.name) }}
               <span class="tw-text-neutral-600 tw-text-xs">{{ translate(element.description) }}</span>
             </p>
-            <span class="material-icons-outlined tw-self-center">drag_indicator</span>
+            <span class="material-icons-outlined tw-self-center tw-cursor-grab">drag_indicator</span>
           </div>
         </transition-group>
       </draggable>
@@ -188,7 +189,6 @@ export default {
   margin: 8px 0px;
   background-color: #FAFAFA;
   border: 1px solid #F2F2F3;
-  cursor: grab;
   border-radius: calc(var(--em-default-br) / 2);
 
   &:hover {
