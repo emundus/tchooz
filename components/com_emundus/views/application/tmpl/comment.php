@@ -47,10 +47,6 @@ $now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0)
         font-size: 14px;
     }
 
-    .widget .action {
-        margin-top: 5px;
-    }
-
     .widget .comment-text {
         font-size: 12px;
     }
