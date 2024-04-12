@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -26,6 +26,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 			'EXPRESSINT' => 'Priority Mail Express International (International)',
 			'EXPRESSINTBOX' => 'Priority Mail Express International Flat Rate Boxes (International)',
 			'FIRST CLASS' => 'First Class Mail',
+			'GROUND ADVANTAGE' => 'Ground Advantage',
 			'FIRSTCLASSINT' => 'First Class Mail (International)',
 			'INTERNATIONAL' => 'Priority Mail International (International)',
 			'PRIORITYINTSMALL' => 'Priority Mail International Small Flat Rate Box (International)',
@@ -91,6 +92,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 		'ENVELOPE' => 14,
 		'MEDIA' => 15,
 		'RETAIL GROUND' => 16,
+		'GROUND ADVANTAGE' => 17,
 	);
 
 	var $use_cache = true;
@@ -375,7 +377,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 
 			$rates = array();
 			if($parcels[0]->Country == 'US') {
-				$modes = array('PRIORITY', 'MEDIA', 'EXPRESS', 'FIRST CLASS', 'RETAIL GROUND');
+				$modes = array('PRIORITY', 'MEDIA', 'EXPRESS', 'FIRST CLASS', 'GROUND ADVANTAGE', 'RETAIL GROUND');
 				foreach($modes as $mode) {
 					if(!empty($rate->shipping_params->$mode))
 						$this->addRate($rates, $mode, $parcels, $rate, $currency, false);
@@ -657,6 +659,8 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 		$element->shipping_params->EXPRESSINT='Express Mail International (International)';
 		$element->shipping_params->FIRSTCLASSINT='First Class Mail (International)';
 		$element->shipping_params->ENVELOPE='USPS GXG Envelopes (International)';
+		$GROUNDADVANTAGE = 'GROUND ADVANTAGE';
+		$element->shipping_params->$GROUNDADVANTAGE='USPS Ground Advantage';
 		$element->shipping_params->post_code='';
 		$element->shipping_params->firstclass_mail_type='PARCEL';
 		$element->shipping_params->container='RECTANGULAR';
@@ -708,6 +712,8 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 			$element->shipping_params->EXPRESSINT=in_array('EXPRESSINT',$element->shipping_params->services);
 			$element->shipping_params->FIRSTCLASSINT=in_array('FIRSTCLASSINT',$element->shipping_params->services);
 			$element->shipping_params->ENVELOPE=in_array('ENVELOPE',$element->shipping_params->services);
+			$GROUNDADVANTAGE = 'GROUND ADVANTAGE';
+			$element->shipping_params->$GROUNDADVANTAGE=in_array('GROUND ADVANTAGE',$element->shipping_params->services);
 		}else {
 			$app->enqueueMessage(JText::sprintf('CHOOSE_SHIPPING_SERVICE'));
 		}

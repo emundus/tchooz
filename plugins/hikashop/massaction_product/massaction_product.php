@@ -1,14 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-class plgHikashopMassaction_product extends \Joomla\CMS\Plugin\CMSPlugin
+class plgHikashopMassaction_product extends JPlugin
 {
 	public $message = '';
 	public $massaction = null;
@@ -1339,18 +1339,15 @@ class plgHikashopMassaction_product extends \Joomla\CMS\Plugin\CMSPlugin
 	}
 
 	function onBeforeProductDelete(&$ids,&$do){
-		$products = array();
-		if(!is_array($ids)) $clone = array($ids);
-		else $clone = $ids;
-		foreach($clone as $id){
-			$products[$id] = $this->productClass->get($id);
-		}
-		$this->deletedProducts =& $products;
+		$productClass = hikashop_get('class.product');
+		$products = $productClass->getProductsFromIdsWithCache($ids);
 		$this->massaction->trigger('onBeforeProductDelete',$products);
 	}
 
 	function onAfterProductDelete(&$ids){
-		$this->massaction->trigger('onAfterProductDelete',$this->deletedProducts);
+		$productClass = hikashop_get('class.product');
+		$products = $productClass->getProductsFromIdsWithCache($ids);
+		$this->massaction->trigger('onAfterProductDelete',$products);
 	}
 
 	function onBeforeProductCopy(&$template,&$product,&$do){

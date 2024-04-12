@@ -200,7 +200,7 @@ if ($allowed_attachments !== true) {
 						<?php endforeach; ?>
 					<?php endif; ?>
                 </select>
-                <a class="em-font-size-14 em-pointer" href="emails"
+                <a class="em-font-size-14 em-pointer em-text-underline" href="emails"
                    target="_blank"><?= JText::_('COM_EMUNDUS_EMAILS_ADD_TEMPLATE'); ?>
                 </a>
             </div>
@@ -215,7 +215,7 @@ if ($allowed_attachments !== true) {
         <!-- FROM -->
         <div class="form-inline row">
             <div class="form-group em-form-sender em-mt-12 col-md-6 col-sm-6">
-                <div class="flex items-center">
+                <div class="tw-flex tw-items-center">
                     <label class='em-mr-8' for="mail_from"><?= JText::_('FROM'); ?> :</label>
                     <div id="mail_from_block" class="em-border-radius-8 em-mb-4 email-input-block">
                         <div id="mail_from_name" class="em-p-4-6"
@@ -233,12 +233,12 @@ if ($allowed_attachments !== true) {
             <div class="form-group em-form-recipients em-mt-12 col-md-6 col-sm-6" style="position:static;">
 
                 <div class="email-list-modal hidden" id="email-list-modal">
-                    <div class="flex justify-between mb-3">
+                    <div class="tw-flex tw-justify-between mb-3">
                         <h3><?= JText::_('COM_EMUNDUS_EMAILS_TO_LIST') ?></h3>
                         <span class="material-icons-outlined pointer" onclick="showEmailList()">close</span>
                     </div>
 
-                    <div class="flex items-center gap-2 flex-wrap" style="max-height: 150px; overflow-y: auto;">
+                    <div class="tw-flex tw-items-center tw-gap-2 tw-flex-wrap" style="max-height: 150px; overflow-y: auto;">
 						<?php foreach ($this->users as $user) : ?>
 
 							<?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
@@ -257,8 +257,8 @@ if ($allowed_attachments !== true) {
                 </div>
 
                 <!-- List of users / their emails, gotten from the fnums selected. -->
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center">
+                <div class="tw-flex tw-justify-between tw-items-center">
+                    <div class="tw-flex tw-items-center">
                         <label class='em-mr-8 em-cursor-text mb-0'><?= JText::_('COM_EMUNDUS_TO'); ?> :</label>
 
                         <div class="em-border-radius-8">
@@ -276,7 +276,7 @@ if ($allowed_attachments !== true) {
                         </div>
                     </div>
 
-                    <div class="flex items-center">
+                    <div class="tw-flex tw-items-center">
                         <div id="cc-box-label" class="em-flex-row em-pointer" onclick="openCC()">
                             <label class="em-mb-0-important"><?= JText::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
                             <span id="cc-icon" class="material-icons-outlined">chevron_right</span>
@@ -373,7 +373,7 @@ if ($allowed_attachments !== true) {
 
                         <label for="em-file_to_upload"
                                type="button"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILE_TO_UPLOAD') ?>
-                            <input type="file" id="em-file_to_upload" onChange="addFile();">
+                            <input type="file"  accept=".xls,.xlsx,.doc,.docx,.pdf,.png,.jpg,.jpeg,.gif,.odf,.ppt,.pptx,.svg,.csv" id="em-file_to_upload" onChange="addFile();">
                         </label>
                     </div>
                     <div id="em-progress-wrp" class="loading-bar">
@@ -1210,7 +1210,13 @@ if ($allowed_attachments !== true) {
                 return myXhr;
             },
             success: function (data) {
-                data = JSON.parse(data);
+                try {
+                    data = JSON.parse(data);
+                } catch (e) {
+                    document.getElementById('em-progress-wrp').remove();
+                    $("#upload_file").append('<span class="alert"> <?= JText::_('UPLOAD_FAILED'); ?> </span>')
+                    return false; // error in the above string (in this case, yes)!
+                }
 
                 if (data.status) {
                     $('#em-attachment-list').append(

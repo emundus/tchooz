@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 
@@ -293,38 +294,40 @@ class EmundusModelChecklist extends JModelList
 	}
 
 
-	function setDelete($status = 0, $student = null)
+	function setDelete($can_be_deleted = 0, $student = null)
 	{
+		$toggled = false;
 
 		if (empty($student)) {
-			if (version_compare(JVERSION, '4.0', '>')) {
-				$session = $this->app->getSession();
-			}
-			else {
-				$session = Factory::getSession();
-			}
-
+			$session = $this->app->getSession();
 			$student = $session->get('emundusUser');
 		}
-
-		if ($status > 1) {
-			$status = 1;
-		}
+		$can_be_deleted = $can_be_deleted >= 1 ? 1 : 0;
 
 		$query = $this->_db->getQuery(true);
 
 		$query->update($this->_db->quoteName('#__emundus_uploads'))
-			->set($this->_db->quoteName('can_be_deleted') . ' = ' . $this->_db->quote($status))
-			->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($student->id))
+			->set($this->_db->quoteName('can_be_deleted') . ' = ' . $can_be_deleted)
+			->where($this->_db->quoteName('user_id') . ' = ' . $student->id)
 			->andWhere($this->_db->quoteName('fnum') . ' like ' . $this->_db->quote($student->fnum));
-		$this->_db->setQuery($query);
+
+		if ($can_be_deleted === 1) {
+			$emundus_config = ComponentHelper::getParams('com_emundus');
+			$attachment_ids = $emundus_config->get('attachment_to_keep_non_deletable', []);
+
+			if (!empty($attachment_ids)) {
+				$query->andWhere($this->_db->quoteName('attachment_id') . ' NOT IN (' . implode(',', $attachment_ids) . ')');
+			}
+		}
 
 		try {
-			$this->_db->execute();
+			$this->_db->setQuery($query);
+			$toggled = $this->_db->execute();
+		} catch (Exception $e) {
+			JLog::add('Error in model/checklist at query : '.$query, JLog::ERROR, 'com_emundus');
 		}
-		catch (Exception $e) {
-			JLog::add('Error in model/checklist at query : ' . $query, JLog::ERROR, 'com_emundus');
-		}
+
+		return $toggled;
 	}
 
 

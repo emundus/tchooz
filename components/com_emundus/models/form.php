@@ -15,7 +15,9 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 jimport('joomla.database.table');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 class EmundusModelForm extends JModelList
 {
@@ -51,14 +53,14 @@ class EmundusModelForm extends JModelList
 		$query    = $this->db->getQuery(true);
 
 		// Build filter / limit / pagination part of the query
-		if (empty($lim)) {
-			$limit = 25;
+		if (empty($lim) || $lim == 'all') {
+			$limit = '';
 		}
 		else {
 			$limit = $lim;
 		}
 
-		if (empty($page)) {
+		if (empty($page) || empty($limit)) {
 			$offset = 0;
 		}
 		else {
@@ -661,32 +663,32 @@ class EmundusModelForm extends JModelList
 
 					if (!empty($oldprofile)) {
 						// Create a new profile
-						$query->clear()
-							->insert('#__emundus_setup_profiles')
-							->set($this->db->quoteName('label') . ' = ' . $this->db->quote($oldprofile->label . ' - Copy'))
-							->set($this->db->quoteName('published') . ' = 1')
-							->set($this->db->quoteName('menutype') . ' = ' . $this->db->quote($oldprofile->menutype))
-							->set($this->db->quoteName('acl_aro_groups') . ' = ' . $this->db->quote($oldprofile->acl_aro_groups))
-							->set($this->db->quoteName('status') . ' = ' . $this->db->quote($oldprofile->status));
-						$this->db->setQuery($query);
-						$this->db->execute();
+						$insert = [
+							'label' => $oldprofile->label . ' - Copy',
+							'published' => 1,
+							'menutype' => $oldprofile->menutype,
+							'acl_aro_groups' => $oldprofile->acl_aro_groups,
+							'status' => $oldprofile->status
+						];
+						$insert = (object)$insert;
+						$this->db->insertObject('#__emundus_setup_profiles', $insert);
 						$newprofile = $this->db->insertid();
 
 						if (!empty($newprofile)) {
 							$newmenutype = 'menu-profile' . $newprofile;
 							$newmenutype = $this->createMenuType($newmenutype, $oldprofile->label . ' - Copy');
 							if (empty($newmenutype)) {
-								JLog::add('Failed to create new menu from profile ' . $newprofile, JLog::WARNING, 'com_emundus.error');
+								Log::add('Failed to create new menu from profile ' . $newprofile, Log::WARNING, 'com_emundus.error');
 
 								return false;
 							}
 
-							$query->clear()
-								->update('#__emundus_setup_profiles')
-								->set($this->db->quoteName('menutype') . ' = ' . $this->db->quote($newmenutype))
-								->where($this->db->quoteName('id') . ' = ' . $this->db->quote($newprofile));
-							$this->db->setQuery($query);
-							$this->db->execute();
+							$update = [
+								'id' => $newprofile,
+								'menutype' => $newmenutype
+							];
+							$update = (object)$update;
+							$this->db->updateObject('#__emundus_setup_profiles', $update, 'id');
 							//
 
 							// Duplicate heading menu
@@ -696,12 +698,11 @@ class EmundusModelForm extends JModelList
 								->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($oldprofile->menutype))
 								->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('heading'))
 								->andWhere('published = 1');
-
 							$this->db->setQuery($query);
 							$heading_to_duplicate = $this->db->loadObject();
 
 							if (empty($heading_to_duplicate) || empty($heading_to_duplicate->id)) {
-								JLog::add('Could not find heading menu when copying profile ' . $pid, JLog::INFO, 'com_emundus.form');
+								Log::add('Could not find heading menu when copying profile ' . $pid, Log::INFO, 'com_emundus.form');
 
 								$default_heading_menu                    = new stdClass();
 								$default_heading_menu->id                = 1;
@@ -728,25 +729,23 @@ class EmundusModelForm extends JModelList
 							}
 
 							if (!empty($heading_to_duplicate->id)) {
-								$query->clear();
-								$query->insert($this->db->quoteName('#__menu'));
+								$insert = [];
 								foreach ($heading_to_duplicate as $key => $val) {
-									if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path') {
-										$query->set($key . ' = ' . $this->db->quote($val));
+									if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path' && $key != 'checked_out' && $key != 'checked_out_time') {
+										$insert[$key] = $val;
 									}
 									elseif ($key == 'menutype') {
-										$query->set($key . ' = ' . $this->db->quote($newmenutype));
+										$insert[$key] = $newmenutype;
 									}
 									elseif ($key == 'path') {
-										$query->set($key . ' = ' . $this->db->quote($newmenutype));
+										$insert[$key] = $newmenutype;
 									}
 									elseif ($key == 'alias') {
-										$query->set($key . ' = ' . $this->db->quote(str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($oldprofile->label . '-Copy')) . '-' . $newprofile));
+										$insert[$key] = str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($oldprofile->label . '-Copy')) . '-' . $newprofile;
 									}
 								}
-								$this->db->setQuery($query);
-
-								$inserted_heading = $this->db->execute();
+								$insert = (object)$insert;
+								$inserted_heading = $this->db->insertObject('#__menu', $insert);
 
 								if ($inserted_heading) {
 									// Get fabrik_lists
@@ -806,22 +805,22 @@ class EmundusModelForm extends JModelList
 									$duplicated = $newprofile;
 								}
 								else {
-									JLog::add('Failed to duplicate form, heading has not been created properly', JLog::WARNING, 'com_emundus.error');
+									Log::add('Failed to duplicate form, heading has not been created properly', Log::WARNING, 'com_emundus.error');
 								}
 							}
 							else {
-								JLog::add('Failed to duplicate form, no heading menu found', JLog::WARNING, 'com_emundus.error');
+								Log::add('Failed to duplicate form, no heading menu found', Log::WARNING, 'com_emundus.error');
 							}
 							//
 						}
 						else {
-							JLog::add('Failed to duplicate form, empty new profile ', JLog::WARNING, 'com_emundus.error');
+							Log::add('Failed to duplicate form, empty new profile ', Log::WARNING, 'com_emundus.error');
 						}
 					}
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/form | Error when duplicate forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/form | Error when duplicate forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1135,14 +1134,18 @@ class EmundusModelForm extends JModelList
 
 				if (empty($list_id)) {
 					JLog::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations', JLog::WARNING, 'com_emundus.error');
+
+					throw new Exception('Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations');
 				}
 			}
 			else {
 				JLog::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not find list with jos_emundus_evaluations', JLog::WARNING, 'com_emundus.error');
+				throw new Exception('Error when create a list for evaluation form, could not find list with jos_emundus_evaluations');
 			}
 		}
 		else {
 			JLog::add('component/com_emundus/models/form | Error when create a form for evaluation form', JLog::WARNING, 'com_emundus.error');
+			throw new Exception('Error when create a form for evaluation form');
 		}
 
 		return $form_id;
@@ -1305,10 +1308,6 @@ class EmundusModelForm extends JModelList
 		$results = [];
 
 		if (!empty($prid)) {
-			require_once(JPATH_SITE . '/components/com_emundus/models/formbuilder.php');
-			$formbuilder = new EmundusModelFormbuilder;
-
-
 			$query = $this->db->getQuery(true);
 
 			$query->update($this->db->quoteName('#__menu_types'))
@@ -1768,6 +1767,8 @@ class EmundusModelForm extends JModelList
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$modules  = $eMConfig->get('form_builder_page_creation_modules', [93, 102, 103, 104, 168, 170]);
 
+		require_once (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'update.php');
+
 		try {
 			// Create the menu
 			$submittion_page = $this->getSubmittionPage($prid);
@@ -1805,7 +1806,7 @@ class EmundusModelForm extends JModelList
 				'path'         => 'checklist-' . $prid,
 				'link'         => 'index.php?option=com_emundus&view=checklist',
 				'type'         => 'component',
-				'component_id' => 11369,
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
 				'params'       => $params
 			];
 			$checklist_menu = EmundusHelperUpdate::addJoomlaMenu($datas, $submittion_page->id, 1, 'before', $modules);

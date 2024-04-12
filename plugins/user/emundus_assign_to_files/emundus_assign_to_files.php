@@ -142,7 +142,7 @@ class plgUserEmundus_assign_to_files extends \Joomla\CMS\Plugin\CMSPlugin {
 
 	    $app = Factory::getApplication();
 	    // The method check here ensures that if running as a CLI Application we don't get any errors
-	    if (method_exists($app, 'isClient') && ($app->isClient('site') || $app->isClient('cli'))) {
+	    if (method_exists($app, 'isClient') && $app->isClient('cli')) {
 		    return;
 	    }
 

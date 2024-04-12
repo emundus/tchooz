@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -222,7 +222,7 @@ class hikashopUpdateHelper{
 				$extensionData->copyright = '(C) 2011-'.date('Y').' HIKARI SOFTWARE. All rights reserved.';
 				$extensionData->authorEmail = 'contact@hikashop.com';
 				$extensionData->authorUrl = 'https://www.hikashop.com';
-				$extensionData->version = '5.0.0';
+				$extensionData->version = '5.0.3';
 				$extensionData->description = $oneExt->name;
 				$extensionData->group = '';
 				$extensionData->filename = $oneExt->element;
@@ -690,6 +690,23 @@ class hikashopUpdateHelper{
 		$query='INSERT IGNORE INTO #__update_sites_extensions (update_site_id, extension_id) values ('.$update_site_id.','.$extension_id.')';
 		$this->db->setQuery($query);
 		$this->db->execute();
+
+		if(file_exists(HIKASHOP_BACK.'hikashop.xml')) {
+			$xml = simplexml_load_file(HIKASHOP_BACK.'hikashop.xml');
+			if($xml !== false) {
+				if(!isset($xml->updateservers)) {
+					$xml->addChild('updateservers');
+				}
+				if(!isset($xml->updateservers->server)) {
+					$server = $xml->updateservers->addChild('server');
+					$server->addAttribute('type', 'collection');
+				}
+				$xml->updateservers->server = $object->location;
+				JFile::write(HIKASHOP_BACK.'hikashop.xml',$xml->asXML());
+			}
+
+		}
+
 		return true;
 	}
 

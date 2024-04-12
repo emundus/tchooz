@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -59,7 +59,7 @@ if(!isset($this->quantityLayout)) {
 	$quantityLayout = $this->quantityLayout;
 
 $extra_classes = '';
-if($this->config->get('synchronized_add_to_cart', 0) && isset($this->row)) {
+if($this->config->get('synchronized_add_to_cart', 0) && isset($this->row) && empty($this->global_on_listing)) {
 	$cartClass = hikashop_get('class.cart');
 	$cartProductData = $cartClass->getCartProductData($this->row->product_id);
 	$this->row->synched_cart_quantity = (int)@$cartProductData->cart_product_quantity;

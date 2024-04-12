@@ -1,5 +1,4 @@
 default:
-  retry: 2
   tags:
     - k8s
 
@@ -34,9 +33,69 @@ php_security_checker_gantry5:
     COMPOSER_PATH: "./libraries/gantry5/composer.lock"
 
 deployer:
+  stage: test
+  environment: 
+    name: testing
+    deployment_tier: testing
+  variables:
+    DEPLOY_OPTIONS: "id=WcEF4kAHVHGMpbXhpM8Fx3rlkWQ4VOFP -o branch=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME -vv"
+    DEPLOY_FILE: '-f tchooz-with-reset.php'
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+
+deployer_test_playwright_in_schedule:
+  stage: test
+  environment: 
+    name: testing
+    deployment_tier: testing
+  extends:
+    - deployer
+  variables:
+    DEPLOY_OPTIONS: "id=WcEF4kAHVHGMpbXhpM8Fx3rlkWQ4VOFP -o branch=$CI_COMMIT_BRANCH -vv"
+    DEPLOY_FILE: '-f tchooz-with-reset.php'
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+test_playwright:
+  image: mcr.microsoft.com/playwright:v1.43.0-jammy
+  script:
+    - git clone $PLAYWRIGHT_ACCESS
+    - cd playwright
+    - npm ci
+    - npx playwright install
+    - npx playwright test
+  variables:
+    PLAYWRIGHT_ACCESS: $PLAYWRIGHT_ACCESS
+    BASE_URL: $PLAYWRIGHT_RELEASE_BASE_URL
+    COORD_USERNAME: $PLAYWRIGHT_RELEASE_COORD_USERNAME
+    COORD_PASSWORD: $PLAYWRIGHT_RELEASE_COORD_PASSWORD
+    SYSADMIN_USERNAME: $PLAYWRIGHT_RELEASE_SYSADMIN_USERNAME
+    SYSADMIN_PASSWORD: $PLAYWRIGHT_RELEASE_SYSADMIN_PASSWORD
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: manual
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  allow_failure: true
+  artifacts:
+    when: always
+    expose_as: 'Playwright Report'
+    paths:
+      - playwright/playwright-report
+    expire_in: 4 days
+  needs:
+    - job: deployer
+      optional: true
+    - job: deployer_test_playwright_in_schedule
+      optional: true
+
+deployer_staging:
+  stage: deploy
   environment: 
     name: staging
     deployment_tier: staging
+  extends:
+    - deployer
   variables:
     DEPLOY_OPTIONS: 'env=tchooz-v2 -vv'
     DEPLOY_FILE: '-f tchooz.php'

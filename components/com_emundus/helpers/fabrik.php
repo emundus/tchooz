@@ -18,6 +18,8 @@ jimport('joomla.application.component.helper');
 
 require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 
@@ -242,11 +244,18 @@ class EmundusHelperFabrik
 			if ($type == 'eval') {
 				$plugins = [
 					'curl_code'             => [
-						1 => '$student_id=JRequest::getVar(\'student_id\', null,\'get\');
-$student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInstance(\'{jos_emundus_evaluations___student_id}\');
-echo \'<h2>\'.$student->name.\'</h2>\';
-JHtml::styleSheet(JURI::base() . \'media/jui/css/chosen.css\');
-JHTML::stylesheet(JURI::Base().\'media/com_fabrik/css/fabrik.css\');',
+						1 => 'use Joomla\CMS\Factory;
+
+$app = Factory::getApplication();
+$input = $app->getInput();
+
+$student_id = $input->getInt("student_id", null);
+$student = isset($student_id) ? JUser::getInstance($student_id) : JUser::getInstance("{jos_emundus_evaluations___student_id}");
+
+
+echo "<h2>".$student->name."</h2>";
+JHtml::styleSheet(JURI::base() . "media/jui/css/chosen.css");
+JHTML::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");',
 						2 => 'echo \'<script>window.parent.ScrollToTop();</script>\';
 echo \'<style>.em-swal-title{
   margin: 8px 8px 32px 8px !important;
@@ -344,6 +353,7 @@ die("<script>
 	static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0)
 	{
 
+	    $plugin_no_required = ['display','panel'];
 		$plugin_to_setup = '';
 		if ($plugin == 'nom' || $plugin == 'prenom' || $plugin == 'email') {
 			$plugin_to_setup = $plugin;
@@ -421,7 +431,7 @@ die("<script>
 			'validations'             => array(),
 		);
 
-		if ($notempty && $plugin != 'display') {
+        if($notempty && !in_array($plugin, $plugin_no_required)){
 			$params['validations']                   = array(
 				'plugin'           => array(
 					"notempty",
@@ -674,18 +684,29 @@ die("<script>
 			$params['toggle_where']    = '';
 		}
 
-		if ($plugin == 'currency') {
+		if($plugin == 'currency') {
 
-			$object                                                      = (object) [
-				'iso3'               => 'EUR',
-				'minimal_value'      => '0.00',
-				'maximal_value'      => '10000.00',
+			$object = (object) [
+				'iso3' => 'EUR',
+				'minimal_value' => '0.00',
+				'maximal_value' => '1000000.00',
 				'thousand_separator' => ' ',
-				'decimal_separator'  => ',',
-				'decimal_numbers'    => '2'
+				'decimal_separator' => ',',
+				'decimal_numbers' => '2'
 			];
 			$params['all_currencies_options']['all_currencies_options0'] = $object;
 		}
+
+		if($plugin == 'emundus_phonenumber') {
+			$params['default_country'] = 'FR';
+		}
+
+	    if($plugin == 'panel'){
+		    $params['type'] = '1';
+		    $params['accordion'] = '0';
+		    $params['title'] = '';
+		    $params['store_in_db'] = 0;
+	    }
 
 		return $params;
 	}
@@ -723,8 +744,8 @@ die("<script>
 
 		if ($plugin == 'email') {
 			$label = array(
-				'fr' => 'Email',
-				'en' => 'Email',
+				'fr' => 'Adresse email',
+				'en' => 'Email address',
 			);
 		}
 
@@ -1041,5 +1062,28 @@ die("<script>
 		}
 
 		return $formattedValue;
+	}
+
+
+	public static function getDbTableName($formid)
+	{
+		$db_table_name = '';
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		if(!empty($formid)) {
+			try {
+				$query->select('db_table_name')
+					->from($db->quoteName('#__fabrik_lists'))
+					->where($db->quoteName('form_id') . ' = ' . $formid);
+				$db->setQuery($query);
+				$db_table_name = $db->loadResult();
+			}
+			catch (Exception $e) {
+				Log::add('EmundusHelperFabrik::getDbTableName Cannot get table name for form ' . $formid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $db_table_name;
 	}
 }

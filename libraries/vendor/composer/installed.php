@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'joomla/joomla-cms',
-        'pretty_version' => 'dev-5.0/build/githublayout',
-        'version' => 'dev-5.0/build/githublayout',
-        'reference' => '0e23b165e580270f5b53f9dc0c5fd17011f4bf87',
+        'pretty_version' => 'dev-5.0-dev',
+        'version' => 'dev-5.0-dev',
+        'reference' => 'a5e3be9a4ed11336ecb1047fcd4af9cd37b07eb2',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
@@ -227,12 +227,14 @@
             'dev_requirement' => false,
         ),
         'joomla/filter' => array(
-            'pretty_version' => '3.0.0',
-            'version' => '3.0.0.0',
-            'reference' => 'b589b6a6c40ace650e2f55ed404994bd99ac3d4a',
+            'pretty_version' => 'dev-3.x-mbstring-issue566',
+            'version' => 'dev-3.x-mbstring-issue566',
+            'reference' => '4ea6d7f1515d6c1dfe83bb58b0ae5b5026689311',
             'type' => 'joomla-package',
             'install_path' => __DIR__ . '/../joomla/filter',
-            'aliases' => array(),
+            'aliases' => array(
+                0 => '3.0.1',
+            ),
             'dev_requirement' => false,
         ),
         'joomla/http' => array(
@@ -254,9 +256,9 @@
             'dev_requirement' => false,
         ),
         'joomla/joomla-cms' => array(
-            'pretty_version' => 'dev-5.0/build/githublayout',
-            'version' => 'dev-5.0/build/githublayout',
-            'reference' => '0e23b165e580270f5b53f9dc0c5fd17011f4bf87',
+            'pretty_version' => 'dev-5.0-dev',
+            'version' => 'dev-5.0-dev',
+            'reference' => 'a5e3be9a4ed11336ecb1047fcd4af9cd37b07eb2',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),
@@ -428,9 +430,9 @@
             'dev_requirement' => false,
         ),
         'phpseclib/phpseclib' => array(
-            'pretty_version' => '3.0.23',
-            'version' => '3.0.23.0',
-            'reference' => '866cc78fbd82462ffd880e3f65692afe928bed50',
+            'pretty_version' => '3.0.34',
+            'version' => '3.0.34.0',
+            'reference' => '56c79f16a6ae17e42089c06a2144467acc35348a',
             'type' => 'library',
             'install_path' => __DIR__ . '/../phpseclib/phpseclib',
             'aliases' => array(),

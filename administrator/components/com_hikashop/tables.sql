@@ -462,6 +462,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_order_product` (
 CREATE TABLE IF NOT EXISTS `#__hikashop_payment` (
 	`payment_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 	`payment_name` varchar(255) NOT NULL DEFAULT '',
+	`payment_alias` varchar(255) NOT NULL DEFAULT '',
 	`payment_description` text NOT NULL,
 	`payment_images` text NOT NULL,
 	`payment_params` text NOT NULL,
@@ -572,6 +573,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 	`plugin_type` VARCHAR(255) NOT NULL,
 	`plugin_published` INT(4) NOT NULL DEFAULT 0,
 	`plugin_name` VARCHAR(255) NOT NULL,
+	`plugin_alias` varchar(255) NOT NULL,
 	`plugin_ordering` INT(10) NOT NULL DEFAULT 0,
 	`plugin_description` TEXT NULL,
 	`plugin_params` TEXT NULL,
@@ -587,6 +589,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_shipping` (
 	`shipping_price` decimal(17,5) NOT NULL DEFAULT '0.00000',
 	`shipping_currency_id` int(10) unsigned NOT NULL DEFAULT '0',
 	`shipping_name` varchar(255) NOT NULL,
+	`shipping_alias` varchar(255) NOT NULL,
 	`shipping_description` text NOT NULL,
 	`shipping_published` tinyint(4) NOT NULL DEFAULT '1',
 	`shipping_ordering` int(10) unsigned NOT NULL DEFAULT '0',

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -393,6 +393,16 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		return $result;
 	}
 
+	public function onBeforeOrderCreate(&$order,&$do){
+		if(parent::onBeforeOrderCreate($order, $do) === true)
+			return true;
+
+		if((empty($this->payment_params->client_id) || empty($this->payment_params->client_secret)) && $this->plugin_data->payment_id == $order->order_payment_id) {
+			$this->app->enqueueMessage('Please check your &quot;PayPal Checkout&quot; payment method configuration');
+			$do = false;
+		}
+	}
+
 
 	public function onAfterOrderConfirm(&$order, &$methods, $method_id) {
 		parent::onAfterOrderConfirm($order, $methods, $method_id);
@@ -429,6 +439,19 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		if(empty($round_calculations)){
 			$app = JFactory::getApplication();
 			$app->enqueueMessage(JText::_('PAYPAL_CHECKOUT_ROUND_PRICES_WARNING'));
+		}
+
+		if(empty($element->payment_params->client_id)) {
+			$app = JFactory::getApplication();
+			$lang = JFactory::getLanguage();
+			$locale = strtolower(substr($lang->get('tag'), 0, 2));
+			$app->enqueueMessage(JText::sprintf('ENTER_INFO_REGISTER_IF_NEEDED', 'PayPal Checkout', JText::_('PAYPAL_CHECKOUT_CLIENT_ID'), 'PayPal', 'https://www.paypal.com/' . $locale . '/webapps/mpp/account-selection'));
+		}
+		if(empty($element->payment_params->client_secret)) {
+			$app = JFactory::getApplication();
+			$lang = JFactory::getLanguage();
+			$locale = strtolower(substr($lang->get('tag'), 0, 2));
+			$app->enqueueMessage(JText::sprintf('ENTER_INFO_REGISTER_IF_NEEDED', 'PayPal Checkout', JText::_('PAYPAL_CHECKOUT_CLIENT_SECRET'), 'PayPal', 'https://www.paypal.com/' . $locale . '/webapps/mpp/account-selection'));
 		}
 
 	}
@@ -593,7 +616,6 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			>
 			'.JText::_('PAYPAL_CHECKOUT_CONNECT_TO_PAYPAL_CHECKOUT').'
 		</a>
-		<script id="paypal-js" src="https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js"></script>
 		<script>
 			function onboardedCallback(authCode, sharedId) {
 				var callbackURL = \''.$AJAX_URL.'\';
@@ -674,7 +696,17 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 					elem.addEventListener("click", function(event) {
 						window.hikashop.changeSandbox(event.target.value);
 					});
-				  });
+				});
+				(function(d, s, id) {
+					var js, ref = d.getElementsByTagName(s)[0];
+					if (!d.getElementById(id)) {
+						js = d.createElement(s);
+						js.id = id;
+						js.async = true;
+						js.src = "https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js";
+						ref.parentNode.insertBefore(js, ref);
+					}
+				}(document, "script", "paypal-js"));
 			});
 		</script>
 		';
@@ -882,7 +914,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		} else {
 			hikashop_writeToLog($paypal_id);
 			hikashop_writeToLog($response);
-			$this->modifyOrder($order_id, $this->payment_params->invalid_status, true, true);
+			$this->modifyOrder($order_id, $this->payment_params->invalid_status, false, true);
 		}
 
 		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=after_end&order_id='.$dbOrder->order_id . $this->url_itemid;

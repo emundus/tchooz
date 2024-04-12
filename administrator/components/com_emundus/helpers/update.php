@@ -9,9 +9,12 @@
 // No direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Language;
+use Joomla\CMS\Language\Transliterate;
 use Joomla\CMS\Table\Table;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Cache\Administrator\Model\CacheModel;
 use Joomla\CMS\Language\LanguageHelper;
 
@@ -265,19 +268,18 @@ class EmundusHelperUpdate
                         ->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
                         ->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
                         ->set($db->quoteName('params') . ' = ' . $db->quote($params))
-                        ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''))
-                        ->set($db->quoteName('system_data') . ' = ' . $db->quote(''));
+                        ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''));
                     $db->setQuery($query);
                     $installed = $db->execute();
                 } else {
-                    echo " - " . $element . " already installed." . PHP_EOL ;
+					self::displayMessage('L\'extension ' . $element . ' est déjà installée.');
                     $installed = true;
                 }
             } catch (Exception $e) {
                 echo $e->getMessage();
             }
         } else {
-            echo 'Impossible to install extension without element specified';
+			self::displayMessage('Impossible d\'installer l\'extensions sans élément spécifié.', 'error');
         }
 
         return $installed;
@@ -438,6 +440,8 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function updateConfigurationFile($param, $value) {
+		$updated = false;
+
 		if(!empty($param) && !empty($value) && !in_array($param,['host','user','password','db','secret','mailfrom','smtpuser','smpthost','smtppass','smtpsecure','smtpport','webhook_token'])) {
 			$formatter = new JRegistryFormatPHP();
 			$config    = new JConfig();
@@ -448,15 +452,34 @@ class EmundusHelperUpdate
 			$config_file    = JPATH_CONFIGURATION . '/configuration.php';
 
 			if (file_exists($config_file) and is_writable($config_file)) {
-				file_put_contents($config_file, $str);
+				if(file_put_contents($config_file, $str)) {
+					$updated = true;
 			}
-			else {
-				echo("Update Configuration file failed");
 			}
-		} else {
-			echo("Update Configuration file failed");
 		}
+
+		return $updated;
     }
+
+	public static function getYamlVariable($key1,$file,$key2 = null) {
+		$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
+		$result = null;
+
+		if (!empty($key2))
+		{
+			$result = $yaml[$key1][$key2];
+		}
+		elseif (isset($yaml[$key1]))
+		{
+			$result = $yaml[$key1];
+		}
+		else
+		{
+			echo("Key " . $key1 . ' not found in file ' . $file);
+		}
+
+		return $result;
+	}
 
     /**
      * Update a variable in a yaml file like Gantry configuration files
@@ -568,7 +591,7 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function insertTranslationsTag($tag,$value,$type = 'override', $reference_id = null, $reference_table = null, $reference_field = null, $lang = 'fr-FR'){
+    public static function insertTranslationsTag($tag,$value,$type = 'override', $reference_id = 0, $reference_table = null, $reference_field = null, $lang = 'fr-FR'){
         $db = Factory::getDbo();
         $query = $db->getQuery(true);
 
@@ -584,7 +607,8 @@ class EmundusHelperUpdate
             $tag_existing = $db->loadResult();
 
             if(empty($tag_existing)) {
-                $query->insert($db->quoteName('#__emundus_setup_languages'))
+                $query->clear()
+	                ->insert($db->quoteName('#__emundus_setup_languages'))
                     ->set($db->quoteName('tag') . ' = ' . $db->quote($tag))
                     ->set($db->quoteName('lang_code') . ' = ' . $db->quote($lang))
                     ->set($db->quoteName('override') . ' = ' . $db->quote($value))
@@ -1568,7 +1592,7 @@ class EmundusHelperUpdate
      * @since version 1.33.0
      */
     public static function addJoomlaMenu($params, $parent_id = 1, $published = 1, $position='last-child', $modules = []) {
-        $result = ['status' => false, 'message' => '', 'id' => 0];
+        $result = ['status' => false, 'message' => '', 'id' => 0, 'alias' => '', 'link' => ''];
         $menu_table = JTableNested::getInstance('Menu');
 
         if (empty($params['menutype'])) {
@@ -1580,6 +1604,10 @@ class EmundusHelperUpdate
             return $result;
         }
 
+		if(empty($params['params'])) {
+			$params['params'] = [];
+		}
+
         try {
             // Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
             Factory::$database = null;
@@ -1590,13 +1618,13 @@ class EmundusHelperUpdate
 			if(empty($params['alias']))
 			{
 				$alias = str_replace("\xc2\xa0", ' ', ($params['menutype'] . '-' . $params['title']));
-				$alias = strtolower(JLanguageTransliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias)));
+				$alias = strtolower(Transliterate::utf8_latin_to_ascii(preg_replace('/\s+/', '-', $alias)));
 			} else {
 				$alias = $params['alias'];
 			}
 
             $query->clear()
-                ->select('id')
+                ->select('id,alias,link')
                 ->from($db->quoteName('#__menu'))
                 ->where($db->quoteName('menutype') . ' = ' . $db->quote($params['menutype']));
             if(!empty($params['link'])) {
@@ -1606,10 +1634,10 @@ class EmundusHelperUpdate
                 $query->andWhere($db->quoteName('alias') . ' = ' . $db->quote($alias));
             }
             $db->setQuery($query);
-            $is_existing = $db->loadResult();
+            $is_existing = $db->loadObject();
 
             if (empty($is_existing)) {
-                if ($params['client_id'] != 1) {
+                if (!isset($params['client_id']) || $params['client_id'] != 1) {
                     $default_params = [
                         'menu-anchor_title' => '',
                         'menu-anchor_css' => '',
@@ -1649,6 +1677,8 @@ class EmundusHelperUpdate
                     return $result;
                 }
                 $result['id'] = $menu_table->id;
+                $result['alias'] = $menu_data['alias'];
+                $result['link'] = $menu_data['link'];
 
                 if (!empty($modules)) {
                     foreach ($modules as $module) {
@@ -1672,7 +1702,9 @@ class EmundusHelperUpdate
                     }
                 }
             } else {
-                $result['id'] = $is_existing;
+                $result['id'] = $is_existing->id;
+	            $result['alias'] = $is_existing->alias;
+	            $result['link'] = $is_existing->link;
             }
 
             $result['status'] = true;
@@ -1803,8 +1835,8 @@ class EmundusHelperUpdate
                     'publish_down' => '2099-01-01 00:00:00',
                     'reset_button_label' => $datas['reset_button_label'] ?: 'RESET',
                     'submit_button_label' => $datas['submit_button_label'] ?: 'SAVE_CONTINUE',
-                    'form_template' => $datas['form_template'] ?: 'bootstrap',
-                    'view_only_template' => $datas['view_only_template'] ?: 'bootstrap',
+                    'form_template' => $datas['form_template'] ?: 'emundus',
+                    'view_only_template' => $datas['view_only_template'] ?: 'emundus',
                     'params' => json_encode($params),
                 ];
 
@@ -2067,7 +2099,7 @@ class EmundusHelperUpdate
             return $result;
         }
 
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $column_existing = $db->setQuery('SHOW COLUMNS FROM ' . $table . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($name))->loadResult();
 
         if (empty($column_existing)) {
@@ -2089,6 +2121,9 @@ class EmundusHelperUpdate
             } catch (Exception $e) {
                 $result['message'] = 'ADDING COLUMN : Error : ' . $e->getMessage();
             }
+        } else {
+			$result['status'] = true;
+			$result['message'] = 'Column already exists';
         }
 
         return $result;
@@ -2528,7 +2563,7 @@ class EmundusHelperUpdate
 
 	public static function updateExtensionParam($param,$value,$old_value_checking = null,$component = 'com_emundus'){
 		$updated = false;
-		$config = JComponentHelper::getParams($component);
+		$config = ComponentHelper::getParams($component);
 
 		if(!empty($old_value_checking)){
 			$old_value = $config->get($param,'');
@@ -2539,8 +2574,8 @@ class EmundusHelperUpdate
 			$config->set($param, $value);
 		}
 
-		$componentid = JComponentHelper::getComponent($component)->id;
-		$db = Factory::getDBO();
+		$componentid = ComponentHelper::getComponent($component)->id;
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try {
@@ -3026,6 +3061,54 @@ class EmundusHelperUpdate
         return true;
     }
 
+
+	/**
+	 * @param $file string file to update
+	 * @param $linesToRemove array of lines to remove
+	 * @return bool true if success, false otherwise. If lines to remove are not found, it returns false.
+	 */
+	public static function removeFromFile($file, $linesToRemove)
+	{
+		$removed = false;
+
+		if (empty($file)) {
+			echo "ERROR: Please specify a file." . PHP_EOL;
+			return false;
+		} elseif (!file_exists($file)) {
+			echo "ERROR: The file {$file} does not exist." . PHP_EOL;
+			return false;
+		} elseif (!is_writable($file)) {
+			echo "ERROR: Please specify a writable file ({$file})" . PHP_EOL;
+			return false;
+		} elseif (empty($linesToRemove)) {
+			echo "ERROR: Please specify content to remove." . PHP_EOL;
+			return false;
+		}
+
+		$file_content = file_get_contents($file);
+		if (!empty($file_content)) {
+			$changed = false;
+
+			foreach($linesToRemove as $line) {
+				if (strpos($file_content, $line) !== false) {
+					echo " - Remove {$file} file this content: " . PHP_EOL . $line . PHP_EOL;
+					$file_content = str_replace($line, '', $file_content);
+					$changed = true;
+				}
+			}
+
+			if ($changed) {
+				if (file_put_contents($file, $file_content) !== false) {
+					$removed = true;
+				} else {
+					echo "ERROR: Failed to write content to the file." . PHP_EOL;
+				}
+			}
+		}
+
+		return $removed;
+	}
+
 	public static function updateNewColors() {
 		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
@@ -3110,7 +3193,7 @@ class EmundusHelperUpdate
 				'blue-2' => '#0073e5',
 				'blue-3' => '#0644ae',
 				'green-1' => '#98d432',
-				'green-2' => '#008a35',
+				'green-2' => '#015822',
 				'yellow-1' => '#ffe014',
 				'yellow-2' => '#ffae00',
 				'orange-1' => '#ff6900',
@@ -3263,11 +3346,10 @@ class EmundusHelperUpdate
 			'coordinator' => [
 				'background' => '#f8f8f8',
 				'interface' => '#353544',
-				'primary-color' => '#20835F',
 				'secondary-color' => '#353544',
 				'tertiary-color' => '#5A5A72',
 				'text-color' => '#4B4B4B',
-				'title-color' => '#000000',
+				'title-color' => '#0b0c0f',
 				'family-text' => 'Inter',
 				'family-title' => 'Inter',
 				'size-h1' => '24px',
@@ -3296,26 +3378,37 @@ class EmundusHelperUpdate
 
 	public static function checkHealth()
 	{
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		// Check back button
 		$query->select('id,content')
 			->from($db->quoteName('#__modules'))
-			->where($db->quoteName('title') . ' LIKE ' . $db->quote('eMundus - Back button'))
+			->where($db->quoteName('title') . ' LIKE ' . $db->quote('[GUEST] Back button'))
 			->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_custom'));
 		$db->setQuery($query);
 		$back_button = $db->loadObject();
 
-		$back_button->content = str_replace('https://vanilla.tchooz.io/','/',$back_button->content);
-		$back_button->content = str_replace(JURI::base().'/','/',$back_button->content);
+		if($back_button) {
+			$back_button->content = str_replace(['https://vanilla.tchooz.io/', 'http://localhost:8383/'], '/', $back_button->content);
+			$back_button->content = str_replace(Uri::base() . '/', '/', $back_button->content);
 
-		$query->clear()
-			->update($db->quoteName('#__modules'))
-			->set($db->quoteName('content') . ' = ' . $db->quote($back_button->content))
-			->where($db->quoteName('id') . ' = ' . $db->quote($back_button->id));
-		$db->setQuery($query);
-		$db->execute();
+			$query->clear()
+				->update($db->quoteName('#__modules'))
+				->set($db->quoteName('content') . ' = ' . $db->quote($back_button->content))
+				->where($db->quoteName('id') . ' = ' . $db->quote($back_button->id));
+			$db->setQuery($query);
+			$db->execute();
+
+			$query->clear()
+				->update($db->quoteName('#__falang_content'))
+				->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
+				->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
+				->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
+				->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'));
+			$db->setQuery($query);
+			$db->execute();
+		}
 		//
 
 		// Remove appli emundus yaml assets
@@ -3331,15 +3424,17 @@ class EmundusHelperUpdate
 		$db->setQuery($query);
 		$registration_form = $db->loadObject();
 
-		$params = json_decode($registration_form->params, true);
-		$params['ajax_validations'] = 0;
+		if($registration_form) {
+			$params                     = json_decode($registration_form->params, true);
+			$params['ajax_validations'] = 0;
 
-		$query->clear()
-			->update($db->quoteName('#__fabrik_forms'))
-			->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-			->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
-		$db->setQuery($query);
-		$db->execute();
+			$query->clear()
+				->update($db->quoteName('#__fabrik_forms'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
+			$db->setQuery($query);
+			$db->execute();
+		}
 		//
 
 		// Check if profile menu translations is good
@@ -3478,6 +3573,90 @@ class EmundusHelperUpdate
 				->update($db->quoteName('#__extensions'))
 				->set($db->quoteName('enabled') . ' = 1')
 				->where($db->quoteName('extension_id') . ' = ' . $db->quote($emundus_dropfiles_plugin));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Manage SCP configuration
+		$query->clear()
+			->select('storage_value')
+			->from($db->quoteName('#__securitycheckpro_storage'))
+			->where($db->quoteName('storage_key') . ' LIKE ' . $db->quote('pro_plugin'));
+		$db->setQuery($query);
+		$scp_plugin = $db->loadResult();
+
+		if(!empty($scp_plugin)) {
+			$storage_value = json_decode($scp_plugin, true);
+
+			// Blacklist
+			$storage_value['dynamic_blacklist'] = 1;
+			$storage_value['dynamic_blacklist_counter'] = 5;
+			$storage_value['dynamic_blacklist_time'] = 300;
+			$storage_value['blacklist_email'] = 0;
+
+			// Strict mode
+			$storage_value['mode'] = 1;
+
+			// Logs
+			$storage_value['logs_attacks'] = 1;
+			$storage_value['scp_delete_period'] = 90;
+			$storage_value['log_limits_per_ip_and_day'] = 5;
+			$storage_value['add_access_attempts_logs'] = 1;
+
+			// Redirect
+			$storage_value['redirect_after_attack'] = 1;
+			$storage_value['redirect_options'] = 1;
+			$storage_value['custom_code'] = '<h1 style="text-align: center;">The application\'s firewall has been triggered by your use of the platform.<br />You no longer have access to the platform.<br />Please contact the platform manager so that he can unblock your account.</h1><hr /><h1 style="text-align: center;">Le pare-feu de l\'application vient de se déclencher suite à votre utilisation de la plateforme.<br />Vous n\'avez plus accès à la plateforme.<br />Merci de prendre contact avec le gestionnaire de cette plateforme afin qu\'il débloque votre compte.</h1>';
+
+			// Second level
+			$storage_value['second_level'] = 1;
+			$storage_value['second_level_redirect'] = 1;
+			$storage_value['second_level_limit_words'] = 3;
+			$storage_value['second_level_words'] = 'ZHJvcCx1cGRhdGUsc2V0LGFkbWluLHNlbGVjdCx1c2VyLHBhc3N3b3JkLGNvbmNhdCxsb2dpbixsb2FkX2ZpbGUsYXNjaWksY2hhcix1bmlvbixncm91cCBieSxvcmRlciBieSxpbnNlcnQsdmFsdWVzLHBhc3Msd2hlcmUsc3Vic3RyaW5nLGJlbmNobWFyayxtZDUsc2hhMSxzY2hlbWEsdmVyc2lvbixyb3dfY291bnQsY29tcHJlc3MsZW5jb2RlLGluZm9ybWF0aW9uX3NjaGVtYSxzY3JpcHQsamF2YXNjcmlwdCxpbWcsc3JjLGlucHV0LGJvZHksaWZyYW1lLGZyYW1lLCRfUE9TVCxldmFsLCRfUkVRVUVTVCxiYXNlNjRfZGVjb2RlLGd6aW5mbGF0ZSxnenVuY29tcHJlc3MsZ3ppbmZsYXRlLHN0cnRyZXhlYyxwYXNzdGhydSxzaGVsbF9leGVjLGNyZWF0ZUVsZW1lbnQ=';
+
+			// Emails
+			$storage_value['email_active'] = 0;
+
+			// Exceptions
+			$storage_value['exclude_exceptions_if_vulnerable'] = 1;
+			$storage_value['check_header_referer'] = 1;
+			$storage_value['check_base_64'] = 1;
+			$storage_value['base64_exceptions'] = 'com_hikashop,com_emundus,com_fabrik';
+			$storage_value['strip_all_tags'] = 1;
+			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik';
+			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['line_comments_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik';
+			$storage_value['escape_strings_exceptions'] = 'com_jce,com_fabrik';
+			$storage_value['lfi_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['second_level_exceptions'] = '';
+
+			// Session
+			$storage_value['session_protection_active'] = 0;
+			$storage_value['session_hijack_protection'] = 0;
+			$storage_value['session_hijack_protection_what_to_check'] = 2;
+			$storage_value['session_protection_groups'] = ["11","3","5","2","10","1"];
+			$storage_value['track_failed_logins'] = 1;
+			$storage_value['logins_to_monitorize'] = 0;
+			$storage_value['write_log'] = 1;
+			$storage_value['actions_failed_login'] = 1;
+			$storage_value['email_on_admin_login'] = 0;
+			$storage_value['forbid_admin_frontend_login'] = 0;
+			$storage_value['forbid_new_admins'] = 0;
+
+			// Upload scanner
+			$storage_value['upload_scanner_enabled'] = 1;
+			$storage_value['check_multiple_extensions'] = 1;
+			$storage_value['mimetypes_blacklist'] = 'application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript,application/xml';
+			$storage_value['extensions_blacklist'] = 'php,js,exe,xml';
+			$storage_value['delete_files'] = 1;
+			$storage_value['actions_upload_scanner'] = 1;
+
+			$query->clear()
+				->update($db->quoteName('#__securitycheckpro_storage'))
+				->set($db->quoteName('storage_value') . ' = ' . $db->quote(json_encode($storage_value)))
+				->where($db->quoteName('storage_key') . ' = ' . $db->quote('pro_plugin'));
 			$db->setQuery($query);
 			$db->execute();
 		}

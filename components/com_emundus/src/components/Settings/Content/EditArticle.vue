@@ -21,7 +21,7 @@
         ></multiselect>
       </div>
 
-      <div class="mb-4 flex items-center" v-if="category === 'rgpd'">
+      <div class="tw-mb-4 tw-flex tw-items-center" v-if="category === 'rgpd'">
         <div class="em-toggle">
           <input type="checkbox"
                  true-value="1"
@@ -35,7 +35,7 @@
           <strong class="b em-toggle-switch"></strong>
           <strong class="b em-toggle-track"></strong>
         </div>
-        <span for="published" class="ml-2">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_CONTENT_PUBLISH') }}</span>
+        <span for="published" class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_CONTENT_PUBLISH') }}</span>
       </div>
 
       <div class="form-group controls">

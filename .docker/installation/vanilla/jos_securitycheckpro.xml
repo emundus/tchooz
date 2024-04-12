@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__securitycheckpro">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="Product" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="sc_type" Type="varchar(35)" Null="YES" Key="" Extra="" />
+   <field Field="Installedversion" Type="varchar(60)" Null="YES" Key="" Default="---" Extra="" />
+   <field Field="Vulnerable" Type="varchar(10)" Null="NO" Key="" Default="No" Extra="" />
+   <key Table="#__securitycheckpro" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_widgets_repeat_access">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="parent_id" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="profile" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="default" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="position" Type="int" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_widgets_repeat_access" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_widgets_repeat_access" Non_unique="1" Key_name="jos_emundus_widgets_access_setup_profiles_id_fk" Seq_in_index="1" Column_name="profile" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_widgets_repeat_access" Non_unique="1" Key_name="fb_parent_fk_parent_id_INDEX" Seq_in_index="1" Column_name="parent_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_widgets_repeat_access">
+   <row>
+    <field name="id">2</field>
+    <field name="parent_id">6</field>
+    <field name="profile">2</field>
+    <field name="default">1</field>
+    <field name="position">2</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="parent_id">7</field>
+    <field name="profile">2</field>
+    <field name="default">1</field>
+    <field name="position">1</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="parent_id">7</field>
+    <field name="profile">6</field>
+    <field name="default">1</field>
+    <field name="position">1</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="parent_id">9</field>
+    <field name="profile">2</field>
+    <field name="default">1</field>
+    <field name="position">3</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="parent_id">6</field>
+    <field name="profile">5</field>
+    <field name="default">1</field>
+    <field name="position">2</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="parent_id">7</field>
+    <field name="profile">5</field>
+    <field name="default">1</field>
+    <field name="position">1</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="parent_id">9</field>
+    <field name="profile">5</field>
+    <field name="default">1</field>
+    <field name="position">3</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__usergroups">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="parent_id" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="lft" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="rgt" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="title" Type="varchar(100)" Null="NO" Key="MUL" Default="" Extra="" />
+   <key Table="#__usergroups" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__usergroups" Non_unique="0" Key_name="idx_usergroup_parent_title_lookup" Seq_in_index="1" Column_name="parent_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__usergroups" Non_unique="0" Key_name="idx_usergroup_parent_title_lookup" Seq_in_index="2" Column_name="title" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__usergroups" Non_unique="1" Key_name="idx_usergroup_title_lookup" Seq_in_index="1" Column_name="title" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__usergroups" Non_unique="1" Key_name="idx_usergroup_adjacency_lookup" Seq_in_index="1" Column_name="parent_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__usergroups" Non_unique="1" Key_name="idx_usergroup_nested_set_lookup" Seq_in_index="1" Column_name="lft" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__usergroups" Non_unique="1" Key_name="idx_usergroup_nested_set_lookup" Seq_in_index="2" Column_name="rgt" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__usergroups">
+   <row>
+    <field name="id">1</field>
+    <field name="parent_id">0</field>
+    <field name="lft">1</field>
+    <field name="rgt">28</field>
+    <field name="title">Public</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="parent_id">1</field>
+    <field name="lft">2</field>
+    <field name="rgt">11</field>
+    <field name="title">Registered</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="parent_id">2</field>
+    <field name="lft">5</field>
+    <field name="rgt">10</field>
+    <field name="title">Author</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="parent_id">3</field>
+    <field name="lft">6</field>
+    <field name="rgt">9</field>
+    <field name="title">Editor</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="parent_id">4</field>
+    <field name="lft">7</field>
+    <field name="rgt">8</field>
+    <field name="title">Publisher</field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="parent_id">1</field>
+    <field name="lft">16</field>
+    <field name="rgt">19</field>
+    <field name="title">Manager</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="parent_id">6</field>
+    <field name="lft">17</field>
+    <field name="rgt">18</field>
+    <field name="title">Administrator</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="parent_id">1</field>
+    <field name="lft">26</field>
+    <field name="rgt">27</field>
+    <field name="title">Super Users</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="parent_id">1</field>
+    <field name="lft">20</field>
+    <field name="rgt">21</field>
+    <field name="title">Guest</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="parent_id">1</field>
+    <field name="lft">22</field>
+    <field name="rgt">23</field>
+    <field name="title">Nobody</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="parent_id">2</field>
+    <field name="lft">3</field>
+    <field name="rgt">4</field>
+    <field name="title">Applicant</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="parent_id">1</field>
+    <field name="lft">12</field>
+    <field name="rgt">13</field>
+    <field name="title">Evaluator</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="parent_id">1</field>
+    <field name="lft">14</field>
+    <field name="rgt">15</field>
+    <field name="title">Expert</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="parent_id">1</field>
+    <field name="lft">24</field>
+    <field name="rgt">25</field>
+    <field name="title">Partner</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

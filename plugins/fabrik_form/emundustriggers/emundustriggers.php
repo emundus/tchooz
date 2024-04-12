@@ -13,6 +13,8 @@
  */
 
 // No direct access
+use Fabrik\Helpers\ArrayHelper;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -316,14 +318,25 @@ class PlgFabrik_FormEmundustriggers extends PlgFabrik_Form
      * @return  mixed
      * @since 1.0.0
      */
-    public function onElementCanUse() {
+    public function onElementCanUse($args) {
         $formModel = $this->getModel();
+	    $elementModel = ArrayHelper::getValue($args, 0, false);
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onElementCanUse', ['formModel' => $formModel]]);
+        $results = \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onElementCanUse', ['formModel' => $formModel, 'elementModel' => $elementModel]]);
+		
+		if(!empty($results) && !empty($results[0])) {
+			$onElementCanUse = array_map(function($result) {
+				return $result['onElementCanUse'];
+			}, $results);
+		}
 
-        return true;
-    }
+		if(!empty($onElementCanUse)) {
+			return in_array(false, $onElementCanUse) ? false : true;
+		} else {
+			return true;
+		}
+	}
 
     /**
      * On canView test for elements in form

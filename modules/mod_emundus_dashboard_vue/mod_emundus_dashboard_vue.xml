@@ -45,7 +45,8 @@
                        label="Profil"
                        description="Profils eMundus ayant accès à ce dashboard"
                        key_field="id"
-                       value_field="label">
+                       value_field="label"
+                       class="advancedSelect">
                 </field>
 
                 <field name="filter_programmes" type="radio" default="0" label="Filtrer par programme"
@@ -68,6 +69,16 @@
                 <field name="display_description" type="radio" default="0"
                        label="COM_EMUNDUS_DASHBOARD_WELCOME_DESCRIPTION"
                        description="COM_EMUNDUS_DASHBOARD_WELCOME_DESCRIPTION_DESC" class="btn-group btn-group-yesno">
+                    <option value="0">JNo</option>
+                    <option value="1">JYes</option>
+                </field>
+
+                <field name="display_shapes" type="radio" default="1" label="COM_EMUNDUS_DASHBOARD_SHAPES" description="COM_EMUNDUS_DASHBOARD_SHAPES_DESC" class="btn-group btn-group-yesno">
+                    <option value="0">JNo</option>
+                    <option value="1">JYes</option>
+                </field>
+
+                <field name="display_dashboard_tchoozy" type="radio" default="1" label="COM_EMUNDUS_DASHBOARD_TCHOOZY_DASHBOARD" description="COM_EMUNDUS_DASHBOARD_TCHOOZY_DASHBOARD_DESC" class="btn-group btn-group-yesno">
                     <option value="0">JNo</option>
                     <option value="1">JYes</option>
                 </field>

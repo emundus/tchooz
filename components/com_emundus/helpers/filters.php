@@ -17,6 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 /**
  * Content Component Query Helper
@@ -385,7 +386,7 @@ class EmundusHelperFilters
 	 *
 	 * @return   array    list of Fabrik element ID used in evaluation form
 	 **/
-	function getAllElementsByGroups($groups, $show_in_list_summary = null, $hidden = null)
+	static function getAllElementsByGroups($groups, $show_in_list_summary = null, $hidden = null)
 	{
 		$elements = [];
 
@@ -409,13 +410,13 @@ class EmundusHelperFilters
 			if ($hidden !== null) {
 				$query->andWhere('jfe.hidden = ' . $hidden);
 			}
-			$query->order('find_in_set(jfg.id, "' . $groups . '"), jfe.ordering');
+			$query->order('jffg.ordering, jfe.ordering');
 			try {
 				$db->setQuery($query);
 				$elements = $db->loadObjectList();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get fabrik elements by group id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get fabrik elements by group id ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -448,7 +449,6 @@ class EmundusHelperFilters
 				ORDER BY group_id';
 		$db->setQuery($query);
 
-//		die(str_replace("#_", "jos", $query));
 		return $db->loadObjectList();
 	}
 

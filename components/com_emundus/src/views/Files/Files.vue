@@ -1,9 +1,9 @@
 <template>
-  <div class="ml-8 em-files">
+  <div class="tw-ml-8 em-files">
     <Application v-if="currentFile" :file="currentFile" :type="$props.type" :user="$props.user" :ratio="$props.ratio"
                  @getFiles="getFiles(true)"/>
 
-    <div class="mb-4 flex items-center justify-between">
+    <div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
       <h4>{{ translate('COM_EMUNDUS_FILES_' + type.toUpperCase()) }}</h4>
     </div>
 
@@ -12,16 +12,16 @@
     </div>
 
     <div v-if="files">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center">
-          <div class="flex items-center">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+        <div class="tw-flex tw-items-center">
+          <div class="tw-flex tw-items-center">
             <span>{{ translate('COM_EMUNDUS_FILES_TOTAL') }}</span>
-            <span class="ml-1">{{ total_count }}</span>
+            <span class="tw-ml-1">{{ total_count }}</span>
           </div>
-          <span class="ml-3 mr-3">|</span>
+          <span class="tw-ml-3 tw-mr-3">|</span>
           <div class="em-flex-row">
             <span>{{ translate('COM_EMUNDUS_FILES_DISPLAY_PAGE') }}</span>
-            <select class="em-select-no-border ml-3" style="width: max-content; height: fit-content;" v-model="limit">
+            <select class="em-select-no-border tw-ml-3" style="width: max-content; height: fit-content;" v-model="limit">
               <option>10</option>
               <option>25</option>
               <option>50</option>
@@ -30,13 +30,13 @@
           </div>
         </div>
         <template v-if="pages !== null">
-          <div class="flex items-center" v-if="pages.length > 1">
+          <div class="tw-flex tw-items-center" v-if="pages.length > 1">
             <span>{{ translate('COM_EMUNDUS_FILES_PAGE') }}</span>
-            <select class="em-select-no-border ml-3" style="width: 40px;" v-model="page">
+            <select class="em-select-no-border tw-ml-3" style="width: 40px;" v-model="page">
               <option v-for="no_page in pages" :value="no_page">{{ displayPage(no_page) }}</option>
             </select>
-            <span class="ml-3">{{ translate('COM_EMUNDUS_FILES_PAGE_ON') }}</span>
-            <span class="ml-3 mr-3">{{ pages.length }}</span>
+            <span class="tw-ml-3">{{ translate('COM_EMUNDUS_FILES_PAGE_ON') }}</span>
+            <span class="tw-ml-3 tw-mr-3">{{ pages.length }}</span>
           </div>
         </template>
       </div>
@@ -46,33 +46,38 @@
       <tabs v-if="$props.type === 'evaluation'" :tabs="tabs" @updateTab="updateTab"></tabs>
       <hr/>
 
-      <div v-if="!filtersLoading" class="flex justify-between items-start mb-4">
-        <div id="filters" class="flex flex-col">
-          <div id="default-filters" class="mb-4" v-if="defaultFilters.length > 0"
+      <div v-if="!filtersLoading" class="tw-flex tw-justify-between tw-items-start tw-mb-4">
+        <div id="filters" class="tw-flex tw-flex-col">
+          <div id="default-filters" class="tw-mb-4" v-if="defaultFilters.length > 0"
                v-click-outside="onDefaultFiltersClickOutside">
-            <div class="em-tabs cursor-pointer flex items-center em-s-justify-content-center"
+            <div class="em-tabs tw-cursor-pointer tw-flex tw-items-center em-s-justify-content-center"
                  @click="openedFilters = !openedFilters">
               <span>{{ translate('COM_EMUNDUS_FILES_FILTER') }}</span>
-              <span class="material-icons-outlined ml-3">filter_list</span>
+              <span class="material-icons-outlined tw-ml-3">filter_list</span>
             </div>
-            <ul :class="{'hidden': !openedFilters, 'em-input': true}">
+            <ul :class="{'tw-hidden': !openedFilters, 'em-input': true}">
               <li v-for="filter in defaultFilters" :key="filter.id" @click="addFilter(filter)" class="em-pointer">
                 {{ filter.label }}
               </li>
             </ul>
           </div>
-          <div id="applied-filters" v-if="filters.length > 0" class="flex items-center">
-            <div v-for="filter in filters" :key="filter.key" class="applied-filter ml-3 flex items-center">
-              <label class="filter-label mr-3" :for="filter.id + '-' + filter.key" :title="filter.label">{{
+          <div id="applied-filters" v-if="filters.length > 0" class="tw-flex tw-items-center">
+            <div v-for="filter in filters" :key="filter.key" class="applied-filter tw-ml-3 tw-flex tw-items-center">
+              <label class="filter-label tw-mr-3" :for="filter.id + '-' + filter.key" :title="filter.label">{{
                   filter.label
                 }}</label>
-              <select class="mr-3" v-model="filter.selectedOperator">
+              <select class="tw-mr-3" v-model="filter.selectedOperator">
                 <option v-for="operator in filter.operators" :key="operator.value" :value="operator.value">
                   {{ operator.label }}
                 </option>
               </select>
-              <input v-if="filter.type == 'field'" :name="filter.id + '-' + filter.key" type="text"
-                     :placeholder="filter.label" v-model="filter.selectedValue"/>
+              <input v-if="filter.type == 'field'"
+                     :name="filter.id + '-' + filter.key"
+                     type="text"
+                     :placeholder="filter.label"
+                     v-model="filter.selectedValue"
+                     @keyup.enter="applyFilters"
+              />
               <input v-else-if="filter.type == 'date'" :name="filter.id + '-' + filter.key" type="date"
                      v-model="filter.selectedValue">
               <multiselect
@@ -92,16 +97,18 @@
                   :searchable="true"
                   :allow-empty="true"
                   width="250px"
-              ></multiselect>
-              <span class="material-icons-outlined cursor-pointer em-red-500-color ml-3" @click="removeFilter(filter)">close</span>
+              >
+                <span slot="noResult">{{translate('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND')}}</span>
+              </multiselect>
+              <span class="material-icons-outlined tw-cursor-pointer em-red-500-color tw-ml-3" @click="removeFilter(filter)">close</span>
             </div>
           </div>
         </div>
-        <div v-if="defaultFilters.length > 0" class="flex items-center">
-          <span class="material-icons-outlined mr-4 em-red-500-color"
+        <div v-if="defaultFilters.length > 0" class="tw-flex tw-items-center">
+          <span class="material-icons-outlined tw-mr-4 em-red-500-color"
                 :class="{'em-pointer': filters.length > 0, 'em-pointer-disbabled': filters.length < 1 }"
                 :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_alt_off</span>
-          <button class="em-primary-button cusor-pointer" @click="applyFilters">
+          <button class="em-primary-button tw-cusor-pointer" @click="applyFilters">
             {{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}
           </button>
         </div>
@@ -115,7 +122,7 @@
     <div class="em-flex-row em-align-start" v-if="files && columns && files.length > 0" :key="reloadFiles">
       <div id="table_columns_move_right" :class="moveRight ? '' : 'em-disabled-state'"
            class="table-columns-move em-flex-column em-mr-4" @click="scrollToRight">
-        <span class="material-icons-outlined cursor-pointer" style="font-size: 16px">arrow_back</span>
+        <span class="material-icons-outlined tw-cursor-pointer" style="font-size: 16px">arrow_back</span>
       </div>
 
       <el-table

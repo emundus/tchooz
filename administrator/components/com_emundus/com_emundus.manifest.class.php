@@ -12,35 +12,37 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
+use scripts\Release2_0_0Installer;
 
 class Com_EmundusInstallerScript
 {
+	private $db;
+
 	protected $manifest_cache;
 	protected $schema_version;
-	protected EmundusHelperUpdate $h_update;
 
 	public function __construct()
 	{
 		// Get component manifest cache
-		$db    = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
+		$this->db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $this->db->getQuery(true);
 
 		$query->select('extension_id, manifest_cache')
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('element') . ' = ' . $db->quote('com_emundus'));
-		$db->setQuery($query);
-		$extension = $db->loadObject();
+			->from($this->db->quoteName('#__extensions'))
+			->where($this->db->quoteName('element') . ' = ' . $this->db->quote('com_emundus'));
+		$this->db->setQuery($query);
+		$extension = $this->db->loadObject();
 		$this->manifest_cache = json_decode($extension->manifest_cache);
 
 		$query->clear()
 			->select('version_id')
-			->from($db->quoteName('#__schemas'))
-			->where($db->quoteName('extension_id') . ' = ' . $db->quote($extension->extension_id));
-		$db->setQuery($query);
-		$this->schema_version = $db->loadResult();
+			->from($this->db->quoteName('#__schemas'))
+			->where($this->db->quoteName('extension_id') . ' = ' . $this->db->quote($extension->extension_id));
+		$this->db->setQuery($query);
+		$this->schema_version = $this->db->loadResult();
 
 		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
-		$this->h_update = new EmundusHelperUpdate();
 	}
 
     /**
@@ -97,12 +99,27 @@ class Com_EmundusInstallerScript
             $firstrun      = true;
         }
 
+		require_once JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/release.php';
+
+		$releases_path = JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/releases/';
+
+		$query = $this->db->getQuery(true);
+
         if ($this->manifest_cache) {
             if (version_compare($cache_version, '2.0.0', '<=') || $firstrun) {
-				$disabled = EmundusHelperUpdate::disableEmundusPlugins('webauthn');
-				if($disabled) {
-					EmundusHelperUpdate::displayMessage('Le plugin WebAuthn a été désactivé.', 'success');
-				}
+	            EmundusHelperUpdate::displayMessage('Installation de la version 2.0.0...');
+
+	            require_once $releases_path . '2_0_0.php';
+
+	            $release_installer = new Release2_0_0Installer();
+	            $release_installed = $release_installer->install();
+	            if($release_installed['status']) {
+					EmundusHelperUpdate::displayMessage('Installation de la version 2.0.0 réussi.', 'success');
+	            }
+	            else {
+		            EmundusHelperUpdate::displayMessage($release_installed['message'], 'error');
+		            $succeed = false;
+	            }
             }
         }
 
@@ -164,6 +181,38 @@ class Com_EmundusInstallerScript
 		if(!$db->execute()) {
 			return false;
 		}
+		
+		// Sync gantry5 logo
+	    if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml')) {
+		    $logo = JPATH_SITE . '/images/logo_custom.png';
+		    $query->clear()
+			    ->select('id,content')
+			    ->from($db->quoteName('#__modules'))
+			    ->where($db->quoteName('module') . ' = ' . $db->quote('mod_custom'))
+			    ->where($db->quoteName('title') . ' LIKE ' . $db->quote('Logo'));
+		    $db->setQuery($query);
+		    $logo_module = $db->loadObject();
+
+		    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+		    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+		    if (preg_match($pattern, $tab[1])) {
+			    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+		    }
+
+		    if (!empty($tab[1])) {
+			    $logo = str_replace('images/', 'gantry-media://', $tab[1]);
+
+			    EmundusHelperUpdate::updateYamlVariable('image', $logo, JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml');
+		    } elseif(file_exists($logo)) {
+			    $logo = str_replace('images/', 'gantry-media://', $tab[1]);
+
+			    EmundusHelperUpdate::updateYamlVariable('image', $logo, JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml');
+		    }
+	    }
 
 	    // Insert new translations in overrides files
 	    EmundusHelperUpdate::languageBaseToFile();

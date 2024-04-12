@@ -41,7 +41,7 @@ class PlgFabrik_ElementInternalid extends PlgFabrik_Element
 	{
 		$element = $this->getElement();
 		$value = $this->getValue($data, $repeatCounter);
-		$value = stripslashes($value);
+		$value = $value ?? stripslashes($value);
 
 		if (!$this->isEditable())
 		{
@@ -52,7 +52,7 @@ class PlgFabrik_ElementInternalid extends PlgFabrik_Element
 		$layoutData = new stdClass;
 		$layoutData->name = $this->getHTMLName($repeatCounter);;
 		$layoutData->id = $this->getHTMLId($repeatCounter);;
-		$layoutData->value = htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+		$layoutData->value = $value ?? htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
 		$layoutData->class = 'fabrikinput inputbox hidden';
 
 		return $layout->render($layoutData);

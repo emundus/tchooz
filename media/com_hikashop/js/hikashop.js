@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.0.0
+ * @version    5.0.3
  * @author     hikashop.com
- * @copyright  (C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function() {
@@ -1100,9 +1100,12 @@ var hikashop = {
 				window.localPage.infiniteScrollPage = 1;
 
 				setTimeout(function(){
-					var elems = parentNode.querySelectorAll('.hikashop_subcontainer');
-					if(elems && elems.length)
-						window.hikashop.setConsistencyHeight(elems, 'min');
+					var needHeightConsistency = currentArea.querySelector('[data-consistencyheight]');
+					if(needHeightConsistency) {
+						var elems = parentNode.querySelectorAll('.hikashop_subcontainer');
+						if(elems && elems.length)
+							window.hikashop.setConsistencyHeight(elems, 'min');
+					}
 
 					if(window.hikaVotes)
 						initVote(currentArea);
@@ -1499,6 +1502,9 @@ var hikashop = {
 			}
 			if(all.indexOf('type="application/ld+json"') != -1)
 				return '';
+
+			if(all.indexOf('type="importmap"') != -1)
+				return '';
 			regex = RegExp('src="([^"]+)"', 'gi');
 			result = regex.exec(attributes);
 			if(result) {
@@ -1877,6 +1883,23 @@ var hikashop = {
 			checkedGood = [], count = [], el = null,
 			arr = d.getElementsByName('data['+field_type+']['+namekey+'][]');
 
+		// handle when this is passed in new_value
+		// it allows for better handling of radios and checkboxes
+		if(new_value instanceof Element) {
+			if(new_value.type == 'radio' || new_value.type == 'checkbox') {
+				elements = d.getElementsByName(new_value.name);
+				for(cpt = 0; cpt < elements.length; cpt++) {
+					if(elements[cpt].checked) {
+						new_value = elements[cpt].value;
+					}
+				}
+				if(new_value instanceof Element) {
+					new_value = '';
+				}
+			} else {
+				new_value = new_value.value;
+			}
+		} 
 		if(!arr)
 			return false;
 
@@ -1928,6 +1951,7 @@ var hikashop = {
 					specialField = true;
 			}
 			var data = this.fields_data[field_type][namekey];
+
 			for(var k in data) {
 				if(typeof data[k] != 'object')
 					continue;
@@ -2015,14 +2039,21 @@ function submitform(pressbutton) {
 		return false;
 	if(pressbutton)
 		d.adminForm.task.value = pressbutton;
+
+	// old codeMirror code
 	if(typeof(CodeMirror) == 'function') {
 		for(x in CodeMirror.instances) {
 			d.getElementById(x).value = CodeMirror.instances[x].getCode();
 		}
 	}
-	if(typeof(d.adminForm.onsubmit) == "function")
-		d.adminForm.onsubmit();
-	d.adminForm.submit();
+	// Creating the event
+	var event = new Event('submit', {
+		'bubbles'    : true, // Whether the event will bubble up through the DOM or not
+		'cancelable' : true  // Whether the event may be canceled or not
+	});
+	if(d.adminForm.dispatchEvent( event )) {
+		d.adminForm.submit();
+	}
 	return false;
 }
 

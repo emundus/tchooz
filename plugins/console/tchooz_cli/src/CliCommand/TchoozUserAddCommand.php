@@ -142,9 +142,10 @@ class TchoozUserAddCommand extends AbstractCommand
     {
         $this->configureIO($input, $output);
         $this->ioStyle->title('Add User');
-        $this->user       = $this->getStringFromOption('username', 'Please enter a username');
-        $this->firstname  = $this->getStringFromOption('name', 'Please enter a firstname');
-        $this->lastname   = $this->getStringFromOption('name', 'Please enter a lastname');
+
+		$this->user       = $this->getStringFromOption('username', 'Please enter a username');
+		$this->firstname = $this->getStringFromOption('firstname', 'Please enter a firstname');
+		$this->lastname  = $this->getStringFromOption('lastname', 'Please enter a lastname');
         $this->email      = $this->getStringFromOption('email', 'Please enter an email address');
         $this->password   = $this->getStringFromOption('password', 'Please enter a password');
         $this->userGroups = $this->getUserGroups();
@@ -165,6 +166,14 @@ class TchoozUserAddCommand extends AbstractCommand
 
         // Get filter to remove invalid characters
         $filter = new InputFilter();
+
+		if(empty($this->firstname)) {
+			$name = explode(' ', $this->lastname);
+			if(sizeof($name) > 1) {
+				$this->lastname = $name[0];
+				$this->firstname = $name[1];
+			}
+		}
 
         $user = [
             'username' => $filter->clean($this->user, 'USERNAME'),
@@ -280,13 +289,16 @@ class TchoozUserAddCommand extends AbstractCommand
     {
         $answer = (string) $this->cliInput->getOption($option);
 
-        while (!$answer) {
-            if ($option === 'password') {
-                $answer = (string) $this->ioStyle->askHidden($question);
-            } else {
-                $answer = (string) $this->ioStyle->ask($question);
-            }
-        }
+		if($this->cliInput->getOption('no-interaction') === false) {
+			while (!$answer) {
+				if ($option === 'password') {
+					$answer = (string) $this->ioStyle->askHidden($question);
+				}
+				else {
+					$answer = (string) $this->ioStyle->ask($question);
+				}
+			}
+		}
 
         return $answer;
     }
@@ -532,10 +544,11 @@ class TchoozUserAddCommand extends AbstractCommand
         $help = "<info>%command.name%</info> will add a user in Joomla and in eMundus component
 		\nUsage: <info>php %command.full_name%</info>";
 
-        $this->addOption('username', null, InputOption::VALUE_OPTIONAL, 'username');
-        $this->addOption('name', null, InputOption::VALUE_OPTIONAL, 'full name of user');
+        $this->addOption('username', null, InputOption::VALUE_REQUIRED, 'username');
+        $this->addOption('firstname', null, InputOption::VALUE_OPTIONAL, 'firstname of user');
+        $this->addOption('lastname', null, InputOption::VALUE_OPTIONAL, 'lastname of user');
         $this->addOption('password', null, InputOption::VALUE_OPTIONAL, 'password');
-        $this->addOption('email', null, InputOption::VALUE_OPTIONAL, 'email address');
+        $this->addOption('email', null, InputOption::VALUE_REQUIRED, 'email address');
         $this->addOption('usergroup', null, InputOption::VALUE_OPTIONAL, 'usergroup (separate multiple groups with comma ",")');
         $this->addOption('userprofiles', null, InputOption::VALUE_OPTIONAL, 'profiles (separate multiple groups with comma ",")');
         $this->addOption('useremundusgroups', null, InputOption::VALUE_OPTIONAL, 'emundus groups (separate multiple groups with comma ",")');

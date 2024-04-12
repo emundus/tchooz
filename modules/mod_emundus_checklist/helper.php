@@ -1,4 +1,7 @@
 <?php
+
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Access Deny');
 
 class modEmundusChecklistHelper

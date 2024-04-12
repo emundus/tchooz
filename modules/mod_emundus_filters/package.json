@@ -10,7 +10,7 @@
   "dependencies": {
     "@vue/devtools-api": "^6.5.0",
     "core-js": "^3.6.5",
-    "vue": "^3.3.4",
+    "vue": "^3.4.21",
     "vuex": "^4.1.0"
   },
   "devDependencies": {

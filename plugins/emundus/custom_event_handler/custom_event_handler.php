@@ -9,8 +9,9 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Fabrik\Helpers\Worker;
+use Joomla\CMS\Plugin\CMSPlugin;
 
-class plgEmundusCustom_event_handler extends \Joomla\CMS\Plugin\CMSPlugin
+class plgEmundusCustom_event_handler extends CMSPlugin
 {
 
 	private $hEvents = null;
@@ -45,7 +46,7 @@ class plgEmundusCustom_event_handler extends \Joomla\CMS\Plugin\CMSPlugin
 			$returned_values = [];
 
 			if (method_exists($this->hEvents, $event)) {
-				$this->hEvents->{$event}($args);
+				$returned_values[$event] = $this->hEvents->{$event}($args);
 			}
 
 			foreach ($events as $index => $caller_index) {

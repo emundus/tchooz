@@ -12,9 +12,7 @@
  * details.
  */
 defined('_JEXEC') or die('Restricted access');
-
 ?>
-
 
 <div>
     <div>
@@ -102,8 +100,7 @@ defined('_JEXEC') or die('Restricted access');
         <div class="col-md-9 main-panel">
             <div id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="top"
                  title=<?php echo JText::_('COM_EMUNDUS_FILTERS_HIDE_FILTER'); ?>">
-				<span class=" glyphicon glyphicon-chevron-left
-            "></span>
+				<span class="glyphicon glyphicon-chevron-left"></span>
         </div>
         <div class="navbar navbar-inverse em-menuaction">
             <div class="navbar-header em-menuaction-header">
@@ -138,9 +135,7 @@ defined('_JEXEC') or die('Restricted access');
     var loadingLine = '<?php echo JURI::base() . 'media/com_emundus/images/icones/loader-line.gif'; ?>';
     $(document).ready(function () {
         $('.chzn-select').chosen({width: '75%'});
-        // reloadData();
         refreshFilter();
-        // search();
         reloadActions();
     })
 

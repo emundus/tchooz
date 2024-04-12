@@ -1,7 +1,9 @@
 SET FOREIGN_KEY_CHECKS=0;
 
 TRUNCATE TABLE jos_action_logs;
+TRUNCATE TABLE jos_action_logs_users;
 TRUNCATE TABLE jos_dropfiles;
+TRUNCATE TABLE jos_dropfiles_statistics;
 TRUNCATE TABLE jos_dropfiles_files;
 TRUNCATE TABLE jos_emundus_9_00;
 TRUNCATE TABLE jos_emundus_admission;
@@ -34,6 +36,7 @@ TRUNCATE TABLE jos_emundus_languages;
 TRUNCATE TABLE jos_emundus_languages_692_repeat;
 TRUNCATE TABLE jos_emundus_learning_agreement;
 TRUNCATE TABLE jos_emundus_learning_agreement_status;
+TRUNCATE TABLE jos_emundus_logs;
 TRUNCATE TABLE jos_emundus_mobility;
 TRUNCATE TABLE jos_emundus_personal_detail;
 TRUNCATE TABLE jos_emundus_qcm;
@@ -68,6 +71,17 @@ TRUNCATE TABLE jos_emundus_users_assoc;
 TRUNCATE TABLE jos_emundus_users_attachments;
 TRUNCATE TABLE jos_emundus_users_profiles;
 TRUNCATE TABLE jos_emundus_version;
+TRUNCATE TABLE jos_fabrik_connections;
+TRUNCATE TABLE jos_finder_links;
+TRUNCATE TABLE jos_finder_links_terms;
+TRUNCATE TABLE jos_finder_logging;
+TRUNCATE TABLE jos_finder_taxonomy;
+TRUNCATE TABLE jos_finder_taxonomy_map;
+TRUNCATE TABLE jos_finder_terms;
+TRUNCATE TABLE jos_finder_terms_common;
+TRUNCATE TABLE jos_finder_tokens;
+TRUNCATE TABLE jos_finder_tokens_aggregate;
+TRUNCATE TABLE jos_history;
 TRUNCATE TABLE jos_hikashop_order;
 TRUNCATE TABLE jos_hikashop_user;
 TRUNCATE TABLE `jos_hikashop_payment` ;
@@ -78,6 +92,9 @@ TRUNCATE TABLE jos_messages;
 TRUNCATE TABLE jos_redirect_links;
 TRUNCATE TABLE jos_securitycheckpro_blacklist;
 TRUNCATE TABLE jos_securitycheckpro_dynamic_blacklist;
+TRUNCATE TABLE jos_securitycheckpro_logs;
+TRUNCATE TABLE jos_securitycheckpro_sessions;
+TRUNCATE TABLE jos_securitycheckpro_whitelist;
 TRUNCATE TABLE jos_session;
 TRUNCATE TABLE jos_updates;
 TRUNCATE TABLE jos_user_profiles;
@@ -86,8 +103,6 @@ TRUNCATE TABLE jos_users;
 TRUNCATE TABLE jos_overrider;
 TRUNCATE TABLE jos_fabrik_log;
 TRUNCATE TABLE jos_fabrik_form_sessions;
-TRUNCATE TABLE jos_dpcalendar_bookings;
-TRUNCATE TABLE jos_dpcalendar_events;
 
 #FABRIK cleanup
 DELETE FROM `jos_fabrik_lists` WHERE `published` = -2;
@@ -136,6 +151,9 @@ UPDATE `jos_emundus_setup_emails` SET `subject`=REPLACE(subject, "Sorbonne Unive
 UPDATE `jos_emundus_setup_emails` SET `message`=REPLACE(message, "Sorbonne Université", "[SITE_NAME]") ;
 
 DELETE FROM `jos_categories` WHERE `extension` like 'com_dropfiles';
+DELETE FROM `jos_assets` WHERE `name` LIKE 'com_dropfiles.category.%';
+
+DELETE FROM `jos_emundus_setup_action_tag` WHERE `id` NOT IN (1,2,3);
 
 ALTER TABLE `jos_users` auto_increment = 100;
 ALTER TABLE `jos_emundus_users` auto_increment = 100 ROW_FORMAT = COMPACT;

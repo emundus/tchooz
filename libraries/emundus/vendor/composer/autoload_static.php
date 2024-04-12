@@ -8,9 +8,39 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
 {
     public static $files = array (
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
-        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+        '2fb9d6f23c8e8faefc193a4cde0cab4f' => __DIR__ . '/..' . '/joomla/string/src/phputf8/utf8.php',
+        'e6851e0ae7328fe5412fcec73928f3d9' => __DIR__ . '/..' . '/joomla/string/src/phputf8/ord.php',
+        'd9ad1b7c85c100a18c404a13824b846e' => __DIR__ . '/..' . '/joomla/string/src/phputf8/str_ireplace.php',
+        '62bad9b6730d2f83493d2337bf61519d' => __DIR__ . '/..' . '/joomla/string/src/phputf8/str_pad.php',
+        'c4d521b8d54308532dce032713d4eec0' => __DIR__ . '/..' . '/joomla/string/src/phputf8/str_split.php',
+        'fa973e71cace925de2afdc692b861b1d' => __DIR__ . '/..' . '/joomla/string/src/phputf8/strcasecmp.php',
+        '0c98c2f1295d9f4d093cc77d5834bb04' => __DIR__ . '/..' . '/joomla/string/src/phputf8/strcspn.php',
+        'a52639d843b4094945115c178a91ca86' => __DIR__ . '/..' . '/joomla/string/src/phputf8/stristr.php',
+        '73ee7d0297e683c4c2e7798ef040fb2f' => __DIR__ . '/..' . '/joomla/string/src/phputf8/strrev.php',
+        'd55633c05ddb996e0005f35debaa7b5b' => __DIR__ . '/..' . '/joomla/string/src/phputf8/strspn.php',
+        '944e69d23b93558fc0714353cf0c8beb' => __DIR__ . '/..' . '/joomla/string/src/phputf8/trim.php',
+        '31264bab20f14a8fc7a9d4265d91ee98' => __DIR__ . '/..' . '/joomla/string/src/phputf8/ucfirst.php',
+        '05d739a990f75f0c44ebe1f032b33148' => __DIR__ . '/..' . '/joomla/string/src/phputf8/ucwords.php',
+        '4292e2fa66516089e6006723267587b4' => __DIR__ . '/..' . '/joomla/string/src/phputf8/utils/ascii.php',
+        '87465e33b7551b401bf051928f220e9a' => __DIR__ . '/..' . '/joomla/string/src/phputf8/utils/validation.php',
+        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
+        '07d7f1a47144818725fd8d91a907ac57' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/create_uploaded_file.php',
+        'da94ac5d3ca7d2dbab84ce561ce72bfd' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/marshal_headers_from_sapi.php',
+        '3d97c8dcdfba8cb85d3b34f116bb248b' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/marshal_method_from_sapi.php',
+        'e6f3bc6883e449ab367280b34158c05b' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/marshal_protocol_version_from_sapi.php',
+        'd59fbae42019aedf227094ac49a46f50' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/marshal_uri_from_sapi.php',
+        'de95e0ac670b27c84ef8c5ac41fc1b34' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/normalize_server.php',
+        'b6c2870932b0250c10334a86dcb33c7f' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/normalize_uploaded_files.php',
+        'd02cf21124526632320d6f20b1bbf905' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/parse_cookie_header.php',
+        'd919fc9d5ad52cfb7f322f7fe36458ab' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/create_uploaded_file.legacy.php',
+        'e397f74f8af3b1e56166a6e99f216ee7' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/marshal_headers_from_sapi.legacy.php',
+        'd154b49fab8e4da34fb553a2d644918c' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/marshal_method_from_sapi.legacy.php',
+        '9d3db23ca418094bcf0b641a0c9559ed' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/marshal_protocol_version_from_sapi.legacy.php',
+        'b0b88a3b89caae681462c58ff19a7059' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/marshal_uri_from_sapi.legacy.php',
+        'cc8e14526dc240491e17a838cb78508c' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/normalize_server.legacy.php',
+        '786bf90caabc9e09b6ad4cc5ca8f0e30' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/normalize_uploaded_files.legacy.php',
+        '751a5a3f463e4be759be31748b61737c' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/parse_cookie_header.legacy.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
@@ -26,10 +56,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         array (
             'phpDocumentor\\Reflection\\' => 25,
         ),
-        'l' => 
-        array (
-            'libphonenumber\\' => 15,
-        ),
         'Z' => 
         array (
             'ZipStream\\' => 10,
@@ -40,13 +66,13 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         ),
         'S' => 
         array (
-            'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Svg\\' => 4,
             'Sabberworm\\CSS\\' => 15,
         ),
         'P' => 
         array (
             'Psr\\SimpleCache\\' => 16,
+            'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
             'Prophecy\\' => 9,
@@ -57,13 +83,27 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         ),
         'M' => 
         array (
-            'MyCLabs\\Enum\\' => 13,
             'Matrix\\' => 7,
             'Masterminds\\' => 12,
         ),
         'L' => 
         array (
             'Laminas\\Escaper\\' => 16,
+            'Laminas\\Diactoros\\' => 18,
+        ),
+        'J' => 
+        array (
+            'Joomla\\Utilities\\' => 17,
+            'Joomla\\Uri\\' => 11,
+            'Joomla\\String\\' => 14,
+            'Joomla\\Session\\' => 15,
+            'Joomla\\Registry\\' => 16,
+            'Joomla\\OAuth2\\' => 14,
+            'Joomla\\Input\\' => 13,
+            'Joomla\\Http\\' => 12,
+            'Joomla\\Filter\\' => 14,
+            'Joomla\\Event\\' => 13,
+            'Joomla\\Application\\' => 19,
         ),
         'H' => 
         array (
@@ -78,7 +118,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
             'Gotenberg\\' => 10,
-            'Giggsey\\Locale\\' => 15,
         ),
         'F' => 
         array (
@@ -93,6 +132,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         ),
         'C' => 
         array (
+            'Composer\\CaBundle\\' => 18,
             'Complex\\' => 8,
         ),
     );
@@ -112,10 +152,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
-        'libphonenumber\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/giggsey/libphonenumber-for-php/src',
-        ),
         'ZipStream\\' => 
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
@@ -123,10 +159,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
-        ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
         'Svg\\' => 
         array (
@@ -139,6 +171,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'Psr\\SimpleCache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
+        ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/src',
         ),
         'Psr\\Http\\Message\\' => 
         array (
@@ -169,10 +205,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         array (
             0 => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src',
         ),
-        'MyCLabs\\Enum\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
-        ),
         'Matrix\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
@@ -184,6 +216,54 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'Laminas\\Escaper\\' => 
         array (
             0 => __DIR__ . '/..' . '/laminas/laminas-escaper/src',
+        ),
+        'Laminas\\Diactoros\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/laminas/laminas-diactoros/src',
+        ),
+        'Joomla\\Utilities\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/joomla/utilities/src',
+        ),
+        'Joomla\\Uri\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/joomla/uri/src',
+        ),
+        'Joomla\\String\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/joomla/string/src',
+        ),
+        'Joomla\\Session\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/joomla/session/src',
+        ),
+        'Joomla\\Registry\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/joomla/registry/src',
+        ),
+        'Joomla\\OAuth2\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/joomla/oauth2/src',
+        ),
+        'Joomla\\Input\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/joomla/input/src',
+        ),
+        'Joomla\\Http\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/joomla/http/src',
+        ),
+        'Joomla\\Filter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/joomla/filter/src',
+        ),
+        'Joomla\\Event\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/joomla/event/src',
+        ),
+        'Joomla\\Application\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/joomla/application/src',
         ),
         'Http\\Promise\\' => 
         array (
@@ -217,10 +297,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         array (
             0 => __DIR__ . '/..' . '/gotenberg/gotenberg-php/src',
         ),
-        'Giggsey\\Locale\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/giggsey/locale/src',
-        ),
         'FontLib\\' => 
         array (
             0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
@@ -240,6 +316,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'DeepCopy\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
+        ),
+        'Composer\\CaBundle\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/composer/ca-bundle/src',
         ),
         'Complex\\' => 
         array (
@@ -886,7 +966,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'SebastianBergmann\\Type\\UnknownType' => __DIR__ . '/..' . '/sebastian/type/src/UnknownType.php',
         'SebastianBergmann\\Type\\VoidType' => __DIR__ . '/..' . '/sebastian/type/src/VoidType.php',
         'SebastianBergmann\\Version' => __DIR__ . '/..' . '/sebastian/version/src/Version.php',
-        'Stringable' => __DIR__ . '/..' . '/myclabs/php-enum/stubs/Stringable.php',
         'TCPDF' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf.php',
         'TCPDF2DBarcode' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf_barcodes_2d.php',
         'TCPDFBarcode' => __DIR__ . '/..' . '/tecnickcom/tcpdf/tcpdf_barcodes_1d.php',

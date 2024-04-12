@@ -138,19 +138,23 @@ class plgUserEmundus extends CMSPlugin
 		}
 
 		$dir = EMUNDUS_PATH_ABS . $user['id'] . DS;
+		$dir = EMUNDUS_PATH_ABS.$user['id'].DS;
+		if(is_dir($dir)) {
+			if (!$dh = opendir($dir)) {
+				Factory::getApplication()->enqueueMessage(JText::_("JERROR_AN_ERROR_HAS_OCCURRED"), 'error');
+				return false;
+			}
 
-		if (!$dh = opendir($dir)) {
-			return false;
+			while (false !== ($obj = readdir($dh))) {
+				if ($obj == '.' || $obj == '..') continue;
+				if (!unlink($dir . $obj)) {
+					Factory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND") . " : " . $obj . "\n", 'error');
+				}
+			}
+
+			closedir($dh);
+			rmdir($dir);
 		}
-
-		while (false !== ($obj = readdir($dh))) {
-			if ($obj == '.' || $obj == '..') continue;
-			if (!unlink($dir . $obj))
-				Factory::getApplication()->enqueueMessage(JText::_("FILE_NOT_FOUND") . " : " . $obj . "\n", 'error');
-		}
-
-		closedir($dh);
-		rmdir($dir);
 
 		if ($this->params->get('send_email_delete', 0) == 1) {
 			require_once(JPATH_SITE . '/components/com_emundus/controllers/messages.php');
@@ -237,7 +241,7 @@ class plgUserEmundus extends CMSPlugin
 	{
 		$app = Factory::getApplication();
 		// The method check here ensures that if running as a CLI Application we don't get any errors
-		if (method_exists($app, 'isClient') && ($app->isClient('site') || $app->isClient('cli'))) {
+		if (method_exists($app, 'isClient') && ($app->isClient('cli'))) {
 			return;
 		}
 
@@ -434,7 +438,7 @@ class plgUserEmundus extends CMSPlugin
 					}
 				}
 				catch (Exception $e) {
-					JLog::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
+					Log::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
 				}
 
 				$this->onUserLogin($user);
@@ -462,6 +466,19 @@ class plgUserEmundus extends CMSPlugin
 		// ThirdPartyApp::loginUser($user['username'], $user['password']);
 		$input    = $this->app->input;
 		$redirect = $input->get->getBase64('redirect');
+
+		$instance = User::getInstance();
+		$id = (int) UserHelper::getUserId($user['username']);
+
+		if ($id)
+		{
+			$instance->load($id);
+		}
+
+		if ($instance->block == 1)
+		{
+			return false;
+		}
 
 		if (empty($redirect)) {
 			parse_str($input->server->getVar('HTTP_REFERER'), $return_url);
@@ -496,7 +513,7 @@ class plgUserEmundus extends CMSPlugin
 						$result = $this->db->loadObject();
 					}
 					catch (Exception $e) {
-						JLog::add('Error checking if user is not already in emundus users', JLog::ERROR, 'com_emundus.error');
+						Log::add('Error checking if user is not already in emundus users', Log::ERROR, 'com_emundus.error');
 					}
 
 					if (empty($result) && empty($result->id)) {
@@ -613,7 +630,7 @@ class plgUserEmundus extends CMSPlugin
 					}
 				}
 				catch (Exception $e) {
-					JLog::add('plugins/user/emundus/emundus.php | Error when update some informations on profile with external login : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add('plugins/user/emundus/emundus.php | Error when update some informations on profile with external login : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 				}
 
 			}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -44,7 +44,10 @@ class CategoryViewCategory extends hikashopView
 
 		$pageInfo->filter->order->value = $app->getUserStateFromRequest( $this->paramBase.".filter_order", 'filter_order',	'a.category_ordering','cmd' );
 		$pageInfo->filter->order->dir	= $app->getUserStateFromRequest( $this->paramBase.".filter_order_Dir", 'filter_order_Dir',	'asc',	'word' );
-		if(hikaInput::get()->getVar('search')!=$app->getUserState($this->paramBase.".search") || hikaInput::get()->getVar('filter_id')!=$app->getUserState($this->paramBase.".filter_id")){
+
+		$newFilterId = hikaInput::get()->getVar('filter_id');
+		$newSearch = hikaInput::get()->getVar('search');
+		if((!empty($newSearch) && $newSearch!=$app->getUserState($this->paramBase.".search")) || (!empty($newFilterId) && $newFilterId !=$app->getUserState($this->paramBase.".filter_id"))){
 			$app->setUserState( $this->paramBase.'.limitstart',0);
 			$pageInfo->limit->start = 0;
 		}else{
@@ -117,6 +120,10 @@ class CategoryViewCategory extends hikashopView
 		}
 		if($type=='tax'||$type=='status'){
 			$category_image = false;
+		}
+		if($type=='manufacturer') {
+			$this->icon = 'tag';
+			$this->nameListing = 'MANUFACTURERS';
 		}
 		$this->assignRef('type',$type);
 
@@ -271,6 +278,10 @@ class CategoryViewCategory extends hikashopView
 			if(empty($element->category_type)&&$parentData->category_type!='root'){
 				$element->category_type=$parentData->category_type;
 			}
+		}
+		if($element->category_type == 'manufacturer') {
+			$this->icon = 'tag';
+			$this->nameForm = 'MANUFACTURERS';
 		}
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&category_id='.$category_id);
 

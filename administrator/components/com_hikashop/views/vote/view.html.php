@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -195,9 +195,9 @@ class VoteViewVote extends hikashopView{
 		} else {
 			$this->display_reg = ' style="display:none"';
 		}
-		if($element->vote_pseudo == '0')
+		if(empty($element->vote_pseudo) || $element->vote_pseudo == '0')
 			$element->vote_pseudo = '';
-		if($element->vote_email == '0')
+		if(empty($element->vote_email) || $element->vote_email == '0')
 			$element->vote_email = '';
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&vote_id='.$vote_id);
 		$this->toolbar = array(

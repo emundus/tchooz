@@ -129,6 +129,8 @@ class Falang {
      *       4.5 change onBeforeTranslation parameters order
      *           change onAfterTranslation parameters order
      *       4.11 add onBeforeFieldTranslation trigger
+     * @update 5.4 use main query without alias to allow tables locking
+     *             rewrite this query
 	 */
 	public static function translateListWithIDs( &$rows, $ids, $reference_table, $language, & $tableArray, $querySQL, $refTablePrimaryKey="id", $allowfallback=true )
 	{
@@ -222,20 +224,16 @@ class Falang {
 		}
 
 		if (isset($ids) && $reference_table!='') {
-            //TODO Params for published ?
-            //$published = $user->authorise('core.publish', 'com_falang') ? "\n	AND falang_content.published=1" : "";
-			//$published = ($user->get('id')<21)?"\n	AND falang_content.published=1":"";
-			$published = "\n	AND falang_content.published=1";
-			$sql = "SELECT falang_content.reference_field, falang_content.value, falang_content.reference_id, falang_content.original_value "
-			. "\nFROM #__falang_content AS falang_content"
-			. "\nWHERE falang_content.language_id=".$languages[$language]->lang_id
-			. $published
-			. "\n   AND falang_content.reference_id IN($ids)"
-			. "\n   AND falang_content.reference_table='$reference_table'"
-			;
-			$db->setQuery( $sql );
+            $query = $db->getQuery(true);
+            $query->select('reference_field, value, reference_id, original_value')
+                ->from($db->quoteName('#__falang_content'))
+                ->where($db->quoteName('language_id').'='.$languages[$language]->lang_id)
+                ->where($db->quoteName('published').'= 1')
+                ->where($db->quoteName('reference_id').'IN ('.$ids.')')
+                ->where($db->quoteName('reference_table').'= '.$db->quote($reference_table));
 
-			//$translations = $db->loadObjectList('',false);
+            $db->setQuery($query);
+
             $translations = $db->loadObjectList('', 'stdClass', false);
 			if (count($translations)>0){
 				$fieldmap = null;

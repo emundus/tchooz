@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -62,10 +62,14 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 						if($o == $translations[$k])
 							continue;
 						if(is_null($copy)) {
-							$serialize = $item->serialize();
-							$class = $this->resultClass;
-							$copy = new $class();
-							@$copy->unserialize($serialize);
+							if(method_exists($item, 'serialize')) {
+								$serialize = $item->serialize();
+								$class = $this->resultClass;
+								$copy = new $class();
+								@$copy->unserialize($serialize);
+							} else {
+								$copy = hikashop_copy($item);
+							}
 							$copy->language = $language->code;
 							$copy->addTaxonomy('Language', $copy->language);
 						}

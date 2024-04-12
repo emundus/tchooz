@@ -15,10 +15,16 @@ if ($just_logged && !$only_applicant) {
         .em-switch-profile-img {
             text-align: center;
             justify-content: center;
+            height: 300px;
+            padding: 20px 0 20px 0;
         }
 
         .em-switch-profile-img img {
-            width: 10vw;
+            width: 100%;
+        }
+
+        .swal2-header {
+            width: 100%;
         }
 
         .em-switch-profile-swal-container.swal2-shown {
@@ -118,14 +124,14 @@ if ($just_logged && !$only_applicant) {
             Swal.fire({
                 position: 'center',
                 iconHtml: '',
-                title: "<h1 class='em-main-500-color'><?php echo JText::_('MOD_EMUNDUS_SWITCH_PROFILE_WELCOME') . ' ' . $user->name ?></h1>",
+                title: "<h1 class='em-main-500-color em-text-align-center'><?php echo JText::_('MOD_EMUNDUS_SWITCH_PROFILE_WELCOME') . ' ' . $user->firstname . ' ' . $user->lastname; ?></h1>",
                 html: "<?php echo $text ?>",
                 showConfirmButton: false,
                 reverseButtons: true,
                 allowOutsideClick: false,
                 confirmButtonText: "<?php echo JText::_('MOD_EMUNDUS_SWITCH_PROFILE_OK') ?>",
                 customClass: {
-                    header: 'items-center',
+                    header: 'tw-items-center',
                     title: 'em-swal-title',
                     confirmButton: 'em-swal-confirm-button',
                     content: 'em-switch-profile-swal-content',
@@ -144,7 +150,7 @@ if ($just_logged && !$only_applicant) {
                 return;
             }
 
-            const url = window.location.origin.toString() + '/index.php';
+            const url = window.location.origin.toString() + '/' + '<?php echo $redirect ?>';
 
             jQuery.ajax({
                 type: 'POST',

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -447,6 +447,57 @@ class hikashopUserClass extends hikashopClass {
 			$userGroups = JAccess::getGroupsByUser($my->id, (bool)$config->get('inherit_parent_group_access')); //$my->authorisedLevels();
 		}
 		return $userGroups;
+	}
+
+	public function getNumberOfPurchases(&$users, $options=array()) {
+
+		if(empty($users))
+			return true;
+
+		$ids = array();
+		if(!is_array($users)) {
+			if(is_object($users)) {
+				$ids[] = (int)$users->user_id;
+			} else {
+				return false;
+			}
+		}
+		if(is_array($users)) {
+			foreach($users as $k => $user) {
+				$ids[] = (int)$user->user_id;
+				$users[$k]->number_of_purchases = 0;
+			}
+		}
+		$filters = array(
+			'order_user_id IN (' . implode(',', $ids).')'
+		);
+
+		$config = hikashop_config();
+		$invoice_statuses = explode(',', $config->get('invoice_order_statuses', 'confirmed,shipped'));
+		foreach($invoice_statuses as $k => $status) {
+			$invoice_statuses[$k] = $this->database->Quote($status);
+		}
+		if(count($invoice_statuses)) {
+			$filters[] = 'order_status IN ('.implode(',',$invoice_statuses).')';
+		}
+
+		$query = 'SELECT order_full_price, order_user_id, order_id FROM '.hikashop_table('order').' WHERE order_type = '.$this->database->Quote('sale').' AND ('.implode(' OR ',$filters).')';
+		$this->database->setQuery($query);
+		$orders = $this->database->loadObjectList();
+
+		if(is_array($users)) {
+			foreach($orders as $order) {
+				foreach($users as $k => $u) {
+					if($u->user_id == $order->order_user_id) {
+						$users[$k]->number_of_purchases++;
+						break;
+					}
+				}
+			}
+		} else {
+			$users->number_of_purchases = count($orders);
+		}
+		return true;
 	}
 
 	public function register($input_data, $mode, $options = array()) {
@@ -899,7 +950,7 @@ class hikashopUserClass extends hikashopClass {
 			$status = false;
 			$messages['register_email'] = array(JText::_('EMAIL_INVALID'), 'error');
 		}
-		if($mode != 2) {
+		if($mode != 2 && !empty($registerData->email)) {
 			$domains = $params->get('domains');
 			if ($domains) {
 				$emailDomain = explode('@', $registerData->email);

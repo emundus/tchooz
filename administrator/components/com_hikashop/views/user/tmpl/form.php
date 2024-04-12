@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -201,7 +201,7 @@ if(hikashop_level(2) && $this->affiliate_active) {
 <?php if(!empty($this->extraData->end) && !empty($this->extraData->end)) { echo implode("\r\n", $this->extraData->end); } ?>
 	</div>
 </div>
-	<input type="hidden" name="cancel_redirect" value="<?php echo base64_encode(hikaInput::get()->getString('cancel_redirect')); ?>" />
+	<input type="hidden" name="cancel_redirect" value="<?php echo base64_encode((string)hikaInput::get()->getString('cancel_redirect')); ?>" />
 	<input type="hidden" name="cid[]" value="<?php echo @$this->user->user_id; ?>" />
 	<input type="hidden" name="order_id" value="<?php echo hikaInput::get()->getInt('order_id', 0); ?>" />
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />

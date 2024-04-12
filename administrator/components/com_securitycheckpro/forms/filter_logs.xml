@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fields name="filter">
+        <field
+            name="search"
+            type="text"
+            inputmode="search"
+            label="JSEARCH_FILTER_LABEL"                
+            hint="JSEARCH_FILTER"
+        />
+		<field
+			name="leido"
+			type="list"
+			label="COM_SECURITYCHECKPRO_MARKED_DESCRIPTION"
+			description="COM_SECURITYCHECKPRO_MARKED_DESCRIPTION"
+			onchange="this.form.submit();"
+			default="0">
+			<option value="">COM_SECURITYCHECKPRO_MARKED_DESCRIPTION</option>
+			<option value="0">COM_SECURITYCHECKPRO_LOG_NOT_READ</option>
+			<option value="1">COM_SECURITYCHECKPRO_LOG_READ</option>			
+		</field>
+		<field
+			name="type"
+			type="list"
+			label="COM_SECURITYCHECKPRO_TYPE_DESCRIPTION"
+			description="COM_SECURITYCHECKPRO_TYPE_DESCRIPTION"
+			onchange="this.form.submit();"
+			default="">
+			<option value="">COM_SECURITYCHECKPRO_TYPE_DESCRIPTION</option>
+			<option value="XSS">COM_SECURITYCHECKPRO_TITLE_XSS</option>
+			<option value="XSS_BASE64">COM_SECURITYCHECKPRO_TITLE_XSS_BASE64</option>
+			<option value="SQL_INJECTION">COM_SECURITYCHECKPRO_TITLE_SQL_INJECTION</option>
+			<option value="SQL_INJECTION_BASE64">COM_SECURITYCHECKPRO_TITLE_SQL_INJECTION_BASE64</option>
+			<option value="LFI">COM_SECURITYCHECKPRO_TITLE_LFI</option>
+			<option value="LFI_BASE64">COM_SECURITYCHECKPRO_TITLE_LFI_BASE64</option>
+			<option value="IP_PERMITTED">COM_SECURITYCHECKPRO_TITLE_IP_PERMITTED</option>
+			<option value="IP_BLOCKED">COM_SECURITYCHECKPRO_TITLE_IP_BLOCKED</option>
+			<option value="IP_BLOCKED_DINAMIC">COM_SECURITYCHECKPRO_TITLE_IP_BLOCKED_DINAMIC</option>
+			<option value="SECOND_LEVEL">COM_SECURITYCHECKPRO_TITLE_SECOND_LEVEL</option>
+			<option value="USER_AGENT_MODIFICATION">COM_SECURITYCHECKPRO_TITLE_USER_AGENT_MODIFICATION</option>
+			<option value="REFERER_MODIFICATION">COM_SECURITYCHECKPRO_TITLE_REFERER_MODIFICATION</option>
+			<option value="SESSION_PROTECTION">COM_SECURITYCHECKPRO_TITLE_SESSION_PROTECTION</option>
+			<option value="SESSION_HIJACK_ATTEMPT">COM_SECURITYCHECKPRO_TITLE_SESSION_HIJACK_ATTEMPT</option>
+			<option value="FORBIDDEN_EXTENSION">COM_SECURITYCHECKPRO_TITLE_FORBIDDEN_EXTENSION</option>
+			<option value="MULTIPLE_EXTENSIONS">COM_SECURITYCHECKPRO_SUSPICIOUS_FILENAME_EXTENSION</option>
+			<option value="SPAM_PROTECTION">COM_SECURITYCHECKPRO_SPAM_PROTECTION</option>
+			<option value="URL_INSPECTOR">COM_SECURITYCHECKPRO_CPANEL_URL_INSPECTOR_TEXT</option>
+		</field>
+		<field
+			name="description"
+			type="list"
+			label="COM_SECURITYCHECKPRO_SELECT_DESCRIPTION"
+			description="COM_SECURITYCHECKPRO_SELECT_DESCRIPTION"
+			onchange="this.form.submit();"
+			default="">
+			<option value="">COM_SECURITYCHECKPRO_SELECT_DESCRIPTION</option>
+			<option value="TAGS_STRIPPED">COM_SECURITYCHECKPRO_TAGS_STRIPPED</option>
+			<option value="DUPLICATE_BACKSLASHES">COM_SECURITYCHECKPRO_DUPLICATE_BACKSLASHES</option>
+			<option value="LINE_COMMENTS">COM_SECURITYCHECKPRO_LINE_COMMENTS</option>
+			<option value="SQL_PATTERN">COM_SECURITYCHECKPRO_SQL_PATTERN</option>
+			<option value="IF_STATEMENT">COM_SECURITYCHECKPRO_IF_STATEMENT</option>
+			<option value="INTEGERS">COM_SECURITYCHECKPRO_INTEGERS</option>
+			<option value="BACKSLASHES_ADDED">COM_SECURITYCHECKPRO_BACKSLASHES_ADDED</option>
+			<option value="LFI">COM_SECURITYCHECKPRO_LFI</option>
+			<option value="IP_BLOCKED">COM_SECURITYCHECKPRO_IP_BLOCKED</option>
+			<option value="IP_BLOCKED_DINAMIC">COM_SECURITYCHECKPRO_IP_BLOCKED_DINAMIC</option>
+			<option value="IP_PERMITTED">COM_SECURITYCHECKPRO_TITLE_IP_PERMITTED</option>
+			<option value="FORBIDDEN_WORDS">COM_SECURITYCHECKPRO_FORBIDDEN_WORDS</option>
+			<option value="SESSION_PROTECTION">COM_SECURITYCHECKPRO_SESSION_PROTECTION</option>
+			<option value="UPLOAD_SCANNER">COM_SECURITYCHECKPRO_UPLOAD_SCANNER</option>
+			<option value="FAILED_LOGIN_ATTEMPT_LABEL">COM_SECURITYCHECKPRO_FAILED_LOGIN_ATTEMPT_LABEL</option>
+		</field>
+		<field
+			name="datefrom"
+			type="calendar"
+			label="FROM"
+			onchange="this.form.submit();"
+			default="">			
+		</field>
+		<field
+			name="dateto"
+			type="calendar"
+			label="TO"
+			onchange="this.form.submit();"
+			default="">			
+		</field>
+    </fields>
+    <fields name="list">		
+        <field
+                name="limit"
+                type="limitbox"
+                label="JGLOBAL_LIST_LIMIT"
+                default="25"
+                onchange="this.form.submit();"
+        />
+    </fields>
+</form>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form>
+<form addfieldprefix="SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Field">
 	<fields name="filter">
 		<field
 			name="search"
@@ -21,7 +21,7 @@
 			type="extension"
 			label="COM_SECURITYCHECKPRO_EXTENSION"
 			description="COM_SECURITYCHECKPRO_EXTENSION_FILTER_DESC"
-			onchange="this.form.submit()"
+			class="js-select-submit-on-change"
 			>
 			<option value="">COM_SECURITYCHECKPRO_SELECT_EXTENSION</option>
 		</field>

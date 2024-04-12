@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 
 class EmundusModelProfile extends JModelList
@@ -104,6 +105,8 @@ class EmundusModelProfile extends JModelList
 
 	function getProfileByApplicant($aid)
 	{
+		$profile = [];
+
 		$query = 'SELECT eu.firstname, eu.lastname, eu.profile, eu.university_id,
 							esp.label AS profile_label, esp.menutype, esp.published, esp.status
 						FROM #__emundus_users AS eu
@@ -112,13 +115,13 @@ class EmundusModelProfile extends JModelList
 
 		try {
 			$this->_db->setQuery($query);
-
-			return $this->_db->loadAssoc();
+			$profile = $this->_db->loadAssoc();
 		}
 		catch (Exception $e) {
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $query, JLog::ERROR, 'com_emundus.error');
-
+			JLog::add(JUri::getInstance() . ' :: USER ID : ' . Factory::getApplication()->getIdentity()->id . ' -> ' . $query, JLog::ERROR, 'com_emundus.error');
 		}
+
+		return $profile;
 	}
 
 	function affectNoProfile($aid)
@@ -582,28 +585,26 @@ class EmundusModelProfile extends JModelList
 	}
 
 	// TODO: if it is used, update
-	function getProfileByStep($fnum, $step)
-	{
+	function getProfileByStep($step) {
+        $profiles = array();
+
+        // todo: use cache
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
-		try {
+
 			$query->select('esp.id AS profile')
-				->from($this->_db->quoteName('jos_emundus_campaign_candidature', 'cc'))
-				->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' = ' . $this->_db->quoteName('cc.applicant_id'))
-				->leftJoin($this->_db->quoteName('jos_emundus_campaign_workflow', 'ecw') . ' ON ' . $this->_db->quoteName('ecw.campaign') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
+            ->from($this->_db->quoteName('jos_emundus_campaign_workflow', 'ecw'))
 				->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp') . ' ON ' . $this->_db->quoteName('esp.id') . ' = ' . $this->_db->quoteName('ecw.profile'))
-				->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $fnum)
-				->andWhere($this->_db->quoteName('ecw.step') . ' = ' . $step);
+            ->where($this->_db->quoteName('ecw.step').' = '.$this->_db->quote($step));
 
+        try {
 			$this->_db->setQuery($query);
-
-			return $this->_db->loadResult();
+            $profiles = $this->_db->loadColumn();
+        } catch(Exception $e) {
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.', error on query '.$query.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus.error');
 		}
-		catch (Exception $e) {
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $query, JLog::ERROR, 'com_emundus.error');
 
-			return false;
-		}
+        return $profiles;
 	}
 
 	/// get profile from menutype
@@ -1185,8 +1186,11 @@ class EmundusModelProfile extends JModelList
 
 		$emundusSession = new stdClass();
 
-		foreach ($session->get('user') as $key => $value) {
-			$emundusSession->{$key} = $value;
+		$user_session = $session->get('user');
+		if (!empty($user_session)) {
+			foreach ($session->get('user') as $key => $value) {
+				$emundusSession->{$key} = $value;
+			}
 		}
 
 		$emundusSession->firstname  = $profile["firstname"];
@@ -1223,7 +1227,7 @@ class EmundusModelProfile extends JModelList
 			$emundusSession->fnum                   = $campaign["fnum"];
 			$emundusSession->fnums                  = $this->getApplicantFnums($current_user->id);
 			$emundusSession->campaign_id            = $campaign["id"];
-			$emundusSession->status                 = @$campaign["status"];
+			$emundusSession->status                 = $campaign["status"];
 			$emundusSession->candidature_incomplete = ($campaign['status'] == 0) ? 0 : 1;
 			$emundusSession->profile                = !empty($profile["profile_id"]) ? $profile["profile_id"] : $profile["profile"];
 			$emundusSession->profile_label          = $profile["label"];
@@ -1236,12 +1240,12 @@ class EmundusModelProfile extends JModelList
 			$emundusSession->candidature_end        = $campaign["end_date"];
 			$emundusSession->admission_start_date   = $campaign["admission_start_date"];
 			$emundusSession->admission_end_date     = $campaign["admission_end_date"];
-			$emundusSession->candidature_posted     = (@$profile["date_submitted"] == "0000-00-00 00:00:00" || @$profile["date_submitted"] == 0 || @$profile["date_submitted"] == null) ? 0 : 1;
+			$emundusSession->candidature_posted     = ($profile["date_submitted"] == "0000-00-00 00:00:00" || $profile["date_submitted"] == 0 || $profile["date_submitted"] == null) ? 0 : 1;
 			$emundusSession->schoolyear             = $campaign["year"];
 			$emundusSession->code                   = $campaign["training"];
 			$emundusSession->campaign_name          = $campaign["campaign_label"];
 
-			$eMConfig           = JComponentHelper::getParams('com_emundus');
+			$eMConfig           = ComponentHelper::getParams('com_emundus');
 			$allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
 			if ($allow_anonym_files) {
 				$emundusSession->anonym       = $this->checkIsAnonymUser($current_user->id);

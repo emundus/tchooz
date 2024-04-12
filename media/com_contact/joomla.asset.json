@@ -15,7 +15,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "adf7b2"
+      "version": "87129b"
     },
     {
       "name": "com_contact.contacts-list",
@@ -27,7 +27,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "c512d2"
+      "version": "f53819"
     }
   ]
 }

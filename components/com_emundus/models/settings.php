@@ -16,6 +16,8 @@ jimport('joomla.application.component.model');
 
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+use Symfony\Component\Yaml\Yaml;
 
 class EmundusModelsettings extends JModelList
 {
@@ -844,48 +846,92 @@ class EmundusModelsettings extends JModelList
 	 *
 	 * @since 1.0
 	 */
-	function updateLogo($newcontent)
+	function updateLogo($target_file,$new_logo,$ext)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$updated = false;
+		$query = $this->db->getQuery(true);
 
 		try {
-			$query->update($db->quoteName('#__modules'))
-				->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
-				->where($db->quoteName('id') . ' = 90');
-			$db->setQuery($query);
+			$query->select('id,content')
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' = ' . $this->db->quote('mod_custom'))
+				->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote('Logo'));
+			$this->db->setQuery($query);
+			$logo_module = $this->db->loadObject();
 
-			return $db->execute();
+			if (move_uploaded_file($new_logo, $target_file))
+			{
+				$regex = '/(logo.(png+|jpeg+|jpg+|svg+|gif+|webp+))|(logo_custom.(png+|jpeg+|jpg+|svg+|gif+|webp+))/m';
+
+				$new_content = preg_replace($regex, 'logo_custom.' . $ext, $logo_module->content);
+
+				$query->clear()
+					->update($this->db->quoteName('#__modules'))
+					->set($this->db->quoteName('content') . ' = ' . $this->db->quote($new_content))
+					->where($this->db->quoteName('id') . ' = ' . $logo_module->id);
+				$this->db->setQuery($query);
+				$updated = $this->db->execute();
+
+				if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml'))
+				{
+					$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml'));
+
+					if (!empty($yaml))
+					{
+						$yaml['image'] = 'gantry-media://custom/logo_custom.' . $ext;
+
+						file_put_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml', Yaml::dump($yaml));
+					}
+				}
+			}
 		}
 		catch (Exception $e) {
-			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-			return false;
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
+
+		return $updated;
 	}
 
-	function onAfterCreateCampaign($user_id)
+	function onAfterCreateCampaign($user_id = null)
 	{
+		$event_runned = false;
+
+		if (empty($user_id)) {
+			if (!empty($this->_user->id)) {
+				$user_id = $this->_user->id;
+			} else {
+				$user = Factory::getApplication()->getIdentity();
+
+				if (!empty($user->id)) {
+					$user_id = $user->id;
+				} else {
+					return false;
+				}
+			}
+		}
+
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
 		$query->select('count(id)')
 			->from($db->quoteName('#__emundus_setup_campaigns'));
-		$db->setQuery($query);
 
 		try {
+			$db->setQuery($query);
+
 			if ($db->loadResult() === '1') {
 				$this->removeParam('first_login', $user_id);
 
-				return $this->createParam('first_form', $user_id);
+				$event_runned = $this->createParam('first_form', $user_id);
+			} else {
+				$event_runned = true;
 			}
-
-			return true;
 		}
 		catch (Exception $e) {
 			JLog::add('component/com_emundus/models/settings | Error at set tutorial param after create a campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-
-			return false;
+			$event_runned =  false;
 		}
+
+		return $event_runned;
 	}
 
 	function onAfterCreateForm($user_id)
@@ -1631,5 +1677,124 @@ class EmundusModelsettings extends JModelList
 		}
 
 		return $itemId;
+	}
+
+	/**
+	 * Get only accessibles parameters based on settings-applicants.json and settings-general.json files
+	 * This function is used to avoid exposing all parameters to the front-end
+	 * @return array
+	 */
+	public function getEmundusParams()
+	{
+		$params = ['emundus' => [], 'joomla' => [], 'config' => []];
+
+		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-applicants.json');
+		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
+
+		$settings_applicants = json_decode($settings_applicants, true);
+		$settings_general = json_decode($settings_general, true);
+
+		$emundus_parameters = JComponentHelper::getParams('com_emundus');
+
+		foreach($settings_applicants as $settings_applicant) {
+			if ($settings_applicant['component'] === 'emundus') {
+				$params['emundus'][$settings_applicant['param']] = $emundus_parameters->get($settings_applicant['param']);
+			} else {
+				$params['joomla']->$settings_applicant['param'] = $this->app->getConfig()->get($settings_applicant['param']);
+			}
+		}
+
+		foreach($settings_general as $setting_general) {
+			if ($setting_general['component'] === 'emundus') {
+				$params['emundus'][$setting_general['param']] = $emundus_parameters->get($setting_general['param']);
+			} else {
+				$params['joomla'][$setting_general['param']] = $this->app->getConfig()->get($setting_general['param']);
+			}
+		}
+
+		$other_allowed_parameters = ['style', 'content', 'attachment_storage', 'translations'];
+		foreach($other_allowed_parameters as $other_allowed_parameter) {
+			$params['config'][$other_allowed_parameter] = $emundus_parameters->get($other_allowed_parameter);
+		}
+
+		return $params;
+	}
+
+	/**
+	 * @param $component
+	 * @param $param
+	 * @param $value
+	 * @return bool
+	 */
+	public function updateEmundusParam($component, $param, $value) {
+		$updated = false;
+
+		if (!empty($param)) {
+			$params = $this->getEmundusParams();
+			switch($component) {
+				case 'emundus':
+					if (array_key_exists($param, $params['emundus'])) {
+						$eMConfig = ComponentHelper::getParams('com_emundus');
+						$eMConfig->set($param, $value);
+
+						$componentid = ComponentHelper::getComponent('com_emundus')->id;
+						$db = JFactory::getDBO();
+						$query = $db->getQuery(true);
+
+						$query->update($db->quoteName('#__extensions'))
+							->set($db->quoteName('params') . ' = ' . $db->quote($eMConfig->toString()))
+							->where($db->quoteName('extension_id') . ' = ' . $db->quote($componentid));
+
+						try {
+							$db->setQuery($query);
+							$updated = $db->execute();
+						} catch (Exception $e) {
+							JLog::add('Error set param '.$param . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						}
+					} else {
+						JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
+					}
+
+					break;
+				case 'joomla':
+				default:
+					if (array_key_exists($param, $params['joomla'])) {
+						if(!class_exists('EmundusHelperUpdate')) {
+							require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+						}
+						$updated = EmundusHelperUpdate::updateConfigurationFile($param, $value);
+
+						if ($updated) {
+							$configuration = JFactory::getConfig();
+							$configuration->set($param, $value);
+						}
+					} else {
+						JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
+					}
+				break;
+			}
+		}
+
+		return $updated;
+	}
+
+	public function getFavicon() {
+		$favicon = 'images/custom/default_favicon.ico';
+
+		$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml'));
+
+		if(!empty($yaml)) {
+			$favicon_gantry = $yaml['favicon'];
+
+			if (!empty($favicon_gantry)) {
+				$favicon = str_replace('gantry-media:/', 'images', $favicon_gantry);
+
+				if (!file_exists(JPATH_ROOT . '/' . $favicon)) {
+					$favicon = 'images/custom/default_favicon.ico';
+				}
+			}
+		}
+
+		return $favicon;
 	}
 }

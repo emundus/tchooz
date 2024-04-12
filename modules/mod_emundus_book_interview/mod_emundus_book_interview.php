@@ -1,27 +1,39 @@
 <?php
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Helper\ModuleHelper;
+
 defined('_JEXEC') or die('Access Deny');
+
 require_once(dirname(__FILE__) . DS . 'helper.php');
 
-JHtml::stylesheet('media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css');
+$app = Factory::getApplication();
+$wa  = $app->getDocument()->getWebAssetManager();
+$wa->registerAndUseStyle('bootstrap-336', 'media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css');
 
-$session          = JFactory::getSession();
+$session          = $app->getSession();
 $user             = $session->get('emundusUser');
 $helper           = new modEmundusBookInterviewHelper;
 $evaluated_status = $params->get('evaluated_status');
 
-$status = $helper->getLastFileInterviewStatus($user->id)->status;
-$fnum   = $helper->getLastFileInterviewStatus($user->id)->fnum;
-if (isset($fnum)) {
+$interview = $helper->getLastFileInterviewStatus($user->id);
+$jinput = $app->input;
+$fnum = $jinput->get->get('fnum');
 
+if(empty($fnum)){
+	$fnum = $user->fnum;
+}
+
+if (!empty($fnum)) {
 	// First we need to check if the user has booked.
 	// If the user has not, we will display a button that opens a modal allowing them to book an event (and so we need to get the event info).
 	// If the user has we will display the date of their interview.
 	$user_booked = $helper->hasUserbooked($user->id, $user->start_date);
 
-	if ($user_booked) {
+	$offset = $app->get('offset');
 
-		$offset = JFactory::getConfig()->get('offset');
+	$layout = $params->get('mod_em_book_interview_layout');
+	if ($user_booked) {
 
 		$next_interview = $helper->getNextInterview($user);
 		$interview_dt   = new DateTime($next_interview->start_date, new DateTimeZone('GMT'));
@@ -29,14 +41,11 @@ if (isset($fnum)) {
 		$interview_date = $interview_dt->format('M j Y');
 		$interview_time = $interview_dt->format('g:i A');
 
-		require(JModuleHelper::getLayoutPath('mod_emundus_book_interview', 'showInterview_' . $params->get('mod_em_book_interview_layout')));
-
+		$layout = 'showInterview_' . $layout;
 	}
-	elseif ($status == $evaluated_status) {
+	elseif ($user->status == $evaluated_status) {
 
 		$available_events = $helper->getEvents($user, $fnum);
-
-		$offset = JFactory::getConfig()->get('offset');
 
 		$contact_info = array();
 		if ($params->get('skype') == 1) {
@@ -52,8 +61,7 @@ if (isset($fnum)) {
 			$contact_info['google'] = JText::_('ENTER_GOOGLE_ID');
 		}
 
-		require(JModuleHelper::getLayoutPath('mod_emundus_book_interview', $params->get('mod_em_book_interview_layout')));
-
 	}
 
+	require(ModuleHelper::getLayoutPath('mod_emundus_book_interview', $layout));
 }

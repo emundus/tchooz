@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Symfony\Component\Yaml\Yaml;
 
 /** @var \Joomla\Component\Users\Site\View\Login\HtmlView $this */
 
@@ -37,7 +38,7 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 
 	if (empty($this->registrationLink)) {
 		if (!empty($this->campaign) && !empty($this->course)) {
-			$this->registrationLink = 'inscription&course=' . $this->course . '&cid=' . $this->campaign;
+			$this->registrationLink = 'inscription?course=' . $this->course . '&cid=' . $this->campaign;
 		}
 		else {
 			$this->registrationLink = 'inscription';
@@ -45,6 +46,11 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 	}
 	$session->set('cid', $this->campaign);
 	$session->set('course', $this->course);
+
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
+	$m_settings = new EmundusModelsettings();
+
+	$this->favicon = $m_settings->getFavicon();
 
 	echo $this->loadTemplate('login');
 }

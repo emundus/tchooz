@@ -936,7 +936,7 @@ class StringHelper extends \Joomla\String\StringHelper
 
 			if (!preg_match("#^'.*'$#", $value))
 			{
-				$db = Factory::getDbo();
+				$db = Factory::getContainer()->get('DatabaseDriver');
 				$value = $db->quote($value);
 			}
 
@@ -1014,7 +1014,7 @@ class StringHelper extends \Joomla\String\StringHelper
 
 			if (!preg_match("#^`.*`$#", $value))
 			{
-				$db = Factory::getDbo();
+				$db = Factory::getContainer()->get('DatabaseDriver');
 				$value = $db->quoteName($value);
 			}
 

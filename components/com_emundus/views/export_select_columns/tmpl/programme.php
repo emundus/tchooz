@@ -1,7 +1,7 @@
 <?php
 defined('_JEXEC') or die('Restricted access');
 
-JHTML::_('behavior.modal');
+
 //JHTML::stylesheet('media/com_emundus/css/emundus.css' );
 $document = JFactory::getDocument();
 $document->addStyleSheet("media/com_emundus/css/emundus_export_select_columns.css");
@@ -80,7 +80,7 @@ if (!empty($s_elements)) {
             </div>
 		<?php elseif ($t->table_id != $tbl_tmp && $tbl_tmp != '') : ?>
 			<?php
-			$label = explode("-", $t->table_label);
+			$label = explode("-", $t->title);
 			$label = $label[1];
 			?>
             </div>
@@ -159,7 +159,7 @@ if (!empty($s_elements)) {
     <div class="em-mb-16"><?= JText::_('COM_EMUNDUS_FORM_NO_FORM_DEFINED'); ?></div>
 <?php endif;
 
-$today = date("MdYHis");
+/*$today = date("MdYHis");
 $name  = md5($today . rand(0, 10));
 $name  = $name . '.csv';
 $file  = JPATH_BASE . DS . 'tmp' . DS . $name;
@@ -173,6 +173,6 @@ $res = fputcsv($csv, $fabrik_elements, ",", '"', "\\");
 
 if (count($this->elements) > 0) {
 	echo '<div class="em-link"><a class="em-primary-button em-float-right em-no-hover em-hover-background-neutral-300" href="index.php?option=com_emundus&controller=files&task=download&name=' . $name . '">' . JText::_('COM_EMUNDUS_EXPORTS_EXPORT_AS_CSV_TEMPLATE') . '</a></div>';
-}
+}*/
 
 ?>

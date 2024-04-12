@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1064,9 +1064,8 @@ class hikashopWidgetClass extends hikashopClass {
 					$widget->widget_params->content_view='product';
 					$getLimit=$widget->widget_params->limit;
 					if(!empty($getLimit)	&& !$csv){ $limit=' LIMIT '.(int)$getLimit;	}
-					if($widget->widget_params->content=='products' || $widget->widget_params->content=='categories'){
-						$filters=$this->_dateLimit($widget, $filters, $date_field);
-					}else{
+					$filters=$this->_dateLimit($widget, $filters, $date_field);
+					if($widget->widget_params->content=='discounts'){
 						$filters[]='order_discount_code IS NOT NULL AND order_discount_code <> \'\'';
 					}
 					if(!empty($filters)){

@@ -6,18 +6,6 @@
   "license": "GPL-2.0-or-later",
   "assets": [
     {
-      "name": "com_modules.admin-module-edit-assignment",
-      "type": "script",
-      "uri": "com_modules/admin-module-edit_assignment.min.js",
-      "dependencies": [
-        "core"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "version": "46aaab"
-    },
-    {
       "name": "com_modules.admin-module-edit",
       "type": "script",
       "uri": "com_modules/admin-module-edit.min.js",
@@ -27,19 +15,19 @@
       "attributes": {
         "type": "module"
       },
-      "version": "ec6c86"
+      "version": "3209d6"
     },
     {
-      "name": "com_modules.admin-module-search",
+      "name": "com_modules.admin-module-edit-assignment",
       "type": "script",
-      "uri": "com_modules/admin-module-search.min.js",
+      "uri": "com_modules/admin-module-edit_assignment.min.js",
       "dependencies": [
         "core"
       ],
       "attributes": {
         "type": "module"
       },
-      "version": "3fa723"
+      "version": "d8d12e"
     },
     {
       "name": "com_modules.admin-modules-modal",
@@ -53,7 +41,19 @@
       },
       "deprecated": true,
       "deprecatedMsg": "Use postMessage() directly or with help of [modal-content-select] asset. To post the modal selection.",
-      "version": "b32f29"
+      "version": "b0c3f2"
+    },
+    {
+      "name": "com_modules.admin-module-search",
+      "type": "script",
+      "uri": "com_modules/admin-module-search.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "b297ae"
     },
     {
       "name": "com_modules.admin-select-modal",
@@ -65,7 +65,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "a917b8"
+      "version": "e4f906"
     }
   ]
 }

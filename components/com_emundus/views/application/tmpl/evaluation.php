@@ -90,10 +90,11 @@ else {
                 <div id="formCopy"></div>
                 <div class="form" id="form">
 					<?php if (!empty($this->url_form)) : ?>
-                        <div class="holds-iframe"><?= JText::_('COM_EMUNDUS_LOADING'); ?></div>
-                        <iframe id="iframe" src="<?= $this->url_form; ?>" align="left" frameborder="0" height="600"
-                                width="100%" scrolling="no" marginheight="0" marginwidth="0"
-                                onload="resizeIframe(this)"></iframe>
+                        <div class="em-w-100 em-flex-row" style="justify-content: center">
+                            <div class="em-loader"></div>
+                        </div>
+                        <iframe id="iframe" src="<?= $this->url_form; ?>" height="600" width="100%" onload="onLoadIframe(this)">
+                        </iframe>
 					<?php else : ?>
                         <div class="em_no-form"><?= JText::_($this->message); ?></div>
 					<?php endif; ?>
@@ -104,11 +105,6 @@ else {
     </div>
 </div>
 <script type="text/javascript">
-
-    $('iframe').load(function () {
-        $(".holds-iframe").remove();
-    }).show();
-
     $('#iframe').mouseleave(function () {
         resizeIframe(document.getElementById('iframe'));
     });
@@ -116,6 +112,11 @@ else {
     $('#iframe').mouseover(function () {
         resizeIframe(document.getElementById('iframe'));
     });
+
+    function onLoadIframe(iframe) {
+        document.querySelector('.em-loader').classList.add('hidden');
+        resizeIframe(iframe);
+    }
 
     function resizeIframe(obj) {
         if (obj.contentWindow.document.body) {
@@ -130,7 +131,6 @@ else {
     };
 
     var url_evaluation = '<?php echo $this->url_evaluation; ?>';
-
     if (url_evaluation != '') {
         $.ajax({
             type: "GET",

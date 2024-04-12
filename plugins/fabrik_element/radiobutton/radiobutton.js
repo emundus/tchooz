@@ -101,6 +101,12 @@ define(['jquery', 'fab/elementlist'], function (jQuery, FbElementList) {
                 if (typeOf(fabchecked) === 'null') {
                     input.set('fabchecked', 1);
                 }
+            } else {
+                // remove any active and btn-xxx classes
+                label.removeClass('active');
+                label.removeClass('btn-primary');
+                label.removeClass('btn-danger');
+                label.removeClass('btn-success');
             }
         },
 

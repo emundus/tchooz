@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -440,6 +440,12 @@ class configViewConfig extends hikashopView
 			if(empty($_SESSION['check_system_user'])) {
 				hikashop_display('The HikaShop user synchronization plugin has been either removed or disabled from the website. It is a critical part of HikaShop and should not be disabled if you\'re using HikaShop on your website.Please enable that plugin via the Joomla plugins manager and then logout/login from the backend.','error');
 			}
+		}
+
+		$db->setQuery("SELECT extension_id FROM `#__extensions` WHERE `folder` = 'system' AND `element` = 'hikashopproducttag' AND `enabled` = '1'");
+		$check_producttag = (int)$db->loadResult();
+		if($check_producttag != 0) {
+			hikashop_display(JText::_('HIKA_MICRODATA_ERROR'),'error');
 		}
 
 		$db->setQuery("SELECT payment_id FROM `#__hikashop_payment` WHERE `payment_type` = 'paypal' AND `payment_published` = '1'");

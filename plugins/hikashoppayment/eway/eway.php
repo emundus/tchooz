@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -84,8 +84,8 @@ class plgHikashoppaymentEway extends hikashopPaymentPlugin
 		$eway->setCardExpiryMonth( $this->cc_month );
 		$eway->setCardExpiryYear( $this->cc_year );
 		$eway->setCardCVN( $this->cc_CCV );
-
-		switch($eway->doPayment()) {
+		$result_code = $eway->doPayment();
+		switch($result_code) {
 			case EWAY_TRANSACTION_FAILED:
 				$this->app->enqueueMessage('Your transaction was declined. Please reenter your credit card or another credit card information.');
 				$error = $eway->getErrorMessage();
@@ -97,7 +97,7 @@ class plgHikashoppaymentEway extends hikashopPaymentPlugin
 				break;
 			case EWAY_TRANSACTION_UNKNOWN:
 			default:
-				$this->app->enqueueMessage('There was an error while processing your transaction: '.$eway->getErrorMessage());
+				$this->app->enqueueMessage('There was an error while processing your transaction: '.'['.$result_code.']'.$eway->getErrorMessage());
 				$this->ccClear();
 				$do = false;
 				break;

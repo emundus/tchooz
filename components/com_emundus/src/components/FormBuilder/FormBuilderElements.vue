@@ -1,27 +1,56 @@
 <template>
   <div id="form-builder-elements">
-    <p id="form-builder-elements-title" class="em-text-align-center em-w-100 em-p-16">
-      {{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENTS') }} </p>
-    <draggable
-        v-model="elements"
-        class="draggables-list"
-        :group="{ name: 'form-builder-section-elements', pull: 'clone', put: false }"
-        :sort="false"
-        :clone="setCloneElement"
-        @end="onDragEnd"
-    >
-      <transition-group>
+    <div class="tw-flex tw-items-center tw-justify-around">
+      <div v-for="menu in menus" :key="menu.id" id="form-builder-elements-title" class="em-light-tabs em-pointer"
+           @click="selected = menu.id" :class="selected === menu.id ? 'em-light-selected-tab' : ''">
+        {{ translate(menu.name) }}
+      </div>
+    </div>
+
+    <div v-if="selected === 1">
+      <draggable
+          v-model="publishedElements"
+          class="draggables-list"
+          :group="{ name: 'form-builder-section-elements', pull: 'clone', put: false }"
+          :sort="false"
+          :clone="setCloneElement"
+          @end="onDragEnd"
+      >
+        <transition-group>
+          <div
+              v-for="element in publishedElements"
+              :key="element.value"
+              class="form-builder-element tw-flex tw-justify-between tw-items-start tw-gap-3 tw-p-3 tw-cursor-copy"
+              @click="$emit('create-element-lastgroup', element)"
+          >
+            <span class="material-icons-outlined">{{ element.icon }}</span>
+            <p class="tw-w-full tw-flex tw-flex-col">
+              {{ translate(element.name) }}
+              <span class="tw-text-neutral-600 tw-text-xs">{{ translate(element.description) }}</span>
+            </p>
+            <span class="material-icons-outlined tw-self-center tw-cursor-grab">drag_indicator</span>
+          </div>
+        </transition-group>
+      </draggable>
+    </div>
+
+    <div v-if="selected === 2">
+      <div
+          v-for="group in publishedGroups"
+          :key="group.id"
+          class="draggables-list"
+          @click="addGroup(group)"
+      >
         <div
-            v-for="element in publishedElements"
-            :key="element.id"
-            class="form-builder-element em-flex-row em-flex-space-between"
+            class="form-builder-element tw-flex tw-items-center tw-justify-between tw-cursor-pointer"
         >
-          <span class="material-icons-outlined">{{ element.icon }}</span>
-          <span class="em-w-100 em-p-16">{{ translate(element.name) }}</span>
-          <span class="material-icons-outlined"> drag_indicator</span>
+          <span class="material-icons-outlined">{{ group.icon }}</span>
+          <span class="em-w-100 em-p-16">{{ translate(group.name) }}</span>
+          <span class="material-icons-outlined">add_circle_outline</span>
         </div>
-      </transition-group>
-    </draggable>
+      </div>
+    </div>
+
     <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
@@ -39,19 +68,41 @@ export default {
     draggable
   },
   mixins: [formBuilderMixin, errorsMixin],
+  props: {
+    form: {
+      type: Object,
+      required: false
+    }
+  },
   data() {
     return {
+      selected: 1,
+      menus: [
+        {
+          id: 1,
+          name: 'COM_EMUNDUS_FORM_BUILDER_ELEMENTS'
+        },
+        {
+          id: 2,
+          name: 'COM_EMUNDUS_FORM_BUILDER_SECTIONS'
+        }
+      ],
       elements: [],
+      groups: [],
       cloneElement: {},
       loading: false,
     }
   },
   created() {
     this.elements = this.getElements();
+    this.groups = this.getSections();
   },
   methods: {
     getElements() {
       return require('../../../data/form-builder-elements.json');
+    },
+    getSections() {
+      return require('../../../data/form-builder-sections.json');
     },
     setCloneElement(element) {
       this.cloneElement = element;
@@ -79,7 +130,7 @@ export default {
         mode: mode
       }).then(response => {
         if (response.status && response.data > 0) {
-          formBuilderService.updateElementOrder(group_id, response.data, event.newDraggableIndex).then((response) => {
+          formBuilderService.updateElementOrder(group_id, response.data, event.newDraggableIndex).then(() => {
             this.$emit('element-created');
             this.updateLastSave();
             this.loading = false;
@@ -93,10 +144,38 @@ export default {
         this.loading = false;
       });
     },
+    addGroup(group) {
+      this.loading = true;
+
+      const data = this.$store.getters['global/datas'];
+      const mode = typeof data.mode !== 'undefined' ? data.mode.value : 'forms';
+
+      formBuilderService.createSectionSimpleElements({
+        gid: group.id,
+        fid: this.form.id,
+        mode: mode
+      }).then(response => {
+        console.log(response);
+        if (response.status && response.data.data.length > 0) {
+          this.$emit('element-created');
+          this.updateLastSave();
+          this.loading = false;
+        } else {
+          this.displayError(response.msg);
+          this.loading = false;
+        }
+      }).catch((error) => {
+        console.warn(error);
+        this.loading = false;
+      });
+    }
   },
   computed: {
     publishedElements() {
       return this.elements.filter(element => element.published);
+    },
+    publishedGroups() {
+      return this.groups.filter(group => group.published);
     }
   }
 }
@@ -105,16 +184,19 @@ export default {
 <style lang="scss">
 .form-builder-element {
   width: 258px;
-  height: 48px;
+  height: auto;
   font-size: 14px;
-  padding: 15px;
   margin: 8px 0px;
   background-color: #FAFAFA;
   border: 1px solid #F2F2F3;
-  cursor: grab;
+  border-radius: calc(var(--em-default-br) / 2);
+
+  &:hover {
+    background-color: var(--neutral-200);
+  }
 }
 
-#form-builder-elements-title {
-  border-bottom: 1px solid black;
-}
+  .em-light-selected-tab {
+    border-bottom: 1px solid var(--main-400);
+  }
 </style>

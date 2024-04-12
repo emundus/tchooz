@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -299,16 +299,20 @@ class hikashopMenusClass extends hikashopClass {
 				'b.title IS NOT NULL'
 			);
 
-			$user = JFactory::getUser();
-			$accesses = JAccess::getAuthorisedViewLevels(@$user->id);
-			if(!empty($accesses)){
-				$filters[]='a.access IN ('.implode(',',$accesses).')';
+			if(hikashop_isClient('site')) {
+				$user = JFactory::getUser();
+				$accesses = JAccess::getAuthorisedViewLevels(@$user->id);
+				if(!empty($accesses)){
+					$filters[]='a.access IN ('.implode(',',$accesses).')';
+				}
 			}
 
 			$filters[] = 'a.client_id=0';
 
 			if(empty($view)){
 				$filters[] = 'a.link LIKE \'index.php?option=com_hikashop&view=%\'';
+			}elseif(!empty($id)){
+				$filters[] = 'a.link LIKE \'index.php?option=com_hikashop&view='.($view=='manufacturer'?'category':$view).'&layout=%\'';
 			}else{
 				$filters[] = 'a.link='.$this->database->Quote('index.php?option=com_hikashop&view='.($view=='manufacturer'?'category':$view).'&layout='.$layout);
 			}

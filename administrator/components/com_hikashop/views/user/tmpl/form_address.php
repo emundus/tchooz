@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -104,6 +104,7 @@ if(empty($this->edit_address)) {
 			if(!empty($field->vendor_edit)) {
 				echo $html;
 			} else {
+				$field->currentElement = $this->address;
 				echo $this->fieldsClass->show($field, @$this->address->$fieldname);
 			}
 		?></dd>

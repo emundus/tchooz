@@ -10,7 +10,7 @@ $task   = $app->input->get('task', null, 'GET', 'none', 0);
 $tmpl   = $app->input->get('tmpl', null, 'GET', 'none', 0);
 
 jimport('joomla.utilities.date');
-JHTML::_('behavior.modal');
+
 
 function age($naiss)
 {

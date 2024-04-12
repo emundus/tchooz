@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__hikashop_shipping">
+   <field Field="shipping_id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="shipping_type" Type="varchar(255)" Null="NO" Key="" Default="manual" Extra="" />
+   <field Field="shipping_zone_namekey" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="shipping_tax_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="shipping_price" Type="decimal(17,5)" Null="NO" Key="" Default="0.00000" Extra="" />
+   <field Field="shipping_currency_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="shipping_name" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="shipping_description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="shipping_published" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="shipping_ordering" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="shipping_currency" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <field Field="shipping_params" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="shipping_images" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="shipping_access" Type="varchar(255)" Null="NO" Key="" Default="all" Extra="" />
+   <field Field="shipping_alias" Type="varchar(255)" Null="NO" Key="" Extra="" />
+   <key Table="#__hikashop_shipping" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="shipping_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

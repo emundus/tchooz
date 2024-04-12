@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -35,14 +35,6 @@ if(hikashop_level(2)){
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php echo $this->directionType->display($this->name.'[slide_direction]',@$this->element['slide_direction']);?>
-			</dd>
-		</dl>
-		<dl class="hika_options" data-part="effect" id="<?php echo 'transition_effect_'.$this->type.'"'; ?>>
-			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('TRANSITION_EFFECT');?></label>
-			</dt>
-			<dd class="hikashop_option_value">
-				<label><?php echo $this->transition_effectType->display($this->name.'[transition_effect]',@$this->element['transition_effect']);?></label>
 			</dd>
 		</dl>
 		<dl class="hika_options" data-part="carousel" id="<?php echo 'carousel_effect_duration_'.$this->type.'"'; ?>>

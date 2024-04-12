@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__menu_types">
+   <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="asset_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="menutype" Type="varchar(24)" Null="NO" Key="UNI" Extra="" />
+   <field Field="title" Type="varchar(48)" Null="NO" Key="" Extra="" />
+   <field Field="description" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="client_id" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__menu_types" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__menu_types" Non_unique="0" Key_name="idx_menutype" Seq_in_index="1" Column_name="menutype" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__menu_types">
+   <row>
+    <field name="id">1</field>
+    <field name="asset_id">0</field>
+    <field name="menutype">mainmenu</field>
+    <field name="title">Main Menu</field>
+    <field name="description">The main menu for the site</field>
+    <field name="client_id">0</field>
+    <field name="ordering">1</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="asset_id">104</field>
+    <field name="menutype">usermenu</field>
+    <field name="title">User Menu</field>
+    <field name="description">Profile menu</field>
+    <field name="client_id">0</field>
+    <field name="ordering">2</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="asset_id">109</field>
+    <field name="menutype">coordinatormenu</field>
+    <field name="title">Coordinator</field>
+    <field name="description">Menu for Coordinators users</field>
+    <field name="client_id">0</field>
+    <field name="ordering">3</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="asset_id">111</field>
+    <field name="menutype">applicantmenu</field>
+    <field name="title">Applicant</field>
+    <field name="description">Menu for applicants</field>
+    <field name="client_id">0</field>
+    <field name="ordering">4</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="asset_id">113</field>
+    <field name="menutype">actions</field>
+    <field name="title">Actions</field>
+    <field name="description">This menu defines all actions accessible with access rights written in not of each menu item</field>
+    <field name="client_id">0</field>
+    <field name="ordering">5</field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="asset_id">114</field>
+    <field name="menutype">actions-shared-files</field>
+    <field name="title">Actions - Shared files</field>
+    <field name="description"></field>
+    <field name="client_id">0</field>
+    <field name="ordering">6</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="asset_id">115</field>
+    <field name="menutype">actions-users</field>
+    <field name="title">Actions - Utilisateurs</field>
+    <field name="description"></field>
+    <field name="client_id">0</field>
+    <field name="ordering">7</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="asset_id">116</field>
+    <field name="menutype">application</field>
+    <field name="title">Application</field>
+    <field name="description">Items availables when we open an application file</field>
+    <field name="client_id">0</field>
+    <field name="ordering">8</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="asset_id">117</field>
+    <field name="menutype">adminmenu</field>
+    <field name="title">Administrator</field>
+    <field name="description">Menu for Administrator (sysadmin) users</field>
+    <field name="client_id">0</field>
+    <field name="ordering">9</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="asset_id">118</field>
+    <field name="menutype">evaluatormenu</field>
+    <field name="title">Evaluator</field>
+    <field name="description">Menu for evaluators users</field>
+    <field name="client_id">0</field>
+    <field name="ordering">10</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="asset_id">119</field>
+    <field name="menutype">onboardingmenu</field>
+    <field name="title">Tchooz</field>
+    <field name="description">Menu Tchooz with campaigns, emails, formbuilder and global settings</field>
+    <field name="client_id">0</field>
+    <field name="ordering">11</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="asset_id">120</field>
+    <field name="menutype">program-manager-menu</field>
+    <field name="title">Program Manager</field>
+    <field name="description">Menu for program manager users</field>
+    <field name="client_id">0</field>
+    <field name="ordering">12</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="asset_id">97</field>
+    <field name="menutype">topmenu</field>
+    <field name="title">Top Menu</field>
+    <field name="description"></field>
+    <field name="client_id">0</field>
+    <field name="ordering">13</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="asset_id">0</field>
+    <field name="menutype">menu-profile9</field>
+    <field name="title">Formulaire de base candidat</field>
+    <field name="description">Menu for applicant</field>
+    <field name="client_id">0</field>
+    <field name="ordering">14</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="asset_id">125</field>
+    <field name="menutype">dropfiles</field>
+    <field name="title">Dropfiles menu</field>
+    <field name="description">Dropfiles menu</field>
+    <field name="client_id">0</field>
+    <field name="ordering">15</field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="asset_id">0</field>
+    <field name="menutype">hikashop_default</field>
+    <field name="title">HikaShop default menus</field>
+    <field name="description">This menu is used by HikaShop to store menus configurations</field>
+    <field name="client_id">0</field>
+    <field name="ordering">0</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

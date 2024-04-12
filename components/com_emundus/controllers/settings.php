@@ -14,7 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * Settings Controller
@@ -332,12 +334,16 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function getlogo()
 	{
-		$logo_module = JModuleHelper::getModuleById('90');
+		require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+		$logo = EmundusHelperEmails::getLogo();
 
-		$regex = '/logo_custom.{3,4}[png+|jpeg+|jpg+|svg+|gif+]/m';
-		preg_match($regex, $logo_module->content, $matches, PREG_OFFSET_CAPTURE, 0);
+		$filename = '';
+		if(!empty($logo)) {
+			$logo_path = explode('/', $logo);
+			$filename = $logo_path[count($logo_path) - 1];
+		}
 
-		$tab = array('status' => 1, 'msg' => JText::_('LOGO_FOUND'), 'filename' => $matches[0][0]);
+		$tab = array('status' => 1, 'msg' => JText::_('LOGO_FOUND'), 'filename' => $filename);
 
 		echo json_encode((object) $tab);
 		exit;
@@ -345,13 +351,11 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function getfavicon()
 	{
-		$target_dir  = "images/custom/";
-		$filename    = 'favicon';
-		$old_favicon = glob("{$target_dir}{$filename}.*");
+		$favicon = $this->m_settings->getFavicon();
 
-		$tab = array('status' => 1, 'msg' => JText::_('FAVICON_FOUND'), 'filename' => $old_favicon[0]);
+		$tab = array('status' => 1, 'msg' => JText::_('FAVICON_FOUND'), 'filename' => $favicon);
 
-		echo json_encode((object) $tab);
+		echo json_encode((object)$tab);
 		exit;
 	}
 
@@ -364,13 +368,8 @@ class EmundusControllersettings extends JControllerLegacy
 			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
 		}
 		else {
-
 			$image = $this->input->files->get('file');
-			// get old logo
-			$logo_module = JModuleHelper::getModuleById('90');
-			$regex       = '/logo_custom.{3,4}[png+|jpeg+|jpg+|svg+|gif+]/m';
-			preg_match($regex, $logo_module->content, $matches, PREG_OFFSET_CAPTURE, 0);
-			$old_logo = $matches[0][0];
+			$old_logo = EmundusHelperEmails::getLogo(true);
 
 			if (!empty($image)) {
 				$target_dir = 'images/custom/';
@@ -382,15 +381,9 @@ class EmundusControllersettings extends JControllerLegacy
 
 					$target_file = $target_dir . basename('logo_custom.' . $ext);
 
-					$logo_module = JModuleHelper::getModuleById('90');
+					$updated = $this->m_settings->updateLogo($target_file, $image["tmp_name"], $ext);
 
-					if (move_uploaded_file($image["tmp_name"], $target_file)) {
-						$regex = '/(logo.(png+|jpeg+|jpg+|svg+|gif+|webp+))|(logo_custom.(png+|jpeg+|jpg+|svg+|gif+|webp+))/m';
-
-						$new_content = preg_replace($regex, 'logo_custom.' . $ext, $logo_module->content);
-
-						$this->m_settings->updateLogo($new_content);
-
+					if ($updated) {
 						$cache = JCache::getInstance('callback');
 						$cache->clean(null, 'notgroup');
 
@@ -414,15 +407,11 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function updateicon()
 	{
-		$user = JFactory::getUser();
+		$result = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'filename' => '', 'old_favicon' => ''];
+		$user   = JFactory::getUser();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
-
-			$image = $this->input->files->get('file');
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$image  = $this->input->files->get('file');
 
 			if (isset($image)) {
 				$ext         = pathinfo($image['name'], PATHINFO_EXTENSION);
@@ -444,18 +433,22 @@ class EmundusControllersettings extends JControllerLegacy
 					$cache = JCache::getInstance('callback');
 					$cache->clean(null, 'notgroup');
 
-					$tab = array('status' => 1, 'msg' => JText::_('ICON_UPDATED'), 'filename' => 'favicon.' . $ext, 'old_favicon' => $old_favicon[0]);
+					$result['status']      = 1;
+					$result['msg']         = Text::_('ICON_UPDATED');
+					$result['filename']    = 'favicon.' . $ext;
+					$result['old_favicon'] = $old_favicon[0];
 				}
 				else {
-					$tab = array('status' => 0, 'msg' => JText::_('ICON_NOT_UPDATED'));
+					$resul['msg'] = Text::_('ICON_NOT_UPDATED');
 				}
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ICON_NOT_UPDATED'));
+				$result['msg'] = Text::_('ICON_NOT_UPDATED');
 			}
-			echo json_encode((object) $tab);
-			exit;
 		}
+
+		echo json_encode((object) $result);
+		exit;
 	}
 
 	public function removeicon()
@@ -784,7 +777,7 @@ class EmundusControllersettings extends JControllerLegacy
 		$segments       = explode('?', $current_link);
 		$segments       = explode('&', $segments[1]);
 
-		$exceptions = ['view', 'layout', 'option', 'format'];
+		$exceptions = ['view', 'layout', 'option', 'format', 'formid'];
 		foreach ($segments as $key => $segment) {
 			$segment = explode('=', $segment);
 
@@ -797,10 +790,9 @@ class EmundusControllersettings extends JControllerLegacy
 
 		$response = array('status' => true, 'msg' => 'SUCCESS', 'data' => $current_link);
 
-		$itemId = $this->m_settings->getMenuId($link);
+		$menu = Factory::getApplication()->getMenu()->getItems('link', $link, true);
 
-		if (!empty($itemId)) {
-			$menu             = $this->app->getMenu()->getItem($itemId);
+		if (!empty($menu)) {
 			$response['data'] = $menu->route;
 
 			if (!empty($options_to_set)) {
@@ -912,14 +904,10 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function uploaddropfiledoc()
 	{
+		$response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
-			$result = 0;
-			echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
-		}
-		else {
-
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			//require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
 			$m_campaign = $this->getModel('Campaign');
 
 			$file = $this->input->files->get('file');
@@ -928,80 +916,85 @@ class EmundusControllersettings extends JControllerLegacy
 			if (isset($file)) {
 				$campaign_category = $m_campaign->getCampaignCategory($cid);
 
-				$path     = $file["name"];
+				$path     = $file['name'];
 				$ext      = pathinfo($path, PATHINFO_EXTENSION);
 				$filename = pathinfo($path, PATHINFO_FILENAME);
 
-				$target_dir = "media/com_dropfiles/" . $campaign_category . "/";
+				if(!file_exists('media/com_dropfiles') || !is_dir('media/com_dropfiles')) {
+					mkdir('media/com_dropfiles');
+				}
+				$target_dir = "media/com_dropfiles/$campaign_category/";
 				if (!file_exists($target_dir)) {
-					mkdir($target_dir);
+					$created = mkdir($target_dir);
 				}
 
-				do {
-					$target_file = $target_dir . rand(1000, 90000) . '.' . $ext;
-				} while (file_exists($target_file));
-
-				if (move_uploaded_file($file["tmp_name"], $target_file)) {
-					$did = $this->m_settings->moveUploadedFileToDropbox(pathinfo($target_file, PATHINFO_BASENAME), $filename, $ext, $campaign_category, filesize($target_file));
-					echo json_encode($m_campaign->getDropfileDocument($did));
+				if (!file_exists($target_dir)) {
+					$response['msg'] = 'Error while trying to create the dropbox folder.';
 				}
 				else {
-					echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
+					do {
+						$target_file = $target_dir . rand(1000, 90000) . '.' . $ext;
+					} while (file_exists($target_file));
+
+					if (move_uploaded_file($file['tmp_name'], $target_file)) {
+						$did      = $this->m_settings->moveUploadedFileToDropbox(pathinfo($target_file, PATHINFO_BASENAME), $filename, $ext, $campaign_category, filesize($target_file));
+						$response = $m_campaign->getDropfileDocument($did);
+					}
+					else {
+						$response['msg'] = 'Error while trying to move the file to the dropbox folder. File ' . $file['name'] . ' not uploaded to ' . $target_file . '.';
+					}
 				}
 			}
 			else {
-				echo json_encode(array('msg' => 'ERROR WHILE UPLOADING YOUR DOCUMENT'));
+				$response['msg'] = 'Missing file';
 			}
-			exit;
 		}
+
+		echo json_encode($response);
+		exit;
 	}
 
 	public function getemundusparams()
 	{
-		$user = JFactory::getUser();
+		$params = ['emundus' => [], 'joomla' => [], 'msg' => JText::_('ACCESS_DENIED')];
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			$params        = $this->m_settings->getEmundusParams();
+			$params['msg'] = JText::_('SUCCESS');
 		}
-		else {
-			$eMConfig = JComponentHelper::getParams('com_emundus');
 
-			echo json_encode(array('config' => $eMConfig));
-		}
+		echo json_encode($params);
 		exit;
 	}
 
 	public function updateemundusparam()
 	{
-		$user = JFactory::getUser();
+		$user     = Factory::getApplication()->getIdentity();
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
-		}
-		else {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$response['msg'] = JText::_('MISSING_PARAMS');
+			$jinput          = Factory::getApplication()->input;
+			$component       = $jinput->getString('component');
+			$param           = $jinput->getString('param');
+			$value           = $jinput->getString('value', null);
 
-			$param = $this->input->getString('param');
-			$value = $this->input->getInt('value');
+			if (!empty($param) && isset($value)) {
+				if ($this->m_settings->updateEmundusParam($component, $param, $value)) {
+					$response['msg']    = JText::_('SUCCESS');
+					$response['status'] = true;
 
-			$eMConfig = JComponentHelper::getParams('com_emundus');
-			$eMConfig->set($param, $value);
-
-			$componentid = JComponentHelper::getComponent('com_emundus')->id;
-			$db          = JFactory::getDBO();
-
-			$query = "UPDATE #__extensions SET params = " . $db->Quote($eMConfig->toString()) . " WHERE extension_id = " . $componentid;
-
-			try {
-				$db->setQuery($query);
-				$status = $db->execute();
+					if ($param === 'list_limit') {
+						JFactory::getSession()->set('limit', $value);
+					}
+				}
+				else {
+					$response['msg'] = JText::_('PARAM_NOT_UPDATED');
+				}
 			}
-			catch (Exception $e) {
-				JLog::add('Error set param ' . $param, JLog::ERROR, 'com_emundus');
-			}
-			echo json_encode(array('status' => $status));
 		}
+
+		echo json_encode($response);
 		exit;
 	}
 
@@ -1169,28 +1162,25 @@ class EmundusControllersettings extends JControllerLegacy
 		$user    = JFactory::getUser();
 		$results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+		// get input format, second, minutes or hours
+		$format = $this->input->getString('format', 'hours');
 
-			// get input format, second, minutes or hours
-			$format = $this->input->getString('format', 'hours');
+		$config = JFactory::getConfig();
+		$offset = $config->get('offset');
 
-			$config = JFactory::getConfig();
-			$offset = $config->get('offset');
-
-			$dateTZ = new DateTimeZone($offset);
-			$date   = new DateTime('now', $dateTZ);
-			$offset = $dateTZ->getOffset($date);
-			if (!empty($offset)) {
-				if ($format == 'hours') {
-					$offset = $offset / 3600;
-				}
-				elseif ($format == 'minutes') {
-					$offset = $offset / 60;
-				}
+		$dateTZ = new DateTimeZone($offset);
+		$date   = new DateTime('now', $dateTZ);
+		$offset = $dateTZ->getOffset($date);
+		if (!empty($offset)) {
+			if ($format == 'hours') {
+				$offset = $offset / 3600;
 			}
-
-			$results = ['status' => true, 'msg' => '', 'data' => $offset];
+			elseif ($format == 'minutes') {
+				$offset = $offset / 60;
+			}
 		}
+
+		$results = ['status' => true, 'msg' => '', 'data' => $offset];
 
 		echo json_encode((object) $results);
 		exit;

@@ -102,6 +102,7 @@ button#back:hover, button#back:active, button#back:focus,
     border: 1px solid var(--red-500) !important;
     color: var(--neutral-0) !important;
     padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+    border-radius: var(--em-coordinator-br);
 }
 
 .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover,
@@ -262,6 +263,7 @@ a.btn.btn-success:not(.btn-xs) {
 .view-featured .candidacy-files-list .row {
     position: relative;
     height: 100%;
+    overflow: hidden;
 }
 
 @media all and (max-width: 479px) {
@@ -518,9 +520,9 @@ a.btn.btn-success:not(.btn-xs) {
     position: absolute;
     background: var(--neutral-0);
     z-index: 9999;
-    margin-top: 34px;
     width: max-content;
-    right: 20px;
+    right: 40px;
+    top: 68px;
 }
 
 .mod_emundus_applications__actions a:hover,
@@ -586,7 +588,6 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 .mod_emundus_application_swal_manage_tabs_popup {
-    padding: unset !important;
     min-width: 40em;
 }
 
@@ -620,9 +621,8 @@ a.btn.btn-success:not(.btn-xs) {
 .mod_emundus_application_swal_manage_tabs_actions {
     border-top: solid 1px var(--neutral-300);
     margin-top: var(--m-8) !important;
-    padding: var(--p-8) var(--p-12);
+    padding: var(--p-12) 0;
     display: flex !important;
-    justify-content: end !important;
 }
 
 .mod_emundus_application_swal_manage_tabs_actions button {
@@ -632,7 +632,7 @@ a.btn.btn-success:not(.btn-xs) {
 .mod_emundus_application_swal_manage_tabs_popup .swal2-select {
     font-size: 14px;
     width: 100%;
-    margin-top: var(--m-16) 0 0 0;
+    margin: var(--m-16) 0 0 0;
     height: 48px;
     border-radius: var(--em-applicant-br);
 }
@@ -780,7 +780,8 @@ circle.circle {
     height: 100%;
     width: 100%;
     border-radius: 16px;
-    transform: rotate(4.43deg);
+    transform: rotate(2deg);
+    opacity: 0.3;
     transition: transform .3s;
 }
 
@@ -797,12 +798,21 @@ circle.circle {
 .mod_emundus_applications___content_app #background-shapes {
     position: absolute;
     z-index: 2;
-    width: 100%;
+    width: 70%;
     height: 255px;
-    top: -14px;
-    right: -103px;
+    top: -37px;
+    right: -25px;
     pointer-events: none;
     transition: transform .3s;
+    mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
+    -webkit-mask-image: url('/modules/mod_emundus_campaign/assets/fond-fonce.svg');
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: contain;
+    -webkit-mask-size: contain;
 }
 
 .mod_emundus_applications___content_app #background-shapes {
@@ -815,7 +825,7 @@ circle.circle {
 }
 
 .hover-and-tile-container:hover > #tile-hover-offset-request {
-    transform: rotate(6deg);
+    transform: rotate(3deg);
 }
 
 .view-featured .mod_emundus_applications__list_content--default {
@@ -826,11 +836,20 @@ circle.circle {
 .view-featured .mod_emundus_applications__list_content--default #background-shapes {
     position: absolute;
     z-index: 2;
-    width: 100%;
+    width: 70%;
     height: 300%;
     top: -29px;
-    right: -239px;
+    right: -70px;
     pointer-events: none;
+    mask-image: url(/modules/mod_emundus_campaign/assets/fond-fonce.svg);
+    -webkit-mask-image: url(/modules/mod_emundus_campaign/assets/fond-fonce.svg);
+    background: var(--em-profile-color);
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+    mask-size: contain;
+    -webkit-mask-size: contain;
 }
 
 /* Titres */

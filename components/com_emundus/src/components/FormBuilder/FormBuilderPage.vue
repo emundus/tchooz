@@ -23,8 +23,8 @@
           contenteditable="true"
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"></span>
 
-    <div class="form-builder-page-sections mt-2">
-      <button v-if="sections.length > 0" id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
+    <div class="form-builder-page-sections tw-mt-2">
+      <button v-if="sections.length > 0" id="add-section" class="em-primary-button tw-px-6 tw-py-3" @click="addSection()">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
       </button>
       <form-builder-page-section
@@ -45,7 +45,7 @@
       >
       </form-builder-page-section>
     </div>
-    <button id="add-section" class="em-primary-button px-6 py-3" @click="addSection()">
+    <button id="add-section" class="em-primary-button tw-px-6 tw-py-3" @click="addSection()">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
     </button>
 
@@ -100,7 +100,7 @@ export default {
     }
   },
   methods: {
-    getSections() {
+    getSections(eltid = null) {
       this.loading = true;
       formService.getPageObject(this.page.id).then(response => {
         if (response.status && response.data != '') {
@@ -109,6 +109,18 @@ export default {
           const groups = Object.values(response.data.Groups);
           this.sections = groups.filter(group => group.hidden_group != -1);
           this.getDescription();
+          if(eltid) {
+            setTimeout(() => {
+              document.getElementById('center_content').scrollTo(0, document.getElementById('center_content').scrollHeight);
+              console.log(document.getElementById('element_' + eltid))
+              document.getElementById('element_' + eltid).style.backgroundColor = 'var(--main-50)';
+              document.getElementById('element_' + eltid).style.borderColor = 'var(--main-400)';
+              setTimeout(() => {
+                document.getElementById('element_' + eltid).style.backgroundColor = 'inherit';
+                document.getElementById('element_' + eltid).style.borderColor = '';
+              }, 1500)
+            }, 300)
+          }
         } else {
           this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
         }

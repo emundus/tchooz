@@ -32,8 +32,7 @@
           </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16"
-             v-show="this.element.plugin !== 'display'">
+        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-show="!['display','panel'].includes(this.element.plugin)">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</span>
           <div class="em-toggle">
             <input type="checkbox" class="em-toggle-check" v-model="element.FRequire"
@@ -41,6 +40,22 @@
             <strong class="b em-toggle-switch"></strong>
             <strong class="b em-toggle-track"></strong>
           </div>
+        </div>
+
+        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-show="this.element.plugin == 'panel'">
+          <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED_FORMAT") }}</span>
+          <div class="em-toggle">
+            <input type="checkbox" true-value="1" false-value="0" class="em-toggle-check" v-model="element.eval" @click="element.eval == 1 ? element.eval = 0 : element.eval = 1">
+            <strong class="b em-toggle-switch"></strong>
+            <strong class="b em-toggle-track"></strong>
+          </div>
+        </div>
+
+        <div class="w-full em-pt-16 em-pb-16" v-show="this.element.plugin == 'panel'">
+          <label for="element-default">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT") }}</label>
+
+          <textarea v-if="element.eval == 0" id="element-default" name="element-default" v-model="element.default" class="tw-w-full tw-resize-y"></textarea>
+          <editor-quill v-if="element.eval == 1" v-model="element.default" :id="'element-default'" :text="element.default" :height="'30em'" />
         </div>
 
         <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-if="sysadmin">
@@ -73,10 +88,12 @@ import elementParams from '../../../data/form-builder-elements-params.json'
 import formBuilderMixin from "../../mixins/formbuilder";
 
 import FormBuilderElementParams from "./FormBuilderElements/FormBuilderElementParams";
+import EditorQuill from "@/components/editorQuill.vue";
 
 export default {
   name: 'FormBuilderElementProperties',
   components: {
+    EditorQuill,
     FormBuilderElementParams
   },
   props: {
@@ -233,6 +250,13 @@ export default {
     }
   },
   watch: {
+    'element.eval': function(value){
+      if(value == 0) {
+        this.element.default = this.element.default.replace(/<p>/g, '\n');
+        this.element.default = this.element.default.replace(/(<([^>]+)>)/gi, "");
+      }
+    },
+
     'element.id': function (value) {
       this.paramsAvailable();
     }

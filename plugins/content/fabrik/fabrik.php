@@ -31,6 +31,7 @@ jimport('joomla.plugin.plugin');
  * @subpackage  Content.fabrik
  * @since       1.5
  */
+#[\AllowDynamicProperties]
 class PlgContentFabrik extends CMSPlugin
 {
 	/**
@@ -49,6 +50,9 @@ class PlgContentFabrik extends CMSPlugin
 	{
 		jimport('joomla.html.parameter');
 		jimport('joomla.filesystem.file');
+		
+		//Fabrik doesn't play with Smart Search indexer; don't run content plugin when indexing
+		if ($context == 'com_finder.indexer') return true;
 
 		// Load fabrik language
 		$lang = Factory::getApplication()->getLanguage();

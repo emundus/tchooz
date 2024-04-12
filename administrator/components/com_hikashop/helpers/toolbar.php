@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -170,6 +170,7 @@ class hikashopToolbarHelper {
 					else
 						$tool['icon'] = $tool['icon'] . '#' . $this->translateIcon($tool['icon']);
 				}
+				if(HIKASHOP_J60) include_once(HIKASHOP_BUTTON.'/hikapopup.php');
 				$bar->appendButton('HikaPopup', $tool['icon'], $tool['alt'], $tool['url'], $tool['width'], $tool['height'], $tool['top'], $tool['left'], $tool['onClose'], $tool['title'], $tool['footer'], $tool['check']);
 				break;
 			case 'close':
@@ -190,10 +191,13 @@ class hikashopToolbarHelper {
 				}
 				break;
 			case 'pophelp':
-				if(!empty($tool['target']))
+				if(!empty($tool['target'])) {
+					if(HIKASHOP_J60) include_once(HIKASHOP_BUTTON.'/pophelp.php');
 					$bar->appendButton('Pophelp', $tool['target']);
+				}
 				break;
 			case 'export':
+				if(HIKASHOP_J60) include_once(HIKASHOP_BUTTON.'/export.php');
 				$tool = array_merge(array('task'=>'export','text'=>'HIKA_EXPORT', 'icon'=>'icon-upload', 'check' => false), $tool);
 				$bar->appendButton('Export', $tool['task'], $tool['text'], $tool['icon'], $tool['check']);
 				break;

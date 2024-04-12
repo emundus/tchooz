@@ -21,13 +21,12 @@ use Joomla\CMS\HTML\HTMLHelper;
     <?php foreach($list as $language):?>
 
         
-        <!-- >>> [FREE] >>> -->
         <?php if ($params->get('show_active', 0) || !$language->active):?>
             <li class="<?php echo $language->active ? 'lang-active' : '';?>" dir="<?php echo  $language->rtl ? 'rtl' : 'ltr' ?>">
                 <?php if ($language->display) { ?>
                     <a href="<?php echo $language->link;?>">
                         <?php if ($params->get('image', 1)):?>
-                            <?php echo HTMLHelper::_('image', 'mod_falang/'.$language->image.'.gif', $language->title_native, array('title'=>$language->title_native), true);?>
+                            <?php echo HTMLHelper::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native), $relativePath);?>
                         <?php endif; ?>
                         <?php if ($params->get('show_name', 1)):?>
                             <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
@@ -35,7 +34,7 @@ use Joomla\CMS\HTML\HTMLHelper;
                     </a>
                 <?php } else { ?>
                     <?php if ($params->get('image', 1)):?>
-                        <?php echo HTMLHelper::_('image', 'mod_falang/'.$language->image.'.gif', $language->title_native, array('title'=>$language->title_native,'style'=>'opacity:0.5'), true);?>
+                        <?php echo HTMLHelper::_('image', $imagesPath.$language->image.'.'.$imagesType, $language->title_native, array('title'=>$language->title_native,'style'=>'opacity:0.5'), $relativePath);?>
                     <?php endif; ?>
                     <?php if ($params->get('show_name', 1)):?>
                         <?php echo $params->get('full_name', 1) ? $language->title_native : strtoupper($language->sef);?>
@@ -43,6 +42,7 @@ use Joomla\CMS\HTML\HTMLHelper;
                 <?php } ?>
             </li>
         <?php endif;?>
-        <!-- <<< [FREE] <<< -->
+        
+        
     <?php endforeach;?>
 </ul>

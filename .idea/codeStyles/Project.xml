@@ -21,6 +21,7 @@
       <option name="BLANK_LINES_BEFORE_RETURN_STATEMENT" value="1" />
     </PHPCodeStyleSettings>
     <codeStyleSettings language="PHP">
+      <option name="BRACE_STYLE" value="2" />
       <option name="ELSE_ON_NEW_LINE" value="true" />
       <option name="CATCH_ON_NEW_LINE" value="true" />
       <option name="SPACE_AFTER_TYPE_CAST" value="true" />

@@ -1,28 +1,28 @@
 <template>
-  <div id="onboarding_list" class="w-full">
-    <skeleton v-if="loading.lists" height="40px" width="100%" class="mb-4 mt-4 rounded-lg"></skeleton>
-    <div v-else class="head flex justify-between mb-4 mt-4">
+  <div id="onboarding_list" class="tw-w-full">
+    <skeleton v-if="loading.lists" height="40px" width="100%" class="tw-mb-4 tw-mt-4 tw-rounded-lg"></skeleton>
+    <div v-else class="head tw-flex tw-justify-between tw-mb-4 tw-mt-4">
       <h2>{{ translate(currentList.title) }}</h2>
-      <a v-if="addAction" id="add-action-btn" class="em-primary-button em-w-auto cursor-pointer"
+      <a v-if="addAction" id="add-action-btn" class="em-primary-button em-w-auto tw-cursor-pointer"
          @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
     </div>
-    <hr class="w-full mt-1.5 mb-1.5">
+    <hr class="tw-w-full mt-1.5 mb-1.5">
 
     <div v-if="loading.tabs" id="tabs-loading">
-      <div class="flex justify-between">
-        <skeleton height="40px" width="20%" class="mb-4 rounded-lg"></skeleton>
-        <skeleton height="40px" width="5%" class="mb-4 rounded-lg"></skeleton>
+      <div class="tw-flex tw-justify-between">
+        <skeleton height="40px" width="20%" class="tw-mb-4 tw-rounded-lg"></skeleton>
+        <skeleton height="40px" width="5%" class="tw-mb-4 tw-rounded-lg"></skeleton>
       </div>
       <div :class="{'skeleton-grid': viewType === 'blocs','em-flex-column': viewType === 'list'}"
            style="flex-wrap: wrap">
-        <skeleton v-for="i in 9" :key="i" class="rounded-lg skeleton-item"></skeleton>
+        <skeleton v-for="i in 9" :key="i" class="tw-rounded-lg skeleton-item"></skeleton>
       </div>
     </div>
-    <div v-else class="list mt-4">
+    <div v-else class="list tw-mt-4">
       <nav v-if="currentList.tabs.length > 1" id="list-nav">
-        <ul style="list-style-type: none;margin-left:0;" class="flex">
+        <ul style="list-style-type: none;margin-left:0;" class="tw-flex">
           <li v-for="tab in currentList.tabs" :key="tab.key"
-              class="cursor-pointer font-normal p-4"
+              class="tw-cursor-pointer tw-font-normal tw-p-4"
               :class="{
 								'em-neutral-900-color em-border-bottom-coordinator': selectedListTab === tab.key,
 							  'em-neutral-700-color em-border-bottom-neutral-300': selectedListTab !== tab.key
@@ -33,33 +33,33 @@
           </li>
         </ul>
       </nav>
-      <section id="actions" class="flex justify-between mt-4 mb-4">
+      <section id="actions" class="tw-flex tw-justify-between tw-mt-4 tw-mb-4">
         <section id="tab-actions">
           <select v-for="filter in filters[selectedListTab]" :key="selectedListTab + '-' + filter.key"
-                  v-model="filter.value" @change="onChangeFilter(filter)" class="mr-2">
+                  v-model="filter.value" @change="onChangeFilter(filter)" class="tw-mr-2">
             <option v-for="option in filter.options" :key="option.value" :value="option.value">
               {{ translate(option.label) }}
             </option>
           </select>
         </section>
 
-        <section id="default-actions" class="flex">
-          <div class="flex items-center">
+        <section id="default-actions" class="tw-flex">
+          <div class="tw-flex tw-items-center">
             <input name="search" type="text" v-model="searches[selectedListTab].search"
                    :placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
-                   class="rounded-lg"
+                   class="tw-rounded-lg"
                    :class="{'em-disabled-events': items[this.selectedListTab].length < 1 && searches[selectedListTab].search === ''}"
                    style="margin: 0;"
                    :disabled="items[this.selectedListTab].length < 1 && searches[selectedListTab].search === ''"
                    @change="searchItems" @keyup="searchItems">
-            <span class="material-icons-outlined mr-2 cursor-pointer" style="margin-left: -32px" @click="searchItems">
+            <span class="material-icons-outlined tw-mr-2 tw-cursor-pointer" style="margin-left: -32px" @click="searchItems">
 							search
 						</span>
           </div>
-          <div class="view-type flex items-center">
+          <div class="view-type tw-flex tw-items-center">
 					<span v-for="viewTypeOption in viewTypeOptions" :key="viewTypeOption.value"
-                style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;"
-                class="material-icons-outlined ml-2 cursor-pointer"
+                style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;background: var(--neutral-0);"
+                class="material-icons-outlined tw-ml-2 tw-cursor-pointer"
                 :class="{
 								'active em-main-500-color em-border-main-500': viewTypeOption.value === viewType,
 								'em-neutral-600-color em-border-neutral-600': viewTypeOption.value !== viewType
@@ -72,10 +72,10 @@
 
       <div v-if="loading.items"
            id="items-loading"
-           :class="{'skeleton-grid': viewType === 'blocs','em-flex-column mb-4': viewType === 'list'}"
+           :class="{'skeleton-grid': viewType === 'blocs','em-flex-column tw-mb-4': viewType === 'list'}"
            style="flex-wrap: wrap"
       >
-        <skeleton v-for="i in 9" :key="i" class="rounded-lg skeleton-item"></skeleton>
+        <skeleton v-for="i in 9" :key="i" class="tw-rounded-lg skeleton-item"></skeleton>
       </div>
       <div v-else>
         <div v-if="displayedItems.length > 0" id="list-items">
@@ -95,32 +95,32 @@
 							    class="em-border-cards table-row"
                 :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
             >
-              <td class="cursor-pointer" @click="onClickAction(editAction, item.id)">
-                <span :class="{'em-font-weight-600 mb-4 text-ellipsis overflow-hidden':  viewType === 'blocs'}"
+              <td class="tw-cursor-pointer" @click="onClickAction(editAction, item.id)">
+                <span :class="{'em-font-weight-600 tw-mb-4 tw-text-ellipsis tw-overflow-hidden':  viewType === 'blocs'}"
                       :title="item.label[params.shortlang]">{{ item.label[params.shortlang] }}</span>
               </td>
               <td class="columns" v-for="column in item.additional_columns" :key="column.key"
                   v-if="column.display === viewType || column.display === 'all'">
-                <div v-if="column.type === 'tags'" class="flex flex-wrap" :class="column.classes">
-										<span v-for="tag in column.values" :key="tag.key" class="mr-2 h-max" :class="tag.classes" v-html="tag.value"></span>
+                <div v-if="column.type === 'tags'" class="tw-flex tw-items-center tw-flex-wrap tw-gap-2" :class="column.classes">
+										<span v-for="tag in column.values" :key="tag.key" class="tw-mr-2 tw-h-max" :class="tag.classes" v-html="tag.value"></span>
                 </div>
-									<span v-else class="mt-2 mb-2" :class="column.classes" v-html="column.value"></span>
+									<span v-else class="tw-mt-2 tw-mb-2" :class="column.classes" v-html="column.value"></span>
               </td>
               <div>
-                <hr v-if="viewType === 'blocs'" class="w-full mt-1.5 mb-3">
+                <hr v-if="viewType === 'blocs'" class="tw-w-full tw-mt-1.5 tw-mb-3">
                 <td class="actions">
                   <a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id)"
-                     class="em-primary-button text-sm cursor-pointer em-w-auto">
+                     class="em-primary-button tw-text-sm tw-cursor-pointer em-w-auto">
                     {{ translate(editAction.label) }}
                   </a>
-                  <div class="flex items-center">
-                    <span v-if="previewAction" class="material-icons-outlined cursor-pointer"
+                  <div class="tw-flex tw-items-center em-gap-8">
+                    <span v-if="previewAction" class="material-icons-outlined tw-cursor-pointer"
                           @click="onClickPreview(item)">visibility</span>
-                    <span v-for="action in iconActions" :key="action.name" class="cursor-pointer"
+                    <span v-for="action in iconActions" :key="action.name" class="tw-cursor-pointer"
                           :class="{
 															'material-icons-outlined': action.iconOutlined,
 															'material-icons': !action.iconOutlined,
-															'hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))
+															'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))
 														}"
                           @click="onClickAction(action, item.id)"
                     >
@@ -131,12 +131,12 @@
                         :popoverArrowClass="'custom-popover-arrow'">
                       <span class="tooltip-target b3 material-icons">more_vert</span>
                       <template slot="popover">
-                        <ul style="list-style-type: none; margin: 0;">
+                        <ul style="list-style-type: none; margin: 0;padding: 0">
                           <li v-for="action in tabActionsPopover"
                               :key="action.name"
-                              :class="{'hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
+                              :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
                               @click="onClickAction(action, item.id)"
-                              class="cursor-pointer p-2 em-font-size-12"
+                              class="tw-cursor-pointer tw-p-2 em-font-size-16"
                           >
                             {{ translate(action.label) }}
                           </li>
@@ -153,7 +153,7 @@
         <div v-else id="empty-list" class="noneDiscover" v-html="noneDiscoverTranslation"></div>
       </div>
 
-      <section id="pagination-wrapper" class="flex justify-between items-center mt-5">
+      <section id="pagination-wrapper" class="tw-flex tw-justify-between tw-items-center tw-mt-5">
         <select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()">
           <option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
           <option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
@@ -162,23 +162,23 @@
         </select>
         <div
             v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1"
-            id="pagination" class="text-center">
-          <ul class="flex list-none gap-1">
+            id="pagination" class="tw-text-center">
+          <ul class="tw-flex tw-list-none tw-gap-1">
 						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
-                  class="material-icons-outlined cursor-pointer mr-2 items-center"
+                  class="material-icons-outlined tw-cursor-pointer tw-mr-2 tw-items-center"
                   style="display: flex"
                   @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">
 							chevron_left
 						</span>
             <li v-for="i in currentTab.pagination.total" :key="i"
-                class="cursor-pointer em-square-button"
+                class="tw-cursor-pointer em-square-button"
                 :class="{'active': i === currentTab.pagination.current}"
                 @click="getListItems(i, selectedListTab)">
               {{ i }}
             </li>
             <span
                 :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
-                class="material-icons-outlined cursor-pointer ml-2 items-center"
+                class="material-icons-outlined tw-cursor-pointer tw-ml-2 tw-items-center"
                 style="display: flex"
                 @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">
 							chevron_right
@@ -696,6 +696,11 @@ export default {
 </script>
 
 <style lang="scss">
+
+#onboarding_list .head  {
+  min-height: 38px;
+}
+
 #list-nav {
   li {
     transition: all .3s;

@@ -113,11 +113,11 @@ if (!empty($this->custom_title)) :?>
 
 <?php if (count($this->attachments) > 0) : ?>
 
-    <div id="attachment_list" class="em-attachmentList em-repeat-card p-6">
+    <div id="attachment_list" class="em-attachmentList em-repeat-card tw-p-6">
         <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg"
                 alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-        <h2 class="after-em-border after:bg-red-800 mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
-        <div class="alert alert-info flex items-center gap-1 mt-1">
+        <h2 class="after-em-border after:tw-bg-red-800 tw-mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
+        <div class="alert alert-info tw-flex tw-items-center tw-gap-1 tw-mt-1">
             <span class="material-icons">info</span>
             <div>
                 <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' ' . JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
@@ -153,7 +153,7 @@ if (!empty($this->custom_title)) :?>
 			}
 			$div = '<div id="a' . $attachment->id . '" style="position: relative;top: -65px;"></div>
                 <fieldset id="a' . $attachment->id . '" class="em-fieldset-attachment mt-3">
-                <div id="l' . $attachment->id . '" class="flex items-center em-ml-8 em-mt-8">';
+                <div id="l' . $attachment->id . '" class="tw-flex tw-items-center em-ml-8 em-mt-8">';
 			if ($attachment->nb == 0) {
 				if ($this->show_info_legend) {
 					$div .= $attachment->mandatory ? '<span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>' : '<span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>';
@@ -189,7 +189,7 @@ if (!empty($this->custom_title)) :?>
 					else {
 						$div .= JText::_('COM_EMUNDUS_ONBOARD_TYPE_FILE') . ' ' . $nb;
 					}
-					$div .= ' | <span style="font-size: 13px">' . JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2")) . '</span>';
+					$div .= ' | <span style="font-size: 13px">' . ucfirst(EmundusHelperDate::displayDate($item->timedate, 'DATE_FORMAT_LC2', 0)) . '</span>';
 					if ($this->show_shortdesc_input) {
 						$div .= ' | ';
 						$div .= empty($item->description) ? JText::_('COM_EMUNDUS_ATTACHMENTS_NO_DESC') : $item->description;
@@ -198,7 +198,7 @@ if (!empty($this->custom_title)) :?>
 					$div .= '<tr class="em-added-files">
                     <td class="em-flex-row">';
 					if ($item->can_be_viewed == 1) {
-						$div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="' . $chemin . $this->user->id . '/' . $item->filename . '" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>' . JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
+						$div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>' . JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
 					}
 					else {
 						$div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
@@ -217,7 +217,7 @@ if (!empty($this->custom_title)) :?>
 			// Disable upload UI if
 			if (!$block_upload) {
 
-				if ($attachment->nb < $attachment->nbmax || $this->user->profile <= 4) {
+				if ($attachment->nb < $attachment->nbmax || $this->_user->profile <= 4) {
 					$div .= '
                 <tr>
                     <td>';
@@ -283,8 +283,8 @@ if (!empty($this->custom_title)) :?>
                         }
             
                         recorderInserted.onUploadDone = function(recorderId, streamName, streamDuration, audioCodec, videoCodec, fileType, audioOnly, location){
-                            //var args = Array.prototype.slice.call(arguments);
-                            //__log("onUploadDone("+args.join(\', \')+")");
+                            document.querySelector(".em-page-loader").style.display = "block";    
+                            __log("onUploadDone("+args.join(\', \')+")");
                             recorderInserted.save();
                         }
             
@@ -340,6 +340,7 @@ if (!empty($this->custom_title)) :?>
             
                         recorderInserted.onDesktopVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
                             //var args = Array.prototype.slice.call(arguments);
+                            document.querySelector(".em-page-loader").style.display = "block";
                             __log("' . JText::_('VIDEO_INSTR_UPLOADING') . '");
                         }
             
@@ -360,6 +361,7 @@ if (!empty($this->custom_title)) :?>
                         //MOBILE EVENTS API
                         recorderInserted.onVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
                             //var args = Array.prototype.slice.call(arguments);
+                            document.querySelector(".em-page-loader").style.display = "block";
                             __log("' . JText::_('VIDEO_INSTR_RECORD_SAVED') . '");
                         }
     
@@ -396,7 +398,7 @@ if (!empty($this->custom_title)) :?>
                 <input type="hidden" name="required_desc" value="' . $this->required_desc . '"/>
                 <div>';
 						if ($this->show_shortdesc_input) {
-							$div .= '<div class="row"><div><label><span>' . JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC') . '</span></label><input type="text" class="em-w-100" maxlength="80" name="description" placeholder="' . (($this->required_desc != 0) ? JText::_('EMUNDUS_REQUIRED_FIELD') : '') . '" /></div></div>';
+							$div .= '<div class="row"><div class="tw-mb-2"><label><span>' . JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC') . '</span></label><input type="text" class="em-w-100" maxlength="80" name="description" placeholder="' . (($this->required_desc != 0) ? JText::_('EMUNDUS_REQUIRED_FIELD') : '') . '" /></div></div>';
 						}
 						if ($this->show_browse_button) {
 							$div .= '<div class="row" id="upload-files-' . $file_upload . '"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input class="em-send-attachment" id="em-send-attachment-' . $file_upload . '" type="file" name="file" multiple onchange="processSelectedFiles(this)"/><span style="display: none;" >' . JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE") . '</span></label>';
@@ -654,10 +656,10 @@ if (!empty($this->custom_title)) :?>
             </div>
 
             <div class="col-md-12">
-                <div class="flex justify-between">
+                <div class="tw-flex tw-justify-between">
                     <div>
                         <div class="btn-group">
-                            <div class="em-goback-btn flex items-center"><span class="material-icons-outlined"
+                            <div class="em-goback-btn tw-flex tw-items-center"><span class="material-icons-outlined"
                                                                                style="color:var(--neutral-900);">navigate_before</span>
                                 <button type="button" class="btn goback-btn button" onclick="window.history.go(-1)"
                                         name="Goback"><?php echo JText::_('GO_BACK') ?></button>
@@ -842,7 +844,7 @@ if (!empty($this->custom_title)) :?>
 
         //ADDPIPE check if video is uploaded. If yes, reaload page
         function is_file_uploaded(fnum, aid, applicant_id) {
-            setInterval(function () {
+    let is_file_uploaded_timer = setInterval(function(){
 
                 $.ajax({
                     type: 'POST',
@@ -854,14 +856,43 @@ if (!empty($this->custom_title)) :?>
                         applicant_id: applicant_id
                     }),
                     success: function (result) {
-                        //console.log(result.status + " :: " + result.fnum + " :: " + result.aid + " :: " + result.applicant_id + " :: " + result.user_id + " :: " + result.user_fnum + " :: " + result.query);
+                //console.log(result.status + " :: " + result.fnum + " :: " + result.aid + " :: " + result.applicant_id + " :: " + result.user_id + " :: " + result.user_fnum + " :: " + result.query)
                         if (result.status) {
-                            clearInterval();
+                    document.querySelector(".em-page-loader").style.display = "none";
+
+                    clearInterval(is_file_uploaded_timer);
+
+                    Swal.fire({
+                        position: 'top',
+                        type: 'success',
+                        title: "<?= JText::_('COM_EMUNDUS_UPLOAD_SUCCESS'); ?>",
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        customClass: {
+                            title: 'em-swal-title'
+                        },
+                        timer: 3000
+                    }).then(() => {
                             window.location.reload(true);
+                    });
                         }
                     },
                     error: function (jqXHR) {
                         console.log("ERROR: " + jqXHR.responseText);
+
+                Swal.fire({
+                    position: 'top',
+                    type: 'error',
+                    title: "<?= JText::_('COM_EMUNDUS_ERROR_OCCURED'); ?>",
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    customClass: {
+                        title: 'em-swal-title'
+                    },
+                    timer: 3000
+                }).then(() => {
+                    window.location.reload(true);
+                });
                     }
                 });
             }, 500);

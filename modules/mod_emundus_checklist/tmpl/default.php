@@ -73,10 +73,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
             <div>
 				<?php foreach ($forms as $index => $form) : ?>
 					<?php
-					$query = 'SELECT count(*) FROM ' . $form->db_table_name . ' WHERE fnum like ' . $db->Quote($user->fnum);
-					$db->setQuery($query);
-					$cpt        = $db->loadResult();
-					$class      = $cpt == 0 ? 'need_missing' : 'need_ok';
+					$class      = $form->rowid == 0 ? 'need_missing' : 'need_ok';
 					$step       = $index + 1;
 					$form_title = explode(' - ', $form->title)[1] ?: $form->title;
 					?>

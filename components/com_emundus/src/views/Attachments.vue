@@ -16,7 +16,7 @@
             <span class="material-icons-outlined search">search</span>
             <span class="material-icons-outlined clear em-pointer" @click="search = ''">clear</span>
           </div>
-          <select v-if="Object.entries(displayedAttachmentCategories).length > 0"
+          <select v-if="columns.includes('category') && Object.entries(displayedAttachmentCategories).length > 0"
                   name="category"
                   class="category-select em-ml-16"
                   v-model="category"
@@ -75,7 +75,7 @@
         <table :class="{ loading: loading }" aria-describedby="Table of attachments information">
           <thead>
           <tr>
-            <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/>
+            <th v-if="columns.includes('check')" id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/>
             </th>
             <th v-if="columns.includes('name')" id="name" @click="orderBy('value')">
               <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}</span>
@@ -250,7 +250,7 @@ export default {
     columns: {
       type: Array,
       default() {
-        return ['name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+        return ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
       }
     },
     displayEdit: {
@@ -687,7 +687,7 @@ export default {
       return this.displayedAttachments.indexOf(this.selectedAttachment);
     },
     attachmentPath() {
-      return this.$store.state.attachment.attachmentPath + this.displayedUser.user_id + '/' + this.selectedAttachment.filename;
+      return '/index.php?option=com_emundus&task=getfile&u=' + this.$store.state.attachment.attachmentPath + this.displayedUser.user_id + '/' + this.selectedAttachment.filename;
     },
     displayedAttachmentCategories() {
       let displayedCategories = {};

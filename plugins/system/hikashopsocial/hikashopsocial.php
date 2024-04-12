@@ -1,14 +1,15 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
+if(!class_exists('hikashopJoomlaPlugin')) return;
 class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 	var $meta = array();
 	var $headScripts = array();
@@ -105,7 +106,7 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 		if ($plugin->params['display_twitter'] == 1)
 			$TwitterButton = $this->_addTwitterButton($plugin, $plugin->params);
 		$FacebookButton = '';
-		if ($plugin->params['display_fb'] == 1)
+		if (!empty($plugin->params['display_fb']))
 			$FacebookButton = $this->_addFacebookButton($plugin, $plugin->params);
 		$LinkedInButton = '';
 		if ($plugin->params['display_twitter'] == 1)
@@ -307,14 +308,23 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 	}
 
 	function _addFacebookButton(&$plugin, $params) {
+		if(empty($plugin->params['display_fb']))
+			return '';
+
+		$element = $this->_getElementInfo();
+		if(empty($element))
+			return '';
+
+		if(!empty($element->url_canonical))
+			$url = hikashop_cleanURL($element->url_canonical);
+		else
+			$url = hikashop_currentURL('', false);
+
+		$this->_addOpenGraph($element, $plugin, $url);
+
+		$html = '';
+
 		if ($params['legacy']) {
-			if(empty($plugin->params['display_fb']))
-				return '';
-
-			$element = $this->_getElementInfo();
-			if(empty($element))
-				return '';
-
 			$options = array(
 				'layout' => 'standard',
 				'width' => 400
@@ -381,12 +391,6 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 			if(!empty($plugin->params['fb_send']))
 				$xfbml_options['send'] = 'true';
 
-			if(!empty($element->url_canonical))
-				$url = hikashop_cleanURL($element->url_canonical);
-			else
-				$url = hikashop_currentURL('', false);
-
-			$html = '';
 
 			if($plugin->params['display_fb'] != 2) {
 				$html = '<span class="hikashop_social_fb">';
@@ -416,56 +420,8 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 
 				$html .= '</span>';
 			}
-
-			$this->meta['property="og:title"'] = '<meta property="og:title" content="'.htmlspecialchars($element->name, ENT_COMPAT,'UTF-8').'"/> ';
-
-			$types = array(
-				0 => 'product',
-				1 => 'album',
-				2 => 'book',
-				3 => 'company',
-				4 => 'drink',
-				5 => 'game',
-				6 => 'movie',
-				7 => 'song',
-			);
-			if(isset($types[ (int)$plugin->params['fb_type']]))
-				$this->meta['property="og:type"']='<meta property="og:type" content="'.$types[ (int)$plugin->params['fb_type']].'"/> ';
-
-			$config =& hikashop_config();
-			$uploadFolder = ltrim(JPath::clean(html_entity_decode($config->get('uploadfolder','media/com_hikashop/upload/'))), DS);
-			$uploadFolder = rtrim($uploadFolder,DS) . DS;
-			$this->uploadFolder_url = str_replace(DS, '/', $uploadFolder);
-			$this->uploadFolder = JPATH_ROOT . DS . $uploadFolder;
-			$this->thumbnail = $config->get('thumbnail', 1);
-			$this->thumbnail_y = $config->get('product_image_y', $config->get('thumbnail_y'));
-			$this->thumbnail_x = $config->get('product_image_x', $config->get('thumbnail_x'));
-			$this->main_thumbnail_x = $this->thumbnail_x;
-			$this->main_thumbnail_y = $this->thumbnail_y;
-			$this->main_uploadFolder_url = $this->uploadFolder_url;
-			$this->main_uploadFolder = $this->uploadFolder;
-
-			$imageUrl = $this->_getImageURL($element);
-			if(!empty($imageUrl))
-				$this->meta['property="og:image"']='<meta property="og:image" content="'.$imageUrl.'" /> ';
-
-			$this->meta['property="og:url"']='<meta property="og:url" content="'.$url.'" />';
-			$description = $this->_cleanDescription($element->description);
-			$this->meta['property="og:description"'] = '<meta property="og:description" content="'.$description.'"/> ';
-
-			$jconf = JFactory::getConfig();
-			if(HIKASHOP_J30)
-				$siteName = $jconf->get('sitename');
-			else
-				$siteName = $jconf->getValue('config.sitename');
-			$this->meta['property="og:site_name"'] = '<meta property="og:site_name" content="'.htmlspecialchars($siteName, ENT_COMPAT,'UTF-8').'"/> ';
-
-			if(!empty($plugin->params['admin']))
-				$this->meta['property="fb:admins"'] = '<meta property="fb:admins" content="'.htmlspecialchars($plugin->params['admin'], ENT_COMPAT,'UTF-8').'" />';
-
-			return $html;
 		}
-		else {
+		elseif($plugin->params['display_fb'] != 2) {
 			$display = 'popup';
 			if($params['redirection_btn'] == 'tab') {
 				$display = 'page';
@@ -482,9 +438,58 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 				'name' => 'Facebook'
 			);
 
-			$return = $this->btn_build($array_elem);
+			$html = $this->btn_build($array_elem);
 		}
-		return $return;
+		return $html;
+	}
+
+	function _addOpenGraph(&$element, &$plugin, $url) {
+		$this->meta['property="og:title"'] = '<meta property="og:title" content="'.htmlspecialchars($element->name, ENT_COMPAT,'UTF-8').'"/> ';
+
+		$types = array(
+			0 => 'product',
+			1 => 'album',
+			2 => 'book',
+			3 => 'company',
+			4 => 'drink',
+			5 => 'game',
+			6 => 'movie',
+			7 => 'song',
+		);
+		if(isset($types[ (int)$plugin->params['fb_type']]))
+			$this->meta['property="og:type"']='<meta property="og:type" content="'.$types[ (int)$plugin->params['fb_type']].'"/> ';
+
+		$config = hikashop_config();
+		$uploadFolder = ltrim(JPath::clean(html_entity_decode($config->get('uploadfolder','media/com_hikashop/upload/'))), DS);
+		$uploadFolder = rtrim($uploadFolder,DS) . DS;
+		$this->uploadFolder_url = str_replace(DS, '/', $uploadFolder);
+		$this->uploadFolder = JPATH_ROOT . DS . $uploadFolder;
+		$this->thumbnail = $config->get('thumbnail', 1);
+		$this->thumbnail_y = $config->get('product_image_y', $config->get('thumbnail_y'));
+		$this->thumbnail_x = $config->get('product_image_x', $config->get('thumbnail_x'));
+		$this->main_thumbnail_x = $this->thumbnail_x;
+		$this->main_thumbnail_y = $this->thumbnail_y;
+		$this->main_uploadFolder_url = $this->uploadFolder_url;
+		$this->main_uploadFolder = $this->uploadFolder;
+
+		$imageUrl = $this->_getImageURL($element);
+		if(!empty($imageUrl))
+			$this->meta['property="og:image"']='<meta property="og:image" content="'.$imageUrl.'" /> ';
+
+		$this->meta['property="og:url"']='<meta property="og:url" content="'.$url.'" />';
+		$description = $this->_cleanDescription($element->description);
+		$this->meta['property="og:description"'] = '<meta property="og:description" content="'.$description.'"/> ';
+
+		$jconf = JFactory::getConfig();
+		if(HIKASHOP_J30)
+			$siteName = $jconf->get('sitename');
+		else
+			$siteName = $jconf->getValue('config.sitename');
+		$this->meta['property="og:site_name"'] = '<meta property="og:site_name" content="'.htmlspecialchars($siteName, ENT_COMPAT,'UTF-8').'"/> ';
+
+		if(!empty($plugin->params['admin']))
+			$this->meta['property="fb:admins"'] = '<meta property="fb:admins" content="'.htmlspecialchars($plugin->params['admin'], ENT_COMPAT,'UTF-8').'" />';
+
 	}
 
 	function _getElementInfo() {
@@ -530,6 +535,7 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 		$product_id = (int)hikashop_getCID('product_id');
 		$menus = $app->getMenu();
 		$menu = $menus->getActive();
+		global $Itemid;
 		if(empty($menu) && !empty($Itemid)) {
 			$menus->setActive($Itemid);
 			$menu = $menus->getItem($Itemid);

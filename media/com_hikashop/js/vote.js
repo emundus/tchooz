@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.0.0
+ * @version    5.0.3
  * @author     hikashop.com
- * @copyright  (C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 var hikaVote = function(el,opt) {
@@ -108,8 +108,9 @@ hikaVote.vote = function(val, from){
 			data += "&main_ctrl="+String(type);
 			window.Oby.xRequest(hikaVote.options.urls.show, {mode: "POST", data: data}, function(xhr) {
 				section.innerHTML = xhr.response;
-				if(hkjQuery().chosen)
+				if(hkjQuery().chosen && hkjQuery('#' + section.id + ' select')) {
 					hkjQuery('#' + section.id + ' select').chosen();
+				}
 			});
 		}
 		if(response.values) {
@@ -142,8 +143,9 @@ hikaVote.useful = function(vote_id, val) {
 	window.Oby.xRequest(hikaVote.options.urls.show, {mode: "POST", data: data}, function(xhr) {
 		setTimeout(function(){
 			section.innerHTML = xhr.response;
-			if(hkjQuery().chosen)
+			if(hkjQuery().chosen && hkjQuery('#' + section.id + ' select')) {
 				hkjQuery('#' + section.id + ' select').chosen();
+			}
 		}, 5000);
 	});
 };

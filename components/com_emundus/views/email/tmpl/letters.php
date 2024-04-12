@@ -3,7 +3,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $document = JFactory::getDocument();
 
-JHTML::_('behavior.modal');
+
 
 JHTML::stylesheet('media/com_emundus/cssemundus.css/');
 JHTML::stylesheet('templates/system/css/general.css');
@@ -107,7 +107,10 @@ else {
           method="post" enctype="multipart/form-data"
           onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
         <div>
-			<?php echo EmundusHelperFilters::setEvaluationList($result_id); ?>
+	        <?php
+	        $h_files = new EmundusHelperFilters();
+	        echo $h_files->setEvaluationList($result_id);
+	        ?>
             <input name="campaign_id" type="hidden" value="<?php echo $evaluation[0]["campaign_id"]; ?>"/>
             <input name="uid" type="hidden" value="<?php echo $student_id; ?>"/>
             <input name="aid" type="hidden" value="26"/>

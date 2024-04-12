@@ -6,63 +6,65 @@
  * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
  */
 
-// No direct access to this file
-defined('_JEXEC') or die;
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
 
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Router;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
-use Joomla\CMS\Cache\CacheControllerFactoryInterface;
-use Joomla\CMS\Categories\CategoryFactoryInterface;
-use Joomla\CMS\Component\Router\RouterFactory;
 use Joomla\CMS\Component\Router\RouterFactoryInterface;
 use Joomla\CMS\Component\Router\RouterInterface;
-use Joomla\CMS\Component\Router\RouterServiceInterface;
-use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Menu\AbstractMenu;
 use Joomla\CMS\Menu\MenuFactoryInterface;
 use Joomla\CMS\Router\SiteRouter;
-use Joomla\Component\Fields\Administrator\Model\FieldModel;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Database\Event\ConnectionEvent;
 use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Registry\Registry;
-use Joomla\CMS\Router\Route;
-use Joomla\CMS\Router\SiteRouterAwareTrait;
-
 
 //Global definitions use for front
 if( !defined('DS') ) {
     define( 'DS', DIRECTORY_SEPARATOR );
 }
 
-
-jimport('joomla.plugin.plugin');
-
 /**
  * Falang Driver Plugin
+ * can't use SubscriberInterface in other case problem with the other event
+ *
  */
-class plgSystemFalangdriver extends CMSPlugin
+final class plgSystemFalangdriver extends CMSPlugin
 {
-
     /**
      * Affects constructor behavior. If true, language files will be loaded automatically.
      *
      * @var    boolean
      * @since  3.10.2
+     * @update 5.2 change constructor
+     *             add onAfterDisconnect
      */
     protected $autoloadLanguage = true;
 
-    public function __construct(&$subject, $config = array())
+    /*
+     * @from 1.0
+     * @update 5.4 test site and not administrator
+     * */
+    public function __construct(DispatcherInterface $dispatcher, $config = array())
     {
+        parent::__construct($dispatcher, $config);
 
-
-        parent::__construct($subject, $config);
+        //add onAfterDisconnect event support from SubscriberInterface
+        //fix database already close
+        if (Factory::getApplication()->isClient('site')) {
+            $dispatcher->addListener('onAfterDisconnect', [$this,'onAfterDisconnect']);
+        }
 
         $this->setupCoreFileOverride();
 
@@ -70,7 +72,8 @@ class plgSystemFalangdriver extends CMSPlugin
         $this->displayInfoMessage();
 
         // This plugin is only relevant for use within the frontend!
-        if (Factory::getApplication()->isClient('administrator')) {
+        // need to test site
+        if (!Factory::getApplication()->isClient('site')) {
             return;
         }
 
@@ -81,6 +84,20 @@ class plgSystemFalangdriver extends CMSPlugin
             $this->setupDatabaseDriverOverride();
         }
 
+    }
+
+    /*
+     * @since 5.2 set the connection too null fix the mysqli already close event
+     *            need to access to the protected var $connection
+     * */
+    public function onAfterDisconnect(ConnectionEvent $event){
+        $db = Factory::getDbo();
+        if (is_a($db, 'JFalangDatabase')){
+            $reflectionClass = new ReflectionClass('JFalangDatabase');
+            $reflectionProperty = $reflectionClass->getProperty('connection');
+            $reflectionProperty->setAccessible(true); // only required prior to PHP 8.1.0
+            $reflectionProperty->setValue($db, null);
+        }
     }
 
     /**
@@ -415,8 +432,8 @@ class plgSystemFalangdriver extends CMSPlugin
             if (ComponentHelper::isEnabled('com_virtuemart', true)){
                 if (!class_exists( 'VmConfig' )) require(JPATH_ROOT .'/administrator/components/com_virtuemart/helpers/config.php');
                 VmConfig::loadConfig();
-                vmLanguage::$jSelLangTag = false;
-                vmLanguage::initialise(true);
+                \vmLanguage::$jSelLangTag = false;
+                \vmLanguage::initialise(true);
             }
 
             Factory::getApplication()->getMenu()->__construct();
@@ -551,8 +568,9 @@ class plgSystemFalangdriver extends CMSPlugin
 
     /*
      * Use trigger to activate the language selection in the template
+     * and load the custom fields in the translated form
      */
-    function onContentPrepareForm($form, $data)
+    function onContentPrepareForm(Form $form, $data)
     {
         if (Factory::getApplication()->isClient('site')){return;}
 
@@ -569,6 +587,8 @@ class plgSystemFalangdriver extends CMSPlugin
     * actually can't work perfectly because fields_values table don't have id key
     *
     * @since 4.0.5 load publish/unpublish custom field translation
+    * @update 5.3 fix bug with extra plugin showtime, create model need to be done for content in Admin mode and not Site
+    * @update 5.4 the context for category custom fields translation was not set correctly fix it
     *
     */
 	private function loadCustomFields($form, $data){
@@ -586,9 +606,9 @@ class plgSystemFalangdriver extends CMSPlugin
 
 			$context = $form->getName();
 
-			// When a category is edited, the context is com_categories.categorycom_content
+			// When a category is edited, the context is not set correctly => fix it
 			if (strpos($context, 'com_categories.category') === 0) {
-				$context = str_replace('com_categories.category', '', $context) . '.categories';
+                $context = 'com_content.categories';
 			}
 
 			$parts = FieldsHelper::extract($context, $form);
@@ -605,7 +625,7 @@ class plgSystemFalangdriver extends CMSPlugin
 			//necessary to load the related custom fields even if a translation for them don't exist.
     			if ( !empty($reference_id) && $catid == 'content'){
                 $mvcFactory = Factory::getApplication()->bootComponent('com_content')->getMVCFactory();
-                $articleModel = $mvcFactory->createModel('Article', 'Site', ['ignore_request' => true]);
+                $articleModel = $mvcFactory->createModel('Article', 'Administrator', ['ignore_request' => true]);
                 $contentParams = ComponentHelper::getParams('com_content');
                 $articleModel->setState('params', $contentParams);
                 $item =  $articleModel->getItem($reference_id);
@@ -704,6 +724,8 @@ class plgSystemFalangdriver extends CMSPlugin
      *
      * @since 4.0.5 add cateogry custom fields support
      * @update 4.12 save original text (null not accepted)
+     * @update 5.0 original value is empty
+     * @update 5.4 add showtime support use original gallery (the gallery can't be removed or changed)
      *
      * @param $post
      * @return bool|void
@@ -752,19 +774,19 @@ class plgSystemFalangdriver extends CMSPlugin
 		// Get the translated fields data
 		$fieldsData = !empty($formData) ? (array)$formData['com_fields'] : array();
 
-		// Loading the model
-		//sbou4
-		//$model = JModelLegacy::getInstance('Field', 'FieldsModel', array('ignore_request' => true));
-		//$model = FieldModel::getInstance('Field', array('ignore_request'=>true));
 		$db = Factory::getDbo();
 		$user = Factory::getUser();
 
 		$values = array();
 		// Loop over the fields
 		foreach ($fields as $field) {
-			// Determine the value if it is available from the data
-			$value = key_exists($field->name, $fieldsData) ? $fieldsData[$field->name] : null;
-			$values[$field->name] = $value;
+            if ($field->type == 'showtime'){
+                $values[$field->name] = $field->value;
+            } else {
+                // Determine the value if it is available from the data
+                $value = key_exists($field->name, $fieldsData) ? $fieldsData[$field->name] : null;
+                $values[$field->name] = $value;
+            }
 		}
 
 
@@ -794,7 +816,7 @@ class plgSystemFalangdriver extends CMSPlugin
 			$fieldContent->reference_field= 'com_fields';
 			$fieldContent->value = $jsonValues;
 			// the original value don't exist for custom_fields.
-			$fieldContent->original_value = md5(null);
+			$fieldContent->original_value = '';
             $fieldContent->original_text = "";
 
 			$fieldContent->modified =  Factory::getDate()->toSql();

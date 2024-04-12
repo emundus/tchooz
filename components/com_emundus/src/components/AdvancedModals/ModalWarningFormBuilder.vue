@@ -30,7 +30,7 @@
       </div>
 
       <div class="modalC-content">
-        <div class="em-flex-row em-flex-space-between mb-1">
+        <div class="em-flex-row em-flex-space-between tw-mb-1">
           <button class="bouton-sauvergarder-et-continuer w-retour"
                   type="button"
                   @click.prevent="$modal.hide('modalWarningFormBuilder')">

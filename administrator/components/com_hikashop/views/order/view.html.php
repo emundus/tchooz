@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -42,7 +42,6 @@ class OrderViewOrder extends hikashopView{
 		$config = hikashop_config();
 		$fieldsClass = hikashop_get('class.field');
 		$null = null;
-		$fields =  $fieldsClass->getFields('backend_listing', $null, 'order');
 
 		$popup = (hikaInput::get()->getString('tmpl') === 'component');
 		$this->assignRef('popup',$popup);
@@ -73,6 +72,9 @@ class OrderViewOrder extends hikashopView{
 			$defaultStatus = explode(',', $defaultStatus);
 		}
 		$pageInfo->filter->filter_status = $app->getUserStateFromRequest($this->paramBase.".filter_status",'filter_status',$defaultStatus,'array');
+		if(isset($_POST['search']) && !isset($_POST['filter_status'])) {
+			$pageInfo->filter->filter_status = $defaultStatus;
+		}
 		$pageInfo->filter->filter_payment = $app->getUserStateFromRequest($this->paramBase.".filter_payment",'filter_payment','','string');
 		$pageInfo->filter->filter_partner = $app->getUserStateFromRequest($this->paramBase.".filter_partner",'filter_partner','','int');
 		$pageInfo->filter->filter_end = $app->getUserStateFromRequest($this->paramBase.".filter_end",'filter_end','','string');
@@ -100,12 +102,19 @@ class OrderViewOrder extends hikashopView{
 					$filters[] = 'b.order_status = '.$database->Quote($pageInfo->filter->filter_status);
 					break;
 				}
-				if(!count($pageInfo->filter->filter_status) || in_array('', $pageInfo->filter->filter_status) || in_array('all', $pageInfo->filter->filter_status))
+
+				if(!HIKASHOP_J40 && (!count($pageInfo->filter->filter_status) || in_array('', $pageInfo->filter->filter_status) || in_array('all', $pageInfo->filter->filter_status)))
 					break;
 				$statuses = array();
+				$displayed_statuses = array();
 				foreach($pageInfo->filter->filter_status as $status){
+					if(HIKASHOP_J40 && $status == 'all') {
+						continue;
+					}
 					$statuses[] = $database->Quote($status);
+					$displayed_statuses[] = $status;
 				}
+				$pageInfo->filter->filter_status = $displayed_statuses;
 				$filters[]='b.order_status IN ('.implode(',',$statuses).')';
 				break;
 		}
@@ -158,12 +167,18 @@ class OrderViewOrder extends hikashopView{
 		}
 
 		$searchMap = array('c.id','c.username','c.name','a.user_email','b.order_user_id','b.order_number','b.order_id','b.order_invoice_number','b.order_invoice_id','b.order_full_price','d.address_firstname','d.address_lastname', 'b.order_discount_code');
+		$fields =  $fieldsClass->getFields('backend_listing', $null, 'order');
 		foreach($fields as $field) {
 			if($field->field_type == "customtext")
 				continue;
 			$searchMap[] = 'b.'.$field->field_namekey;
 		}
-
+		$userFields = $fieldsClass->getData('backend_listing', 'user', false);
+		foreach($userFields as $field) {
+			if($field->field_type == "customtext")
+				continue;
+			$searchMap[] = 'a.'.$field->field_namekey;
+		}
 		$extrafilters = array();
 		JPluginHelper::importPlugin('hikashop');
 		if(hikashop_level(2))

@@ -130,6 +130,15 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     cp -r /templates/g5_helium/custom/config templates/g5_helium/custom/
   fi
 
+  if [ ! -e language/overrides/fr-FR.override.ini ]; then
+    echo >&2 "Copy of language files in progress..."
+
+    cp -r /language/overrides language/
+  fi
+
+  # Ensure the MySQL Database is created
+  php /makedb.php "$JOOMLA_DB_HOST" "$JOOMLA_DB_USER" "$JOOMLA_DB_PASSWORD" "$JOOMLA_DB_NAME" "${JOOMLA_DB_TYPE:-mysqli}"
+
   if [ ! -e configuration.php ] && [ -d ".docker/installation/" ]; then
 
     echo >&2 "========================================================================"
@@ -138,7 +147,11 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2
     echo >&2 "========================================================================"
 
-    mv /core/logo.png images/custom/logo.png
+    # if core/logo.png exists, we copy it to images/custom/logo.png
+    if [ -f /core/logo.png ]; then
+      echo >&2 "Copy of Tchooz logo in progress..."
+      mv /core/logo.png images/custom/logo.png
+    fi
 
     echo >&2 "Init configuration variables..."
     cp configuration.php.dist configuration.php
@@ -152,20 +165,27 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     chown www-data: configuration.php
 
     php cli/joomla.php config:set sitename="$TCHOOZ_SITENAME" dbtype="mysqli" sef_rewrite=true frontediting=0
+    php cli/joomla.php config:set offline="$TCHOOZ_OFFLINE" offline_message="$TCHOOZ_OFFLINE_MESSAGE" display_offline_message="$TCHOOZ_DISPLAY_OFFLINE_MESSAGE" offline_image="$TCHOOZ_OFFLINE_IMAGE" debug="$TCHOOZ_DEBUG" debug_lang="$TCHOOZ_DEBUG_LANG" live_site="$TCHOOZ_LIVE_SITE" secret="$TCHOOZ_SECRET" offset="$TCHOOZ_OFFSET" mailer="$TCHOOZ_MAILER" mailfrom="$TCHOOZ_MAIL_FROM" fromname="$TCHOOZ_MAIL_FROM_NAME" smtpauth="$TCHOOZ_MAIL_SMTP_AUTH" smtpuser="$TCHOOZ_MAIL_SMTP_USER" smtppass="$TCHOOZ_MAIL_SMTP_PASS" smtphost="$TCHOOZ_MAIL_SMTP_HOST" smtpsecure="$TCHOOZ_MAIL_SMTP_SECURITY" smtpport="$TCHOOZ_MAIL_SMTP_PORT" caching="$TCHOOZ_CACHING" cache_handler="$TCHOOZ_CACHE_HANDLER" cachetime="$TCHOOZ_CACHE_LIFETIME" session_handler="$TCHOOZ_SESSION_HANDLER"
 
     echo >&2 "Init database..."
 
-    php cli/joomla.php database:import --folder=".docker/installation/core/vanilla" -n
+    php cli/joomla.php database:import --folder=".docker/installation/vanilla" -n
+    php cli/joomla.php tchooz:vanilla --action="import" --folder=".docker/installation/vanilla" -n
+    php cli/joomla.php tchooz:vanilla --action="import_foreign_keys" --folder=".docker/installation/vanilla" -n
 
 
     echo >&2 "Create super administrator user..."
 
-    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_SYSADMIN_USERNAME" --name="$TCHOOZ_SYSADMIN_LAST_NAME $TCHOOZ_SYSADMIN_FIRST_NAME" --password="$TCHOOZ_SYSADMIN_PASSWORD" --email="$TCHOOZ_SYSADMIN_MAIL" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Tous les droits" -n
+    #php cli/joomla.php tchooz:user:add --username="sysadmin" --lastname="ADMINISTRATOR" --firstname="Emundus" --password="password" --email="dev@emundus.io" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Tous les droits" -n
+    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_SYSADMIN_USERNAME" --lastname="$TCHOOZ_SYSADMIN_LAST_NAME" --firstname="$TCHOOZ_SYSADMIN_FIRST_NAME" --password="$TCHOOZ_SYSADMIN_PASSWORD" --email="$TCHOOZ_SYSADMIN_MAIL" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Tous les droits" -n
 
     echo >&2 "Create coordinator user..."
 
-    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_COORD_USERNAME" --name="$TCHOOZ_COORD_LAST_NAME $TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" --userprofiles="Gestionnaire de plateforme,Formulaire de base candidat" --useremundusgroups="Tous les droits" -n
+    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_COORD_USERNAME" --lastname="$TCHOOZ_COORD_LAST_NAME" --firstname="$TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" --userprofiles="Gestionnaire de plateforme,Formulaire de base candidat" --useremundusgroups="Tous les droits" -n
 
+    echo >&2 "Set Fabrik connection..."
+
+    php cli/joomla.php tchooz:fabrik_connection_reset -n
 
     chown www-data: configuration.php
     chown www-data: .htaccess
@@ -176,9 +196,6 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2
     echo >&2 "========================================================================"
   fi
-
-  # Ensure the MySQL Database is created
-  php /makedb.php "$JOOMLA_DB_HOST" "$JOOMLA_DB_USER" "$JOOMLA_DB_PASSWORD" "$JOOMLA_DB_NAME" "${JOOMLA_DB_TYPE:-mysqli}"
 
   echo >&2 "========================================================================"
   echo >&2

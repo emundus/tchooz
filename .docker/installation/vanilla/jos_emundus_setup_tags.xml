@@ -1,0 +1,496 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_setup_tags">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="date_time" Type="datetime" Null="NO" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="tag" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="request" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="description" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="published" Type="tinyint(1)" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__emundus_setup_tags" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__emundus_setup_tags">
+   <row>
+    <field name="id">1</field>
+    <field name="date_time">2013-05-22 13:24:00</field>
+    <field name="tag">APPLICANT_ID</field>
+    <field name="request">[APPLICANT_ID]</field>
+    <field name="description">Applicant's identifier</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="date_time">2013-05-22 13:32:00</field>
+    <field name="tag">USER_ID</field>
+    <field name="request">[USER_ID]</field>
+    <field name="description">User's identifier</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="date_time">2013-05-22 13:37:00</field>
+    <field name="tag">APPLICANT_NAME</field>
+    <field name="request">[APPLICANT_NAME]</field>
+    <field name="description">Applicant's name</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="date_time">2013-05-22 16:00:00</field>
+    <field name="tag">CURRENT_DATE</field>
+    <field name="request">[CURRENT_DATE]</field>
+    <field name="description">Current date at mail sending</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">6</field>
+    <field name="date_time">2013-05-22 20:11:00</field>
+    <field name="tag">TRAINING_CODE</field>
+    <field name="request">[TRAINING_CODE]</field>
+    <field name="description"></field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="date_time">2013-05-22 20:38:00</field>
+    <field name="tag">TRAINING_PROGRAMME</field>
+    <field name="request">[TRAINING_PROGRAMME]</field>
+    <field name="description"></field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="date_time">2013-05-22 21:51:00</field>
+    <field name="tag">REASON</field>
+    <field name="request">[REASON]</field>
+    <field name="description"></field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="date_time">2013-05-23 00:00:00</field>
+    <field name="tag">TRAINING_FEE</field>
+    <field name="request">[TRAINING_FEE]</field>
+    <field name="description"></field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="date_time">2013-05-23 00:00:00</field>
+    <field name="tag">TRAINING_PERIODE</field>
+    <field name="request">[TRAINING_PERIODE]</field>
+    <field name="description"></field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">11</field>
+    <field name="date_time">2013-05-23 00:00:00</field>
+    <field name="tag">APPLICANT_BIRTH_DATE</field>
+    <field name="request">DATE_FORMAT(birth_date,'%D %M %Y')|#__emundus_personal_detail|user=[APPLICANT_ID] AND fnum like &quot;[FNUM]&quot;</field>
+    <field name="description">Birthday's applicant</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="date_time">2013-06-04 00:00:00</field>
+    <field name="tag">ID</field>
+    <field name="request">[APPLICANT_ID]</field>
+    <field name="description">use this code for automatic replace with student id</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">13</field>
+    <field name="date_time">2013-06-04 00:00:00</field>
+    <field name="tag">NAME</field>
+    <field name="request">[APPLICANT_NAME]</field>
+    <field name="description">use this code for automatic replace with student name</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="date_time">2013-06-04 00:00:00</field>
+    <field name="tag">EMAIL</field>
+    <field name="request">[APPLICANT_EMAIL]</field>
+    <field name="description">use this code for automatic replace with student email</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="date_time">2013-06-04 00:00:00</field>
+    <field name="tag">USERNAME</field>
+    <field name="request">[APPLICANT_USERNAME]</field>
+    <field name="description">use this code for automatic replace with student username</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">16</field>
+    <field name="date_time">2013-06-04 00:00:00</field>
+    <field name="tag">ACTIVATION_URL</field>
+    <field name="request">[ACTIVATION_URL]</field>
+    <field name="description">use this code for automatic replace with activation URL link</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">17</field>
+    <field name="date_time">2013-06-04 00:00:00</field>
+    <field name="tag">SITE_URL</field>
+    <field name="request">[SITE_URL]</field>
+    <field name="description">Tchooz application url</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">18</field>
+    <field name="date_time">2013-06-04 00:00:00</field>
+    <field name="tag">UPLOAD_URL</field>
+    <field name="request">[UPLOAD_URL]</field>
+    <field name="description">use this code for automatic replace with referent letter upload form URL link</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">19</field>
+    <field name="date_time">2023-06-20 15:42:33</field>
+    <field name="tag">PROGRAMME_NAME</field>
+    <field name="request">[TRAINING_PROGRAMME]</field>
+    <field name="description"></field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">20</field>
+    <field name="date_time">2013-07-16 00:00:00</field>
+    <field name="tag">USER_NAME</field>
+    <field name="request">[USER_NAME]</field>
+    <field name="description">use this code for automatic replace with logged user account name</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">21</field>
+    <field name="date_time">2013-07-16 00:00:00</field>
+    <field name="tag">USER_EMAIL</field>
+    <field name="request">[USER_EMAIL]</field>
+    <field name="description">use this code for automatic replace with logged user account email</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">22</field>
+    <field name="date_time">2013-09-19 19:56:45</field>
+    <field name="tag">CAMPAIGN_LABEL</field>
+    <field name="request">[CAMPAIGN_LABEL]</field>
+    <field name="description">Campaign's name</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">23</field>
+    <field name="date_time">2013-09-19 19:56:45</field>
+    <field name="tag">CAMPAIGN_YEAR</field>
+    <field name="request">[CAMPAIGN_YEAR]</field>
+    <field name="description">COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_YEAR</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">24</field>
+    <field name="date_time">2013-09-19 19:57:55</field>
+    <field name="tag">CAMPAIGN_START</field>
+    <field name="request">[CAMPAIGN_START]</field>
+    <field name="description">COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_START</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">25</field>
+    <field name="date_time">2013-09-19 19:57:55</field>
+    <field name="tag">CAMPAIGN_END</field>
+    <field name="request">[CAMPAIGN_END]</field>
+    <field name="description">COM_EMUNDUS_TAG_APPLICANT_CAMPAIGN_END</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">26</field>
+    <field name="date_time">2013-09-19 19:59:31</field>
+    <field name="tag">CAMPAIGN_CODE</field>
+    <field name="request">[CAMPAIGN_CODE]</field>
+    <field name="description">Code of the current applicant's campaign</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">27</field>
+    <field name="date_time">2014-02-04 00:00:00</field>
+    <field name="tag">EXPERT_ACCEPT_LINK</field>
+    <field name="request">[EXPERT_ACCEPT_LINK]</field>
+    <field name="description"></field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">28</field>
+    <field name="date_time">2014-02-04 00:00:00</field>
+    <field name="tag">EXPERT_REFUSE_LINK</field>
+    <field name="request">[EXPERT_REFUSE_LINK]</field>
+    <field name="description"></field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">29</field>
+    <field name="date_time">2014-02-04 00:00:00</field>
+    <field name="tag">EVAL_DEADLINE</field>
+    <field name="request">[EVAL_DEADLINE]</field>
+    <field name="description"></field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">32</field>
+    <field name="date_time">2014-06-19 16:18:23</field>
+    <field name="tag">APPLICATION_TAGS</field>
+    <field name="request">[APPLICATION_TAGS]</field>
+    <field name="description">Tags for application file add by current user</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">33</field>
+    <field name="date_time">2014-06-19 16:18:23</field>
+    <field name="tag">APPLICATION_STATUS</field>
+    <field name="request">[APPLICATION_STATUS]</field>
+    <field name="description">File's status</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">34</field>
+    <field name="date_time">2014-06-19 14:20:05</field>
+    <field name="tag">FNUM</field>
+    <field name="request">[FNUM]</field>
+    <field name="description">Application file number</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">35</field>
+    <field name="date_time">2014-06-19 14:20:05</field>
+    <field name="tag">PHOTO</field>
+    <field name="request">filename|#__emundus_uploads|user_id=[APPLICANT_ID] AND attachment_id=10 AND fnum like &quot;[FNUM]&quot;</field>
+    <field name="description">Photo</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">38</field>
+    <field name="date_time">2015-03-12 00:00:00</field>
+    <field name="tag">FICHE_EMPLOI</field>
+    <field name="request">[FICHE_EMPLOI]</field>
+    <field name="description">Intitulé de la fiche emploi</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">39</field>
+    <field name="date_time">2015-03-12 00:00:00</field>
+    <field name="tag">FICHE_EMPLOI_VALIDE</field>
+    <field name="request">[FICHE_EMPLOI_VALIDE]</field>
+    <field name="description">Etat de la validation de la fiche par le référent</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">40</field>
+    <field name="date_time">2015-03-12 00:00:00</field>
+    <field name="tag">FICHE_EMPLOI_VALIDE_COMITE</field>
+    <field name="request">[FICHE_EMPLOI_VALIDE_COMITE]</field>
+    <field name="description">Etat de la validation par le comité des référents</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">42</field>
+    <field name="date_time">2023-06-20 15:42:33</field>
+    <field name="tag">LASTFIRST_NAME</field>
+    <field name="request">php|$user = JFactory::getSession()-&gt;get('emundusUser'); $last=mb_substr($user-&gt;lastname, 0, 3); $first=mb_substr($user-&gt;firstname, 0, 3); return $last.&quot;_&quot;.$first;</field>
+    <field name="description">Gets first three letters of last name and first name then concatenates them.</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">45</field>
+    <field name="date_time">2014-06-19 16:20:21</field>
+    <field name="tag">APPLICATION_PROGRESS</field>
+    <field name="request">php|require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+$m_application = new EmundusModelApplication();
+$fnum = '[FNUM]';
+if (!empty($fnum)) {
+ $app_progress = $m_application-&gt;getFormsProgress($fnum);
+return $app_progress.'%';
+}</field>
+    <field name="description">Progression of application file</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">46</field>
+    <field name="date_time">2019-12-16 00:00:00</field>
+    <field name="tag">ATTACHMENT_PROGRESS</field>
+    <field name="request">php|require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+$m_application = new EmundusModelApplication();
+$fnum = '[FNUM]';
+if (!empty($fnum)) {
+ return $m_application-&gt;getAttachmentsProgress($fnum).'%';
+}</field>
+    <field name="description"></field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">47</field>
+    <field name="date_time">2021-07-22 09:43:06</field>
+    <field name="tag">MESSENGER_NOTIFY</field>
+    <field name="request">php|require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messenger.php');
+$m_messages = new EmundusModelmessenger();
+$fnum = '[FNUM]';
+if (!empty($fnum)) {
+    return '&lt;p class=&quot;messenger__notifications_counter&quot;&gt;' . $m_messages-&gt;getNotificationsByFnum($fnum) . '&lt;/p&gt;';
+}
+</field>
+    <field name="description">Nombre de notifications messages</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">48</field>
+    <field name="date_time">2022-01-25 09:54:59</field>
+    <field name="tag">ZOOM_MEETING_START_TIME</field>
+    <field name="request">php|$fnum = '[FNUM]';
+if(!empty($fnum)) {
+    try {
+        $db = JFactory::getDbo();
+        $query = &quot;select start_time from jos_emundus_candidat_meeting as jecm where jecm.fnum like &quot; . $fnum;
+        $db-&gt;setQuery($query);
+        $raw = $db-&gt;loadResult();
+        $html = '&lt;strong&gt;' . $raw . '&lt;/strong&gt;';
+        return $html;
+    } catch (Exception $e) {
+        return '';
+    }
+}</field>
+    <field name="description">Zoom meeting start time</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">49</field>
+    <field name="date_time">2022-01-25 09:59:38</field>
+    <field name="tag">ZOOM_MEETING_DURATION</field>
+    <field name="request">php|$fnum = '[FNUM]';
+if(!empty($fnum)) {
+    try {
+        $db = JFactory::getDbo();
+        $query = &quot;select duration from jos_emundus_candidat_meeting as jecm where jecm.fnum like &quot; . $fnum;
+        $db-&gt;setQuery($query);
+        $raw = $db-&gt;loadResult();
+        $html = '&lt;strong&gt;' . $raw . '&lt;/strong&gt;';
+        return $html;
+    } catch (Exception $e) {
+        return '';
+    }
+}</field>
+    <field name="description">Zoom meeting duration (in minutes)</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">50</field>
+    <field name="date_time">2022-01-25 09:59:39</field>
+    <field name="tag">ZOOM_MEETING_SESSION_LINK</field>
+    <field name="request">php|$fnum = '[FNUM]';
+if(!empty($fnum)){
+    try {
+        $db = JFactory::getDbo();
+        $query = &quot;select join_url from jos_emundus_jury as jej left join jos_emundus_candidat_meeting as jecm on jej.id = jecm.session where jecm.fnum like &quot; . $fnum ;
+        $db-&gt;setQuery($query);
+        $raw = $db-&gt;loadResult();
+        $html = '&lt;strong&gt;&lt;a href=&quot;' . $raw . '&quot; target=&quot;_blank&quot;&gt;' . ' ici ' . '&lt;/a&gt;&lt;/strong&gt;';
+        return $html;
+    } catch (Exception $e) {
+        return '';
+    }
+}</field>
+    <field name="description">Zoom meeting session link</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">51</field>
+    <field name="date_time">2022-02-22 10:06:35</field>
+    <field name="tag">ZOOM_SESSION_NAME</field>
+    <field name="request">[ZOOM_SESSION_NAME]</field>
+    <field name="description">Zoom meeting name (room name)</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">52</field>
+    <field name="date_time">2022-02-22 10:06:35</field>
+    <field name="tag">ZOOM_SESSION_START_TIME</field>
+    <field name="request">[ZOOM_SESSION_START_TIME]</field>
+    <field name="description">Zoom meeting start time</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">53</field>
+    <field name="date_time">2022-02-22 10:06:35</field>
+    <field name="tag">ZOOM_SESSION_URL</field>
+    <field name="request">[ZOOM_SESSION_URL]</field>
+    <field name="description">Zoom meeting access url (will be customize to Host, Participant)</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">54</field>
+    <field name="date_time">2022-02-22 10:06:35</field>
+    <field name="tag">ZOOM_SESSION_JURY</field>
+    <field name="request">[ZOOM_SESSION_JURY]</field>
+    <field name="description">Zoom meeting jury</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">55</field>
+    <field name="date_time">2022-02-22 13:42:33</field>
+    <field name="tag">ZOOM_SESSION_PROFILE</field>
+    <field name="request">[ZOOM_SESSION_PROFILE]</field>
+    <field name="description">Zoom session profile (Coordinator / Host / Evaluator)</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">56</field>
+    <field name="date_time">2022-02-22 14:23:54</field>
+    <field name="tag">ZOOM_SESSION_UPDATE_TIME</field>
+    <field name="request">[ZOOM_SESSION_UPDATE_TIME]</field>
+    <field name="description">Zoom session (created/updated) time</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">57</field>
+    <field name="date_time">2022-02-22 16:06:06</field>
+    <field name="tag">ZOOM_SESSION_PREVIOUS_NAME</field>
+    <field name="request">[ZOOM_SESSION_PREVIOUS_NAME]</field>
+    <field name="description">Zoom session previous name</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">58</field>
+    <field name="date_time">2022-02-22 16:08:42</field>
+    <field name="tag">ZOOM_SESSION_PREVIOUS_START_TIME</field>
+    <field name="request">[ZOOM_SESSION_PREVIOUS_START_TIME]</field>
+    <field name="description">Zoom session previous start time</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">59</field>
+    <field name="date_time">2022-02-27 14:23:42</field>
+    <field name="tag">ZOOM_MEETING_START_DATE</field>
+    <field name="request">php|$fnum = '[FNUM]';
+if(!empty($fnum)) {
+    try {
+        $db = JFactory::getDbo();
+        $query = &quot;select date(start_time_) from jos_emundus_jury as jej left join jos_emundus_candidat_meeting as jecm on jej.id = jecm.session where jecm.fnum like &quot; . $fnum;
+        $db-&gt;setQuery($query);
+        $raw = $db-&gt;loadResult();
+        return date('d/m/Y', strtotime($raw));
+    } catch (Exception $e) {
+        return '';
+    }
+}</field>
+    <field name="description">Zoom meeting start date (just date)</field>
+    <field name="published">0</field>
+   </row>
+   <row>
+    <field name="id">60</field>
+    <field name="date_time">2022-02-27 17:42:43</field>
+    <field name="tag">ZOOM_SESSION_HOST</field>
+    <field name="request">[ZOOM_SESSION_HOST]</field>
+    <field name="description">Zoom meeting host</field>
+    <field name="published">0</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

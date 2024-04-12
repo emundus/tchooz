@@ -9,6 +9,10 @@
 // ensure this file is being included by a parent file
 defined('_JEXEC') or die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Factory;
 

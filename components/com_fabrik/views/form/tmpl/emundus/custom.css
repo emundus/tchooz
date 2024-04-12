@@ -8,14 +8,26 @@ form .fabrikGroupColumns.fabrikGroup .row {
     flex-wrap: nowrap;
 }
 
+.fabrikElementContainer {
+    position: relative;
+}
+
 form .fabrikGroupColumns.fabrikGroup .row .fabrikElementContainer {
     padding: 0;
+}
+
+.em-submit-form-button .btn-group .btn-primary {
+    margin-bottom: 0;
 }
 
 @media all and (max-width: 479px) {
     .fabrikGroup .repeatGroupTable .fabrikSubGroupElements .fabrikGroupRepeater {
         display: flex;
         justify-content: flex-end;
+    }
+
+    form .fabrikGroupColumns.fabrikGroup .row {
+        flex-wrap: wrap;
     }
 }
 

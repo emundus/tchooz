@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -58,7 +58,7 @@ function dropdownFill () {
 
 		drop_html += '<li>'+
 			'<label href="#" onclick="window.localPage.actionColumns(event, ' + ref + ', \'click\'); return false;">' +
-				'<input class="form-check-input me-1" id="columnSelect_' + ref + '" type="checkbox" name="columnSelect" value="' + header_name[i] + '" '+status+'>' +
+				'<input class="form-check-input me-1" id="columnSelect_' + ref + '" type="checkbox" name="columnSelect" value="' + header_name[i].replace('%', '') + '" '+status+'>' +
 				'<span class="hika_columns_name">' + header_name[i] + '</span>' +
 			'</label>'+
 		'</li>';

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -260,6 +260,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 		if(!empty($this->fields['order'])){
 			foreach($this->fields['order'] as $fieldName => $oneExtraField) {
+				$oneExtraField->currentElement = $this->order;
 ?>
 					<tr>
 						<td class="key">
@@ -467,6 +468,7 @@ defined('_JEXEC') or die('Restricted access');
 								<p class="hikashop_order_product_custom_item_fields"><?php
 								if(hikashop_level(2) && !empty($this->fields['item'])){
 									foreach($this->fields['item'] as $field){
+										$field->currentElement = $product;
 										$namekey = $field->field_namekey;
 										if(empty($product->$namekey)){
 											continue;

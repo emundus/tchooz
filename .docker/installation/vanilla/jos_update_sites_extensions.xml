@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__update_sites_extensions">
+   <field Field="update_site_id" Type="int" Null="NO" Key="PRI" Default="0" Extra="" />
+   <field Field="extension_id" Type="int" Null="NO" Key="PRI" Default="0" Extra="" />
+   <key Table="#__update_sites_extensions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="update_site_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__update_sites_extensions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="2" Column_name="extension_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__update_sites_extensions">
+   <row>
+    <field name="update_site_id">1</field>
+    <field name="extension_id">227</field>
+   </row>
+   <row>
+    <field name="update_site_id">2</field>
+    <field name="extension_id">228</field>
+   </row>
+   <row>
+    <field name="update_site_id">2</field>
+    <field name="extension_id">605</field>
+   </row>
+   <row>
+    <field name="update_site_id">3</field>
+    <field name="extension_id">24</field>
+   </row>
+   <row>
+    <field name="update_site_id">4</field>
+    <field name="extension_id">333</field>
+   </row>
+   <row>
+    <field name="update_site_id">5</field>
+    <field name="extension_id">341</field>
+   </row>
+   <row>
+    <field name="update_site_id">6</field>
+    <field name="extension_id">341</field>
+   </row>
+   <row>
+    <field name="update_site_id">7</field>
+    <field name="extension_id">342</field>
+   </row>
+   <row>
+    <field name="update_site_id">8</field>
+    <field name="extension_id">347</field>
+   </row>
+   <row>
+    <field name="update_site_id">9</field>
+    <field name="extension_id">348</field>
+   </row>
+   <row>
+    <field name="update_site_id">10</field>
+    <field name="extension_id">654</field>
+   </row>
+   <row>
+    <field name="update_site_id">10</field>
+    <field name="extension_id">663</field>
+   </row>
+   <row>
+    <field name="update_site_id">11</field>
+    <field name="extension_id">601</field>
+   </row>
+   <row>
+    <field name="update_site_id">12</field>
+    <field name="extension_id">347</field>
+   </row>
+   <row>
+    <field name="update_site_id">13</field>
+    <field name="extension_id">731</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

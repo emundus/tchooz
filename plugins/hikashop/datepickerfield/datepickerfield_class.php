@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -128,7 +128,7 @@ class fieldOpt_datepicker_options {
 	}
 }
 
-class hikashopDatepickerfield {
+class hikashopDatepickerfield extends stdClass{
 
 	public $prefix = null;
 	public $suffix = null;
@@ -548,7 +548,7 @@ window.hikashopDatepicker = function(el) {
 					'<button class="btn" onclick="document.getElementById(\''.$datepicker_id.'\').focus();return false;"><i class="icon-calendar"></i></button>'.
 					'</div>';
 			} else {
-				$ret = '<input type="text" id="'.$datepicker_id.'" data-picker="'.$id.'" data-options=\''.$dateOptions.'\' class="hikashop_datepicker" value="'.$txtValue.'"/>';
+				$ret = '<input type="text" id="'.$datepicker_id.'" data-picker="'.$id.'" data-options=\''.$dateOptions.'\' class="hikashop_datepicker form-control" value="'.$txtValue.'"/>';
 			}
 		} else {
 			$ret = '<div id="'.$datepicker_id.'" data-picker="'.$id.'" data-options=\''.$dateOptions.'\' class="hikashop_datepicker" value="'.$txtValue.'"></div>';

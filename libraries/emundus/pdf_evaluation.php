@@ -1,6 +1,48 @@
 <?php
 
-function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $options = null) {
+if(!function_exists('get_mime_type'))
+{
+	function get_mime_type($filename, $mimePath = '../etc')
+	{
+		$fileext = substr(strrchr($filename, '.'), 1);
+
+		if (empty($fileext))
+		{
+			return false;
+		}
+
+		$regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
+		$lines = file("$mimePath/mime.types");
+		foreach ($lines as $line)
+		{
+			if (substr($line, 0, 1) == '#')
+			{
+				continue;
+			} // skip comments
+			$line = rtrim($line) . " ";
+			if (!preg_match($regex, $line, $matches))
+			{
+				continue;
+			} // no match to the extension
+
+			return $matches[1];
+		}
+
+		return false; // no match at all
+	}
+}
+
+if(!function_exists('is_image_ext'))
+{
+	function is_image_ext($filename)
+	{
+		$array = explode('.', $filename);
+
+		return in_array(strtolower(end($array)), ['png', 'jpe', 'jpeg', 'jpg', 'gif', 'bmp', 'ico', 'tiff', 'tif', 'svg', 'svgz']);
+	}
+}
+
+function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $options = []) {
     jimport( 'joomla.html.parameter' );
     set_time_limit(0);
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');

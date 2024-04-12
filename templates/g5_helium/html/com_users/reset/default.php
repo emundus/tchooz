@@ -15,15 +15,20 @@ JHtml::_('behavior.formvalidator');
 $document = JFactory::getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_users_reset.css");
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
+$m_settings = new EmundusModelsettings();
+
+$favicon = $m_settings->getFavicon();
+
 ?>
 <div class="reset<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
 		<div class="page-header">
             <?php if (file_exists('images/custom/favicon.png')) : ?>
-                <a href="index.php" alt="Logo" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+                <a href="index.php" alt="Logo" class="em-profile-picture tw-mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $favicon ?>)">
                 </a>
             <?php endif; ?>
-            <h1 class="em-mb-8">
+            <h1 class="tw-mb-4">
                 <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
             </h1>
 		</div>

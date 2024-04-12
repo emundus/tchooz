@@ -56,11 +56,28 @@ define(['jquery', 'fab/element'],
                     search_contains: true,
                 });
 
-                const element = document.querySelector('#' + this.element.id + ' .chzn-single span');
+                const element = document.querySelector('#' + this.element.id + ' .chosen-single span');
                 this.changeElement(element);
 
                 jQuery(this.HTMLSelectElement).on('change', () => { // sadly mandatory
                     this.handlerSelectChange();
+                });
+
+                jQuery(this.HTMLInputElement).on('mouseover', () => {
+                    if(document.activeElement !== this.HTMLInputElement) {
+                        this.element.querySelector('.chosen-single').style.borderColor = 'var(--em-form-bc-hover)';
+                    }
+                });
+                jQuery(this.HTMLInputElement).on('mouseout', () => {
+                    if(document.activeElement !== this.HTMLInputElement) {
+                        this.element.querySelector('.chosen-single').style.borderColor = 'inherit';
+                    }
+                });
+                jQuery(this.HTMLInputElement).on('focus', () => {
+                    this.element.querySelector('.chosen-single').style.borderColor = 'var(--em-form-bc-focus)';
+                });
+                jQuery(this.HTMLInputElement).on('focusout', () => {
+                    this.element.querySelector('.chosen-single').style.borderColor = 'inherit';
                 });
             }
         },
@@ -74,7 +91,7 @@ define(['jquery', 'fab/element'],
             this.addMask();
             this.mask.value = newInputValue;
 
-            const element = document.querySelector('#'+this.element.id+' .chzn-single span');
+            const element = document.querySelector('#'+this.element.id+' .chosen-single span');
             this.changeElement(element);
         },
 

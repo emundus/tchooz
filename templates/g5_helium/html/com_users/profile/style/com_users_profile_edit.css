@@ -4,7 +4,7 @@
 
 .password-group .input-group .input-password-toggle {
     position: absolute;
-    right: 16px;
+    right: 4px;
     padding: 0;
     margin-bottom: 0;
     background: transparent;
@@ -20,13 +20,13 @@
     align-items: center;
 }
 
-.com-users-profile__edit-form#member-profile fieldset:nth-child(2) {
+.com-users-profile__edit-form#member-profile fieldset:nth-child(3) {
     display: none;
 }
 
 .com-users-profile__edit-form#member-profile {
     background: #fff;
-    margin: 0px auto 50px auto;
+    margin: 0 auto 50px auto;
     padding: 32px 32px 24px 32px;
     border-radius: var(--em-form-br-block) !important;
     width: 84%;
@@ -47,6 +47,12 @@ form#member-profile .control-group {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    margin: 0;
+}
+
+form#member-profile .control-group:nth-child(5),
+form#member-profile .control-group:nth-child(6),
+form#member-profile .control-group:nth-child(7){
     margin: 24px 0 0 0;
 }
 
@@ -68,16 +74,20 @@ form#member-profile.well legend {
 
 form#member-profile.form-validate.form-horizontal.well input {
     width: 100%;
-    color: var(--neutral-600);
+    color: var(--em-default-text-color-1);
     font-family: var(--em-applicant-font);
-    height: 48px;
-    border-radius: 8px;
-    padding: 0 12px 0 12px;
-    border: 1px solid var(--neutral-400);
+    height: var(--em-form-height);
+    border-radius: var(--em-form-br);
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+    padding-top: var(--em-spacing-2);
+    padding-bottom: var(--em-spacing-2);
+    border: 1px solid var(--em-form-bc);
     box-shadow: none;
     margin-top: 6px;
     margin-bottom: 0;
-    background-color: #fff;
+    font-size: var(--em-form-font-size);
+    background-color: var(--em-form-bgc);
 }
 
 form#member-profile.form-validate.form-horizontal.well input:hover {
@@ -93,16 +103,33 @@ form#member-profile.form-validate.form-horizontal.well input:focus {
 
 form#member-profile .control-group .control-label label {
     font-family: var(--em-applicant-font);
-    font-size: 14px;
+    font-size: var(--em-form-label-size);
     font-style: normal;
-    font-weight: 500;
+    font-weight: var(--em-form-label-weight);
     line-height: 17px;
     letter-spacing: 0.0025em;
     text-align: left;
-    color: var(--neutral-800);
+    color: var(--neutral-900);
     margin-bottom: 0 !important;
     padding-top: 0 !important;
 }
+
+form#member-profile .control-group .controls .text-muted {
+    color: var(--em-form-tip-color) !important;
+}
+
+form#member-profile .control-group .controls .text-muted strong {
+    font-weight: 400;
+}
+
+.password-group .input-group .input-password-toggle span {
+    color: var(--neutral-500) !important;
+}
+
+.password-group .input-group .input-password-toggle:hover span {
+    color: var(--neutral-700) !important;
+}
+
 form#member-profile.form-validate.form-horizontal.well button.btn {
     text-transform: capitalize;
     border-radius: var(--em-applicant-br);
@@ -112,6 +139,12 @@ form#member-profile.form-validate.form-horizontal.well button.btn {
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     height: 38px;
 }
+
+form#member-profile.form-validate.form-horizontal.well button.input-password-toggle {
+    height: var(--em-form-height);
+    margin-top: 6px;
+}
+
 form#member-profile.form-validate.form-horizontal.well a.btn {
     font-weight: 300;
     margin-right: 16px !important;
@@ -126,13 +159,20 @@ form#member-profile.form-validate.form-horizontal.well fieldset:nth-child(2) {
     margin-top: 20px;
 }
 form#member-profile.form-validate.form-horizontal.well label {
-    font-size: 14px;
-    color: var(--neutral-800);
+    font-size: var(--em-form-label-size);
+    color: var(--neutral-900);
     font-family: var(--em-applicant-font);
 }
 
 form#member-profile.form-validate.form-horizontal.well span.star {
     display: none;
+}
+
+.invalid .form-control-feedback {
+    margin-top: var(--em-spacing-1);
+    color: var(--em-form-element-color-error) !important;
+    font-weight: 700;
+    padding-left: 0;
 }
 
 @media all and (max-width: 767px) {

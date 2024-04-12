@@ -2,20 +2,28 @@
   <div
       id="application-modal"
       name="application-modal"
+      v-if="selectedFile !== null && selectedFile !== undefined"
+      :class="{ 'context-files': context === 'files', 'hidden': hidden }"
   >
     <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900 em-flex-row">
-      <div class="em-flex-row em-pointer em-gap-8" id="evaluation-modal-close">
-        <div class="em-w-max-content em-flex-row">
+      <div class="em-flex-row em-pointer em-flex-space-between em-w-100" id="evaluation-modal-close">
+        <div class="em-flex-row em-gap-8">
+          <div class="em-w-max-content em-flex-row">
           <span class="material-icons-outlined em-font-size-16"
-                onclick="document.querySelector('body').style.overflow= 'visible';swal.close()" style="color: white">arrow_back</span>
+                @click="onClose" style="color: white">arrow_back</span>
+          </div>
+          <span class="em-text-neutral-500">|</span>
+          <p class="em-font-size-14" style="color: white" v-if="selectedFile.applicant_name != ''">
+            {{ selectedFile.applicant_name }} - {{ selectedFile.fnum }}
+          </p>
+          <p class="em-font-size-14" style="color: white" v-else>
+            {{ selectedFile.fnum }}
+          </p>
         </div>
-        <span class="em-text-neutral-500">|</span>
-        <p class="em-font-size-14" style="color: white" v-if="file.applicant_name != ''">
-          {{ file.applicant_name }} - {{ file.fnum }}
-        </p>
-        <p class="em-font-size-14" style="color: white" v-else>
-          {{ file.fnum }}
-        </p>
+        <div v-if="fnums.length > 1" class="em-flex-row">
+          <span class="material-icons-outlined em-font-size-16" style="color:white;" @click="openPreviousFnum">navigate_before</span>
+          <span class="material-icons-outlined em-font-size-16" style="color:white;" @click="openNextFnum">navigate_next</span>
+        </div>
       </div>
     </div>
 
@@ -23,7 +31,7 @@
       <div id="modal-applicationform">
         <div class="scrollable">
           <div class="em-flex-row em-flex-center em-gap-16 em-border-bottom-neutral-300 sticky-tab">
-            <div v-for="tab in tabs" v-if="access[tab.access].r" class="em-light-tabs em-pointer"
+            <div v-for="tab in tabsICanAccessTo" :key="tab.name" class="em-light-tabs em-pointer"
                  @click="selected = tab.name" :class="selected === tab.name ? 'em-light-selected-tab' : ''">
               <span class="em-font-size-14">{{ translate(tab.label) }}</span>
             </div>
@@ -32,14 +40,14 @@
           <div v-if="selected === 'application'" v-html="applicationform"></div>
           <Attachments
               v-if="selected === 'attachments'"
-              :fnum="file.fnum"
+              :fnum="selectedFile.fnum"
               :user="$props.user"
               :columns="['name','date','category','status']"
               :displayEdit="false"
           />
           <Comments
               v-if="selected === 'comments'"
-              :fnum="file.fnum"
+              :fnum="selectedFile.fnum"
               :user="$props.user"
               :access="access['10']"
           />
@@ -84,9 +92,15 @@ export default {
       type: String,
       default: '66/33'
     },
+    context: {
+      type: String,
+      default: ''
+    }
   },
   mixins: [errors],
   data: () => ({
+    fnums: [],
+    selectedFile: null,
     applicationform: '',
     selected: 'application',
     tabs: [
@@ -110,7 +124,7 @@ export default {
     url: null,
     access: null,
     student_id: null,
-
+    hidden: false,
     loading: false
   }),
 
@@ -120,72 +134,104 @@ export default {
     let ratio_array = this.$props.ratio.split('/');
     r.style.setProperty('--attachment-width', ratio_array[0] + '%');
 
-    this.loading = true;
-    let fnum = '';
+    this.selectedFile = this.file;
 
-    if (typeof this.$props.file == 'string') {
-      fnum = this.$props.file;
+    // if props file is not null, then render
+    if (typeof this.selectedFile !== 'undefined' && this.selectedFile !== null) {
+      this.render();
     } else {
-      fnum = this.$props.file.fnum;
+      // hide modal if no file is selected
+      this.$modal.hide('application-modal');
     }
 
-    if (typeof this.$props.file == 'string') {
-      filesService.getFile(fnum, this.$props.type).then((result) => {
-        if (result.status == 1) {
-          this.$props.file = result.data;
-          this.access = result.rights;
-          this.updateURL(this.$props.file.fnum)
-          this.getApplicationForm();
-          if (this.$props.type === 'evaluation') {
-            this.getEvaluationForm();
-          }
-        } else {
-          this.displayError(
-              'COM_EMUNDUS_FILES_CANNOT_ACCESS',
-              'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC'
-          ).then((confirm) => {
-            if (confirm === true) {
-              this.$modal.hide('application-modal');
-            }
-          });
-        }
-      });
-    } else {
-      filesService.checkAccess(fnum).then((result) => {
-        if (result.status == true) {
-          this.access = result.data;
-          this.updateURL(this.$props.file.fnum)
-          if (this.access['1'].r) {
-            this.getApplicationForm();
-          } else {
-            if (this.access['4'].r) {
-              this.selected = 'attachments';
-            } else if (this.access['10'].r) {
-              this.selected = 'comments';
-            }
-          }
-          if (this.$props.type === 'evaluation') {
-            this.getEvaluationForm();
-          }
-        } else {
-          this.displayError(
-              'COM_EMUNDUS_FILES_CANNOT_ACCESS',
-              'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC'
-          ).then((confirm) => {
-            if (confirm === true) {
-              this.$modal.hide('application-modal');
-            }
-          });
-        }
-      });
-    }
+    this.addEventListeners();
+  },
+  onBeforeDestroy() {
+    window.removeEventListener('openSingleApplicationWithFnum');
   },
 
   methods: {
+    addEventListeners() {
+      window.addEventListener('openSingleApplicationWithFnum', (e) => {
+        this.selectedFile = e.detail.fnum;
+
+        if (e.detail.fnums) {
+          this.fnums = e.detail.fnums;
+        }
+
+        if (typeof this.selectedFile !== 'undefined' && this.selectedFile !== null) {
+          this.render();
+        }
+      });
+    },
+    render() {
+      this.loading = true;
+      let fnum = '';
+
+      if (typeof this.selectedFile == 'string') {
+        fnum = this.selectedFile;
+      } else {
+        fnum = this.selectedFile.fnum;
+      }
+
+      if (typeof this.selectedFile == 'string') {
+        filesService.getFile(fnum, this.$props.type).then((result) => {
+          if (result.status == 1) {
+            this.selectedFile = result.data;
+            this.access = result.rights;
+            this.updateURL(this.selectedFile.fnum)
+            this.getApplicationForm();
+            if (this.$props.type === 'evaluation') {
+              this.getEvaluationForm();
+            }
+
+            this.$modal.show('application-modal');
+            this.hidden = false;
+          } else {
+            this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', result.msg
+            ).then((confirm) => {
+              if (confirm === true) {
+                this.$modal.hide('application-modal');
+                this.hidden = true;
+              }
+            });
+          }
+        });
+      } else {
+        filesService.checkAccess(fnum).then((result) => {
+          if (result.status == true) {
+            this.access = result.data;
+            this.updateURL(this.selectedFile.fnum)
+            if (this.access['1'].r) {
+              this.getApplicationForm();
+            } else {
+              if (this.access['4'].r) {
+                this.selected = 'attachments';
+              } else if (this.access['10'].r) {
+                this.selected = 'comments';
+              }
+            }
+            if (this.$props.type === 'evaluation') {
+              this.getEvaluationForm();
+            }
+            this.$modal.show('application-modal');
+            this.hidden = false;
+          } else {
+            this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', 'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC').then((confirm) => {
+              if (confirm === true) {
+                this.$modal.hide('application-modal');
+                this.hidden = true;
+              }
+            });
+          }
+        });
+      }
+    },
+
     getApplicationForm() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=" + this.file.fnum,
+        url: "index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=" + this.selectedFile.fnum,
       }).then(response => {
         this.applicationform = response.data;
         if (this.$props.type !== 'evaluation') {
@@ -194,34 +240,34 @@ export default {
       });
     },
     getEvaluationForm() {
-      if (this.$props.file.id != null) {
-        this.rowid = this.$props.file.id;
+      if (this.selectedFile.id != null) {
+        this.rowid = this.selectedFile.id;
       }
-      if (typeof this.$props.file.applicant_id != 'undefined') {
-        this.student_id = this.$props.file.applicant_id;
+      if (typeof this.selectedFile.applicant_id != 'undefined') {
+        this.student_id = this.selectedFile.applicant_id;
       } else {
-        this.student_id = this.$props.file.student_id;
+        this.student_id = this.selectedFile.student_id;
       }
       let view = 'form';
 
-      filesService.getEvaluationFormByFnum(this.$props.file.fnum, this.$props.type).then((response) => {
+      filesService.getEvaluationFormByFnum(this.selectedFile.fnum, this.$props.type).then((response) => {
         if (response.data !== 0) {
-          if (typeof this.$props.file.id === 'undefined') {
-            filesService.getMyEvaluation(this.$props.file.fnum).then((data) => {
+          if (typeof this.selectedFile.id === 'undefined') {
+            filesService.getMyEvaluation(this.selectedFile.fnum).then((data) => {
               this.rowid = data.data;
               if (this.rowid == null) {
                 this.rowid = "";
               }
 
-              this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.$props.file.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.$props.file.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
+              this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.selectedFile.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.selectedFile.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
             });
           } else {
-            this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.$props.file.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.$props.file.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
+            this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid=' + response.data + '&rowid=' + this.rowid + '&jos_emundus_evaluations___student_id[value]=' + this.student_id + '&jos_emundus_evaluations___campaign_id[value]=' + this.selectedFile.campaign + '&jos_emundus_evaluations___fnum[value]=' + this.selectedFile.fnum + '&student_id=' + this.student_id + '&tmpl=component&iframe=1'
           }
         }
       });
     },
-    iframeLoaded(event) {
+    iframeLoaded() {
       this.loading = false;
     },
     updateURL(fnum = '') {
@@ -233,13 +279,50 @@ export default {
       } else {
         window.history.pushState('', '', url[0] + '#' + fnum);
       }
-    }
+    },
+    onClose(e) {
+      e.preventDefault();
+      this.hidden = true;
+      this.$modal.hide('application-modal');
+      document.querySelector('body').style.overflow= 'visible';
+      swal.close();
+    },
+    openNextFnum() {
+      let index = typeof this.selectedFile === 'string' ? this.fnums.indexOf(this.selectedFile) : this.fnums.indexOf(this.selectedFile.fnum);
+      if (index !== -1 && index < this.fnums.length - 1) {
+        const newIndex = index + 1;
+        if (newIndex > this.fnums.length) {
+          this.selectedFile = this.fnums[0];
+        } else {
+          this.selectedFile = this.fnums[newIndex];
+        }
+
+        this.render();
+      }
+    },
+    openPreviousFnum() {
+      let index = typeof this.selectedFile === 'string' ? this.fnums.indexOf(this.selectedFile) : this.fnums.indexOf(this.selectedFile.fnum);
+
+      if (index !==-1 && index > 0) {
+        const newIndex = index - 1;
+        if (newIndex < 0) {
+          // open last fnum
+          this.selectedFile = this.fnums[this.fnums.length - 1];
+        } else {
+          this.selectedFile = this.fnums[newIndex];
+        }
+        this.render();
+      }
+    },
   },
   computed: {
     ratioStyle() {
       let ratio_array = this.$props.ratio.split('/');
       return ratio_array[0] + '% ' + ratio_array[1] + '%';
     },
+    tabsICanAccessTo() {
+      return this.tabs.filter(tab => this.access[tab.access].r);
+    }
   }
 }
 </script>
@@ -303,5 +386,24 @@ export default {
 
 #modal-applicationform #em-attachments #em-attachment-preview {
   width: 100%;
+}
+
+.context-files:not(.hidden) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: white;
+  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+}
+
+.hidden {
+  display: none;
+  z-index: -1;
+  margin: 0;
+  padding: 0;
+  width: 0;
+  height: 0;
 }
 </style>

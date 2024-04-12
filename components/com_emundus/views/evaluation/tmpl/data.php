@@ -14,10 +14,42 @@
 defined('_JEXEC') or die('Restricted access');
 $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
 $limits         = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 15 => 15, 20 => 20, 25 => 25, 30 => 30, 50 => 50, 100 => 100];
+
+$fnums = [];
+if (is_array($this->datas)) {
+    foreach($this->datas as $line) {
+        if (!empty($line['fnum']) && !empty($line['fnum']->val)) {
+	        $fnums[] = $line['fnum']->val;
+        }
+    }
+}
+
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$fix_header = $eMConfig->get('fix_file_header', 0);
 ?>
 
+<style>
+    .em-double-scroll-bar {
+        position: sticky;
+        padding: 0 !important;
+        z-index: 999;
+    }
+    div.top-scrollbars::-webkit-scrollbar, .em-double-scroll-bar::-webkit-scrollbar {
+        -webkit-appearance: none;
+        width: 7px;
+        height: 10px;
+        background-color: white !important;
+    }
+
+    div.top-scrollbars::-webkit-scrollbar-thumb, .em-double-scroll-bar::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        background-color: var(--neutral-400);
+        box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+    }
+</style>
+
 <input type="hidden" id="view" name="view" value="evaluation">
-<div class="panel panel-default em-data">
+<div class="panel panel-default em-data <?php if(!is_array($this->datas)) : ?>bg-transparent<?php endif; ?>">
 	<?php if (is_array($this->datas)): ?>
         <div class="container-result">
             <div class="em-ml-8 em-flex-row">
@@ -36,7 +68,7 @@ $limits         = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 1
 			<?php echo $this->pageNavigation ?>
             <div id="countCheckedCheckbox" class="countCheckedCheckbox" style="display: none"></div>
         </div>
-        <div class="em-data-container" style="padding-bottom: unset">
+        <div class="em-data-container top-scrollbars" style="padding-bottom: unset">
             <table class="table table-striped table-hover" id="em-data">
                 <thead>
                 <tr>
@@ -96,9 +128,9 @@ $limits         = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 1
 							<?php foreach ($line as $k => $value): ?>
 								<?php if ($k != 'evaluation_id'): ?>
 
-                                    <td <?php if ($k == 'check' && $value->class != null) {
+                                    <td <?php if ($k == 'check' && $value->class != null)  {
 										echo 'class="' . $value->class . '"';
-									} ?>>
+									} if ($k == 'jecc___campaign_id') { echo 'class="em-cell-scroll"'; } ?>>
                                         <div class="em-cell">
 											<?php if ($k == 'check'): ?>
                                                 <label for="<?php echo $line['fnum']->val ?>_check">
@@ -116,22 +148,43 @@ $limits         = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 1
                                                 <span class="label label-<?php echo $value->status_class ?>"
                                                       title="<?php echo $value->val ?>"><?php echo $value->val ?></span>
 											<?php elseif ($k == 'fnum'): ?>
-                                                <a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>"
-                                                   class="em_file_open">
-													<?php if (isset($value->photo) && !$anonymize_data) : ?>
-                                                        <div class="em_list_photo"><?= $value->photo; ?></div>
-													<?php endif; ?>
-                                                    <div class="em_list_text">
-														<?php if ($anonymize_data) : ?>
-                                                            <div class="em_list_fnum"><?= $value->val; ?></div>
-														<?php else : ?>
-                                                            <span class="em_list_text"
-                                                                  title="<?= $value->val; ?>"> <strong> <?= $value->user->name; ?></strong></span>
-                                                            <div class="em_list_email"><?= $value->user->email; ?></div>
-                                                            <div class="em_list_email"><?= $value->user->id; ?></div>
-														<?php endif; ?>
+                                                <?php if ($this->open_file_in_modal) : ?>
+                                                    <div id="<?php echo $value->val ?>" class="em-pointer evaluation-open-modal-file"
+                                                         onclick="clickOpenfile('<?php echo $value->val ?>')">
+	                                                    <?php if (isset($value->photo) && !$anonymize_data) : ?>
+                                                            <div class="em_list_photo"><?= $value->photo; ?></div>
+	                                                    <?php endif; ?>
+                                                        <div class="em_list_text">
+		                                                    <?php if ($anonymize_data) : ?>
+                                                                <div class="em_list_fnum"><?= $value->val; ?></div>
+		                                                    <?php else : ?>
+                                                                <span class="em_list_text" title="<?= $value->val; ?>">
+                                                                    <strong> <?= $value->user->name; ?></strong>
+                                                                </span>
+                                                                <div class="em_list_email"><?= $value->user->email; ?></div>
+                                                                <div class="em_list_email"><?= $value->user->id; ?></div>
+		                                                    <?php endif; ?>
+                                                        </div>
                                                     </div>
-                                                </a>
+                                                <?php else : ?>
+                                                    <a href="#<?php echo $value->val ?>|open" id="<?php echo $value->val ?>"
+                                                       class="em_file_open">
+														<?php if (isset($value->photo) && !$anonymize_data) : ?>
+                                                            <div class="em_list_photo"><?= $value->photo; ?></div>
+														<?php endif; ?>
+                                                        <div class="em_list_text">
+															<?php if ($anonymize_data) : ?>
+                                                                <div class="em_list_fnum"><?= $value->val; ?></div>
+															<?php else : ?>
+                                                                <span class="em_list_text" title="<?= $value->val; ?>">
+                                                                    <strong> <?= $value->user->name; ?></strong>
+                                                                </span>
+                                                                <div class="em_list_email"><?= $value->user->email; ?></div>
+                                                                <div class="em_list_email"><?= $value->user->id; ?></div>
+															<?php endif; ?>
+                                                        </div>
+                                                    </a>
+                                                <?php endif; ?>
 											<?php elseif ($k == "access") : ?>
 												<?= $this->accessObj[$line['fnum']->val] ?>
 											<?php elseif ($k == "id_tag") : ?>
@@ -174,9 +227,43 @@ $limits         = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 1
             </table>
         </div>
 	<?php else: ?>
-		<?= $this->datas ?>
+        <div class="text-center tw-mt-6">
+            <h1 class="tw-mb-8 !tw-text-neutral-600"><?= $this->datas ?></h1>
+            <div class="no-result tw-bg-no-repeat tw-w-64 tw-h-64 tw-my-0 tw-mx-auto"></div>
+        </div>
 	<?php endif; ?>
 </div>
+
+
+<?php
+
+if ($this->open_file_in_modal) {
+	require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+	$hash = EmundusHelperCache::getCurrentGitHash();
+	?>
+    <div id="em-files"
+         context="files"
+         user="<?= $this->user->id; ?>"
+         ratio="<?= $this->modal_ratio; ?>"
+         type="evaluation"
+         base="<?= JURI::base(); ?>"
+    >
+    </div>
+
+    <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+    <script>
+        function clickOpenfile(fnum) {
+            const fnums = <?= json_encode($fnums) ?>;
+            var event = new CustomEvent('openSingleApplicationWithFnum', {detail: {fnum: fnum, fnums: fnums}});
+            window.dispatchEvent(event);
+        }
+    </script>
+    <?php
+}
+?>
+
+
+
 <script type="text/javascript">
     // todo: maybe try to reload actions here ?
 
@@ -188,21 +275,35 @@ $limits         = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 1
         menuAction = document.querySelector('.em-menuaction');
         headerNav = document.querySelector('#g-navigation .g-container');
         containerResult = document.querySelector('.container-result');
+
         setTimeout(() => {
-            $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
-            $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+            if ($('.container-result')) {
+                $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
+                $('.em-double-scroll-bar').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight - 2) + 'px');
+            }
+            if ($('#em-data th')) {
+                if (containerResult) {
+                    $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
+                } else {
+                    $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
+                }
+            }
         }, 2000);
+
+        const dataContainer = document.querySelector('.em-data-container')
+        if (dataContainer) {
+            DoubleScroll(document.querySelector('.em-data-container'));
+        }
     });
     window.parent.$("html, body").animate({scrollTop: 0}, 300);
 
 </script>
 
-
 <script>
-    const selectDropdownContainer = document.querySelector('#selectAll_evaluation');
-    const countFiles = document.querySelector('#countCheckedCheckbox');
+    var countFiles = document.querySelector('#countCheckedCheckbox');
 
-    if (selectDropdownContainer) {
+    if (document.querySelector('#selectAll_evaluation')) {
+        const selectDropdownContainer = document.querySelector('#selectAll_evaluation')
         selectDropdownContainer.style.display = 'none';
 
         $('.selectDropdown').click(function () {
@@ -320,7 +421,7 @@ $limits         = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 1
 
             if (countCheckedCheckbox !== 0) {
                 displayCount();
-                countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a></p>';
+                countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a></p>';
             } else {
                 hideCount();
                 countFiles.innerHTML = '';
@@ -351,10 +452,23 @@ $limits         = [0 => JText::_('COM_EMUNDUS_ACTIONS_ALL'), 5 => 5, 10 => 10, 1
 
         if (countCheckedCheckbox !== 0) {
             displayCount();
-            countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a></p>';
+            countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a></p>';
         } else {
             hideCount();
             countFiles.innerHTML = '';
         }
     });
+
+    <?php if($fix_header == 1): ?>
+    document.addEventListener('scroll', function(e) {
+        if(window.scrollY > document.querySelector('.em-data-container table thead').offsetHeight) {
+            document.querySelector('.em-data-container table thead').style.position = 'relative';
+            let containerResult = document.querySelector('.container-result').offsetHeight;
+            document.querySelector('.em-data-container table thead').style.top = (window.scrollY - containerResult - 4) + 'px';
+        } else {
+            document.querySelector('.em-data-container table thead').style.position = 'static';
+            document.querySelector('.em-data-container table thead').style.top = '0px';
+        }
+    });
+    <?php endif; ?>
 </script>

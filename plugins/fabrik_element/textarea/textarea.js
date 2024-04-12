@@ -100,7 +100,8 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     if (this.options.wysiwyg && typeof(tinymce) !== 'undefined') {
 
                         // Joomla 3.2 + usess tinyMce 4
-                        if (tinymce.majorVersion >= 4) {
+						//F4: remove version test, will break with JCE >2.9.54
+
                             var inst = this._getTinyInstance();
                             inst.on('keyup', function (e) {
                                 this.informKeyPress(e);
@@ -122,14 +123,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                                 this.forwardEvent('blur');
                             }.bind(this));
 
-                        } else {
-                            tinymce.dom.Event.add(this.container, 'keyup', function (e) {
-                                this.informKeyPress(e);
-                            }.bind(this));
-                            tinymce.dom.Event.add(this.container, 'blur', function (e) {
-                                this.forwardEvent('blur');
-                            }.bind(this));
-                        }
+
                     } else {
                         if (typeOf(this.container) !== 'null') {
                             this.container.addEvent('keydown', function (e) {
@@ -270,26 +264,19 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
         },
 
         _getTinyInstance: function () {
-            return tinyMCE.majorVersion.toInt() >= 4 ?
-                tinyMCE.get(this.element.id) : tinyMCE.getInstanceById(this.element.id);
+            return tinyMCE.get(this.element.id);
         },
 
         _addTinyEditor: function (id) {
-            if (tinyMCE.majorVersion.toInt() >= 4) {
+            
                 tinyMCE.execCommand('mceAddEditor', false, id);
-            }
-            else {
-                tinyMCE.execCommand('mceAddControl', false, id);
-            }
+
         },
 
         _removeTinyEditor: function (id) {
-            if (tinyMCE.majorVersion.toInt() >= 4) {
+            
                 tinyMCE.execCommand('mceRemoveEditor', false, id);
-            }
-            else {
-                tinyMCE.execCommand('mceRemoveControl', false, id);
-            }
+ 
         },
 
         setContent: function (c) {

@@ -14,8 +14,12 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Access\Access;
+use Joomla\CMS\Log\Log;
 
 class EmundusHelperMenu
 {
@@ -26,41 +30,23 @@ class EmundusHelperMenu
 			return false;
 		}
 
-		$list = [];
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+		$h_cache = new EmundusHelperCache();
+		$list = $h_cache->get('menus_'.$profile);
 
-		$app  = Factory::getApplication();
-		$db   = Factory::getDBO();
-		$user = $app->getIdentity();
+		if (empty($list) || !empty($formids) || !$checklevel) {
+			$app  = Factory::getApplication();
+			$db   = Factory::getDBO();
+			$user = $app->getIdentity();
 
-		$query = $db->getQuery(true);
+			$query = $db->getQuery(true);
 
-		$levels = [];
-		if ($checklevel) {
-			$levels = Access::getAuthorisedViewLevels($user->id);
-		}
+			$levels = [];
+			if ($checklevel) {
+				$levels = Access::getAuthorisedViewLevels($user->id);
+			}
 
-		$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
-			->from($db->quoteName('#__menu', 'menu'))
-			->innerJoin($db->quoteName('#__emundus_setup_profiles', 'profile') . ' ON ' . $db->quoteName('profile.menutype') . ' = ' . $db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
-			->innerJoin($db->quoteName('#__fabrik_forms', 'fbforms') . ' ON ' . $db->quoteName('fbforms.id') . ' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
-			->innerJoin($db->quoteName('#__fabrik_lists', 'fbtables') . ' ON ' . $db->quoteName('fbtables.form_id') . ' = ' . $db->quoteName('fbforms.id'))
-			->where($db->quoteName('menu.published') . ' = 1')
-			->andWhere($db->quoteName('menu.parent_id') . ' != 1');
-		if ($checklevel && !empty($levels)) {
-			$query->andWhere($db->quoteName('menu.access') . ' IN (' . implode(',', $levels) . ')');
-		}
-
-		if (!empty($formids) && $formids[0] != "") {
-			$query->andWhere($db->quoteName('fbtables.id') . ' IN (' . implode(',', $formids) . ')');
-		}
-		$query->order('menu.lft');
-
-		try {
-			$db->setQuery($query);
-			$list = $db->loadObjectList();
-
-			$query->clear()
-				->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
+			$query->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
 				->from($db->quoteName('#__menu', 'menu'))
 				->innerJoin($db->quoteName('#__emundus_setup_profiles', 'profile') . ' ON ' . $db->quoteName('profile.menutype') . ' = ' . $db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
 				->innerJoin($db->quoteName('#__fabrik_forms', 'fbforms') . ' ON ' . $db->quoteName('fbforms.id') . ' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
@@ -72,29 +58,55 @@ class EmundusHelperMenu
 			}
 
 			if (!empty($formids) && $formids[0] != "") {
-				$query->andWhere($db->quoteName('fbtables.form_id') . ' IN (' . implode(',', $formids) . ')');
+				$query->andWhere($db->quoteName('fbtables.id') . ' IN (' . implode(',', $formids) . ')');
 			}
 			$query->order('menu.lft');
 
-			$db->setQuery($query);
-			$forms = $db->loadObjectList();
+			try {
+				$db->setQuery($query);
+				$list = $db->loadObjectList();
 
-			// merge forms and lists
-			$list = array_merge($list, $forms);
-
-			// remove duplicates
-			$ids = [];
-			foreach ($list as $key => $item) {
-				if (in_array($item->form_id, $ids)) {
-					unset($list[$key]);
+				$query->clear()
+					->select('fbtables.id AS table_id, fbtables.form_id, fbforms.label, fbtables.db_table_name, CONCAT(menu.link,"&Itemid=",menu.id) AS link, menu.id, menu.title, profile.menutype, fbforms.params, menu.params as menu_params')
+					->from($db->quoteName('#__menu', 'menu'))
+					->innerJoin($db->quoteName('#__emundus_setup_profiles', 'profile') . ' ON ' . $db->quoteName('profile.menutype') . ' = ' . $db->quoteName('menu.menutype') . ' AND ' . $db->quoteName('profile.id') . ' = ' . $db->quote($profile))
+					->innerJoin($db->quoteName('#__fabrik_forms', 'fbforms') . ' ON ' . $db->quoteName('fbforms.id') . ' = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)')
+					->innerJoin($db->quoteName('#__fabrik_lists', 'fbtables') . ' ON ' . $db->quoteName('fbtables.form_id') . ' = ' . $db->quoteName('fbforms.id'))
+					->where($db->quoteName('menu.published') . ' = 1')
+					->andWhere($db->quoteName('menu.parent_id') . ' != 1');
+				if ($checklevel && !empty($levels)) {
+					$query->andWhere($db->quoteName('menu.access') . ' IN (' . implode(',', $levels) . ')');
 				}
-				else {
-					$ids[] = $item->form_id;
+
+				if (!empty($formids) && $formids[0] != "") {
+					$query->andWhere($db->quoteName('fbtables.form_id') . ' IN (' . implode(',', $formids) . ')');
+				}
+				$query->order('menu.lft');
+
+				$db->setQuery($query);
+				$forms = $db->loadObjectList();
+
+				// merge forms and lists
+				$list = array_merge($list, $forms);
+
+				// remove duplicates
+				$ids = [];
+				foreach ($list as $key => $item) {
+					if (in_array($item->form_id, $ids)) {
+						unset($list[$key]);
+					}
+					else {
+						$ids[] = $item->form_id;
+					}
+				}
+
+				if(empty($formids) && $checklevel) {
+					$h_cache->set('menus_' . $profile, $list);
 				}
 			}
-		}
-		catch (Exception $e) {
-			throw new $e->getMessage();
+			catch (Exception $e) {
+				throw new $e->getMessage();
+			}
 		}
 
 		return $list;
@@ -102,6 +114,16 @@ class EmundusHelperMenu
 
 	public static function getUserApplicationMenu($profile, $formids = null)
 	{
+		if (empty($profile)) {
+			return false;
+		}
+
+		if(!class_exists('EmundusHelperCache')) {
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+		}
+		$h_cache = new EmundusHelperCache();
+		$list = $h_cache->get('menus_'.$profile);
+
 		$app  = Factory::getApplication();
 		$db   = Factory::getDBO();
 		$user = $app->getIdentity();
@@ -126,11 +148,15 @@ class EmundusHelperMenu
 		try {
 			$db->setQuery($query);
 
-			return $db->loadObjectList();
+			$lists = $db->loadObjectList();
+
+			$h_cache->set('menus_' . $profile, $list);
 		}
 		catch (Exception $e) {
-			throw new $e->getMessage();
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
+
+		return $lists;
 	}
 
 	function buildMenuListQuery($profile)
@@ -164,6 +190,37 @@ class EmundusHelperMenu
 		}
 
 		return $menu_lists;
+	}
+
+
+	static function getHomepageLink($default_link = null)
+	{
+		$menu = 'index.php';
+
+		$activeLanguage = Factory::getLanguage()->getTag();
+		$languages = LanguageHelper::getLanguages('lang_code');
+		$sef = '';
+		if (isset($languages[$activeLanguage]))
+		{
+			$sef = $languages[$activeLanguage]->sef;
+		}
+
+		$homepage_itemId = ComponentHelper::getParams('com_emundus')->get('logged_homepage_link', '');
+
+		if(!empty($homepage_itemId)) {
+			$menu = Factory::getApplication()->getMenu()->getItem($homepage_itemId);
+			if(!empty($menu)) {
+				$menu = $menu->alias;
+			}
+		}
+
+		if(!in_array($default_link, ['/','index.php','']) && $default_link !== $menu) {
+			$menu = $default_link;
+		} else {
+			$menu = $sef.'/'.$menu;
+		}
+
+		return $menu;
 	}
 }
 

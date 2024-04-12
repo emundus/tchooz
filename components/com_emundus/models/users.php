@@ -22,8 +22,10 @@ use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
+use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Site\Model\ResetModel;
 
@@ -205,7 +207,7 @@ class EmundusModelUsers extends JModelList
 		$showJoomlagroups = $eMConfig->get('showJoomlagroups', 0);
 		$showNewsletter   = $eMConfig->get('showNewsletter');
 
-		$query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile, espr.published as is_applicant_profile, ';
+        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile,group_concat(DISTINCT eup.profile_id) as o_profiles, espr.published as is_applicant_profile, ';
 
 		if ($showNewsletter == 1)
 			$query .= 'up.profile_value as newsletter, ';
@@ -222,7 +224,7 @@ class EmundusModelUsers extends JModelList
 		$query .= 'u.activation as active,u.block as block
                     FROM #__users AS u
                     LEFT JOIN #__emundus_users AS e ON u.id = e.user_id
-                    LEFT JOIN #__emundus_users_profiles AS eup ON e.user_id = eup.user_id
+                    LEFT JOIN #__emundus_users_profiles AS eup ON e.user_id = eup.user_id and eup.profile_id != e.profile
                     LEFT JOIN #__emundus_groups AS egr ON egr.user_id = u.id
                     LEFT JOIN #__emundus_setup_groups AS esgr ON esgr.id = egr.group_id
                     LEFT JOIN #__emundus_setup_profiles AS espr ON espr.id = e.profile
@@ -243,7 +245,11 @@ class EmundusModelUsers extends JModelList
 			$query .= 'LEFT JOIN #__emundus_final_grade AS efg ON u.id = efg.student_id ';
 		}
 
-		$query .= ' where 1=1 AND u.id NOT IN (1,62) ';
+		$exclude_users = [1,62];
+		if (!empty($automated_task_user)) {
+			$exclude_users[] = $automated_task_user;
+		}
+		$query .= ' where 1=1 AND u.id NOT IN ('.implode(',',$exclude_users).') ';
 
 		if (isset($programme) && !empty($programme) && $programme[0] != '%') {
 			$query .= ' AND ( esc.training IN ("' . implode('","', $programme) . '")
@@ -409,12 +415,13 @@ class EmundusModelUsers extends JModelList
 
 	public function getProfiles()
 	{
-		
-		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, esp.published, caag.lft
-        FROM #__emundus_setup_profiles esp
-        INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-        where esp.status=1 AND esp.id > 1
-        ORDER BY esp.acl_aro_groups, esp.label';
+		$query = $this->db->getQuery(true);
+
+		$query->select('esp.id, esp.label, esp.acl_aro_groups, esp.published, caag.lft')
+			->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
+			->innerJoin($this->db->quoteName('#__usergroups', 'caag') . ' on esp.acl_aro_groups=caag.id')
+			->where('esp.status=1 AND esp.id > 1')
+			->order('esp.acl_aro_groups, esp.label');
 		$this->db->setQuery($query);
 
 		return $this->db->loadObjectList('id');
@@ -1180,12 +1187,15 @@ class EmundusModelUsers extends JModelList
 		$instance->setLastVisit();
 
 		// Trigger OnUserLogin
-		JPluginHelper::importPlugin('user', 'emundus');
+		PluginHelper::importPlugin('user');
+		PluginHelper::importPlugin('emundus');
 
-		$options = array('action' => 'core.login.site', 'remember' => false);
+		$options = array();
+		$options['action'] = 'core.login.site';
 
-		$this->app->triggerEvent('onUserLogin', $instance);
-		$this->app->triggerEvent('onCallEventHandler', ['onUserLogin', ['instance' => $instance]]);
+		$response['username'] = $instance->get('username');
+		$app->triggerEvent('onUserLogin', array($response, $options));
+		$app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
 
 		return $instance;
 
@@ -2333,6 +2343,8 @@ class EmundusModelUsers extends JModelList
 						$this->db->setQuery($query);
 						try {
 							$this->db->execute();
+
+							//TODO: Add log to know who created the application for this user
 						}
 						catch (Exception $e) {
 							error_log($e->getMessage(), 0);
@@ -2720,13 +2732,13 @@ class EmundusModelUsers extends JModelList
 	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY')
 	{
 
-		$config = Factory::getConfig();
+		$config = Factory::getApplication()->getConfig();
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
 		$m_emails = new EmundusModelEmails();
 
 		// Load the com_users language tags in order to call the Joomla user JText.
-		$language     = Factory::getLanguage();
+		$language     = Factory::getApplication()->getLanguage();
 		$extension    = 'com_users';
 		$base_dir     = JPATH_SITE;
 		$language_tag = $language->getTag(); // loads the current language-tag
@@ -2817,16 +2829,23 @@ class EmundusModelUsers extends JModelList
 
 		// Assemble the password reset confirmation link.
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
-		$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
+		$menu_item = Factory::getApplication()->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
+
+		if(!empty($menu_item)) {
+			$link = $menu_item->alias.'?layout=confirm&token=' . $token . '&username=' . $user->get('username');
+		}
+		else {
+			$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->get('username');
+		}
 		$link = str_replace('+', '%2B', $link);
 
-		$mailer = Factory::getMailer();
+		$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
 
 		// Put together the email template data.
 		$data              = $user->getProperties();
 		$data['sitename']  = $config->get('sitename');
-		$data['link_text'] = JURI::base() . $link;
-		$data['link_html'] = '<a href=' . JURI::base() . $link . '> ' . JURI::base() . $link . '</a>';
+		$data['link_text'] = Uri::base() . $link;
+		$data['link_html'] = '<a href=' . Uri::base() . $link . '> ' . Uri::base() . $link . '</a>';
 		$data['token']     = $token;
 
 		// Build the translated email.
@@ -3967,23 +3986,29 @@ class EmundusModelUsers extends JModelList
 
 	public function getIdentityPhoto($fnum, $applicant_id)
 	{
-		try {
-			$query = $this->db->getQuery(true);
+		$attachment_id = ComponentHelper::getParams('com_emundus')->get('photo_attachment', '');
 
-			$query->select('filename')
-				->from($this->db->quoteName('#__emundus_uploads'))
-				->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum))
-				->andWhere($this->db->quoteName('attachment_id') . ' = 10');
-			$this->db->setQuery($query);
-			$filename = $this->db->loadResult();
+		if(!empty($attachment_id)) {
+			try {
+				$query = $this->db->getQuery(true);
 
-			if (!empty($filename)) {
-				return EMUNDUS_PATH_REL . $applicant_id . '/' . $filename;
+				$query->select('filename')
+					->from($this->db->quoteName('#__emundus_uploads'))
+					->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum))
+					->andWhere($this->db->quoteName('attachment_id') . ' = ' . $attachment_id);
+				$this->db->setQuery($query);
+				$filename = $this->db->loadResult();
+
+				if (!empty($filename)) {
+					return EMUNDUS_PATH_REL . $applicant_id . '/' . $filename;
+				}
 			}
-		}
-		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			catch (Exception $e) {
+				JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
 
+				return '';
+			}
+		} else {
 			return '';
 		}
 	}

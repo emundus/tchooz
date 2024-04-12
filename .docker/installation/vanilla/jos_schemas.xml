@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__schemas">
+   <field Field="extension_id" Type="int" Null="NO" Key="PRI" Extra="" />
+   <field Field="version_id" Type="varchar(20)" Null="NO" Key="PRI" Extra="" />
+   <key Table="#__schemas" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="extension_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__schemas" Non_unique="0" Key_name="PRIMARY" Seq_in_index="2" Column_name="version_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__schemas">
+   <row>
+    <field name="extension_id">227</field>
+    <field name="version_id">5.0.0-2023-09-11</field>
+   </row>
+   <row>
+    <field name="extension_id">332</field>
+    <field name="version_id">4.0-2023-05-27</field>
+   </row>
+   <row>
+    <field name="extension_id">346</field>
+    <field name="version_id">4.12.0</field>
+   </row>
+   <row>
+    <field name="extension_id">458</field>
+    <field name="version_id">2.0.0</field>
+   </row>
+   <row>
+    <field name="extension_id">601</field>
+    <field name="version_id">4.0.1</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

@@ -1,6 +1,12 @@
-favicon: 'gantry-media://custom/favicon.png'
+favicon: 'gantry-media://emundus/default_favicon.ico'
 touchicon: ''
 css:
+  -
+    location: 'gantry-assets://custom/scss/main.compiled.css'
+    inline: ''
+    extra: '{  }'
+    priority: '0'
+    name: Main
   -
     location: 'gantry-assets://scss/global.scss'
     inline: ''
@@ -20,12 +26,6 @@ css:
     priority: '0'
     name: Quill
   -
-    location: 'gantry-assets://custom/scss/main.compiled.css'
-    inline: ''
-    extra: '{  }'
-    priority: '0'
-    name: Main
-  -
     location: /media/vendor/fontawesome-free/css/fontawesome.min.css
     inline: ''
     extra: {  }
@@ -39,13 +39,6 @@ javascript:
     extra: {  }
     priority: '0'
     name: 'Sweet Alert'
-  -
-    location: 'gantry-assets://custom/custom-js.js'
-    inline: ''
-    in_footer: '0'
-    extra: {  }
-    priority: '0'
-    name: custom-js
   -
     location: /media/com_emundus/js/fabrik.js
     inline: ''

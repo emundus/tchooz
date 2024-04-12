@@ -9,7 +9,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-JHTML::_('behavior.modal');
+
 
 if ($this->applicant_can_renew) {
 	//JError::raiseNotice('YEAR', JText::_( 'FILE_NEW_APPLICATION' ));

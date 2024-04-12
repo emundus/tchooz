@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a class="em-pointer" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
+    <a class="em-pointer em-profile-color em-text-underline" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
 
     <div class="em-mb-4 em-mt-16 em-text-color">{{ ChooseForm }} :</div>
     <div class="em-mb-4">
@@ -10,7 +10,7 @@
         </option>
       </select>
     </div>
-    <a class="em-pointer" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
+    <a class="em-pointer em-profile-color em-text-underline" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
 
     <hr/>
     <h5>{{ translate('COM_EMUNDUS_FORM_PAGES_PREVIEW') }}</h5>
@@ -50,6 +50,7 @@
 
 <script>
 import FormCarrousel from "../../components/Form/FormCarrousel";
+import settingsService from '../../../src/services/settings';
 import axios from "axios";
 
 const qs = require("qs");
@@ -136,7 +137,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      window.location.href = link;
+      settingsService.redirectJRoute(link);
     },
 
     addNewForm() {
@@ -151,7 +152,7 @@ export default {
       }).then(response => {
         this.loading = false;
         this.$props.profileId = response.data.data;
-        this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=' + this.campaignId);
+        window.location.href = '/'+response.data.redirect;
       }).catch(error => {
         console.log(error);
       });

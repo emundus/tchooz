@@ -9,44 +9,60 @@
 // No direct access to this file
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
-use Joomla\CMS\Plugin\PluginHelper;
 
 class  FalangControllerHelper  {
 
-	/**
-	 * Sets up ContentElement Cache - mainly used for data to determine primary key id for tablenames ( and for
-	 * future use to allow tables to be dropped from translation even if contentelements are installed )
-	 */
-	static function _setupContentElementCache()
-	{
-		$db = Factory::getDBO();
-		// Make usre table exists otherwise create it.
-		$db->setQuery( "CREATE TABLE IF NOT EXISTS `#__falang_tableinfo` ( `id` int(11) NOT NULL auto_increment, `joomlatablename` varchar(100) NOT NULL default '',  `tablepkID`  varchar(100) NOT NULL default '', PRIMARY KEY (`id`)) ENGINE=MyISAM");
-		$db->execute();
-		// clear out existing data
-		$db->setQuery( "DELETE FROM `#__falang_tableinfo`");
-		$db->execute();
-		$falangManager = FalangManager::getInstance();
-		$contentElements = $falangManager->getContentElements(true);
-		$sql = "INSERT INTO `#__falang_tableinfo` (joomlatablename,tablepkID) VALUES ";
-		$firstTime = true;
-		foreach ($contentElements as $key => $jfElement){
-			$tablename = $jfElement->getTableName();
-			$refId = $jfElement->getReferenceID();
-			$sql .= $firstTime?"":",";
-			$sql .= " ('".$tablename."', '".$refId."')";
-			$firstTime = false;
-		}
+    /**
+     * Sets up ContentElement Cache - mainly used for data to determine primary key id for tablenames ( and for
+     * future use to allow tables to be dropped from translation even if contentelements are installed )
+     *
+     * update 5.3 improve performance (don't delete/create element each time)
+     */
+    static function _setupContentElementCache()
+    {
+        $db = Factory::getDBO();
+        //get installed content elements in database
+        $query = $db->getQuery(true);
+        $query->select('*')->from('#__falang_tableinfo');
+        $db->setQuery($query);
+        $elements = $db->loadObjectList('joomlatablename');
 
-		$db->setQuery( $sql);
-		$db->execute();
+        $falangManager = FalangManager::getInstance();
+        $contentElements = $falangManager->getContentElements(true);
 
-	}
+        //update database with installed content elements
+        $sql = "INSERT INTO `#__falang_tableinfo` (joomlatablename,tablepkID) VALUES ";
+        $newCE = false;//new content element to add
+        foreach ($contentElements as $key => $jfElement){
+            if (array_key_exists($key,$elements)){continue;}
+            $tablename = $jfElement->getTableName();
+            $refId = $jfElement->getReferenceID();
+            $sql .= $newCE?",":"";
+            $sql .= " ('".$tablename."', '".$refId."')";
+            $newCE = true;
+        }
 
+        //only launch update query if something to add
+        if ($newCE){
+            $db->setQuery( $sql);
+            $db->execute();
+        }
+
+        //remove element from db who don't have content element
+        foreach ($elements as $element){
+            $search = $element->joomlatablename;
+            if (!array_key_exists($search,$contentElements)){
+                $query = $db->getQuery(true);
+                $query->delete($db->quoteName('#__falang_tableinfo'));
+                $query->where( $db->quoteName('joomlatablename') . ' = ' . $db->quote($search));
+                $db->setQuery($query);
+                $db->execute();
+            }
+        }
+    }
 
 	public static function _checkDBCacheStructure (){
 
@@ -123,14 +139,15 @@ class  FalangControllerHelper  {
 
 	/**
 	 * Check Plugin Order since Joomla 3.6.2, language filter need to be set before FalangDatabaseDriver plgin
+     * set order to 1 and 2 - other plugin set to -1 stay at -1
 	 *
 	 * @since 2.7.0
      * @since 4.5   add message to have admintools (if installed) ,fields , language filter , falangdriver order
      *              Check Plugin System Fields (need to be ordered befor Falang Driver plugin
      *              Necessary for Categories field translation
+     * @update 5.0 add debug to the order list
      *
 	 */
-
 	public static function _reorderPlugin(){
 
 		$db     = Factory::getDbo();
@@ -142,7 +159,7 @@ class  FalangControllerHelper  {
 
 		$query->where($query->quoteName('type') . '=' . $query->quote('plugin'));
 		$query->where($query->quoteName('folder') . '=' . $query->quote('system'));
-		$query->where($query->quoteName('element') . 'IN ("admintools","languagefilter","fields","falangdriver")');
+		$query->where($query->quoteName('element') . 'IN ("admintools","languagefilter","fields","falangdriver","debug")');
 		$query->order('ordering ASC');
 
 		$db->setQuery($query);
@@ -172,26 +189,22 @@ class  FalangControllerHelper  {
                     $order[] = $idx;
                     $idx = $idx + 1;
                 }
-
-    //			if ((int)$list['languagefilter']->ordering >=  (int)$list['falangdriver']->ordering){
-                //we have to fix the order
-    //				$pks = array((int)$list['languagefilter']->extension_id,(int)$list['falangdriver']->extension_id);
-                //set order to 1 and 2 - other plugin set to -1 stay at -1
-    //				$order = array(1,2);
+                if (isset($list['debug'])) {
+                    $pks[] = (int)$list['debug']->extension_id;
+                    $order[] = $idx;
+                    $idx = $idx + 1;
+                }
 
                 $pluginsModel = BaseDatabaseModel::getInstance('Plugin', 'PluginsModel');
 
                 // Save the ordering
-                //sbou4 descatived the saveorder
                 $return = $pluginsModel->saveorder($pks, $order);
 
-                $application = Factory::getApplication();
                 if ($return === false) {
                     Factory::getApplication()->enqueueMessage(Text::_('COM_FALANG_PLUGINS_SYSTEM_ORDER_FAILED'), 'error');
                 } else {
                     Factory::getApplication()->enqueueMessage(Text::_('COM_FALANG_PLUGINS_SYSTEM_ORDER_FIXED'), 'notice');
 
-                    // Reset the Joomla! plugins cache ?
                 }
             }
 		}

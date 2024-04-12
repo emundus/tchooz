@@ -9,6 +9,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Filter\OutputFilter;
+use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseInterface;
 
 class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
@@ -23,14 +25,7 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 		parent::__construct($subject, $config);
 
 		$this->app = Factory::getApplication();
-
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->db = Factory::getContainer()->get('DatabaseDriver');
-		}
-		else {
-			$this->db = Factory::getDbo();
-		}
-
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		$this->query = $this->db->getQuery(true);
 
 		jimport('joomla.log.log');
@@ -41,7 +36,7 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 	function onAfterCampaignCreate($id)
 	{
 		try {
-			$label = $this->app->input->getString("jos_emundus_setup_campaigns___label");
+			$label = $this->app->getInput()->getString("jos_emundus_setup_campaigns___label");
 
 			if ($label == null) {
 				$this->query
@@ -53,29 +48,22 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 				$label = $this->db->loadResult();
 			}
 
-			$name = JFilterOutput::stringURLSafe($label);
+			$name = OutputFilter::stringURLSafe($label);
 
 			$this->query->clear()
 				->select($this->db->quoteName('id'))
 				->from($this->db->quoteName('#__categories'))
 				->where($this->db->quoteName('extension') . ' LIKE ' . $this->db->quote('com_dropfiles'))
+				->andWhere('json_valid(`params`)')
 				->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->db->quote('"' . $id . '"'));
 			$this->db->setQuery($this->query);
 			$cat_id = $this->db->loadResult();
 
 			if (!$cat_id) {
-				if (version_compare(JVERSION, '4.0', '>')) {
-					$this->db = Factory::getContainer()->get(DatabaseInterface::class);
-
-				}
-				else {
-					Factory::$database = null;
-					$this->db          = JFactory::getDbo();
-				}
-
+				$this->db = Factory::getContainer()->get(DatabaseInterface::class);
 				$this->query = $this->db->getQuery(true);
 
-				$table = JTable::getInstance('category');
+				$table = Table::getInstance('category');
 
 				$data              = array();
 				$data['path']      = $name;
@@ -120,6 +108,7 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 
 				// Conditions for which records should be updated.
 				$conditions = array(
+					'json_valid(`params`)',
 					'json_extract(`params`, "$.idCampaign") LIKE ' . $this->db->quote('"' . $id . '"'),
 					$this->db->quoteName('extension') . ' LIKE ' . $this->db->quote('com_dropfiles')
 				);
@@ -129,15 +118,6 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 					->update($this->db->quoteName('#__categories'))
 					->set($fields)
 					->where($conditions);
-
-				$this->db->setQuery($this->query);
-				$this->db->execute();
-
-				$this->query
-					->clear()
-					->update($this->db->quoteName('#__categories'))
-					->set($this->db->quoteName('title') . ' = ' . $this->db->quote($label))
-					->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('com_dropfiles.category' . $cat_id));
 
 				$this->db->setQuery($this->query);
 				$this->db->execute();
@@ -161,9 +141,7 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 		}
 
 		try {
-			$app = JFactory::getApplication();
-
-			$table = JTable::getInstance('category');
+			$table = Table::getInstance('category');
 
 			foreach ($ids as $id) {
 
@@ -171,7 +149,8 @@ class plgEmundusSetup_category extends \Joomla\CMS\Plugin\CMSPlugin
 					->clear()
 					->select($this->db->quoteName('id'))
 					->from($this->db->quoteName('jos_categories'))
-					->where('json_extract(`params`, "$.idCampaign") LIKE ' . $this->db->quote('"' . $id . '"'));
+					->where('json_valid(`params`)')
+					->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->db->quote('"'.$id.'"'));
 
 				$this->db->setQuery($this->query);
 				$idCategory = $this->db->loadResult();

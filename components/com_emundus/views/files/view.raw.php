@@ -66,12 +66,12 @@ class EmundusViewFiles extends JViewLegacy
 
 	public function __construct($config = array())
 	{
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/list.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/helpers/export.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 
 
 		$this->app = Factory::getApplication();
@@ -82,10 +82,25 @@ class EmundusViewFiles extends JViewLegacy
 			$this->user = Factory::getUser();
 		}
 
-		$menu                         = $this->app->getMenu();
-		$current_menu                 = $menu->getActive();
-		$menu_params                  = $menu->getParams($current_menu->id);
-		$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+		$menu = $this->app->getMenu();
+		if (!empty($menu)) {
+			$current_menu = $menu->getActive();
+			if (!empty($current_menu)) {
+				$menu_params = $menu->getParams($current_menu->id);
+				if (!empty($menu_params)) {
+					$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
+				} else {
+					$this->use_module_for_filters = false;
+				}
+			}
+		}
+
+		$session = $this->app->getSession();
+		if ($this->use_module_for_filters) {
+			$session->set('last-filters-use-advanced', true);
+		} else {
+			$session->set('last-filters-use-advanced', false);
+		}
 
 		parent::__construct($config);
 	}
@@ -93,12 +108,11 @@ class EmundusViewFiles extends JViewLegacy
 	/** @noinspection PhpInconsistentReturnPointsInspection */
 	public function display($tpl = null)
 	{
-		$h_files = new EmundusHelperFiles;
-
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
+		$h_files = new EmundusHelperFiles;
 		$params               = JComponentHelper::getParams('com_emundus');
 		$default_actions      = $params->get('default_actions', 0);
 		$hide_default_actions = $params->get('hide_default_actions', 0);
@@ -254,8 +268,12 @@ class EmundusViewFiles extends JViewLegacy
 				$this->code       = $m_files->code;
 				$this->fnum_assoc = $m_files->fnum_assoc;
 
-				// get applications files
-				$users = $m_files->getUsers();
+				if(!empty($m_files->fnum_assoc) || !empty($m_files->code)) {
+					// get applications files
+					$users = $m_files->getUsers();
+				} else {
+					$users = array();
+				}
 
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $m_files->getElementsVar();

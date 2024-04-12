@@ -15,7 +15,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "1ec584"
+      "version": "f95580"
     },
     {
       "name": "com_fields.admin-field-edit",
@@ -27,7 +27,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "5abbb6"
+      "version": "f3c19c"
     },
     {
       "name": "com_fields.admin-field-typehaschanged",
@@ -39,7 +39,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "48b415"
+      "version": "1fbf0a"
     },
     {
       "name": "com_fields.admin-fields-batch",
@@ -51,7 +51,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "19a4b6"
+      "version": "fe3339"
     },
     {
       "name": "com_fields.admin-fields-modal",
@@ -65,7 +65,7 @@
       },
       "deprecated": true,
       "deprecatedMsg": "Use postMessage() directly or with help of [modal-content-select] asset. To post the modal selection.",
-      "version": "c7c2dd"
+      "version": "be088f"
     }
   ]
 }

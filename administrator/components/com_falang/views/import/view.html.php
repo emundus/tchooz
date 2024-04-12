@@ -42,7 +42,7 @@ class ImportViewImport extends FalangViewDefault
 
 
         //add toolbar actions
-        ToolBarHelper::cancel('import.cancel','TOOLBAR_CANCEL');
+        ToolBarHelper::cancel('import.cancel',Text::_('JCANCEL'));
 
     }
 }

@@ -9,6 +9,9 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Mail\MailerFactoryInterface;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -61,7 +64,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
         $this->log = '';
 
         // Get list of fnums with a chatroom containing an unread message
-        $db = JFactory::getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query->select('DISTINCT cc.fnum, cc.applicant_id')
@@ -98,7 +101,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
             // For every chatroom, check if the applicant has an unread message
             foreach ($chatrooms as $chatroom) {
                 $query->clear()
-                    ->select('COUNT('.$db-quoteName('m.message_id').')')
+                    ->select('COUNT(m.message_id)')
                     ->from($db->quoteName('#__messages', 'm'))
                     ->leftJoin($db->quoteName('#__emundus_chatroom', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('m.page'))
                     ->where($db->quoteName('c.fnum') . ' LIKE ' . $db->quote($chatroom->fnum))
@@ -118,10 +121,10 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
 
             // Send the mail to each applicant
             foreach ($applicants_to_send as $applicant_to_send){
-                $mailer = JFactory::getMailer();
+				$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
 
                 $query->clear()
-                    ->select($db->quoteName(array('id','email','name')))
+                    ->select('id, email, name')
                     ->from($db->quoteName('#__users'))
                     ->where($db->quoteName('id') . ' = ' . $applicant_to_send);
                 $db->setQuery($query);
@@ -143,8 +146,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
 
                 $body = preg_replace("/\[SITE_URL\]/",$site_url, $body);
 
-                $config = JFactory::getConfig();
-                $email_from_sys = $config->get('mailfrom');
+                $email_from_sys = Factory::getApplication()->get('mailfrom');
                 $email_from = $email->emailfrom;
 
                 // If the email sender has the same domain as the system sender address.
@@ -185,7 +187,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
 
                 // Check if unread messages from the chatroom come from the applicant
                 $query->clear()
-                    ->select('COUNT('.$db->quoteName('m.message_id').')')
+                    ->select('COUNT(m.message_id)')
                     ->from($db->quoteName('#__messages', 'm'))
                     ->leftJoin($db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $db->quoteName('ec.id') . ' = ' . $db->quoteName('m.page'))
                     ->where($db->quoteName('ec.fnum') . ' LIKE ' . $db->quote($chatroom->fnum))
@@ -198,7 +200,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                     // Get users associated to the file by their group and the campaign program
                     if ($notify_users_programs == 1 || !empty($notify_groups) || !empty($notify_profiles)) {
                         $query->clear()
-                            ->select('DISTINCT '.$db->quoteName('eu.user_id'))
+                            ->select('DISTINCT eu.user_id')
                             ->from($db->quoteName('#__emundus_groups', 'eg'))
                             ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc') . ' ON ' . $db->quoteName('esgrc.parent_id') . ' = ' . $db->quoteName('eg.group_id'))
                             ->innerJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eg.user_id'));
@@ -229,7 +231,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                     // Get users associated to the file by their group directly
                     if ($notify_users_groups == 1 || !empty($notify_groups) || !empty($notify_profiles)) {
                         $query->clear()
-                            ->select('DISTINCT '.$db->quoteName('eu.user_id'))
+                            ->select('DISTINCT eu.user_id')
                             ->from($db->quoteName('#__emundus_groups', 'eg'))
                             ->leftJoin($db->quoteName('#__emundus_group_assoc', 'ega') . ' ON ' . $db->quoteName('ega.group_id') . ' = ' . $db->quoteName('eg.group_id'))
                             ->innerJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eg.user_id'));
@@ -260,7 +262,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                     // Get users associated to the file directly
                     if ($notify_users_assoc == 1 || !empty($notify_groups) || !empty($notify_profiles)) {
                         $query->clear()
-                            ->select('DISTINCT '.$db->quoteName('eu.user_id'))
+                            ->select('DISTINCT eu.user_id')
                             ->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
                             ->leftJoin($db->quoteName('#__emundus_users_assoc', 'eua') . ' ON ' . $db->quoteName('eua.fnum') . ' LIKE ' . $db->quoteName('ecc.fnum'))
                             ->innerJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('eua.user_id'));
@@ -294,7 +296,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                     // If there are no users associated to the file, get a list of all coordinators
                     if(empty($users_to_send)){
                         $query->clear()
-                            ->select('DISTINCT '.$db->quoteName('eu.user_id'))
+                            ->select('DISTINCT eu.user_id')
                             ->from($db->quoteName('#__emundus_users','eu'))
                             ->leftJoin($db->quoteName('#__emundus_users_profiles','eup').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eup.user_id'))
                             ->where($db->quoteName('eup.profile_id') . ' = 2');
@@ -302,7 +304,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                         $users_to_send = $db->loadColumn();
                     } else if ($notify_coordinators == 1) {
                         $query->clear()
-                            ->select('DISTINCT '.$db->quoteName('eu.user_id'))
+                            ->select('DISTINCT eu.user_id')
                             ->from($db->quoteName('#__emundus_users','eu'))
                             ->leftJoin($db->quoteName('#__emundus_users_profiles','eup').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eup.user_id'))
                             ->where($db->quoteName('eup.profile_id') . ' = 2');
@@ -324,7 +326,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                 // So we have to send one email to these partners
                 foreach ($users_fnum_assoc as $user_to_send => $fnums_not_read) {
                     $query->clear()
-                        ->select($db->quoteName(array('id, email, name')))
+                        ->select('id, email, name')
                         ->from($db->quoteName('#__users'))
                         ->where($db->quoteName('id') . ' = ' . $user_to_send);
                     $db->setQuery($query);
@@ -336,7 +338,7 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
 
                     // Get the first link from the partner's menu that corresponds to the file list.
                     $query->clear()
-                        ->select($db->quoteName(array('id', 'path')))
+                        ->select('id, path')
                         ->from($db->quoteName('#__menu'))
                         ->where($db->quoteName('menutype').' LIKE '.$db->quote($menutype))
                         ->andWhere($db->quoteName('published').' = 1')

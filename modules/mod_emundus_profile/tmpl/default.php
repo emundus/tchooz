@@ -39,6 +39,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                        href="<?php echo JRoute::_('index.php?option=com_users&view=profile&layout=edit') ?>"
                        title="<?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE') ?>">
                         <span class="material-icons-outlined">manage_accounts</span>
+	                    <?php echo JText::_('MOD_EMUNDUS_PROFILE_EDIT_PROFILE_PASSWORD_TITLE'); ?>
                     </a>
 				<?php endif; ?>
 
@@ -133,7 +134,7 @@ $document->addStyleSheet("modules/mod_emundus_profile/style/mod_emundus_profile.
                 const date = new Date();
                 const newProfileUrl = window.location.origin + '/' + res.profile_picture + '?' + date.getTime();
                 document.querySelector('#pp_profile_background').style.backgroundImage = 'url(' + newProfileUrl + ')';
-                document.querySelector('#userDropdownLabel').style.backgroundImage = 'url(' + newProfileUrl + ')';
+                document.querySelector('#userDropdownLabel .em-profile-picture').style.backgroundImage = 'url(' + newProfileUrl + ')';
             }
         });
 

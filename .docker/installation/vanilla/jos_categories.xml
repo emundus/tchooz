@@ -1,0 +1,337 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__categories">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="asset_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="parent_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="lft" Type="int" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="rgt" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="level" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="path" Type="varchar(400)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="extension" Type="varchar(50)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="title" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="alias" Type="varchar(400)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="note" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="description" Type="mediumtext" Null="YES" Key="" Extra="" />
+   <field Field="published" Type="tinyint" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="checked_out" Type="int unsigned" Null="YES" Key="MUL" Extra="" />
+   <field Field="checked_out_time" Type="datetime" Null="YES" Key="" Extra="" />
+   <field Field="access" Type="int unsigned" Null="NO" Key="MUL" Default="0" Extra="" />
+   <field Field="params" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="metadesc" Type="varchar(1024)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="metakey" Type="varchar(1024)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="metadata" Type="varchar(2048)" Null="NO" Key="" Default="" Extra="" />
+   <field Field="created_user_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="created_time" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="modified_user_id" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="modified_time" Type="datetime" Null="NO" Key="" Extra="" />
+   <field Field="hits" Type="int unsigned" Null="NO" Key="" Default="0" Extra="" />
+   <field Field="language" Type="char(7)" Null="NO" Key="MUL" Default="" Extra="" />
+   <field Field="version" Type="int unsigned" Null="NO" Key="" Default="1" Extra="" />
+   <key Table="#__categories" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__categories" Non_unique="1" Key_name="cat_idx" Seq_in_index="1" Column_name="extension" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__categories" Non_unique="1" Key_name="cat_idx" Seq_in_index="2" Column_name="published" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__categories" Non_unique="1" Key_name="cat_idx" Seq_in_index="3" Column_name="access" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__categories" Non_unique="1" Key_name="idx_access" Seq_in_index="1" Column_name="access" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__categories" Non_unique="1" Key_name="idx_checkout" Seq_in_index="1" Column_name="checked_out" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__categories" Non_unique="1" Key_name="idx_path" Seq_in_index="1" Column_name="path" Collation="A" Null="" Index_type="BTREE" Sub_part="100" Comment="" />
+   <key Table="#__categories" Non_unique="1" Key_name="idx_left_right" Seq_in_index="1" Column_name="lft" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__categories" Non_unique="1" Key_name="idx_left_right" Seq_in_index="2" Column_name="rgt" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__categories" Non_unique="1" Key_name="idx_alias" Seq_in_index="1" Column_name="alias" Collation="A" Null="" Index_type="BTREE" Sub_part="100" Comment="" />
+   <key Table="#__categories" Non_unique="1" Key_name="idx_language" Seq_in_index="1" Column_name="language" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="#__categories">
+   <row>
+    <field name="id">1</field>
+    <field name="asset_id">0</field>
+    <field name="parent_id">0</field>
+    <field name="lft">0</field>
+    <field name="rgt">71</field>
+    <field name="level">0</field>
+    <field name="path"></field>
+    <field name="extension">system</field>
+    <field name="title">ROOT</field>
+    <field name="alias">root</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{}</field>
+    <field name="created_user_id">650</field>
+    <field name="created_time">2023-04-06 13:47:53</field>
+    <field name="modified_user_id">650</field>
+    <field name="modified_time">2023-04-06 13:47:53</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="asset_id">27</field>
+    <field name="parent_id">1</field>
+    <field name="lft">1</field>
+    <field name="rgt">2</field>
+    <field name="level">1</field>
+    <field name="path">uncategorised</field>
+    <field name="extension">com_content</field>
+    <field name="title">Uncategorised</field>
+    <field name="alias">uncategorised</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;workflow_id&quot;:&quot;use_default&quot;}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="created_user_id">650</field>
+    <field name="created_time">2023-04-06 13:47:53</field>
+    <field name="modified_user_id">650</field>
+    <field name="modified_time">2023-04-06 13:47:53</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="asset_id">28</field>
+    <field name="parent_id">1</field>
+    <field name="lft">3</field>
+    <field name="rgt">4</field>
+    <field name="level">1</field>
+    <field name="path">uncategorised</field>
+    <field name="extension">com_banners</field>
+    <field name="title">Uncategorised</field>
+    <field name="alias">uncategorised</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="created_user_id">650</field>
+    <field name="created_time">2023-04-06 13:47:53</field>
+    <field name="modified_user_id">650</field>
+    <field name="modified_time">2023-04-06 13:47:53</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+   <row>
+    <field name="id">4</field>
+    <field name="asset_id">29</field>
+    <field name="parent_id">1</field>
+    <field name="lft">5</field>
+    <field name="rgt">6</field>
+    <field name="level">1</field>
+    <field name="path">uncategorised</field>
+    <field name="extension">com_contact</field>
+    <field name="title">Uncategorised</field>
+    <field name="alias">uncategorised</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="created_user_id">650</field>
+    <field name="created_time">2023-04-06 13:47:53</field>
+    <field name="modified_user_id">650</field>
+    <field name="modified_time">2023-04-06 13:47:53</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="asset_id">30</field>
+    <field name="parent_id">1</field>
+    <field name="lft">7</field>
+    <field name="rgt">8</field>
+    <field name="level">1</field>
+    <field name="path">uncategorised</field>
+    <field name="extension">com_newsfeeds</field>
+    <field name="title">Uncategorised</field>
+    <field name="alias">uncategorised</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="created_user_id">650</field>
+    <field name="created_time">2023-04-06 13:47:53</field>
+    <field name="modified_user_id">650</field>
+    <field name="modified_time">2023-04-06 13:47:53</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+   <row>
+    <field name="id">7</field>
+    <field name="asset_id">32</field>
+    <field name="parent_id">1</field>
+    <field name="lft">9</field>
+    <field name="rgt">10</field>
+    <field name="level">1</field>
+    <field name="path">uncategorised</field>
+    <field name="extension">com_users</field>
+    <field name="title">Uncategorised</field>
+    <field name="alias">uncategorised</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="created_user_id">650</field>
+    <field name="created_time">2023-04-06 13:47:53</field>
+    <field name="modified_user_id">650</field>
+    <field name="modified_time">2023-04-06 13:47:53</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+   <row>
+    <field name="id">8</field>
+    <field name="asset_id">99</field>
+    <field name="parent_id">1</field>
+    <field name="lft">11</field>
+    <field name="rgt">12</field>
+    <field name="level">1</field>
+    <field name="path">rgpd</field>
+    <field name="extension">com_content</field>
+    <field name="title">RGPD</field>
+    <field name="alias">rgpd</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;image_alt&quot;:&quot;&quot;}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="created_user_id">650</field>
+    <field name="created_time">2023-05-10 09:06:49</field>
+    <field name="modified_user_id">650</field>
+    <field name="modified_time">2023-05-10 09:06:49</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+   <row>
+    <field name="id">9</field>
+    <field name="asset_id">100</field>
+    <field name="parent_id">1</field>
+    <field name="lft">13</field>
+    <field name="rgt">14</field>
+    <field name="level">1</field>
+    <field name="path">f-a-q</field>
+    <field name="extension">com_content</field>
+    <field name="title">F.A.Q</field>
+    <field name="alias">f-a-q</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;image_alt&quot;:&quot;&quot;}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="created_user_id">650</field>
+    <field name="created_time">2023-05-10 09:07:01</field>
+    <field name="modified_user_id">650</field>
+    <field name="modified_time">2023-05-10 09:07:01</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+   <row>
+    <field name="id">10</field>
+    <field name="asset_id">101</field>
+    <field name="parent_id">1</field>
+    <field name="lft">15</field>
+    <field name="rgt">16</field>
+    <field name="level">1</field>
+    <field name="path">contact</field>
+    <field name="extension">com_content</field>
+    <field name="title">Contact</field>
+    <field name="alias">contact</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;image_alt&quot;:&quot;&quot;}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="created_user_id">650</field>
+    <field name="created_time">2023-05-10 09:07:14</field>
+    <field name="modified_user_id">650</field>
+    <field name="modified_time">2023-05-10 09:07:14</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+   <row>
+    <field name="id">12</field>
+    <field name="asset_id">143</field>
+    <field name="parent_id">1</field>
+    <field name="lft">37</field>
+    <field name="rgt">38</field>
+    <field name="level">1</field>
+    <field name="path"></field>
+    <field name="extension">com_content</field>
+    <field name="title">Referents</field>
+    <field name="alias">referents</field>
+    <field name="note"></field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="access">1</field>
+    <field name="params">{&quot;category_layout&quot;:&quot;&quot;,&quot;image&quot;:&quot;&quot;,&quot;image_alt&quot;:&quot;&quot;}</field>
+    <field name="metadesc"></field>
+    <field name="metakey"></field>
+    <field name="metadata">{&quot;author&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
+    <field name="created_user_id">1</field>
+    <field name="created_time">2023-12-05 15:26:20</field>
+    <field name="modified_user_id">1</field>
+    <field name="modified_time">2023-12-05 15:26:20</field>
+    <field name="hits">0</field>
+    <field name="language">*</field>
+    <field name="version">1</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

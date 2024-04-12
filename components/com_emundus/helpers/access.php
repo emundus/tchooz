@@ -13,6 +13,9 @@
  */
 
 // no direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
@@ -80,12 +83,14 @@ class EmundusHelperAccess
 	static function check_group($user_id, $group, $inherited)
 	{
 		// 1:Public / 2:Registered / 3:Author / 4:Editor / 5:Publisher / 6:Manager / 7:Administrator / 8:Super Users / 9:Guest / 10:Nobody
-		if ($inherited) {
+		if ($inherited)
+		{
 			//include inherited groups
 			jimport('joomla.access.access');
 			$groups = JAccess::getGroupsByUser($user_id);
 		}
-		else {
+		else
+		{
 			//exclude inherited groups
 			$user   = JFactory::getUser($user_id);
 			$groups = isset($user->groups) ? $user->groups : array();
@@ -167,30 +172,35 @@ class EmundusHelperAccess
 	 */
 	static function asAccessAction($action_id, $crud, $user_id = null, $fnum = null)
 	{
-
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		$m_users = new EmundusModelUsers();
-
-		if (!is_null($fnum) && !empty($fnum)) {
+		if (!is_null($fnum) && !empty($fnum))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+			$m_users   = new EmundusModelUsers();
 			$canAccess = $m_users->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
-			if ($canAccess > 0) {
+			if ($canAccess > 0)
+			{
 				return true;
 			}
-			elseif ($canAccess == 0 || $canAccess === null) {
-				$groups = JFactory::getSession()->get('emundusUser')->emGroups;
-				if (!empty($groups) && count($groups) > 0) {
+			elseif ($canAccess == 0 || $canAccess === null)
+			{
+				$groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
+				if (!empty($groups))
+				{
 					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
 				}
-				else {
+				else
+				{
 					return false;
 				}
 			}
-			else {
+			else
+			{
 				return false;
 			}
 		}
-		else {
-			return EmundusHelperAccess::canAccessGroup(JFactory::getSession()->get('emundusUser')->emGroups, $action_id, $crud);
+		else
+		{
+			return EmundusHelperAccess::canAccessGroup(Factory::getApplication()->getSession()->get('emundusUser')->emGroups, $action_id, $crud);
 		}
 	}
 
@@ -208,37 +218,48 @@ class EmundusHelperAccess
 	static function canAccessGroup($gids, $action_id, $crud, $fnum = null)
 	{
 
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		$m_users = new EmundusModelUsers();
 
-		if (!is_null($fnum) && !empty($fnum)) {
+		if (!is_null($fnum) && !empty($fnum))
+		{
 			$accessList = $m_users->getGroupActions($gids, $fnum, $action_id, $crud);
 			$canAccess  = (!empty($accessList)) ? -1 : null;
-			if (count($accessList) > 0) {
-				foreach ($accessList as $access) {
-					if ($canAccess < intval($access[$crud])) {
+			if (count($accessList) > 0)
+			{
+				foreach ($accessList as $access)
+				{
+					if ($canAccess < intval($access[$crud]))
+					{
 						$canAccess = $access[$crud];
 					}
 				}
 			}
-			if ($canAccess > 0) {
+			if ($canAccess > 0)
+			{
 				return true;
 			}
-			elseif ($canAccess == 0 || $canAccess === null) {
+			elseif ($canAccess == 0 || $canAccess === null)
+			{
 				// We filter the list of groups to take into account only the groups attached to the fnum's programme OR who are attached to no programme.
 				$gids = $m_users->getEffectiveGroupsForFnum($gids, $fnum);
 
 				return EmundusHelperAccess::canAccessGroup($gids, $action_id, $crud);
 			}
-			else {
+			else
+			{
 				return false;
 			}
 		}
-		else {
+		else
+		{
 			$groupsActions = $m_users->getGroupsAcl($gids);
-			if (!empty($groupsActions)) {
-				foreach ($groupsActions as $action) {
-					if ($action['action_id'] == $action_id && $action[$crud] == 1) {
+			if (!empty($groupsActions))
+			{
+				foreach ($groupsActions as $action)
+				{
+					if ($action['action_id'] == $action_id && $action[$crud] == 1)
+					{
 						return true;
 					}
 				}
@@ -257,8 +278,8 @@ class EmundusHelperAccess
 	 */
 	public static function getUserFabrikGroups($user_id)
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'groups.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/groups.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
 		$m_groups = new EmundusModelGroups();
 		$m_users  = new EmundusModelUsers();
 
@@ -278,8 +299,8 @@ class EmundusHelperAccess
 	 */
 	public static function getUserAllowedAttachmentIDs($user_id)
 	{
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
 		$m_files = new EmundusModelFiles();
 		$m_users = new EmundusModelUsers();
 
@@ -299,32 +320,38 @@ class EmundusHelperAccess
 	 */
 	public static function isDataAnonymized($user_id)
 	{
+		$is_data_anonymized = false;
 		JLog::addLogger(['text_file' => 'com_emundus.access.error.php'], JLog::ERROR, 'com_emundus');
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-		$m_users = new EmundusModelUsers();
 
-		$group_ids = $m_users->getUserGroups($user_id);
+		if (!empty($user_id))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+			$m_users   = new EmundusModelUsers();
+			$group_ids = $m_users->getUserGroups($user_id);
+			if (!empty($group_ids))
+			{
+				// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
+				$group_ids = array_keys(array_flip(array_keys($group_ids)));
 
-		if (!empty($group_ids)) {
-			// NOTE: The unorthodox array_keys_flip is actually faster than doing array_unique(). The first array_keys is because the function used returns an assoc array [id => name].
-			$group_ids = array_keys(array_flip(array_keys($group_ids)));
+				$db    = JFactory::getDbo();
+				$query = $db->getQuery(true);
+				$query->select($db->quoteName('anonymize'))->from($db->quoteName('#__emundus_setup_groups'))->where($db->quoteName('id') . ' IN (' . implode(',', $group_ids) . ')');
+				$db->setQuery($query);
 
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
-			$query->select($db->quoteName('anonymize'))->from($db->quoteName('#__emundus_setup_groups'))->where($db->quoteName('id') . ' IN (' . implode(',', $group_ids) . ')');
-			$db->setQuery($query);
+				try
+				{
+					$is_data_anonymized = in_array('1', $db->loadColumn());
+				}
+				catch (Exception $e)
+				{
+					JLog::add('Error seeing if user can access non anonymous data. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
 
-			try {
-				return in_array('1', $db->loadColumn());
-			}
-			catch (Exception $e) {
-				JLog::add('Error seeing if user can access non anonymous data. -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
-
-				return false;
+					$is_data_anonymized = false;
+				}
 			}
 		}
 
-		return false;
+		return $is_data_anonymized;
 	}
 
 	/**
@@ -339,65 +366,90 @@ class EmundusHelperAccess
 	{
 		$allowed = false;
 
-		if (empty($user_id)) {
+		if (empty($user_id))
+		{
 			$user_id = JFactory::getUser()->id;
 		}
 
-		if (!empty($user_id) && !empty($fnum)) {
-			// does user is associated to the fnum directly?
+		if (!empty($user_id) && !empty($fnum))
+		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
+			// is the fnum mine ?
 			$query->select('id')
-				->from('#__emundus_users_assoc')
-				->where('user_id = ' . $db->quote($user_id))
-				->andWhere('fnum = ' . $db->quote($fnum))
-				->andWhere('action_id = 1')
-				->andWhere('r = 1');
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where('applicant_id = ' . $db->quote($user_id))
+				->andWhere('fnum LIKE ' . $db->quote($fnum));
 			$db->setQuery($query);
-			$allowed_to_read = $db->loadResult();
+			$ccid = $db->loadResult();
 
-			if ($allowed_to_read) {
+			if (!empty($ccid))
+			{
 				$allowed = true;
 			}
-			else {
-				// does the user have common groups associated to the fnum?
+			else
+			{
+				// does user is associated to the fnum directly?
 				$query->clear()
-					->select('group_id')
-					->from('#__emundus_groups')
-					->where('user_id = ' . $db->quote($user_id));
+					->select('id')
+					->from('#__emundus_users_assoc')
+					->where('user_id = ' . $db->quote($user_id))
+					->andWhere('fnum LIKE ' . $db->quote($fnum))
+					->andWhere('action_id = 1')
+					->andWhere('r = 1');
 				$db->setQuery($query);
-				$user_groups = $db->loadColumn();
+				$allowed_to_read = $db->loadResult();
 
-				// first, we check groups associated manually to the file
-				$query->clear()
-					->select($db->quoteName('group_id'))
-					->from($db->quoteName('#__emundus_group_assoc'))
-					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
-					->andWhere($db->quoteName('action_id') . ' = 1')
-					->andWhere($db->quoteName('r') . ' = 1');
-				$db->setQuery($query);
-				$groups_assoc = $db->loadColumn();
-
-				$groups_in_both_assoc = array_intersect($user_groups, $groups_assoc);
-
-				if (!empty($groups_in_both_assoc)) {
+				if ($allowed_to_read)
+				{
 					$allowed = true;
 				}
-				else {
-					// if there is none, we check files associated to the program
-					require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
-					$m_users     = new EmundusModelUsers();
-					$file_groups = $m_users->getEffectiveGroupsForFnum($user_groups, $fnum, true);
+				else
+				{
+					// does the user have common groups associated to the fnum?
+					$query->clear()
+						->select('group_id')
+						->from('#__emundus_groups')
+						->where('user_id = ' . $db->quote($user_id));
+					$db->setQuery($query);
+					$user_groups = $db->loadColumn();
 
-					$groups_in_both_program = array_intersect($user_groups, $file_groups);
-					if (!empty($groups_in_both_program)) {
-						$groups_actions = $m_users->getGroupsAcl($groups_in_both_program);
+					// first, we check groups associated manually to the file
+					$query->clear()
+						->select($db->quoteName('group_id'))
+						->from($db->quoteName('#__emundus_group_assoc'))
+						->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+						->andWhere($db->quoteName('action_id') . ' = 1')
+						->andWhere($db->quoteName('r') . ' = 1');
+					$db->setQuery($query);
+					$groups_assoc = $db->loadColumn();
 
-						foreach ($groups_actions as $action) {
-							if ($action['action_id'] == 1 && $action['r'] == 1) {
-								$allowed = true;
-								break;
+					$groups_in_both_assoc = array_intersect($user_groups, $groups_assoc);
+
+					if (!empty($groups_in_both_assoc))
+					{
+						$allowed = true;
+					}
+					else
+					{
+						// if there is none, we check files associated to the program
+						require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+						$m_users     = new EmundusModelUsers();
+						$file_groups = $m_users->getEffectiveGroupsForFnum($user_groups, $fnum, true);
+
+						$groups_in_both_program = array_intersect($user_groups, $file_groups);
+						if (!empty($groups_in_both_program))
+						{
+							$groups_actions = $m_users->getGroupsAcl($groups_in_both_program);
+
+							foreach ($groups_actions as $action)
+							{
+								if ($action['action_id'] == 1 && $action['r'] == 1)
+								{
+									$allowed = true;
+									break;
+								}
 							}
 						}
 					}
@@ -421,12 +473,64 @@ class EmundusHelperAccess
 		$config = JFactory::getConfig();
 		$secret = $config->get('secret', '');
 
-		if (trim($secret) == '') {
+		if (trim($secret) == '')
+		{
 			throw new RuntimeException('You must supply a secret code in your Joomla configuration.php file');
 		}
 
 		$key = new JCryptKey('simple', $secret, $secret);
 
 		return new JCrypt(new JCryptCipherSimple, $key);
+	}
+
+	public static function buildFormUrl($link, $fnum): string
+	{
+		$url_params = [];
+		$parsed_url = parse_url($link);
+		parse_str($parsed_url['query'], $url_params);
+
+		if (!empty($url_params['formid']))
+		{
+			$db_table_name = EmundusHelperFabrik::getDbTableName($url_params['formid']);
+			$rowid         = EmundusHelperAccess::getRowIdByFnum($db_table_name, $fnum);
+
+			if (!empty($rowid))
+			{
+				$url_params['rowid'] = $rowid;
+			}
+			if (!empty($fnum))
+			{
+				$url_params['fnum'] = $fnum;
+			}
+
+			$link = http_build_url($link, ['query' => http_build_query($url_params)]);
+		}
+
+		return $link;
+	}
+
+	public static function getRowIdByFnum($db_table_name, $fnum): int
+	{
+		$rowid = 0;
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		if (!empty($fnum))
+		{
+			try
+			{
+				$query->select('id')
+					->from($db->quoteName($db_table_name))
+					->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+				$db->setQuery($query);
+				$rowid = (int) $db->loadResult();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error getting row id by fnum. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $rowid;
 	}
 }

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -236,6 +236,7 @@ defined('_JEXEC') or die('Restricted access');
 			foreach($this->itemFields as $field) {
 				$namekey = $field->field_namekey;
 				if(!empty($cart_product->$namekey) && strlen($cart_product->$namekey)) {
+					$field->currentElement = $cart_product;
 					$edit = true;
 					$html .= '<p class="hikashop_order_item_'.$namekey.'">' .
 						$this->fieldsClass->getFieldName($field) . ': ' .
@@ -307,6 +308,7 @@ defined('_JEXEC') or die('Restricted access');
 	if(hikashop_level(1) && !empty($this->productFields)) {
 		foreach($this->productFields as $field) {
 			$namekey = $field->field_namekey;
+			$field->currentElement = $product;
 ?>			<td data-title="<?php echo $this->fieldsClass->trans($field->field_realname); ?>" >
 <?php
 			if(!empty($product->$namekey)) {

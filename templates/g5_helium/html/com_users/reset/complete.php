@@ -15,15 +15,20 @@ JHtml::_('behavior.formvalidator');
 $document = JFactory::getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_users_reset.css");
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
+$m_settings = new EmundusModelsettings();
+
+$favicon = $m_settings->getFavicon();
+
 ?>
 <div class="reset-complete<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
 		<div class="page-header">
-            <?php if (file_exists('images/custom/favicon.png')) : ?>
-                <a href="index.php" alt="Logo" class="em-profile-picture em-mb-32" style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+            <?php if (file_exists($favicon)) : ?>
+                <a href="index.php" alt="Logo" class="em-profile-picture tw-mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $favicon ?>)">
                 </a>
             <?php endif; ?>
-            <h3 class="em-mb-8">
+            <h3 class="tw-mb-4">
                 <?php echo $this->escape($this->params->get('page_heading')); ?>
             </h3>
 		</div>
@@ -47,3 +52,43 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 		<?php echo JHtml::_('form.token'); ?>
 	</form>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var password = document.getElementById('jform_password1');
+        password.addEventListener('input', function() {
+            checkPasswordSymbols(password);
+        });
+    });
+
+    function checkPasswordSymbols(element) {
+        var wrong_password_title = ['Invalid password', 'Mot de passe invalide'];
+        var wrong_password_description = ['The #$\{\};<> characters are forbidden, as are spaces.', 'Les caractères #$\{\};<> sont interdits ainsi que les espaces'];
+
+        var site_url = window.location.toString();
+        var site_url_lang_regexp = /\w+.\/en/d;
+
+        var index = 0;
+
+        if(site_url.match(site_url_lang_regexp) === null) { index = 1; }
+
+        var regex = /[#$\{\};<> ]/;
+        var password_value = element.value;
+
+        if (password_value.match(regex) != null) {
+            Swal.fire({
+                icon: 'error',
+                title: wrong_password_title[index],
+                text: wrong_password_description[index],
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    actions: 'em-swal-single-action',
+                }
+            });
+
+            element.value = '';
+        }
+    }
+</script>

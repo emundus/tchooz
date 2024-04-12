@@ -12,7 +12,7 @@
         "jquery"
       ],
       "uri": "legacy/jquery-noconflict.min.js",
-      "version": "4784e5"
+      "version": "504da4"
     },
     {
       "name": "joomla.treeselectmenu",
@@ -24,7 +24,7 @@
       "attributes": {
         "defer": true
       },
-      "version": "e5cbd2"
+      "version": "c80ebd"
     }
   ]
 }

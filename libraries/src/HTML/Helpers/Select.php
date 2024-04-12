@@ -106,6 +106,15 @@ abstract class Select
         $idtag = false,
         $translate = false
     ) {
+		$chosen = strpos($attribs['list.attr'] ?? '', 'multiple') !== false;
+
+	    if ($chosen) {
+		    HTMLHelper::_('behavior.core');
+		    HTMLHelper::_('jquery.framework');
+		    HTMLHelper::_('formbehavior.chosen');
+		    HTMLHelper::_('script', 'legacy/ajax-chosen.min.js', ['version' => 'auto', 'relative' => true]);
+	    }
+
         // Set default options
         $options = array_merge(HTMLHelper::$formatOptions, ['format.depth' => 0, 'id' => false]);
 

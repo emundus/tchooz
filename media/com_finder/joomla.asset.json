@@ -9,31 +9,7 @@
       "name": "com_finder.dates",
       "type": "style",
       "uri": "com_finder/dates.min.css",
-      "version": "d29da4"
-    },
-    {
-      "name": "com_finder.finder-edit",
-      "type": "script",
-      "uri": "com_finder/finder-edit.min.js",
-      "dependencies": [
-        "core"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "version": "efd79c"
-    },
-    {
-      "name": "com_finder.filters",
-      "type": "script",
-      "uri": "com_finder/filters.min.js",
-      "dependencies": [
-        "core"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "version": "dcfa38"
+      "version": "e7901d"
     },
     {
       "name": "com_finder.debug",
@@ -45,13 +21,25 @@
       "attributes": {
         "type": "module"
       },
-      "version": "f95d12"
+      "version": "d162b4"
+    },
+    {
+      "name": "com_finder.filters",
+      "type": "script",
+      "uri": "com_finder/filters.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "ce7a61"
     },
     {
       "name": "com_finder.finder",
       "type": "style",
       "uri": "com_finder/finder.min.css",
-      "version": "e2f2f1"
+      "version": "624068"
     },
     {
       "name": "com_finder.finder",
@@ -63,13 +51,25 @@
       "attributes": {
         "type": "module"
       },
-      "version": "d82ed7"
+      "version": "bc972b"
+    },
+    {
+      "name": "com_finder.finder-edit",
+      "type": "script",
+      "uri": "com_finder/finder-edit.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "6a2a02"
     },
     {
       "name": "com_finder.indexer",
       "type": "style",
       "uri": "com_finder/indexer.min.css",
-      "version": "d28072"
+      "version": "2b8d6c"
     },
     {
       "name": "com_finder.indexer",
@@ -81,7 +81,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "2b53c8"
+      "version": "491cd3"
     },
     {
       "name": "com_finder.maps",
@@ -93,7 +93,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "09b36f"
+      "version": "63e1cd"
     }
   ]
 }

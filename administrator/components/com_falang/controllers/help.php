@@ -16,8 +16,11 @@ defined('_JEXEC') or die;
  *
  */
 class HelpController extends BaseController {
+
+    protected $default_view = 'help';
+
 	/**
-	 * Joom!Fish Controler for the Control Panel
+	 *
 	 * @param array		configuration
 	 */
 	function __construct($config = array())
@@ -30,11 +33,11 @@ class HelpController extends BaseController {
 
 	/**
 	 * Standard display control structure
+     * @update 5.0 use default fiew name
 	 * 
 	 */
 	function display($cachable = false, $urlparams = array())
 	{
-		$this->view =  $this->getView("help");
 		parent::display();
 	}
 	

@@ -14,6 +14,7 @@
   		<field type="htmltext" name="description" translate="1" >Description</field>
   		<field type="text" name="metakey" length="50" maxlength="250" translate="1">Metakey</field>
   		<field type="textarea" name="metadesc"  rows="5" columns="80" translate="1">Metadesc</field>
+		<filter>c.id>1 AND c.language="*"</filter>
   	</table>
   	<component>
   		<form>com_tags#_tags#cid#task#!edit</form>

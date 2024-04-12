@@ -14,6 +14,7 @@ defined('_JEXEC') or die;
 <ul class="gf-menu l1 emundus" id="em_user_menu">
 	<?php
 	foreach ($list as $i => &$item) :
+        if($item->getParams()->get('menu_show') != 0) :
 		$item->anchor_css = "item";
 		$class            = 'item-' . $item->id;
 		if ($item->id == $active_id) {
@@ -77,5 +78,6 @@ defined('_JEXEC') or die;
 		else {
 			echo '</li>';
 		}
+        endif;
 	endforeach;
 	?></ul>

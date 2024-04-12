@@ -67,23 +67,44 @@ class plgSystemEmundus_block_user extends CMSPlugin
 			!empty($user->id) &&
 			EmundusHelperAccess::isApplicant($user->id) &&
 			($input->get('option', '') != 'com_emundus' && $input->get('view', '') != 'user') &&
-			strpos($uri->toString(), 'activation') === false &&
 			strpos($uri->toString(), 'logout') === false
         ) {
-            $table = JTable::getInstance('user', 'JTable');
+	        $table = JTable::getInstance('user', 'JTable');
 
-            $table->load($user->id);
-            $params = new JRegistry($table->params);
+	        $table->load($user->id);
+	        $params = new JRegistry($table->params);
 
-            $token = $params->get('emailactivation_token');
-            $token = md5($token);
-            if (!empty($token) && strlen($token) === 32 && $this->app->input->getInt($token, 0, 'get') === 1) {
-                $table->activation = 1;
-            }
-            if ((int)$table->activation == -1) {
+	        $token = $params->get('emailactivation_token');
+	        $token = md5($token);
+	        if (!empty($token) && strlen($token) === 32 && $this->app->input->getInt($token, 0, 'get') === 1 && $input->getInt('emailactivation',0) == 1) {
+		        $table->activation = 1;
+		        $params->set('emailactivation_token', null);
+		        $table->params = $params->toString();
+
+		        // save user data
+		        if ($table->store()) {
+			        $this->app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'), 'success');
+
+			        $redirect = $this->params->get('activation_redirect', 'index.php');
+			        if (!empty($redirect)) {
+				        $this->app->redirect($redirect);
+			        }
+		        }
+		        else {
+			        throw new RuntimeException($table->getError());
+		        }
+	        }
+	        elseif (($table->activation == 1 || $table->activation == 0) && $input->getInt('emailactivation',0) == 1) {
+		        $this->app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ALREADY_ACTIVATED'), 'warning');
+
+		        $redirect = $this->params->get('activation_redirect', 'index.php');
+		        if (!empty($redirect)) {
+			        $this->app->redirect($redirect);
+		        }
+			}
+	        else if ((int) $table->activation == -1 && strpos($uri->toString(), 'activation') === false) {
 				$this->app->redirect('activation');
-            }
-
+			}
         }
     }
 }

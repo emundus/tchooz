@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1740,12 +1740,14 @@ class hikashopOrderClass extends hikashopClass {
 				foreach($products as $k => $product) {
 					$products[$k]->files = array();
 					foreach($files as $file) {
+						$this->files_pos = array();
 						if($product->product_id == $file->file_ref_id) {
 							$this->_setDownloadFile($file, $products, $k, $files);
 						}
 					}
 					if(empty($products[$k]->files) && !empty($product->product_parent_id)) {
 						foreach($files as $file) {
+							$this->files_pos = array();
 							if($product->product_parent_id==$file->file_ref_id) {
 								$this->_setDownloadFile($file, $products, $k, $files);
 							}
@@ -1780,8 +1782,6 @@ class hikashopOrderClass extends hikashopClass {
 	}
 
 	public function _setDownloadFile(&$file, &$products, $k, &$files) {
-		static $files_pos = array();
-
 		$total_product_quantity = 0;
 		foreach($products as $i => $product) {
 			if($product->product_id == $file->file_ref_id) {
@@ -1798,22 +1798,22 @@ class hikashopOrderClass extends hikashopClass {
 		}
 
 		if(substr($file->file_path, 0, 1) == '@' || substr($file->file_path, 0, 1) == '#') {
-			if(!isset($files_pos[$file->file_id]))
-				$files_pos[$file->file_id] = 0;
+			if(!isset($this->files_pos[$file->file_id]))
+				$this->files_pos[$file->file_id] = 0;
 
 			if(empty($file->file_pos)) {
 				for($i = 1; $i <= $product_quantity; $i++) {
-					$pos = $files_pos[$file->file_id] + $i;
+					$pos = $this->files_pos[$file->file_id] + $i;
 					$f = clone($file);
 					$f->file_pos = $pos;
 					$id = sprintf('%05d-%05d-%05d', $file->file_ordering, $file->file_id, $pos);
 					$products[$k]->files[$id] = $f;
 					unset($f);
 				}
-				$files_pos[$file->file_id] += $product_quantity;
+				$this->files_pos[$file->file_id] += $product_quantity;
 			} else {
 				for($i = 1; $i <= $product_quantity; $i++) {
-					$pos = $files_pos[$file->file_id] + $i;
+					$pos = $this->files_pos[$file->file_id] + $i;
 
 					$skip = false;
 					foreach($files as $fileFromDB) {
@@ -1831,7 +1831,7 @@ class hikashopOrderClass extends hikashopClass {
 					$products[$k]->files[$id] = $f;
 					unset($f);
 				}
-				$files_pos[$file->file_id] += $product_quantity;
+				$this->files_pos[$file->file_id] += $product_quantity;
 
 				$id = sprintf('%05d-%05d-%05d', $file->file_ordering, $file->file_id, (int)$file->file_pos);
 				$products[$k]->files[$id] = $file;

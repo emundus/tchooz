@@ -1,5 +1,5 @@
 <?php
-JHTML::_('behavior.modal');
+
 JHTML::stylesheet('media/com_emundus/css/emundus.css');
 defined('_JEXEC') or die('Restricted access');
 $path = JPATH_BASE . DS . 'images' . DS . 'emundus' . DS . 'files' . DS;

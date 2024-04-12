@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__finder_terms_common">
+   <field Field="term" Type="varchar(75)" Null="NO" Key="PRI" Default="" Extra="" />
+   <field Field="language" Type="char(7)" Null="NO" Key="PRI" Default="" Extra="" />
+   <field Field="custom" Type="int" Null="NO" Key="" Default="0" Extra="" />
+   <key Table="#__finder_terms_common" Non_unique="0" Key_name="idx_term_language" Seq_in_index="1" Column_name="term" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__finder_terms_common" Non_unique="0" Key_name="idx_term_language" Seq_in_index="2" Column_name="language" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__finder_terms_common" Non_unique="1" Key_name="idx_lang" Seq_in_index="1" Column_name="language" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

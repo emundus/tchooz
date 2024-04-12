@@ -3705,6 +3705,12 @@
           <xs:enumeration value="FIRST_OVERNIGHT"/>
           <xs:enumeration value="GROUND_HOME_DELIVERY"/>
           <xs:enumeration value="INTERNATIONAL_ECONOMY"/>
+          <xs:enumeration value="INTERNATIONAL_ECONOMY_DISTRIBUTION"/>
+          <xs:enumeration value="INTERNATIONAL_PRIORITY_DISTRIBUTION"/>
+          <xs:enumeration value="FEDEX_INTERNATIONAL_PRIORITY"/>
+          <xs:enumeration value="FEDEX_INTERNATIONAL_PRIORITY_EXPRESS"/>
+          <xs:enumeration value="FEDEX_INTERNATIONAL_CONNECT_PLUS"/>
+          <xs:enumeration value="FEDEX_REGIONAL_ECONOMY"/>
           <xs:enumeration value="INTERNATIONAL_ECONOMY_FREIGHT"/>
           <xs:enumeration value="INTERNATIONAL_FIRST"/>
           <xs:enumeration value="INTERNATIONAL_PRIORITY"/>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1217,6 +1217,32 @@ class hikashopProductClass extends hikashopClass{
 			}
 		}
 		return $products;
+	}
+
+	public function getProductsFromIdsWithCache($ids) {
+		static $elementsCache = array();
+
+		$needLoading = array();
+		foreach($ids as $id) {
+			if(!isset($elementsCache[(int)$id])) {
+				$needLoading[(int)$id] = (int)$id;
+			}
+		}
+		if(count($needLoading)) {
+			$db = JFactory::getDBO();
+			$query = 'SELECT * FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',',$needLoading).')';
+			$db->setQuery($query);
+			$loadedElements = $db->loadObjectList('product_id');
+			foreach($loadedElements as $id => $el) {
+				$elementsCache[(int)$id] = $el;
+			}
+		}
+		$elements = array();
+		foreach($ids as $id) {
+			if(isset($elementsCache[(int)$id]))
+				$elements[] = $elementsCache[(int)$id];
+		}
+		return $elements;
 	}
 
 	function getProducts($ids, $mode = 'id') {

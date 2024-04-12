@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -83,7 +83,7 @@ class plgHikashoppaymentBluepaid extends hikashopPaymentPlugin
 		if(!empty($this->payment_params->ips)){
 			$ip = hikashop_getIP();
 			$ips = str_replace(array('.','*',','),array('\.','[0-9]+','|'),$this->payment_params->ips);
-			if(!preg_match('#('.implode('|',$ips).')#',$ip)){
+			if(!preg_match('#('.$ips.')#',$ip)){
 				$body = str_replace('<br/>',"\r\n",JText::sprintf('NOTIFICATION_REFUSED_FROM_IP','Bluepaid',$ip,implode("\r\n",$this->payment_params->ips)))."\r\n\r\n".$order_text;
 
 

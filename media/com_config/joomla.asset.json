@@ -15,7 +15,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "7fff86"
+      "version": "e767f4"
     },
     {
       "name": "com_config.modules",
@@ -27,7 +27,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "e3d9c2"
+      "version": "632e8b"
     },
     {
       "name": "com_config.templates",
@@ -39,7 +39,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "ed437d"
+      "version": "ba135d"
     },
     {
       "name": "com_config.filters",
@@ -51,7 +51,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "8b334f"
+      "version": "6b2e5c"
     }
   ]
 }

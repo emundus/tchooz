@@ -134,41 +134,6 @@ class EmundusModelTrombinoscope extends JModelLegacy
 		}
 	}
 
-	/*
-		// TCPDF
-		public function generate_pdf($html_value) {
-
-			jimport( 'joomla.html.parameter' );
-
-			set_time_limit(0);
-			require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
-			require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
-
-			$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-			$pdf->SetCreator(PDF_CREATOR);
-			$pdf->SetAuthor('www.emundus.fr');
-			$pdf->SetFont('helvetica', '', 8);
-
-			// set margins
-			$pdf->SetMargins($this->pdf_margin_left, $this->pdf_margin_top, $this->pdf_margin_right);
-			$pdf->SetHeaderMargin($this->pdf_margin_header);
-			$pdf->SetFooterMargin($this->pdf_margin_footer);
-
-			// Il faut découper $html_value par page, donc on va passer par un tableau
-			$tab_html = explode('###', $html_value);
-
-			for ($i=0; $i<count($tab_html); $i++) {
-				$pdf->AddPage();
-				$pdf->writeHTML($tab_html[$i], true, false, false, false, '');
-			}
-
-			$fileName = "trombinoscope-".time().".pdf";
-			$tmpName = JPATH_SITE.DS.'tmp'.DS.$fileName;
-			$pdf->Output($tmpName, 'F');
-
-			return JURI::base().'tmp'.DS.$fileName;
-		}
-	*/
 	// DOMPDF
 	public function generate_pdf($html_value, $format)
 	{

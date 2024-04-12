@@ -1,0 +1,827 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="data_departements">
+   <field Field="departement_id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="departement_code" Type="varchar(3)" Null="YES" Key="MUL" Extra="" />
+   <field Field="departement_nom" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="departement_nom_uppercase" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="departement_slug" Type="varchar(255)" Null="YES" Key="MUL" Extra="" />
+   <field Field="departement_nom_soundex" Type="varchar(20)" Null="YES" Key="MUL" Extra="" />
+   <key Table="data_departements" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="departement_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="data_departements" Non_unique="1" Key_name="departement_code" Seq_in_index="1" Column_name="departement_code" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="data_departements" Non_unique="1" Key_name="departement_nom_soundex" Seq_in_index="1" Column_name="departement_nom_soundex" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="data_departements" Non_unique="1" Key_name="departement_slug" Seq_in_index="1" Column_name="departement_slug" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+  <table_data name="data_departements">
+   <row>
+    <field name="departement_id">1</field>
+    <field name="departement_code">01</field>
+    <field name="departement_nom">Ain</field>
+    <field name="departement_nom_uppercase">AIN</field>
+    <field name="departement_slug">ain</field>
+    <field name="departement_nom_soundex">A500</field>
+   </row>
+   <row>
+    <field name="departement_id">2</field>
+    <field name="departement_code">02</field>
+    <field name="departement_nom">Aisne</field>
+    <field name="departement_nom_uppercase">AISNE</field>
+    <field name="departement_slug">aisne</field>
+    <field name="departement_nom_soundex">A250</field>
+   </row>
+   <row>
+    <field name="departement_id">3</field>
+    <field name="departement_code">03</field>
+    <field name="departement_nom">Allier</field>
+    <field name="departement_nom_uppercase">ALLIER</field>
+    <field name="departement_slug">allier</field>
+    <field name="departement_nom_soundex">A460</field>
+   </row>
+   <row>
+    <field name="departement_id">4</field>
+    <field name="departement_code">04</field>
+    <field name="departement_nom">Alpes-de-Haute-Provence</field>
+    <field name="departement_nom_uppercase">ALPES-DE-HAUTE-PROVENCE</field>
+    <field name="departement_slug">alpes-de-haute-provence</field>
+    <field name="departement_nom_soundex">A412316152</field>
+   </row>
+   <row>
+    <field name="departement_id">5</field>
+    <field name="departement_code">05</field>
+    <field name="departement_nom">Hautes-Alpes</field>
+    <field name="departement_nom_uppercase">HAUTES-ALPES</field>
+    <field name="departement_slug">hautes-alpes</field>
+    <field name="departement_nom_soundex">H32412</field>
+   </row>
+   <row>
+    <field name="departement_id">6</field>
+    <field name="departement_code">06</field>
+    <field name="departement_nom">Alpes-Maritimes</field>
+    <field name="departement_nom_uppercase">ALPES-MARITIMES</field>
+    <field name="departement_slug">alpes-maritimes</field>
+    <field name="departement_nom_soundex">A41256352</field>
+   </row>
+   <row>
+    <field name="departement_id">7</field>
+    <field name="departement_code">07</field>
+    <field name="departement_nom">Ardèche</field>
+    <field name="departement_nom_uppercase">ARDÈCHE</field>
+    <field name="departement_slug">ardeche</field>
+    <field name="departement_nom_soundex">A632</field>
+   </row>
+   <row>
+    <field name="departement_id">8</field>
+    <field name="departement_code">08</field>
+    <field name="departement_nom">Ardennes</field>
+    <field name="departement_nom_uppercase">ARDENNES</field>
+    <field name="departement_slug">ardennes</field>
+    <field name="departement_nom_soundex">A6352</field>
+   </row>
+   <row>
+    <field name="departement_id">9</field>
+    <field name="departement_code">09</field>
+    <field name="departement_nom">Ariège</field>
+    <field name="departement_nom_uppercase">ARIÈGE</field>
+    <field name="departement_slug">ariege</field>
+    <field name="departement_nom_soundex">A620</field>
+   </row>
+   <row>
+    <field name="departement_id">10</field>
+    <field name="departement_code">10</field>
+    <field name="departement_nom">Aube</field>
+    <field name="departement_nom_uppercase">AUBE</field>
+    <field name="departement_slug">aube</field>
+    <field name="departement_nom_soundex">A100</field>
+   </row>
+   <row>
+    <field name="departement_id">11</field>
+    <field name="departement_code">11</field>
+    <field name="departement_nom">Aude</field>
+    <field name="departement_nom_uppercase">AUDE</field>
+    <field name="departement_slug">aude</field>
+    <field name="departement_nom_soundex">A300</field>
+   </row>
+   <row>
+    <field name="departement_id">12</field>
+    <field name="departement_code">12</field>
+    <field name="departement_nom">Aveyron</field>
+    <field name="departement_nom_uppercase">AVEYRON</field>
+    <field name="departement_slug">aveyron</field>
+    <field name="departement_nom_soundex">A165</field>
+   </row>
+   <row>
+    <field name="departement_id">13</field>
+    <field name="departement_code">13</field>
+    <field name="departement_nom">Bouches-du-Rhône</field>
+    <field name="departement_nom_uppercase">BOUCHES-DU-RHÔNE</field>
+    <field name="departement_slug">bouches-du-rhone</field>
+    <field name="departement_nom_soundex">B2365</field>
+   </row>
+   <row>
+    <field name="departement_id">14</field>
+    <field name="departement_code">14</field>
+    <field name="departement_nom">Calvados</field>
+    <field name="departement_nom_uppercase">CALVADOS</field>
+    <field name="departement_slug">calvados</field>
+    <field name="departement_nom_soundex">C4132</field>
+   </row>
+   <row>
+    <field name="departement_id">15</field>
+    <field name="departement_code">15</field>
+    <field name="departement_nom">Cantal</field>
+    <field name="departement_nom_uppercase">CANTAL</field>
+    <field name="departement_slug">cantal</field>
+    <field name="departement_nom_soundex">C534</field>
+   </row>
+   <row>
+    <field name="departement_id">16</field>
+    <field name="departement_code">16</field>
+    <field name="departement_nom">Charente</field>
+    <field name="departement_nom_uppercase">CHARENTE</field>
+    <field name="departement_slug">charente</field>
+    <field name="departement_nom_soundex">C653</field>
+   </row>
+   <row>
+    <field name="departement_id">17</field>
+    <field name="departement_code">17</field>
+    <field name="departement_nom">Charente-Maritime</field>
+    <field name="departement_nom_uppercase">CHARENTE-MARITIME</field>
+    <field name="departement_slug">charente-maritime</field>
+    <field name="departement_nom_soundex">C6535635</field>
+   </row>
+   <row>
+    <field name="departement_id">18</field>
+    <field name="departement_code">18</field>
+    <field name="departement_nom">Cher</field>
+    <field name="departement_nom_uppercase">CHER</field>
+    <field name="departement_slug">cher</field>
+    <field name="departement_nom_soundex">C600</field>
+   </row>
+   <row>
+    <field name="departement_id">19</field>
+    <field name="departement_code">19</field>
+    <field name="departement_nom">Corrèze</field>
+    <field name="departement_nom_uppercase">CORRÈZE</field>
+    <field name="departement_slug">correze</field>
+    <field name="departement_nom_soundex">C620</field>
+   </row>
+   <row>
+    <field name="departement_id">20</field>
+    <field name="departement_code">2a</field>
+    <field name="departement_nom">Corse-du-sud</field>
+    <field name="departement_nom_uppercase">CORSE-DU-SUD</field>
+    <field name="departement_slug">corse-du-sud</field>
+    <field name="departement_nom_soundex">C62323</field>
+   </row>
+   <row>
+    <field name="departement_id">21</field>
+    <field name="departement_code">2b</field>
+    <field name="departement_nom">Haute-corse</field>
+    <field name="departement_nom_uppercase">HAUTE-CORSE</field>
+    <field name="departement_slug">haute-corse</field>
+    <field name="departement_nom_soundex">H3262</field>
+   </row>
+   <row>
+    <field name="departement_id">22</field>
+    <field name="departement_code">21</field>
+    <field name="departement_nom">Côte-d'or</field>
+    <field name="departement_nom_uppercase">CÔTE-D'OR</field>
+    <field name="departement_slug">cote-dor</field>
+    <field name="departement_nom_soundex">C360</field>
+   </row>
+   <row>
+    <field name="departement_id">23</field>
+    <field name="departement_code">22</field>
+    <field name="departement_nom">Côtes-d'armor</field>
+    <field name="departement_nom_uppercase">CÔTES-D'ARMOR</field>
+    <field name="departement_slug">cotes-darmor</field>
+    <field name="departement_nom_soundex">C323656</field>
+   </row>
+   <row>
+    <field name="departement_id">24</field>
+    <field name="departement_code">23</field>
+    <field name="departement_nom">Creuse</field>
+    <field name="departement_nom_uppercase">CREUSE</field>
+    <field name="departement_slug">creuse</field>
+    <field name="departement_nom_soundex">C620</field>
+   </row>
+   <row>
+    <field name="departement_id">25</field>
+    <field name="departement_code">24</field>
+    <field name="departement_nom">Dordogne</field>
+    <field name="departement_nom_uppercase">DORDOGNE</field>
+    <field name="departement_slug">dordogne</field>
+    <field name="departement_nom_soundex">D6325</field>
+   </row>
+   <row>
+    <field name="departement_id">26</field>
+    <field name="departement_code">25</field>
+    <field name="departement_nom">Doubs</field>
+    <field name="departement_nom_uppercase">DOUBS</field>
+    <field name="departement_slug">doubs</field>
+    <field name="departement_nom_soundex">D120</field>
+   </row>
+   <row>
+    <field name="departement_id">27</field>
+    <field name="departement_code">26</field>
+    <field name="departement_nom">Drôme</field>
+    <field name="departement_nom_uppercase">DRÔME</field>
+    <field name="departement_slug">drome</field>
+    <field name="departement_nom_soundex">D650</field>
+   </row>
+   <row>
+    <field name="departement_id">28</field>
+    <field name="departement_code">27</field>
+    <field name="departement_nom">Eure</field>
+    <field name="departement_nom_uppercase">EURE</field>
+    <field name="departement_slug">eure</field>
+    <field name="departement_nom_soundex">E600</field>
+   </row>
+   <row>
+    <field name="departement_id">29</field>
+    <field name="departement_code">28</field>
+    <field name="departement_nom">Eure-et-Loir</field>
+    <field name="departement_nom_uppercase">EURE-ET-LOIR</field>
+    <field name="departement_slug">eure-et-loir</field>
+    <field name="departement_nom_soundex">E6346</field>
+   </row>
+   <row>
+    <field name="departement_id">30</field>
+    <field name="departement_code">29</field>
+    <field name="departement_nom">Finistère</field>
+    <field name="departement_nom_uppercase">FINISTÈRE</field>
+    <field name="departement_slug">finistere</field>
+    <field name="departement_nom_soundex">F5236</field>
+   </row>
+   <row>
+    <field name="departement_id">31</field>
+    <field name="departement_code">30</field>
+    <field name="departement_nom">Gard</field>
+    <field name="departement_nom_uppercase">GARD</field>
+    <field name="departement_slug">gard</field>
+    <field name="departement_nom_soundex">G630</field>
+   </row>
+   <row>
+    <field name="departement_id">32</field>
+    <field name="departement_code">31</field>
+    <field name="departement_nom">Haute-Garonne</field>
+    <field name="departement_nom_uppercase">HAUTE-GARONNE</field>
+    <field name="departement_slug">haute-garonne</field>
+    <field name="departement_nom_soundex">H3265</field>
+   </row>
+   <row>
+    <field name="departement_id">33</field>
+    <field name="departement_code">32</field>
+    <field name="departement_nom">Gers</field>
+    <field name="departement_nom_uppercase">GERS</field>
+    <field name="departement_slug">gers</field>
+    <field name="departement_nom_soundex">G620</field>
+   </row>
+   <row>
+    <field name="departement_id">34</field>
+    <field name="departement_code">33</field>
+    <field name="departement_nom">Gironde</field>
+    <field name="departement_nom_uppercase">GIRONDE</field>
+    <field name="departement_slug">gironde</field>
+    <field name="departement_nom_soundex">G653</field>
+   </row>
+   <row>
+    <field name="departement_id">35</field>
+    <field name="departement_code">34</field>
+    <field name="departement_nom">Hérault</field>
+    <field name="departement_nom_uppercase">HÉRAULT</field>
+    <field name="departement_slug">herault</field>
+    <field name="departement_nom_soundex">H643</field>
+   </row>
+   <row>
+    <field name="departement_id">36</field>
+    <field name="departement_code">35</field>
+    <field name="departement_nom">Ile-et-Vilaine</field>
+    <field name="departement_nom_uppercase">ILE-ET-VILAINE</field>
+    <field name="departement_slug">ile-et-vilaine</field>
+    <field name="departement_nom_soundex">I43145</field>
+   </row>
+   <row>
+    <field name="departement_id">37</field>
+    <field name="departement_code">36</field>
+    <field name="departement_nom">Indre</field>
+    <field name="departement_nom_uppercase">INDRE</field>
+    <field name="departement_slug">indre</field>
+    <field name="departement_nom_soundex">I536</field>
+   </row>
+   <row>
+    <field name="departement_id">38</field>
+    <field name="departement_code">37</field>
+    <field name="departement_nom">Indre-et-Loire</field>
+    <field name="departement_nom_uppercase">INDRE-ET-LOIRE</field>
+    <field name="departement_slug">indre-et-loire</field>
+    <field name="departement_nom_soundex">I536346</field>
+   </row>
+   <row>
+    <field name="departement_id">39</field>
+    <field name="departement_code">38</field>
+    <field name="departement_nom">Isère</field>
+    <field name="departement_nom_uppercase">ISÈRE</field>
+    <field name="departement_slug">isere</field>
+    <field name="departement_nom_soundex">I260</field>
+   </row>
+   <row>
+    <field name="departement_id">40</field>
+    <field name="departement_code">39</field>
+    <field name="departement_nom">Jura</field>
+    <field name="departement_nom_uppercase">JURA</field>
+    <field name="departement_slug">jura</field>
+    <field name="departement_nom_soundex">J600</field>
+   </row>
+   <row>
+    <field name="departement_id">41</field>
+    <field name="departement_code">40</field>
+    <field name="departement_nom">Landes</field>
+    <field name="departement_nom_uppercase">LANDES</field>
+    <field name="departement_slug">landes</field>
+    <field name="departement_nom_soundex">L532</field>
+   </row>
+   <row>
+    <field name="departement_id">42</field>
+    <field name="departement_code">41</field>
+    <field name="departement_nom">Loir-et-Cher</field>
+    <field name="departement_nom_uppercase">LOIR-ET-CHER</field>
+    <field name="departement_slug">loir-et-cher</field>
+    <field name="departement_nom_soundex">L6326</field>
+   </row>
+   <row>
+    <field name="departement_id">43</field>
+    <field name="departement_code">42</field>
+    <field name="departement_nom">Loire</field>
+    <field name="departement_nom_uppercase">LOIRE</field>
+    <field name="departement_slug">loire</field>
+    <field name="departement_nom_soundex">L600</field>
+   </row>
+   <row>
+    <field name="departement_id">44</field>
+    <field name="departement_code">43</field>
+    <field name="departement_nom">Haute-Loire</field>
+    <field name="departement_nom_uppercase">HAUTE-LOIRE</field>
+    <field name="departement_slug">haute-loire</field>
+    <field name="departement_nom_soundex">H346</field>
+   </row>
+   <row>
+    <field name="departement_id">45</field>
+    <field name="departement_code">44</field>
+    <field name="departement_nom">Loire-Atlantique</field>
+    <field name="departement_nom_uppercase">LOIRE-ATLANTIQUE</field>
+    <field name="departement_slug">loire-atlantique</field>
+    <field name="departement_nom_soundex">L634532</field>
+   </row>
+   <row>
+    <field name="departement_id">46</field>
+    <field name="departement_code">45</field>
+    <field name="departement_nom">Loiret</field>
+    <field name="departement_nom_uppercase">LOIRET</field>
+    <field name="departement_slug">loiret</field>
+    <field name="departement_nom_soundex">L630</field>
+   </row>
+   <row>
+    <field name="departement_id">47</field>
+    <field name="departement_code">46</field>
+    <field name="departement_nom">Lot</field>
+    <field name="departement_nom_uppercase">LOT</field>
+    <field name="departement_slug">lot</field>
+    <field name="departement_nom_soundex">L300</field>
+   </row>
+   <row>
+    <field name="departement_id">48</field>
+    <field name="departement_code">47</field>
+    <field name="departement_nom">Lot-et-Garonne</field>
+    <field name="departement_nom_uppercase">LOT-ET-GARONNE</field>
+    <field name="departement_slug">lot-et-garonne</field>
+    <field name="departement_nom_soundex">L3265</field>
+   </row>
+   <row>
+    <field name="departement_id">49</field>
+    <field name="departement_code">48</field>
+    <field name="departement_nom">Lozère</field>
+    <field name="departement_nom_uppercase">LOZÈRE</field>
+    <field name="departement_slug">lozere</field>
+    <field name="departement_nom_soundex">L260</field>
+   </row>
+   <row>
+    <field name="departement_id">50</field>
+    <field name="departement_code">49</field>
+    <field name="departement_nom">Maine-et-Loire</field>
+    <field name="departement_nom_uppercase">MAINE-ET-LOIRE</field>
+    <field name="departement_slug">maine-et-loire</field>
+    <field name="departement_nom_soundex">M346</field>
+   </row>
+   <row>
+    <field name="departement_id">51</field>
+    <field name="departement_code">50</field>
+    <field name="departement_nom">Manche</field>
+    <field name="departement_nom_uppercase">MANCHE</field>
+    <field name="departement_slug">manche</field>
+    <field name="departement_nom_soundex">M200</field>
+   </row>
+   <row>
+    <field name="departement_id">52</field>
+    <field name="departement_code">51</field>
+    <field name="departement_nom">Marne</field>
+    <field name="departement_nom_uppercase">MARNE</field>
+    <field name="departement_slug">marne</field>
+    <field name="departement_nom_soundex">M650</field>
+   </row>
+   <row>
+    <field name="departement_id">53</field>
+    <field name="departement_code">52</field>
+    <field name="departement_nom">Haute-Marne</field>
+    <field name="departement_nom_uppercase">HAUTE-MARNE</field>
+    <field name="departement_slug">haute-marne</field>
+    <field name="departement_nom_soundex">H3565</field>
+   </row>
+   <row>
+    <field name="departement_id">54</field>
+    <field name="departement_code">53</field>
+    <field name="departement_nom">Mayenne</field>
+    <field name="departement_nom_uppercase">MAYENNE</field>
+    <field name="departement_slug">mayenne</field>
+    <field name="departement_nom_soundex">M000</field>
+   </row>
+   <row>
+    <field name="departement_id">55</field>
+    <field name="departement_code">54</field>
+    <field name="departement_nom">Meurthe-et-Moselle</field>
+    <field name="departement_nom_uppercase">MEURTHE-ET-MOSELLE</field>
+    <field name="departement_slug">meurthe-et-moselle</field>
+    <field name="departement_nom_soundex">M63524</field>
+   </row>
+   <row>
+    <field name="departement_id">56</field>
+    <field name="departement_code">55</field>
+    <field name="departement_nom">Meuse</field>
+    <field name="departement_nom_uppercase">MEUSE</field>
+    <field name="departement_slug">meuse</field>
+    <field name="departement_nom_soundex">M200</field>
+   </row>
+   <row>
+    <field name="departement_id">57</field>
+    <field name="departement_code">56</field>
+    <field name="departement_nom">Morbihan</field>
+    <field name="departement_nom_uppercase">MORBIHAN</field>
+    <field name="departement_slug">morbihan</field>
+    <field name="departement_nom_soundex">M615</field>
+   </row>
+   <row>
+    <field name="departement_id">58</field>
+    <field name="departement_code">57</field>
+    <field name="departement_nom">Moselle</field>
+    <field name="departement_nom_uppercase">MOSELLE</field>
+    <field name="departement_slug">moselle</field>
+    <field name="departement_nom_soundex">M240</field>
+   </row>
+   <row>
+    <field name="departement_id">59</field>
+    <field name="departement_code">58</field>
+    <field name="departement_nom">Nièvre</field>
+    <field name="departement_nom_uppercase">NIÈVRE</field>
+    <field name="departement_slug">nievre</field>
+    <field name="departement_nom_soundex">N160</field>
+   </row>
+   <row>
+    <field name="departement_id">60</field>
+    <field name="departement_code">59</field>
+    <field name="departement_nom">Nord</field>
+    <field name="departement_nom_uppercase">NORD</field>
+    <field name="departement_slug">nord</field>
+    <field name="departement_nom_soundex">N630</field>
+   </row>
+   <row>
+    <field name="departement_id">61</field>
+    <field name="departement_code">60</field>
+    <field name="departement_nom">Oise</field>
+    <field name="departement_nom_uppercase">OISE</field>
+    <field name="departement_slug">oise</field>
+    <field name="departement_nom_soundex">O200</field>
+   </row>
+   <row>
+    <field name="departement_id">62</field>
+    <field name="departement_code">61</field>
+    <field name="departement_nom">Orne</field>
+    <field name="departement_nom_uppercase">ORNE</field>
+    <field name="departement_slug">orne</field>
+    <field name="departement_nom_soundex">O650</field>
+   </row>
+   <row>
+    <field name="departement_id">63</field>
+    <field name="departement_code">62</field>
+    <field name="departement_nom">Pas-de-Calais</field>
+    <field name="departement_nom_uppercase">PAS-DE-CALAIS</field>
+    <field name="departement_slug">pas-de-calais</field>
+    <field name="departement_nom_soundex">P23242</field>
+   </row>
+   <row>
+    <field name="departement_id">64</field>
+    <field name="departement_code">63</field>
+    <field name="departement_nom">Puy-de-Dôme</field>
+    <field name="departement_nom_uppercase">PUY-DE-DÔME</field>
+    <field name="departement_slug">puy-de-dome</field>
+    <field name="departement_nom_soundex">P350</field>
+   </row>
+   <row>
+    <field name="departement_id">65</field>
+    <field name="departement_code">64</field>
+    <field name="departement_nom">Pyrénées-Atlantiques</field>
+    <field name="departement_nom_uppercase">PYRÉNÉES-ATLANTIQUES</field>
+    <field name="departement_slug">pyrenees-atlantiques</field>
+    <field name="departement_nom_soundex">P65234532</field>
+   </row>
+   <row>
+    <field name="departement_id">66</field>
+    <field name="departement_code">65</field>
+    <field name="departement_nom">Hautes-Pyrénées</field>
+    <field name="departement_nom_uppercase">HAUTES-PYRÉNÉES</field>
+    <field name="departement_slug">hautes-pyrenees</field>
+    <field name="departement_nom_soundex">H321652</field>
+   </row>
+   <row>
+    <field name="departement_id">67</field>
+    <field name="departement_code">66</field>
+    <field name="departement_nom">Pyrénées-Orientales</field>
+    <field name="departement_nom_uppercase">PYRÉNÉES-ORIENTALES</field>
+    <field name="departement_slug">pyrenees-orientales</field>
+    <field name="departement_nom_soundex">P65265342</field>
+   </row>
+   <row>
+    <field name="departement_id">68</field>
+    <field name="departement_code">67</field>
+    <field name="departement_nom">Bas-Rhin</field>
+    <field name="departement_nom_uppercase">BAS-RHIN</field>
+    <field name="departement_slug">bas-rhin</field>
+    <field name="departement_nom_soundex">B265</field>
+   </row>
+   <row>
+    <field name="departement_id">69</field>
+    <field name="departement_code">68</field>
+    <field name="departement_nom">Haut-Rhin</field>
+    <field name="departement_nom_uppercase">HAUT-RHIN</field>
+    <field name="departement_slug">haut-rhin</field>
+    <field name="departement_nom_soundex">H365</field>
+   </row>
+   <row>
+    <field name="departement_id">70</field>
+    <field name="departement_code">69</field>
+    <field name="departement_nom">Rhône</field>
+    <field name="departement_nom_uppercase">RHÔNE</field>
+    <field name="departement_slug">rhone</field>
+    <field name="departement_nom_soundex">R500</field>
+   </row>
+   <row>
+    <field name="departement_id">71</field>
+    <field name="departement_code">70</field>
+    <field name="departement_nom">Haute-Saône</field>
+    <field name="departement_nom_uppercase">HAUTE-SAÔNE</field>
+    <field name="departement_slug">haute-saone</field>
+    <field name="departement_nom_soundex">H325</field>
+   </row>
+   <row>
+    <field name="departement_id">72</field>
+    <field name="departement_code">71</field>
+    <field name="departement_nom">Saône-et-Loire</field>
+    <field name="departement_nom_uppercase">SAÔNE-ET-LOIRE</field>
+    <field name="departement_slug">saone-et-loire</field>
+    <field name="departement_nom_soundex">S5346</field>
+   </row>
+   <row>
+    <field name="departement_id">73</field>
+    <field name="departement_code">72</field>
+    <field name="departement_nom">Sarthe</field>
+    <field name="departement_nom_uppercase">SARTHE</field>
+    <field name="departement_slug">sarthe</field>
+    <field name="departement_nom_soundex">S630</field>
+   </row>
+   <row>
+    <field name="departement_id">74</field>
+    <field name="departement_code">73</field>
+    <field name="departement_nom">Savoie</field>
+    <field name="departement_nom_uppercase">SAVOIE</field>
+    <field name="departement_slug">savoie</field>
+    <field name="departement_nom_soundex">S100</field>
+   </row>
+   <row>
+    <field name="departement_id">75</field>
+    <field name="departement_code">74</field>
+    <field name="departement_nom">Haute-Savoie</field>
+    <field name="departement_nom_uppercase">HAUTE-SAVOIE</field>
+    <field name="departement_slug">haute-savoie</field>
+    <field name="departement_nom_soundex">H321</field>
+   </row>
+   <row>
+    <field name="departement_id">76</field>
+    <field name="departement_code">75</field>
+    <field name="departement_nom">Paris</field>
+    <field name="departement_nom_uppercase">PARIS</field>
+    <field name="departement_slug">paris</field>
+    <field name="departement_nom_soundex">P620</field>
+   </row>
+   <row>
+    <field name="departement_id">77</field>
+    <field name="departement_code">76</field>
+    <field name="departement_nom">Seine-Maritime</field>
+    <field name="departement_nom_uppercase">SEINE-MARITIME</field>
+    <field name="departement_slug">seine-maritime</field>
+    <field name="departement_nom_soundex">S5635</field>
+   </row>
+   <row>
+    <field name="departement_id">78</field>
+    <field name="departement_code">77</field>
+    <field name="departement_nom">Seine-et-Marne</field>
+    <field name="departement_nom_uppercase">SEINE-ET-MARNE</field>
+    <field name="departement_slug">seine-et-marne</field>
+    <field name="departement_nom_soundex">S53565</field>
+   </row>
+   <row>
+    <field name="departement_id">79</field>
+    <field name="departement_code">78</field>
+    <field name="departement_nom">Yvelines</field>
+    <field name="departement_nom_uppercase">YVELINES</field>
+    <field name="departement_slug">yvelines</field>
+    <field name="departement_nom_soundex">Y1452</field>
+   </row>
+   <row>
+    <field name="departement_id">80</field>
+    <field name="departement_code">79</field>
+    <field name="departement_nom">Deux-Sèvres</field>
+    <field name="departement_nom_uppercase">DEUX-SÈVRES</field>
+    <field name="departement_slug">deux-sevres</field>
+    <field name="departement_nom_soundex">D2162</field>
+   </row>
+   <row>
+    <field name="departement_id">81</field>
+    <field name="departement_code">80</field>
+    <field name="departement_nom">Somme</field>
+    <field name="departement_nom_uppercase">SOMME</field>
+    <field name="departement_slug">somme</field>
+    <field name="departement_nom_soundex">S500</field>
+   </row>
+   <row>
+    <field name="departement_id">82</field>
+    <field name="departement_code">81</field>
+    <field name="departement_nom">Tarn</field>
+    <field name="departement_nom_uppercase">TARN</field>
+    <field name="departement_slug">tarn</field>
+    <field name="departement_nom_soundex">T650</field>
+   </row>
+   <row>
+    <field name="departement_id">83</field>
+    <field name="departement_code">82</field>
+    <field name="departement_nom">Tarn-et-Garonne</field>
+    <field name="departement_nom_uppercase">TARN-ET-GARONNE</field>
+    <field name="departement_slug">tarn-et-garonne</field>
+    <field name="departement_nom_soundex">T653265</field>
+   </row>
+   <row>
+    <field name="departement_id">84</field>
+    <field name="departement_code">83</field>
+    <field name="departement_nom">Var</field>
+    <field name="departement_nom_uppercase">VAR</field>
+    <field name="departement_slug">var</field>
+    <field name="departement_nom_soundex">V600</field>
+   </row>
+   <row>
+    <field name="departement_id">85</field>
+    <field name="departement_code">84</field>
+    <field name="departement_nom">Vaucluse</field>
+    <field name="departement_nom_uppercase">VAUCLUSE</field>
+    <field name="departement_slug">vaucluse</field>
+    <field name="departement_nom_soundex">V242</field>
+   </row>
+   <row>
+    <field name="departement_id">86</field>
+    <field name="departement_code">85</field>
+    <field name="departement_nom">Vendée</field>
+    <field name="departement_nom_uppercase">VENDÉE</field>
+    <field name="departement_slug">vendee</field>
+    <field name="departement_nom_soundex">V530</field>
+   </row>
+   <row>
+    <field name="departement_id">87</field>
+    <field name="departement_code">86</field>
+    <field name="departement_nom">Vienne</field>
+    <field name="departement_nom_uppercase">VIENNE</field>
+    <field name="departement_slug">vienne</field>
+    <field name="departement_nom_soundex">V500</field>
+   </row>
+   <row>
+    <field name="departement_id">88</field>
+    <field name="departement_code">87</field>
+    <field name="departement_nom">Haute-Vienne</field>
+    <field name="departement_nom_uppercase">HAUTE-VIENNE</field>
+    <field name="departement_slug">haute-vienne</field>
+    <field name="departement_nom_soundex">H315</field>
+   </row>
+   <row>
+    <field name="departement_id">89</field>
+    <field name="departement_code">88</field>
+    <field name="departement_nom">Vosges</field>
+    <field name="departement_nom_uppercase">VOSGES</field>
+    <field name="departement_slug">vosges</field>
+    <field name="departement_nom_soundex">V200</field>
+   </row>
+   <row>
+    <field name="departement_id">90</field>
+    <field name="departement_code">89</field>
+    <field name="departement_nom">Yonne</field>
+    <field name="departement_nom_uppercase">YONNE</field>
+    <field name="departement_slug">yonne</field>
+    <field name="departement_nom_soundex">Y500</field>
+   </row>
+   <row>
+    <field name="departement_id">91</field>
+    <field name="departement_code">90</field>
+    <field name="departement_nom">Territoire de Belfort</field>
+    <field name="departement_nom_uppercase">TERRITOIRE DE BELFORT</field>
+    <field name="departement_slug">territoire-de-belfort</field>
+    <field name="departement_nom_soundex">T636314163</field>
+   </row>
+   <row>
+    <field name="departement_id">92</field>
+    <field name="departement_code">91</field>
+    <field name="departement_nom">Essonne</field>
+    <field name="departement_nom_uppercase">ESSONNE</field>
+    <field name="departement_slug">essonne</field>
+    <field name="departement_nom_soundex">E250</field>
+   </row>
+   <row>
+    <field name="departement_id">93</field>
+    <field name="departement_code">92</field>
+    <field name="departement_nom">Hauts-de-Seine</field>
+    <field name="departement_nom_uppercase">HAUTS-DE-SEINE</field>
+    <field name="departement_slug">hauts-de-seine</field>
+    <field name="departement_nom_soundex">H32325</field>
+   </row>
+   <row>
+    <field name="departement_id">94</field>
+    <field name="departement_code">93</field>
+    <field name="departement_nom">Seine-Saint-Denis</field>
+    <field name="departement_nom_uppercase">SEINE-SAINT-DENIS</field>
+    <field name="departement_slug">seine-saint-denis</field>
+    <field name="departement_nom_soundex">S525352</field>
+   </row>
+   <row>
+    <field name="departement_id">95</field>
+    <field name="departement_code">94</field>
+    <field name="departement_nom">Val-de-Marne</field>
+    <field name="departement_nom_uppercase">VAL-DE-MARNE</field>
+    <field name="departement_slug">val-de-marne</field>
+    <field name="departement_nom_soundex">V43565</field>
+   </row>
+   <row>
+    <field name="departement_id">96</field>
+    <field name="departement_code">95</field>
+    <field name="departement_nom">Val-d'oise</field>
+    <field name="departement_nom_uppercase">VAL-D'OISE</field>
+    <field name="departement_slug">val-doise</field>
+    <field name="departement_nom_soundex">V432</field>
+   </row>
+   <row>
+    <field name="departement_id">97</field>
+    <field name="departement_code">976</field>
+    <field name="departement_nom">Mayotte</field>
+    <field name="departement_nom_uppercase">MAYOTTE</field>
+    <field name="departement_slug">mayotte</field>
+    <field name="departement_nom_soundex">M300</field>
+   </row>
+   <row>
+    <field name="departement_id">98</field>
+    <field name="departement_code">971</field>
+    <field name="departement_nom">Guadeloupe</field>
+    <field name="departement_nom_uppercase">GUADELOUPE</field>
+    <field name="departement_slug">guadeloupe</field>
+    <field name="departement_nom_soundex">G341</field>
+   </row>
+   <row>
+    <field name="departement_id">99</field>
+    <field name="departement_code">973</field>
+    <field name="departement_nom">Guyane</field>
+    <field name="departement_nom_uppercase">GUYANE</field>
+    <field name="departement_slug">guyane</field>
+    <field name="departement_nom_soundex">G500</field>
+   </row>
+   <row>
+    <field name="departement_id">100</field>
+    <field name="departement_code">972</field>
+    <field name="departement_nom">Martinique</field>
+    <field name="departement_nom_uppercase">MARTINIQUE</field>
+    <field name="departement_slug">martinique</field>
+    <field name="departement_nom_soundex">M6352</field>
+   </row>
+   <row>
+    <field name="departement_id">101</field>
+    <field name="departement_code">974</field>
+    <field name="departement_nom">Réunion</field>
+    <field name="departement_nom_uppercase">RÉUNION</field>
+    <field name="departement_slug">reunion</field>
+    <field name="departement_nom_soundex">R500</field>
+   </row>
+  </table_data>
+ </database>
+</mysqldump>

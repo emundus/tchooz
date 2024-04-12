@@ -18,10 +18,23 @@ $app = Factory::getApplication();
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controller.php');
 
 // Helpers
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'javascript.php');
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'array.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'checklist.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'events.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'javascript.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'messages.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'module.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'tags.php');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'users.php');
 
 // LOGGER
 jimport('joomla.log.log');
@@ -176,6 +189,7 @@ Text::script('COM_EMUNDUS_EXPORTS_ASSESSMENT_PDF');
 Text::script('JYES');
 Text::script('JNO');
 Text::script('COM_EMUNDUS_PLEASE_SELECT');
+Text::script('COM_EMUNDUS_PLEASE_SELECT_MULTIPLE');
 Text::script('COM_EMUNDUS_EXPORTS_CHANGE_STATUS');
 Text::script('COM_EMUNDUS_EXPORTS_EXPORT_SET_TAG');
 Text::script('COM_EMUNDUS_ATTACHMENTS_YOU_MUST_SELECT_ATTACHMENT');
@@ -639,6 +653,11 @@ Text::script('COM_EMUNDUS_PASSWORD_WRONG_FORMAT_DESCRIPTION');
 Text::script('COM_EMUNDUS_DELETE_ADVANCED_FILTERS');
 
 Text::script('COM_EMUNDUS_MAIL_GB_BUTTON');
+
+Text::script('COM_EMUNDUS_EMAIL_CURRENT_FILE');
+Text::script('COM_EMUNDUS_EMAIL_ALL_FILES');
+Text::script('COM_EMUNDUS_EMAIL_ON_FILE');
+
 
 // Require specific controller if requested
 if ($controller = $app->input->get('controller', '', 'WORD')) {

@@ -11,16 +11,15 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Model\FormModel;
 
 defined('_JEXEC') or die;
-
-jimport('joomla.application.component.modelform');
 
 /**
  *
  * @since  1.6
  */
-class ExportModelExport extends JModelForm
+class ExportModelExport extends FormModel
 {
 	/**
 	 * @var      string    The prefix to use with controller messages.

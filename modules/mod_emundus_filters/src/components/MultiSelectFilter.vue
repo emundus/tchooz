@@ -2,7 +2,7 @@
   <div class="multi-select-filter em-w-100 em-mb-16" :id="'filter-id-' +  filter.uid" :ref="'filter-id-' +  filter.uid"
        @click="toggleOpened">
     <div class="em-flex-row em-flex-space-between">
-      <p class="recap-label" :title="filter.label">{{ filter.label }}</p>
+      <p class="recap-label" :title="translate(filter.label)">{{ translate(filter.label) }}</p>
       <div class="em-flex-row">
         <span @mouseenter="resetHover = true" @mouseleave="resetHover = false"
               class="material-icons-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}"
@@ -35,14 +35,14 @@
       </section>
       <section class="multi-select-filter-options" :class="{'hidden': !opened}">
         <div class="operators-selection em-flex-row em-flex-wrap em-flex-gap-8">
-          <div v-for="operator in operators" :key="filter.uid + '-' +operator.value" class="em-p-8 em-border-radius-8"
+          <div v-for="operator in operators" :key="filter.uid + '-' +operator.value" class="em-p-8 em-border-radius-8 em-pointer"
                :class="{'label-default': operator.value !== filter.operator, 'label-darkblue': operator.value === filter.operator}">
             <input class="hidden label"
                    type="radio"
                    :id="filter.uid + '-operator-' + operator.value" :value="operator.value"
                    v-model="filter.operator"
             >
-            <label :for="filter.uid + '-operator-' + operator.value" style="margin: 0">{{ operator.label }}</label>
+            <label :for="filter.uid + '-operator-' + operator.value" style="margin: 0" class="em-pointer">{{ operator.label }}</label>
           </div>
         </div>
         <hr/>
@@ -82,8 +82,8 @@
             <input :name="filter.uid + '-filter-value'" :id="filter.uid + '-filter-value-'+ value.value" type="checkbox"
                    :value="value.value" v-model="filter.value">
             <label :for="filter.uid + '-filter-value-'+ value.value" style="margin: 0">
-              <span>{{ value.label }} </span> <span v-if="countFilterValues && value.hasOwnProperty('count')"
-                                                    class="em-gray-color"> ({{ value.count }})</span>
+              <span>{{ translate(value.label) }} </span> <span v-if="countFilterValues && value.hasOwnProperty('count')"
+                                                               class="em-gray-color"> ({{ value.count }})</span>
             </label>
           </div>
         </div>
@@ -216,6 +216,8 @@ export default {
       }
     },
     onCloseCard() {
+      this.search = '';
+      this.onSearchChange();
       const valueDifferences = this.filter.value && Array.isArray(this.filter.value) ? this.filter.value.filter((x) => !this.originalFilterValue.includes(x)).concat(this.originalFilterValue.filter(x => !this.filter.value.includes(x))) : [];
       const operatorDifferences = this.filter.operator !== this.originalFilterOperator;
 

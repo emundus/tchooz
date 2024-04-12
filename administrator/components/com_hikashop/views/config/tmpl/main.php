@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -31,7 +31,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION');?></td>
 		<td>
-			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2310301745]
+			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2401311558]
 		</td>
 	</tr>
 	<tr>

@@ -1,12 +1,50 @@
 <component name="InspectionProjectProfileManager">
-  <profile version="1.0" >
+  <profile version="1.0">
     <option name="myName" value="Project Default" />
+    <inspection_tool class="AngularAmbiguousComponentTag" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularBindingTypeMismatch" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularCliAddDependency" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="AngularDeferBlockOnTrigger" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularForBlockNonIterableVar" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularInaccessibleSymbol" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularIncorrectBlockUsage" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularIncorrectTemplateDefinition" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularInsecureBindingToEvent" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="AngularInvalidAnimationTriggerAssignment" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularInvalidEntryComponent" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularInvalidI18nAttribute" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="AngularInvalidImportedOrDeclaredSymbol" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularInvalidSelector" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularInvalidTemplateReferenceVariable" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularMissingEventHandler" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularMissingOrInvalidDeclarationInModule" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularMissingRequiredDirectiveInputBinding" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularMultipleStructuralDirectives" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularNgOptimizedImage" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="AngularNonEmptyNgContent" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularNonStandaloneComponentImports" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularRecursiveModuleImportExport" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularUndefinedBinding" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularUndefinedModuleExport" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="AngularUndefinedTag" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="BladeControlDirectives" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="BladeUnpairedParenthesesInStringLiteral" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="CucumberExamplesColon" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="CucumberMissedExamples" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="CucumberTableInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CucumberUndefinedStep" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="DuplicatedCode" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="FileHeaderInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GherkinBrokenTableInspection" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="GherkinMisplacedBackground" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="GherkinScenarioToScenarioOutline" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="GrazieInspection" enabled="false" level="GRAMMAR_ERROR" enabled_by_default="false" />
+    <inspection_tool class="JSHint" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="LanguageDetectionInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="MissingSinceTagDocInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="PhpObjectShapeCanBeAddedInspection" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="PhpUndefinedClassConstantInspection" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
       <option name="processCode" value="true" />
       <option name="processLiterals" value="true" />

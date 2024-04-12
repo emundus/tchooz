@@ -8,7 +8,7 @@
 
 // No direct access to this file
 use Joomla\CMS\Factory;
-use Joomla\CMS\Input\Input;
+use Joomla\Input\Input;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 

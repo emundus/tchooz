@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -191,7 +191,7 @@ class hikashopAddressClass extends hikashopClass {
 		}
 	}
 
-	function displayAddress(&$fields, &$address, $view = 'address', $text = false) {
+	function displayAddress(&$fields, &$address, $view = 'address', $text = false, $class = 'hikashop_custom_file_link') {
 		$params = new HikaParameter('');
 		$params->set('address', $address);
 
@@ -200,9 +200,10 @@ class hikashopAddressClass extends hikashopClass {
 		$html = '' . hikashop_getLayout($view, 'address_template', $params, $js);
 		if(!empty($fields)) {
 			foreach($fields as $field) {
+				$field->currentElement = $address;
 				$fieldname = $field->field_namekey;
 				if(!empty($address->$fieldname))
-					$html = str_replace('{'.$fieldname.'}', (string)$fieldsClass->show($field,$address->$fieldname), $html);
+					$html = str_replace('{'.$fieldname.'}', (string)$fieldsClass->show($field,$address->$fieldname, $class), $html);
 			}
 		}
 
@@ -694,6 +695,7 @@ class hikashopAddressClass extends hikashopClass {
 					$this->fieldsClass = hikashop_get('class.field');
 
 				foreach($fields as $field){
+					$field->currentElement = $address;
 					$fieldname = $field->field_namekey;
 					$ret = str_replace('{'.$fieldname.'}', (string)$this->fieldsClass->show($field, @$address->$fieldname), $ret);
 				}
@@ -725,6 +727,7 @@ class hikashopAddressClass extends hikashopClass {
 				$this->fieldsClass = hikashop_get('class.field');
 
 			foreach($fields as $field) {
+				$field->currentElement = $address;
 				$fieldname = $field->field_namekey;
 				$ret = str_replace('{'.$fieldname.'}', (string)$this->fieldsClass->show($field, @$address->$fieldname), $ret);
 			}

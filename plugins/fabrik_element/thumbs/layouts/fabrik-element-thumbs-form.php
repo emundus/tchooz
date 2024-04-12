@@ -20,25 +20,12 @@ $d = $displayData;
 				<?php echo FabrikHelperHTML::image('thumbs-down', 'form', $d->tmpl); ?>
 				<span class="thumb-count"><?php echo $d->countDown;?></span>
 			</button>
-
+		<?php
+		endif;
+		?>
 
 	</div>
-<?php
-else :
-	?>
-	<span style="color:#32d723;" id="count_thumbup"><?php echo $d->countUp;?></span>
-	<img src="<?php echo $d->imagepath . $d->imagefileup;?>" style="padding:0px 5px 0 1px;" alt="UP" id="thumbup" />
 
-	<?php
-	if ($d->showDown) :
-		?>
-		<span style="color:#f82516;" id="count_thumbdown"><?php echo $d->countDown;?></span>
-		<img src="<?php echo $d->imagepath . $d->imagefiledown; ?>" style="padding:0px 5px 0 1px;" alt="DOWN" id="thumbdown" />
-	<?php
-	endif;
-
-endif;
-?>
 
 <input type="hidden" name="<?php echo $d->name;?>"
 	id="<?php echo $d->id;?>" value="<?php echo $d->countDiff;?>"

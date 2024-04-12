@@ -24,9 +24,33 @@ else {
 }
 
 $anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
+
+
+$eMConfig = JComponentHelper::getParams('com_emundus');
+$fix_header = $eMConfig->get('fix_file_header', 0);
 ?>
+<style>
+    .em-double-scroll-bar {
+        position: sticky;
+        padding: 0 !important;
+        z-index: 999;
+    }
+    div.top-scrollbars::-webkit-scrollbar, .em-double-scroll-bar::-webkit-scrollbar {
+        -webkit-appearance: none;
+        width: 7px;
+        height: 10px;
+        background-color: white !important;
+    }
+
+    div.top-scrollbars::-webkit-scrollbar-thumb, .em-double-scroll-bar::-webkit-scrollbar-thumb {
+        border-radius: 8px;
+        background-color: var(--neutral-400);
+        box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+    }
+</style>
+
 <input type="hidden" id="view" name="view" value="decision">
-<div class="panel panel-default em-data">
+<div class="panel panel-default em-data <?php if(!is_array($this->datas)) : ?>bg-transparent<?php endif; ?>">
 	<?php if (is_array($this->datas)) : ?>
         <div class="container-result">
             <div class="em-ml-8 em-flex-row">
@@ -77,7 +101,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
 			<?php echo $this->pageNavigation ?>
             <div id="countCheckedCheckbox" class="countCheckedCheckbox" style="display: none"></div>
         </div>
-        <div class="em-data-container" style="padding-bottom: unset">
+        <div class="em-data-container top-scrollbars" style="padding-bottom: unset">
             <table class="table table-striped table-hover" id="em-data">
                 <thead>
                 <tr>
@@ -192,7 +216,10 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
             </table>
         </div>
 	<?php else: ?>
-		<?= $this->datas; ?>
+        <div class="text-center mt-6">
+            <h1 class="mb-8 !text-neutral-600"><?= $this->datas ?></h1>
+            <div class="no-result bg-no-repeat w-64 h-64 my-0 mx-auto"></div>
+        </div>
 	<?php endif; ?>
 </div>
 <script type="text/javascript">
@@ -256,6 +283,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
         containerResult = document.querySelector('.container-result');
         setTimeout(() => {
             $('.container-result').css('top', (headerNav.offsetHeight + menuAction.offsetHeight) + 'px');
+            $('.em-double-scroll-bar').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight - 2) + 'px');
             $('#em-data th').css('top', (headerNav.offsetHeight + menuAction.offsetHeight + containerResult.offsetHeight) + 'px');
         }, 2000);
 
@@ -388,7 +416,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
 
             if (countCheckedCheckbox !== 0) {
                 displayCount();
-                countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a></p>';
+                countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a></p>';
             } else {
                 hideCount();
                 countFiles.innerHTML = '';
@@ -419,10 +447,23 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
 
         if (countCheckedCheckbox !== 0) {
             displayCount();
-            countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer" onclick="checkAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a></p>';
+            countFiles.innerHTML = '<p>' + Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + countCheckedCheckbox + ' ' + files + '. <a class="em-pointer em-text-underline em-profile-color" onclick="checkAllFiles()">' + Joomla.JText._('COM_EMUNDUS_FILES_SELECT_ALL_FILES') + '</a></p>';
         } else {
             hideCount();
             countFiles.innerHTML = '';
         }
     });
+
+    <?php if($fix_header == 1): ?>
+    document.addEventListener('scroll', function(e) {
+        if(window.scrollY > document.querySelector('.em-data-container table thead').offsetHeight) {
+            document.querySelector('.em-data-container table thead').style.position = 'relative';
+            let containerResult = document.querySelector('.container-result').offsetHeight;
+            document.querySelector('.em-data-container table thead').style.top = (window.scrollY - containerResult - 4) + 'px';
+        } else {
+            document.querySelector('.em-data-container table thead').style.position = 'static';
+            document.querySelector('.em-data-container table thead').style.top = '0px';
+        }
+    });
+    <?php endif; ?>
 </script>

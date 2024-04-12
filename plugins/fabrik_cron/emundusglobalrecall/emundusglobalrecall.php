@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -85,20 +87,15 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
 
             foreach ($users as $user) {
                 $fnums = $this->getFnumAssoc($user,$status,$tags);
-                //$gFnums = $this->getFnumGroupAssoc($user,$status,$tags);
-                //merge both results to have one list of fnums
-                //$assoc_users[$user] = array_unique(array_merge($fnums, $gFnums));
                 $assoc_users[$user] = $fnums;
             }
 
             if (!empty($assoc_users)) {
                 include_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
                 include_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-                include_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
                 include_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 
                 $m_profile = new EmundusModelProfile();
-                $m_emails = new EmundusModelEmails();
                 $m_files = new EmundusModelFiles();
                 $c_messages = new EmundusControllerMessages();
 
@@ -114,30 +111,10 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
                 }
 
                 if (!empty($emailArray)) {
-                    $menu = JMenu::getInstance('site');
-
                     foreach ($emailArray as $emailUser => $emailCampaigns) {
                         foreach ($emailCampaigns as $campaign) {
                             // We send a email for each campaign for each user
-                            $user = JFactory::getUser($emailUser);
-
-                            $menutype = $m_profile->getProfileByApplicant($user->id)['menutype'];
-                            $items = $menu->getItems('menutype', $menutype);
-
-                            // We're getting the first link in the user's menu that's from com_emundus, which is PROBABLY a files/evaluation view, but this does not guarantee it.
-                            $index = 0;
-                            foreach ($items as $k => $item) {
-                                if ($item->component === 'com_emundus') {
-                                    $index = $k;
-                                    break;
-                                }
-                            }
-
-                            if (JFactory::getConfig()->get('sef') == 1) {
-                                $userLink = $items[$index]->alias;
-                            } else {
-                                $userLink = $items[$index]->link.'&Itemid='.$items[0]->id;
-                            }
+                            $user = Factory::getUser($emailUser);
 
                             $fnumList = '<ul>';
                             foreach ($campaign['fnums'] as $fnum) {
@@ -167,10 +144,10 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
                             $post = array(
                                 'FNUMS' => $fnumList,
                                 'CAMPAIGN_LABEL' => $campaign['label'],
-                                'EVALUATION_END' => strftime("%d/%m/%Y %H:%M", strtotime($campaign['eval_end_date'])),
+                                'EVALUATION_END' => date("d/m/Y H:i", strtotime($campaign['eval_end_date'])),
                                 'NAME' => $user->name,
                                 'SITE_URL' => JURI::base(),
-                                'SITE_NAME' => JFactory::getConfig()->get('sitename'),
+                                'SITE_NAME' => Factory::getApplication()->get('sitename'),
                                 'LOGO' => $logo,
                             );
 
@@ -192,8 +169,9 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
      * @return mixed
      *
      */
-    public function getEmundusUsersByAclGroups($acl_groups) {
-        $db = JFactory::getDBO();
+    public function getEmundusUsersByAclGroups($acl_groups): array {
+		$users = [];
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query
@@ -205,15 +183,17 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
 
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+	        $users = $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $users;
     }
 
-    public function getEmundusUsersByGroups($groups) {
-        $db = JFactory::getDBO();
+    public function getEmundusUsersByGroups($groups): array {
+		$users = [];
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query
@@ -224,15 +204,17 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
 
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+	        $users = $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $users;
     }
 
-    public function getEmundusUsersByProfiles($profiles) {
-        $db = JFactory::getDBO();
+    public function getEmundusUsersByProfiles($profiles): array {
+		$users = [];
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query
@@ -243,11 +225,12 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
 
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+	        $users = $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $users;
     }
 
     /**
@@ -257,8 +240,9 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
      * @return mixed
      *
      */
-    public function getGroupsByProg($profile) {
-        $db = JFactory::getDBO();
+    public function getGroupsByProg($profile): array {
+		$groups = [];
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query
@@ -272,11 +256,12 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
 
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+	        $groups = $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $groups;
     }
 
     /**
@@ -286,8 +271,9 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
      * @return mixed
      *
      */
-    public function getFnumAssoc($user,$status,$tags) {
-        $db = JFactory::getDBO();
+    public function getFnumAssoc($user,$status,$tags): array {
+		$fnums = [];
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query->select('distinct eua.fnum')
@@ -306,11 +292,12 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
 
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+	        $fnums = $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $fnums;
     }
 
     /**
@@ -320,8 +307,9 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
      * @return mixed
      *
      */
-    public function getFnumGroupAssoc($user,$status,$tags) {
-        $db = JFactory::getDBO();
+    public function getFnumGroupAssoc($user,$status,$tags):array {
+		$fnums = [];
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
 
         $query
@@ -342,11 +330,12 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
 
         try {
             $db->setQuery($query);
-            return $db->loadColumn();
+	        $fnums = $db->loadColumn();
         } catch (Exception $e) {
             JLog::add('SQL Error -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
         }
+
+		return $fnums;
     }
 }
 

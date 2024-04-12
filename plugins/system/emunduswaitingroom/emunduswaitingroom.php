@@ -104,10 +104,11 @@ class plgSystemEmunduswaitingroom extends CMSPlugin
 				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 				$query->select('count(userid)')
-					->from($db->quoteName('#__session'));
-				$db->setQuery($query);
+					->from($db->quoteName('#__session'))
+					->where($db->quoteName('guest') . ' = 0');
 
 				try {
+					$db->setQuery($query);
 					$active_session = $db->loadResult();
 				} catch (Exception $e) {
 					JLog::add('Error getting count session plugins/system/emunduswaitingroom:' .  $query->___toString(), JLog::ERROR, 'com_emundus');

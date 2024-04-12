@@ -41,7 +41,7 @@ class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
 	 *
 	 * @var bool
 	 */
-	protected $recordInDatabase = false;
+	protected $recordInDatabase = true;
 
 	/**
 	 * Set/get if element should record its data in the database
@@ -52,7 +52,7 @@ class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
 	 */
 	public function setIsRecordedInDatabase()
 	{
-		$this->recordInDatabase = false;
+		$this->recordInDatabase = true;
 	}
 
 	/**
@@ -65,7 +65,47 @@ class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
 	 */
 	public function recordInDatabase($data = null)
 	{
-		return false;
+		return true;
+	}
+
+	/**
+	 * Get the GMT Date time - tz offset applied in render() if needed
+	 *
+	 * @param   array $data          Form data timestamp will be GMT if store as local OFF, otherwise as local time
+	 * @param   int   $repeatCounter When repeating joined groups we need to know what part of the array to access
+	 * @param   array $opts          Options
+	 *
+	 * @return  string    value  timestamp
+	 */
+	public function getValue($data, $repeatCounter = 0, $opts = [])
+	{
+		if (is_array($data) === false) {
+			$data = [$repeatCounter => $data];
+		}
+		$params       = $this->getParams();
+		$storeAsLocal = $params->get('gmt_or_local', 0);
+		$storeAsLocal += 0;
+		$formModel    = $this->getFormModel();
+		$value        = parent::getValue($data, $repeatCounter, $opts);
+
+		if (FabrikWorker::inFormProcess())
+		{
+			// Don't mess with posted value - can cause double offsets - instead do in _indStoareDBFormat();
+			return $value;
+		}
+
+		// Don't offset if null timestamp.
+		if ($value === null)
+		{
+			return $value;
+		}
+
+		$timeZone = new \DateTimeZone($this->config->get('offset'));
+		$date     = Factory::getDate($value);
+
+		$value = $date->toSQL($storeAsLocal);
+
+		return $value;
 	}
 
 	/**
@@ -85,7 +125,7 @@ class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
 		$layoutData->id =  $this->getHTMLId($repeatCounter);
 		$layoutData->name = $this->getHTMLName($repeatCounter);
 
-		if ($params->get('update_on_edit') || $this->getFormModel()->isNewRecord()) {
+		if ($params->get('timestamp_update_on_edit') || $this->getFormModel()->isNewRecord()) {
 			$date = Factory::getDate();
 			$tz = new \DateTimeZone($this->config->get('offset'));
 			$date->setTimezone($tz);
@@ -94,7 +134,7 @@ class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
 			$gmtOrLocal += 0;
 			$layoutData->value = $date->toSql($gmtOrLocal);
 		} else {
-			$layoutData->value = $this->getValue($repeatCounter);
+			$layoutData->value = $this->getValue($data, $repeatCounter);
 		}
 
 		return $layout->render($layoutData);
@@ -115,8 +155,16 @@ class PlgFabrik_ElementTimestamp extends PlgFabrik_Element
         JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
         $params = $this->getParams();
-		$tz_offset = $params->get('gmt_or_local', '0') == '0';
-		$data = HTMLHelper::_('date', $data, Text::_($params->get('timestamp_format', 'DATE_FORMAT_LC2')), $tz_offset);
+		$gmtOrLocal = $params->get('gmt_or_local');
+		$gmtOrLocal += 0;
+
+		if ($gmtOrLocal == '0') {
+			/* Adjust the date to local time for display */
+			$date = Factory::getDate($data);
+			$tz = new \DateTimeZone($this->config->get('offset'));
+			$date->setTimezone($tz);
+			$data = $date->__toString();
+		}
 
 		return parent::renderListData($data, $thisRow, $opts);
 	}

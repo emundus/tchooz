@@ -1,15 +1,15 @@
 <template>
-  <div id="incremental-selector">
+  <div id="incremental-selector" class="tw-mt-2">
     <div class="em-w-100 em-flex-row em-mb-16">
       <div v-if="isNewVal" id="new-value" class="em-w-100">
         <input type="text" class="em-w-100 em-mb-0-important" v-model="newValue.label" @focusin="showOptions = true"
-               @focusout="emitValueChanges"/>
+               @keyup="emitValueChanges"/>
         <i class="em-main-500-color">({{ translate('COM_EMUNDUS_FORM_BUILDER_NEW_VALUE') }})</i>
       </div>
       <div v-if="!isNewVal" id="existing-value" class="em-w-100">
         <div class="em-w-100 em-flex-row em-flex-space-between">
           <input type="text" class="em-w-100 em-mb-0-important em-border-main-500 important" v-model="newExistingLabel"
-                 @focusout="emitValueChanges"/>
+                 @keyup="emitValueChanges"/>
           <span v-if="!locked" @click="unselectExistingValue" class="material-icons-outlined em-pointer"
                 @mouseenter="hoverUnselect = true" @mouseleave="hoverUnselect = false">close</span>
         </div>

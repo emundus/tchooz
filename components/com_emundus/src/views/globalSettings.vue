@@ -8,8 +8,8 @@
           <div style="background: var(--neutral-0);" v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index"
                class="em-shadow-cards em-hover-s-scale" v-wave @click="changeMenu(menu)">
             <span class="material-icons-outlined em-main-500-color em-mb-16">{{ menu.icon }}</span>
-            <h4 class="em-body-16-semibold em-mb-8">{{ translate(menu.title) }}</h4>
-            <p class="em-font-size-14">{{ translate(menu.description) }}</p>
+            <h3 class="em-mb-8">{{ translate(menu.title) }}</h3>
+            <p class="em-font-size-16 em-neutral-700-color">{{ translate(menu.description) }}</p>
           </div>
         </div>
       </transition>
@@ -142,7 +142,7 @@ export default {
   created() {
     this.loading = true;
     settingsService.getEmundusParams().then((params) => {
-      this.em_params = params.data.config;
+      this.em_params = params.data.emundus;
 
       // Give access to modules
       this.menus[0].access = this.em_params.style != undefined ? parseInt(this.em_params.style) : 1;
@@ -154,6 +154,17 @@ export default {
 
       this.loading = false;
     });
+
+    let conteneur = document.querySelector(".view-settings #g-page-surround");
+    let containerDivShapes = document.createElement("div");
+    let divShapes = document.createElement("div");
+    containerDivShapes.id = "container-parameters-background-shapes";
+    divShapes.id = "parameters-background-shapes";
+
+    let firstDiv = conteneur.firstChild;
+
+    conteneur.insertBefore(containerDivShapes, firstDiv);
+    conteneur.insertBefore(divShapes, firstDiv);
   },
 
   methods: {

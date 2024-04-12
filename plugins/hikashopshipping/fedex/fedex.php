@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,9 +27,12 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 		array('key'=>10,'code' => 'INTERNATIONAL_ECONOMY', 'name' => 'FedEx International Economy'),
 		array('key'=>11,'code' => 'INTERNATIONAL_ECONOMY_DISTRIBUTION', 'name' => 'FedEx International Economy Distribution'),
 		array('key'=>12,'code' => 'INTERNATIONAL_FIRST', 'name' => 'FedEx International First'),
-		array('key'=>13,'code' => 'INTERNATIONAL_PRIORITY', 'name' => 'FedEx International Priority'),
+		array('key'=>13,'code' => 'FEDEX_INTERNATIONAL_PRIORITY', 'name' => 'FedEx International Priority'),
+		array('key'=>17,'code' => 'FEDEX_INTERNATIONAL_PRIORITY_EXPRESS', 'name' => 'FedEx International Priority Express'),
+		array('key'=>18,'code' => 'FEDEX_INTERNATIONAL_CONNECT_PLUS', 'name' => 'FedEx International Connect Plus'),
 		array('key'=>14,'code' => 'INTERNATIONAL_PRIORITY_DISTRIBUTION', 'name' => 'FedEx International Priority Distribution'),
-		array('key'=>15,'code' => 'EUROPE_FIRST_INTERNATIONAL_PRIORITY', 'name' => 'FedEx Europe First')
+		array('key'=>15,'code' => 'EUROPE_FIRST_INTERNATIONAL_PRIORITY', 'name' => 'FedEx Europe First'),
+		array('key'=>16,'code' => 'FEDEX_REGIONAL_ECONOMY', 'name' => 'FedEx Regional Economy', 'countries' => 'Austria, Belgium, Czech Republic, Denmark, Estonia, Finland, France, Germany, Hungary, Ireland, Italy, Latvia, Lithuania, Luxembourg, Netherlands, Norway, Poland, Slovenia, Spain, Sweden, Switzerland, United Kingdom')
 	);
 	var $convertUnit=array(
 		'kg' => 'KGS',
@@ -373,7 +376,10 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 			'EUROPE_FIRST_INTERNATIONAL_PRIORITY',
 			'INTERNATIONAL_FIRST',
 			'INTERNATIONAL_PRIORITY',
-			'INTERNATIONAL_PRIORITY_DISTRIBUTION'
+			'INTERNATIONAL_PRIORITY_DISTRIBUTION',
+			'FEDEX_INTERNATIONAL_PRIORITY_EXPRESS',
+			'FEDEX_INTERNATIONAL_CONNECT_PLUS',
+			'FEDEX_REGIONAL_ECONOMY'
 		);
 
 		$limit = array(

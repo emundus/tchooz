@@ -5,23 +5,27 @@
     text-decoration: none;
 }
 
-#header-b #em_user_menu a.item span.image-title {
+#header-b .g-main-nav a.item span.image-title {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     width: 100%;
+    font-weight: 400;
+    font-style: normal;
+    line-height: normal;
 }
 
 .g-main-nav .g-sublevel > li.g-parent .g-menu-parent-indicator {
     margin-top: -4px;
 }
 
-.g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator::after {
-    width: auto;
-    padding: 0;
-    height: 100%;
-    color: var(--neutral-900);
-    opacity: inherit;
+.g-main-nav .g-toplevel > li.g-parent:not(.current) .g-menu-parent-indicator::after,
+.g-main-nav .g-toplevel > li.g-parent:not(.current) .g-menu-parent-indicator {
+    display: block !important;
+}
+
+.g-main-nav .g-toplevel > li.g-parent.current .g-menu-parent-indicator::after {
+    display: none !important;
 }
 
 #g-navigation .g-main-nav .g-sublevel > li > .g-menu-item-container {
@@ -78,6 +82,7 @@ ul.g-dropdown.g-dropdown-right.g-fade a {
 
 .g-main-nav .g-sublevel > li > .g-menu-item-container > .g-menu-item-content {
     font-weight: 400;
+    font-size: 16px;
 }
 
 .g-main-nav .g-standard > .g-dropdown, .g-main-nav .g-fullwidth > .g-dropdown {
@@ -185,12 +190,8 @@ footer div {
     height: 50px !important;
 }
 
-.g-main-nav .g-toplevel > li.g-parent .g-menu-parent-indicator::after {
-    width: auto;
-    padding: 0;
-    height: auto;
-    color: var(--neutral-900);
-    opacity: inherit;
+.g-main-nav .g-toplevel > li.g-parent:hover .g-menu-parent-indicator::after {
+    color: var(--em-profile-color);
 }
 
 ul.g-dropdown.g-dropdown-right.g-fade {

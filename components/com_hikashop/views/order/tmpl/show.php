@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -306,6 +306,7 @@ if($this->invoice_type == 'order') {
 				foreach($itemFields as $field) {
 					$namekey = $field->field_namekey;
 					if(!empty($product->$namekey) && strlen($product->$namekey)) {
+						$field->currentElement = $product;
 						echo '<p class="hikashop_order_item_'.$namekey.'">' .
 							$this->fieldsClass->getFieldName($field) . ': <span>' .
 							$this->fieldsClass->show($field,$product->$namekey).'</span>' .
@@ -351,6 +352,7 @@ if($this->invoice_type == 'order') {
 				foreach($productFields as $field){
 					$namekey = $field->field_namekey;
 					$productData = @$this->products[$product->product_id];
+					$field->currentElement = $productData;
 					?>
 					<td>
 					<?php
@@ -729,6 +731,7 @@ if($this->invoice_type == 'order') {
 		foreach($this->fields['order'] as $fieldName => $oneExtraField) {
 			if(empty($this->order->$fieldName))
 				continue;
+			$oneExtraField->currentElement = $this->order;
 ?>
 						<tr class="hikashop_order_custom_field_<?php echo $fieldName;?>_line">
 							<td class="key"><?php
@@ -782,6 +785,7 @@ if($this->invoice_type == 'order') {
 			if(!empty($this->fields['entry'])) {
 				foreach($this->fields['entry'] as $field) {
 					$namekey = $field->field_namekey;
+					$field->currentElement = $entry;
 					if(!empty($entry->$namekey))
 						echo '<td>'.$this->fieldsClass->show($field, $entry->$namekey).'</td>';
 				}
@@ -812,6 +816,23 @@ if($this->invoice_type == 'order') {
 if($this->invoice_type == 'order') {
 ?>
 </form>
+<?php } else { ?>
+<style>
+@media print
+{
+  #htmlfieldset_products table { page-break-after:auto }
+  #htmlfieldset_products tr    { page-break-inside:avoid; page-break-after:auto }
+  #htmlfieldset_products td    { page-break-inside:avoid; page-break-after:auto }
+  #htmlfieldset_products thead { display:table-header-group }
+  #htmlfieldset_products tfoot { display:table-footer-group }
+}
+</style>
 <?php } ?>
 </div>
+<?php
+$navigator_check = hikashop_getNavigator();
+if ($navigator_check["name"] != "Apple Safari") {
+?>
 <div style="page-break-after:always"></div>
+<?php
+}

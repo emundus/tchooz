@@ -1,10 +1,14 @@
 # DOCKER AND CI
 .docker/data/*
+.docker/installation/databases/*
+!.docker/installation/databases/core.sql
 docker-compose-*.yml
 ## UNIT TESTS
 /components/com_emundus/unittest/logs/
 /components/coverage/
 .phpunit.result.cache
+/tests/tmp
+/tests/logs/
 
 # IDE AND OS
 ## VisualStudioCode
@@ -25,6 +29,8 @@ docker-compose-*.yml
 !.idea/codeStyles
 !.idea/inspectionProfiles
 !.idea/cssdialects.xml
+.idea/*
+.idea/php.xml
 .scannerwork
 workspace.xml
 
@@ -48,6 +54,7 @@ workspace.xml
 images/emundus/import/*
 images/emundus/photo/*
 images/stories/*
+/images/emundus/carriere/*
 /images/emundus/files/*
 /images/emundus/letters/*
 /images/emundus/phases/*
@@ -121,6 +128,7 @@ libraries/emundus/custom/*
 /tmp/*
 
 # CONFIGURATION FILES
+/configuration*.php
 /configuration.php
 /.htaccess
 

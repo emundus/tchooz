@@ -362,13 +362,16 @@ class ContentObject
 		}
 	}
 
+    /*
+     * @update 5.0 empty alias is no more null remove deprected
+     * */
 	function filterName(&$alias)
 	{
 		$app     = Factory::getApplication();
 		$jinput = $app->input;
 		if ($alias == "")
 		{
-			$alias = $jinput->get("refField_name",null,'STR');
+			$alias = $jinput->get("refField_name",'','STR');
 		}
 		$version = new FalangVersion();
 		if ($app->getCfg('unicodeslugs') == 1 && $version != 'free')

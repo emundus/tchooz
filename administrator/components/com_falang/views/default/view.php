@@ -88,7 +88,7 @@ class FalangViewDefault extends BaseHtmlView {
 				</a>
 			</div>
 			<br />
-			&copy; 2023 - faboba.com All right Reserved
+			&copy; 2024 - faboba.com All right Reserved
 			<p></p>
 		</div>
 		<?php

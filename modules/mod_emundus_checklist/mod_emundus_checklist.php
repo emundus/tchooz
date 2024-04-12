@@ -61,10 +61,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$show_send                   = $params->get('showsend', 1);
 
 	$eMConfig             = JComponentHelper::getParams('com_emundus');
+	$can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
 	$id_applicants        = $eMConfig->get('id_applicants', '0');
 	$exceptions           = explode(',', $id_applicants);
 	$applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
 	$application_fee      = $eMConfig->get('application_fee', 0);
+	$application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
 	$checkout_url = null;
 	if ($application_fee) {
@@ -192,9 +194,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 		}
 	}
 
-	$forms          = @EmundusHelperMenu::buildMenuQuery($user->profile);
+	$forms          = EmundusHelperMenu::buildMenuQuery($user->profile);
 	$keys_to_remove = array();
 	foreach ($forms as $key => $form) {
+		$form->rowid = EmundusHelperAccess::getRowIdByFnum($form->db_table_name,$user->fnum);
+		$form->link .= !empty($form->rowid) ? '&rowid='.$form->rowid : '';
+		$form->link .= '&fnum='.$user->fnum;
 		$m_params = json_decode($form->menu_params, true);
 		if (isset($m_params['menu_show']) && $m_params['menu_show'] == 0) {
 			$keys_to_remove[] = $key;
@@ -206,10 +211,11 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$forms = array_values($forms);
 
 	// Prepare display of send button
-	$application     = @modEmundusChecklistHelper::getApplication($user->fnum);
+	$application     = modEmundusChecklistHelper::getApplication($user->fnum);
 	$status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
 
-	$confirm_form_url = $m_checklist->getConfirmUrl() . '&usekey=fnum&rowid=' . $user->fnum;
+	$confirm_form_url = $m_checklist->getConfirmUrl();
+	$confirm_form_url = EmundusHelperAccess::buildFormUrl($confirm_form_url, $user->fnum);
 	$uri              = JUri::getInstance();
 	$is_confirm_url   = false;
 
@@ -242,25 +248,13 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	if (!empty($current_phase)) {
 		$is_app_sent                = !in_array($user->status, $current_phase->entry_status);
 		$status_for_send            = array_merge($status_for_send, $current_phase->entry_status);
-		$show_preliminary_documents = $show_preliminary_documents && $current_phase->display_preliminary_documents;
+		if (!$show_preliminary_documents) {
+			$show_preliminary_documents = $show_preliminary_documents && $current_phase->display_preliminary_documents;
+		}
 	}
 	elseif (!empty($user->status)) {
 		$is_app_sent = $user->status != 0;
 	}
-
-	$id_applicants           = $eMConfig->get('id_applicants', '0');
-	$applicants              = explode(',', $id_applicants);
-	$can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
-	$application_fee         = $eMConfig->get('application_fee', 0);
-	$application_fee         = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
-	if ($application_fee) {
-		$fnumInfos = $m_files->getFnumInfos($user->fnum);
-
-		$order = $m_application->getHikashopOrder($fnumInfos);
-		$cart  = $m_application->getHikashopCartUrl($user->profile);
-		$paid  = !empty($order);
-	}
-	//
 
 	if ($show_preliminary_documents) {
 		include_once(JPATH_BASE . '/modules/mod_emundus_campaign_dropfiles/helper.php');

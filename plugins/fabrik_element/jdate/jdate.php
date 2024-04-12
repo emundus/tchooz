@@ -1081,7 +1081,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 		}
 
 		// in some corner cases, date will be db name quoted, like in CSV export after an advanced search!
-		$value = trim($value, "'");
+		$value = $value ?? trim($value, "'");
         $value = $value == "" ? null : $value;
 
 		//if ($input->get('task') == 'form.process' || ($app->isClient('administrator') && $input->get('task') == 'process'))
@@ -2690,7 +2690,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 	public function getFrontDefaultValue($data = array())
 	{
 		$params       = $this->getParams();
-		$db           = Factory::getDbo();
+		$db           = Factory::getContainer()->get('DatabaseDriver');
 		$alwaysToday  = $params->get('jdate_alwaystoday', false);
 		$defaultToday = $params->get('jdate_defaulttotoday', false);
 
@@ -2993,7 +2993,7 @@ class FabDate extends Date
 		$trs = array(
 			'd' => '%d',
 			'D' => '%a',
-			'j' => '%e',
+			'j' => '%d', //@@@trob: force j to %d (instead of the 'related' %e which is not working in form view);
 			'l' => '%A',
 			'N' => '%u',
 			'S' => '',

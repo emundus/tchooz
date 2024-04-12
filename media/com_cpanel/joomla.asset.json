@@ -15,7 +15,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "eed527"
+      "version": "65f456"
     },
     {
       "name": "com_cpanel.admin-cpanel",
@@ -27,7 +27,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "433d95"
+      "version": "7f8ab7"
     },
     {
       "name": "com_cpanel.admin-system-loader",
@@ -40,7 +40,7 @@
         "type": "module",
         "defer": true
       },
-      "version": "43ff08"
+      "version": "d972b4"
     }
   ]
 }

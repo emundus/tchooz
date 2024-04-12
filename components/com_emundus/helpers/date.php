@@ -18,6 +18,7 @@ jimport('joomla.application.component.helper');
 
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Factory;
 
 /**
  * Content Component Query Helper
@@ -66,7 +67,7 @@ class EmundusHelperDate
 
 		if (!EmundusHelperDate::isNull($date)) {
 			if ($local) {
-				$config = JFactory::getConfig();
+				$config = Factory::getApplication()->getConfig();
 				$offset = $config->get('offset');
 
 				$date_time = new DateTime($date, new DateTimeZone($offset));

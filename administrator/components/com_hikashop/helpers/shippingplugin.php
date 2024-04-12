@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -220,7 +220,12 @@ class hikashopShippingPlugin extends hikashopPlugin {
 							$rate_prices['products']['product_names'][] = '"' . $order->products['p'.$row->product_id]->product_name . '"';
 						$rate_prices['products'][$row->product_parent_id] = 0;
 					} elseif(!isset($rate->shipping_params->shipping_virtual_included) || $rate->shipping_params->shipping_virtual_included || $row->product_weight > 0) {
-						$price += $rate_prices['price'] * $row->cart_product_quantity;
+						if(empty($rate->shipping_params->price_per_product_mode) || $rate->shipping_params->price_per_product_mode == 'sum') {
+							$price += $rate_prices['price'] * $row->cart_product_quantity;
+						} elseif($rate->shipping_params->price_per_product_mode == 'highest') {
+							if($price < $rate_prices['price'])
+								$price = $rate_prices['price'];
+						}
 					}
 				}
 				if(count($rate_prices['products']['product_names'])) {

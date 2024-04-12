@@ -8,17 +8,23 @@
  */
 
 use classes\api\FileSynchronizer;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
 
 defined('_JEXEC') or die('Restricted access');
 
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'api' . DS . 'FileSynchronizer.php');
 
-class plgEmundusSync_file extends \Joomla\CMS\Plugin\CMSPlugin
+class plgEmundusSync_file extends CMSPlugin
 {
+	private $db;
 
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
+
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
+
 		jimport('joomla.log.log');
 		JLog::addLogger(array('text_file' => 'com_emundus.sync_file.php'), JLog::ALL, array('com_emundus_sync_file'));
 	}
@@ -62,18 +68,17 @@ class plgEmundusSync_file extends \Joomla\CMS\Plugin\CMSPlugin
 	private function getSyncType($upload_id): string
 	{
 		$type  = '';
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 		$query->select('type')
 			->from('#__emundus_setup_sync')
 			->leftJoin('#__emundus_setup_attachments ON #__emundus_setup_sync.id = #__emundus_setup_attachments.sync')
 			->leftJoin('#__emundus_uploads ON #__emundus_uploads.attachment_id = #__emundus_setup_attachments.id')
-			->where('#__emundus_uploads.id = ' . $db->quote($upload_id));
+			->where('#__emundus_uploads.id = ' . $this->db->quote($upload_id));
 
-		$db->setQuery($query);
+		$this->db->setQuery($query);
 
 		try {
-			$type = $db->loadResult();
+			$type = $this->db->loadResult();
 			$type = empty($type) ? '' : $type;
 		}
 		catch (Exception $e) {

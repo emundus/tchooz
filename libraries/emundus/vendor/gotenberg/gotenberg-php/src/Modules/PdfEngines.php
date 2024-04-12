@@ -14,7 +14,7 @@ class PdfEngines
 {
     use MultipartFormDataModule;
 
-    private ?Index $index = null;
+    private Index|null $index = null;
 
     /**
      * Overrides the default index generator for ordering
@@ -28,13 +28,21 @@ class PdfEngines
     }
 
     /**
-     * Sets the PDF format of the resulting PDF.
-     *
-     * See https://gotenberg.dev/docs/modules/pdf-engines#engines.
+     * Sets the PDF/A format of the resulting PDF.
      */
-    public function pdfFormat(string $format): self
+    public function pdfa(string $format): self
     {
-        $this->formValue('pdfFormat', $format);
+        $this->formValue('pdfa', $format);
+
+        return $this;
+    }
+
+    /**
+     * Enables PDF for Universal Access for optimal accessibility.
+     */
+    public function pdfua(): self
+    {
+        $this->formValue('pdfua', true);
 
         return $this;
     }
@@ -43,8 +51,6 @@ class PdfEngines
      * Merges PDFs into a unique PDF.
      *
      * Note: the merging order is determined by the order of the arguments.
-     *
-     * See https://gotenberg.dev/docs/modules/pdf-engines#merge.
      */
     public function merge(Stream $pdf1, Stream $pdf2, Stream ...$pdfs): RequestInterface
     {
@@ -63,16 +69,12 @@ class PdfEngines
     }
 
     /**
-     * Converts PDF(s) to a specific PDF format.
+     * Converts PDF(s) to a specific PDF/A format.
      * Gotenberg will return the PDF or a ZIP archive with the PDFs.
-     *
-     * See:
-     * https://gotenberg.dev/docs/modules/pdf-engines#convert.
-     * https://gotenberg.dev/docs/modules/pdf-engines#engines.
      */
-    public function convert(string $pdfFormat, Stream $pdf, Stream ...$pdfs): RequestInterface
+    public function convert(string $pdfa, Stream $pdf, Stream ...$pdfs): RequestInterface
     {
-        $this->formValue('pdfFormat', $pdfFormat);
+        $this->pdfa($pdfa);
         $this->formFile($pdf->getFilename(), $pdf->getStream());
 
         foreach ($pdfs as $pdf) {

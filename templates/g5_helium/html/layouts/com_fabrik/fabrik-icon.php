@@ -12,6 +12,20 @@ $props = isset($d->properties) ? $d->properties : '';
  * uses "icon-clock timeButton".  Also handle multiple icon-foo, like "icon-spinner icon-spin"
  */
 
+if(strpos($d->icon, 'sort-down') !== false)
+{
+    $d->icon = 'icon-expand_more';
+}
+
+if(strpos($d->icon, 'sort-up') !== false)
+{
+	$d->icon = 'icon-expand_less';
+}
+
+if(strpos($d->icon, 'calendar') !== false)
+{
+	$d->icon = 'icon-event';
+}
 
 $iconParts  = explode(' ', trim($d->icon));
 $spareParts = array();
@@ -24,7 +38,7 @@ if ($iconParts[1] == 'notempty' || $iconParts[0] != 'icon-question-sign')
     $icon = explode('-',$iconParts[0]);
     if(in_array(trim($icon[1]),['eye','star','envelope'])) {
         $icon[1] = 'emergency';
-        $class = 'text-xxs text-red-500 mr-0';
+        $class = '!tw-text-xs tw-text-red-500 tw-mr-0';
         $style = 'style="top: -5px;position: relative"';
     }
 	?>

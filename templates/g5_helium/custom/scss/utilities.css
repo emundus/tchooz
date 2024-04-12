@@ -1,14 +1,14 @@
 @layer utilities {
     h1 {
-        @apply em-default-title-1;
+        @apply tw-em-default-title-1;
     }
 
     h2 {
-        @apply em-default-title-2;
+        @apply tw-em-default-title-2;
     }
 
     h3 {
-        @apply em-default-title-3;
+        @apply tw-em-default-title-3;
     }
 
     h4 {
@@ -59,6 +59,10 @@
         font-style: normal;
         line-height: normal;
         font-size: var(--em-applicant-font-size);
+    }
+
+    ul, ol {
+        padding-left: 20px;
     }
 
     .hidden {
@@ -134,8 +138,11 @@
         margin: 16px 0;
     }
 
+    ol {
+        list-style: decimal;
+    }
     ul {
-        list-style: initial;
+        list-style: disc;
     }
 
     legend {
@@ -232,27 +239,30 @@
     div:where(.swal2-container) {
         div:where(.swal2-popup) {
             padding: var(--em-alert-modal-padding) !important;
+            align-items: flex-start;
 
             .swal2-title {
-                @apply em-default-title-3;
-                @apply m-0;
+                @apply tw-em-default-title-3;
                 padding: 0;
                 font-weight: 600;
-                @apply text-start;
+                @apply tw-text-start;
             }
 
             .swal2-icon {
-                margin: 8px auto;
+                margin: 12px auto;
+                border: unset;
+                height: auto;
+                min-height: 80px;
             }
 
             .swal2-close {
-                @apply flex;
-                @apply flex-col;
-                @apply justify-center;
-                @apply items-center;
+                @apply tw-flex;
+                @apply tw-flex-col;
+                @apply tw-justify-center;
+                @apply tw-items-center;
                 color: var(--neutral-900);
-                @apply font-light;
-                @apply text-2xl;
+                @apply tw-font-light;
+                @apply tw-text-2xl;
                 right: 20px;
                 top: 20px;
                 width: 20px;
@@ -260,18 +270,23 @@
             }
 
             .swal2-html-container{
-                @apply text-base;
+                @apply tw-text-base;
                 text-align: left !important;
                 overflow: visible;
                 margin: var(--em-spacing-5) 0 0 0;
                 padding: 0;
             }
 
+            .swal2-content {
+                @apply tw-text-base;
+                text-align: left !important;
+            }
+
             .swal2-actions {
-                @apply mt-10;
-                @apply w-full;
+                @apply tw-mt-10;
+                @apply tw-w-full;
                 button {
-                    @apply m-0;
+                    @apply tw-m-0;
                 }
             }
         }
@@ -297,7 +312,7 @@
     }*/
 
     .swal2-popup {
-        border-radius: calc(var(--em-default-br) * 2) !important;
+        border-radius: var(--em-default-br) !important;
     }
 
     button.swal2-styled.swal2-confirm {
@@ -348,6 +363,10 @@
         border: 1px solid var(--em-secondary-color) !important;
         border-radius: var(--em-coordinator-br) !important;
         color: var(--neutral-0) !important;
+        text-transform: inherit;
+        font-size: 16px;
+        padding: 8px 12px;
+        font-weight: 400;
     }
 
     button.swal2-cancel.goback-btn:hover,
@@ -364,14 +383,21 @@
     }
 
     /* ALERTES */
+
+    .files-board #system-message .alert {
+        width: calc(100% - 90px);
+        float: right;
+        margin: 8px 7px;
+    }
+
     #system-message .alert, .fabrikMainError {
-        @apply flex;
-        @apply p-5;
-        @apply text-lg;
+        @apply tw-flex;
+        @apply tw-p-5;
+        @apply tw-text-lg;
+        @apply tw-mb-0;
 
         .material-icons {
-            @apply mr-3;
-            margin-top: 4px;
+            @apply tw-mr-3;
         }
 
         p {
@@ -425,6 +451,10 @@
         border: solid 1px var(--red-500);
     }
 
+    .alert.alert-danger ul, .alert.alert-error ul {
+        padding-left: 20px;
+    }
+
     /* ALERT */
     .messenger__notifications_counter {
         background: var(--red-500);
@@ -464,11 +494,14 @@
     }
 
     .alert a {
-        font-size: 20px !important;
+        text-decoration: underline;
+        font-weight: normal;
     }
 
     .alert a:hover {
-        font-size: 20px;
+        font-weight: normal;
+        text-decoration: underline;
+        color: inherit;
     }
 
     .has-error .help-block,
@@ -511,24 +544,22 @@
         display: inline-block;
         border-radius: var(--em-status-br);
         font-size: 14px;
-        font-weight: 400;
+        font-weight: 600;
         box-shadow: 0 1px 4px rgba(32, 35, 44, 0.05);
-        padding: 6px 10px;
+        padding: 5px 12px;
+        color: var(--neutral-0);
     }
 
     .circle {
         flex-basis: 8px;
         height: 8px;
         border-radius: 50%;
-        margin-right: 8px;
         flex-grow: 0;
-        margin-top: 4px;
         flex-shrink: 0;
     }
 
     .sticker {
-        border: solid 1px;
-        border-radius: 4px 8px 8px 4px;
+        border-radius: 20px 8px 8px 20px;
         padding: 4px 8px;
         margin: 4px 0;
         font-size: 14px;
@@ -839,6 +870,7 @@
     .label-black {
         background-color: var(--em-black);
         text-shadow: none;
+        color: var(--neutral-0);
     }
 
     .label-text-black {

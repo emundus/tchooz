@@ -117,7 +117,6 @@
 }
 
 .com_emundus .containerButtons input[type="button"] {
-    height: calc(var(--em-form-height) - 2px) !important;
     border-top: 1px solid #ccc;
     border-right: 1px solid #ccc;
     border-bottom: 1px solid #ccc;

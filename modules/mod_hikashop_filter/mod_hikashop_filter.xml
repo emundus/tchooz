@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5" method="upgrade" client="site">
 	<name>Hikashop Filtering Module</name>
-	<creationDate>30 octobre 2023</creationDate>
-	<version>5.0.0</version>
+	<creationDate>31 janvier 2024</creationDate>
+	<version>5.0.3</version>
 	<author>Hikari Software</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>Content display for Hikashop</description>
 	<files>
@@ -33,7 +33,7 @@
 			<option value="inside">HIKA_INSIDE</option>
 		</param>
 		<param name="filters" type="filters" default="" label="FILTERS" description="FILTERS_SELECTION_DESC" />
-		<param name="itemid" type="text" default="" label="MENU" description="FILTER_MODULE_MENU_DESC" />
+		<param name="itemid" type="text" default="356" label="MENU" description="FILTER_MODULE_MENU_DESC" />
 		<param name="force_redirect" type="radio" default="1" label="FORCE_REDIRECT" description="FORCE_REDIRECT_DESC">
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
@@ -111,7 +111,7 @@
 					<option value="inside">HIKA_INSIDE</option>
 				</field>
 				<field name="filters" type="filters" default="" label="FILTERS" description="FILTERS_SELECTION_DESC" />
-				<field name="itemid" type="text" default="" label="MENU" description="FILTER_MODULE_MENU_DESC" />
+				<field name="itemid" type="text" default="356" label="MENU" description="FILTER_MODULE_MENU_DESC" />
 				<field name="force_redirect" type="radio" default="1" label="FORCE_REDIRECT" description="FORCE_REDIRECT_DESC" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>

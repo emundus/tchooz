@@ -122,7 +122,7 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 	{
 		$params = $this->getParams();
 		$w = new FabrikWorker();
-		$db    = Factory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 
 		$position = $params->get('sequence_position', 'prefix');
 		$padding = $params->get('sequence_padding', '4');
@@ -194,13 +194,15 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
                         $db->quoteName('table_name'),
                         $db->quoteName('affix'),
                         $db->quoteName('element_id'),
-                        $db->quoteName('sequence')
+                        $db->quoteName('sequence'),
+						$db->quoteName('date_created')
                     );
                     $values = array(
                         $db->quote($tableName),
                         $db->quote($affix),
                         $db->quote($elementId),
-                        $db->quote($start)
+                        $db->quote($start),
+						'NOW()'
                     );
 
                     $query->clear()
@@ -216,7 +218,7 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
                     $sequence++;
                     $query->clear()
                         ->update('#__fabrik_sequences')
-                        ->set($db->quoteName('sequence') . ' = ' . $sequence)
+                        ->set($db->quoteName('sequence') . ' = ' . $sequence,$db->quoteName('date_created') . ' = NOW()')
                         ->where($db->quoteName('table_name') . ' = ' . $db->quote($tableName))
                         ->where($db->quoteName('affix') . ' = ' . $db->quote($affix))
                         ->where($db->quoteName('element_id') . ' = ' . $db->quote($elementId));

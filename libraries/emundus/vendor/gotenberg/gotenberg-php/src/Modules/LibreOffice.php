@@ -14,8 +14,8 @@ class LibreOffice
 {
     use MultipartFormDataModule;
 
-    private ?Index $index = null;
-    private bool $merge   = false;
+    private Index|null $index = null;
+    private bool $merge       = false;
 
     /**
      * Overrides the default index generator for ordering
@@ -52,37 +52,21 @@ class LibreOffice
     }
 
     /**
-     * Tells Gotenberg to use unoconv for converting the resulting PDF(s) to
-     * the "PDF/A-1a" format.
-     *
-     * @deprecated
+     * Sets the PDF/A format of the resulting PDF.
      */
-    public function nativePdfA1aFormat(): self
+    public function pdfa(string $format): self
     {
-        $this->formValue('nativePdfA1aFormat', true);
+        $this->formValue('pdfa', $format);
 
         return $this;
     }
 
     /**
-     * Tells Gotenberg to use unoconv for converting the resulting PDF to a PDF
-     * format.
+     * Enables PDF for Universal Access for optimal accessibility.
      */
-    public function nativePdfFormat(string $format): self
+    public function pdfua(): self
     {
-        $this->formValue('nativePdfFormat', $format);
-
-        return $this;
-    }
-
-    /**
-     * Sets the PDF format of the resulting PDF.
-     *
-     * See https://gotenberg.dev/docs/modules/pdf-engines#engines.
-     */
-    public function pdfFormat(string $format): self
-    {
-        $this->formValue('pdfFormat', $format);
+        $this->formValue('pdfua', true);
 
         return $this;
     }
@@ -104,8 +88,6 @@ class LibreOffice
      *
      * Note: if you requested a merge, the merging order is determined by the
      * order of the arguments.
-     *
-     * See https://gotenberg.dev/docs/modules/libreoffice#route.
      */
     public function convert(Stream $file, Stream ...$files): RequestInterface
     {

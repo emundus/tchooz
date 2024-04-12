@@ -6,18 +6,21 @@
  * @copyright (C) 2019 eMundus SOFTWARE. All rights reserved.
  * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
+
 defined('_JEXEC') or die('Restricted access');
 
-class plgEmundusExcelia_aurion_export extends \Joomla\CMS\Plugin\CMSPlugin
+class plgEmundusExcelia_aurion_export extends CMSPlugin
 {
-
-	var $db;
+	private $db;
 
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
 
-		$this->db = JFactory::getDbo();
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 		jimport('joomla.log.log');
 		JLog::addLogger(array('text_file' => 'com_emundus.exceliaAurionExport.php'), JLog::ALL, array('com_emundus_exceliaAurionExport'));
@@ -205,8 +208,7 @@ class plgEmundusExcelia_aurion_export extends \Joomla\CMS\Plugin\CMSPlugin
 
 			$query = $this->db->getQuery(true);
 			// In the query, we merge all the different tables in the select and join them while checking if the rows we get in the aurion tables are published
-			$query
-				->select(array_merge($campaign_columns, $eu_columns, $pd_columns, $qualification_columns, $scholarship_columns, $concours_columns, $coord_concours, $aurion_user, $aurion_em_user, $aurion_civility, $aurion_diplome, $aurion_nationality, $aurion_concours_1, $aurion_concours_2, $aurion_city, $spe_columns, $rentrees, $aurion_lycee, $aurion_etab, $aurion_type_dip, $aurion_concours_Easy))
+			$query->select(array_merge($campaign_columns, $eu_columns, $pd_columns, $qualification_columns, $scholarship_columns, $concours_columns, $coord_concours, $aurion_user, $aurion_em_user, $aurion_civility, $aurion_diplome, $aurion_nationality, $aurion_concours_1, $aurion_concours_2, $aurion_city, $spe_columns, $rentrees, $aurion_lycee, $aurion_etab, $aurion_type_dip, $aurion_concours_Easy))
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('ecc.campaign_id') . ' = ' . $this->db->quoteName('esc.id'))
 				->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = ' . $this->db->quoteName('eu.user_id'))
@@ -859,18 +861,18 @@ class plgEmundusExcelia_aurion_export extends \Joomla\CMS\Plugin\CMSPlugin
 
 	public function getOutputLabelFromInput($input, $inputColumn, $outputColumn, $table)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$this->db    = JFactory::getDbo();
+		$query = $this->db->getQuery(true);
 
 		$query
-			->select($db->quoteName($outputColumn))
-			->from($db->quoteName($table))
-			->where($db->quoteName($inputColumn) . ' = ' . $db->quote($input));
+			->select($this->db->quoteName($outputColumn))
+			->from($this->db->quoteName($table))
+			->where($this->db->quoteName($inputColumn) . ' = ' . $this->db->quote($input));
 
 		try {
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadResult();
+			return $this->db->loadResult();
 		}
 		catch (Exception $e) {
 			JLog::add('Query error ' . $query->__toString(), JLog::ERROR, 'com_emundus_exceliaAurionExport');
@@ -882,21 +884,20 @@ class plgEmundusExcelia_aurion_export extends \Joomla\CMS\Plugin\CMSPlugin
 
 	function getAlternance($fnum)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query
-			->select([$db->quoteName('da_fr.id_TypeDApprenant', 'alt_fr'), $db->quoteName('da_int.id_TypedApprenant', 'alt_int')])
-			->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
-			->leftjoin($db->quoteName('data_aurion_37130437', 'da_int') . ' ON ' . $db->quoteName('da_int.id') . ' = ' . $db->quoteName('cc.spe_int_alt'))
-			->leftjoin($db->quoteName('data_aurion_35616195', 'da_fr') . ' ON ' . $db->quoteName('da_fr.id') . ' = ' . $db->quoteName('cc.spe_fr_alt'))
-			->where($db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum));
+			->select([$this->db->quoteName('da_fr.id_TypeDApprenant', 'alt_fr'), $this->db->quoteName('da_int.id_TypedApprenant', 'alt_int')])
+			->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
+			->leftjoin($this->db->quoteName('data_aurion_37130437', 'da_int') . ' ON ' . $this->db->quoteName('da_int.id') . ' = ' . $this->db->quoteName('cc.spe_int_alt'))
+			->leftjoin($this->db->quoteName('data_aurion_35616195', 'da_fr') . ' ON ' . $this->db->quoteName('da_fr.id') . ' = ' . $this->db->quoteName('cc.spe_fr_alt'))
+			->where($this->db->quoteName('cc.fnum') . ' LIKE ' . $this->db->quote($fnum));
 
 		try {
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return array_values(array_filter($db->loadAssoc()))[0];
+			return array_values(array_filter($this->db->loadAssoc()))[0];
 		}
 		catch (Exception $e) {
 			JLog::add('Query error ' . $query->__toString(), JLog::ERROR, 'com_emundus_exceliaAurionExport');
@@ -926,7 +927,7 @@ class plgEmundusExcelia_aurion_export extends \Joomla\CMS\Plugin\CMSPlugin
 		try {
 			return $this->db->loadObjectList();
 		}
-		catch (Execption $e) {
+		catch (Exception $e) {
 			JLog::add('Query error getting winter/summer school speacialities : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus_exceliaAurionExport');
 
 			return null;

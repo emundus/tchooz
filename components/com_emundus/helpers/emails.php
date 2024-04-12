@@ -18,6 +18,9 @@ jimport('joomla.application.component.helper');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Uri\Uri;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Content Component Query Helper
@@ -285,7 +288,7 @@ class EmundusHelperEmails
 						<input name="mail_type" type="hidden" class="inputbox" id="mail_type" value="expert" />
 						<p>
 							<div>
-								<input class="btn btn-large btn-success" style="margin-top: 16px" type="submit" name="expert" value="' . JText::_('COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL') . '" >
+								<button class="btn btn-primary absolute" style="bottom: 32px;right: 32px" type="submit" name="expert">'.JText::_( 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL' ).'</button>
 							</div>
 						</p>
 						
@@ -899,33 +902,53 @@ class EmundusHelperEmails
 				JLog::add('Invalid email ' . $email, JLog::INFO, 'com_emundus.email');
 			}
 			else {
-				$domain = substr($email, strpos($email, '@') + 1);
-				if (!checkdnsrr($domain)) {
-					JLog::add('Invalid email domain ' . $email, JLog::INFO, 'com_emundus.email');
-					$is_correct = false;
-				}
+				$emConfig = ComponentHelper::getParams('com_emundus');
+                if ($emConfig->get('email_check_dns', 1) == 1)
+                {
+	                $domain = substr($email, strpos($email, '@') + 1);
+	                if (!checkdnsrr($domain))
+	                {
+		                JLog::add('Invalid email domain ' . $email, JLog::INFO, 'com_emundus.email');
+		                $is_correct = false;
+	                }
+                }
 			}
 		}
 
 		return $is_correct;
 	}
 
-	static function getLogo(): string
+	static function getLogo($only_filename = false): string
 	{
-		$logo     = '';
-		$app      = JFactory::getApplication();
-		$template = $app->getTemplate(true);
-		$config   = JFactory::getConfig();
+		$logo = 'images/custom/logo_custom.png';
 
-		$params = $template->params;
+		if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml')) {
+			$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml'));
 
+			if (!empty($yaml)) {
+				$logo_gantry = $yaml['image'];
 
-		if (!empty($params->get('logo')->custom->image)) {
-			$logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-			$logo = !empty($logo['path']) ? JURI::base() . $logo['path'] : "";
+				if (!empty($logo_gantry)) {
+					$logo = str_replace('gantry-media:/', 'images', $logo_gantry);
+
+					if (!file_exists(JPATH_ROOT . '/' . $logo)) {
+						$logo = 'images/custom/logo_custom.png';
+					}
+				}
+			}
 		}
-		else {
-			$logo_module = JModuleHelper::getModuleById('90');
+
+		if (!file_exists($logo)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('id,content')
+				->from($db->quoteName('#__modules'))
+				->where($db->quoteName('module') . ' = ' . $db->quote('mod_custom'))
+				->where($db->quoteName('title') . ' LIKE ' . $db->quote('Logo'));
+			$db->setQuery($query);
+			$logo_module = $db->loadObject();
+			
 			preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
 			$pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
         (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
@@ -933,13 +956,16 @@ class EmundusHelperEmails
         (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
 
 			if (preg_match($pattern, $tab[1])) {
-				$tab[1] = parse_url($tab[1], PHP_URL_PATH);
+				$logo = parse_url($tab[1], PHP_URL_PATH);
 			}
-
-			$logo = JURI::base() . $tab[1];
 		}
 
-		return $logo;
+		if($only_filename)
+		{
+			return basename($logo);
+		}
+
+		return Uri::base() . $logo;
 	}
 
 	public static function getCustomHeader(): string

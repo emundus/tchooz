@@ -1,4 +1,3 @@
-joomla-toolbar-button .dropdown-item:focus,
-joomla-toolbar-button .dropdown-item:hover {
+joomla-toolbar-button .dropdown-item:focus, joomla-toolbar-button .dropdown-item:hover {
   color: #fff;
 }

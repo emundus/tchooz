@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -393,7 +393,10 @@ class plgHikashopshippingUps2 extends hikashopShippingPlugin
 			$data['height'] = $packages['z'];
 			$data['length'] = $packages['y'];
 			$data['width'] = $packages['x'];
-			$data['price'] = $price;
+			if(!empty($packages['price']))
+				$data['price'] = $packages['price'];
+			else
+				$data['price'] = $price;
 			$data['quantity'] = 1;
 
 			$packagesToSend[] = $this->_createPackage($data, $rate, $order, true);
@@ -626,7 +629,7 @@ class plgHikashopshippingUps2 extends hikashopShippingPlugin
 			$payload['RateRequest']['Shipment']['ShipTo']['attentionName'] = $attentionName;
 		}
 
-		if(in_array($srcCountry, array('US', 'PR')) && $dstCountry != $srcCountry) {
+		if($dstCountry != $srcCountry) {
 			$payload['RateRequest']['Shipment']['InvoiceLineTotal'] = array(
 				'CurrencyCode' => $currency_code,
 				'MonetaryValue' => (string)round($price, 2),
@@ -709,6 +712,7 @@ class plgHikashopshippingUps2 extends hikashopShippingPlugin
 			if(!empty($response['response']['errors'])) {
 				foreach($response['response']['errors'] as $error) {
 					$app->enqueueMessage($error['code'] . ' ' .$error['message']);
+					$this->error_messages['ups_error'] = 'An error occurred. The connection to the UPS server could not be established. [' . $error['code'] . '] ' .$error['message'];
 				}
 			} else {
 				$app->enqueueMessage('No response status');

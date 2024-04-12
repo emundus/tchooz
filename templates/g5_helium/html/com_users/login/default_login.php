@@ -36,19 +36,17 @@ else {
 	$session->clear('login_campaign_id');
 }
 ?>
-<iframe id="background-shapes2" class="background-shaped-top" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-<iframe id="background-shapes2" class="background-shaped-bottom" src="/modules/mod_emundus_campaign/assets/fond-clair.svg" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
 <div class="com-users-login login">
 	<?php if ($this->params->get('show_page_heading')) : ?>
-        <div class="page-header flex flex-column items-center">
-			<?php if (file_exists('images/custom/favicon.png')) : ?>
-                <a href="index.php" alt="Logo" class="em-profile-picture mb-8"
-                   style="width: 50px;height: 50px;background-image: url('images/custom/favicon.png')">
+        <div class="page-header tw-flex tw-flex-col tw-items-center">
+	        <?php if (file_exists($this->favicon)) : ?>
+                <a href="index.php" alt="Logo" class="em-profile-picture tw-mb-8" style="width: 50px;height: 50px;background-image: url(<?php echo $this->favicon ?>)">
                 </a>
-			<?php endif; ?>
-            <h1 class="em-mb-8">
-				<?php echo JText::_('JLOGIN'); ?>
+	        <?php endif; ?>
+            <h1 class="tw-mb-4">
+				<?php echo Text::_('JLOGIN'); ?>
             </h1>
+            <p class="em-applicant-text-color em-applicant-default-font"><?php echo Text::_('JLOGIN_DESC'); ?></p>
         </div>
 	<?php endif; ?>
 
@@ -74,7 +72,7 @@ else {
         <fieldset>
 			<?php echo $this->form->renderFieldset('credentials', ['class' => 'com-users-login__input']); ?>
 
-            <div class="em-w-100 em-flex-row em-flex-end">
+            <div class="tw-full tw-flex tw-items-center tw-justify-end">
 				<?php if (PluginHelper::isEnabled('system', 'remember')) : ?>
                     <div class="control-group">
                         <div class="control-label">
@@ -89,7 +87,7 @@ else {
 				<?php endif; ?>
 
 				<?php if ($this->displayForgotten) : ?>
-                    <div class="control-group em-float-right">
+                    <div class="control-group tw-float-right">
                         <div class="control-label">
                             <a class="em-text-underline" href="<?php echo JRoute::_($this->forgottenLink); ?>">
 								<?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
@@ -196,5 +194,16 @@ else {
         document.querySelector(".background-shaped-top").style.display = 'none';
         document.querySelector(".background-shaped-bottom").style.display = 'none';
     }
+
+    let conteneur = document.querySelector("#g-page-surround");
+    let divShapesLeft = document.createElement("div");
+    let divShapesRight = document.createElement("div");
+    divShapesLeft.id = "login-background-shapes-left";
+    divShapesRight.id = "login-background-shapes-right";
+
+    let firstDiv = conteneur.firstChild;
+
+    conteneur.insertBefore(divShapesLeft, firstDiv);
+    conteneur.insertBefore(divShapesRight, firstDiv);
 
 </script>

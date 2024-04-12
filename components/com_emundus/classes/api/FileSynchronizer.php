@@ -18,7 +18,7 @@ use JLog;
 
 defined('_JEXEC') or die('Restricted access');
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
 
 class FileSynchronizer
 {
@@ -498,7 +498,12 @@ class FileSynchronizer
 
 				$response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
 
-				fclose($filepath);
+				try {
+					// in php 8, if file is already closed, fclose throws an error
+					fclose($file_pointer);
+				} catch (\Exception $e) {
+					JLog::add('[fclose] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.sync');
+				}
 
 				if (!empty($response->entry)) {
 					$saved = $this->saveNodeId($upload_id, $response->entry->id, $relativePath . '/' . $filename);

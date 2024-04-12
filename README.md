@@ -8,7 +8,7 @@
 <h3 align="center">eMundus</h3>
 
   <p align="center">
-    Online application management for Joomla 3.10.x
+    Online application management for Joomla 5.x.x
     <br />
     <a href="https://emundus.atlassian.net/wiki/spaces/HD/overview"><strong>Explore the docs »</strong></a>
     <br />
@@ -122,9 +122,9 @@ docker-compose up --build -d
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Add SSO connection with Keycloak
-- [ ] Add evaluation and decision in formbuilder
-- [ ] Allow coordinators to create their own workflow
+- [ ] Workflow builder
+- [ ] More global parameters
+- [ ] Allow conditionnal in formbuilder
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -150,14 +150,14 @@ Below are several links that are essential for developers working on this projec
 [product-screenshot]: images/product-screenshot.png
 [Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
 [Vue-url]: https://vuejs.org/
-[Joomla.com]: https://img.shields.io/badge/Joomla%204.X.X-5091CD?style=for-the-badge&logo=joomla&logoColor=white
+[Joomla.com]: https://img.shields.io/badge/Joomla%205.X.X-5091CD?style=for-the-badge&logo=joomla&logoColor=white
 [Joomla-url]: https://www.joomla.fr/
 [Node-url]: https://nodejs.org/
 [Node-min-badge]: https://img.shields.io/badge/min-16.x-orange
 [Node-reco-badge]: https://img.shields.io/badge/recommended-18.x-green
 [Composer-local-installation]: https://getcomposer.org/download/
 [Composer-global-installation]: https://getcomposer.org/doc/00-intro.md#globally
-[PHP-min-badge]: https://img.shields.io/badge/dependencies-PHP%207.4-green
+[PHP-min-badge]: https://img.shields.io/badge/dependencies-PHP%208.1-green
 [PHP-url]: https://www.php.net/manual/en/install.macosx.php
 [Mailtrap-url]: https://mailtrap.io
 

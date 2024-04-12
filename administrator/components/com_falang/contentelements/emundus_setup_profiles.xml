@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<falang type="contentelement">
+  <name>Emundus - Profiles</name>
+  <author>eMundus - www.emundus.fr</author>
+  <version>2.0</version>
+  <description>Definition for the emundus component</description>
+  <reference>
+  	<table name="emundus_setup_profiles">
+  		<field type="referenceid" name="id" translate="0">ID</field>
+  		<field type="titletext" name="label" translate="1">Short name</field>
+  		<field type="textarea" name="description" translate="1">Long name</field>
+  	</table>
+  </reference>
+</falang>

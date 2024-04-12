@@ -3,7 +3,7 @@
   /** APPLICANT **/
   .emundus-form {
     .page-header h1 {
-      @apply em-default-title-1;
+      @apply tw-em-default-title-1;
     }
     .em-form-intro {
       * {
@@ -18,22 +18,33 @@
     }
   }
 
+  /* DATE ELEMENT - CALENDAR */
+
+  .calendar thead .button {
+    font-weight: normal;
+    border: 1px solid transparent;
+    color: #000 !important;
+    background: inherit;
+  }
+
   /** REGISTRATION FORM **/
   .view-registration.em-formRegistrationCenter {
-    @apply flex;
-    @apply flex-wrap;
+    @apply tw-flex;
+    @apply tw-flex-wrap;
     margin-right: -10px;
     margin-left: -10px;
     .emundus-form {
       @media all and (min-width: 768px) {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto;
+        margin: 0 auto;
+        padding-top: 0;
       }
       @media all and (min-width: 1440px) {
         flex: 0 0 30rem;
         max-width: 30rem;
-        margin: 16px auto;
+        margin: 0 auto;
+        padding-top: 0;
       }
 
       .em-form-intro {
@@ -49,6 +60,10 @@
         .fabrikGroupColumns.fabrikGroup {
           .row {
             column-gap: 0;
+
+            .col-sm-6:first-child {
+              padding-right: 8px;
+            }
           }
         }
       }
@@ -64,11 +79,11 @@
       }
 
       .fabrikElementContainer:not(.fabrikHide) {
-        @apply mb-3;
+        @apply tw-mb-3;
       }
 
       #jos_emundus_users___password_check {
-        @apply mt-1;
+        @apply tw-mt-1;
       }
       .fb_el_jos_emundus_users___terms_and_conditions {
         .row {
@@ -79,8 +94,8 @@
         }
         .fabrikgrid_checkbox {
           span {
-            @apply flex;
-            @apply ml-1;
+            @apply tw-flex;
+            @apply tw-ml-1;
             order: 1;
           }
         }
@@ -96,17 +111,18 @@
       .fb_el_jos_emundus_users___data_privacy_link {
         .fabrikLabel {
           display: block !important;
+          margin-bottom: 18px;
         }
       }
 
       .fabrikActions .em-submit-form-button {
         .btn-group {
-          @apply w-full;
+          @apply tw-w-full;
           .button.register {
-            @apply flex;
-            @apply w-full;
-            @apply justify-center;
-            @apply items-center;
+            @apply tw-flex;
+            @apply tw-w-full;
+            @apply tw-justify-center;
+            @apply tw-items-center;
           }
         }
       }
@@ -173,6 +189,10 @@
     .fabrikElement {
       margin-top: var(--em-form-label-margin-bottom);
       position: relative;
+
+      div li {
+        list-style-position: inside;
+      }
     }
 
     .fabrikElementContainer:not(.fabrikHide) {
@@ -182,7 +202,7 @@
     .fabrikLabel {
       display: inline-block !important;
       font-size: var(--em-form-label-size);
-      @apply w-full;
+      @apply tw-w-full;
       font-family: var(--em-applicant-font);
       font-style: normal;
       font-weight: var(--em-form-label-weight);
@@ -194,7 +214,7 @@
 
     .fabrikElementTip {
       color: var(--em-form-tip-color);
-      @apply text-base;
+      @apply tw-text-base;
       font-weight: 400;
       font-family: var(--em-applicant-font);
       font-style: normal;
@@ -206,6 +226,9 @@
       i.icon-question-sign  {
         display: none;
       }
+    }
+    .fabrikElementTipAbove span.fa.fa-question-circle{
+      display: none;
     }
 
 
@@ -219,8 +242,8 @@
     input:not([type='file']), select, textarea {
       color: var(--em-default-text-color-1);
       border-radius: var(--em-form-br);
-      @apply px-2.5 py-2;
-      @apply mb-0;
+      @apply tw-px-2.5 tw-py-2;
+      @apply tw-mb-0;
       background-color: var(--em-form-bgc);
       border-color: var(--em-form-bc);
       transition: all 0.1s ease-out;
@@ -254,7 +277,7 @@
     #renderCountryCode
     {
       height: var(--em-form-height);
-      width: 40px;
+      width: 50px;
       text-align: center;
       padding: 0 6px 0 6px;
       border-radius: unset;
@@ -286,41 +309,42 @@
       position: absolute;
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container{
+    .fabrikEmundusPhoneNumber .chosen-container{
       width: auto !important;
+      min-width: unset;
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-drop{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-drop{
       width: fit-content;
       border-radius: var(--em-form-br);
       margin-top: var(--m-8);
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-drop .chzn-search{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-drop .chosen-search{
       padding: var(--p-4);
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-drop .chzn-search input{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-drop .chosen-search input{
       height: 35px;
-      background: unset;
+      background-image: unset;
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-drop .chzn-results {
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-drop .chosen-results {
       margin: var(--m-4);
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-drop .chzn-results li{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-drop .chosen-results li{
       font-size: 14px;
       word-spacing: 4px;
       margin-right: var(--m-4);
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-single{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-single{
       display: flex;
       justify-content: center;
       align-items: center;
       border-radius: var(--em-form-br) 0 0 var(--em-form-br) !important;
-      height: calc(var(--em-form-height) + 2px);
+      height: var(--em-form-height);
       background-position-x: 90% !important;
       background-position-y: 54% !important;
       background-image: url(/images/emundus/arrow.svg) !important;
@@ -329,20 +353,21 @@
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
       box-shadow: unset;
+      margin-right: -1px;
       &:hover {
         border-color: var(--em-form-bc-hover);
       }
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-single span{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-single span{
       font-size: var(--em-form-font-size);
       margin-right: var(--m-16);
     }
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-single span img{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-single span img{
       width: 24px;
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-single div{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-single div{
       height: auto;
       width: 8px;
       position: static;
@@ -350,7 +375,7 @@
       margin-top: -4px;
     }
 
-    .fabrikEmundusPhoneNumber .chzn-container .chzn-single div b{
+    .fabrikEmundusPhoneNumber .chosen-container .chosen-single div b{
       border: solid var(--neutral-900);
       border-width: 0 2px 2px 0;
       display: inline-block;
@@ -401,11 +426,11 @@
       .fabrikElement {
         .fabrikSubElementContainer {
           display: flex;
-          .input-append {
+          border-radius: var(--em-form-br);
+          input[type="text"] {
             position: relative;
             display: flex;
-            width: fit-content;
-            min-width: 20%;
+            border-radius: var(--em-form-br)
           }
 
           button.calendarbutton, button.timeButton {
@@ -414,19 +439,25 @@
             height: var(--em-form-height) !important;
             color: var(  --em-form-label-color);
             position: absolute;
-            right: 15px;
+            right: 8px;
             border: unset;
             z-index: 10;
             background: transparent;
             padding: 6px;
             &:focus {
               outline: unset;
+              box-shadow: unset;
             }
             &:active {
               box-shadow: unset;
             }
+            &:hover {
+              .material-icons-outlined,.material-icons {
+                color: var(--em-form-bc-hover) !important;
+              }
+            }
 
-            .material-icons-outlined {
+            .material-icons-outlined,.material-icons {
               font-size: 16px;
               color: var(--neutral-600);
             }
@@ -434,7 +465,6 @@
         }
       }
     }
-
 
     /* YES / NO */
     /* And radio buttons grouped together */
@@ -464,149 +494,211 @@
       gap: var(--em-form-yesno-gap);
     }
 
-    label.btn-default.btn.btn-success.active {
+  .plg-yesno .switcher  {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    height: fit-content;
+  }
+
+  .switcher .toggle-outside,
+  .plg-yesno .switcher input{
+    display: none;
+  }
+
+  .plg-yesno .switcher label {
+    opacity: 1 !important;
+    position: relative !important;
+    margin-inline-start: 0;
+  }
+
+    .plg-yesno .switcher input[value="1"] + label {
+    align-items: center;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    cursor: pointer;
+    border: 1px solid var(--neutral-500);
+    background: var(--neutral-0);
+    color: var(--em-green-2);
+    border-radius: var(--em-coordinator-br) !important;
+    width: 200px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    height: var(--em-form-height);
+    }
+
+    .plg-yesno .switcher  input[value="1"] + label:hover {
+      color: var(--em-green-2);
+      border: 1px solid var(--em-green-2);
+      background: var(--neutral-0);
+    }
+
+    .plg-yesno .switcher  input[value="1"]:checked + label {
+      color: var(--neutral-0);
+      border: 1px solid var(--em-green-2);
+      background: var(--em-green-2);
+    }
+
+    .plg-yesno .switcher input[value="0"] + label {
+      align-items: center;
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      background-color: var(--em-form-yesno-bgc-yes);
-      border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-yes);
-      color: var(--neutral-900);
-      border-radius: var(--em-applicant-br) !important;
-      width: var(--em-form-yesno-width) !important;
+      border: 1px solid var(--neutral-500);
+      background: var(--neutral-0);
+      border-radius: var(--em-coordinator-br) !important;
+      width: 200px;
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
-      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
       justify-content: center;
-      height: var(--em-form-yesno-height);
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
+      color: var(--red-700);
+      height: var(--em-form-height);
     }
 
-    label.btn-default.btn.btn-success.active:hover {
-      background-color: var(--em-form-yesno-bgc-yes-hover);
-      border-color: var(--em-form-yesno-bc-yes-hover) !important;
+    .plg-yesno .switcher  input[value="0"] + label:hover {
+      color: var(--red-700);
+      border: 1px solid var(--red-700);
+      background: var(--neutral-0);
     }
 
-    label.btn-default.btn.btn-success.active:hover span {
-      font-family: var(--em-default-font);
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-yes-hover);
-      word-wrap: break-word;
+    .plg-yesno .switcher  input[value="0"]:checked + label {
+      color: var(--neutral-0);
+      border: 1px solid var(--red-700);
+      background: var(--red-700);
     }
 
-    label.btn-default.btn.btn-success.active span {
-      font-family: var(--em-default-font);
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-yes);
-      word-wrap: break-word;
+
+    /* RADIO GROUPE */
+
+    .plg-radiobutton .btn-group .btn:focus ,
+    .plg-radiobutton .btn-group  .btn-check:focus + .btn {
+      box-shadow: none;
     }
 
-    label.btn-default.btn.btn-danger.active {
-      height: var(--em-form-yesno-height);
+    .plg-radiobutton .btn-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px !important;
+      width: fit-content !important;
+      height: fit-content;
+    }
+
+    .plg-radiobutton .btn-group  label.btn-outline-secondary.btn:not(.active)[for*="input_1"]{
+      align-items: center;
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      background-color: var(--em-form-yesno-bgc-no);
-      border-color: var(--em-form-yesno-bc-no);
-      color: var(--em-form-yesno-color-no);
-      border-radius: var(--em-applicant-br) !important;
+      border: 1px solid var(--neutral-500);
+      background: var(--neutral-0);
+      border-radius: var(--em-coordinator-br) !important;
+      width: 200px !important;
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
-      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
       justify-content: center;
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
-      width: var(--em-form-yesno-width) !important;
+      height: var(--em-form-height);
     }
 
-
-    label.btn-default.btn.btn-danger.active:hover {
-      background-color: var(--em-form-yesno-bgc-no-hover);
-      border-color: var(--em-form-yesno-bc-no-hover)!important;
-    }
-
-    label.btn-default.btn.btn-danger.active:hover span {
+    .plg-radiobutton .btn-group  label.btn-outline-secondary.btn:not(.active)[for*="input_1"] span {
       font-family: var(--em-default-font);
       font-size: 16px;
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-no-hover);
+      color: var(--em-green-2);
       word-wrap: break-word;
     }
 
-    label.btn-default.btn.btn-danger.active span {
-      font-family: var(--em-default-font);
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-no);
-      word-wrap: break-word;
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn.active[for*="input_1"]{
+      border: 1px solid var(--neutral-500) !important;
+      background: var(--em-green-2);
+      width: 200px !important;
     }
 
-    label.btn-default.btn:not(.active) {
-      height: var(--em-form-yesno-height);
+    .plg-radiobutton .btn-group  label.btn-outline-secondary.btn.active[for*="input_1"] span{
+      color: var(--neutral-0);
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_1"]:hover {
+      border: 1px solid var(--em-green-2);
+      background: var(--neutral-0);
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_1"]:hover span {
+      color: var(--em-green-2);
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_0"]{
+      align-items: center;
       padding: var(--p-12);
       box-shadow: none;
       cursor: pointer;
-      border: var(--em-form-yesno-bw) solid var(--em-form-yesno-bc-not-active);
-      background: var(--em-form-yesno-bgc-not-active);
-      color: var(--em-form-yesno-color-not-active);
+      border: 1px solid var(--neutral-500);
+      background: var(--neutral-0);
+      border-radius: var(--em-coordinator-br) !important;
+      width: 200px !important;
+      display: -webkit-box;
+      display: -ms-flexbox;
       display: flex;
-      align-items: center;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
       justify-content: center;
-      font-size: 16px;
-      line-height: 24px;
-      font-style: normal;
-      letter-spacing: 0.0015em;
-      width: var(--em-form-yesno-width) !important;
+      height: var(--em-form-height);
     }
 
-    label.btn-default.btn:not(.active):hover {
-      background-color: var(--em-form-yesno-bgc-not-active-hover);
-      border-color: var(--em-form-yesno-bc-not-active-hover) !important;
-    }
-
-    label.btn-default.btn:not(.active):hover span {
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_0"] span {
       font-family: var(--em-default-font);
       font-size: 16px;
       font-style: normal;
       line-height: 24px;
       letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-not-active-hover);
+      color: var(--red-700);
       word-wrap: break-word;
     }
 
-    label.btn-default.btn:not(.active) span {
-      font-family: var(--em-default-font);
-      font-size: 16px;
-      font-style: normal;
-      line-height: 24px;
-      letter-spacing: 0.0015em;
-      color: var(--em-form-yesno-color-not-active);
-      word-wrap: break-word;
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn.active[for*="input_0"]{
+      border: 1px solid var(--neutral-500) !important;
+      background: var(--red-700);
+      width: 200px !important;
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn.active[for*="input_0"] span{
+      color: var(--neutral-0);
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_0"]:hover {
+      border: 1px solid var(--red-700);
+      background: var(--neutral-0);
+    }
+
+    .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_0"]:hover span {
+      color: var(--red-700);
     }
 
 
     /** SELECT **/
     select {
-      background-position-x: 98%;
+      background-position-x: 93%;
       background-position-y: 54%;
       -webkit-appearance: none;
       appearance: none;
       background-image: url(/images/emundus/arrow.svg);
       background-size: 8px;
       background-repeat: no-repeat;
-      @apply pr-4;
+      @apply tw-pr-4;
+      @apply tw-cursor-pointer;
       &.input-small {
         background-position-x: 92%;
       }
@@ -624,18 +716,19 @@
           width: 100%;
         }
 
+        .row {
+          padding: 4px 0;
+        }
+
         .fabrikgrid_radio {
-          @apply py-1;
-          @apply mb-1;
-          @apply items-center;
-          width: auto;
-          @apply ml-0;
-          @apply flex;
-          @apply items-center;
+          @apply tw-py-1;
+          @apply tw-mb-1;
+          @apply tw-ml-0;
+          @apply tw-flex;
+          @apply tw-items-start;
           padding: var(--em-form-radio-padding);
           border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
           border-radius: var(--em-form-radio-br);
-          margin-right: var(--em-form-radio-margin-right);
 
           input {
             accent-color: var(--em-form-radio-color-checked);
@@ -648,7 +741,8 @@
           }
 
           label {
-            @apply mb-0;
+            cursor: pointer;
+            @apply tw-mb-0;
             span{
               word-wrap: break-word;
             }
@@ -672,6 +766,11 @@
 
 
     /** CHECKBOX **/
+
+    .form-check-input:focus {
+      box-shadow: none;
+    }
+
     .plg-checkbox {
       .fabrikElement {
         .fabrikSubElementContainer {
@@ -689,13 +788,18 @@
               }
 
             .fabrikgrid_checkbox {
+              @apply tw-flex;
+              @apply tw-items-start;
               input {
+                @apply tw-cursor-pointer;
                 accent-color: var(--em-form-checkbox-color-checked);
                 transform: scale(var(--em-form-checkbox-scale));
-                margin-left: 0;
+                margin: 0;
               }
               label {
+                @apply tw-cursor-pointer;
                 margin-bottom: 0;
+                margin-top: -2px;
                 span {
                   box-decoration-break: clone;
                   -webkit-box-decoration-break: clone;
@@ -712,11 +816,11 @@
     .plg-panel {
       .fabrikElement {
         .fabrikinput {
-          @apply flex;
-          @apply p-5;
-          @apply rounded;
+          @apply tw-flex;
+          @apply tw-p-5;
+          @apply tw-rounded;
           .fabrikElementContent {
-            @apply ml-3;
+            @apply tw-ml-3;
             line-height: 24px;
           }
         }
@@ -726,8 +830,8 @@
     /** CAPTCHA **/
     .plg-captcha {
       .fabrikElement {
-        @apply flex;
-        @apply items-center;
+        @apply tw-flex;
+        @apply tw-items-center;
         gap: 8px;
 
         img {
@@ -736,8 +840,8 @@
         }
       }
       .captcha_input {
-        @apply mt-0;
-        @apply w-full;
+        @apply tw-mt-0;
+        @apply tw-w-full;
       }
     }
 
@@ -748,9 +852,10 @@
         flex-direction: column-reverse;
         padding: var(--em-form-fileupload-padding);
         background-color: var(--em-form-fileupload-bgc);
+        border-radius: var(--em-form-br);
         input[type='file'] {
           height: auto;
-          @apply w-full;
+          @apply tw-w-full;
 
           &:hover {
             border: unset;
@@ -769,18 +874,21 @@
     /** CURRENCY **/
     .currencyElement {
       position: relative;
-      select, .chzn-container {
+      select, .chosen-container {
         position: absolute;
         right: 0;
         width: auto !important;
         border-left: 0;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
-        .chzn-single {
+        min-width: unset;
+        .chosen-single {
           border-left: 0 !important;
           border-top-left-radius: 0 !important;
           border-bottom-left-radius: 0 !important;
           border-color: var(--em-form-bc);
+          justify-content: end;
+          background-image: none !important;
           span{
             font-size: 16px;
             margin-right: 16px;
@@ -791,33 +899,36 @@
             position: static;
             margin-right: 4px;
             b{
+              position: relative;
+              top: -3px;
               border: solid var(--neutral-900);
               border-width: 0 2px 2px 0;
               display: inline-block;
               transform: rotate(45deg);
               -webkit-transform: rotate(45deg);
               background: unset;
-              position: static;
               padding: 3px;
             }
           }
         }
-        .chzn-drop {
+        .chosen-drop {
           width: max-content;
           margin-top: 6px;
-          .chzn-search{
+          right: 0;
+          box-shadow: unset;
+          border: solid 1px var(--neutral-400);
+          .chosen-search{
             padding: 4px;
             input {
               height: 35px;
               background: unset;
             }
           }
-          .chzn-results {
-            margin: 4px;
+          .chosen-results {
+            border-radius: 4px;
             li{
               font-size: 16px;
               word-spacing: 4px;
-              margin-right: 4px;
             }
             li.highlighted{
               background-color: #D1E9FF;
@@ -825,13 +936,13 @@
           }
         }
       }
-      input:hover + select,input:hover + .chzn-container .chzn-single
+      input:hover + select,input:hover + .chosen-container .chosen-single
       {
         background-color: var(--em-form-bgc-hover);
         border-color: var(--em-form-bc-hover);
         box-shadow: unset;
       }
-      input:focus + select,input:focus + .chzn-container .chzn-single
+      input:focus + select,input:focus + .chosen-container .chosen-single
       {
         border-radius: var(--em-form-br-focus);
         border-color: var(--em-form-bc-focus);
@@ -850,8 +961,10 @@
             width: auto;
             tbody td {
               width: auto;
+              padding: 0;
               select {
                 min-width: 85px;
+                background-position-x: 92%;
               }
             }
           }
@@ -882,7 +995,7 @@
     }
 
     .fabrikErrorMessage {
-      @apply mt-1;
+      @apply tw-mt-1;
       color: var(--em-form-element-color-error) !important;
       font-weight: 700;
       padding-left: 0;
@@ -890,13 +1003,13 @@
 
     /** REPEAT GROUP **/
     .fabrikGroupRepeater {
-      @apply relative;
+      @apply tw-relative;
       bottom: 0;
       background: transparent;
       opacity: 1 !important;
-      @apply flex;
-      @apply items-center;
-      @apply justify-end;
+      @apply tw-flex;
+      @apply tw-items-center;
+      @apply tw-justify-end;
 
       .addGroup {
         padding: 6px 10px;
@@ -970,8 +1083,8 @@
     input:not([type='file']), select, textarea {
       color: var(--em-default-text-color-1);
       border-radius: var(--em-coordinator-br);
-      @apply px-1.5 py-2;
-      @apply mb-0;
+      @apply tw-px-1.5 tw-py-2;
+      @apply tw-mb-0;
       background-color: var(--em-form-bgc);
       transition: all 0.1s ease-out;
 
@@ -1011,6 +1124,7 @@
   .uneditable-input,
   select:not(.profile-select),
   a.chzn-single,
+  a.chosen-single,
   textarea {
     background-color: var(--neutral-0);
     color: var(--neutral-900);
@@ -1107,19 +1221,19 @@
   }
 
   /* CHOSEN */
-  .files-board.com_emundus .chzn-container {
+  .files-board.com_emundus .chzn-container,.files-board.com_emundus .chosen-container {
     width: 100% !important;
   }
-  .chzn-container, .chzn-container.chzn-container-multi, .chzn-container.chzn-container-multi.chzn-container-active {
+  .chzn-container, .chzn-container.chzn-container-multi, .chzn-container.chzn-container-multi.chzn-container-active, .chosen-container, .chosen-container.chosen-container-multi, .chosen-container.chosen-container-multi.chosen-container-active {
     width: auto;
     max-width: unset !important;
 
-    .chzn-drop {
+    .chzn-drop,.chosen-drop {
       border-radius: var(--em-form-br);
     }
 
-    &.chzn-with-drop .chzn-single, &.chzn-with-drop .chzn-choices {
-      background-position-x: 98% !important;
+    &.chzn-with-drop .chzn-single, &.chzn-with-drop .chzn-choices, &.chosen-with-drop .chosen-single, &.chosen-with-drop .chosen-choices {
+      background-position-x: 96% !important;
       background-position-y: 54% !important;
       -webkit-appearance: none;
       appearance: none;
@@ -1129,8 +1243,8 @@
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
       box-shadow: unset;
-      border-color: var(--em-form-bc) !important;
-      border-radius: var(--em-form-br) !important;
+      border-color: var(--em-form-bc);
+      border-radius: var(--em-form-br);
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -1138,8 +1252,8 @@
       min-height: var(--em-form-height);
     }
 
-    .chzn-single, .chzn-choices {
-      background-position-x: 98% !important;
+    .chzn-single, .chzn-choices, .chosen-single, .chosen-choices {
+      background-position-x: 96% !important;
       background-position-y: 54% !important;
       -webkit-appearance: none;
       appearance: none;
@@ -1149,8 +1263,8 @@
       background-repeat: no-repeat;
       padding-right: 1.5rem !important;
       box-shadow: unset;
-      border-color: var(--em-form-bc) !important;
-      border-radius: var(--em-form-br) !important;
+      border-color: var(--em-form-bc);
+      border-radius: var(--em-form-br);
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -1196,7 +1310,7 @@
       }
     }
 
-    .chzn-search {
+    .chzn-search,.chosen-search {
       padding: 4px 12px;
       line-height: 20px;
 
@@ -1206,7 +1320,7 @@
       }
     }
 
-    .chzn-results {
+    .chzn-results,.chosen-results {
       padding: 0;
       margin: 0;
 
@@ -1215,22 +1329,26 @@
       }
     }
 
-    .chzn-results li.highlighted {
+    .chzn-results li.highlighted,.chosen-results li.highlighted {
       background-color: var(--neutral-300);
       background-image: unset !important;
       color: var(--neutral-900);
     }
   }
 
-  .chzn-container-multi:not(.chzn-container-active) .chzn-drop {
+  .chzn-container-multi:not(.chzn-container-active) .chzn-drop,.chosen-container-multi:not(.chosen-container-active) .chosen-drop {
     display: none;
   }
 
   /* ADD PIPE */
+  pre#log {
+    display: none;
+  }
+
   div[id^='recorder-'] {
     margin-bottom: 12px;
 
-    .pipeRecordRTC {
+    > div:nth-child(1) {
       width: 100% !important;
     }
 

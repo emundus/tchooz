@@ -1,4 +1,9 @@
 <?php
+
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Access Deny');
 
 
@@ -8,10 +13,10 @@ class modEmundusTimeslotsHelper
 	public function getCalendars()
 	{
 
-		$db = JFactory::getDBo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		// Get the parent cal ID, this is the one we omit from the list
-		$eMConfig  = JComponentHelper::getParams('com_emundus');
+		$eMConfig  = ComponentHelper::getParams('com_emundus');
 		$parent_id = $eMConfig->get('parentCalId');
 
 		$query = 'SELECT id, title FROM #__categories
@@ -19,20 +24,15 @@ class modEmundusTimeslotsHelper
                         AND id != ' . $parent_id;
 
 		try {
-
 			$db->setQuery($query);
-
 			return $db->loadObjectList();
-
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting calendars for module/calendar_create_timeslots at query: ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add('Error getting calendars for module/calendar_create_timeslots at query: ' . $query, Log::ERROR, 'com_emundus');
 
 			return false;
 		}
-
 	}
-
 }
 
 ?>

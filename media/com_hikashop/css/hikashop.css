@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.0.0
+ * @version    5.0.3
  * @author     hikashop.com
- * @copyright  (C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 .hk-container {
@@ -516,10 +516,14 @@ input[type=checkbox].hkform-control, input[type=radio].hkform-control {
 }
 
 @media (min-width: 576px) {
+
 	.hkform-horizontal .hkcontrol-label {
 		text-align: right;
 		margin-bottom: 0;
 		padding-top: 7px;
+	}
+	.hikashop_checkout_login .hkform-horizontal .hkcontrol-label {
+		text-align: unset;
 	}
 	.hkform-horizontal .form-group-lg .hkcontrol-label {
 		padding-top: 11px;
@@ -905,11 +909,11 @@ dl.hika_options.large > dt {
 
 dl.hika_options > dt label {
 	margin:0px;
-	padding: 0.5rem 0 0 0.4em;
+
 }
 .hika_j4 dl.hika_options > dt label {
 
-   padding: 0 3px 0 0;
+
 }
 .hika_j4 dl.hika_options > dd {
     margin: 0px 20px 0px 205px;
@@ -1696,8 +1700,8 @@ div#hikashop_social {
  }
 
 
- .hikasocial_twitter span.hikasocial_icon {background-color: #209DEB;}
- .hikasocial_twitter span.hikasocial_name {background-color: #23ABFF;}
+ .hikasocial_twitter span.hikasocial_icon {background-color: #020202;}
+ .hikasocial_twitter span.hikasocial_name {background-color: #3b3a3a;}
 
 
  .hikasocial_facebook span.hikasocial_icon {background-color: #395FB1;}

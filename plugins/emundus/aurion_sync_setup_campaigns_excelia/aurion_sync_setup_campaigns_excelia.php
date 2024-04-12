@@ -6,19 +6,22 @@
  * @copyright (C) 2019 eMundus SOFTWARE. All rights reserved.
  * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\CMSPlugin;
+
 defined('_JEXEC') or die('Restricted access');
 
-class plgEmundusAurion_sync_setup_campaigns_excelia extends \Joomla\CMS\Plugin\CMSPlugin
+class plgEmundusAurion_sync_setup_campaigns_excelia extends CMSPlugin
 {
-
-	var $db;
-	var $query;
+	private $db;
+	private $query;
 
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
 
-		$this->db    = JFactory::getDbo();
+		$this->db    = Factory::getContainer()->get('DatabaseDriver');
 		$this->query = $this->db->getQuery(true);
 
 		jimport('joomla.log.log');
@@ -33,8 +36,8 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends \Joomla\CMS\Plugin\C
 	 */
 	function setupCampaignSync()
 	{
-
 		$au_ids_camps = $this->params->get('au_ids_camps');
+
 		if (!empty($au_ids_camps)) {
 
 			// Get all of the mapping values defined in the param.
@@ -67,13 +70,13 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends \Joomla\CMS\Plugin\C
 			foreach (explode(',', $au_ids_camps) as $au_ids_camp) {
 
 				// SELECT from the $au_year table in question all of the information.
-				$this->query
-					->clear()
+				$this->query->clear()
 					->select($this->db->quoteName([$camp_year, $camp_label, $camp_programme_id, $camp_end_date_fr, $camp_end_date_int, $camp_label_en, $camp_aurion_id, $camp_prog_label]))
 					->from($this->db->quoteName('data_aurion_' . $au_ids_camp))
 					->where($this->db->quoteName('published') . ' = 1');
-				$this->db->setQuery($this->query);
+
 				try {
+					$this->db->setQuery($this->query);
 					$db_au_camp_data = $this->db->loadAssocList($camp_aurion_id);
 				}
 				catch (Exception $e) {
@@ -83,8 +86,7 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends \Joomla\CMS\Plugin\C
 				}
 
 				// Get the prog IDs in order to match the CODE based on that.
-				$this->query
-					->clear()
+				$this->query->clear()
 					->select($this->db->quoteName(['id', 'code']))
 					->from($this->db->quoteName('#__emundus_setup_programmes'));
 				$this->db->setQuery($this->query);
@@ -108,8 +110,9 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends \Joomla\CMS\Plugin\C
 					->clear()
 					->select($this->db->quoteName('aurion_id'))
 					->from($this->db->quoteName('#__emundus_setup_campaigns'));
-				$this->db->setQuery($this->query);
+
 				try {
+					$this->db->setQuery($this->query);
 					$db_em_camp_aurion_ids = array_unique($this->db->loadColumn());
 				}
 				catch (Exception $e) {
@@ -126,10 +129,9 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends \Joomla\CMS\Plugin\C
 
 				// If not exists, INSERT the object.
 				if (!empty($to_insert)) {
-
 					$insert_values = [];
-					foreach ($to_insert as $insert) {
 
+					foreach ($to_insert as $insert) {
 						$insert = $db_au_camp_data[$insert];
 
 						if (empty($insert) || (empty($insert[$camp_end_date_fr]) && empty($insert[$camp_end_date_int]))) {
@@ -170,13 +172,13 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends \Joomla\CMS\Plugin\C
 					}
 
 					if (!empty($insert_values)) {
-						$this->query
-							->clear()
+						$this->query->clear()
 							->insert($this->db->quoteName('#__emundus_setup_campaigns'))
 							->columns($this->db->quoteName(array_keys($insert_data)))
 							->values($insert_values);
-						$this->db->setQuery($this->query);
+
 						try {
+							$this->db->setQuery($this->query);
 							$this->db->execute();
 						}
 						catch (Exception $e) {
@@ -191,7 +193,6 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends \Joomla\CMS\Plugin\C
 				if (!empty($to_update)) {
 
 					foreach ($to_update as $update) {
-
 						$update = $db_au_camp_data[$update];
 						$where  = null;
 
@@ -211,8 +212,9 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends \Joomla\CMS\Plugin\C
 								->update($this->db->quoteName('#__emundus_setup_campaigns'))
 								->set($fields)
 								->where($where);
-							$this->db->setQuery($this->query);
+
 							try {
+								$this->db->setQuery($this->query);
 								$this->db->execute();
 							}
 							catch (Exception $e) {
@@ -226,13 +228,13 @@ class plgEmundusAurion_sync_setup_campaigns_excelia extends \Joomla\CMS\Plugin\C
 							$fields[] = $this->db->quoteName('end_date') . ' = ' . $this->db->quote(date("Y-m-d H:i:s", strtotime($update[$camp_end_date_int])));
 							$where    = [$this->db->quoteName('aurion_id') . ' LIKE ' . $this->db->quote($update[$camp_aurion_id]), $this->db->quoteName('int_fr') . ' LIKE ' . $this->db->quote('int')];
 
-							$this->query
-								->clear()
+							$this->query->clear()
 								->update($this->db->quoteName('#__emundus_setup_campaigns'))
 								->set($fields)
 								->where($where);
-							$this->db->setQuery($this->query);
+
 							try {
+								$this->db->setQuery($this->query);
 								$this->db->execute();
 							}
 							catch (Exception $e) {

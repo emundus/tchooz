@@ -26,11 +26,12 @@ class EmundusViewApplication extends JViewLegacy
 {
 	private $app;
 	private $user;
-	private $euser;
+	protected $euser;
 
 	protected $student;
 	protected $synthesis;
 	protected $assoc_files;
+	protected $columns;
 	protected $userAttachments;
 	protected $attachmentsProgress;
 	protected $nameCategory;
@@ -86,6 +87,9 @@ class EmundusViewApplication extends JViewLegacy
 			$this->user = JFactory::getUser();
 		}
 		$this->euser = $session->get('emundusUser');
+		if(empty($this->euser->fnums)) {
+			$this->euser->fnums = array();
+		}
 
 		parent::__construct($config);
 	}
@@ -100,7 +104,8 @@ class EmundusViewApplication extends JViewLegacy
 		$params = ComponentHelper::getParams('com_emundus');
 
 		$jinput = $this->app->input;
-		$fnum   = $jinput->getString('fnum', null);
+		$fnum   = $jinput->getString('fnum', '');
+		$ccid   = $jinput->getInt('ccid', 0);
 		$layout = $jinput->getString('layout', 0);
 		$Itemid = $jinput->get('Itemid', 0);
 
@@ -118,59 +123,68 @@ class EmundusViewApplication extends JViewLegacy
 
 		$expire = time() + 60 * 60 * 24 * 30;
 		setcookie("application_itemid", $jinput->getString('id', 0), $expire);
-
+		
 		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum)) {
 
 			switch ($layout) {
 				case 'synthesis':
-					$this->synthesis = new stdClass();
-					$program         = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);
+						$this->synthesis = new stdClass();
+						$program         = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);
 
-					if (!empty($program->synthesis)) {
-						$campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $fnumInfos['campaign_id']);
+						if (!empty($program->synthesis)) {
+							$campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], $fnumInfos['campaign_id']);
 
-						$m_email = new EmundusModelEmails();
-						$tag     = array(
-							'FNUM'                 => $fnum,
-							'CAMPAIGN_NAME'        => $fnumInfos['label'],
-							'CAMPAIGN_LABEL'       => $fnumInfos['label'],
-							'APPLICATION_STATUS'   => $fnumInfos['value'],
-							'APPLICATION_TAGS'     => $fnum,
-							'APPLICATION_PROGRESS' => $fnumInfos['form_progress'],
-							'ATTACHMENT_PROGRESS'  => $fnumInfos['attachment_progress']
-						);
+							$m_email = new EmundusModelEmails();
+							$tag     = array(
+								'FNUM'                 => $fnum,
+								'CAMPAIGN_NAME'        => $fnumInfos['label'],
+								'CAMPAIGN_LABEL'       => $fnumInfos['label'],
+								'APPLICATION_STATUS'   => $fnumInfos['value'],
+								'APPLICATION_TAGS'     => $fnum,
+								'APPLICATION_PROGRESS' => $fnumInfos['form_progress'],
+								'ATTACHMENT_PROGRESS'  => $fnumInfos['attachment_progress']
+							);
 
-						$tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum, '', $program->synthesis);
+							$tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum, '', $program->synthesis);
 
-						$this->synthesis->program = $program;
-						$this->synthesis->camp    = $campaignInfo;
-						$this->synthesis->fnum    = $fnum;
-						$this->synthesis->block   = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
-						$this->synthesis->block   = $m_email->setTagsFabrik($this->synthesis->block, array($fnum));
-					}
+							$this->synthesis->program = $program;
+							$this->synthesis->camp    = $campaignInfo;
+							$this->synthesis->fnum    = $fnum;
+							$this->synthesis->block   = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
+							$this->synthesis->block   = $m_email->setTagsFabrik($this->synthesis->block, array($fnum));
+						}
 					break;
 
 				case 'assoc_files':
-					$show_related_files = $params->get('show_related_files', 0);
+						$show_related_files = $params->get('show_related_files', 0);
 
-					if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asManagerAccessLevel($this->user->id)) {
-						$campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id']);
+						if ($show_related_files || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asManagerAccessLevel($this->user->id)) {
+							$campaignInfo = $m_application->getUserCampaigns($fnumInfos['applicant_id'], null, false);
 
-						foreach ($campaignInfo as $key => $campaign) {
-							if (!EmundusHelperAccess::isUserAllowedToAccessFnum($this->_user->id, $campaign->fnum)) {
-								unset($campaignInfo[$key]);
+							$published_campaigns   = array_filter($campaignInfo, function ($campaign) {
+								return $campaign->published == 1;
+							});
+							$unpublished_campaigns = array_filter($campaignInfo, function ($campaign) {
+								return $campaign->published != 1;
+							});
+
+							foreach ($campaignInfo as $key => $campaign) {
+								if (!EmundusHelperAccess::isUserAllowedToAccessFnum($this->_user->id, $campaign->fnum)) {
+									unset($campaignInfo[$key]);
+								}
 							}
+
+						}
+						else {
+							$published_campaigns   = $m_application->getCampaignByFnum($fnum);
+							$unpublished_campaigns = [];
 						}
 
-					}
-					else {
-						$campaignInfo = $m_application->getCampaignByFnum($fnum);
-					}
-
-					$this->assoc_files            = new stdClass();
-					$this->assoc_files->camps     = $campaignInfo;
-					$this->assoc_files->fnumInfos = $fnumInfos;
-					$this->assoc_files->fnum      = $fnum;
+						$this->assoc_files                        = new stdClass();
+						$this->assoc_files->published_campaigns   = $published_campaigns;
+						$this->assoc_files->unpublished_campaigns = $unpublished_campaigns;
+						$this->assoc_files->fnumInfos             = $fnumInfos;
+						$this->assoc_files->fnum                  = $fnum;
 
 					break;
 
@@ -187,6 +201,7 @@ class EmundusViewApplication extends JViewLegacy
 						$this->attachmentsProgress = $m_application->getAttachmentsProgress($fnum);
 						$this->nameCategory        = $m_files->getAttachmentCategories();
 						$this->student_id          = $fnumInfos['applicant_id'];
+						$this->columns = ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
 					}
 					else {
 						echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
@@ -338,7 +353,7 @@ class EmundusViewApplication extends JViewLegacy
 						$this->userComments = $m_application->getFileComments($fnum);
 
 						foreach ($this->userComments as $comment) {
-							$comment->date = EmundusHelperDate::displayDate($comment->date);
+							$comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2',0);
 						}
 					}
 					elseif (EmundusHelperAccess::asAccessAction(10, 'c', $this->user->id, $fnum)) {
@@ -348,7 +363,7 @@ class EmundusViewApplication extends JViewLegacy
 						$this->userComments = $m_application->getFileOwnComments($fnum, $this->user->id);
 
 						foreach ($this->userComments as $comment) {
-							$comment->date = EmundusHelperDate::displayDate($comment->date);
+							$comment->date = EmundusHelperDate::displayDate($comment->date, 'DATE_FORMAT_LC2',0);
 						}
 
 						$this->fnum = $fnum;
@@ -366,6 +381,10 @@ class EmundusViewApplication extends JViewLegacy
 						$m_logs = new EmundusModelLogs();
 
 						$this->fileLogs = $m_logs->getActionsOnFnum($fnum, null, null, ["c", "r", "u", "d"]);
+						if(!empty($fnum) && in_array($fnum, array_keys($this->euser->fnums))) {
+							$this->euser->fnum = $fnum;
+							$this->app->getSession()->set('emundusUser', $this->euser);
+						}
 
 						foreach ($this->fileLogs as $log) {
 							$log->timestamp = EmundusHelperDate::displayDate($log->timestamp);
@@ -402,6 +421,8 @@ class EmundusViewApplication extends JViewLegacy
 
 				case 'form':
 					if (EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum)) {
+						$emundus_config = ComponentHelper::getParams('com_emundus');
+						$see_only_filled_workflows = $emundus_config->get('see_only_filled_workflows', 0);
 						$this->header = $jinput->getString('header', 1);
 
 						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FORM_READ');
@@ -423,10 +444,26 @@ class EmundusViewApplication extends JViewLegacy
 						/* get all profiles (order by step) by campaign */
 						$pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id], 'object');
 
+                        $pidsStep = [];
+                        if (isset($step) && is_numeric($step)) {
+                            $pidsStep = $m_profiles->getProfileByStep($step);
+                        }
+
 						$noPhasePids  = array();
 						$hasPhasePids = array();
-
 						foreach ($pidsRaw as $pidRaw) {
+                            if (!empty($pidsStep)) {
+                                if (!in_array($pidRaw->pid, $pidsStep)) {
+                                    continue;
+                                }
+                            }
+
+							if ($see_only_filled_workflows) {
+								if (!$m_application->isFormFilled($pidRaw->pid, $fnum)) {
+									continue;
+								}
+							}
+
 							if ($pidRaw->pid === $pid) {
 								$this->defaultpid = $pidRaw;
 							}
@@ -439,6 +476,9 @@ class EmundusViewApplication extends JViewLegacy
 							}
 							else {
 								$hasPhasePids[] = $pidRaw;
+                                if (empty($this->defaultpid)) {
+                                    $this->defaultpid = $pidRaw;
+                                }
 							}
 						}
 
@@ -446,13 +486,13 @@ class EmundusViewApplication extends JViewLegacy
 
 						/* group profiles by phase */
 						foreach ($hasPhasePids as $ppid) {
-							$profiles_by_phase['step_' . $ppid->phase]['lbl']    = $ppid->lbl;
+                            $profiles_by_phase['step_' . $ppid->phase]['lbl'] = $ppid->label;
 							$profiles_by_phase['step_' . $ppid->phase]['data'][] = $ppid;
 						}
 
-						$this->pids          = json_encode(array_merge($profiles_by_phase, $noPhasePids));
+						$this->pids          = array_merge($profiles_by_phase, $noPhasePids);
 						$this->formsProgress = $m_application->getFormsProgress($fnum);
-						$this->forms         = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $pid);
+						$this->forms         = $m_application->getForms(intval($fnumInfos['applicant_id']), $fnum, $this->defaultpid->pid);
 						$this->applicant     = $applicant[0];
 					}
 					else {

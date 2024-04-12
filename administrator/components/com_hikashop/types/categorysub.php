@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -189,7 +189,12 @@ window.hikashop.ready(function(){ window.hikashop.noChzn(); });
 				$doc = JFactory::getDocument();
 				$doc->addScriptDeclaration($js);
 			}
-			return $order_statusType->display($map, $value, 'class="no-chzn custom-select"'.$attribute, $addAll);
+			$html = $order_statusType->display($map, $value, 'class="no-chzn custom-select"'.$attribute, $addAll);
+			if($this->multiple && HIKASHOP_J40) {
+				JFactory::getDocument()->getWebAssetManager()->usePreset('choicesjs')->useScript('webcomponent.field-fancy-select');
+				$html = '<joomla-field-fancy-select>'.$html.'</joomla-field-fancy-select>';
+			}
+			return $html;
 		}
 
 		$this->load($form);

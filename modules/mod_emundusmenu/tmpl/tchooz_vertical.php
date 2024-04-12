@@ -84,13 +84,17 @@ defined('_JEXEC') or die;
 
     /*** Sublevel parent ***/
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item::before {
-        background: var(--neutral-900);
-        width: 3px;
+        background: var(--em-profile-color);
+        width: 4px;
         height: 100%;
         content: "";
         position: absolute;
         left: -20px;
         display: flex;
+    }
+
+    ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item span[class*="material-icons"] {
+        color: var(--em-profile-color) !important;
     }
 
     .active .item .image-title {
@@ -113,6 +117,7 @@ defined('_JEXEC') or die;
     #g-navigation .g-main-nav .tchooz-vertical-toplevel > li {
         margin-inline: 10px;
         font-family: var(--em-default-font);
+        margin: 5px 0.5rem;
     }
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo {
@@ -128,11 +133,15 @@ defined('_JEXEC') or die;
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
         width: 30px;
-        height: fit-content;
+        height: 30px;
     }
 
     #g-navigation .g-main-nav .g-sublevel > li:not(:last-child) > .g-menu-item-container {
         border-bottom: unset !important;
+    }
+
+    #g-navigation .g-main-nav .g-sublevel > li:hover > .g-menu-item-container {
+        color: var(--neutral-900);
     }
 
     .tchooz-vertical-item a {
@@ -142,6 +151,12 @@ defined('_JEXEC') or die;
         position: relative;
         z-index: 2;
         transition: all 0.3s ease-in-out;
+        color: var(--neutral-900);
+        text-decoration: none;
+    }
+
+    .tchooz-vertical-item a:hover {
+        text-decoration: none;
     }
 
     .tchooz-vertical-item a img,
@@ -149,7 +164,6 @@ defined('_JEXEC') or die;
         width: 30px;
         height: 30px;
         padding: 3px !important;
-        color: var(--em-profile-color) !important;
     }
 
     .image-title {
@@ -205,6 +219,13 @@ defined('_JEXEC') or die;
         border-bottom: 1px solid #e0e0e5;
         padding-bottom: 10px;
         color: var(--neutral-900);
+        line-height: normal;
+    }
+
+    .message-tooltip-block a {
+        font-weight: 400;
+        font-style: normal;
+        line-height: normal;
     }
 
     .message-tooltip-block {
@@ -221,7 +242,7 @@ defined('_JEXEC') or die;
         height: 0;
         width: 0;
         right: 100%;
-        top: 10px;
+        top: 12px;
         border: 10px solid transparent;
         border-right-color: transparent;
         border-right-style: solid;
@@ -264,7 +285,7 @@ defined('_JEXEC') or die;
 
         <li class="g-menu-item g-standard tchooz-vertical-item">
             <a class="item" onclick="enableTitles()">
-                <img src="http://localhost/images/emundus/menus/menu.png" style="width: 30px">
+                <img src="./images/emundus/menus/menu.png" style="width: 30px">
                 <span class="image-title"
                       style="display: block; opacity: 1;"><?php echo JText::_('MOD_EMUNDUSMENU_ITEM_MENU') ?></span>
             </a>
@@ -272,17 +293,7 @@ defined('_JEXEC') or die;
 
 		<?php
 
-		$target_dir = "images/custom/";
-		$filename   = 'favicon';
-		$favicon    = glob("{$target_dir}{$filename}.*");
-
-		if (file_exists(JPATH_SITE . '/' . $favicon[0])) {
-			$favicon = JURI::base() . '/' . $favicon[0];
-		}
-		else {
-			$favicon = JURI::base() . '/images/emundus/tchooz_favicon.png';
-		}
-		echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="' . JText::_('MOD_EMUNDUSMENU_HOME') . '" href="' . $favicon_link . '"><img src="' . $favicon . '" alt="' . JText::_('MOD_EMUNDUSMENU_HOME') . '"></a>
+        echo '<li class="g-menu-item g-standard tchooz-vertical-item tchooz-vertical-logo"><a class="item" title="'.JText::_('MOD_EMUNDUSMENU_HOME').'" href="'.$favicon_link.'"><img src="'.JURI::base().'/'.$favicon.'" alt="'.JText::_('MOD_EMUNDUSMENU_HOME').'"></a>
         </li>';
 
 		if ($display_tchooz) :
@@ -349,7 +360,7 @@ defined('_JEXEC') or die;
 			endforeach;
 
 			if (sizeof($tchooz_list) > 0) :
-				echo '<hr id="menu_separator" class="mb-4 mt-4">';
+				echo '<hr id="menu_separator">';
 			endif;
 		endif;
 
@@ -495,67 +506,59 @@ defined('_JEXEC') or die;
 
 
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".g-sublevel > li").forEach(function (el) {
-            el.addEventListener("mouseenter", function (e) {
-                if (this.querySelector("ul")) {
-                    var elm = this.querySelector("ul:first-child");
-                    var off = elm.getBoundingClientRect();
-                    var l = off.left;
-                    var w = elm.offsetWidth;
-                    var docH = document.querySelector("#g-page-surround").offsetHeight;
-                    var docW = document.querySelector("#g-page-surround").offsetWidth;
-                    var isEntirelyVisible = (l + w <= docW);
-
-                    if (!isEntirelyVisible) {
-                        this.classList.add("edge");
-                    } else {
-                        this.classList.remove("edge");
-                    }
-                }
-            });
-        });
-    });
-
-
     //Keep original tooltip margin to reposition after mouse out (usefull in case of window resizing)
     const originalMargin = parseInt(document.querySelector("[id^=tooltip-]:first-of-type").style.marginTop, 10);
 
     function enableTooltip(menu) {
-        if (window.getComputedStyle(document.querySelector(".image-title")).getPropertyValue("display") !== "none") {
-            if (document.querySelector("#sublevel_list_" + menu)) {
-                document.querySelector("#tooltip-" + menu).style.marginLeft = "200px";
-                document.querySelector("#tooltip-" + menu).style.display = "block";
-            }
-        } else {
-            document.querySelector("#tooltip-" + menu).style.marginLeft = "0";
-            document.querySelector("#tooltip-" + menu).style.display = "block";
+        let enabled = false;
+        let tooltipMenu = document.querySelector("#tooltip-" + menu);
 
-            //Reposition tooltip if out of viewport or scroll happened
-            var tooltipBox = document.querySelector("#tooltip-" + menu);
-            var tooltipRect = tooltipBox.getBoundingClientRect();
-            const menuBox = document.querySelector("li.g-menu-item-" + menu);
-            const menuRect = menuBox.getBoundingClientRect();
-            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        if (tooltipMenu) {
+            if (window.getComputedStyle(document.querySelector('.image-title')).getPropertyValue('display') !== 'none') {
+                if (document.querySelector('#sublevel_list_' + menu)) {
+                    tooltipMenu.style.marginLeft = '200px';
+                    tooltipMenu.style.display = 'block';
+                }
+            } else {
+                tooltipMenu.style.marginLeft = '0';
+                tooltipMenu.style.display = 'block';
 
-            //reposition after scrolling
-            if (tooltipRect.top - menuRect.top > 10) {
-                document.querySelector("#tooltip-" + menu).style.marginTop = -(tooltipRect.top - menuRect.top - originalMargin) + 'px';
-                //get new position of tooltip
-                tooltipBox = document.querySelector("#tooltip-" + menu);
-                tooltipRect = tooltipBox.getBoundingClientRect();
+                //Reposition tooltip if out of viewport or scroll happened
+                let tooltipRect = tooltipMenu.getBoundingClientRect();
+                const menuBox = document.querySelector('li.g-menu-item-' + menu);
+                const menuRect = menuBox.getBoundingClientRect();
+                const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+                //reposition after scrolling
+                if (tooltipRect.top - menuRect.top > 10) {
+                    tooltipMenu.style.marginTop = -(tooltipRect.top - menuRect.top - originalMargin) + 'px';
+                    // get new position of tooltip
+                    tooltipRect = tooltipMenu.getBoundingClientRect();
+                }
+
+                // reposition out of viewport
+                if (tooltipRect.bottom > viewportHeight) {
+                    tooltipMenu.style.marginTop = -(tooltipRect.bottom - viewportHeight - parseInt(tooltipMenu.style.marginTop, 10)) + 'px';
+                }
             }
 
-            //reposition out of viewport
-            if (tooltipRect.bottom > viewportHeight) {
-                document.querySelector("#tooltip-" + menu).style.marginTop = -(tooltipRect.bottom - viewportHeight - parseInt(document.querySelector("#tooltip-" + menu).style.marginTop, 10)) + 'px';
-            }
+            enabled = true;
         }
+
+        return enabled;
     }
 
     function disableTooltip(menu) {
-        document.querySelector("#tooltip-" + menu).style.display = "none";
-        document.querySelector("#tooltip-" + menu).style.marginTop = originalMargin + "px";
+        let disabled = false;
+
+        let tooltipMenu = document.querySelector('#tooltip-' + menu);
+        if (tooltipMenu) {
+            tooltipMenu.style.display = 'none';
+            tooltipMenu.style.marginTop = originalMargin + 'px';
+            disabled = true;
+        }
+
+        return disabled;
     }
 
     function enableTitles(state) {
@@ -572,20 +575,12 @@ defined('_JEXEC') or die;
             if (document.querySelector(".sidebar-formbuilder")) {
                 document.querySelector(".sidebar-formbuilder").style.opacity = "0";
             }
-            if (window.innerWidth >= 1280) {
+            if (window.innerWidth >= 0) {
                 jQuery("#g-footer").css("padding-left", "280px");
                 jQuery("#footer-rgpd").css("padding-left", "280px");
-                jQuery("#g-container-main").css("padding-left", "280px");
+                jQuery("#g-container-main").css("padding-left", "270px");
                 jQuery("#header-a").css("opacity", "1");
-                jQuery(".logo").css("position", "absolute");
                 jQuery(".tchooz-vertical-logo").css("opacity", "0");
-
-                let elmnt = document.getElementById("g-top");
-                if (elmnt !== null) {
-                    jQuery(".logo").css("top", "-37px");
-                } else {
-                    jQuery(".logo").css("top", "7px");
-                }
             }
             setTimeout(() => {
                 document.querySelectorAll(".image-title").forEach(function (elem) {
@@ -610,7 +605,7 @@ defined('_JEXEC') or die;
             if (document.querySelector(".sidebar-formbuilder")) {
                 document.querySelector(".sidebar-formbuilder").style.opacity = "0";
             }
-            if (window.innerWidth >= 1280) {
+            if (window.innerWidth >= 0) {
                 if (document.querySelector("#g-footer")) {
                     document.querySelector("#g-footer").style.paddingLeft = "280px";
                     if (document.querySelector("#footer-rgpd")) {
@@ -651,7 +646,7 @@ defined('_JEXEC') or die;
                 document.querySelector(".sidebar-formbuilder").style.opacity = "1";
             }
 
-            if (window.innerWidth >= 1280) {
+            if (window.innerWidth >= 0) {
                 document.querySelector("#g-container-main").style.paddingLeft = "76px";
                 if (document.querySelector("#g-footer")) {
                     document.querySelector("#g-footer").style.paddingLeft = "76px";
@@ -663,6 +658,7 @@ defined('_JEXEC') or die;
             }
 
             setTimeout(function () {
+                document.querySelector(".tchooz-vertical-logo").style.opacity = "1";
                 document.querySelectorAll(".image-title").forEach(function (elem) {
                     elem.style.display = "none";
                 });
@@ -688,9 +684,33 @@ defined('_JEXEC') or die;
         });
     }
 
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".g-sublevel > li").forEach(function (el) {
+            el.addEventListener("mouseenter", function (e) {
+                if (this.querySelector("ul")) {
+                    var elm = this.querySelector("ul:first-child");
+                    var off = elm.getBoundingClientRect();
+                    var l = off.left;
+                    var w = elm.offsetWidth;
+                    var docH = document.querySelector("#g-page-surround").offsetHeight;
+                    var docW = document.querySelector("#g-page-surround").offsetWidth;
+                    var isEntirelyVisible = (l + w <= docW);
+
+                    if (!isEntirelyVisible) {
+                        this.classList.add("edge");
+                    } else {
+                        this.classList.remove("edge");
+                    }
+                }
+            });
+        });
+    });
+
     document.addEventListener('click', function (e) {
         e.stopPropagation();
-        if (document.querySelector(".image-title").style.display == 'block') {
+        const imageTitle = document.querySelector(".image-title");
+
+        if (imageTitle && imageTitle.style.display == 'block') {
             enableTitles();
         }
     });

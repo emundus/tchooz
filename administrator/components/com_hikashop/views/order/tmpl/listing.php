@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.0
+ * @version	5.0.3
  * @author	hikashop.com
- * @copyright	(C) 2010-2023 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -134,7 +134,7 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 				if(!empty($this->rates)){
 					foreach($this->rates as $rate){
 						$count_fields++;
-						echo '<th class="hikashop_order_'.$rate->tax_namekey.'_title title default" data-alias="'.$rate->tax_namekey.'">'.hikashop_translate($rate->tax_namekey).'</th>';
+						echo '<th class="hikashop_order_'.$rate->tax_namekey.'_title title default" data-alias="'.str_replace('%', '', $rate->tax_namekey).'">'.hikashop_translate($rate->tax_namekey).'</th>';
 					}
 				}
 
@@ -332,6 +332,7 @@ if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
 					}
 					if(hikashop_level(2) && !empty($this->fields)){
 						foreach($this->fields as $field){
+							$field->currentElement = $row;
 							$namekey = $field->field_namekey;
 							echo '<td class="hikashop_order_'.$namekey.'_value">';
 							if(!empty($row->$namekey)) echo $this->fieldsClass->show($field,$row->$namekey);

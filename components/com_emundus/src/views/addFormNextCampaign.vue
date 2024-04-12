@@ -59,7 +59,7 @@
 
         <!-- end Menu -->
 
-        <div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
+        <div v-if="menuHighlightProg != -1" class="warning-message-program tw-mb-1">
           <p class="em-red-500-color em-flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{ translations.ProgramWarning }}
           </p>
           <ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32 em-pl-16">
@@ -108,7 +108,7 @@
            v-if="menuHighlight !== 0 && menuHighlightProg !== 0">
         <button
             type="button"
-            class="em-primary-button em-w-auto"
+            class="em-primary-button em-w-auto tw-mb-4"
             @click="next">
           {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
         </button>
@@ -445,5 +445,6 @@ export default {
   padding: 8px 12px;
   margin-right: 2px;
   display: block;
+  text-decoration: none;
 }
 </style>

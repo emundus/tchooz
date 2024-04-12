@@ -173,14 +173,16 @@ export default {
       Swal.fire({
         title: '',
         html: '<div class="form-group campaign-label">' +
-            '<label for="campLabel">' + this.DocumentName + '</label><input type="text" maxlength="200" id="label_' + doc.id + '" value="' + doc.title + '"/>' +
+            '<label for="campLabel">' + this.DocumentName + '</label><input type="text" class="tw-mt-2" maxlength="200" id="label_' + doc.id + '" value="' + doc.title + '"/>' +
             '</div>',
         showCloseButton: true,
         allowOutsideClick: false,
+        confirmButtonText: this.translate('COM_EMUNDUS_OK'),
         customClass: {
           title: 'em-swal-title',
           confirmButton: 'em-swal-confirm-button',
           actions: "em-swal-single-action",
+          content: "text-start"
         }
       }).then((value) => {
         if (value) {
