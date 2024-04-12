@@ -466,7 +466,7 @@ else {
 <style>
     .search-field input {
         font-size: small !important;
-        font-style: italic;
+        height: 20px !important;
     }
 
     #filters-logs, #export-logs {
@@ -476,4 +476,8 @@ else {
     #apply-filters {
         padding-bottom: 0;
     }
+
+    .chzn-container.chzn-container-multi {
+        margin-top: 6px;
+     }
 </style>
