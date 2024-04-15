@@ -62,12 +62,12 @@ else {
             <br class="panel-body em-container-comment-body">
 
 	        <?php if ($this->euser->applicant == 0) : ?>
-                <div class="view-type tw-flex tw-items-center tw-justify-end tw-mr-4">
-                    <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;"
+                <div class="view-type tw-flex tw-items-center tw-justify-end tw-mr-4 ">
+                    <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center; background: var(--neutral-0);"
                           id="table_view_button"
                           class="material-icons-outlined tw-ml-2 tw-cursor-pointer active em-main-500-color em-border-main-500"
                     >dehaze</span>
-                    <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center;"
+                    <span style="padding: 4px;border-radius: calc(var(--em-default-br)/2);display: flex;height: 38px;width: 38px;align-items: center;justify-content: center; background: var(--neutral-0);"
                           id="grid_view_button"
                           class="material-icons-outlined tw-ml-2 tw-cursor-pointer em-neutral-600-color em-border-neutral-600"
                     >grid_view</span>
@@ -466,7 +466,7 @@ else {
 <style>
     .search-field input {
         font-size: small !important;
-        font-style: italic;
+        height: 20px !important;
     }
 
     #filters-logs, #export-logs {
@@ -476,4 +476,8 @@ else {
     #apply-filters {
         padding-bottom: 0;
     }
+
+    .chzn-container.chzn-container-multi {
+        margin-top: 6px;
+     }
 </style>

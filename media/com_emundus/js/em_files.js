@@ -479,7 +479,7 @@ function openFiles(fnum, page = 0, vue = false) {
                 $('#'+fnum.fnum+'_ls_op' ).addClass('active');
             } else {
                 if (fnum.hasOwnProperty('name')) {
-                    $('#em-last-open .list-group').append('<a href="#'+fnum.fnum+'|open" class="list-group-item active" title="'+fnum.fnum+'" id="'+fnum.fnum+'_ls_op"><strong>'+fnum.name+'</strong><span> - '+fnum.label+'</span></a>');
+                    $('#em-last-open .list-group').append('<a href="#'+fnum.fnum+'|open" class="list-group-item active" title="'+fnum.fnum+'" id="'+fnum.fnum+'_ls_op"><strong>'+fnum.name+' - </strong><span>'+fnum.label+'</span></a>');
                 } else {
                     $('#em-last-open .list-group').append('<a href="#'+fnum.fnum+'|open" class="list-group-item active" id="'+fnum.fnum+'_ls_op">'+fnum.fnum+'</a>');
                 }

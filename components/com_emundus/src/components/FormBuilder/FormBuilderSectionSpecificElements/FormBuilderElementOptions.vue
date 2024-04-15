@@ -9,10 +9,10 @@
         <div class="element-option em-flex-row em-flex-space-between em-mt-8 em-mb-8"
              v-for="(option, index) in arraySubValues" :key="option" @mouseover="optionHighlight = index;"
              @mouseleave="optionHighlight = null">
-          <div class="em-flex-row em-w-100">
-            <div class="em-flex-row">
+          <div class="tw-flex tw-items-center tw-w-full">
+            <div class="tw-flex tw-items-center">
               <span class="icon-handle" :style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'">
-                <span class="material-icons-outlined handle-options em-grab">drag_indicator</span>
+                <span class="material-icons-outlined handle-options em-grab" style="font-size: 18px">drag_indicator</span>
               </span>
             </div>
             <input v-if="type !== 'dropdown'" :type="type" :name="'element-id-' + element.id"
@@ -33,15 +33,17 @@
       </draggable>
       <div id="add-option" class="em-flex-row em-flex-start em-s-justify-content-center">
         <span class="icon-handle" style="opacity: 0">
-          <span class="material-icons-outlined handle-options">drag_indicator</span>
+          <span class="material-icons-outlined handle-options" style="font-size: 18px">drag_indicator</span>
         </span>
         <input v-if="type !== 'dropdown'" :type="type" :name="'element-id-' + element.id">
         <div v-else>{{ element.params.sub_options.sub_labels.length + 1 }}.</div>
         <input
             type="text"
             class="editable-data editable-data-input em-ml-4 em-w-100"
+            :id="'new-option-'+ element.id"
             v-model="newOption"
             @focusout="addOption"
+            @keyup.enter="addOption"
             :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_OPTION')">
       </div>
     </div>
@@ -79,18 +81,18 @@ export default {
     this.getSubOptionsTranslation();
   },
   methods: {
-    async reloadOptions() {
+    async reloadOptions(new_option = false) {
       this.loading = true;
       formBuilderService.getElementSubOptions(this.element.id).then((response) => {
         if (response.data.status) {
           this.element.params.sub_options = response.data.new_options;
-          this.getSubOptionsTranslation();
+          this.getSubOptionsTranslation(new_option);
         } else {
           this.loading = false;
         }
       });
     },
-    async getSubOptionsTranslation() {
+    async getSubOptionsTranslation(new_option = false) {
       this.loading = true;
 
       formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
@@ -102,6 +104,13 @@ export default {
               'sub_label': this.element.params.sub_options.sub_labels[i],
             };
           });
+
+          setTimeout(() => {
+            if(new_option) {
+              document.getElementById('new-option-' + this.element.id).focus();
+            }
+          }, 500)
+
         }
 
         this.loading = false;
@@ -116,7 +125,7 @@ export default {
       formBuilderService.addOption(this.element.id, this.newOption, this.shortDefaultLang).then((response) => {
         this.newOption = '';
         if (response.data.status) {
-          this.reloadOptions();
+          this.reloadOptions(true);
         }
         this.loading = false;
       })

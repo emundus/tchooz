@@ -651,6 +651,8 @@ div#em-appli-block a#download-pdf{
     justify-content: center;
     display: inline-flex;
     width: 100%;
+    flex-wrap: wrap;
+    gap: 4px;
 }
 /* Panel droit dossier */
 .em-close-minimise {

@@ -20,15 +20,18 @@
           <div
               v-for="element in publishedElements"
               :key="element.value"
-              class="form-builder-element tw-flex tw-justify-between tw-items-start tw-gap-3 tw-p-3 tw-cursor-copy"
-              @click="$emit('create-element-lastgroup', element)"
+              @mouseover="elementHovered = element.value" @mouseleave="elementHovered = 0"
+              class="form-builder-element tw-flex tw-justify-between tw-items-start tw-gap-3 tw-p-3 tw-cursor-move"
           >
-            <span class="material-icons-outlined">{{ element.icon }}</span>
+            <span class="material-icons-outlined" style="font-size: 18px">{{ element.icon }}</span>
             <p class="tw-w-full tw-flex tw-flex-col">
               {{ translate(element.name) }}
               <span class="tw-text-neutral-600 tw-text-xs">{{ translate(element.description) }}</span>
             </p>
-            <span class="material-icons-outlined tw-self-center tw-cursor-grab">drag_indicator</span>
+            <div class="tw-flex tw-items-center">
+<!--              <span class="material-icons-outlined" style="font-size: 18px">drag_indicator</span>-->
+              <span v-show="elementHovered == element.value" class="material-icons-outlined tw-cursor-copy" style="font-size: 18px" @click="$emit('create-element-lastgroup', element)">add_circle_outline</span>
+            </div>
           </div>
         </transition-group>
       </draggable>
@@ -91,6 +94,7 @@ export default {
       groups: [],
       cloneElement: {},
       loading: false,
+      elementHovered: 0,
     }
   },
   created() {
