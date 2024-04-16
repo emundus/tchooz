@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2024. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Language\Text;
 
 ?>
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
    function copyToClipboard(value, action) {
       try {
          if (document.getElementById) {
@@ -25,7 +25,7 @@ use Joomla\CMS\Language\Text;
              innerHTML = translateService(srcEl.innerHTML);
          }
             if ( typeof(tinyMCE)=="object") {
-               tinyMCE.editors["refField_"+value].execCommand("mceSetContent",false,innerHTML );
+                tinyMCE.get("refField_"+value).execCommand("mceSetContent",false,innerHTML );
             }
             else {
                if (window.clipboardData){
@@ -42,7 +42,8 @@ use Joomla\CMS\Language\Text;
          }
       }
       catch(e){
-         alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('CLIPBOARD_NOSUPPORT'));?>");
+          console.log(e.message);
+          alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('CLIPBOARD_NOSUPPORT'));?>");
       }
    }
    

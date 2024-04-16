@@ -42,14 +42,20 @@ $wa->useScript('form.validate');
 //if no translator selected.
 $translate_button_available = false;
 $translate_button_icon = 'fas fa-globe';
-if (!empty($params->get('translator')) && ('none' != strtolower($params->get('translator'))) && (!empty($params->get('translator_bingkey')) ||
+$translate_service = $params->get('translator');
+if (!empty($translate_service) && ('none' != strtolower($translate_service)) &&
+                                           !empty($params->get('translator_bingkey') ||
+                                           !empty($params->get('translator_deeplkey'))  ||
                                            !empty($params->get('translator_googlekey'))  ||
                                            !empty($params->get('translator_yandexkey'))  ||
                                            !empty($params->get('translator_lingvanex')) )){
 	require_once __DIR__ .'/../../../classes/translator.php';
 	translatorFactory::getTranslator($this->select_language_id);
 	$translate_button_available = true;
-	switch ($params->get('translator')){
+	switch ($translate_service){
+        case 'Deepl':
+            $translate_button_icon = 'fa fa-language';
+            break;
 	    case 'Bing':
             $translate_button_icon = 'fab fa-windows';
             break;
@@ -144,7 +150,8 @@ if (file_exists($editorFile)){
 }
 else {
 	?>
-	<script language="javascript" type="text/javascript">
+	<script type="text/javascript">
+
 	function copyToClipboard(value,action) {
 		try {
 			if (document.getElementById) {
@@ -179,13 +186,14 @@ else {
 			}
 		}
 		catch(e){
+            console.log(e.message);
 			alert("<?php echo Text::_('CLIPBOARD_NOSUPPORT');?>");
 		}
 	}
     </script>
 <?php } ?>
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 
     //add insert image name for image type
     function jInsertFieldValue(value,id) {
@@ -194,23 +202,6 @@ else {
             document.getElementById(id).value = value;
         }
     }
-
-	function confirmChangeLanguage(fromLang, fromIndex){
-		selections = document.getElementsByName("language_id")[0].options;
-		selection = document.getElementsByName("language_id")[0].selectedIndex;
-		//alert(selection+" from "+ fromIndex+" which is "+fromLang+" xx "+document.getElementsByName("language_id")[0].value);
-		var toLang = selections[selection].text;
-		var toValue = selection = document.getElementsByName("language_id")[0].value;
-		if (fromIndex!=toValue){
-			answer = confirm("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('JS_CHANGE_TRANSLATION_LANGUAGE')); ?>");
-			if (!answer) {
-				document.getElementsByName("language_id")[0].selectedIndex=fromIndex;
-			}
-		}
-		else {
-			alert("<?php echo preg_replace( '#<br\s*/>#', '\n', Text::_('JS_REINSTATE_TRANSLATION_LANGUAGE',true)); ?>");
-		}
-	}
 
     </script>
 
@@ -405,7 +396,7 @@ else {
 
 		                    <?php if( strtolower($field->Type)!='htmltext' && strtolower($field->Type)!='readonlytext') {?>
                                 <!-- Translate button -->
-                                <a class="button btn btn-translate <?php echo $translate_button_available ? '': 'disabled';?>" title="<?php echo !$translate_button_available ?Text::_('COM_FALANG_SERVICE_NOT_CONFIGURED'):'';?>"  onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = translateService(document.adminForm.origText_<?php echo $field->Name;?>.value);" title="<?php echo Text::_('COM_FALANG_BTN_TRANSLATE'); ?>"><i class="<?php echo $translate_button_icon;?>"></i></a>
+                                <a class="button btn btn-translate <?php echo $translate_button_available ? '': 'disabled';?>" title="<?php echo !$translate_button_available ?Text::_('COM_FALANG_SERVICE_NOT_CONFIGURED'):'';?>"  onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = translateService(document.adminForm.origText_<?php echo $field->Name;?>.value);" title="<?php echo Text::sprintf('COM_FALANG_BTN_TRANSLATE',$translate_service); ?>"><i class="<?php echo $translate_button_icon;?>"></i></a>
                                 <!-- Copy button -->
                                 <a class="button btn btn-copy" onclick="document.adminForm.refField_<?php echo $field->Name;?>.value = document.adminForm.origText_<?php echo $field->Name;?>.value;" title="<?php echo Text::_('COM_FALANG_BTN_COPY'); ?>"><i class="icon-copy"></i></a>
                                 <!-- Delete button -->
@@ -414,7 +405,7 @@ else {
 
 		                    <?php if( strtolower($field->Type)=='htmltext' && strtolower($field->Type)!='readonlytext') {?>
                                 <!-- Translate button -->
-                                <a class="button btn btn-translate <?php echo $translate_button_available ? '': 'disabled';?>"  onclick="copyToClipboard('<?php echo $field->Name;?>','translate');" title="<?php echo Text::_('COM_FALANG_BTN_TRANSLATE'); ?>"><i class="<?php echo $translate_button_icon;?>"></i></a>
+                                <a class="button btn btn-translate <?php echo $translate_button_available ? '': 'disabled';?>"  onclick="copyToClipboard('<?php echo $field->Name;?>','translate');" title="<?php echo Text::sprintf('COM_FALANG_BTN_TRANSLATE',$translate_service); ?>"><i class="<?php echo $translate_button_icon;?>"></i></a>
                                 <!-- Copy button -->
                                 <a class="button btn btn-copy" onclick="copyToClipboard('<?php echo $field->Name;?>','copy');" title="<?php echo Text::_('COM_FALANG_BTN_COPY'); ?>"><i class="icon-copy"></i></a>
                                 <!-- Delete button -->
