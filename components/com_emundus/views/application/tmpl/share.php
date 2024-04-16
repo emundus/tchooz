@@ -355,9 +355,31 @@
 </script>
 
 <style>
+
+    a.em-del-access:hover, a.em-del-access:focus {
+        text-decoration: none;
+    }
+
+    a.em-del-access:hover span, a.em-del-access:focus span {
+        color: var(--red-700);
+    }
+
+    a.em-del-access span {
+        color: var(--red-500);
+    }
+
+    #em-appli-block div.em-w-100 {
+        flex-wrap: nowrap;
+    }
+
     #groups-access-table, #users-access-table {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
+        margin-bottom: 0;
+    }
+
+    .em-container-share-table-left {
+        width: fit-content;
     }
 
     .table-left table {
