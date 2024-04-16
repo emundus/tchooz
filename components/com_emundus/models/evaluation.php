@@ -2673,6 +2673,11 @@ class EmundusModelEvaluation extends JModelList
 						}
 						break;
 				}
+
+				if ($res->status) {
+					$logs_params = ['created' => ['filename' => $letter->title]];
+					EmundusModelLogs::log($user->id, (int)substr($fnum, -7), $fnum, 27, 'c', 'COM_EMUNDUS_ACCESS_LETTERS', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+				}
 			}
 		}
 
@@ -3081,18 +3086,26 @@ class EmundusModelEvaluation extends JModelList
 	private function copy_directory($src, $dst)
 	{
 		$dir = opendir($src);
-		@mkdir($dst);
-		while (false !== ($file = readdir($dir))) {
-			if (($file != '.') && ($file != '..')) {
-				if (is_dir($src . '/' . $file)) {
-					recurse_copy($src . '/' . $file, $dst . '/' . $file);
-				}
-				else {
-					copy($src . '/' . $file, $dst . '/' . $file);
+
+		if($dir !== false)
+		{
+			mkdir($dst);
+			while (false !== ($file = readdir($dir)))
+			{
+				if (($file != '.') && ($file != '..'))
+				{
+					if (is_dir($src . '/' . $file))
+					{
+						recurse_copy($src . '/' . $file, $dst . '/' . $file);
+					}
+					else
+					{
+						copy($src . '/' . $file, $dst . '/' . $file);
+					}
 				}
 			}
+			closedir($dir);
 		}
-		closedir($dir);
 
 		return 0;
 	}
