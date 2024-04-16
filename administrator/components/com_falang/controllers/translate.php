@@ -10,6 +10,7 @@ defined( '_JEXEC' ) or die;
 
 JLoader::import( 'helpers.controllerHelper',FALANG_ADMINPATH);
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -680,4 +681,28 @@ class TranslateController extends AdminController   {
 
 		$this->view->display();
 	}
+
+    /**
+     *
+     * Call translation service on Translator
+     * Remove old system with javascript and Cors problem
+     *
+     * @from 5.6
+     */
+    public function service(){
+
+        require_once JPATH_ADMINISTRATOR.'/components/com_falang/classes/translator.php';
+
+        //get default language id - translator need a target language id but we don't have it here
+        $default_lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
+        $falangManager  = FalangManager::getInstance();
+        $language_id = $falangManager->getLanguageID($default_lang);
+
+        $translator = translatorFactory::getTranslator((int)$language_id);
+        $response = $translator->getServiceTranslation();
+
+        header('content-type: application/json; charset=utf-8');
+        echo json_encode($response);
+       exit;
+    }
 }
