@@ -1,5 +1,10 @@
 @layer components {
 
+  /* COORDINATOR FORMS*/
+  .emundus-form.tw-p-6.homepage {
+    background: var(--neutral-0);
+  }
+
   /** APPLICANT **/
   .emundus-form {
     .page-header h1 {

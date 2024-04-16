@@ -1914,6 +1914,11 @@ thead th:hover {
     color: var(--neutral-0) !important;
 }
 
+#em-appli-block .panel-heading .panel-title a.clean:hover,
+#em-appli-block .panel-heading .panel-title a.clean + div.em-flex-row a:hover{
+    text-decoration: none;
+}
+
 .table-left,
 .table-right {
     padding: 0 !important;
