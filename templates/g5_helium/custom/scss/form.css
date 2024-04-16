@@ -695,7 +695,7 @@
 
     /** SELECT **/
     select {
-      background-position-x: 93%;
+      background-position-x: 98%;
       background-position-y: 54%;
       -webkit-appearance: none;
       appearance: none;
@@ -707,6 +707,10 @@
       &.input-small {
         background-position-x: 92%;
       }
+    }
+
+    select.form-select + .chosen-container .chosen-single {
+      background-position-x: 98% !important;
     }
 
     select[size] {

@@ -1461,7 +1461,7 @@ form.fabrikForm .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(
     }
 /** SELECT **/
 form.fabrikForm select {
-      background-position-x: 93%;
+      background-position-x: 98%;
       background-position-y: 54%;
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -1475,6 +1475,9 @@ form.fabrikForm select {
 form.fabrikForm select.input-small {
         background-position-x: 92%;
       }
+form.fabrikForm select.form-select + .chosen-container .chosen-single {
+      background-position-x: 98% !important;
+    }
 form.fabrikForm select[size] {
       height: var(--em-form-height) !important;
     }
