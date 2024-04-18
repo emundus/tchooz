@@ -119,12 +119,26 @@ p,
   transition: all ease-in-out 0.3s;
 }
 
-.gantry:not(.applicant-form):not(.files-board) #g-container-main,
+.gantry:not(.applicant-form):not(.files-board):not(.view-contacts):not(.com_dropfiles) #g-container-main,
 .gantry.view-form #g-utility,
 .gantry.view-checklist #g-utility,
 .gantry.view-details #g-utility,
 .gantry.mon-profil #g-container-main {
-  padding-top: 40px !important;
+  padding-top: 32px !important;
+}
+
+.gantry:not(.applicant-form):not(.files-board) {
+  &.view-campaigns, &.view-form.com_emundus, &.view-emails, &.view-settings {
+    #g-container-main {
+      padding-top: 26px !important;
+      .g-container {
+        padding: 0 32px;
+      }
+    }
+  }
+  &.view-settings #g-container-main {
+    padding-top: 32px !important;
+  }
 }
 
 
@@ -134,6 +148,10 @@ p,
 
 #g-container-main .g-container {
   padding: 0 20px;
+}
+
+.view-syncs #g-container-main .g-container.g-flushed {
+  padding: 0 32px !important;
 }
 
 .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
@@ -1380,7 +1398,7 @@ footer#g-footer > .g-container {
     font-size: var(--em-coordinator-font-size) !important;
     height: auto !important;
     &:hover, &:active, &:focus {
-      background: var(--neutral-0);
+      background: var(--neutral-0) !important;
       border: 1px solid var(--em-profile-color) !important;
       color: var(--em-profile-color);
       letter-spacing: normal;
@@ -1596,8 +1614,7 @@ footer#g-footer > .g-container {
 }
 
 .view-list #g-container-main .g-container {
-  padding-left: 5%;
-  padding-right: 5%;
+  padding: 0 32px;
 }
 
 .row .span3 {
@@ -1620,7 +1637,7 @@ footer#g-footer > .g-container {
 
 .view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
   position: relative;
-  width: calc(100% - 76px);
+  width: 100%;
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -4211,6 +4228,31 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   }
 }
 
+.view-form #center_content #form-builder-page div.em-flex-row.em-flex-space-between #add-page-modele {
+  background: var(--neutral-0);
+  border: 1px solid var(--em-profile-color);
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--em-default-br);
+  gap: 12px;
+  color: var(--em-profile-color);
+}
+
+.view-form #center_content #form-builder-page div.em-flex-row.em-flex-space-between #add-page-modele span {
+  color: var(--em-profile-color);
+  font-size: 20px;
+}
+
+.view-form #center_content #form-builder-page div.em-flex-row.em-flex-space-between #add-page-modele:hover {
+  background: var(--em-profile-color);
+  color: var(--neutral-0);
+  cursor: pointer;
+
+  span {
+    color: var(--neutral-0);
+  }
+}
 
 /* INDICATIFS TEL */
 

@@ -48,7 +48,7 @@ class EmundusModelApplication extends JModelList
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 
 		$this->_mainframe = Factory::getApplication();
-		$this->_db        = Factory::getDbo();
+		$this->_db        = Factory::getContainer()->get('DatabaseDriver');
 		$this->h_cache        = new EmundusHelperCache();
 
 		$session  = $this->_mainframe->getSession();
@@ -3993,32 +3993,94 @@ class EmundusModelApplication extends JModelList
 		}
 	}
 
-	public function deleteGroupAccess($fnum, $gid)
+	/**
+	 * @param $fnum string
+	 * @param $gid int
+	 * @param $current_user int If null, the current user will be used
+	 * @return false|mixed
+	 */
+	public function deleteGroupAccess($fnum, $gid, $current_user = null)
 	{
+		$deleted = false;
 
-		try {
-			$query = "delete from #__emundus_group_assoc  where `group_id` = $gid and `fnum` like " . $this->_db->quote($fnum);
-			$this->_db->setQuery($query);
+		if (!empty($fnum) && !empty($gid)) {
+			if (empty($current_user)) {
+				$current_user = Factory::getApplication()->getIdentity()->id;
+			}
 
-			return $this->_db->execute();
+			$query = $this->_db->getQuery(true);
+
+			$query->delete('#__emundus_group_assoc')
+				->where($this->_db->quoteName('group_id') . ' = ' . $gid)
+				->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+			try {
+				$this->_db->setQuery($query);
+				$deleted = $this->_db->execute();
+			} catch (Exception $e) {
+				Log::add('Error in model/application at query: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+
+			if ($deleted) {
+				$query->clear()
+					->select('label')
+					->from('#__emundus_setup_groups')
+					->where('id = ' . $gid);
+
+				$this->_db->setQuery($query);
+				$label = $this->_db->loadResult();
+
+				$logsParams = ['deleted' => ['details' => $label]];
+				EmundusModelLogs::log($current_user, '', $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+			}
 		}
-		catch (Exception $e) {
-			throw $e;
-		}
+
+		return $deleted;
 	}
 
-	public function deleteUserAccess($fnum, $uid)
+	/**
+	 * @param $fnum string
+	 * @param $uid int
+	 * @param $current_user int if null, the current user will be used
+	 * @return false|mixed
+	 */
+	public function deleteUserAccess($fnum, $uid, $current_user = null)
 	{
+		$deleted = false;
 
-		try {
-			$query = "delete from #__emundus_users_assoc where `user_id` = $uid and `fnum` like " . $this->_db->quote($fnum);
-			$this->_db->setQuery($query);
+		if (!empty($fnum) && !empty($uid)) {
+			if (empty($current_user)) {
+				$current_user = Factory::getApplication()->getIdentity()->id;
+			}
 
-			return $this->_db->execute();
+			$query = $this->_db->getQuery(true);
+
+			$query->delete('#__emundus_users_assoc')
+				->where($this->_db->quoteName('user_id') . ' = ' . $uid)
+				->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+			try {
+				$this->_db->setQuery($query);
+				$deleted = $this->_db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error in model/application at query: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+
+			if ($deleted) {
+				$query->clear()
+					->select('name')
+					->from('#__users')
+					->where('id = ' . $uid);
+
+				$this->_db->setQuery($query);
+				$user_name = $this->_db->loadResult();
+
+				$logsParams = ['deleted' => ['details' => $user_name]];
+				EmundusModelLogs::log($current_user, '', $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+			}
 		}
-		catch (Exception $e) {
-			throw $e;
-		}
+
+		return $deleted;
 	}
 
 	public function getApplications($uid)

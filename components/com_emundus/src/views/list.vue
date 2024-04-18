@@ -1,7 +1,7 @@
 <template>
   <div id="onboarding_list" class="tw-w-full">
     <skeleton v-if="loading.lists" height="40px" width="100%" class="tw-mb-4 tw-mt-4 tw-rounded-lg"></skeleton>
-    <div v-else class="head tw-flex tw-justify-between tw-mb-4 tw-mt-4">
+    <div v-else class="head tw-flex tw-items-center tw-justify-between">
       <h2>{{ translate(currentList.title) }}</h2>
       <a v-if="addAction" id="add-action-btn" class="em-primary-button em-w-auto tw-cursor-pointer"
          @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
@@ -696,6 +696,9 @@ export default {
 </script>
 
 <style lang="scss">
+.head  {
+  padding: 0 0 20px 0;
+}
 
 #onboarding_list .head  {
   min-height: 38px;
