@@ -1398,7 +1398,7 @@ footer#g-footer > .g-container {
     font-size: var(--em-coordinator-font-size) !important;
     height: auto !important;
     &:hover, &:active, &:focus {
-      background: var(--neutral-0);
+      background: var(--neutral-0) !important;
       border: 1px solid var(--em-profile-color) !important;
       color: var(--em-profile-color);
       letter-spacing: normal;
