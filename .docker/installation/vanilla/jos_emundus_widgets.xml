@@ -94,49 +94,45 @@ try {
     $db-&gt;setQuery($query);
     $status = $db-&gt;loadObjectList();
 
+    $session = JFactory::getSession();
+    $filters = $session-&gt;get('widget_filters_5');
+
+    $year_filter_ids = [];
+    if (!empty($filters) &amp;&amp; !empty($filters['year'])) {
+        $year_filter_ids = array_map(function ($filter) {
+            return $filter['value'];
+        }, $filters['year']);
+    }
+
     $datas = [];
+
+    $max_count = 0;
 
     foreach ($status as $statu) {
         $file = new stdClass;
         $file-&gt;label = $statu-&gt;value;
 
-        $colors = array(
-            'lightpurple' =&gt; '#D444F1',
-            'purple' =&gt; '#7959F8',
-            'darkpurple' =&gt; '#663399',
-            'lightblue' =&gt; '#0BA4EB',
-            'blue' =&gt; '#2E90FA',
-            'darkblue' =&gt; '#2970FE',
-            'lightgreen' =&gt; '#15B79E',
-            'green' =&gt; '#238C69',
-            'darkgreen' =&gt; '#20835F',
-            'lightyellow' =&gt; '#5D5B00',
-            'yellow' =&gt; '#EAA907',
-            'darkyellow' =&gt; '#F79009',
-            'lightorange' =&gt; '#C87E00',
-            'orange' =&gt; '#EF681F',
-            'darkorange' =&gt; '#FF4305',
-            'lightred' =&gt; '#EC644B',
-            'red' =&gt; '#DB333E',
-            'darkred' =&gt; '#DB333E',
-            'lightpink' =&gt; '#B04748',
-            'pink' =&gt; '#EE46BC',
-            'darkpink' =&gt; '#F53D68',
-            'default' =&gt; '#5E6580'
-        );
+        $styles_files = JPATH_SITE . '/templates/g5_helium/custom/config/default/styles.yaml';
+		$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($styles_files));
 
-        $file-&gt;color = $colors[$statu-&gt;class];
+		$file-&gt;color = $yaml['accent'][$statu-&gt;class];
 
         $query-&gt;clear()
             -&gt;select('COUNT(ecc.id) as files')
             -&gt;from($db-&gt;quoteName('#__emundus_campaign_candidature','ecc'))
             -&gt;leftJoin($db-&gt;quoteName('#__emundus_setup_campaigns','esc').' ON '.$db-&gt;quoteName('esc.id').' = '.$db-&gt;quoteName('ecc.campaign_id'))
-            -&gt;where($db-&gt;quoteName('ecc.status') . ' = ' . $db-&gt;quote($statu-&gt;step))
-            -&gt;andWhere($db-&gt;quoteName('ecc.published') . ' = ' . $db-&gt;quote(1));
+            -&gt;where($db-&gt;quoteName('ecc.status').' = '.$db-&gt;quote($statu-&gt;step))
+            -&gt;andWhere($db-&gt;quoteName('ecc.published').' = 1');
+
+        if (!empty($year_filter_ids)) {
+            $query-&gt;andWhere('esc.year IN ('.implode(',',$db-&gt;quote($year_filter_ids)).')');
+        }
 
         $db-&gt;setQuery($query);
         $file-&gt;value = $db-&gt;loadResult();
         $datas[] = $file;
+
+        $max_count = ($file-&gt;value &gt; $max_count) ? $file-&gt;value : $max_count;
     }
 
 	$dataSource = new stdClass;
@@ -145,12 +141,25 @@ try {
 		'caption'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_CAPTION&quot;),
 		'xaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_STATUS&quot;),
 		'yaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER&quot;),
-		'animation' =&gt; 1,
-		'numberScaleValue' =&gt; &quot;1&quot;,
-		'numDivLines' =&gt; 1,
-		'numbersuffix'=&gt; &quot;&quot;,
-		'theme'=&gt; &quot;fusion&quot;
+        'animation' =&gt; 1,
+        'numberScaleValue' =&gt; &quot;1&quot;,
+        'numDivLines' =&gt; 1,
+        'numbersuffix'=&gt; &quot;&quot;,
+        'showValues' =&gt; 1,
+        'decimalSeparator' =&gt; &quot;,&quot;,
+        'thousandSeparator' =&gt; &quot; &quot;,
+        'yAxisMaxValue' =&gt; round($max_count + $max_count / 5, - strlen((string)$max_count) + 2),
+        'theme'=&gt; &quot;fusion&quot;
 	);
+
+    $query-&gt;clear()
+        -&gt;select('DISTINCT year AS label, year AS value')
+        -&gt;from('#__emundus_setup_campaigns')
+        -&gt;order('year DESC');
+    $db-&gt;setQuery($query);
+    $years = $db-&gt;loadObjectList();
+
+    $dataSource-&gt;filters = [['key' =&gt; 'year', 'options' =&gt; $years]];
 	$dataSource-&gt;data = $datas;
 	return $dataSource;
 } catch (Exception $e) {
@@ -254,51 +263,46 @@ $user_id = JFactory::getUser()-&gt;id;
 
 try {
     $query-&gt;select('*')
-        -&gt;from($db-&gt;quoteName('jos_emundus_setup_status'))
+        -&gt;from('#__emundus_setup_status')
         -&gt;order('ordering');
     $db-&gt;setQuery($query);
     $status = $db-&gt;loadObjectList();
 
+    $session = JFactory::getSession();
+    $filters = $session-&gt;get('widget_filters_7');
+
+    $year_filter_ids = [];
+    if (!empty($filters) &amp;&amp; !empty($filters['year'])) {
+        $year_filter_ids = array_map(function ($filter) {
+            return $filter['value'];
+        }, $filters['year']);
+    }
+
     $datas = [];
+
+    $max_count = 0;
 
     foreach ($status as $statu) {
         $file = new stdClass;
         $file-&gt;label = $statu-&gt;value;
 
-        $colors = array(
-            'lightpurple' =&gt; '#D444F1',
-            'purple' =&gt; '#7959F8',
-            'darkpurple' =&gt; '#663399',
-            'lightblue' =&gt; '#0BA4EB',
-            'blue' =&gt; '#2E90FA',
-            'darkblue' =&gt; '#2970FE',
-            'lightgreen' =&gt; '#15B79E',
-            'green' =&gt; '#238C69',
-            'darkgreen' =&gt; '#20835F',
-            'lightyellow' =&gt; '#5D5B00',
-            'yellow' =&gt; '#EAA907',
-            'darkyellow' =&gt; '#F79009',
-            'lightorange' =&gt; '#C87E00',
-            'orange' =&gt; '#EF681F',
-            'darkorange' =&gt; '#FF4305',
-            'lightred' =&gt; '#EC644B',
-            'red' =&gt; '#DB333E',
-            'darkred' =&gt; '#DB333E',
-            'lightpink' =&gt; '#B04748',
-            'pink' =&gt; '#EE46BC',
-            'darkpink' =&gt; '#F53D68',
-            'default' =&gt; '#5E6580'
-        );
+        $styles_files = JPATH_SITE . '/templates/g5_helium/custom/config/default/styles.yaml';
+		$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($styles_files));
 
-        $file-&gt;color = $colors[$statu-&gt;class];
+		$file-&gt;color = $yaml['accent'][$statu-&gt;class];
 
         $query-&gt;clear()
             -&gt;select('distinct eua.fnum as files')
             -&gt;from($db-&gt;quoteName('#__emundus_users_assoc','eua'))
             -&gt;leftJoin($db-&gt;quoteName('#__emundus_campaign_candidature','cc').' ON '.$db-&gt;quoteName('cc.fnum').' = '.$db-&gt;quoteName('eua.fnum'))
+            -&gt;leftJoin($db-&gt;quoteName('#__emundus_setup_campaigns','sc').' ON '.$db-&gt;quoteName('cc.campaign_id').' = '.$db-&gt;quoteName('sc.id'))
             -&gt;where($db-&gt;quoteName('cc.status').' = '.$db-&gt;quote($statu-&gt;step))
-			-&gt;andWhere($db-&gt;quoteName('cc.published').' = '.$db-&gt;quote(1))
+            -&gt;andWhere($db-&gt;quoteName('cc.published').' = 1')
             -&gt;andWhere($db-&gt;quoteName('eua.user_id').' = '.$db-&gt;quote($user_id));
+
+        if (!empty($year_filter_ids)) {
+            $query-&gt;andWhere('sc.year IN ('.implode(',',$db-&gt;quote($year_filter_ids)).')');
+        }
 
         $db-&gt;setQuery($query);
         $files_user_assoc = $db-&gt;loadColumn();
@@ -307,10 +311,15 @@ try {
             -&gt;select('distinct ega.fnum as files')
             -&gt;from($db-&gt;quoteName('#__emundus_group_assoc','ega'))
             -&gt;leftJoin($db-&gt;quoteName('#__emundus_campaign_candidature','cc').' ON '.$db-&gt;quoteName('cc.fnum').' = '.$db-&gt;quoteName('ega.fnum'))
+            -&gt;leftJoin($db-&gt;quoteName('#__emundus_setup_campaigns','sc').' ON '.$db-&gt;quoteName('cc.campaign_id').' = '.$db-&gt;quoteName('sc.id'))
             -&gt;leftJoin($db-&gt;quoteName('#__emundus_groups','eg').' ON '.$db-&gt;quoteName('eg.group_id').' = '.$db-&gt;quoteName('ega.group_id'))
             -&gt;where($db-&gt;quoteName('cc.status').' = '.$db-&gt;quote($statu-&gt;step))
-			-&gt;andWhere($db-&gt;quoteName('cc.published').' = '.$db-&gt;quote(1))
+            -&gt;andWhere($db-&gt;quoteName('cc.published').' = 1')
             -&gt;andWhere($db-&gt;quoteName('eg.user_id').' = '.$db-&gt;quote($user_id));
+
+        if (!empty($year_filter_ids)) {
+            $query-&gt;andWhere('sc.year IN ('.implode(',',$db-&gt;quote($year_filter_ids)).')');
+        }
 
         $db-&gt;setQuery($query);
         $files_group_assoc = $db-&gt;loadColumn();
@@ -322,32 +331,51 @@ try {
             -&gt;leftJoin($db-&gt;quoteName('#__emundus_setup_campaigns', 'esc').' ON '.$db-&gt;quoteName('esc.training').' = '.$db-&gt;quoteName('esgrc.course'))
             -&gt;leftJoin($db-&gt;quoteName('#__emundus_campaign_candidature','cc').' ON '.$db-&gt;quoteName('cc.campaign_id').' = '.$db-&gt;quoteName('esc.id'))
             -&gt;where($db-&gt;quoteName('cc.status').' = '.$db-&gt;quote($statu-&gt;step))
-			-&gt;andWhere($db-&gt;quoteName('cc.published').' = '.$db-&gt;quote(1))
+            -&gt;andWhere($db-&gt;quoteName('cc.published').' = 1')
             -&gt;andWhere($db-&gt;quoteName('eg.user_id').' = '.$db-&gt;quote($user_id));
+
+        if (!empty($year_filter_ids)) {
+            $query-&gt;andWhere('esc.year IN ('.implode(',',$db-&gt;quote($year_filter_ids)).')');
+        }
 
         $db-&gt;setQuery($query);
         $files_group_programs = $db-&gt;loadColumn();
 
         $file-&gt;value = sizeof(array_unique(array_merge($files_user_assoc,$files_group_assoc,$files_group_programs)));
         $datas[] = $file;
+
+        $max_count = ($file-&gt;value &gt; $max_count) ? $file-&gt;value : $max_count;
     }
 
-	$dataSource = new stdClass;
-	$dataSource-&gt;chart = new stdClass;
-	$dataSource-&gt;chart = array(
-		'caption'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS_CAPTION&quot;),
-		'xaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_STATUS&quot;),
-		'yaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER&quot;),
-		'animation' =&gt; 1,
-		'numberScaleValue' =&gt; &quot;1&quot;,
-		'numDivLines' =&gt; 1,
-		'numbersuffix'=&gt; &quot;&quot;,
-		'theme'=&gt; &quot;fusion&quot;
-	);
-	$dataSource-&gt;data = $datas;
-	return $dataSource;
+    $dataSource = new stdClass;
+    $dataSource-&gt;chart = new stdClass;
+    $dataSource-&gt;chart = array(
+        'caption'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS_CAPTION&quot;),
+        'xaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_STATUS&quot;),
+        'yaxisname'=&gt; JText::_(&quot;COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS_NUMBER&quot;),
+        'animation' =&gt; 1,
+        'numberScaleValue' =&gt; &quot;1&quot;,
+        'numDivLines' =&gt; 1,
+        'numbersuffix'=&gt; &quot;&quot;,
+        'showValues' =&gt; 1,
+        'decimalSeparator' =&gt; &quot;,&quot;,
+        'thousandSeparator' =&gt; &quot; &quot;,
+        'yAxisMaxValue' =&gt; round($max_count + $max_count / 5, - strlen((string)$max_count) + 2),
+        'theme'=&gt; &quot;fusion&quot;
+    );
+
+    $query-&gt;clear()
+        -&gt;select('DISTINCT year AS label, year AS value')
+        -&gt;from('#__emundus_setup_campaigns')
+        -&gt;order('year DESC');
+    $db-&gt;setQuery($query);
+    $years = $db-&gt;loadObjectList();
+
+    $dataSource-&gt;filters = [['key' =&gt; 'year', 'options' =&gt; $years]];
+    $dataSource-&gt;data = $datas;
+    return $dataSource;
 } catch (Exception $e) {
-	return array('dataset' =&gt; '');
+    return array('dataset' =&gt; '');
 }</field>
     <field name="class"></field>
     <field name="published">1</field>

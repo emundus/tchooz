@@ -1585,6 +1585,23 @@
     <field name="private">0</field>
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:2,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:1,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
+   <row>
+    <field name="id">798</field>
+    <field name="name">LIST_RUN_CRON</field>
+    <field name="css"></field>
+    <field name="label">LIST_RUN_CRON</field>
+    <field name="published">1</field>
+    <field name="created">2024-03-21 14:59:15</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-03-21 14:59:15</field>
+    <field name="modified_by">0</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:0,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_sortable&quot;:&quot;0&quot;,&quot;repeat_order_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:1,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

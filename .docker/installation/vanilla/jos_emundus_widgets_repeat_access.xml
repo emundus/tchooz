@@ -61,6 +61,27 @@
     <field name="default">1</field>
     <field name="position">3</field>
    </row>
+   <row>
+    <field name="id">13</field>
+    <field name="parent_id">7</field>
+    <field name="profile">1</field>
+    <field name="default">1</field>
+    <field name="position">1</field>
+   </row>
+   <row>
+    <field name="id">14</field>
+    <field name="parent_id">6</field>
+    <field name="profile">1</field>
+    <field name="default">1</field>
+    <field name="position">2</field>
+   </row>
+   <row>
+    <field name="id">15</field>
+    <field name="parent_id">9</field>
+    <field name="profile">1</field>
+    <field name="default">1</field>
+    <field name="position">3</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

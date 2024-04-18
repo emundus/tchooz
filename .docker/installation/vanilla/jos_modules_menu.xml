@@ -281,6 +281,10 @@
     <field name="menuid">141</field>
    </row>
    <row>
+    <field name="moduleid">130</field>
+    <field name="menuid">143</field>
+   </row>
+   <row>
     <field name="moduleid">140</field>
     <field name="menuid">0</field>
    </row>

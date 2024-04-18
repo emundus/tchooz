@@ -26,11 +26,9 @@
    <row>
     <field name="id">1</field>
     <field name="lbl">confirm_post</field>
-    <field name="subject">Application form sent / Dossier de candidature envoyé</field>
+    <field name="subject">Dossier envoyé / Application form sent</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Congratulations, you have posted your application form.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;F&amp;eacute;licitations, vous venez d'envoyer votre dossier de candidature.&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;[NAME],&lt;/p&gt;&lt;p&gt;Vous venez d'envoyer votre dossier pour &quot;&lt;strong&gt;[CAMPAIGN_LABEL]&lt;/strong&gt;&quot; &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;You have posted your application form for the campaign &quot;&lt;strong&gt;[CAMPAIGN_LABEL]&lt;/strong&gt;&quot; &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;on this platform&lt;/a&gt;.&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
@@ -44,15 +42,9 @@
    <row>
     <field name="id">2</field>
     <field name="lbl">attachment</field>
-    <field name="subject">An attachment has been uploaded to your application file / Un document a été téléchargé sur votre dossier</field>
+    <field name="subject">Une nouveau document a été ajouté sur votre dossier / A new document has been uploaded to your application file</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Dear [NAME],&lt;/p&gt;
-&lt;p&gt;A new document has been uploaded on your application file.&lt;/p&gt;
-&lt;p&gt;Best regards,&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Cher [NAME],&lt;/p&gt;
-&lt;p&gt;Un nouveau document a &amp;eacute;t&amp;eacute; ajout&amp;eacute; &amp;agrave; votre dossier de candidature.&lt;/p&gt;
-&lt;p&gt;Cordialement,&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;[NAME],&lt;/p&gt;&lt;p&gt;Un nouveau document a été ajouté à votre dossier &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;A new document has been uploaded on your application file &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;on this platform&lt;/a&gt;.&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
@@ -66,13 +58,9 @@
    <row>
     <field name="id">5</field>
     <field name="lbl">new_account</field>
-    <field name="subject">New account information / Nouveau compte</field>
+    <field name="subject">Nouveau compte créé / New account created</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Your name : [NAME] &lt;br /&gt;Your email : [EMAIL] &lt;br /&gt;Your username : [USERNAME] &lt;br /&gt;Your password : [PASSWORD]&lt;/p&gt;
-&lt;p&gt;Dear [NAME], &lt;br /&gt;A new account has been created for you for the application plateform : &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;&lt;br /&gt;Kind Regards,&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Votre nom : [NAME] &lt;br /&gt;Votre email : [EMAIL] &lt;br /&gt;Votre nom d'utilisateur : [USERNAME] &lt;br /&gt;Votre mot de passe : [PASSWORD]&lt;/p&gt;
-&lt;p&gt;Cher [NAME], &lt;br /&gt;Un nouveau compte a &amp;eacute;t&amp;eacute; cr&amp;eacute;&amp;eacute; pour vous sur la plateforme de candidature : &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;&lt;br /&gt;Cordialement,&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;Cher [NAME],&lt;/p&gt;&lt;p&gt;Un nouveau compte a été créé pour vous &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Cordialement,&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Votre email : &lt;strong&gt;[EMAIL] &lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Votre nom d'utilisateur : &lt;strong&gt;[USERNAME]&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Votre mot de passe : &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;A new account has been created for you &lt;a href=&quot;https://vanilla.tchooz.us/emails/[SITE_URL]&quot; target=&quot;_blank&quot;&gt;on this plateform&lt;/a&gt;.&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
@@ -122,9 +110,7 @@
     <field name="lbl">attachment_notification</field>
     <field name="subject">Attachment have been uploaded for applicant / Nouveau document téléchargé sur un dossier</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;A new document has been uploaded on personal page of [NAME].&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Un nouveau document a &amp;eacute;t&amp;eacute; ajout&amp;eacute; au dossier de candidature de [NAME].&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;Un nouveau document a été ajouté au dossier de candidature de [NAME].&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;A new document has been uploaded on the file of [NAME].&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
@@ -138,16 +124,9 @@
    <row>
     <field name="id">15</field>
     <field name="lbl">reminder</field>
-    <field name="subject">Application not finished / Dossier non-terminé</field>
+    <field name="subject">Dossier non-terminé / Application not finished</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Dear [NAME],&lt;br /&gt;&lt;br /&gt;Your application for [CAMPAIGN_LABEL] is not yet complete. Please complete it in order to finish your application.&lt;/p&gt;
-&lt;p&gt;You can access to our website by this address: &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;. Remember the deadline is the [CAMPAIGN_END].&lt;/p&gt;
-&lt;p&gt;Sincerely,&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Cher [NAME],&lt;/p&gt;
-&lt;p&gt;Votre candidature pour [CAMPAIGN_LABEL] n'est pas encore termin&amp;eacute;e. Veuillez la renseigner afin de pouvoir envoyer votre dossier.&lt;/p&gt;
-&lt;p&gt;Vous pouvez acc&amp;eacute;der au site via cette adresse : &lt;a href=&quot;[SITE_URL]&quot;&gt;[SITE_URL]&lt;/a&gt;.&lt;br /&gt;N'oubliez pas que la date limite est le : [CAMPAIGN_END].&lt;/p&gt;
-&lt;p&gt;Cordialement,&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;Cher [NAME],&lt;/p&gt;&lt;p&gt;Votre dossier pour la campagne &quot;&lt;strong&gt;[CAMPAIGN_LABEL]&lt;/strong&gt;&quot; n'est pas encore terminé. Veuillez le finaliser &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme &lt;/a&gt;afin de pouvoir envoyer votre dossier.&lt;/p&gt;&lt;p&gt;N'oubliez pas que la date limite est le &lt;strong&gt;[CAMPAIGN_END]&lt;/strong&gt;.&lt;/p&gt;&lt;p&gt;Cordialement,&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Your application for the campaign &quot;&lt;strong&gt;[CAMPAIGN_LABEL]&lt;/strong&gt;&quot; is not yet complete. Please complete it &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;on this platform&lt;/a&gt; in order to finish your application.&lt;/p&gt;&lt;p&gt;Remember the deadline is the &lt;strong&gt;[CAMPAIGN_END]&lt;/strong&gt;.&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
@@ -161,47 +140,9 @@
    <row>
     <field name="id">72</field>
     <field name="lbl">registration_email</field>
-    <field name="subject">Activate your account / Activez votre compte</field>
+    <field name="subject">Activez votre compte / Activate your account</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;[USER_NAME],&lt;/p&gt;
-&lt;p&gt;Thank you for signing up to the application platform.&lt;/p&gt;
-&lt;p&gt;In order to activate your account please click on the link below:&amp;nbsp;&lt;/p&gt;
-&lt;table style=&quot;margin-left: auto; margin-right: auto;&quot; border=&quot;0&quot;&gt;
-    &lt;tbody&gt;
-    &lt;tr&gt;
-        &lt;td&gt;
-            &lt;table border=&quot;0&quot;&gt;
-                &lt;tbody&gt;
-                &lt;tr&gt;
-                    &lt;td style=&quot;border-radius: 3px; text-align: center;&quot;&gt;&lt;a style=&quot;font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; background-color: #26a65b; text-decoration: none; border-radius: 3px; padding: 12px 18px; border: 1px solid #26a65b; display: inline-block;&quot; href=&quot;[ACTIVATION_URL]&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;ACTIVATE MY ACCOUNT&lt;/a&gt;&lt;/td&gt;
-                &lt;/tr&gt;
-                &lt;/tbody&gt;
-            &lt;/table&gt;
-        &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p style=&quot;text-align: left;&quot;&gt;Your username: [USER_LOGIN]&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;[USER_NAME],&lt;/p&gt;
-&lt;p&gt;Merci de vous &amp;ecirc;tre inscrit sur la plateforme de candidature.&lt;/p&gt;
-&lt;p&gt;Afin de pouvoir activer votre compte, veuillez cliquer sur le lien ci-dessous :&amp;nbsp;&lt;/p&gt;
-&lt;table style=&quot;margin-left: auto; margin-right: auto;&quot; border=&quot;0&quot;&gt;
-    &lt;tbody&gt;
-    &lt;tr&gt;
-        &lt;td&gt;
-            &lt;table border=&quot;0&quot;&gt;
-                &lt;tbody&gt;
-                &lt;tr&gt;
-                    &lt;td style=&quot;border-radius: 3px; text-align: center;&quot;&gt;&lt;a style=&quot;font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; background-color: #26a65b; text-decoration: none; border-radius: 3px; padding: 12px 18px; border: 1px solid #26a65b; display: inline-block;&quot; href=&quot;[ACTIVATION_URL]&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;ACTIVER MON COMPTE&lt;/a&gt;&lt;/td&gt;
-                &lt;/tr&gt;
-                &lt;/tbody&gt;
-            &lt;/table&gt;
-        &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;&amp;nbsp;Votre login : [USER_LOGIN]&amp;nbsp;&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;[USER_NAME],&lt;/p&gt;&lt;p&gt;Vous venez de créer un compte &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Afin de pouvoir l'activer, veuillez cliquer sur le lien ci-dessous :&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;[ACTIVATION_URL]&quot; target=&quot;_blank&quot; style=&quot;color: rgb(255, 255, 255); background-color: rgb(38, 166, 91);&quot;&gt;ACTIVER MON COMPTE&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;You have just created an account &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;on this platform&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;In order to activate it please click on the link below:&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://vanilla.tchooz.us/emails/[ACTIVATION_URL]&quot; target=&quot;_blank&quot; style=&quot;background-color: rgb(38, 166, 91); color: rgb(255, 255, 255);&quot;&gt;ACTIVATE MY ACCOUNT&lt;/a&gt;&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
@@ -215,15 +156,9 @@
    <row>
     <field name="id">73</field>
     <field name="lbl">delete_file</field>
-    <field name="subject">Application file deleted / Dossier supprimé</field>
+    <field name="subject">Dossier supprimé / Application file deleted</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Dear [NAME],&lt;/p&gt;
-&lt;p&gt;Your application file &lt;strong&gt;&lt;em&gt;[FNUM]&lt;/em&gt;&lt;/strong&gt; has been deleted.&lt;/p&gt;
-&lt;p&gt;A zip file containing the data deleted is attached to this email.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Bonjour [NAME],&lt;/p&gt;
-&lt;p&gt;Votre dossier de candidature &lt;strong&gt;&lt;em&gt;[FNUM]&lt;/em&gt;&lt;/strong&gt; vient d'&amp;ecirc;tre supprim&amp;eacute;.&lt;/p&gt;
-&lt;p&gt;Ci-joint, une archive des informations qui ont &amp;eacute;t&amp;eacute; supprim&amp;eacute;es.&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;Bonjour [NAME],&lt;/p&gt;&lt;p&gt;Votre dossier &lt;strong&gt;[FNUM]&lt;/strong&gt; vient d'être supprimé de &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;cette plateforme&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Ci-joint, une archive des informations qui ont été supprimées.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Your application file &lt;strong&gt;[FNUM]&lt;/strong&gt; has been deleted &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;on this platform&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;A zip file containing the deleted data is attached to this email.&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
@@ -237,13 +172,9 @@
    <row>
     <field name="id">74</field>
     <field name="lbl">delete_user</field>
-    <field name="subject">User account deleted / Compte utilisateur supprimé</field>
+    <field name="subject">Compte utilisateur supprimé / User account deleted</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Hello [NAME],&lt;/p&gt;
-&lt;p&gt;Your account has been deleted.&lt;br /&gt;&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Bonjour [NAME],&lt;/p&gt;
-&lt;p&gt;Votre compte utilisateur a &amp;eacute;t&amp;eacute; supprim&amp;eacute;.&lt;br /&gt;&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;Bonjour [NAME],&lt;/p&gt;&lt;p&gt;Votre compte utilisateur vient d'être supprimé &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Your account has been deleted &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;on this platform&lt;/a&gt;.&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
@@ -257,15 +188,9 @@
    <row>
     <field name="id">75</field>
     <field name="lbl">regenerate_password</field>
-    <field name="subject">Password reset / Regénération de votre mot de passe</field>
+    <field name="subject">Réinitialisation de votre mot de passe / Password reset</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Hello,&lt;/p&gt;
-&lt;p&gt;Here is your new password: &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;We strongly recommend that you change it new time you log in.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Bonjour,&lt;/p&gt;
-&lt;p&gt;Voici votre nouveau mot de passe : &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;N'oubliez pas de le modifier lors de votre prochaine connexion.&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;Bonjour,&lt;/p&gt;&lt;p&gt;Voici votre nouveau mot de passe : &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;N'oubliez pas de le modifier lors de &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;votre prochaine connexion&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Here is your new password: &lt;strong&gt;[PASSWORD]&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;We strongly recommend that you change it &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot; class=&quot;&quot;&gt;next time you log in&lt;/a&gt;.&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
@@ -279,15 +204,9 @@
    <row>
     <field name="id">76</field>
     <field name="lbl">share_with_evaluator</field>
-    <field name="subject">Access to application files / Accès aux dossiers de candidature</field>
+    <field name="subject">Accès à de nouveaux dossiers / Access to new application files</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Bonjour [NAME],&lt;/p&gt;
-&lt;p&gt;De nouveaux dossiers de candidature sont disponibles sur la plateforme :&lt;/p&gt;
-&lt;p&gt;[FNUMS]&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Dear [NAME],&lt;/p&gt;
-&lt;p&gt;New application files are now visible for you on the platform:&lt;/p&gt;
-&lt;p&gt;[FNUMS]&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;Bonjour [NAME],&lt;/p&gt;&lt;p&gt;De nouveaux dossiers sont disponibles &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme&lt;/a&gt; :&lt;/p&gt;&lt;p&gt;[FNUMS]&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;em&gt;New application files are now visible for you &lt;/em&gt;&lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;&lt;em&gt;on this platform&lt;/em&gt;&lt;/a&gt;&lt;em&gt; (list above).&lt;/em&gt;&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
@@ -303,16 +222,10 @@
     <field name="lbl">limit_obtained_alert</field>
     <field name="subject">Campaign limit reached / Limite atteinte sur une campagne</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Hello [NAME],&lt;/p&gt;
-&lt;p&gt;The [CAMPAIGN_LABEL] campaign has reached its application limit.&lt;br /&gt;From this moment on, candidates can no longer send or edit their application.&lt;br /&gt;However, the campaign remains visible on the homepage, without the possibility to apply. If you wish to remove it from the homepage, you must unpublish this campaign.&lt;/p&gt;
-&lt;p&gt;Sincerely&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Bonjour [NAME],&lt;/p&gt;
-&lt;p&gt;La campagne &lt;strong&gt;[CAMPAIGN_LABEL]&lt;/strong&gt; vient d'atteindre sa limite de candidature.&lt;br /&gt;&amp;Agrave; partir de ce moment, les candidats ne peuvent plus envoyer, ni &amp;eacute;diter leur dossier. &lt;br /&gt;La campagne reste cependant visible sur la page d'accueil, sans avoir la possibilit&amp;eacute; de candidater. Si vous d&amp;eacute;sirer la retirer sur la page d'accueil, vous devez d&amp;eacute;publier cette campagne.&lt;/p&gt;
-&lt;p&gt;Cordialement&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;Hello [NAME],&lt;/p&gt;&lt;p&gt;The &lt;strong&gt;[CAMPAIGN_LABEL]&lt;/strong&gt; campaign has reached its application limit.&lt;/p&gt;&lt;p&gt;From this moment on, candidates can no longer send or edit their application.&lt;/p&gt;&lt;p&gt;However, the campaign remains visible on the homepage, without the possibility to apply. If you wish to remove it from the homepage, you must unpublish this campaign.&lt;/p&gt;&lt;p&gt;Sincerely&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Bonjour [NAME],&lt;/p&gt;&lt;p&gt;La campagne &lt;strong&gt;[CAMPAIGN_LABEL]&lt;/strong&gt; vient d'atteindre sa limite de candidature.&lt;/p&gt;&lt;p&gt;À partir de ce moment, les candidats ne peuvent plus envoyer, ni éditer leur dossier. &lt;/p&gt;&lt;p&gt;La campagne reste cependant visible sur la page d'accueil, sans avoir la possibilité de candidater. Si vous désirer la retirer sur la page d'accueil, vous devez dépublier cette campagne.&lt;/p&gt;&lt;p&gt;Cordialement&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
-    <field name="published">1</field>
+    <field name="published">0</field>
     <field name="email_tmpl">1</field>
     <field name="letter_attachment">0</field>
     <field name="candidate_attachment">0</field>
@@ -396,22 +309,6 @@
     <field name="candidate_attachment" value_is_null="true"></field>
     <field name="category">Système</field>
     <field name="cci"></field>
-    <field name="tags" value_is_null="true"></field>
-   </row>
-   <row>
-    <field name="id">83</field>
-    <field name="lbl">custom_2023110310100530</field>
-    <field name="subject">Refus</field>
-    <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;Bonjour &lt;span class=&quot;mention&quot; data-denotation-char=&quot;&quot; data-id=&quot;3&quot; data-value=&quot;[APPLICANT_NAME]&quot;&gt;﻿&lt;span contenteditable=&quot;false&quot;&gt;&lt;span class=&quot;ql-mention-denotation-char&quot;&gt;&lt;/span&gt;[APPLICANT_NAME]&lt;/span&gt;﻿&lt;/span&gt;,&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Nous avons le regret de vous informer que vous êtes refusé à &lt;span class=&quot;mention&quot; data-denotation-char=&quot;&quot; data-id=&quot;22&quot; data-value=&quot;[CAMPAIGN_LABEL]&quot;&gt;﻿&lt;span contenteditable=&quot;false&quot;&gt;&lt;span class=&quot;ql-mention-denotation-char&quot;&gt;&lt;/span&gt;[CAMPAIGN_LABEL]&lt;/span&gt;﻿&lt;/span&gt; &lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Bien à vous,&lt;/p&gt;&lt;p&gt;[NAME]&lt;/p&gt;</field>
-    <field name="name"></field>
-    <field name="type">2</field>
-    <field name="published">1</field>
-    <field name="email_tmpl">1</field>
-    <field name="letter_attachment" value_is_null="true"></field>
-    <field name="candidate_attachment" value_is_null="true"></field>
-    <field name="category">Système</field>
-    <field name="cci" value_is_null="true"></field>
     <field name="tags" value_is_null="true"></field>
    </row>
   </table_data>
