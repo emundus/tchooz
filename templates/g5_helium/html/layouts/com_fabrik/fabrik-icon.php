@@ -30,7 +30,7 @@ if(strpos($d->icon, 'calendar') !== false)
 $iconParts  = explode(' ', trim($d->icon));
 $spareParts = array();
 
-if ($iconParts[1] == 'notempty' || $iconParts[0] != 'icon-question-sign')
+if ($iconParts[1] == 'notempty' || $d->icon == 'icon-event')
 {
 	$class = '';
 	$style = '';
@@ -42,7 +42,7 @@ if ($iconParts[1] == 'notempty' || $iconParts[0] != 'icon-question-sign')
         $style = 'style="top: -5px;position: relative"';
     }
 	?>
-    <span class="material-icons <?php echo $class ?>" <?php echo $style ?>>
+    <span class="material-icons-outlined <?php echo $class ?>" <?php echo $style ?>>
 	    <?php echo trim($icon[1]) ?>
     </span>
 	<?php
