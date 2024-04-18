@@ -10,10 +10,13 @@
           contenteditable="true"
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
           v-html="translate(title)"></span>
-      <span class="material-icons-outlined em-pointer"
-            v-if="mode == 'forms'"
-            :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
-            @click="$emit('open-create-model', page.id)">post_add</span>
+      <a id="add-page-modele">
+        <span class="material-icons-outlined em-pointer"
+              v-if="mode == 'forms'"
+              :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
+              @click="$emit('open-create-model', page.id)">post_add</span>
+        {{ translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE') }}
+      </a>
     </div>
     <span class="description editable-data"
           id="pageDescription"
