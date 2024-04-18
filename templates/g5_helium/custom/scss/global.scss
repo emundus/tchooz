@@ -4228,6 +4228,31 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   }
 }
 
+.view-form #center_content #form-builder-page div.em-flex-row.em-flex-space-between #add-page-modele {
+  background: var(--neutral-0);
+  border: 1px solid var(--em-profile-color);
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--em-default-br);
+  gap: 12px;
+  color: var(--em-profile-color);
+}
+
+.view-form #center_content #form-builder-page div.em-flex-row.em-flex-space-between #add-page-modele span {
+  color: var(--em-profile-color);
+  font-size: 20px;
+}
+
+.view-form #center_content #form-builder-page div.em-flex-row.em-flex-space-between #add-page-modele:hover {
+  background: var(--em-profile-color);
+  color: var(--neutral-0);
+  cursor: pointer;
+
+  span {
+    color: var(--neutral-0);
+  }
+}
 
 /* INDICATIFS TEL */
 
