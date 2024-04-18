@@ -48,7 +48,7 @@ class EmundusModelApplication extends JModelList
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 
 		$this->_mainframe = Factory::getApplication();
-		$this->_db        = Factory::getDbo();
+		$this->_db        = Factory::getContainer()->get('DatabaseDriver');
 		$this->h_cache        = new EmundusHelperCache();
 
 		$session  = $this->_mainframe->getSession();
@@ -891,80 +891,46 @@ class EmundusModelApplication extends JModelList
 	 *
 	 * @since version
 	 */
-	public function getAttachmentsProgress($fnum = null, $euser = null)
+	public function getAttachmentsProgress($fnums = null, $euser = null)
 	{
-		if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
-			return false;
+		$progress     = 0.0;
+		$return_array = true;
+
+		if (empty($fnums) || (!is_array($fnums) && !is_numeric($fnums)))
+		{
+			$progress = 0.0;
 		}
+		else
+		{
+			$current_user = $euser;
+			if (empty($current_user))
+			{
+				$session = Factory::getApplication()->getSession();
 
-		$current_user = $euser;
-		if (empty($current_user)) {
-			$session = Factory::getApplication()->getSession();
-
-			$current_user = $session->get('emundusUser');
-		}
-
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-		$m_profile = new EmundusModelProfile;
-
-		$query = $this->_db->getQuery(true);
-
-		if (!is_array($fnum)) {
-			$profile_by_status = $m_profile->getProfileByStatus($fnum);
-
-			if (empty($profile_by_status['profile'])) {
-				$query->clear()
-					->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
-					->from($this->_db->quoteName('#__emundus_setup_campaigns', 'esc'))
-					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.campaign_id') . ' = ' . $this->_db->quoteName('esc.id'))
-					->where($this->_db->quoteName('ecc.fnum') . ' LIKE ' . $this->_db->quote($fnum));
-				$this->_db->setQuery($query);
-				$profile_by_status = $this->_db->loadAssoc();
+				$current_user = $session->get('emundusUser');
 			}
 
-			$profile    = !empty($profile_by_status['profile_id']) ? $profile_by_status['profile_id'] : $profile_by_status['profile'];
-			$profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $profile && $current_user->applicant === 1) ? $current_user->profile : $profile;
+			require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/models/checklist.php');
+			$m_profile   = new EmundusModelProfile;
+			$m_checklist = new EmundusModelChecklist;
 
-			$query->clear()
-				->select('COUNT(profiles.id)')
-				->from($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles'))
-				->where($this->_db->quoteName('profiles.campaign_id') . ' = ' . $this->_db->quote($profile_by_status['campaign_id']))
-				->andWhere($this->_db->quoteName('profiles.displayed') . ' = 1');
-			$this->_db->setQuery($query);
-			$attachments = $this->_db->loadResult();
-
-			if (intval($attachments) == 0) {
-				$query->clear()
-					->select('IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))')
-					->from($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles'))
-					->leftJoin($this->_db->quoteName('#__emundus_uploads', 'uploads') . ' ON ' . $this->_db->quoteName('uploads.attachment_id') . ' = ' . $this->_db->quoteName('profiles.attachment_id') . ' AND ' . $this->_db->quoteName('uploads.fnum') . ' like ' . $this->_db->Quote($fnum))
-					->where($this->_db->quoteName('profiles.profile_id') . ' = ' . $this->_db->quote($profile_id))
-					->andWhere($this->_db->quoteName('profiles.displayed') . ' = 1')
-					->andWhere($this->_db->quoteName('profiles.mandatory') . ' = 1');
-			}
-			else {
-				$query->clear()
-					->select('IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))')
-					->from($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles'))
-					->leftJoin($this->_db->quoteName('#__emundus_uploads', 'uploads') . ' ON ' . $this->_db->quoteName('uploads.attachment_id') . ' = ' . $this->_db->quoteName('profiles.attachment_id') . ' AND ' . $this->_db->quoteName('uploads.fnum') . ' like ' . $this->_db->Quote($fnum))
-					->where($this->_db->quoteName('profiles.campaign_id') . ' = ' . $this->_db->quote($profile_by_status['campaign_id']))
-					->andWhere($this->_db->quoteName('profiles.displayed') . ' = 1')
-					->andWhere($this->_db->quoteName('profiles.mandatory') . ' = 1');
+			if (!is_array($fnums))
+			{
+				$fnums        = [$fnums];
+				$return_array = false;
 			}
 
-			$this->_db->setQuery($query);
-			$doc_result = $this->_db->loadResult();
-			$this->updateAttachmentProgressByFnum(floor($doc_result), $fnum);
-
-			return floor($doc_result);
-
-		}
-		else {
+			$query  = $this->_db->getQuery(true);
 			$result = array();
-			foreach ($fnum as $f) {
+			foreach ($fnums as $f)
+			{
+				$result[$f] = 0.0;
+
 				$profile_by_status = $m_profile->getProfileByStatus($f);
 
-				if (empty($profile_by_status["profile"])) {
+				if (empty($profile_by_status["profile"]))
+				{
 					$query->clear()
 						->select('esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id')
 						->from($this->_db->quoteName('#__emundus_setup_campaigns', 'esc'))
@@ -974,43 +940,74 @@ class EmundusModelApplication extends JModelList
 					$profile_by_status = $this->_db->loadAssoc();
 				}
 
-				$profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+				if (!empty($profile_by_status))
+				{
+					$profile_id  = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
+					$campaign_id = $profile_by_status["campaign_id"];
 
-				$query->clear()
-					->select('COUNT(profiles.id)')
-					->from($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles'))
-					->where($this->_db->quoteName('profiles.campaign_id') . ' = ' . $this->_db->quote($profile_by_status["campaign_id"]))
-					->andWhere($this->_db->quoteName('profiles.displayed') . ' = 1');
-				$this->_db->setQuery($query);
-				$attachments = $this->_db->loadResult();
+					$attachments = $m_checklist->getAttachmentsForProfile($profile_id, $campaign_id);
 
-				if (intval($attachments) == 0) {
-					$query->clear()
-						->select('IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))')
-						->from($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles'))
-						->leftJoin($this->_db->quoteName('#__emundus_uploads', 'uploads') . ' ON ' . $this->_db->quoteName('uploads.attachment_id') . ' = ' . $this->_db->quoteName('profiles.attachment_id') . ' AND ' . $this->_db->quoteName('uploads.fnum') . ' like ' . $this->_db->Quote($f))
-						->where($this->_db->quoteName('profiles.profile_id') . ' = ' . $this->_db->quote($profile_id))
-						->andWhere($this->_db->quoteName('profiles.displayed') . ' = 1')
-						->andWhere($this->_db->quoteName('profiles.mandatory') . ' = 1');
+					// verify
+					// check how many attachments are completed
+					$completion = 0;
+
+					if (!empty($attachments))
+					{
+						$nb_mandatory_attachments = 0;
+						foreach ($attachments as $attachment)
+						{
+							if ($attachment->mandatory == 1)
+							{
+								$nb_mandatory_attachments++;
+							}
+						}
+
+						if ($nb_mandatory_attachments > 0)
+						{
+							foreach ($attachments as $attachment)
+							{
+								if ($attachment->mandatory == 1)
+								{
+									$query = $this->_db->getQuery(true);
+
+									$query->select('count(*)')
+										->from($this->_db->quoteName('#__emundus_uploads'))
+										->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($f))
+										->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $attachment->id);
+									$this->_db->setQuery($query);
+									$nb = $this->_db->loadResult();
+
+									if ($nb > 0)
+									{
+										$completion += 100 / $nb_mandatory_attachments;
+									}
+								}
+							}
+						}
+						else
+						{
+							$completion = 100;
+						}
+					}
+					else
+					{
+						$completion = 100;
+					}
+
+
+					$this->updateAttachmentProgressByFnum(floor($completion), $f);
+					$result[$f] = floor($completion);
 				}
-				else {
-					$query->clear()
-						->select('IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))')
-						->from($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles'))
-						->leftJoin($this->_db->quoteName('#__emundus_uploads', 'uploads') . ' ON ' . $this->_db->quoteName('uploads.attachment_id') . ' = ' . $this->_db->quoteName('profiles.attachment_id') . ' AND ' . $this->_db->quoteName('uploads.fnum') . ' like ' . $this->_db->Quote($f))
-						->where($this->_db->quoteName('profiles.campaign_id') . ' = ' . $this->_db->quote($profile_by_status["campaign_id"]))
-						->andWhere($this->_db->quoteName('profiles.displayed') . ' = 1')
-						->andWhere($this->_db->quoteName('profiles.mandatory') . ' = 1');
-				}
-
-				$this->_db->setQuery($query);
-				$doc_result = $this->_db->loadResult();
-				$this->updateAttachmentProgressByFnum(floor($doc_result), $f);
-				$result[$f] = floor($doc_result);
 			}
-
-			return $result;
+			$progress = $result;
 		}
+
+		if (!$return_array && count($progress) == 1)
+		{
+			$progress = $progress[$fnums[0]];
+		}
+
+		return $progress;
 	}
 
 	/**
@@ -1059,13 +1056,25 @@ class EmundusModelApplication extends JModelList
 
 	public function updateAttachmentProgressByFnum($result, $fnum)
 	{
-		$query = $this->_db->getQuery(true);
-		$query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
-			->set($this->_db->quoteName('attachment_progress') . ' = ' . $this->_db->quote($result))
-			->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
-		$this->_db->setQuery($query);
+		$updated = false;
 
-		return $this->_db->execute();
+		if (!empty($fnum))
+		{
+
+			$query = $this->_db->getQuery(true);
+			$query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->set($this->_db->quoteName('attachment_progress') . ' = ' . $this->_db->quote($result))
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+			$this->_db->setQuery($query);
+
+			try {
+				$updated = $this->_db->execute();
+			} catch (Exception $e) {
+				Log::add('Error in model/application at query: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $updated;
 	}
 
 	public function checkFabrikValidations($fnum, $redirect = false, $itemId = null)
@@ -3984,32 +3993,94 @@ class EmundusModelApplication extends JModelList
 		}
 	}
 
-	public function deleteGroupAccess($fnum, $gid)
+	/**
+	 * @param $fnum string
+	 * @param $gid int
+	 * @param $current_user int If null, the current user will be used
+	 * @return false|mixed
+	 */
+	public function deleteGroupAccess($fnum, $gid, $current_user = null)
 	{
+		$deleted = false;
 
-		try {
-			$query = "delete from #__emundus_group_assoc  where `group_id` = $gid and `fnum` like " . $this->_db->quote($fnum);
-			$this->_db->setQuery($query);
+		if (!empty($fnum) && !empty($gid)) {
+			if (empty($current_user)) {
+				$current_user = Factory::getApplication()->getIdentity()->id;
+			}
 
-			return $this->_db->execute();
+			$query = $this->_db->getQuery(true);
+
+			$query->delete('#__emundus_group_assoc')
+				->where($this->_db->quoteName('group_id') . ' = ' . $gid)
+				->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+			try {
+				$this->_db->setQuery($query);
+				$deleted = $this->_db->execute();
+			} catch (Exception $e) {
+				Log::add('Error in model/application at query: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+
+			if ($deleted) {
+				$query->clear()
+					->select('label')
+					->from('#__emundus_setup_groups')
+					->where('id = ' . $gid);
+
+				$this->_db->setQuery($query);
+				$label = $this->_db->loadResult();
+
+				$logsParams = ['deleted' => ['details' => $label]];
+				EmundusModelLogs::log($current_user, '', $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+			}
 		}
-		catch (Exception $e) {
-			throw $e;
-		}
+
+		return $deleted;
 	}
 
-	public function deleteUserAccess($fnum, $uid)
+	/**
+	 * @param $fnum string
+	 * @param $uid int
+	 * @param $current_user int if null, the current user will be used
+	 * @return false|mixed
+	 */
+	public function deleteUserAccess($fnum, $uid, $current_user = null)
 	{
+		$deleted = false;
 
-		try {
-			$query = "delete from #__emundus_users_assoc where `user_id` = $uid and `fnum` like " . $this->_db->quote($fnum);
-			$this->_db->setQuery($query);
+		if (!empty($fnum) && !empty($uid)) {
+			if (empty($current_user)) {
+				$current_user = Factory::getApplication()->getIdentity()->id;
+			}
 
-			return $this->_db->execute();
+			$query = $this->_db->getQuery(true);
+
+			$query->delete('#__emundus_users_assoc')
+				->where($this->_db->quoteName('user_id') . ' = ' . $uid)
+				->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+			try {
+				$this->_db->setQuery($query);
+				$deleted = $this->_db->execute();
+			} catch (Exception $e) {
+				JLog::add('Error in model/application at query: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+
+			if ($deleted) {
+				$query->clear()
+					->select('name')
+					->from('#__users')
+					->where('id = ' . $uid);
+
+				$this->_db->setQuery($query);
+				$user_name = $this->_db->loadResult();
+
+				$logsParams = ['deleted' => ['details' => $user_name]];
+				EmundusModelLogs::log($current_user, '', $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+			}
 		}
-		catch (Exception $e) {
-			throw $e;
-		}
+
+		return $deleted;
 	}
 
 	public function getApplications($uid)

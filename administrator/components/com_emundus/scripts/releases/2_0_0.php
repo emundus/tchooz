@@ -97,6 +97,18 @@ class Release2_0_0Installer extends ReleaseInstaller
 				$this->db->updateObject('#__fabrik_forms', $setup_program, 'id');
 			}
 
+			// Add custom events
+			$get_attachments_for_profile_event_added = EmundusHelperUpdate::addCustomEvents([
+				['label' => 'onAfterGetAttachmentsForProfile', 'category' => 'Files']
+			]);
+			if($get_attachments_for_profile_event_added) {
+				EmundusHelperUpdate::displayMessage('L\'événement onAfterGetAttachmentsForProfile a été ajouté.', 'success');
+			}
+			else {
+				throw new \Exception('Erreur lors de l\'ajout de l\'événement onAfterGetAttachmentsForProfile.');
+			}
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

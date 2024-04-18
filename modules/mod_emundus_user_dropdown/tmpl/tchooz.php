@@ -9,26 +9,34 @@
 // No direct access.
 defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
+
+require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
 ?>
 
-<link rel="stylesheet" href="modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css" type="text/css"/>
+<link rel="stylesheet" href="modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css?<?php echo $hash; ?>"
+      type="text/css"/>
 
 <?php
 $guest = JFactory::getUser()->guest;
 
-if ($user != null) {
+if ($user != null)
+{
 
 // background color of the home page
 	include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
 	$m_profiles = new EmundusModelProfile();
 	$app_prof   = $m_profiles->getApplicantsProfilesArray();
-	if (!empty($user->profile)) {
+	if (!empty($user->profile))
+	{
 		$user_profile = $m_profiles->getProfileById($user->profile);
 	}
 
 	$user = JFactory::getSession()->get('emundusUser');
 
-	if (in_array($user->profile, $app_prof)) {
+	if (in_array($user->profile, $app_prof))
+	{
 
 		?>
         <style>
@@ -40,7 +48,8 @@ if ($user != null) {
 		<?php
 	}
 
-	else {
+	else
+	{
 
 		?>
         <style>
@@ -167,7 +176,6 @@ if ($user != null) {
 
         .em-user-dropdown-icon {
             color: var(--em-profile-color);
-            font-size: 36px;
             border: solid 3px var(--transparent);
         }
 
@@ -185,15 +193,62 @@ if ($user != null) {
             white-space: nowrap;
             text-overflow: ellipsis;
         }
+
+        .em-user-dropdown-icon:before {
+            background-color: var(--em-profile-color);
+            color: white;
+            opacity: 1;
+            content: attr(data-initials);
+            display: inline-block;
+            font-weight: bold;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-right: 0.5em;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        @supports (background-color: hsl(from white h s 90%)) {
+            .em-user-dropdown-icon:before {
+                background-color: hsl(from var(--em-profile-color) h s 90%);
+                color: var(--em-profile-color);
+            }
+        }
+
+        .em-user-dropdown-icon-big {
+            font-size: 24px;
+        }
+
+        .em-user-dropdown-icon-big:before {
+            width: 68px;
+            height: 68px;
+            line-height: 68px;
+        }
+
+        .em-user-dropdown-icon-xxl {
+            font-size: 28px;
+        }
+
+        .em-user-dropdown-icon-xxl:before {
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+        }
+
+        .em-user-dropdown-icon-xxl:hover:before {
+            color: transparent;
+        }
     </style>
 
 	<?= $intro; ?>
 
     <!-- Button which opens up the dropdown menu. -->
-    <div class='dropdown' tabindex="0" id="userDropdown"
-         style="float: right;">
+    <div class='dropdown' tabindex="0" id="userDropdown" style="float: right;">
 		<?php if ($display_svg == 1) : ?>
-    <div id="background-shapes"></div>
+            <div id="background-shapes"></div>
 		<?php endif; ?>
 		<?php if (!empty($profile_picture)): ?>
             <div id="userDropdownLabel">
@@ -213,7 +268,7 @@ if ($user != null) {
                 </div>
             </div>
 		<?php else : ?>
-            <div  id="userDropdownLabel" onclick="manageHeight()">
+            <div id="userDropdownLabel" onclick="manageHeight()">
                 <div class="em-flex-row em-flex-end em-profile-container">
                     <div class="tw-mr-4">
 						<?php if (!empty($user)) : ?>
@@ -224,8 +279,9 @@ if ($user != null) {
 						<?php endif; ?>
                     </div>
                     <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
-                        <span class="material-icons-outlined em-user-dropdown-icon"
-                              alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>">account_circle</span>
+                        <span class="em-user-dropdown-icon"
+                              data-initials="<?php echo substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1); ?>"
+                              alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
                     </div>
 
                 </div>
@@ -247,8 +303,9 @@ if ($user != null) {
                              style="background-image:url('<?php echo $profile_picture ?>');">
                         </div>
 					<?php else : ?>
-                        <span class="material-icons-outlined em-profile-picture-modal-icon"
-                              alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>">account_circle</span>
+                        <span class="em-user-dropdown-icon em-user-dropdown-icon-big"
+                              data-initials="<?php echo substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1); ?>"
+                              alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
 					<?php endif; ?>
                     <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
                     <li class="dropdown-header em-text-align-center em-text-neutral-600"
@@ -260,22 +317,28 @@ if ($user != null) {
 
 			<?php
 			$ids_array = array();
-			if (isset($user->fnums) && $user->fnums) {
-				foreach ($user->fnums as $fnum) {
+			if (isset($user->fnums) && $user->fnums)
+			{
+				foreach ($user->fnums as $fnum)
+				{
 					$ids_array[$fnum->profile_id] = $fnum->fnum;
 				}
 			}
 
-			if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (!$only_applicant)) {
+			if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (!$only_applicant))
+			{
 				echo '<h5 class="mb-2">' . JText::_('SELECT_PROFILE') . '</h5>';
 				echo '<div class="select">';
 				echo '<select class="profile-select" id="profile" name="profiles" onchange="postCProfile()"> ';
-				foreach ($user->emProfiles as $profile) {
-					if ($profile->published && !$applicant_option) {
+				foreach ($user->emProfiles as $profile)
+				{
+					if ($profile->published && !$applicant_option)
+					{
 						echo '<option  value="' . $profile->id . "." . $ids_array[$profile->id] . '"' . (in_array($user->profile, $app_prof) ? 'selected="selected"' : "") . '>' . JText::_('APPLICANT') . '</option>';
 						$applicant_option = true;
 					}
-                    elseif (!$profile->published) {
+                    elseif (!$profile->published)
+					{
 						echo '<option  value="' . $profile->id . "." . '"' . (($user->profile == $profile->id) ? 'selected="selected"' : "") . '>' . trim($profile->label) . '</option>';
 					}
 				}
@@ -289,13 +352,17 @@ if ($user != null) {
                                 class="material-icons-outlined tw-mr-2">person_outline</span><?= JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?>
                     </a></li>
 			<?php endif; ?>
-			<?php if (!empty($custom_actions)) {
-				foreach ($custom_actions as $custom_action) {
-					if (!empty($custom_action->link) || !empty($custom_action->onclick)) {
+			<?php if (!empty($custom_actions))
+			{
+				foreach ($custom_actions as $custom_action)
+				{
+					if (!empty($custom_action->link) || !empty($custom_action->onclick))
+					{
 						?>
                         <li>
 							<?php
-							switch ($custom_action->type) {
+							switch ($custom_action->type)
+							{
 								case 'button':
 									echo '<a type="button" onclick="' . $custom_action->onclick . '" class="edit-button-user em-pointer">' . JText::_($custom_action->title) . '</a>';
 									break;
@@ -311,10 +378,10 @@ if ($user != null) {
 				}
 			} ?>
 
-			<?php if ($show_logout == '1') : ?>
-                <hr style="width: 100%">
+            <hr style="width: 100%">
 
-				<?= '<li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-icons-outlined tw-mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
+			<?php if ($show_logout == '1') : ?>
+				<?= '<li><a class="logout-button-user em-flex-important em-flex-row em-flex-center" href="' . JURI::base() . 'index.php?option=com_users&task=user.logout&' . JSession::getFormToken() . '=1"><span class="material-icons-outlined mr-2">logout</span>' . JText::_('COM_EMUNDUS_USER_MENU_LOGOUT_ACTION') . '</a></li>'; ?>
 			<?php endif; ?>
 
         </ul>
@@ -323,7 +390,7 @@ if ($user != null) {
     <script>
         // get current profile color and state
         let profile_color = '<?php echo $profile_details->class; ?>';
-        let profile_state = '<?php echo $profile_details->published; ?>';
+        let profile_state = <?php echo $profile_details->published; ?>;
 
         // if session storage is empty, get profile color and state from server
         if (profile_color === null || profile_state === null) {
@@ -343,14 +410,13 @@ if ($user != null) {
                 }
             }).then((result) => {
                 if (result.status) {
-
                     let profile_color = result.data.class;
                     let profile_state = result.data.published;
 
                     // save profile color and state in local storage
                     sessionStorage.setItem('profile_color', profile_color);
                     sessionStorage.setItem('profile_state', profile_state);
-                    applyColors(profile_color, profile_state);
+                    //applyColors(profile_color, profile_state);
                 }
             });
         }
@@ -385,8 +451,7 @@ if ($user != null) {
                 let css_var = getComputedStyle(root).getPropertyValue("--em-primary-color");
 
                 updateSvgColors(css_var);
-                                }
-            else  { // it's a coordinator profile
+            } else { // it's a coordinator profile
                 if (profile_color != '') {
 
                     profile_color = profile_color.split('-')[1];
@@ -402,21 +467,21 @@ if ($user != null) {
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            if(document.getElementById('profile_chzn') != null){
+            if (document.getElementById('profile_chzn') != null) {
                 document.getElementById('profile_chzn').style.display = 'none';
                 document.getElementById('profile').style.display = 'block';
                 document.querySelector('#header-c .g-content').style.alignItems = 'start';
             }
 
             let elmnt2 = document.getElementById("g-top");
-            if(elmnt2 !== null) {
+            if (elmnt2 !== null) {
                 let hauteurTotaleElem = elmnt2.offsetHeight;
                 document.getElementById("g-navigation").style.top = hauteurTotaleElem + 'px';
             }
         });
 
         function updateSvgColors(css_var) {
-                        document.documentElement.style.setProperty("--em-profile-color", css_var);
+            document.documentElement.style.setProperty("--em-profile-color", css_var);
         }
 
         function displayUserOptions() {
@@ -532,9 +597,11 @@ if ($user != null) {
 	<?php endif; ?>
     <div class="header-right" style="text-align: right;">
 		<?php if ($show_registration) { ?>
-            <a class="btn btn-danger" href="<?= JRoute::_($link_register); ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
+            <a class="btn btn-danger" href="<?= JRoute::_($link_register); ?>"
+               data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
 		<?php } ?>
-        <a class="btn btn-danger btn-creer-compte" href="<?= JRoute::_($link_login); ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
+        <a class="btn btn-danger btn-creer-compte" href="<?= JRoute::_($link_login); ?>"
+           data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
     </div>
     <script>
 		<?php if ($guest): ?>
