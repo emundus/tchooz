@@ -1997,8 +1997,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 		}
 		catch (Exception $e) {
-			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $fnumInfos;
