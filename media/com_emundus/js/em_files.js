@@ -5474,7 +5474,7 @@ $(document).ready(function() {
             addLoader();
             $.ajax({
                 type: 'POST',
-                url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=setlimit',
+                url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=setlimit',
                 dataType: 'json',
                 data: ({
                     limit: $(this).val()

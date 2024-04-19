@@ -1225,7 +1225,7 @@ label[for='clear-search']{
 }
 
 .main-panel select#pager-select {
-    width: auto;
+    width: 55px;
     color: #353544;
 }
 

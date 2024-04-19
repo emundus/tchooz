@@ -70,6 +70,41 @@
         </section>
       </section>
 
+      <section id="pagination-wrapper" class="tw-flex tw-justify-end tw-items-center mb-3">
+        <select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()">
+          <option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
+          <option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
+          <option value='50'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 50</option>
+          <option value='all'>{{ translate('ALL') }}</option>
+        </select>
+        <div
+            v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1"
+            id="pagination" class="tw-text-center">
+          <ul class="tw-flex tw-list-none tw-gap-1">
+						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
+                  class="material-icons-outlined tw-cursor-pointer tw-mr-2 tw-items-center"
+                  style="display: flex"
+                  @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">
+							chevron_left
+						</span>
+            <li v-for="i in currentTab.pagination.total" :key="i"
+                class="tw-cursor-pointer em-square-button"
+                :class="{'active': i === currentTab.pagination.current}"
+                @click="getListItems(i, selectedListTab)">
+              {{ i }}
+            </li>
+            <span
+                :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
+                class="material-icons-outlined tw-cursor-pointer tw-ml-2 tw-items-center"
+                style="display: flex"
+                @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">
+							chevron_right
+						</span>
+          </ul>
+        </div>
+      </section>
+
+
       <div v-if="loading.items"
            id="items-loading"
            :class="{'skeleton-grid': viewType === 'blocs','em-flex-column tw-mb-4': viewType === 'list'}"
@@ -77,6 +112,7 @@
       >
         <skeleton v-for="i in 9" :key="i" class="tw-rounded-lg skeleton-item"></skeleton>
       </div>
+
       <div v-else>
         <div v-if="displayedItems.length > 0" id="list-items">
           <table id="list-table" :class="{'blocs': viewType === 'blocs'}">
@@ -152,40 +188,6 @@
         </div>
         <div v-else id="empty-list" class="noneDiscover" v-html="noneDiscoverTranslation"></div>
       </div>
-
-      <section id="pagination-wrapper" class="tw-flex tw-justify-between tw-items-center tw-mt-5">
-        <select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()">
-          <option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
-          <option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
-          <option value='50'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 50</option>
-          <option value='all'>{{ translate('ALL') }}</option>
-        </select>
-        <div
-            v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1"
-            id="pagination" class="tw-text-center">
-          <ul class="tw-flex tw-list-none tw-gap-1">
-						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
-                  class="material-icons-outlined tw-cursor-pointer tw-mr-2 tw-items-center"
-                  style="display: flex"
-                  @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">
-							chevron_left
-						</span>
-            <li v-for="i in currentTab.pagination.total" :key="i"
-                class="tw-cursor-pointer em-square-button"
-                :class="{'active': i === currentTab.pagination.current}"
-                @click="getListItems(i, selectedListTab)">
-              {{ i }}
-            </li>
-            <span
-                :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
-                class="material-icons-outlined tw-cursor-pointer tw-ml-2 tw-items-center"
-                style="display: flex"
-                @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">
-							chevron_right
-						</span>
-          </ul>
-        </div>
-      </section>
     </div>
   </div>
 </template>
