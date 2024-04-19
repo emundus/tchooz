@@ -2848,14 +2848,12 @@ label[for='clear-search'] img:hover:focus {
   a {
     padding: 6px 8px !important;
     color: var(--neutral-900);
-    margin: 0 4px;
 
     &:hover, &:focus, &:active {
       border: unset !important;
       background: #EBECF0 !important;
       border-radius: var(--em-default-br) !important;
       color: var(--neutral-900) !important;
-      margin: 0 4px;
     }
   }
 }
