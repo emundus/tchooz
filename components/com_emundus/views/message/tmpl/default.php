@@ -112,7 +112,7 @@ if ($allowed_attachments !== true) {
     #cc-box-label, #bcc-box-label, #replyto-box-label {
         border-radius: var(--em-coordinator-br);
         width: fit-content;
-        padding: var(--p-4) var(--p-8) 5px 0;
+        padding: var(--p-4) var(--p-4) var(--p-4) var(--p-8);
         margin-left: 0;
     }
 
