@@ -6,7 +6,7 @@
       <a v-if="addAction" id="add-action-btn" class="em-primary-button em-w-auto tw-cursor-pointer"
          @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
     </div>
-    <hr class="tw-w-full mt-1.5 mb-1.5">
+    <hr class="tw-w-full mt-1.5 tw-mb-4">
 
     <div v-if="loading.tabs" id="tabs-loading">
       <div class="tw-flex tw-justify-between">
@@ -20,7 +20,7 @@
     </div>
     <div v-else class="list tw-mt-4">
       <nav v-if="currentList.tabs.length > 1" id="list-nav">
-        <ul style="list-style-type: none;margin-left:0;" class="tw-flex">
+        <ul style="list-style-type: none;margin-left:0; padding-left: 0" class="tw-flex">
           <li v-for="tab in currentList.tabs" :key="tab.key"
               class="tw-cursor-pointer tw-font-normal tw-p-4"
               :class="{
