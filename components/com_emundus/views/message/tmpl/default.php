@@ -66,6 +66,7 @@ if ($allowed_attachments !== true) {
         border: solid 1px var(--em-coordinator-bc);
         border-radius: var(--em-coordinator-form-br);
         background: var(--neutral-0);
+        margin-top: 6px;
     }
 
     .cc-bcc-mails .items {
