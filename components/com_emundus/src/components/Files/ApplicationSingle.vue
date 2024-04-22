@@ -37,20 +37,24 @@
             </div>
           </div>
 
-          <div v-if="selected === 'application'" v-html="applicationform"></div>
-          <Attachments
-              v-if="selected === 'attachments'"
-              :fnum="selectedFile.fnum"
-              :user="$props.user"
-              :columns="['name','date','category','status']"
-              :displayEdit="false"
-          />
-          <Comments
-              v-if="selected === 'comments'"
-              :fnum="selectedFile.fnum"
-              :user="$props.user"
-              :access="access['10']"
-          />
+          <div v-if="!loading">
+            <div v-if="selected === 'application'" v-html="applicationform"></div>
+            <Attachments
+                v-if="selected === 'attachments'"
+                :fnum="selectedFile.fnum"
+                :user="$props.user"
+                :columns="['name','date','category','status']"
+                :displayEdit="false"
+                :key="selectedFile.fnum"
+            />
+            <Comments
+                v-if="selected === 'comments'"
+                :fnum="selectedFile.fnum"
+                :user="$props.user"
+                :access="access['10']"
+                :key="selectedFile.fnum"
+            />
+          </div>
         </div>
       </div>
 
@@ -74,7 +78,7 @@
 import axios from "axios";
 import Attachments from "@/views/Attachments";
 import filesService from 'com_emundus/src/services/files';
-import errors from "@/mixins/errors";
+import errors from "../../mixins/errors.js";
 import Comments from "@/components/Files/Comments";
 
 
@@ -224,6 +228,9 @@ export default {
               }
             });
           }
+        }).catch((error) => {
+          this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', 'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC');
+          this.loading = false;
         });
       }
     },
