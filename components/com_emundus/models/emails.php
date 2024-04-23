@@ -3148,6 +3148,9 @@ class EmundusModelEmails extends JModelList
 					'USER_EMAIL' => $email_address,
 					'LOGO' => EmundusHelperEmails::getLogo(),
 				];
+				if(!empty($fnum)) {
+					$default_post['FNUM'] = $fnum;
+				}
 
 				if (!empty($post)) {
 					$post = array_merge($default_post, $post);
