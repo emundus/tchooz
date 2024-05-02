@@ -98,7 +98,8 @@ class EmundusControllerDashboard extends JControllerLegacy
 	public function getwidgets()
 	{
 		try {
-			$widgets = $this->m_dashboard->getwidgets($this->_user->id);
+			$profile = Factory::getApplication()->getSession()->get('emundusUser')->profile;
+			$widgets = $this->m_dashboard->getwidgets($this->_user->id, $profile);
 
 			$tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
 		}
