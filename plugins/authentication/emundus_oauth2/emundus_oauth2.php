@@ -80,6 +80,21 @@ class plgAuthenticationEmundus_Oauth2 extends CMSPlugin
     {
         parent::__construct($subject, $config);
         $this->loadLanguage();
+
+		$type = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_STRING);
+	    if (!empty($type)) {
+			$second_configuration_type = $this->params->get('type_2', '');
+
+		    if (!empty($second_configuration_type) && $type === $second_configuration_type) {
+			    // it means we should use the configuration n°2
+			    $parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode'];
+
+			    foreach ($parameters as $parameter) {
+				    $this->params->set($parameter, $this->params->get($parameter . '_2'));
+			    }
+		    }
+	    }
+
         $this->scopes = explode(',', $this->params->get('scopes', 'openid'));
         $this->authUrl = $this->params->get('auth_url');
         $this->domain = $this->params->get('domain');
@@ -149,11 +164,11 @@ class plgAuthenticationEmundus_Oauth2 extends CMSPlugin
 		                }
 	                }
 
-                    foreach ($this->attributes->column_name as $key => $column) {
-                        if ($this->attributes->table_name[$key] == 'jos_users') {
-                            $response->{$column} = $body->{$this->attributes->attribute_name[$key]};
-                        }
-                    }
+	                foreach ($this->attributes->column_name as $key => $column) {
+		                if ($this->attributes->table_name[$key] == 'jos_users' || (in_array($column, ['firstname', 'lastname']))) {
+			                $response->{$column} = !empty($body->attributes) && isset($body->attributes->{$this->attributes->attribute_name[$key]}) ? $body->attributes->{$this->attributes->attribute_name[$key]} : $body->{$this->attributes->attribute_name[$key]};
+		                }
+	                }
 
                     if (!empty($response->username)) {
                         $query = $this->db->getQuery(true);
