@@ -86,7 +86,7 @@ $current_user = JFactory::getUser();
                 </select>
             </div>
 
-            <div class="em-flex-row em-mt-12">
+            <div class="em-flex-row em-mt-12 hidden">
                 <input type="checkbox" id="evaluator-email"><label for="evaluator-email"
                                                                    class="em-mb-0-important"><?= JText::_('COM_EMUNDUS_GROUPS_NOTIFY_EVALUATORS'); ?></label>
             </div>

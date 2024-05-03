@@ -60,10 +60,13 @@ var shareModalClick = function(event) {
         }
     } else if (event.target.id === 'specific-user-choice') {
         let specificDiv = document.getElementById('specific-div');
+        let notifyUsers = document.getElementById('evaluator-email');
         if (event.target.checked) {
             specificDiv.classList.remove('hidden');
+            notifyUsers.classList.remove('hidden');
         } else {
             specificDiv.classList.add('hidden');
+            notifyUsers.classList.add('hidden');
         }
     }
 };
