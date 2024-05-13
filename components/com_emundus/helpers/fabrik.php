@@ -17,11 +17,13 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
 require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+include_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
+use Joomla\CMS\Language\Text;
 
 /**
  * Content Component Query Helper
@@ -786,7 +788,7 @@ die("<script>
 
 	static function addOption($eid, $label, $value)
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try {
@@ -807,7 +809,7 @@ die("<script>
 			return $db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/helpers/fabrik | Cannot add option for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/helpers/fabrik | Cannot add option for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -815,7 +817,7 @@ die("<script>
 
 	static function addNotEmptyValidation($eid, $message = '', $condition = '')
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try {
@@ -855,7 +857,7 @@ die("<script>
 			return $db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/helpers/fabrik | Cannot add notempty validation for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -863,7 +865,7 @@ die("<script>
 
 	static function checkFabrikJoins($eid, $name, $plugin, $group_id)
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try {
@@ -896,7 +898,7 @@ die("<script>
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -907,7 +909,7 @@ die("<script>
 		$added = false;
 
 		if (!empty($eid) && !empty($action)) {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			try {
@@ -946,8 +948,7 @@ die("<script>
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-				$added = false;
+				Log::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -956,7 +957,7 @@ die("<script>
 
 	static function getTableFromFabrik($id, $object = 'list')
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try {
@@ -975,7 +976,7 @@ die("<script>
 			return $db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type ' . $object . ' ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type ' . $object . ' ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -984,7 +985,7 @@ die("<script>
 	static function createFilterList(&$filters, $eid, $value, $condition = '=', $join = 'AND', $hidden = 0, $raw = 0)
 	{
 		if (!in_array($eid, $filters['elementid'])) {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('fl.db_table_name,fe.name')
@@ -1056,7 +1057,7 @@ die("<script>
 					}
 				}
 				catch (Exception $e) {
-					JLog::add('EmundusHelperFabrik::getFormattedPhoneNumberValue Phone number lib returned an error for given phone number ' . $phone_number . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add('EmundusHelperFabrik::getFormattedPhoneNumberValue Phone number lib returned an error for given phone number ' . $phone_number . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 				}
 			}
 		}
@@ -1085,5 +1086,233 @@ die("<script>
 		}
 
 		return $db_table_name;
+	}
+
+	/**
+	 * @param $elt_name string fabrik element name
+	 * @param $raw_value string|array raw value of the element
+	 * @param $groupId int group ID of the element
+	 * @param $uid int user ID for replace in databasejoin
+	 * @param $html bool if the value should be formatted with HTML tags
+	 *
+	 * @description This function format a value of an element according to its plugin name
+	 * @return mixed|string|null
+	 *
+	 * @throws Exception
+	 */
+	static function formatElementValue($elt_name, $raw_value, $groupId = null, $uid = null, $html = false)
+	{
+		$formatted_value = $raw_value;
+
+		if(!empty($elt_name))
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$element = null;
+
+			$query->select('fe.id,fe.name,fe.params,fe.plugin, fe.label, fe.group_id')
+				->from($db->quoteName('#__fabrik_elements', 'fe'))
+				->where($db->quoteName('name') . ' = ' . $db->quote($elt_name));
+
+			if (!empty($groupId))
+			{
+				$query->andWhere($db->quoteName('fe.group_id') . ' = ' . $db->quote($groupId));
+			}
+
+			try
+			{
+				$db->setQuery($query);
+				$element = $db->loadObject();
+			}
+			catch (Exception $e)
+			{
+				Log::add('components/com_emundus/helpers/fabrik | Error when try to get fabrik elements table data : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+			}
+
+			if (!empty($element))
+			{
+				$params = json_decode($element->params, true);
+
+				switch ($element->plugin)
+				{
+					case 'date':
+						$date_format = $params['date_form_format'];
+						$local       = $params['date_store_as_local'] ? 1 : 0;
+
+						$formatted_value = EmundusHelperDate::displayDate($raw_value, $date_format, $local);
+						break;
+
+					case 'birthday':
+						preg_match('/([0-9]{4})-([0-9]{1,})-([0-9]{1,})/', $raw_value, $matches);
+						if (count($matches) != 0)
+						{
+							$format = $params['list_date_format'];
+
+							$d = DateTime::createFromFormat($format, $raw_value);
+							if ($d && $d->format($format) == $raw_value)
+							{
+								$formatted_value = $html ? JHtml::_('date', $raw_value, JText::_('DATE_FORMAT_LC')) : EmundusHelperDate::displayDate($raw_value);
+							}
+							else
+							{
+								$formatted_value = $html ? JHtml::_('date', $raw_value, $format) : EmundusHelperDate::displayDate($raw_value, $format);
+							}
+						}
+						break;
+
+					case 'emundus_phonenumber':
+						$formatted_value = self::getFormattedPhoneNumberValue($raw_value);
+						break;
+
+					case 'databasejoin':
+						$select = $params['join_val_column'];
+						if (!empty($params['join_val_column_concat']))
+						{
+							$select = 'CONCAT(' . $params['join_val_column_concat'] . ')';
+							$select = preg_replace('#{thistable}#', 'jd', $select);
+							$select = preg_replace('#{shortlang}#', substr(Factory::getLanguage()->getTag(), 0, 2), $select);
+							if (!empty($uid))
+							{
+								$select = preg_replace('#{my->id}#', $uid, $select);
+							}
+						}
+
+						$query->clear()
+							->select($select)
+							->from($db->quoteName($params['join_db_name'], 'jd'));
+
+						if (($params['database_join_display_type'] == 'checkbox' || $params['database_join_display_type'] == 'multilist') && is_array($raw_value))
+						{
+							$query->where($db->quoteName('jd.' . $params['join_key_column']) . ' IN (' . implode(',', $raw_value) . ')');
+							$db->setQuery($query);
+							$res = $db->loadColumn();
+
+							$formatted_value = $html ? "<ul><li>" . implode("</li><li>", $res) . "</li></ul>" : implode(',', $res);
+						}
+						elseif(!is_array($raw_value))
+						{
+							$query->where($db->quoteName('jd.' . $params['join_key_column']) . ' = ' . $db->quote($raw_value));
+							$db->setQuery($query);
+
+							$formatted_value = $db->loadResult();
+						}
+
+						break;
+
+					case 'cascadingdropdown':
+						$cascadingdropdown_id    = $params['cascadingdropdown_id'];
+						$cascadingdropdown_label = Text::_($params['cascadingdropdown_label']);
+
+						$r1     = explode('___', $cascadingdropdown_id);
+						$r2     = explode('___', $cascadingdropdown_label);
+						$select = !empty($params['cascadingdropdown_label_concat'] ? "CONCAT(" . $params['cascadingdropdown_label_concat'] . ")" : $r2[1]);
+						$from   = $r2[0];
+						$where  = $r1[1] . '=' . $db->Quote($raw_value);
+						$query  = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
+						$query  = preg_replace('#{thistable}#', $from, $query);
+						$query  = preg_replace('#{shortlang}#', substr(Factory::getLanguage()->getTag(), 0, 2), $query);
+						if (!empty($uid))
+						{
+							$query = preg_replace('#{my->id}#', $uid, $query);
+						}
+
+						$db->setQuery($query);
+						$ret = $db->loadResult();
+						if (empty($ret))
+						{
+							$ret = $raw_value;
+						}
+						$formatted_value = Text::_($ret);
+						break;
+
+					case 'dropdown':
+					case 'radiobutton':
+						if (isset($params['multiple']) && $params['multiple'] == 1)
+						{
+							$data = json_decode($raw_value);
+							foreach ($data as $key => $value)
+							{
+								$index = array_search($value, $params['sub_options']['sub_values']);
+								if ($index !== false)
+								{
+									$data[$key] = Text::_($params['sub_options']['sub_labels'][$index]);
+								}
+							}
+							$formatted_value = $html ? "<ul><li>" . implode("</li><li>", $data) . "</li></ul>" : implode(',', $data);
+						}
+						else
+						{
+							$index = array_search($raw_value, $params['sub_options']['sub_values']);
+
+							if ($index !== false)
+							{
+								if ($raw_value == '0')
+								{
+									$formatted_value = '';
+								}
+								else
+								{
+									$formatted_value = Text::_($params['sub_options']['sub_labels'][$index]);
+								}
+							}
+						}
+						break;
+
+					case 'checkbox':
+						$elm  = array();
+						$data = json_decode($raw_value, true);
+
+						if (!empty($data))
+						{
+							$index = array_intersect($data, $params['sub_options']['sub_values']);
+						}
+						else
+						{
+							$index = $params['sub_options']['sub_values'];
+						}
+
+						foreach ($index as $sub_value)
+						{
+							$key   = array_search($sub_value, $params['sub_options']['sub_values']);
+							$elm[] = Text::_($params['sub_options']['sub_labels'][$key]);
+						}
+
+						$formatted_value = $html ? "<ul>" . implode("</li><li>", $elm) . "</ul>" : implode(',', $elm);
+						break;
+
+					case 'yesno':
+						$formatted_value = $raw_value == 1 ? Text::_('JYES') : Text::_('JNO');
+						break;
+
+					case 'textarea':
+						$formatted_value = nl2br($raw_value);
+						break;
+
+					case 'field':
+						if ($params['password'] == 1)
+						{
+							$formatted_value = '******';
+						}
+						elseif ($params['password'] == 3 && $html)
+						{
+							$formatted_value = '<a href="mailto:' . $raw_value . '" title="' . Text::_($element->label) . '">' . $raw_value . '</a>';
+						}
+						elseif ($params['password'] == 5 && $html)
+						{
+							$formatted_value = '<a href="' . $raw_value . '" target="_blank" title="' . Text::_($element->label) . '">' . $raw_value . '</a>';
+						}
+						break;
+					case 'internalid':
+						$formatted_value = '';
+						break;
+
+					default:
+						break;
+				}
+			}
+		}
+
+		return $formatted_value;
 	}
 }

@@ -64,6 +64,7 @@ JLog::addLogger(
 Text::script('PLEASE_SELECT');
 Text::script('IN');
 Text::script('ALL');
+Text::script('ALL_FEMININE');
 Text::script('USERNAME');
 Text::script('EMAIL');
 Text::script('APPLICATION_CREATION_DATE');
@@ -145,6 +146,7 @@ Text::script('COM_EMUNDUS_ACTIONS_CANCEL');
 Text::script('COM_EMUNDUS_OK');
 Text::script('COM_EMUNDUS_ACTIONS_BACK');
 Text::script('COM_EMUNDUS_USERNAME');
+Text::script('COM_EMUNDUS_FORM_YEARS_OLD');
 Text::script('ID');
 Text::script('COM_EMUNDUS_ACTIONS_ALL');
 Text::script('COM_EMUNDUS_IN');
@@ -275,7 +277,10 @@ Text::script('COM_EMUNDUS_ERROR_CSV_CAPACITY');
 Text::script('COM_EMUNDUS_XLS_GENERATION');
 Text::script('COM_EMUNDUS_EXPORT_FINISHED');
 Text::script('COM_EMUNDUS_ERROR_CAPACITY_XLS');
+Text::script('COM_EMUNDUS_EXPORT_EXCEL');
 Text::script('COM_EMUNDUS_CREATE_CSV');
+Text::script('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD');
+Text::script('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY');
 Text::script('EXPECTED_GRADUATION_DATE');
 Text::script('GRADE_POINT_AVERAGE');
 Text::script('GRADUATION_DATE');
@@ -356,6 +361,7 @@ Text::script('CHOOSE_YOUR_OPTION');
 Text::script('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS_OTHERS_EVAL');
 Text::script('COM_EMUNDUS_EXPORTS_GENERATE_EXCEL');
 Text::script('COM_EMUNDUS_USER_REGENERATE_PASSWORD_SUCCESS');
+Text::script('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_INFORMATION');
 
 //Export PDF
 Text::script('COM_EMUNDUS_EXPORTS_PDF_GENERATION');

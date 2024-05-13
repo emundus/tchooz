@@ -15,6 +15,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
 
@@ -28,6 +29,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Site\Model\ResetModel;
+use Joomla\CMS\Log\Log;
 
 class EmundusModelUsers extends JModelList
 {
@@ -539,7 +541,7 @@ class EmundusModelUsers extends JModelList
 					$profile_info = $this->_db->loadObject();
 					$h_cache->set('profile_details_'.$profile_id, $profile_info);
 				} catch (Exception $e){
-					JLog::add('component/com_emundus/models/users | Error when try to get profile details : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.error');
+					Log::add('component/com_emundus/models/users | Error when try to get profile details : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), Log::ERROR, 'com_emundus.error');
 				}
 			}
 		}
@@ -652,7 +654,7 @@ class EmundusModelUsers extends JModelList
 			$campaigns = $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Failed to list all campaigns ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Failed to list all campaigns ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $campaigns;
@@ -1006,7 +1008,7 @@ class EmundusModelUsers extends JModelList
 		try {
 			if (!$user->save()) {
 				$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<BR />' . $user->getError(), 'error');
-				JLog::add('Failed to create user ' . $user->getError(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to create user ' . $user->getError(), Log::ERROR, 'com_emundus.error');
 			}
 			else {
 				$query = $this->db->getQuery(true);
@@ -1023,7 +1025,7 @@ class EmundusModelUsers extends JModelList
 		}
 		catch (Exception $e) {
 			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<br />' . $e->getMessage(), 'error');
-			JLog::add('Failed to create user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Failed to create user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			$new_user_id = 0;
 		}
 
@@ -1192,7 +1194,7 @@ class EmundusModelUsers extends JModelList
 		}
 		catch (Exception $e) {
 			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<br />' . $e->getMessage(), 'error');
-			JLog::add('Failed to create user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Failed to create user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 	}
 
@@ -1545,7 +1547,7 @@ class EmundusModelUsers extends JModelList
 			$str = "";
 		}
 		catch (Exception $e) {
-			JLog::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, Log::ERROR, 'com_emundus');
 
 			return null;
 		}
@@ -1562,7 +1564,7 @@ class EmundusModelUsers extends JModelList
 			$str = "";
 		}
 		catch (Exception $e) {
-			JLog::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, Log::ERROR, 'com_emundus');
 
 			return null;
 		}
@@ -1582,7 +1584,7 @@ class EmundusModelUsers extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, JLog::ERROR, 'com_emundus');
+				Log::add('Error on adding group: ' . $e->getMessage() . ' at query -> ' . $query, Log::ERROR, 'com_emundus');
 
 				return null;
 			}
@@ -1685,7 +1687,7 @@ class EmundusModelUsers extends JModelList
 
 		// Save user data
 		if (!$table->store()) {
-			JLog::add('Error saving params : ' . $table->getError(), JLog::ERROR, 'mod_emundus.hesam');
+			Log::add('Error saving params : ' . $table->getError(), Log::ERROR, 'mod_emundus.hesam');
 
 			return false;
 		}
@@ -1717,7 +1719,7 @@ class EmundusModelUsers extends JModelList
 				$ids = $this->db->loadAssocList();
 			}
 			catch (Exception $e) {
-				JLog::add('Error on getting non-applicant users: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Error on getting non-applicant users: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -1749,7 +1751,7 @@ class EmundusModelUsers extends JModelList
 					$affected = $this->db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add('Error on affecting users to groups: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Error on affecting users to groups: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					$affected = false;
 				}
 			}
@@ -1824,7 +1826,7 @@ class EmundusModelUsers extends JModelList
 			return $this->db->loadColumn();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting online users in model/users at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting online users in model/users at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1988,7 +1990,7 @@ class EmundusModelUsers extends JModelList
 				$program_ids = $this->db->loadColumn();
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting all profiles associated to user in model/access at query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+				Log::add('Error getting all profiles associated to user in model/access at query : ' . $query->__toString(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -2016,7 +2018,7 @@ class EmundusModelUsers extends JModelList
 				$campaign_ids = $this->db->loadColumn();
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting all profiles associated to user in model/access at query : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+				Log::add('Error getting all profiles associated to user in model/access at query : ' . $query->__toString(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -2045,7 +2047,7 @@ class EmundusModelUsers extends JModelList
 				$applications = $this->db->loadColumn();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get applications assoc to group ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get applications assoc to group ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2070,7 +2072,7 @@ class EmundusModelUsers extends JModelList
 				$applications = $this->db->loadColumn();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get applications assoc to user ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get applications assoc to user ' . $uid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2096,19 +2098,25 @@ class EmundusModelUsers extends JModelList
 
 	public function getUserOprofiles($uid)
 	{
+		$o_profiles = [];
+
 		try {
-			$query = "select esp.id, esp.label
-                      from #__emundus_setup_profiles as esp
-                      left join #__emundus_users_profiles as eup on eup.profile_id = esp.id
-                      where eup.user_id = " . $uid;
+			$query = $this->db->getQuery(true);
+
+			$query->select('esp.id,esp.label')
+				->from($this->db->quoteName('#__emundus_setup_profiles','esp'))
+				->leftJoin($this->db->quoteName('#__emundus_users_profiles','eup').' ON '.$this->db->quoteName('eup.profile_id').' = '.$this->db->quoteName('esp.id'))
+				->where($this->db->quoteName('eup.user_id').' = '.$uid);
 
 			$this->db->setQuery($query);
 
-			return $this->db->loadAssocList('id', 'label');
+			$o_profiles =  $this->db->loadAssocList('id', 'label');
 		}
 		catch (Exception $e) {
-			return false;
+			Log::add('Failed to get user o-profiles ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
+
+		return $o_profiles;
 	}
 
 	public function countUserEvaluations($uid)
@@ -2555,7 +2563,7 @@ class EmundusModelUsers extends JModelList
 			$groups = $this->db->loadColumn();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting effective groups for fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error getting effective groups for fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $groups;
@@ -2615,7 +2623,7 @@ class EmundusModelUsers extends JModelList
 				$action = $this->db->loadResult();
 			}
 			catch (Exception $e) {
-				JLog::add("Error from getUserActionByFnum aid $aid, fnum $fnum, uid $uid, crud $crud", JLog::ERROR, 'com_emundus.error');
+				Log::add("Error from getUserActionByFnum aid $aid, fnum $fnum, uid $uid, crud $crud", Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2645,7 +2653,7 @@ class EmundusModelUsers extends JModelList
 				$groupActions = $this->db->loadAssocList();
 			}
 			catch (Exception $e) {
-				JLog::add("Error from getGroupActions gids " . implode(',', $gids) . ", fnum $fnum, aid $aid, crud $crud", JLog::ERROR, 'com_emundus.error');
+				Log::add("Error from getGroupActions gids " . implode(',', $gids) . ", fnum $fnum, aid $aid, crud $crud", Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2706,7 +2714,7 @@ class EmundusModelUsers extends JModelList
 		if (!empty($uid)) {
 			
 			$query = $this->db->getQuery(true);
-			$query->select('eu.*, case when u.password = ' . $this->db->quote('') . ' then ' . $this->db->quote('external') . ' else ' . $this->db->quote('internal') . ' end as login_type')
+			$query->select('eu.*,u.email, u.username, u.registerDate, u.lastvisitDate, case when u.password = ' . $this->db->quote('') . ' then ' . $this->db->quote('external') . ' else ' . $this->db->quote('internal') . ' end as login_type')
 				->from('#__emundus_users as eu')
 				->leftJoin('#__users as u on u.id = eu.user_id')
 				->where('eu.user_id = ' . $uid);
@@ -2716,7 +2724,7 @@ class EmundusModelUsers extends JModelList
 				$users = $this->db->loadObjectList();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get user by id ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get user by id ' . $uid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2740,7 +2748,7 @@ class EmundusModelUsers extends JModelList
 				$username = $this->db->loadAssoc();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get username by id ' . $id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get username by id ' . $id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2770,9 +2778,14 @@ class EmundusModelUsers extends JModelList
 			try {
 				$this->db->setQuery($query);
 				$users = $this->db->loadObjectList();
+
+				foreach ($users as $user)
+				{
+					unset($user->password);
+				}
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get users by ids ' . implode(',', $ids) . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get users by ids ' . implode(',', $ids) . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2979,7 +2992,8 @@ class EmundusModelUsers extends JModelList
 
 	public function getProfileForm()
 	{
-		
+		$form_id = 0;
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -2989,13 +3003,13 @@ class EmundusModelUsers extends JModelList
 				->andWhere($this->db->quoteName('published') . ' = 1');
 			$this->db->setQuery($query);
 
-			return $this->db->loadResult();
+			$form_id = $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot get profile form for edit user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-
-			return 0;
+			Log::add(' com_emundus/models/users.php | Cannot get profile form for edit user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
+
+		return $form_id;
 	}
 
 	public function getProfileGroups($formid)
@@ -3014,7 +3028,7 @@ class EmundusModelUsers extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot get profile groups with formid : ' . $formid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot get profile groups with formid : ' . $formid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return [];
 		}
@@ -3056,7 +3070,7 @@ class EmundusModelUsers extends JModelList
 			return $elements;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot get elements of group ' . $group . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot get elements of group ' . $group . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return [];
 		}
@@ -3108,7 +3122,7 @@ class EmundusModelUsers extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot update user ' . $uid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot update user ' . $uid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $saved;
@@ -3133,7 +3147,7 @@ class EmundusModelUsers extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot get default attachments uploaded by the applicant : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot get default attachments uploaded by the applicant : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return [];
 		}
@@ -3153,7 +3167,7 @@ class EmundusModelUsers extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot get attachments allowed to default values : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot get attachments allowed to default values : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return [];
 		}
@@ -3183,7 +3197,7 @@ class EmundusModelUsers extends JModelList
 			return $result;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot insert default documents : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot insert default documents : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3215,7 +3229,7 @@ class EmundusModelUsers extends JModelList
 			return $result;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot delete document from jos_emundus_users_attachments with id ' . $id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot delete document from jos_emundus_users_attachments with id ' . $id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3275,7 +3289,7 @@ class EmundusModelUsers extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot copy profile document ' . json_encode($aids) . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot copy profile document ' . json_encode($aids) . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3342,7 +3356,7 @@ class EmundusModelUsers extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot copy profile document ' . $aid . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot copy profile document ' . $aid . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3362,7 +3376,7 @@ class EmundusModelUsers extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add("com_emundus/models/users.php | Cannot update profile picture for user $user_id :" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add("com_emundus/models/users.php | Cannot update profile picture for user $user_id :" . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3391,7 +3405,7 @@ class EmundusModelUsers extends JModelList
 			return $app_profile;
 		}
 		catch (Exception $e) {
-			JLog::add(' com_emundus/models/users.php | Cannot add applicant profile for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add(' com_emundus/models/users.php | Cannot add applicant profile for user ' . $user_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -3429,7 +3443,7 @@ class EmundusModelUsers extends JModelList
 				}
 				catch (Exception $e) {
 					$updated = false;
-					JLog::add('Failed to update emundus user profile from user_id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Failed to update emundus user profile from user_id ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 
 				if ($updated) {
@@ -3445,7 +3459,7 @@ class EmundusModelUsers extends JModelList
 					}
 					catch (Exception $e) {
 						// catch any database errors.
-						JLog::add('Failed to update user joomla group ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						Log::add('Failed to update user joomla group ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
 					$query->clear()
@@ -3461,7 +3475,7 @@ class EmundusModelUsers extends JModelList
 					}
 					catch (Exception $e) {
 						// catch any database errors.
-						JLog::add('Failed to update user ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						Log::add('Failed to update user ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
 					if (empty($campaign_id)) {
@@ -3493,7 +3507,7 @@ class EmundusModelUsers extends JModelList
 						}
 						catch (Exception $e) {
 							$campaign_id = 0;
-							JLog::add('Failed to get campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+							Log::add('Failed to get campaign ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 							$message = JText::_('COM_EMUNDUS_ANONYM_USERS_ERROR_TRYING_TO_FIND_CAMPAIGN');
 						}
 					}
@@ -3509,7 +3523,7 @@ class EmundusModelUsers extends JModelList
 						}
 						catch (Exception $e) {
 							$campaign_id = 0;
-							JLog::add('Failed to check campaign existence ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+							Log::add('Failed to check campaign existence ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 						}
 					}
 
@@ -3558,7 +3572,7 @@ class EmundusModelUsers extends JModelList
 								]);
 
 								if (!$sent) {
-									JLog::add('Failed to send email to anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
+									Log::add('Failed to send email to anonym user' . $user_id . ' campaign id :' . $campaign_id, Log::WARNING, 'com_emundus.error');
 								}
 							}
 
@@ -3578,17 +3592,17 @@ class EmundusModelUsers extends JModelList
 								];
 							}
 							else {
-								JLog::add('Failed to open session for anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
+								Log::add('Failed to open session for anonym user' . $user_id . ' campaign id :' . $campaign_id, Log::WARNING, 'com_emundus.error');
 								$message = JText::_('COM_EMUNDUS_ANONYM_USERS_CREATE_ANONYM_SESSION_ERROR');
 							}
 						}
 						else {
-							JLog::add('Failed to create file for anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
+							Log::add('Failed to create file for anonym user' . $user_id . ' campaign id :' . $campaign_id, Log::WARNING, 'com_emundus.error');
 							$message = 'Une erreur est survenue au cours de la création d\'un dossier.';
 						}
 					}
 					else {
-						JLog::add('Failed to retrieve campaign for anonym user' . $user_id, JLog::WARNING, 'com_emundus.error');
+						Log::add('Failed to retrieve campaign for anonym user' . $user_id, Log::WARNING, 'com_emundus.error');
 						$message = JText::_('COM_EMUNDUS_ANONYM_USERS_NO_CAMPAIGN_FOUND');
 					}
 				}
@@ -3599,7 +3613,7 @@ class EmundusModelUsers extends JModelList
 		}
 		else {
 			$message = JText::_('ANONYM_FILES_ARE_FORBIDDEN');
-			JLog::add('Attempt to deposit an anonym file but emundus configuration forbid it.', JLog::INFO, 'com_emundus.users');
+			Log::add('Attempt to deposit an anonym file but emundus configuration forbid it.', Log::INFO, 'com_emundus.users');
 		}
 
 		return [
@@ -3638,7 +3652,7 @@ class EmundusModelUsers extends JModelList
 				$result = $this->db->loadObject();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get key from token ' . $token . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get key from token ' . $token . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				$message = 'COM_EMUNDUS_USERS_ANONYM_FAILED_TO_FOUND_KEY';
 			}
 
@@ -3694,7 +3708,7 @@ class EmundusModelUsers extends JModelList
 			$updated = $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('Failed to connect from valid key ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Failed to connect from valid key ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		if ($updated) {
@@ -3735,7 +3749,7 @@ class EmundusModelUsers extends JModelList
 			}
 			catch (Exception $e) {
 				$result = 0;
-				JLog::add('Failed to retrieve emundus user from token ' . $token . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to retrieve emundus user from token ' . $token . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if (!empty($result)) {
@@ -3776,7 +3790,7 @@ class EmundusModelUsers extends JModelList
 				$emundusUser = $this->db->loadObject();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to retrieve emundus user from token ' . $token . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to retrieve emundus user from token ' . $token . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if (!empty($emundusUser) && !empty($emundusUser->user_id)) {
@@ -3791,7 +3805,7 @@ class EmundusModelUsers extends JModelList
 						$existing_user = $this->db->loadResult();
 					}
 					catch (Exception $e) {
-						JLog::add('Failed to check if user with same username already exists ' . $emundusUser->email_anonym . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						Log::add('Failed to check if user with same username already exists ' . $emundusUser->email_anonym . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
 					if (!empty($existing_user)) {
@@ -3846,7 +3860,7 @@ class EmundusModelUsers extends JModelList
 						}
 						catch (Exception $e) {
 							$user_updated = false;
-							JLog::add('Failed to update user data ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+							Log::add('Failed to update user data ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 						}
 
 
@@ -3863,7 +3877,7 @@ class EmundusModelUsers extends JModelList
 							}
 							catch (Exception $e) {
 								$emundus_user_updated = false;
-								JLog::add('Failed to update emundus user data ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+								Log::add('Failed to update emundus user data ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 							}
 
 							if ($emundus_user_updated) {
@@ -3882,7 +3896,7 @@ class EmundusModelUsers extends JModelList
 					}
 				}
 				else {
-					JLog::add('User choose to create file anonymously, can not update without necessary info (at least email)', JLog::WARNING, 'com_emundus.error');
+					Log::add('User choose to create file anonymously, can not update without necessary info (at least email)', Log::WARNING, 'com_emundus.error');
 				}
 			}
 		}
@@ -3916,12 +3930,12 @@ class EmundusModelUsers extends JModelList
 
 				if (empty($token)) {
 					$token = '';
-					JLog::add('Existing user does not have token ' . $user_id, JLog::INFO, 'com_emundus.anonym');
+					Log::add('Existing user does not have token ' . $user_id, Log::INFO, 'com_emundus.anonym');
 				}
 			}
 			catch (Exception $e) {
 				$token = '';
-				JLog::add('Failed to find token from user id ' . $user_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to find token from user id ' . $user_id . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -3955,7 +3969,7 @@ class EmundusModelUsers extends JModelList
 			}
 			catch (Exception $e) {
 				$failed_attempts = [];
-				JLog::add('Failed to detect if wrong attempts already occured with ip ' . $current_ip . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to detect if wrong attempts already occured with ip ' . $current_ip . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if (sizeof($failed_attempts) > 4) {
@@ -4004,7 +4018,7 @@ class EmundusModelUsers extends JModelList
 				$updated = $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to generate new token for user ' . $user_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to generate new token for user ' . $user_id . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if ($updated) {
@@ -4032,7 +4046,7 @@ class EmundusModelUsers extends JModelList
 			}
 			catch (Exception $e) {
 				$params = '';
-				JLog::add(' com_emundus/models/users.php | Failed to check if is saml users : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add(' com_emundus/models/users.php | Failed to check if is saml users : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if (!empty($params)) {
@@ -4065,7 +4079,7 @@ class EmundusModelUsers extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add(' com_emundus/models/users.php | Failed to get identity photo : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 				return '';
 			}
@@ -4106,5 +4120,272 @@ class EmundusModelUsers extends JModelList
 
 		//shuffle the password string before returning!
 		return str_shuffle($password);
+	}
+
+	/**
+	 * @param $uid
+	 * @description Return the label of group(s)'s user in jos_emundus_setup_groupes table
+	 * @return array|mixed
+	 */
+	public function getUserGroupsLabelById($uid)
+	{
+		$groups_label = [];
+
+		if (!empty($uid)) {
+			$query = $this->db->getQuery(true);
+
+			$query->select('esg.label')
+				->from($this->db->quoteName('#__emundus_setup_groups', 'esg'))
+				->leftJoin($this->db->quoteName('#__emundus_groups', 'eg') . ' ON eg.group_id = esg.id')
+				->where($this->db->quoteName('eg.user_id') . ' = ' . $uid);
+
+			try {
+				$this->db->setQuery($query);
+				$groups_label = $this->db->loadColumn();
+
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/users | Error when try to get group(s) label : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+			}
+		}
+		return $groups_label;
+	}
+
+	/**
+	 * @description Return all columns of a profile form
+	 * @return array|mixed|null
+	 */
+	public function getColumnsFromProfileForm() {
+
+		$columns = null;
+
+		$query = $this->db->getQuery(true);
+
+		$profile_form = $this->getProfileForm();
+
+		if(!empty($profile_form))
+		{
+			$query->select('fe.id as id, fe.name as name, fe.group_id as group_id, fe.plugin as plugin, fe.label as label, fe.params as params')
+				->from($this->db->quoteName('#__fabrik_elements', 'fe'))
+				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ff.group_id = fe.group_id')
+				->where($this->db->quoteName('ff.form_id') . ' = ' . $profile_form)
+				->andWhere($this->db->quoteName('fe.hidden') . ' = ' . '0')
+				->andWhere($this->db->quoteName('fe.published') . ' = ' . '1')
+				->andWhere($this->db->quoteName('fe.name') . ' != ' . $this->db->quote('DEFAULT_LANGUAGE'));
+
+			try
+			{
+				$this->db->setQuery($query);
+				$columns = $this->db->loadObjectList();
+			}
+			catch (Exception $e)
+			{
+				Log::add('component/com_emundus/models/users | Error when try to get form\'s columns : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $columns;
+	}
+
+	/**
+	 * @return object[]
+	 * @description Return all the columns of the joomla columns wanted to be exported
+	 */
+	public function getJoomlaUserColumns()
+	{
+		return array(
+			'lastname' => (object)array(
+				'id' => null,
+				'name' => 'lastname',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_LASTNAME',
+			),
+			'firstname' => (object)array(
+				'id' => null,
+				'name' => 'firstname',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_FIRSTNAME',
+			),
+			'email' => (object)array(
+				'id' => null,
+				'name' => 'email',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_EMAIL',
+			),
+			'profile' => (object)array(
+				'id' => null,
+				'name' => 'profile',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_PROFILE',
+			),
+			'oprofiles' => (object)array(
+				'id' => null,
+				'name' => 'oprofiles',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_O_PROFILES',
+			),
+			'registerDate' => (object)array(
+				'id' => null,
+				'name' => 'registerDate',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_REGISTERDATE',
+			),
+			'lastvisitDate' => (object)array(
+				'id' => null,
+				'name' => 'lastvisitDate',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_LASTVISITDATE',
+			),
+			'groups' => (object)array(
+				'id' => null,
+				'name' => 'groups',
+				'plugin' => null,
+				'label' => 'COM_EMUNDUS_GROUPE',
+			),
+		);
+	}
+
+	/**
+	 * @param $uid
+	 * @return array
+	 * @description Return an array of 2 elements
+	 *  First element concerns the columns form profile
+	 *  Second element concerns Joomla user columns (email, etc...)
+	 * @throws Exception
+	 */
+	public function getAllInformationsToExport($uid)
+	{
+		$data = [];
+
+		if (!empty($uid)) {
+			$columns = $this->getColumnsFromProfileForm();
+
+			// Configure the hour according to the location
+			if (version_compare(JVERSION, '4.0', '>=')) {
+				$config = Factory::getApplication()->getConfig();
+			} else {
+				$config = Factory::getConfig();
+			}
+			$offset = $config->get('offset', 'Europe/Paris');
+			$timezone = new DateTimeZone($offset);
+
+			// Necessary to retrieve data not available in the profile form
+			// (email, username, registerDate of the user, last connexion date of a user, profile and groups)
+			$user = $this->getUserById($uid);
+			if (!empty($user)) {
+				$user = $user[0];
+
+				$user_profile_details = $this->getProfileDetails($user->profile);
+				if ($user_profile_details->published == 0) {
+					$user_profile = $user_profile_details->label;
+				} else {
+					$user_profile = Text::_('COM_EMUNDUS_APPLICANT');
+				}
+
+				$user_groups = $this->getUserGroupsLabelById($uid);
+				$oprofiles = $this->getUserOprofiles($uid);
+
+				if (empty($user_groups)) {
+					$user_groups = array();
+				}
+
+				$register_date = $user->registerDate ?? '';
+				$lastvisit_date = $user->lastvisitDate ?? '';
+
+				// Set the right format date according to the location
+				if (!empty($register_date)) {
+					$register_date = EmundusHelperDate::displayDate($register_date, 'DATE_FORMAT_LC2', $timezone === 'UTC' ? 1 : 0);
+				}
+				if (!empty($lastvisit_date)) {
+					$lastvisit_date = EmundusHelperDate::displayDate($lastvisit_date, 'DATE_FORMAT_LC2', $timezone === 'UTC' ? 1 : 0);
+				}
+
+				// Create an array with array of each data not in the profile form
+				// Necessary to be coherent with the data in the profile form
+				// We indeed need id, name, plugin, and label at least for each
+				$j_columns = $this->getJoomlaUserColumns();
+
+				$j_columns['username'] = (object)array(
+					'id' => null,
+					'name' => 'username',
+					'plugin' => null,
+					'label' => 'COM_EMUNDUS_USERNAME',
+				);
+
+				foreach ($j_columns as $j_column) {
+					switch ($j_column->name) {
+						case 'lastname' :
+							$j_column->value = $user->lastname ?? '';
+							break;
+						case 'firstname' :
+							$j_column->value = $user->firstname ?? '';
+							break;
+						case 'email':
+							$j_column->value = $user->email ?? '';
+							break;
+						case 'username':
+							$j_column->value = $user->username ?? '';
+							break;
+						case 'registerDate':
+							$j_column->value = $register_date;
+							break;
+						case 'lastvisitDate':
+							$j_column->value = $lastvisit_date;
+							break;
+						case 'groups':
+							$j_column->value = implode(', ', $user_groups);
+							break;
+						case 'profile':
+							$j_column->value = $user_profile ?? '';
+							break;
+						case 'oprofiles':
+							$j_column->value = implode(', ', $oprofiles);
+							break;
+						default :
+							$j_column->value = '';
+							break;
+					}
+				}
+
+				// Create a complete array with all the data we want
+				$data = array(
+					'columns' => $columns,
+					'j_columns' => $j_columns
+				);
+			}
+		}
+		return $data;
+	}
+
+	/**
+	 * @param $uid
+	 * @description Return all the details of a user to export in a csv file (profile form and emundus informations)
+	 * @return array
+	 */
+	public function getUserDetails($uid) {
+		$user_details = [];
+
+		if(!empty($uid)) {
+			$columns = $this->getAllInformationsToExport($uid);
+			$user = $this->getUserById($uid);
+
+			if(!empty($user))
+			{
+				$user = $user[0];
+
+				foreach ($columns['j_columns'] as $field)
+				{
+					$user_details[$field->label] = $field->value;
+				}
+
+				foreach ($columns['columns'] as $column) {
+					if (isset($column->value)) {
+						$user_details[$column->label] = $column->value;
+					} else {
+						$user_details[$column->label] = EmundusHelperFabrik::formatElementValue($column->name, $user->{$column->name}, $column->group_id, $uid);
+					}
+				}
+			}
+		}
+		return $user_details;
 	}
 }

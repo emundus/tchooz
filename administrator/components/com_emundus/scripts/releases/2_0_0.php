@@ -114,6 +114,37 @@ class Release2_0_0Installer extends ReleaseInstaller
 
 			EmundusHelperUpdate::addColumn('jos_emundus_widgets_repeat_access', 'access_level', 'INT', 11);
 
+			$datas = [
+				'menutype'     => 'actions-users',
+				'title'        => 'Exporter',
+				'alias'        => 'export',
+				'link'         => '',
+				'type'         => 'heading',
+				'component_id' => 0,
+			];
+			$export_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+
+			if($export_menu['status'])
+			{
+				EmundusHelperUpdate::insertFalangTranslation(1, $export_menu['id'], 'menu', 'title', 'Export');
+
+				$datas = [
+					'menutype'     => 'actions-users',
+					'title'        => 'Exporter vers Excel',
+					'alias'        => 'export-excel',
+					'type'         => 'url',
+					'link'         => 'index.php?option=com_emundus&view=users&format=raw&layout=export&Itemid={Itemid}',
+					'component_id' => 0,
+					'note'         => '12|r|1|6'
+				];
+				$export_action = EmundusHelperUpdate::addJoomlaMenu($datas,$export_menu['id']);
+
+				if($export_action['status'])
+				{
+					EmundusHelperUpdate::insertFalangTranslation(1, $export_action['id'], 'menu', 'title', 'Export to Excel');
+				}
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
