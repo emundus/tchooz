@@ -10,6 +10,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Language\Text;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -957,7 +958,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 		$trigger_emails = $m_email->getEmailTrigger($state, $code, $to_applicant);
 
-		echo json_encode((object) (array('status' => !empty($trigger_emails), 'msg' => JText::_('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO'))));
+		echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => Text::sprintf('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO', sizeof($validFnums)))));
 		exit;
 	}
 
@@ -4421,6 +4422,55 @@ class EmundusControllerFiles extends JControllerLegacy
 			}
 			else {
 				$response['msg']  = JText::_('MISSING_PARAMS');
+				$response['code'] = 400;
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function countfilesbeforeaction()
+	{
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$app    = Factory::getApplication();
+			$fnums  = $this->input->getString('fnums', null);
+			$action = $this->input->getInt('action_id', 0);
+			$verb   = $this->input->getString('verb', '');
+
+			if (!empty($fnums))
+			{
+				$m_files = new EmundusModelFiles();
+
+				if ($fnums === 'all')
+				{
+					$fnums = $m_files->getAllFnums();
+				}
+				else if (!is_array($fnums))
+				{
+					$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+				}
+
+				$validFnums = [];
+				foreach ($fnums as $fnum)
+				{
+					if (EmundusHelperAccess::asAccessAction($action, $verb, $this->_user->id, $fnum))
+					{
+						$validFnums[] = $fnum;
+					}
+				}
+
+				$response['status'] = true;
+				$response['code']   = 200;
+				$response['msg']    = Text::_('SUCCESS');
+				$response['data']   = sizeof($validFnums);
+			}
+			else
+			{
+				$response['msg']  = Text::_('MISSING_PARAMS');
 				$response['code'] = 400;
 			}
 		}
