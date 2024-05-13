@@ -1077,6 +1077,44 @@ class EmundusControllerCampaign extends JControllerLegacy
 		echo json_encode((object) $tab);
 		exit;
 	}
+
+	public function getProgrammeByCampaignID() {
+		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$campaign_id = $this->input->getInt('campaign_id', 0);
+			$programmes = $this->m_campaign->getProgrammeByCampaignID($campaign_id);
+
+			if (!empty($programmes)) {
+				$response = array('status' => 1, 'msg' => Text::_('PROGRAMMES_RETRIEVED'), 'data' => $programmes);
+			} else {
+				$response = array('status' => 0, 'msg' => Text::_('NO_PROGRAMMES'), 'data' => $programmes);
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function getcampaignmoreformurl()
+	{
+		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+			$campaign_id = $this->input->getInt('cid', 0);
+
+			$url = $this->m_campaign->getCampaignMoreFormUrl($campaign_id);
+
+			if (!empty($url)) {
+				$response = ['status' => 1, 'msg' => Text::_('URL_RETRIEVED'), 'data' => $url, 'code' => 200];
+			} else {
+				$response = ['status' => 0, 'msg' => Text::_('NO_URL'), 'data' => $url, 'code' => 404];
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 }
 
 ?>

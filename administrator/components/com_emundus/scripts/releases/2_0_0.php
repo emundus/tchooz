@@ -145,6 +145,14 @@ class Release2_0_0Installer extends ReleaseInstaller
 				}
 			}
 
+			if (!class_exists('EmundusModelAdministratorCampaign')) {
+				require_once(JPATH_ROOT . '/administrator/components/com_emundus/models/campaign.php');
+			}
+			$m_admin_campaign = new \EmundusModelAdministratorCampaign();
+			if(!$m_admin_campaign->installCampaignMore()) {
+				throw new \Exception('Erreur lors de l\'installation de la table jos_emundus_setup_campaigns_more');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

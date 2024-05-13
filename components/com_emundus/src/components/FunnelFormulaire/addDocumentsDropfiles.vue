@@ -102,7 +102,6 @@ export default {
     profileId: Number,
     campaignId: Number,
     langue: String,
-    menuHighlight: Number,
     manyLanguages: Number
   },
 
