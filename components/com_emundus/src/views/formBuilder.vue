@@ -40,8 +40,8 @@
         </div>
       </header>
       <div v-if="principalContainer === 'default'" class="body em-flex-row em-flex-space-between">
-        <aside class="left-panel em-flex-row em-flex-start em-h-100">
-          <div class="tabs em-flex-column em-flex-start em-h-100">
+        <aside class="left-panel tw-flex tw-justify-start tw-h-full tw-relative">
+          <div class="tabs tw-flex tw-flex-col tw-justify-start tw-h-full">
             <div class="tab" v-for="(tab,i) in displayedLeftPanels" :key="title + '_' + i"
                  :class="{ active: tab.active }">
               <span
@@ -52,18 +52,33 @@
               </span>
             </div>
           </div>
-          <div class="tab-content em-flex-start">
-            <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage" @create-element-lastgroup="createElementLastGroup">
-            </form-builder-elements>
-            <form-builder-document-formats
-                v-else-if="leftPanelActiveTab === 'Documents'"
-                :profile_id="profile_id"
-                @open-create-document="onEditDocument"
-            >
-            </form-builder-document-formats>
+          <div class="tab-content tw-justify-start"
+
+               @mouseover="showMinimizedLeft = true"
+               @mouseleave="showMinimizedLeft = false"
+          >
+            <div :class="minimizedLeft === true ? 'tw-w-0' : 'tw-w-72'" class="tw-transition-all">
+              <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage" @create-element-lastgroup="createElementLastGroup">
+              </form-builder-elements>
+              <form-builder-document-formats
+                  v-else-if="leftPanelActiveTab === 'Documents'"
+                  :profile_id="profile_id"
+                  @open-create-document="onEditDocument"
+              >
+              </form-builder-document-formats>
+            </div>
+            <div class="tw-w-[16px]"
+                 @mouseover="showMinimizedLeft = true"
+                 @mouseleave="showMinimizedLeft = false">
+            <span class="material-icons-outlined tw-absolute tw-right-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
+                  :class="minimizedLeft ? 'tw-rotate-180' : ''"
+                  v-show="showMinimizedLeft === true"
+                  @click="handleSidebarSize('left')">chevron_left</span>
+            </div>
           </div>
+
         </aside>
-        <section class="em-flex-column em-w-100 em-h-100" id="center_content">
+        <section class="tw-flex tw-flex-col tw-w-full tw-h-full" id="center_content">
           <transition name="fade" mode="out-in">
             <form-builder-page
                 ref="formBuilderPage"
@@ -88,59 +103,72 @@
             ></form-builder-document-list>
           </transition>
         </section>
+
         <transition name="slide-fade" mode="out-in">
-          <aside v-if="rightPanel.tabs.includes(showInRightPanel)" class="right-panel em-flex-column em-h-100">
+          <aside v-if="rightPanel.tabs.includes(showInRightPanel)" class="right-panel tw-h-full tw-flex tw-flex-col tw-relative"
+                 @mouseover="showMinimizedRight = true"
+                 @mouseleave="showMinimizedRight = false"
+          >
+            <div class="tw-w-[16px] !tw-h-0"
+                 @mouseover="showMinimizedRight = true"
+                 @mouseleave="showMinimizedRight = false">
+            <span class="material-icons-outlined tw-absolute tw-left-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
+                  :class="minimizedRight ? 'tw-rotate-180' : ''"
+                  v-show="showMinimizedRight === true"
+                  @click="handleSidebarSize('right')">chevron_right</span>
+            </div>
             <transition name="fade" mode="out-in">
-              <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')"
-                   class="em-w-100">
-                <form-builder-pages
-                    :pages="pages"
-                    :selected="parseInt(selectedPage)"
+              <div :class="minimizedRight === true ? '!tw-w-0' : 'tw-w-72'" class="tw-transition-all">
+                <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')">
+                  <form-builder-pages
+                      :pages="pages"
+                      :selected="parseInt(selectedPage)"
+                      :profile_id="parseInt(profile_id)"
+                      @select-page="selectPage($event)"
+                      @add-page="getPages(currentPage.id)"
+                      @delete-page="selectedPage = pages[0].id;"
+                      @open-page-create="principalContainer = 'create-page';"
+                      @reorder-pages="onReorderedPages"
+                      @open-create-model="onOpenCreateModel"
+                  ></form-builder-pages>
+                  <hr>
+                  <form-builder-documents
+                      ref="formBuilderDocuments"
+                      :profile_id="parseInt(profile_id)"
+                      :campaign_id="parseInt(campaign_id)"
+                      @show-documents="setSectionShown('documents')"
+                      @open-create-document="onOpenCreateDocument"
+                  ></form-builder-documents>
+                </div>
+                <form-builder-element-properties
+                    v-if="showInRightPanel === 'element-properties'"
+                    @close="onCloseElementProperties"
+                    :element="selectedElement"
                     :profile_id="parseInt(profile_id)"
-                    @select-page="selectPage($event)"
-                    @add-page="getPages(currentPage.id)"
-                    @delete-page="selectedPage = pages[0].id;"
-                    @open-page-create="principalContainer = 'create-page';"
-                    @reorder-pages="onReorderedPages"
-                    @open-create-model="onOpenCreateModel"
-                ></form-builder-pages>
-                <hr>
-                <form-builder-documents
-                    ref="formBuilderDocuments"
+                ></form-builder-element-properties>
+                <form-builder-section-properties
+                    v-if="showInRightPanel === 'section-properties'"
+                    @close="onCloseSectionProperties"
+                    :section_id="selectedSection.group_id"
                     :profile_id="parseInt(profile_id)"
-                    :campaign_id="parseInt(campaign_id)"
-                    @show-documents="setSectionShown('documents')"
-                    @open-create-document="onOpenCreateDocument"
-                ></form-builder-documents>
+                ></form-builder-section-properties>
+                <form-builder-create-model
+                    v-if="showInRightPanel === 'create-model'"
+                    :page="selectedPage"
+                    @close="showInRightPanel = 'hierarchy';"
+                ></form-builder-create-model>
+                <form-builder-create-document
+                    v-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
+                    ref="formBuilderCreateDocument"
+                    :key="formBuilderCreateDocumentKey"
+                    :profile_id="parseInt(profile_id)"
+                    :current_document="selectedDocument ? selectedDocument : null"
+                    :mandatory="createDocumentMandatory"
+                    :mode="createDocumentMode"
+                    @close="showInRightPanel = 'hierarchy'"
+                    @documents-updated="onUpdateDocument"
+                ></form-builder-create-document>
               </div>
-              <form-builder-element-properties
-                  v-if="showInRightPanel === 'element-properties'"
-                  @close="onCloseElementProperties"
-                  :element="selectedElement"
-                  :profile_id="parseInt(profile_id)"
-              ></form-builder-element-properties>
-              <form-builder-section-properties
-                  v-if="showInRightPanel === 'section-properties'"
-                  @close="onCloseSectionProperties"
-                  :section_id="selectedSection.group_id"
-                  :profile_id="parseInt(profile_id)"
-              ></form-builder-section-properties>
-              <form-builder-create-model
-                  v-if="showInRightPanel === 'create-model'"
-                  :page="selectedPage"
-                  @close="showInRightPanel = 'hierarchy';"
-              ></form-builder-create-model>
-              <form-builder-create-document
-                  v-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
-                  ref="formBuilderCreateDocument"
-                  :key="formBuilderCreateDocumentKey"
-                  :profile_id="parseInt(profile_id)"
-                  :current_document="selectedDocument ? selectedDocument : null"
-                  :mandatory="createDocumentMandatory"
-                  :mode="createDocumentMode"
-                  @close="showInRightPanel = 'hierarchy'"
-                  @documents-updated="onUpdateDocument"
-              ></form-builder-create-document>
             </transition>
           </aside>
         </transition>
@@ -241,7 +269,12 @@ export default {
         ],
       },
       formBuilderCreateDocumentKey: 0,
-      createDocumentMode: 'create'
+      createDocumentMode: 'create',
+
+      minimizedLeft: false,
+      showMinimizedLeft: false,
+      minimizedRight: false,
+      showMinimizedRight: false,
     }
   },
   created() {
@@ -469,7 +502,14 @@ export default {
       } else {
         window.history.go(-1);
       }
-    }
+    },
+    handleSidebarSize(position = 'left') {
+      if (position === 'left') {
+        this.minimizedLeft = !this.minimizedLeft;
+      } else {
+        this.minimizedRight = !this.minimizedRight;
+      }
+    },
   },
   computed: {
     currentPage() {
@@ -534,12 +574,9 @@ export default {
     }
 
     .right-panel {
-      min-width: 366px;
-      width: 366px;
       border-left: solid 1px #E3E5E8;
 
       > div {
-        width: 100%;
         height: 100%;
         overflow: auto;
       }
@@ -570,9 +607,12 @@ export default {
 
       .tab-content {
         align-items: flex-start;
-        padding: 0 16px;
         height: 100%;
         overflow: auto;
+
+        #form-builder-elements,#form-builder-document-formats {
+          padding: 0 0 0 16px;
+        }
       }
     }
 

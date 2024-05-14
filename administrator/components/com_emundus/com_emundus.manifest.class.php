@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use scripts\Release2_0_0Installer;
@@ -222,6 +223,26 @@ class Com_EmundusInstallerScript
 
 	    // Clear Joomla Cache
 	    EmundusHelperUpdate::clearJoomlaCache();
+
+	    // Clear dashboard of emundus accounts
+	    $query->clear()
+		    ->delete($db->quoteName('#__emundus_setup_dashboard'))
+		    ->where($db->quoteName('user') . ' IN (62,95)');
+	    $db->setQuery($query);
+	    $db->execute();
+
+	    EmundusHelperUpdate::checkHealth();
+
+	    EmundusHelperUpdate::checkPageClass();
+
+	    // if payment is activated, remove cookie samesite line in .htaccess file, else add it
+	    $eMConfig = ComponentHelper::getParams('com_emundus');
+	    $payment_activated = $eMConfig->get('application_fee');
+
+	    EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict']);
+	    if (!$payment_activated) {
+		    EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
+	    }
 
 		return true;
     }

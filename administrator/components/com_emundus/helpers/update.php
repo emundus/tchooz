@@ -3689,11 +3689,12 @@ class EmundusHelperUpdate
 			$storage_value['strip_all_tags'] = 1;
 			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik';
 			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['sql_pattern_exceptions'] = 'com_emundus,com_fabrik';
 			$storage_value['line_comments_exceptions'] = 'com_emundus,com_fabrik';
 			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik';
 			$storage_value['escape_strings_exceptions'] = 'com_jce,com_fabrik';
 			$storage_value['lfi_exceptions'] = 'com_emundus,com_fabrik';
-			$storage_value['second_level_exceptions'] = '';
+			$storage_value['second_level_exceptions'] = 'com_emundus';
 
 			// Session
 			$storage_value['session_protection_active'] = 0;
