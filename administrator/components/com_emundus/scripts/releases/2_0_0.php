@@ -110,7 +110,7 @@ class Release2_0_0Installer extends ReleaseInstaller
 			//
 
 			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER','exemple@domaine.com');
-			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER','example@domain.com', 'override', null, null, null, 'en-GB');
+			EmundusHelperUpdate::insertTranslationsTag('COM_USERS_LOGIN_EMAIL_PLACEHOLDER','example@domain.com', 'override', 0, null, null, 'en-GB');
 
 			EmundusHelperUpdate::addColumn('jos_emundus_widgets_repeat_access', 'access_level', 'INT', 11);
 
@@ -152,6 +152,8 @@ class Release2_0_0Installer extends ReleaseInstaller
 			if(!$m_admin_campaign->installCampaignMore()) {
 				throw new \Exception('Erreur lors de l\'installation de la table jos_emundus_setup_campaigns_more');
 			}
+
+			EmundusHelperUpdate::installExtension('plg_emundus_system', 'emundus',null,'plugin',1,'system');
 
 			$result['status'] = true;
 		}

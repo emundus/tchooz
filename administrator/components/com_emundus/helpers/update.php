@@ -240,44 +240,103 @@ class EmundusHelperUpdate
         return $updated;
     }
 
-    public static function installExtension($name, $element, $manifest_cache, $type, $enabled = 1, $folder = '', $params = '{}'){
+    public static function installExtension($name, $element, $manifest_cache = null, $type = 'plugin', $enabled = 1, $folder = '', $params = '{}'){
         $installed = false;
 
         if (!empty($element)) {
             $db = Factory::getDbo();
             $query = $db->getQuery(true);
-
-            try {
-                $query->select('extension_id')
-                    ->from($db->quoteName('#__extensions'))
-                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
-				if(!empty($folder)){
-					$query->where($db->quoteName('folder') . ' LIKE ' . $db->quote($folder));
+			
+			if(empty($manifest_cache) && (!empty($folder) && !empty($type))) {
+				$folder_type = '';
+				switch ($type) {
+					case 'plugin':
+						$folder_type = 'plugins';
+						break;
+					case 'module':
+						$folder_type = 'modules';
+						break;
+					case 'component':
+						$folder_type = 'components';
+						break;
+					case 'library':
+						$folder_type = 'libraries';
+						break;
 				}
-                $db->setQuery($query);
-                $is_existing = $db->loadResult();
+				
+				if(!empty($folder_type))
+				{
+					$manifest_path = JPATH_BASE . '/' . $folder_type . '/' . $folder . '/' . $element . '/'.$element.'.xml';
+					if(file_exists($manifest_path))
+					{
+						$xml_string = file_get_contents($manifest_path);
+						$xml        = simplexml_load_string($xml_string);
+						$json       = json_encode($xml);
+						if(!empty($json))
+						{
+							$array    = json_decode($json, true);
+							$manifest_cache = [
+								'name'         => $array['name'],
+								'type'         => $array['@attributes']['type'],
+								'creationDate' => $array['creationDate'],
+								'author'       => $array['author'],
+								'copyright'    => $array['copyright'],
+								'authorEmail'  => $array['authorEmail'],
+								'authorUrl'    => $array['authorUrl'],
+								'version'      => $array['version'],
+								'description'  => $array['description'],
+								'group'        => $array['@attributes']['group'],
+								'filename'     => $element,
+							];
+							$manifest_cache = json_encode($manifest_cache);
+						}
+					}
+				}
+			}
 
-                if (empty($is_existing)) {
-                    $query->clear()
-                        ->insert($db->quoteName('#__extensions'))
-                        ->set($db->quoteName('name') . ' = ' . $db->quote($name))
-                        ->set($db->quoteName('type') . ' = ' . $db->quote($type))
-                        ->set($db->quoteName('element') . ' = ' . $db->quote($element))
-                        ->set($db->quoteName('folder') . ' = ' . $db->quote($folder))
-                        ->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
-                        ->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
-                        ->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote($params))
-                        ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''));
-                    $db->setQuery($query);
-                    $installed = $db->execute();
-                } else {
-					self::displayMessage('L\'extension ' . $element . ' est déjà installée.');
-                    $installed = true;
-                }
-            } catch (Exception $e) {
-                echo $e->getMessage();
-            }
+			if(!empty($manifest_cache))
+			{
+				try
+				{
+					$query->select('extension_id')
+						->from($db->quoteName('#__extensions'))
+						->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
+					if (!empty($folder))
+					{
+						$query->where($db->quoteName('folder') . ' LIKE ' . $db->quote($folder));
+					}
+					$db->setQuery($query);
+					$is_existing = $db->loadResult();
+
+					if (empty($is_existing))
+					{
+						$query->clear()
+							->insert($db->quoteName('#__extensions'))
+							->set($db->quoteName('name') . ' = ' . $db->quote($name))
+							->set($db->quoteName('type') . ' = ' . $db->quote($type))
+							->set($db->quoteName('element') . ' = ' . $db->quote($element))
+							->set($db->quoteName('folder') . ' = ' . $db->quote($folder))
+							->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
+							->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
+							->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
+							->set($db->quoteName('params') . ' = ' . $db->quote($params))
+							->set($db->quoteName('custom_data') . ' = ' . $db->quote(''));
+						$db->setQuery($query);
+						$installed = $db->execute();
+					}
+					else
+					{
+						self::displayMessage('L\'extension ' . $element . ' est déjà installée.');
+						$installed = true;
+					}
+				}
+				catch (Exception $e)
+				{
+					echo $e->getMessage();
+				}
+			} else {
+				self::displayMessage('Impossible d\'installer l\'extensions sans manifeste.', 'error');
+			}
         } else {
 			self::displayMessage('Impossible d\'installer l\'extensions sans élément spécifié.', 'error');
         }
