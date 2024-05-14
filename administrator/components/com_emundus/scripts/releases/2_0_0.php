@@ -154,6 +154,7 @@ class Release2_0_0Installer extends ReleaseInstaller
 			}
 
 			EmundusHelperUpdate::installExtension('plg_emundus_system', 'emundus',null,'plugin',1,'system');
+			EmundusHelperUpdate::installExtension('eMundus - Update profile', 'emundusupdateprofile',null,'plugin',1,'fabrik_form');
 
 			$result['status'] = true;
 		}

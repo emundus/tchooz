@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<extension group="fabrik_form" method="upgrade" type="plugin" version="4">
+<extension group="fabrik_form" method="upgrade" type="plugin" version="2">
 	<name>eMundus - Update profile</name>
-	<author>Laura Grandin</author>
+	<author>eMundus</author>
 	<creationDate>April 2024</creationDate>
-	<copyright>Copyright (C) 2021 eMundus.fr - All rights reserved.</copyright>
+	<copyright>Copyright (C) 2024 eMundus.fr - All rights reserved.</copyright>
 	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>laura.grandin@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
