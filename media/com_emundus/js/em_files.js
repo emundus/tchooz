@@ -1524,9 +1524,13 @@ function updateState(fnums, state)
                 Swal.fire({
                     position: 'center',
                     type: 'success',
+                    iconHtml: '<img class="em-sending-email-img tw-w-full tw-max-w-none" src="/media/com_emundus/images/tchoozy/complex-illustrations/checklist.svg"/>',
                     title: result.msg,
                     showConfirmButton: false,
-                    timer: 1500
+                    timer: 3000,
+                    customClass: {
+                        icon: 'em-swal-icon',
+                    },
                 });
             } else {
                 $('.modal-body').empty();
@@ -6320,14 +6324,12 @@ function sendMail(data)
 {
     Swal.fire({
         position: 'center',
+        iconHtml: '<img class="em-sending-email-img tw-w-full tw-max-w-none" src="/media/com_emundus/images/tchoozy/complex-illustrations/ready-to-send.svg"/>',
         title: Joomla.Text._('COM_EMUNDUS_EMAILS_SENDING_EMAILS'),
-        html: '<div id="em-modal-sending-emails">' +
-            '<img class="em-sending-email-img" id="em-sending-email-img" src="/media/com_emundus/images/sending-email.gif"/>' +
-            '</div>',
         showCancelButton: false,
         showConfirmButton: false,
         customClass: {
-            title: 'em-swal-title',
+            icon: 'em-swal-icon',
         },
     });
 
@@ -6402,11 +6404,11 @@ function sendMail(data)
                         reloadActions($('#view').val(), undefined, false);
 
                         Swal.fire({
-                            icon: 'success',
+                            iconHtml: '<img class="tw-w-full tw-max-w-none" src="/media/com_emundus/images/tchoozy/complex-illustrations/message-sent.svg"/>',
                             title: Joomla.Text._('COM_EMUNDUS_EMAILS_EMAILS_SENT'),
                             html: sent_to,
                             customClass: {
-                                title: 'em-swal-title',
+                                icon: 'em-swal-icon',
                                 confirmButton: 'em-swal-confirm-button',
                                 actions: "em-swal-single-action",
                             },
