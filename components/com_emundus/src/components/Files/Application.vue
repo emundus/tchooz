@@ -9,16 +9,16 @@
       @before-close="updateURL()"
       @closed="$emit('getFiles')"
   >
-    <div class="em-modal-header em-w-100 em-h-50 em-p-12-16 em-bg-main-900 em-flex-row">
-      <div class="em-flex-row em-pointer em-gap-8" id="evaluation-modal-close">
-        <div class="em-w-max-content em-flex-row" @click="$modal.hide('application-modal')">
-          <span class="material-icons-outlined em-font-size-16" style="color: white">arrow_back</span>
+    <div class="em-modal-header tw-w-full tw-h-2/4 tw-px-3 tw-py-4 tw-bg-main-900 tw-flex tw-items-center">
+      <div class="tw-flex tw-items-center tw-cursor-pointer tw-gap-2" id="evaluation-modal-close">
+        <div class="tw-w-max tw-flex tw-items-center" @click="$modal.hide('application-modal')">
+          <span class="material-icons-outlined tw-text-base" style="color: white">arrow_back</span>
         </div>
-        <span class="em-text-neutral-500">|</span>
-        <p class="em-font-size-14" style="color: white" v-if="file.applicant_name != ''">
+        <span class="tw-text-neutral-500">|</span>
+        <p class="tw-text-sm" style="color: white" v-if="file.applicant_name != ''">
           {{ file.applicant_name }} - {{ file.fnum }}
         </p>
-        <p class="em-font-size-14" style="color: white" v-else>
+        <p class="tw-text-sm" style="color: white" v-else>
           {{ file.fnum }}
         </p>
       </div>
@@ -27,10 +27,10 @@
     <div class="modal-grid" :style="'grid-template-columns:' + this.ratioStyle" v-if="access">
       <div id="modal-applicationform">
         <div class="scrollable">
-          <div class="em-flex-row em-flex-center em-gap-16 em-border-bottom-neutral-300 sticky-tab">
-            <div v-for="tab in tabs" v-if="access[tab.access].r" class="em-light-tabs em-pointer"
+          <div class="tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300 sticky-tab">
+            <div v-for="tab in tabs" v-if="access[tab.access].r" class="em-light-tabs tw-cursor-pointer"
                  @click="selected = tab.name" :class="selected === tab.name ? 'em-light-selected-tab' : ''">
-              <span class="em-font-size-14">{{ translate(tab.label) }}</span>
+              <span class="tw-text-sm">{{ translate(tab.label) }}</span>
             </div>
           </div>
 
@@ -52,10 +52,10 @@
       </div>
 
       <div id="modal-evaluationgrid">
-        <div class="em-flex-column" v-if="!loading" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
-          <div class="em-circle-main-100 em-flex-column" style="width: 40px">
-            <div class="em-circle-main-200 em-flex-column" style="width: 24px">
-              <span class="material-icons-outlined em-main-400-color" style="font-size: 14px">troubleshoot</span>
+        <div class="tw-flex tw-flex-col" v-if="!loading" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
+          <div class="em-circle-main-100 tw-flex tw-flex-col" style="width: 40px">
+            <div class="em-circle-main-200 tw-flex tw-flex-col" style="width: 24px">
+              <span class="material-icons-outlined tw-text-main-400" style="font-size: 14px">troubleshoot</span>
             </div>
           </div>
         </div>

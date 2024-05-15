@@ -33,7 +33,7 @@
           </select>
         </div>
         <div class="form-group" :class="{ 'tw-mb-0': can_translate.label}">
-          <label>{{ translations.Name }}<span class="em-red-500-color">*</span> :</label>
+          <label>{{ translations.Name }}<span class="tw-text-red-500">*</span> :</label>
           <div class="input-can-translate">
             <input v-model="label.fr" type="text" maxlength="40" class="form__input field-general w-input"
                    id="menu_label" style="margin: 0" :class="{ 'is-invalid': errors}"/>
@@ -79,12 +79,12 @@
             <textarea v-model="intro.en" rows="3" class="form__input field-general w-input" maxlength="300"></textarea>
           </div>
         </transition>
-        <div class="col-md-12 em-flex-row" v-if="model_id == -1">
+        <div class="col-md-12 tw-flex tw-items-center" v-if="model_id == -1">
           <input type="checkbox" v-model="template">
           <label class="tw-ml-10px">{{ translations.SaveAsTemplate }} :</label>
         </div>
       </div>
-      <div class="em-flex-row em-flex-space-between tw-mb-1">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-1">
         <button type="button"
                 class="bouton-sauvergarder-et-continuer w-retour"
                 @click.prevent="$modal.hide('modalAddEvaluation')"

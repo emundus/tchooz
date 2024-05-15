@@ -11,8 +11,8 @@
                 @click="$modal.show('modalAddEvaluation')">{{ translations.addGrid }}
         </button>
       </div>
-      <div class="em-flex-row" v-if="grid != null">
-        <button class="bouton-sauvergarder-et-continuer em-mr-4" style="float: none" type="button"
+      <div class="tw-flex tw-items-center" v-if="grid != null">
+        <button class="bouton-sauvergarder-et-continuer tw-mr-1" style="float: none" type="button"
                 @click="evaluationBuilder">{{ translations.editGrid }}
         </button>
         <button class="bouton-sauvergarder-et-continuer w-delete" style="float: none" type="button" @click="deleteGrid">

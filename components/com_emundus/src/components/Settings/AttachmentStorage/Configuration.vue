@@ -2,11 +2,11 @@
   <div>
     <h2>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_CONFIGURATION') }}</h2>
 
-    <div class="em-flex-row">
+    <div class="tw-flex tw-items-center">
       <ul class="nav nav-tabs topnav">
 
         <li v-for="(integration,index) in integrations" :key="'integration-' + index">
-          <a class="em-neutral-700-color em-pointer"
+          <a class="tw-text-neutral-700 tw-cursor-pointer"
              :class="currentIntegration === index ? 'w--current' : ''">
             {{ translate(integration) }}
           </a>

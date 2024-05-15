@@ -1,7 +1,7 @@
 <template>
   <div id="form-builder-document-list">
-    <div id="required-documents" class="em-w-100 em-mb-32 em-mt-32">
-      <p class="em-font-size-24 em-font-weight-600">{{ translate('COM_EMUNDUS_FORM_BUILDER_REQUIRED_DOCUMENTS') }}</p>
+    <div id="required-documents" class="tw-w-full tw-mb-8 tw-mt-8">
+      <p class="tw-text-2xl tw-font-semibold">{{ translate('COM_EMUNDUS_FORM_BUILDER_REQUIRED_DOCUMENTS') }}</p>
 
       <div v-if="requiredDocuments.length > 0">
         <draggable v-model="requiredDocuments" group="form-builder-documents" :sort="false">
@@ -21,10 +21,10 @@
           </transition-group>
         </draggable>
       </div>
-      <div v-if="requiredDocuments.length < 1" class="empty-documents em-mt-16 em-mb-16">
+      <div v-if="requiredDocuments.length < 1" class="empty-documents tw-mt-4 tw-mb-4">
         <draggable :list="emptyDocuments" group="form-builder-documents" :sort="false" class="draggables-list">
           <transition-group id="required-documents">
-            <p class="em-w-100 em-text-align-center em-p-16" v-for="(item, index) in emptyDocuments" :key="index">
+            <p class="tw-w-full tw-text-center tw-p-4" v-for="(item, index) in emptyDocuments" :key="index">
               {{ translate(item.text) }}
             </p>
           </transition-group>
@@ -34,8 +34,8 @@
         {{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_REQUIRED_DOCUMENT') }}
       </button>
     </div>
-    <div id="optional-documents" class="em-w-100 em-mb-32 em-mt-32">
-      <p class="em-font-size-24 em-font-weight-600">{{ translate('COM_EMUNDUS_FORM_BUILDER_OPTIONAL_DOCUMENTS') }}</p>
+    <div id="optional-documents" class="tw-w-full tw-mb-8 tw-mt-8">
+      <p class="tw-text-2xl tw-font-semibold">{{ translate('COM_EMUNDUS_FORM_BUILDER_OPTIONAL_DOCUMENTS') }}</p>
       <div v-if="optionalDocuments.length > 0">
         <draggable v-model="optionalDocuments" group="form-builder-documents" :sort="false">
           <transition-group id="optional-documents">
@@ -54,10 +54,10 @@
           </transition-group>
         </draggable>
       </div>
-      <div v-if="optionalDocuments.length < 1" class="empty-documents em-mt-16 em-mb-16">
+      <div v-if="optionalDocuments.length < 1" class="empty-documents tw-mt-4 tw-mb-4">
         <draggable :list="emptyDocuments" group="form-builder-documents" :sort="false" class="draggables-list">
           <transition-group id="optional-documents">
-            <p class="em-w-100 em-text-align-center em-p-16" v-for="(item, index) in emptyDocuments" :key="index">
+            <p class="tw-w-full tw-text-center tw-p-4" v-for="(item, index) in emptyDocuments" :key="index">
               {{ translate(item.text) }}
             </p>
           </transition-group>

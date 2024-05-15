@@ -11,12 +11,12 @@
       <form @submit.prevent="submit" class="fabrikForm emundus-form">
         <div>
           <div class="tw-mb-4">
-            <h1 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
-            <span class="em-red-500-color em-mb-8">{{ translations.RequiredFieldsIndicate }}</span>
+            <h1 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
+            <span class="tw-text-red-500 tw-mb-2">{{ translations.RequiredFieldsIndicate }}</span>
           </div>
 
           <div>
-            <div class="em-mb-16">
+            <div class="tw-mb-4">
               <label>{{ translations.emailName }} <span style="color: #E5283B">*</span></label>
               <input
                   type="text"
@@ -25,8 +25,8 @@
                   :class="{ 'is-invalid': errors.subject}"
               />
             </div>
-            <span v-if="errors.subject" class="em-red-500-color tw-mb-2">
-              <span class="em-red-500-color">{{ translations.SubjectRequired }}</span>
+            <span v-if="errors.subject" class="tw-text-red-500 tw-mb-2">
+              <span class="tw-text-red-500">{{ translations.SubjectRequired }}</span>
             </span>
 
             <div class="tw-mb-4">
@@ -48,8 +48,8 @@
                    target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
               </div>
             </div>
-            <p v-if="errors.message" class="em-red-500-color tw-mb-2">
-              <span class="em-red-500-color">{{ translations.BodyRequired }}</span>
+            <p v-if="errors.message" class="tw-text-red-500 tw-mb-2">
+              <span class="tw-text-red-500">{{ translations.BodyRequired }}</span>
             </p>
 
             <div class="form-group">
@@ -70,13 +70,13 @@
 
         <div>
           <div class="tw-flex tw-items-center tw-mb-4 tw-gap-1">
-            <h3 class="tw-cursor-pointer em-mb-0-important" @click="displayAdvanced">{{ translations.Advanced }}</h3>
-            <button :title="translations.Advanced" type="button" class="em-transparent-button tw-flex tw-flex-col"
+            <h3 class="tw-cursor-pointer !tw-mb-0" @click="displayAdvanced">{{ translations.Advanced }}</h3>
+            <button :title="translations.Advanced" type="button" class="tw-bg-transparent tw-flex tw-flex-col"
                     @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
             <button :title="translations.Advanced" type="button" @click="displayAdvanced"
-                    class="em-transparent-button tw-flex tw-flex-col" v-show="displayAdvancedParameters">
+                    class="tw-bg-transparent tw-flex tw-flex-col" v-show="displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
             </button>
           </div>
@@ -103,7 +103,7 @@
                   v-model="form.emailfrom"
                   placeholder="reply-to@tchooz.io"
               />
-              <p class="em-font-size-12 em-neutral-700-color">
+              <p class="tw-text-xs tw-text-neutral-700">
                 {{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP') }}</p>
             </div>
 
@@ -213,11 +213,11 @@
         <div class="tw-flex tw-justify-between tw-mt-4">
           <button
               type="button"
-              class="em-secondary-button em-w-auto"
+              class="em-secondary-button !tw-w-auto"
               onclick="history.back()">
             {{ translations.retour }}
           </button>
-          <button type="submit" class="em-primary-button em-w-auto">
+          <button type="submit" class="em-primary-button tw-w-auto">
             {{ translations.continuer }}
           </button>
         </div>

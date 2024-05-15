@@ -14,41 +14,41 @@
         @before-open="beforeOpen"
     >
 
-      <div class="em-flex-row em-flex-space-between em-mb-16">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
         <h4 v-if="currentDoc ==null">
           {{ translations.createDocument }}
         </h4>
         <h4 v-if="currentDoc != null">
           {{ translations.createDocument }}
         </h4>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAddDocuments')">
+        <button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="$modal.hide('modalAddDocuments')">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
 
       <div>
-        <div class="em-mb-16">
-          <a class="em-flex-row">
+        <div class="tw-mb-4">
+          <a class="tw-flex tw-items-center">
             <div class="em-toggle">
               <input type="checkbox" class="em-toggle-check" name="require" v-model="req"
                      @click="updateRequireMandatory()"/>
               <strong class="b em-toggle-switch"></strong>
               <strong class="b em-toggle-track"></strong>
             </div>
-            <span for="require" class="em-ml-8 em-pointer" @click="updateRequireMandatory()">{{
+            <span for="require" class="tw-ml-2 tw-cursor-pointer" @click="updateRequireMandatory()">{{
                 translations.Required
               }}</span>
           </a>
         </div>
 
-        <div class="em-mb-16" v-if="can_be_deleted">
+        <div class="tw-mb-4" v-if="can_be_deleted">
           <button type="button" class="em-tertiary-button"
                   @click="deleteModel">{{ translations.DeleteDocTemplate }}</button>
         </div>
 
-        <div class="em-mb-16" v-if="currentDoc ==null">
-          <label for="modelName" class="em-w-100">{{ translations.DocTemplate }} :</label>
-          <select v-model="doc" id="modelName" class="em-w-100" name="modelName"
+        <div class="tw-mb-4" v-if="currentDoc ==null">
+          <label for="modelName" class="tw-w-full">{{ translations.DocTemplate }} :</label>
+          <select v-model="doc" id="modelName" class="tw-w-full" name="modelName"
                   :disabled="Object.keys(models).length <= 0">
             <option :value="null"></option>
             <option v-for="(modelT, index) in models" :key="'option_' + index" :value="modelT.id">{{
@@ -57,41 +57,41 @@
           </select>
         </div>
 
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <label for="name">{{ translations.Name }}* :</label>
-          <input type="text" class="em-w-100" maxlength="100" v-model="form.name[langue]" id="name"
+          <input type="text" class="tw-w-full" maxlength="100" v-model="form.name[langue]" id="name"
                  :class="{ 'is-invalid': errors.name}"/>
-          <p v-if="errors.name" class="em-red-500-color">
-            <span class="em-red-500-color">{{ translations.NameRequired }}</span>
+          <p v-if="errors.name" class="tw-text-red-500">
+            <span class="tw-text-red-500">{{ translations.NameRequired }}</span>
           </p>
         </div>
 
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <label for="description">{{ translations.Description }} :</label>
           <editor :height="'20em'" :text="form.description[langue]" :lang="langue" :enable_variables="false"
                   :id="'editor_fr'" :key="dynamicComponent" v-model="form.description[langue]"></editor>
         </div>
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <label for="nbmax">{{ translations.MaxPerUser }}* :</label>
-          <input type="number" class="em-w-100" min="1" v-model="form.nbmax" id="nbmax"
+          <input type="number" class="tw-w-full" min="1" v-model="form.nbmax" id="nbmax"
                  :class="{ 'is-invalid': errors.nbmax}"/>
-          <p v-if="errors.nbmax" class="em-red-500-color">
-            <span class="em-red-500-color">{{ translations.MaxRequired }}</span>
+          <p v-if="errors.nbmax" class="tw-text-red-500">
+            <span class="tw-text-red-500">{{ translations.MaxRequired }}</span>
           </p>
         </div>
 
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{ translations.FileType }}* :</label>
           <div :class="{ 'is-invalid': errors.selectedUsers}">
-            <div v-for="(type, index) in types" :key="index" class="em-flex-row em-mb-8">
+            <div v-for="(type, index) in types" :key="index" class="tw-flex tw-items-center tw-mb-2">
               <input type="checkbox" v-model="form.selectedTypes[type.value]" @change="selectType(type)">
-              <div class="em-ml-8">
+              <div class="tw-ml-2">
                   <p>{{ type.title }} ({{ type.value }})</p>
               </div>
             </div>
           </div>
-          <p v-if="errors.selectedTypes" class="em-red-500-color">
-            <span class="em-red-500-color">{{ translations.TypeRequired }}</span>
+          <p v-if="errors.selectedTypes" class="tw-text-red-500">
+            <span class="tw-text-red-500">{{ translations.TypeRequired }}</span>
           </p>
         </div>
       </div>
@@ -106,11 +106,11 @@
         <br/>
         <div class="form-group">
           <label for="image-min-width">{{ translations.ImageWidth }}</label>
-          <div class="input-can-translate em-flex-row em-flex-space-between">
-              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width"
+          <div class="input-can-translate tw-flex tw-items-center tw-justify-between">
+              <input type="number" maxlength="100" class="form__input field-general w-input tw-mb-0" id="image-min-width"
                      min="300" v-model="form.minResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()"
                      v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
-              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width"
+              <input type="number" maxlength="100" class="form__input field-general w-input tw-mb-0" id="image-max-width"
                      min="300" v-model="form.maxResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()"
                      v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
@@ -121,11 +121,11 @@
 
         <div class="form-group">
           <label for="image-min-height">{{ translations.ImageHeight }}</label>
-          <div class="input-can-translate em-flex-row em-flex-space-between">
-              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height"
+          <div class="input-can-translate tw-flex tw-items-center tw-justify-between">
+              <input type="number" maxlength="100" class="form__input field-general w-input tw-mb-0" id="image-min-height"
                      min="300" v-model="form.minResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()"
                      v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
-              <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height"
+              <input type="number" maxlength="100" class="form__input field-general w-input tw-mb-0" id="image-max-height"
                      min="300" v-model="form.maxResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()"
                      v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
@@ -135,15 +135,15 @@
         </div>
 
       </div>
-      <div class="em-flex-row em-flex-space-between em-mb-8">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
         <button
             type="button"
-            class="em-secondary-button em-w-auto"
+            class="em-secondary-button !tw-w-auto"
             @click.prevent="$modal.hide('modalAddDocuments')">
           {{ translations.Retour }}
         </button>
         <button type="button"
-                class="em-primary-button em-w-auto"
+                class="em-primary-button !tw-w-auto"
                 @click.prevent="createNewDocument()">
           {{ translations.Continuer }}
         </button>

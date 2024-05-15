@@ -1,5 +1,5 @@
 <template>
-  <div :id="'formBuilder'" class="em-w-100 em-h-100">
+  <div :id="'formBuilder'" class="tw-w-full tw-h-full">
     <modal
         :name="'formBuilder'"
         height="auto"
@@ -15,17 +15,17 @@
           position="bottom left"
           :classes="'vue-notification-custom'"
       />
-      <header class="em-flex-row em-flex-space-between">
-        <div class="right-actions em-p-12-16 em-flex-row em-pointer"
+      <header class="tw-flex tw-items-center tw-justify-between">
+        <div class="right-actions tw-px-3 tw-py-4 tw-flex tw-items-center tw-cursor-pointer"
              @click="clickGoBack">
           <span id="go-back"
                 class="material-icons-outlined">
             navigate_before
           </span>
-          <span class="em-ml-8 em-text-neutral-900" >{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
+          <span class="tw-ml-2 tw-text-neutral-900" >{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
         </div>
         <span
-            class="em-font-size-14  em-font-weight-600 editable-data"
+            class="tw-text-sm	tw-font-semibold editable-data"
             contenteditable="true"
             ref="formTitle"
             @focusout="updateFormTitle"
@@ -33,31 +33,31 @@
         >
             {{ title }}
           </span>
-        <div class="left-actions em-flex-row em-flex-space-between em-p-12-16">
-          <p v-if="lastSave" id="saved-at" class="em-font-size-14 em-main-500-color">
+        <div class="left-actions tw-flex tw-items-center tw-justify-between tw-px-3 tw-py-4">
+          <p v-if="lastSave" id="saved-at" class="tw-text-sm tw-text-main-500">
             {{ translate("COM_EMUNDUS_FORM_BUILDER_SAVED_AT") }} {{ lastSave }}
           </p>
         </div>
       </header>
-      <div v-if="principalContainer === 'default'" class="body em-flex-row em-flex-space-between">
+      <div v-if="principalContainer === 'default'" class="body tw-flex tw-items-center tw-justify-between">
         <aside class="left-panel tw-flex tw-justify-start tw-h-full tw-relative">
           <div class="tabs tw-flex tw-flex-col tw-justify-start tw-h-full">
             <div class="tab" v-for="(tab,i) in displayedLeftPanels" :key="title + '_' + i"
                  :class="{ active: tab.active }">
               <span
-                  class="material-icons-outlined em-p-16"
+                  class="material-icons-outlined tw-p-4"
                   @click="tab.url ? goTo(tab.url, 'blank') : selectTab(tab.title)"
               >
                 {{ tab.icon }}
               </span>
             </div>
           </div>
-          <div class="tab-content tw-justify-start"
+          <div class="tab-content tw-justify-start tw-transition-all tw-duration-300" :class="minimizedLeft === true ? 'tw-max-w-0' : 'tw-max-w-md'"
 
                @mouseover="showMinimizedLeft = true"
                @mouseleave="showMinimizedLeft = false"
           >
-            <div :class="minimizedLeft === true ? 'tw-w-0' : 'tw-w-72'" class="tw-transition-all">
+            <div class="">
               <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage" @create-element-lastgroup="createElementLastGroup">
               </form-builder-elements>
               <form-builder-document-formats
@@ -67,14 +67,14 @@
               >
               </form-builder-document-formats>
             </div>
-            <div class="tw-w-[16px]"
-                 @mouseover="showMinimizedLeft = true"
-                 @mouseleave="showMinimizedLeft = false">
+          </div>
+          <div class="tw-w-[16px]"
+               @mouseover="showMinimizedLeft = true"
+               @mouseleave="showMinimizedLeft = false">
             <span class="material-icons-outlined tw-absolute tw-right-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
                   :class="minimizedLeft ? 'tw-rotate-180' : ''"
                   v-show="showMinimizedLeft === true"
                   @click="handleSidebarSize('left')">chevron_left</span>
-            </div>
           </div>
 
         </aside>
@@ -118,7 +118,7 @@
                   @click="handleSidebarSize('right')">chevron_right</span>
             </div>
             <transition name="fade" mode="out-in">
-              <div :class="minimizedRight === true ? '!tw-w-0' : 'tw-w-72'" class="tw-transition-all">
+              <div :class="minimizedRight === true ? 'tw-max-w-0' : 'tw-max-w-md tw-min-w-[22rem]'" class="tw-transition-all tw-duration-300">
                 <div id="form-hierarchy" v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')">
                   <form-builder-pages
                       :pages="pages"

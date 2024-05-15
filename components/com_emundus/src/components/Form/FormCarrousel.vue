@@ -1,22 +1,22 @@
 <template>
   <div>
-    <div class="em-flex-row em-flex-space-between em-align-start">
-      <div class="em-w-100">
+    <div class="tw-flex tw-items-center tw-justify-between tw-items-start">
+      <div class="tw-w-full">
         <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility"
                     v-if="formLinkArray[indexHighlight]" @editPage="EditPage"/>
       </div>
 
       <hr class="vertical-divider">
 
-      <div class="em-flex-column em-align-start em-mt-48">
-        <div class="em-mb-16">
+      <div class="tw-flex tw-flex-col tw-items-start tw-mt-12">
+        <div class="tw-mb-4">
           <h4>
             <span class="material-icons-outlined">article</span>
             {{ Form }}
           </h4>
-          <div v-for="(value, index) in formNameArray" :key="index" class="MenuForm em-mb-8">
+          <div v-for="(value, index) in formNameArray" :key="index" class="MenuForm tw-mb-2">
             <a @click="ChangeIndex(index)"
-               class="em-pointer em-text-neutral-900"
+               class="tw-cursor-pointer tw-text-neutral-900"
                :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
                v-html="value.value"
             >{{ value.value }}</a>
@@ -28,8 +28,8 @@
             <span class="material-icons-outlined">folder</span>
             {{ Documents }}
           </h4>
-          <div v-for="(doc, index) in documentsList" :key="index" class="MenuForm em-mb-8">
-            <p class="em-text-neutral-900">{{ doc.label }}</p>
+          <div v-for="(doc, index) in documentsList" :key="index" class="MenuForm tw-mb-2">
+            <p class="tw-text-neutral-900">{{ doc.label }}</p>
           </div>
         </div>
       </div>

@@ -1,32 +1,32 @@
 <template>
-  <div class="em-mt-16">
+  <div class="tw-mt-4">
 
-    <div class="em-flex-row em-flex-space-between">
-      <div class="em-h4 em-mb-16">{{
+    <div class="tw-flex tw-items-center tw-justify-between">
+      <div class="em-h4 tw-mb-4">{{
           translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_WRITING')
         }}
       </div>
-      <div class="em-flex-row">
-        <a class="em-mr-16 em-pointer em-blue-500-color em-hover-blue-500"
+      <div class="tw-flex tw-items-center">
+        <a class="tw-mr-4 tw-cursor-pointer em-blue-500-color em-hover-blue-500"
            href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
            target="_blank">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_TAGS_LIST') }}</a>
-        <div class="em-pointer em-blue-500-color" @click="resetName">
+        <div class="tw-cursor-pointer em-blue-500-color" @click="resetName">
           {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_RESET') }}
         </div>
       </div>
     </div>
 
-    <div class="em-name-preview em-mb-16 em-flex-row" :class="selectedTags.length === 0 ? 'em-name-preview-error' : ''">
-      <div v-for="(tag,index) in selectedTags" class="em-flex-row">
+    <div class="em-name-preview tw-mb-4 tw-flex tw-items-center" :class="selectedTags.length === 0 ? 'em-name-preview-error' : ''">
+      <div v-for="(tag,index) in selectedTags" class="tw-flex tw-items-center">
         <span>{{ tag.value }}</span>
         <div v-if="(index + 1) !== selectedTags.length">{{ selectedSeparator }}</div>
       </div>
     </div>
-    <div class="em-red-500-color em-mb-16" v-if="selectedTags.length === 0">
+    <div class="tw-text-red-500 tw-mb-4" v-if="selectedTags.length === 0">
       {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_SELECT_A_TAG') }}
     </div>
 
-    <div class="em-flex-row">
+    <div class="tw-flex tw-items-center">
       <multiselect
           v-model="new_tag"
           label="label"
@@ -42,15 +42,15 @@
           :placeholder="'Ajouter une balise'"
       ></multiselect>
 
-      <div v-for="(tag,index) in selectedTags" :key="index" class="em-ml-16 em-flex-row em-tag-preview">
+      <div v-for="(tag,index) in selectedTags" :key="index" class="em-ml-16 tw-flex tw-items-center em-tag-preview">
         <span>{{ tag.label }}</span>
-        <span class="material-icons em-pointer em-ml-8" @click="removeTag(tag.value)">close</span>
+        <span class="material-icons tw-cursor-pointer tw-ml-2" @click="removeTag(tag.value)">close</span>
       </div>
     </div>
 
-    <div class="em-flex-row em-mt-16">
+    <div class="tw-flex tw-items-center tw-mt-4">
       <span>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SEPARATOR') }} : </span>
-      <div class="em-ml-16 em-separator em-pointer"
+      <div class="em-ml-16 em-separator tw-cursor-pointer"
            :class="selectedSeparator === separator ? 'em-selected-separator' : ''" v-for="separator in separators"
            @click="selectedSeparator = separator">
         <span>{{ separator }}</span>

@@ -12,16 +12,16 @@
         @before-open="beforeOpen"
     >
 
-      <div class="em-flex-row em-flex-space-between em-mb-16">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
         <h4>
           {{ ModelPreview }}
         </h4>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalEmailPreview_' + model)">
+        <button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="$modal.hide('modalEmailPreview_' + model)">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
 
-      <div class="em-mb-16">
+      <div class="tw-mb-4">
           <p v-if="email != null"><span v-html="email.message"></span></p>
       </div>
 

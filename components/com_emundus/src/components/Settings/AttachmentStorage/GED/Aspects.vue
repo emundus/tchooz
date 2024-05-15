@@ -1,16 +1,16 @@
 <template>
   <section>
-    <div class="em-h4 em-mb-16">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS') }}</div>
-    <div id="no-aspects" class="em-flex-row" v-if="aspects.length < 1 && upload">
+    <div class="em-h4 tw-mb-4">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS') }}</div>
+    <div id="no-aspects" class="tw-flex tw-items-center" v-if="aspects.length < 1 && upload">
       <input type="file" id="aspect-file" class="em-m-0" accept=".xml"/>
-      <div class="em-primary-button em-w-33 em-ml-16 em-pointer" @click="uploadAspectFile">
+      <div class="em-primary-button em-w-33 em-ml-16 tw-cursor-pointer" @click="uploadAspectFile">
         {{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD') }}
       </div>
     </div>
     <div id="aspects" v-else>
-      <div class="em-h5 em-mb-16">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_MAPPING') }}</div>
-      <div v-for="aspect in aspects" :key="aspect.name" class="em-mb-16">
-        <div class="em-flex-row em-flex-space-between">
+      <div class="em-h5 tw-mb-4">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_MAPPING') }}</div>
+      <div v-for="aspect in aspects" :key="aspect.name" class="tw-mb-4">
+        <div class="tw-flex tw-items-center tw-justify-between">
           <input type="text" v-model="aspect.label" disabled>
           <span class="material-icons">sync_alt</span>
           <select v-model="aspect.mapping" @change="updateAspectMapping">
@@ -20,12 +20,12 @@
       </div>
 
       <div v-if="upload">
-        <div class="em-h6 em-mb-16">
+        <div class="em-h6 tw-mb-4">
           {{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_ADD_FROM_FILE') }}
         </div>
-        <div id="add-aspects-from-file" class="em-flex-row">
+        <div id="add-aspects-from-file" class="tw-flex tw-items-center">
           <input type="file" id="update-aspect-file" accept=".xml"/>
-          <div class="em-primary-button em-pointer" @click="updateAspectListFromFile">
+          <div class="em-primary-button tw-cursor-pointer" @click="updateAspectListFromFile">
             {{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_ADD') }}
           </div>
         </div>

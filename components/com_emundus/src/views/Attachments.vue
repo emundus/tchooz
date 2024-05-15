@@ -1,9 +1,9 @@
 <template>
-  <div id="em-attachments" class="em-w-100">
+  <div id="em-attachments" class="tw-w-full">
     <div class="wrapper" :class="{loading: loading}">
-      <section id="filters" class="em-flex-row em-flex-space-between">
-        <div class="em-flex-row">
-          <div class="em-flex-row searchbar-wrapper">
+      <section id="filters" class="tw-flex tw-items-center tw-justify-between">
+        <div class="tw-flex tw-items-center">
+          <div class="tw-flex tw-items-center searchbar-wrapper">
             <input
                 id="searchbar"
                 type="text"
@@ -14,7 +14,7 @@
                 @keyup.enter="onSearchKeyup"
             />
             <span class="material-icons-outlined search">search</span>
-            <span class="material-icons-outlined clear em-pointer" @click="search = ''">clear</span>
+            <span class="material-icons-outlined clear tw-cursor-pointer" @click="search = ''">clear</span>
           </div>
           <select v-if="columns.includes('category') && Object.entries(displayedAttachmentCategories).length > 0"
                   name="category"
@@ -28,14 +28,14 @@
             </option>
           </select>
         </div>
-        <div class="actions em-flex-row">
+        <div class="actions tw-flex tw-items-center">
           <div
               v-if="canExport"
               class="btn-icon-text"
               @click="exportAttachments"
               :class="{ disabled: checkedAttachments.length < 1 }"
           >
-            <span class="material-icons-outlined export em-mr-8">file_upload</span>
+            <span class="material-icons-outlined export tw-mr-2">file_upload</span>
             <span>{{ translate("COM_EMUNDUS_EXPORTS_EXPORT") }}</span>
           </div>
           <div
@@ -49,7 +49,7 @@
             </span>
             <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE") }}</span>
           </div>
-          <span class="material-icons-outlined refresh em-pointer"
+          <span class="material-icons-outlined refresh tw-cursor-pointer"
                 @click="refreshAttachments(true)"
                 :title="translate('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE')"
           >
@@ -66,12 +66,12 @@
 					</span>
         </div>
       </section>
-      <div v-if="exportLink" class="em-mt-16 em-mb-16">
+      <div v-if="exportLink" class="tw-mt-4 tw-mb-4">
         <a :href="exportLink" target="_blank" @click="exportLink = ''">
           {{ translate('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK') }}
         </a>
       </div>
-      <section v-if="attachments.length" class="table-wrapper em-w-100">
+      <section v-if="attachments.length" class="table-wrapper tw-w-full">
         <table :class="{ loading: loading }" aria-describedby="Table of attachments information">
           <thead>
           <tr>
@@ -80,58 +80,58 @@
             <th v-if="columns.includes('name')" id="name" @click="orderBy('value')">
               <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}</span>
               <span v-if="sort.orderBy === 'value' && sort.order === 'asc'"
-                    class="material-icons-outlined em-font-size-16">arrow_upward</span>
+                    class="material-icons-outlined tw-text-base">arrow_upward</span>
               <span v-if="sort.orderBy === 'value' && sort.order === 'desc'"
-                    class="material-icons-outlined em-font-size-16">arrow_downward</span>
+                    class="material-icons-outlined tw-text-base">arrow_downward</span>
             </th>
             <th v-if="columns.includes('date')" id="date" class="date" @click="orderBy('timedate')">
               <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}</span>
               <span v-if="sort.orderBy === 'timedate' && sort.order === 'asc'"
-                    class="material-icons-outlined em-font-size-16">arrow_upward</span>
+                    class="material-icons-outlined tw-text-base">arrow_upward</span>
               <span v-if="sort.orderBy === 'timedate' && sort.order === 'desc'"
-                    class="material-icons-outlined em-font-size-16">arrow_downward</span>
+                    class="material-icons-outlined tw-text-base">arrow_downward</span>
             </th>
             <th v-if="columns.includes('desc')" id="desc" class="desc" @click="orderBy('upload_description')">
               <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION") }}</span>
               <span v-if="sort.orderBy === 'upload_description' && sort.order === 'asc'"
-                    class="material-icons-outlined em-font-size-16">arrow_upward</span>
+                    class="material-icons-outlined tw-text-base">arrow_upward</span>
               <span v-if="sort.orderBy === 'upload_description' && sort.order === 'desc'"
-                    class="material-icons-outlined em-font-size-16">arrow_downward</span>
+                    class="material-icons-outlined tw-text-base">arrow_downward</span>
             </th>
             <th v-if="columns.includes('category')" id="category" class="category" @click="orderBy('category')">
               <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
               <span v-if="sort.orderBy === 'category' && sort.order === 'asc'"
-                    class="material-icons-outlined em-font-size-16">arrow_upward</span>
+                    class="material-icons-outlined tw-text-base">arrow_upward</span>
               <span v-if="sort.orderBy === 'category' && sort.order === 'desc'"
-                    class="material-icons-outlined em-font-size-16">arrow_downward</span>
+                    class="material-icons-outlined tw-text-base">arrow_downward</span>
             </th>
             <th v-if="columns.includes('status')" id="status" class="status" @click="orderBy('is_validated')">
               <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}</span>
               <span v-if="sort.orderBy === 'is_validated' && sort.order === 'asc'"
-                    class="material-icons-outlined em-font-size-16">arrow_upward</span>
+                    class="material-icons-outlined tw-text-base">arrow_upward</span>
               <span v-if="sort.orderBy === 'is_validated' && sort.order === 'desc'"
-                    class="material-icons-outlined em-font-size-16">arrow_downward</span>
+                    class="material-icons-outlined tw-text-base">arrow_downward</span>
             </th>
             <th v-if="canSee && columns.includes('user')" id="user" @click="orderBy('user_id')">
               <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}</span>
               <span v-if="sort.orderBy === 'user_id' && sort.order === 'asc'"
-                    class="material-icons-outlined em-font-size-16">arrow_upward</span>
+                    class="material-icons-outlined tw-text-base">arrow_upward</span>
               <span v-if="sort.orderBy === 'user_id' && sort.order === 'desc'"
-                    class="material-icons-outlined em-font-size-16">arrow_downward</span>
+                    class="material-icons-outlined tw-text-base">arrow_downward</span>
             </th>
             <th v-if="canSee && columns.includes('modified_by')" id="modified_by" @click="orderBy('modified_by')">
               <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
               <span v-if="sort.orderBy === 'modified_by' && sort.order === 'asc'"
-                    class="material-icons-outlined em-font-size-16">arrow_upward</span>
+                    class="material-icons-outlined tw-text-base">arrow_upward</span>
               <span v-if="sort.orderBy === 'modified_by' && sort.order === 'desc'"
-                    class="material-icons-outlined em-font-size-16">arrow_downward</span>
+                    class="material-icons-outlined tw-text-base">arrow_downward</span>
             </th>
             <th v-if="columns.includes('modified')" id="modified" class="date" @click="orderBy('modified')">
               <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
               <span v-if="sort.orderBy === 'modified' && sort.order === 'asc'"
-                    class="material-icons-outlined em-font-size-16">arrow_upward</span>
+                    class="material-icons-outlined tw-text-base">arrow_upward</span>
               <span v-if="sort.orderBy === 'modified' && sort.order === 'desc'"
-                    class="material-icons-outlined em-font-size-16">arrow_downward</span>
+                    class="material-icons-outlined tw-text-base">arrow_downward</span>
             </th>
             <th v-if="columns.includes('permissions')" id="permissions" class="permissions">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}
@@ -167,39 +167,39 @@
 
     <modal id="edit-modal" name="edit" :resizable="true" :draggable="true"
            styles="display:flex;flex-direction:column;justify-content:center;align-items:center;">
-      <div class="modal-head em-w-100 em-flex-row em-flex-space-between">
-        <div id="actions-left" class="em-flex-row em-flex-start"><span>{{ selectedAttachment.filename }}</span></div>
-        <div id="actions-right" class="em-flex-row">
-          <a v-if="sync && syncSelectedPreview" class="download btn-icon-text em-mr-24"
+      <div class="modal-head tw-w-full tw-flex tw-items-center tw-justify-between">
+        <div id="actions-left" class="tw-flex tw-items-center tw-justify-start"><span>{{ selectedAttachment.filename }}</span></div>
+        <div id="actions-right" class="tw-flex tw-items-center">
+          <a v-if="sync && syncSelectedPreview" class="download btn-icon-text tw-mr-6"
              :href="syncSelectedPreview" target="_blank">
             <span class="material-icons-outlined">open_in_new</span>
             <span>{{ translate('COM_EMUNDUS_ATTACHMENTS_OPEN_IN_GED') }}</span>
           </a>
-          <a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text em-mr-24">
+          <a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text tw-mr-6">
             <span class="material-icons"> file_download </span>
             <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD") }}</span>
           </a>
-          <div class="prev-next-attachments em-flex-row em-flex-space-between em-mr-8">
+          <div class="prev-next-attachments tw-flex tw-items-center tw-justify-between tw-mr-2">
             <div
-                class="prev em-flex-row em-mr-4"
+                class="prev tw-flex tw-items-center tw-mr-1"
                 :class="{ active: selectedAttachmentPosition > 0 }"
                 @click="changeAttachment(selectedAttachmentPosition - 1, true)"
             >
               <span class="material-icons"> navigate_before </span>
             </div>
             <span class="lvl">{{ selectedAttachmentPosition + 1 }} /{{ displayedAttachments.length }}</span>
-            <div class="next em-flex-row em-ml-4"
+            <div class="next tw-flex tw-items-center tw-ml-1"
                  :class="{active: selectedAttachmentPosition < displayedAttachments.length - 1}"
                  @click="changeAttachment(selectedAttachmentPosition + 1)"
             >
               <span class="material-icons"> navigate_next </span>
             </div>
           </div>
-          <span class="material-icons em-pointer" @click="closeModal">close</span>
+          <span class="material-icons tw-cursor-pointer" @click="closeModal">close</span>
         </div>
       </div>
       <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
-        <div v-if="!modalLoading && displayedUser.user_id && displayedFnum" class="modal-body em-flex-row"
+        <div v-if="!modalLoading && displayedUser.user_id && displayedFnum" class="modal-body tw-flex tw-items-center"
              :class="{'only-preview': onlyPreview}">
           <AttachmentPreview @fileNotFound="canDownload = false" @canDownload="canDownload = true"
                              :user="displayedUser.user_id"></AttachmentPreview>

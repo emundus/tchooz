@@ -23,21 +23,21 @@
           v-model="documents"
           style="margin: 0"
           handle=".handle"
-          class="em-flex-row"
+          class="tw-flex tw-items-center"
           chosen-class="em-grabbing"
           v-bind="dragOptions"
           @end="updateDocumentsOrder"
       >
-        <transition-group type="transition" :value="!drag ? 'flip-list' : null" class="em-grid-3 em-w-100 handle">
+        <transition-group type="transition" :value="!drag ? 'flip-list' : null" class="tw-grid tw-grid-cols-3 tw-gap-6 tw-w-full handle">
           <div :id="'itemDoc' + document.id"
                v-for="(document,indexDoc) in documents"
                :key="document.id"
-               class="em-document-dropzone-card em-grab">
-            <button type="button" class="em-float-right em-transparent-button" @click="deleteDoc(indexDoc,document.id)">
+               class="em-document-dropzone-card tw-cursor-grab">
+            <button type="button" class="tw-float-right tw-bg-transparent" @click="deleteDoc(indexDoc,document.id)">
               <span class="material-icons-outlined">close</span>
             </button>
-            <div class="em-flex-row em-w-100 em-flex-center">
-              <div class="em-flex-column em-edit-cursor" @click="editName(document)">
+            <div class="tw-flex tw-items-center tw-w-full tw-justify-center">
+              <div class="tw-flex tw-flex-col em-edit-cursor" @click="editName(document)">
                 <img v-if="document.ext === 'pdf'" src="/media/com_emundus/images/icones/filetype/pdf.png"
                      class="em-filetype-icon" alt="filetype">
                 <img v-else-if="['docx','doc','odf'].includes(document.ext)"
@@ -50,8 +50,8 @@
                      src="/media/com_emundus/images/icones/filetype/zip.png" class="em-filetype-icon" alt="filetype">
                 <img v-else-if="['svg'].includes(document.ext)" src="/media/com_emundus/images/icones/filetype/svg.png"
                      class="em-filetype-icon" alt="filetype">
-                <div class="em-mt-8">
-                  <span class="em-overflow-ellipsis em-max-width-250 em-mr-4">{{ document.title }}</span>
+                <div class="tw-mt-2">
+                  <span class="em-overflow-ellipsis em-max-width-250 tw-mr-1">{{ document.title }}</span>
                 </div>
               </div>
             </div>

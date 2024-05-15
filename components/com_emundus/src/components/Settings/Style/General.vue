@@ -10,24 +10,24 @@
 
     <!-- LOGO -->
     <div class="em-grid-2" v-if="!loading">
-      <div class="em-style-options em-mb-32">
-        <div class="em-flex-row">
+      <div class="em-style-options tw-mb-8">
+        <div class="tw-flex tw-items-center">
           <div>
-            <h4 class="em-text-neutral-800 em-flex-row em-mb-8">
+            <h4 class="em-text-neutral-800 tw-flex tw-items-center tw-mb-2">
               Logo
-              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayLogoTip">help_outline</span>
+              <span class="material-icons-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayLogoTip">help_outline</span>
             </h4>
             <p class="tw-text-neutral-700"><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png, gif, svg</em></p>
             <p class="tw-text-neutral-700"><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_LOGO_RECOMMENDED') }}</em></p>
           </div>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" v-if="!logo_updating">
+        <div class="em-logo-box pointer tw-mt-4" v-if="!logo_updating">
           <img id="logo-img" class="logo-settings" v-if="!hideLogo" :src="imageLink" :srcset="'/'+imageLink"
                @error="hideLogo = true">
           <p v-if="hideLogo">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_LOGO') }}</p>
         </div>
-        <div class="em-mt-16" v-if="logo_updating">
+        <div class="tw-mt-4" v-if="logo_updating">
           <vue-dropzone
               ref="dropzone"
               id="customdropzone"
@@ -45,30 +45,30 @@
           </vue-dropzone>
         </div>
 
-        <button id="btn-update-logo" @click="logo_updating = !logo_updating" class="em-mt-8 em-primary-button">
+        <button id="btn-update-logo" @click="logo_updating = !logo_updating" class="tw-mt-2 em-primary-button">
           <span v-if="!logo_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_LOGO") }}</span>
           <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
         </button>
       </div>
 
       <!-- FAVICON -->
-      <div class="em-style-options em-mb-32">
-        <div class="em-flex-row">
+      <div class="em-style-options tw-mb-8">
+        <div class="tw-flex tw-items-center">
           <div>
-            <h4 class="em-text-neutral-800 em-flex-row em-mb-8">
+            <h4 class="em-text-neutral-800 tw-flex tw-items-center tw-mb-2">
               {{ translate("COM_EMUNDUS_ONBOARD_ICON") }}
-              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayFaviconTip">help_outline</span>
+              <span class="material-icons-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayFaviconTip">help_outline</span>
             </h4>
             <p class="tw-text-neutral-700"><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, jpg, png, ico</em></p>
             <p class="tw-text-neutral-700"><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ICON_RECOMMENDED') }}</em></p>
           </div>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" v-if="!favicon_updating">
+        <div class="em-logo-box pointer tw-mt-4" v-if="!favicon_updating">
           <img class="logo-settings" v-if="!hideIcon" :src="iconLink" :srcset="iconLink" @error="hideIcon = true">
           <p v-if="hideIcon">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_ICON') }}</p>
         </div>
-        <div class="em-mt-16" v-if="favicon_updating">
+        <div class="tw-mt-4" v-if="favicon_updating">
           <vue-dropzone
               ref="dropzone"
               id="customdropzone"
@@ -86,51 +86,51 @@
           </vue-dropzone>
         </div>
 
-        <button id="btn-update-favicon" @click="favicon_updating = !favicon_updating" class="em-mt-8 em-primary-button">
+        <button id="btn-update-favicon" @click="favicon_updating = !favicon_updating" class="tw-mt-2 em-primary-button">
           <span v-if="!favicon_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_ICON") }}</span>
           <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
         </button>
       </div>
 
       <!-- COLORS -->
-      <div class="em-style-options em-mb-32">
+      <div class="em-style-options tw-mb-8">
         <div>
-          <h4 class="em-text-neutral-800 em-flex-row em-mb-8">
+          <h4 class="em-text-neutral-800 tw-flex tw-items-center tw-mb-2">
             {{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}
-            <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayColorsTip">help_outline</span>
+            <span class="material-icons-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayColorsTip">help_outline</span>
           </h4>
           <span style="opacity: 0">Colors</span><br/>
           <span style="opacity: 0">Colors</span>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16">
+        <div class="em-logo-box pointer tw-mt-4">
           <div class="color-preset" :style="'background-color:' + primary + ';border-right: 25px solid' + secondary">
           </div>
         </div>
 
-        <button class="em-mt-8 em-primary-button" @click="$modal.show('modalUpdateColors')">
+        <button class="tw-mt-2 em-primary-button" @click="$modal.show('modalUpdateColors')">
           <span>{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_COLORS") }}</span>
         </button>
       </div>
 
       <!-- BANNER -->
-      <div v-if="bannerLink" class="em-h-auto em-flex-col em-mb-32" style="align-items: start">
-        <div class="em-flex-row">
+      <div v-if="bannerLink" class="em-h-auto em-flex-col tw-mb-8" style="align-items: start">
+        <div class="tw-flex tw-items-center">
           <div>
-            <h4 class="em-text-neutral-800 em-mb-8 em-flex-row">
+            <h4 class="em-text-neutral-800 tw-mb-2 tw-flex tw-items-center">
               {{ translate("COM_EMUNDUS_ONBOARD_BANNER") }}
-              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayBannerTip">help_outline</span>
+              <span class="material-icons-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayBannerTip">help_outline</span>
             </h4>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS') }} : jpeg, png</em></span><br/>
             <span><em>{{ translate('COM_EMUNDUS_FORM_BUILDER_RECOMMENDED_SIZE') }} : 1440x200px</em></span>
           </div>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" v-if="!banner_updating">
+        <div class="em-logo-box pointer tw-mt-4" v-if="!banner_updating">
           <img class="logo-settings" style="width: 180px" :src="bannerLink" :srcset="'/'+bannerLink"
                :alt="InsertBanner">
         </div>
-        <div class="em-mt-16" v-if="banner_updating">
+        <div class="tw-mt-4" v-if="banner_updating">
           <vue-dropzone
               ref="dropzone"
               id="customdropzone"
@@ -148,7 +148,7 @@
           </vue-dropzone>
         </div>
 
-        <button id="btn-update-banner" @click="banner_updating = !banner_updating" class="em-mt-8 em-primary-button">
+        <button id="btn-update-banner" @click="banner_updating = !banner_updating" class="tw-mt-2 em-primary-button">
           <span v-if="!banner_updating">{{ translate("COM_EMUNDUS_ONBOARD_UPDATE_BANNER") }}</span>
           <span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
         </button>

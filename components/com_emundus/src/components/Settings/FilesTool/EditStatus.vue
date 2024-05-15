@@ -2,10 +2,10 @@
   <div class="em-settings-menu">
     <div class="em-w-80">
 
-      <div class="em-grid-3 em-mb-16">
-        <button @click="pushStatus" class="em-primary-button em-mb-24" style="width: max-content">
+      <div class="tw-grid tw-grid-cols-3 tw-gap-6 tw-mb-4">
+        <button @click="pushStatus" class="em-primary-button tw-mb-6" style="width: max-content">
           <div class="add-button-div">
-            <em class="fas fa-plus em-mr-4"></em>
+            <em class="fas fa-plus tw-mr-1"></em>
             {{ translate('COM_EMUNDUS_ONBOARD_ADD_STATUS') }}
           </div>
         </button>
@@ -17,21 +17,21 @@
           :class="'draggables-list'"
           @end="updateStatusOrder"
       >
-        <div v-for="(statu, index) in status" class="em-mb-24" :title="'step_' + statu.step" :key="statu.step"
+        <div v-for="(statu, index) in status" class="tw-mb-6" :title="'step_' + statu.step" :key="statu.step"
              :id="'step_' + statu.step" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-          <div class="em-flex-row em-flex-row-start em-w-100">
-            <span class="handle em-grab" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
+          <div class="tw-flex tw-items-center tw-flex tw-items-center-start tw-w-full">
+            <span class="handle tw-cursor-grab" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
               <span class="material-icons-outlined">drag_indicator</span>
             </span>
             <div class="status-field">
               <div>
-                <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + statu.step"
+                <p class="tw-px-2 tw-py-3 em-editable-content" contenteditable="true" :id="'status_label_' + statu.step"
                    @focusout="updateStatus(statu)" @keyup.enter="manageKeyup(statu)" @keydown="checkMaxlength">
                   {{ statu.label[actualLanguage] }}</p>
               </div>
               <input type="hidden" :class="'label-' + statu.class">
             </div>
-            <div class="em-flex-row">
+            <div class="tw-flex tw-items-center">
               <v-swatches
                   v-model="statu.class"
                   @input="updateStatus(statu)"
@@ -44,11 +44,11 @@
               ></v-swatches>
               <a type="button" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1"
                  :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" @click="removeStatus(statu,index)"
-                 class="em-flex-row em-ml-8 em-pointer">
-                <span class="material-icons-outlined em-red-500-color">delete_outline</span>
+                 class="tw-flex tw-items-center tw-ml-2 tw-cursor-pointer">
+                <span class="material-icons-outlined tw-text-red-500">delete_outline</span>
               </a>
               <a type="button" v-else :title="translate('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS')"
-                 class="em-flex-row em-ml-8 em-pointer">
+                 class="tw-flex tw-items-center tw-ml-2 tw-cursor-pointer">
                 <span class="material-icons-outlined em-text-neutral-600">delete_outline</span>
               </a>
             </div>

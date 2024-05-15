@@ -1,30 +1,30 @@
 <template>
   <div id="form-builder-element-properties">
-    <div class="em-flex-row em-flex-space-between em-p-16">
+    <div class="tw-flex tw-items-center tw-justify-between tw-p-4">
       <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_SECTION_PROPERTIES") }}</p>
-      <span class="material-icons-outlined em-pointer" @click="$emit('close')">close</span>
+      <span class="material-icons-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
     </div>
-    <ul id="properties-tabs" class="em-flex-row em-flex-space-between em-p-16 em-w-90">
+    <ul id="properties-tabs" class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-w-11/12">
       <li
           v-for="tab in publishedTabs"
           :key="tab.id"
-          :class="{ 'is-active': tab.active, 'em-w-50': publishedTabs.length == '2', 'em-w-100': publishedTabs.length == 1 }"
-          class="em-p-16 em-pointer"
+          :class="{ 'is-active': tab.active, 'tw-w-2/4': publishedTabs.length == '2', 'tw-w-full': publishedTabs.length == 1 }"
+          class="tw-p-4 tw-cursor-pointer"
           @click="selectTab(tab)"
       >
         {{ translate(tab.label) }}
       </li>
     </ul>
     <div id="properties">
-      <div v-if="tabs[0].active" id="section-parameters" class="em-p-16">
+      <div v-if="tabs[0].active" id="section-parameters" class="tw-p-4">
         <label for="section-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION_LABEL') }}</label>
-        <input id="section-label" name="section-label" class="em-w-100" type="text" v-model="section_tmp.label"/>
+        <input id="section-label" name="section-label" class="tw-w-full" type="text" v-model="section_tmp.label"/>
       </div>
-      <div v-if="tabs[1].active" class="em-p-16">
+      <div v-if="tabs[1].active" class="tw-p-4">
         <form-builder-section-params :params="params" :section="section_tmp"></form-builder-section-params>
       </div>
     </div>
-    <div class="em-flex-row em-flex-space-between actions em-m-16">
+    <div class="tw-flex tw-items-center tw-justify-between actions tw-m-4">
       <button class="em-primary-button" @click="saveProperties()">
         {{ translate("COM_EMUNDUS_FORM_BUILDER_SECTION_PROPERTIES_SAVE") }}
       </button>

@@ -5,7 +5,7 @@ module.exports = {
     prefix: 'tw-',
     content: [
         "./templates/g5_helium/html/**/*.{html,js,php}",
-        "./modules/**/src/*.{html,js,php}",
+        "./modules/**/src/**/*.{html,js,php,vue}",
         "./modules/**/tmpl/*.{html,js,php}",
         "./plugins/fabrik_element/**/*.{html,js,php}",
         "./components/com_emundus/helpers/**/*.{html,js,php,vue}",
@@ -114,6 +114,16 @@ module.exports = {
                 11: 'var(--em-spacing-11)',
                 12: 'var(--em-spacing-12)',
             },
+            borderRadius: {
+                'coordinator': 'var(--em-coordinator-br)',
+                'applicant': 'var(--em-applicant-br)',
+            },
+            fontSize: {
+                'xxs': '8px'
+            },
+            height: {
+                'form': 'var(--em-form-height)',
+            }
         },
     },
     plugins: [

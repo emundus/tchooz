@@ -1,20 +1,20 @@
 <template>
   <div id="form-builder-document-list-element" @click="editDocument">
-    <div class="section-card em-mt-32 em-mb-32 em-w-100 em-flex-column">
-      <div class="section-identifier em-bg-main-500 em-pointer">
+    <div class="section-card tw-mt-8 tw-mb-8 tw-w-full tw-flex tw-flex-col">
+      <div class="section-identifier tw-bg-main-500 tw-cursor-pointer">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT') }} {{ documentIndex }} / {{ totalDocuments }}
       </div>
       <div class="section-content" :class="{'closed': closedSection}">
         <div v-if="documentData.id">
-          <div class="em-w-100 em-flex-row em-flex-space-between">
+          <div class="tw-w-full tw-flex tw-items-center tw-justify-between">
             <span class="section-title">{{ documentData.name[shortDefaultLang] }}</span>
 
             <div>
-              <span class="material-icons-outlined em-pointer hover-opacity" @click="moveDocument('up')"
+              <span class="material-icons-outlined tw-cursor-pointer hover-opacity" @click="moveDocument('up')"
                     title="Move section upwards">keyboard_double_arrow_up</span>
-              <span class="material-icons-outlined em-pointer hover-opacity" @click="moveDocument('down')"
+              <span class="material-icons-outlined tw-cursor-pointer hover-opacity" @click="moveDocument('down')"
                     title="Move section downwards">keyboard_double_arrow_down</span>
-              <span v-if="canBeRemoved" class="material-icons-outlined em-red-500-color em-pointer hover-opacity"
+              <span v-if="canBeRemoved" class="material-icons-outlined tw-text-red-500 tw-cursor-pointer hover-opacity"
                     @click="deleteDocument">delete</span>
             </div>
           </div>

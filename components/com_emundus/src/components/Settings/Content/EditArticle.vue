@@ -2,7 +2,7 @@
   <div class="em-settings-menu">
     <div class="em-w-80">
 
-      <div class="em-grid-3 em-mb-16">
+      <div class="tw-grid tw-grid-cols-3 tw-gap-6 tw-mb-4">
         <multiselect
             v-model="lang"
             label="title_native"

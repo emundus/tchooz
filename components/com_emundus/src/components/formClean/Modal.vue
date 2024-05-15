@@ -13,38 +13,38 @@
         @before-open="beforeOpen"
     >
 
-      <div class="em-flex-row em-flex-space-between em-mb-16">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
         <h4>
           {{ ElementOptions }}
         </h4>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalEditElement' + elementId)">
+        <button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="$modal.hide('modalEditElement' + elementId)">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
 
       <div v-if="element != null">
-        <div class="em-mb-16">
-          <div class="em-flex-row em-mb-16 em-pointer" @click="publishUnpublishElement()">
+        <div class="tw-mb-4">
+          <div class="tw-flex tw-items-center tw-mb-4 tw-cursor-pointer" @click="publishUnpublishElement()">
             <em :class="[element.publish ? 'fa-eye-slash' : 'fa-eye','far']" style="width: 45px"
                 :id="'publish_icon_' + element.id"></em>
-            <span class="em-ml-8" v-if="element.publish">{{ Unpublish }}</span>
-            <span class="em-ml-8" v-if="!element.publish">{{ Publish }}</span>
+            <span class="tw-ml-2" v-if="element.publish">{{ Unpublish }}</span>
+            <span class="tw-ml-2" v-if="!element.publish">{{ Publish }}</span>
           </div>
 
-          <div class="em-mb-16 em-flex-row" v-if="plugin != 'display'">
+          <div class="tw-mb-4 tw-flex tw-items-center" v-if="plugin != 'display'">
             <div class="em-toggle">
               <input type="checkbox" class="em-toggle-check" id="require" name="require" v-model="element.FRequire"
                      @click="updateRequireElement()"/>
               <strong class="b em-toggle-switch"></strong>
               <strong class="b em-toggle-track"></strong>
             </div>
-            <span for="require" class="em-ml-8 em-pointer" @click="updateRequireElement()">{{ Required }}</span>
+            <span for="require" class="tw-ml-2 tw-cursor-pointer" @click="updateRequireElement()">{{ Required }}</span>
           </div>
         </div>
 
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <label>{{ fieldType }} :</label>
-          <select id="select_type" class="em-w-100" v-model="plugin"
+          <select id="select_type" class="tw-w-full" v-model="plugin"
                   :disabled="(files != 0 && element.plugin == 'birthday') || (files != 0 && element.params.password == 6)">
             <option v-for="(plugin, index) in plugins" :key="index" :value="plugin.value">
               {{ plugin.name }}
@@ -54,7 +54,7 @@
 
         <hr>
 
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <fieldF v-if="plugin == 'field'" :files="files" :element="element"></fieldF>
           <birthdayF v-if="plugin =='birthday'" :element="element"></birthdayF>
           <checkboxF v-if="plugin =='checkbox'" :element="element" :databases="databases"
@@ -72,14 +72,14 @@
         </div>
       </div>
 
-      <div class="em-flex-row em-flex-space-between em-mb-16">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
         <button type="button"
-                class="em-secondary-button em-w-auto"
+                class="em-secondary-button !tw-w-auto"
                 @click.prevent="$modal.hide('modalEditElement' + elementId)">
           {{ Retour }}
         </button>
         <button type="button"
-                class="em-primary-button em-w-auto"
+                class="em-primary-button tw-w-auto"
                 @click.prevent="UpdateParams"
         >{{ Continuer }}</button>
       </div>

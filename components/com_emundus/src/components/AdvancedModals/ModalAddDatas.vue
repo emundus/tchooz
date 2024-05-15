@@ -52,7 +52,7 @@
           </div>
         </div>
       </div>
-      <div class="em-flex-row em-flex-space-between tw-mb-1">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-1">
         <button
             type="button"
             class="bouton-sauvergarder-et-continuer w-retour"

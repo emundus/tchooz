@@ -1,11 +1,11 @@
 <template>
-  <div id="form-builder-create-page" class="em-w-100 em-p-32 em-pt-16">
+  <div id="form-builder-create-page" class="tw-w-full em-p-32 tw-pt-4">
     <div>
-      <h3 class="em-mb-4 em-text-neutral-800">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
+      <h3 class="tw-mb-1 em-text-neutral-800">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
       <p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
       <section id="new-page">
-        <div class="em-mt-16 em-mb-16 card-wrapper" :class="{selected: -1 === selected}" @click="selected = -1;">
-          <div class="card em-shadow-cards em-pointer em-flex-row" @dblclick="createPage">
+        <div class="tw-mt-4 tw-mb-4 card-wrapper" :class="{selected: -1 === selected}" @click="selected = -1;">
+          <div class="card em-shadow-cards tw-cursor-pointer tw-flex tw-items-center" @dblclick="createPage">
             <span class="add_circle material-icons-outlined em-main-500-color">add_circle</span>
           </div>
           <input
@@ -13,34 +13,34 @@
               v-model="page.label[shortDefaultLang]"
               class="em-p-4"
               :class="{
-								'em-color-white': -1 === selected,
-								'em-bg-main-500':  -1 === selected
+								'tw-text-white': -1 === selected,
+								'tw-bg-main-500':  -1 === selected
 							}"
           >
         </div>
       </section>
-      <div class="separator em-mt-32">
-        <p class="line-head em-mt-4 em-p-8 em-color-white em-bg-main-500">
+      <div class="separator tw-mt-8">
+        <p class="line-head em-mt-4 em-p-8 tw-text-white tw-bg-main-500">
           {{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</p>
-        <div class="line em-bg-main-500"></div>
+        <div class="line tw-bg-main-500"></div>
       </div>
-      <section id="models" class="em-flex-row em-w-100">
-        <div v-if="!loading" class="em-w-100">
+      <section id="models" class="tw-flex tw-items-center tw-w-full">
+        <div v-if="!loading" class="tw-w-full">
           <div id="search-model-wrapper">
-            <input id="search-model" class="em-mt-16" type="text" v-model="search" placeholder="Rechercher"/>
-            <span class="reset-search material-icons-outlined em-pointer" @click="search = ''">close</span>
+            <input id="search-model" class="tw-mt-4" type="text" v-model="search" placeholder="Rechercher"/>
+            <span class="reset-search material-icons-outlined tw-cursor-pointer" @click="search = ''">close</span>
           </div>
           <section id="structure-options">
-            <div class="em-flex-row">
+            <div class="tw-flex tw-items-center">
               <input type="radio" id="new-structure" name="structure" value="new" v-model="structure"/>
               <label for="new-structure">{{ translate('COM_EMUNDUS_FORM_BUILDER_NEW_STRUCTURE') }}</label>
             </div>
-            <div class="em-flex-row" :class="{'disabled': !canUseInitialStructure }">
+            <div class="tw-flex tw-items-center" :class="{'disabled': !canUseInitialStructure }">
               <input type="radio" id="initial-structure" name="structure" value="initial" v-model="structure"/>
               <label for="initial-structure">{{ translate('COM_EMUNDUS_FORM_BUILDER_INITIAL_STRUCTURE') }}</label>
             </div>
           </section>
-          <div class="models-card em-flex-row">
+          <div class="models-card tw-flex tw-items-center">
             <div
                 v-for="model in models" :key="model.id"
                 class="card-wrapper em-mr-32"
@@ -52,31 +52,31 @@
               <form-builder-preview-form
                   :form_id="Number(model.form_id)"
                   :form_label="model.label[shortDefaultLang]"
-                  class="card em-shadow-cards model-preview em-pointer"
+                  class="card em-shadow-cards model-preview tw-cursor-pointer"
                   :class="{
-									'em-color-white': model.id === selected,
-									'em-bg-main-500': model.id === selected
+									'tw-text-white': model.id === selected,
+									'tw-bg-main-500': model.id === selected
 								}"
               >
               </form-builder-preview-form>
               <p class="em-p-4" :class="{
-								'em-color-white': model.id === selected,
-								'em-bg-main-500': model.id === selected
+								'tw-text-white': model.id === selected,
+								'tw-bg-main-500': model.id === selected
 							}">
                 {{ model.label[shortDefaultLang] }}
               </p>
             </div>
 
-            <div v-if="displayedModels.length < 1" class="empty-model-message em-w-100 em-text-align-center">
+            <div v-if="displayedModels.length < 1" class="empty-model-message tw-w-full tw-text-center">
               <span class="material-icons-outlined">manage_search</span>
-              <p class="em-w-100"> {{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
+              <p class="tw-w-full"> {{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
             </div>
           </div>
         </div>
-        <div v-else class="em-w-100">
-          <skeleton width="206px" height="41px" classes="em-mt-16 em-mb-16 em-border-radius-5"></skeleton>
-          <div class="models-card em-grid">
-            <div v-for="i in 16" :key="i" class="em-flex-column card-wrapper em-mr-24">
+        <div v-else class="tw-w-full">
+          <skeleton width="206px" height="41px" classes="tw-mt-4 tw-mb-4 tw-rounded-coordinator"></skeleton>
+          <div class="models-card tw-grid">
+            <div v-for="i in 16" :key="i" class="tw-flex tw-flex-col card-wrapper tw-mr-6">
               <skeleton width="150px" height="200px" classes="card em-shadow-cards model-preview"></skeleton>
               <skeleton width="150px" height="20px" classes="em-p-4"></skeleton>
             </div>
@@ -84,11 +84,11 @@
         </div>
       </section>
     </div>
-    <div class="actions em-flex-space-between em-flex-row em-w-100">
-      <button class="em-secondary-button em-w-auto em-white-bg" @click="close(false)">
+    <div class="actions tw-justify-between tw-flex tw-items-center tw-w-full">
+      <button class="em-secondary-button !tw-w-auto tw-bg-white" @click="close(false)">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}
       </button>
-      <button class="em-primary-button em-w-auto em-ml-8" @click="createPage">
+      <button class="em-primary-button tw-w-auto tw-ml-2" @click="createPage">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}
       </button>
     </div>

@@ -14,26 +14,26 @@
         @UpdateTriggers="getTriggers"
         :key="'manual-' + manual_trigger"
     />
-    <div class="em-flex-row">
+    <div class="tw-flex tw-items-center">
       <h4>{{ CandidateAction }}</h4>
     </div>
     <p>{{ TheCandidateDescription }}</p>
 
-    <button class="em-primary-button em-w-auto em-mt-8"
+    <button class="em-primary-button tw-w-auto tw-mt-2"
             @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null">
       {{ addTrigger }}
     </button>
 
-    <transition-group :name="'slide-down'" type="transition" class="em-grid-2 em-m-16" style="margin-left: 0">
+    <transition-group :name="'slide-down'" type="transition" class="em-grid-2 tw-m-4" style="margin-left: 0">
       <div
           v-for="trigger in candidateTriggers"
           :key="trigger.trigger_id"
           class="em-email-card"
       >
-        <div class="em-flex-row em-align-start em-flex-space-between em-w-100">
+        <div class="tw-flex tw-items-center tw-items-start tw-justify-between tw-w-full">
           <div>
-            <span class="em-mb-8">{{ trigger.subject }}</span>
-            <div class="em-mt-8 em-mb-8">
+            <span class="tw-mb-2">{{ trigger.subject }}</span>
+            <div class="tw-mt-2 tw-mb-2">
               <span style="font-weight: bold">{{ Target }} : </span>
               <span v-for="(user, index) in triggerUsersWithProfile(trigger)" :key="'user_' + index">
                 {{ user.firstname }} {{ user.lastname }}
@@ -47,35 +47,35 @@
             <span>{{ Status }} {{ trigger.status }}</span>
           </div>
 
-          <div class="em-flex-row em-flex-end">
-            <a class="em-mr-8 em-pointer" @click="editTrigger(trigger)">
+          <div class="tw-flex tw-items-center em-flex-end">
+            <a class="tw-mr-2 tw-cursor-pointer" @click="editTrigger(trigger)">
               <span class="material-icons-outlined">edit</span>
             </a>
-            <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)" :title="removeTrig">
-              <span class="material-icons-outlined em-red-500-color">close</span>
+            <a class="tw-cursor-pointer" @click="removeTrigger(trigger.trigger_id)" :title="removeTrig">
+              <span class="material-icons-outlined tw-text-red-500">close</span>
             </a>
           </div>
         </div>
       </div>
     </transition-group>
 
-    <div class="em-flex-row">
-      <h4 class="em-mt-16">{{ ManagerAction }}</h4>
+    <div class="tw-flex tw-items-center">
+      <h4 class="tw-mt-4">{{ ManagerAction }}</h4>
     </div>
     <p>{{ ManualDescription }}</p>
 
-    <button class="em-primary-button em-w-auto em-mt-8"
+    <button class="em-primary-button tw-w-auto tw-mt-2"
             @click="$modal.show('modalAddTriggermanual'); triggerSelected = null">
       {{ addTrigger }}
     </button>
 
-    <transition-group :name="'slide-down'" type="transition" class="em-grid-2 em-m-16" style="margin-left: 0">
+    <transition-group :name="'slide-down'" type="transition" class="em-grid-2 tw-m-4" style="margin-left: 0">
       <div v-for="trigger in manualTriggers" :key="trigger.trigger_id" class="em-email-card">
 
-        <div class="em-flex-row em-align-start em-flex-space-between em-w-100">
+        <div class="tw-flex tw-items-center tw-items-start tw-justify-between tw-w-full">
           <div>
-            <span class="em-mb-8">{{ trigger.subject }}</span>
-            <div class="em-mt-8 em-mb-8">
+            <span class="tw-mb-2">{{ trigger.subject }}</span>
+            <div class="tw-mt-2 tw-mb-2">
               <span style="font-weight: bold">{{ Target }} : </span>
               <span
                   v-for="(user, index) in triggerUsersNoProfile(trigger)"
@@ -92,12 +92,12 @@
             <p>{{ Status }} {{ trigger.status }}</p>
           </div>
 
-          <div class="em-flex-row em-flex-end">
-            <a class="em-pointer em-mr-8" @click="editTrigger(trigger)">
+          <div class="tw-flex tw-items-center em-flex-end">
+            <a class="tw-cursor-pointer tw-mr-2" @click="editTrigger(trigger)">
               <span class="material-icons-outlined">edit</span>
             </a>
-            <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)">
-              <span class="material-icons-outlined em-red-500-color">close</span>
+            <a class="tw-cursor-pointer" @click="removeTrigger(trigger.trigger_id)">
+              <span class="material-icons-outlined tw-text-red-500">close</span>
             </a>
           </div>
         </div>
@@ -216,11 +216,11 @@ export default {
   padding: 16px 24px;
 }
 
-a.em-pointer:nth-child(2) .material-icons {
+a.tw-cursor-pointer:nth-child(2) .material-icons {
   color: #DB333E;
 }
 
-a.em-pointer:nth-child(2):hover .material-icons {
+a.tw-cursor-pointer:nth-child(2):hover .material-icons {
   color: #C31924;
 }
 </style>

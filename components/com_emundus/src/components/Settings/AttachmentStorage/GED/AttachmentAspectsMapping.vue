@@ -1,6 +1,6 @@
 <template>
-  <div id="attachment-aspects-mapping" class="em-mt-16">
-    <div id="default-aspects-toggle" class="em-flex-row em-flex-start">
+  <div id="attachment-aspects-mapping" class="tw-mt-4">
+    <div id="default-aspects-toggle" class="tw-flex tw-items-center tw-justify-start">
       <div class="em-toggle">
         <input type="checkbox"
                :true-value="true"

@@ -1,15 +1,15 @@
 <template>
-  <div class="em-w-100">
+  <div class="tw-w-full">
     <div>
 
       <!--- MENU --->
       <transition name="slide-right">
-        <div class="em-grid-3" v-if="menuHighlight === 0">
+        <div class="tw-grid tw-grid-cols-3 tw-gap-6" v-if="menuHighlight === 0">
           <div style="background: var(--neutral-0);" v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index"
                class="em-shadow-cards em-hover-s-scale" v-wave @click="changeMenu(menu)">
-            <span class="material-icons-outlined em-main-500-color em-mb-16">{{ menu.icon }}</span>
-            <h3 class="em-mb-8">{{ translate(menu.title) }}</h3>
-            <p class="em-font-size-16 em-neutral-700-color">{{ translate(menu.description) }}</p>
+            <span class="material-icons-outlined em-main-500-color tw-mb-4">{{ menu.icon }}</span>
+            <h3 class="tw-mb-2">{{ translate(menu.title) }}</h3>
+            <p class="tw-text-base tw-text-neutral-700">{{ translate(menu.description) }}</p>
           </div>
         </div>
       </transition>
@@ -232,7 +232,7 @@ export default {
 }
 
 @media all and (max-width: 959px) {
-  div.em-grid-3 {
+  div.tw-grid tw-grid-cols-3 tw-gap-6 {
     padding: var(--p-24);
   }
 }

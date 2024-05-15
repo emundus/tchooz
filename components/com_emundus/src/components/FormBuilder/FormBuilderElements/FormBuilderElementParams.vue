@@ -7,41 +7,41 @@
 
       <!-- DROPDOWN -->
       <div v-if="param.type === 'dropdown' || param.type === 'sqldropdown'">
-        <select v-if="repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100">
+        <select v-if="repeat_name !== '' && param.options.length > 0" v-model="element.params[repeat_name][index_name][param.name]" class="tw-w-full">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
 
-        <select v-else-if="param.options.length > 0" v-model="element.params[param.name]" class="em-w-100">
+        <select v-else-if="param.options.length > 0" v-model="element.params[param.name]" class="tw-w-full">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
       </div>
 
       <!-- TEXTAREA -->
-      <textarea v-else-if="param.type === 'textarea' && repeat_name !== ''" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100"></textarea>
-      <textarea v-else-if="param.type === 'textarea'" v-model="element.params[param.name]" class="em-w-100"></textarea>
+      <textarea v-else-if="param.type === 'textarea' && repeat_name !== ''" v-model="element.params[repeat_name][index_name][param.name]" class="tw-w-full"></textarea>
+      <textarea v-else-if="param.type === 'textarea'" v-model="element.params[param.name]" class="tw-w-full"></textarea>
 
       <!-- DATABASEJOIN -->
       <div v-else-if="param.type === 'databasejoin' && repeat_name !== ''">
-        <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptions" :id="param.name" @change="updateDatabasejoinParams" class="em-w-100" :class="databasejoin_description ? 'em-mb-4' : ''">
+        <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptions" :id="param.name" @change="updateDatabasejoinParams" class="tw-w-full" :class="databasejoin_description ? 'tw-mb-1' : ''">
           <option v-for="option in param.options" :value="option.database_name">{{ option.label }}</option>
         </select>
         <label v-if="databasejoin_description" style="font-size: small">{{ databasejoin_description }}</label>
       </div>
       <div v-else-if="param.type === 'databasejoin'">
         <select v-model="element.params[param.name]" :key="reloadOptions" :id="param.name"
-                @change="updateDatabasejoinParams" class="em-w-100" :class="databasejoin_description ? 'em-mb-4' : ''">
+                @change="updateDatabasejoinParams" class="tw-w-full" :class="databasejoin_description ? 'tw-mb-1' : ''">
           <option v-for="option in param.options" :value="option.database_name">{{ option.label }}</option>
         </select>
         <label v-if="databasejoin_description" style="font-size: small">{{ databasejoin_description }}</label>
       </div>
 
       <div v-else-if="param.type === 'databasejoin_cascade' && repeat_name !== ''">
-        <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptionsCascade" class="em-w-100">
+        <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptionsCascade" class="tw-w-full">
           <option v-for="option in param.options" :value="option.COLUMN_NAME">{{ option.COLUMN_NAME }}</option>
         </select>
       </div>
       <div v-else-if="param.type === 'databasejoin_cascade'">
-        <select v-model="element.params[param.name]" :key="reloadOptionsCascade" class="em-w-100">
+        <select v-model="element.params[param.name]" :key="reloadOptionsCascade" class="tw-w-full">
           <option v-for="option in param.options" :value="option.COLUMN_NAME">{{ option.COLUMN_NAME }}</option>
         </select>
       </div>
@@ -66,8 +66,8 @@
       </div>
 
       <!-- INPUT (TEXT,NUMBER) -->
-      <input v-else-if="repeat_name !== ''" :type="param.type" v-model="element.params[repeat_name][index_name][param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
-      <input v-else :type="param.type" v-model="element.params[param.name]" class="em-w-100" :placeholder="translate(param.placeholder)"/>
+      <input v-else-if="repeat_name !== ''" :type="param.type" v-model="element.params[repeat_name][index_name][param.name]" class="tw-w-full" :placeholder="translate(param.placeholder)"/>
+      <input v-else :type="param.type" v-model="element.params[param.name]" class="tw-w-full" :placeholder="translate(param.placeholder)"/>
 
       <!-- HELPTEXT -->
       <label v-if="param.helptext !== ''" style="font-size: small">{{ translate(param.helptext) }}</label>

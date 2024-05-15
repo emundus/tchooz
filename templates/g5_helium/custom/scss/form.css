@@ -727,6 +727,7 @@
 
         .row {
           padding: 4px 0;
+          @apply tw-gap-4;
         }
 
         .fabrikgrid_radio {
@@ -735,6 +736,8 @@
           @apply tw-ml-0;
           @apply tw-flex;
           @apply tw-items-start;
+          @apply tw-flex-1;
+          @apply tw-w-0;
           padding: var(--em-form-radio-padding);
           border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
           border-radius: var(--em-form-radio-br);
@@ -752,6 +755,7 @@
           label {
             cursor: pointer;
             @apply tw-mb-0;
+            width: 100%;
             span{
               word-wrap: break-word;
             }

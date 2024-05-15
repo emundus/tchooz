@@ -13,18 +13,18 @@
         @closed="beforeClose"
         @before-open="beforeOpen"
     >
-      <div class="em-flex-row em-flex-space-between em-mb-16">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
         <h4>
           {{ translations.affectCampaigns }}
         </h4>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAffectCampaign')">
+        <button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="$modal.hide('modalAffectCampaign')">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
 
       <div>
-        <p v-if="campaigns.length === 0" class="em-mb-16">{{ translations.campaignsEmpty }}</p>
-        <div class="em-mb-16">
+        <p v-if="campaigns.length === 0" class="tw-mb-4">{{ translations.campaignsEmpty }}</p>
+        <div class="tw-mb-4">
           <div v-for="(campaign, index) in campaigns" :key="index" class="user-item">
               <input type="checkbox" class="form-check-input bigbox" v-model="affectedCampaigns[campaign.id]">
               <div class="ml-10px">
@@ -34,24 +34,24 @@
         </div>
       </div>
 
-      <div class="em-flex-row em-flex-space-between em-mb-8">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
         <button
             type="button"
-            class="em-secondary-button em-w-auto"
+            class="em-secondary-button !tw-w-auto"
             @click="redirect('index.php?option=com_emundus&view=form')">
           {{ translations.BackWithoutAssociation }}
         </button>
         <button type="button"
-                class="em-primary-button em-w-auto"
+                class="em-primary-button tw-w-auto"
                 @click.prevent="affectToForm">
           {{ translations.Continuer }}
         </button>
       </div>
 
-      <div class="em-float-right">
+      <div class="tw-float-right">
         <button v-if="!testing"
                 type="button"
-                class="em-tertiary-button em-w-auto"
+                class="em-tertiary-button tw-w-auto"
                 @click.prevent="goAddCampaign">
           {{ translations.addCampaign }}
         </button>

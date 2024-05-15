@@ -1089,6 +1089,7 @@ $(document).ready(function () {
 	});
 
 	function runAction(id, url = '', option = '') {
+		var formData = new FormData();
 
 		if ($('#em-check-all-all').is(':checked')) {
 			var checkInput = 'all';
@@ -1141,11 +1142,11 @@ $(document).ready(function () {
 					}
 				});
 
-				const formData = new FormData();
+				formData = new FormData();
 				formData.append('users', getUserCheck());
 				formData.append('checkboxes', JSON.stringify(checkedBoxes));
 
-				fetch('index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId, {
+				fetch('/index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId, {
 					method: 'POST',
 					body: formData
 				})
@@ -1206,7 +1207,7 @@ $(document).ready(function () {
 
 				addLoader();
 
-				var formData = new FormData();
+				formData = new FormData();
 				formData.append('gname', $('#gname').val());
 				formData.append('gdesc', $('#gdescription').val());
 				formData.append('gprog', progs);
@@ -1290,7 +1291,7 @@ $(document).ready(function () {
 
 				addLoader();
 
-				var formData = new FormData();
+				formData = new FormData();
 				formData.append('login', login);
 				formData.append('firstname', fn);
 				formData.append('lastname', ln);
@@ -1360,7 +1361,7 @@ $(document).ready(function () {
 					}
 				}
 
-				var formData = new FormData();
+				formData = new FormData();
 				formData.append('users', checkInput);
 				formData.append('groups', groups.substr(0, groups.length - 1));
 
@@ -1438,7 +1439,7 @@ $(document).ready(function () {
 				}
 				addLoader();
 
-				var formData = new FormData();
+				formData = new FormData();
 				formData.append('login', login);
 				formData.append('firstname', fn);
 				formData.append('lastname', ln);
@@ -1509,7 +1510,7 @@ $(document).ready(function () {
 					data.attachments.push(attachment.find('.value').text());
 				});
 
-				var formData = new FormData();
+				formData = new FormData();
 				formData.append('recipients', $('#uids').val());
 				formData.append('template', $('#message_template :selected').val());
 				formData.append('Bcc', $('#sendUserACopy').prop('checked'));

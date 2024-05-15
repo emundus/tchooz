@@ -13,26 +13,26 @@
         @closed="beforeClose"
         @before-open="beforeOpen">
 
-	    <div class="em-flex-row em-flex-space-between em-mb-16">
+	    <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
         <h4>
           {{ translations.editMenu }}
         </h4>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalSide' + ID)">
+        <button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="$modal.hide('modalSide' + ID)">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
 
       <div>
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <label>{{ translations.Name }} :</label>
-          <input v-model="label[actualLanguage]" type="text" maxlength="40" class="em-w-100" style="margin: 0"
+          <input v-model="label[actualLanguage]" type="text" maxlength="40" class="tw-w-full" style="margin: 0"
                  :class="{ 'is-invalid': errors}"/>
         </div>
-        <p v-if="errors" class="em-red-500-color">
-          <span class="em-red-500-color">{{ translations.LabelRequired }}</span>
+        <p v-if="errors" class="tw-text-red-500">
+          <span class="tw-text-red-500">{{ translations.LabelRequired }}</span>
         </p>
 
-        <div class="em-mb-16" :class="{'mb-0': can_translate.intro}">
+        <div class="tw-mb-4" :class="{'mb-0': can_translate.intro}">
           <label>{{ translations.Intro }}</label>
           <editor
               v-if="intro.hasOwnProperty(selectedLanguage)"
@@ -45,26 +45,26 @@
               v-model="intro[selectedLanguage]"></editor>
         </div>
 
-        <div class="em-mb-16 em-flex-row" id="template_checkbox">
+        <div class="tw-mb-4 tw-flex tw-items-center" id="template_checkbox">
           <input type="checkbox" v-model="template">
-          <label class="em-ml-8">{{ translations.SaveAsTemplate }}</label>
+          <label class="tw-ml-2">{{ translations.SaveAsTemplate }}</label>
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-mb-16">
-          <div class="em-flex-row">
+        <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+          <div class="tw-flex tw-items-center">
             <button
-                class="em-secondary-button em-w-auto"
+                class="em-secondary-button !tw-w-auto"
                 @click.prevent="$modal.hide('modalSide' + ID)">
               {{ translations.Retour }}
             </button>
-            <button class="em-tertiary-button em-w-auto"
+            <button class="em-tertiary-button tw-w-auto"
                     @click.prevent="deleteMenu()"
                     v-if="menus.length > 1 && files == 0">
               {{ translations.Delete }}
             </button>
           </div>
           <button
-              class="em-primary-button em-w-auto"
+              class="em-primary-button tw-w-auto"
               @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()">
               {{ translations.Continuer }}
           </button>

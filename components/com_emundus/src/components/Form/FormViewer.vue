@@ -1,14 +1,14 @@
 <template>
-  <div id="FormViewer" class="em-mt-16 applicant-form">
+  <div id="FormViewer" class="tw-mt-4 applicant-form">
     <div v-if="object_json.show_page_heading"
          :class="object_json.show_page_heading.class"
          v-html="object_json.show_page_heading.page_heading"
     />
-    <div class="em-flex-row em-flex-space-between page-header">
-      <h1 class="em-mt-0" v-if="object_json.show_title" v-html="object_json.show_title.value"/>
+    <div class="tw-flex tw-items-center tw-justify-between page-header">
+      <h1 class="!tw-mt-0" v-if="object_json.show_title" v-html="object_json.show_title.value"/>
     </div>
 
-    <p v-if="object_json.intro_value" class="em-mt-16" v-html="object_json.intro_value"/>
+    <p v-if="object_json.intro_value" class="tw-mt-4" v-html="object_json.intro_value"/>
 
     <form method="post" object_json.attribs class="fabrikForm" :id="'form_' + object_json.id">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>

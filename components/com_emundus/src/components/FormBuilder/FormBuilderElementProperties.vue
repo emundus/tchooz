@@ -1,29 +1,29 @@
 <template>
   <div id="form-builder-element-properties">
-    <div class="em-flex-row em-flex-space-between em-p-16 em-flex-align-start">
+    <div class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-items-start">
       <div>
         <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES") }}</p>
-        <span class="em-font-size-14 em-neutral-700-color">{{ element.label[shortDefaultLang] }}</span>
+        <span class="tw-text-sm tw-text-neutral-700">{{ element.label[shortDefaultLang] }}</span>
       </div>
-      <span class="material-icons-outlined em-pointer" @click="$emit('close')">close</span>
+      <span class="material-icons-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
     </div>
-    <ul id="properties-tabs" class="em-flex-row em-flex-space-between em-p-16 em-w-90">
+    <ul id="properties-tabs" class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-w-11/12">
       <li
           v-for="tab in publishedTabs"
           :key="tab.id"
-          :class="{ 'is-active': tab.active, 'em-w-50': publishedTabs.length == 2, 'em-w-100':  publishedTabs.length == 1}"
-          class="em-p-16 em-pointer"
+          :class="{ 'is-active': tab.active, 'tw-w-2/4': publishedTabs.length == 2, 'tw-w-full':  publishedTabs.length == 1}"
+          class="tw-p-4 tw-cursor-pointer"
           @click="selectTab(tab)"
       >
         {{ translate(tab.label) }}
       </li>
     </ul>
     <div id="properties">
-      <div v-if="tabs[0].active" id="element-parameters" class="em-p-16">
+      <div v-if="tabs[0].active" id="element-parameters" class="tw-p-4">
         <label for="element-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_LABEL') }}</label>
-        <input id="element-label" name="element-label" class="em-w-100" type="text"
+        <input id="element-label" name="element-label" class="tw-w-full" type="text"
                v-model="element.label[shortDefaultLang]"/>
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
+        <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
           <div class="em-toggle">
             <input type="checkbox" class="em-toggle-check" v-model="isPublished" @click="togglePublish">
@@ -32,7 +32,7 @@
           </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-show="!['display','panel'].includes(this.element.plugin)">
+        <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4" v-show="!['display','panel'].includes(this.element.plugin)">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</span>
           <div class="em-toggle">
             <input type="checkbox" class="em-toggle-check" v-model="element.FRequire"
@@ -42,7 +42,7 @@
           </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-show="this.element.plugin == 'panel'">
+        <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4" v-show="this.element.plugin == 'panel'">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED_FORMAT") }}</span>
           <div class="em-toggle">
             <input type="checkbox" true-value="1" false-value="0" class="em-toggle-check" v-model="element.eval" @click="element.eval == 1 ? element.eval = 0 : element.eval = 1">
@@ -51,14 +51,14 @@
           </div>
         </div>
 
-        <div class="w-full em-pt-16 em-pb-16" v-show="this.element.plugin == 'panel'">
+        <div class="tw-w-full tw-pt-4 tw-pb-4" v-show="this.element.plugin == 'panel'">
           <label for="element-default">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT") }}</label>
 
           <textarea v-if="element.eval == 0" id="element-default" name="element-default" v-model="element.default" class="tw-w-full tw-resize-y"></textarea>
           <editor-quill v-if="element.eval == 1" v-model="element.default" :id="'element-default'" :text="element.default" :height="'30em'" />
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-if="sysadmin">
+        <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4" v-if="sysadmin">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_HIDDEN") }}</span>
           <div class="em-toggle">
             <input type="checkbox" class="em-toggle-check" v-model="isHidden" @click="toggleHidden">
@@ -68,11 +68,11 @@
         </div>
 
       </div>
-      <div v-if="tabs[1].active" class="em-p-16">
+      <div v-if="tabs[1].active" class="tw-p-4">
         <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases"/>
       </div>
     </div>
-    <div class="em-flex-row em-flex-space-between actions em-m-16">
+    <div class="tw-flex tw-items-center tw-justify-between actions tw-m-4">
       <button class="em-primary-button" @click="saveProperties()">
         {{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE") }}
       </button>

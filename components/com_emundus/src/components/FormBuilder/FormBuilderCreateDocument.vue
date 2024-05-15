@@ -1,15 +1,15 @@
 <template>
   <div id="form-builder-create-document">
-    <div class="em-flex-row em-flex-space-between em-p-16">
-      <p class="em-font-weight-500">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PROPERTIES") }}</p>
-      <span class="material-icons-outlined em-pointer" @click="$emit('close')">close</span>
+    <div class="tw-flex tw-items-center tw-justify-between tw-p-4">
+      <p class="tw-font-medium">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PROPERTIES") }}</p>
+      <span class="material-icons-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
     </div>
-    <ul id="properties-tabs" class="em-flex-row em-flex-space-between em-p-16 em-w-90">
+    <ul id="properties-tabs" class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-w-11/12">
       <li
           v-for="tab in activeTabs"
           :key="tab.id"
-          :class="{ 'is-active': tab.active, 'em-w-50': activeTabs.length == 2, 'em-w-100': activeTabs.length == 1}"
-          class="em-p-16 em-pointer"
+          :class="{ 'is-active': tab.active, 'tw-w-2/4': activeTabs.length == 2, 'tw-w-full': activeTabs.length == 1}"
+          class="tw-p-4 tw-cursor-pointer"
           @click="selectTab(tab)"
       >
         {{ translate(tab.label) }}
@@ -17,9 +17,9 @@
     </ul>
 
     <div id="properties">
-      <div id="general-properties" class="em-p-16" v-show="tabs[0].active">
-        <div class="em-mb-16 em-flex-row em-flex-space-between">
-          <label class="em-font-weight-500">{{
+      <div id="general-properties" class="tw-p-4" v-show="tabs[0].active">
+        <div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
+          <label class="tw-font-medium">{{
               translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED")
             }}</label>
           <div class="em-toggle">
@@ -29,8 +29,8 @@
           </div>
         </div>
 
-        <div class="em-mb-16">
-          <label for="title" class="em-font-weight-500">{{
+        <div class="tw-mb-4">
+          <label for="title" class="tw-font-medium">{{
               translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME")
             }}</label>
           <incremental-select
@@ -43,15 +43,15 @@
           </incremental-select>
         </div>
 
-        <div class="em-mb-16">
-          <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DESCRIPTION') }}</label>
+        <div class="tw-mb-4">
+          <label class="tw-font-medium">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DESCRIPTION') }}</label>
           <textarea id="" name="" rows="5" v-model="document.description[shortDefaultLang]">{{ document.description[shortDefaultLang] }}</textarea>
         </div>
 
-        <div class="em-mb-16">
-          <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
+        <div class="tw-mb-4">
+          <label class="tw-font-medium">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
           <div v-for="(filetype, index) in fileTypes" :key="filetype.value"
-               class="em-flex-row em-mb-4 em-flex-align-start">
+               class="tw-flex tw-items-center tw-mb-1 tw-items-start">
             <input
                 type="checkbox"
                 name="filetypes"
@@ -61,63 +61,63 @@
                 v-model="document.selectedTypes[filetype.value]"
                 @change="checkFileType"
             >
-            <label :for="filetype.value" class="em-font-weight-400 em-mb-0-important em-ml-8">
+            <label :for="filetype.value" class="tw-font-normal !tw-mb-0 tw-ml-2">
               {{ translate(filetype.title) }} ({{ filetype.value }})</label>
           </div>
         </div>
 
-        <div class="em-mb-16">
-          <label for="nbmax" class="em-font-weight-500">{{
+        <div class="tw-mb-4">
+          <label for="nbmax" class="tw-font-medium">{{
               translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NBMAX")
             }}</label>
-          <input type="number" id="nbmax" class="em-w-100" v-model="document.nbmax">
+          <input type="number" id="nbmax" class="tw-w-full" v-model="document.nbmax">
         </div>
       </div>
 
-      <div id="advanced-properties" class="em-p-16" v-show="tabs[1].active">
-        <div v-show="hasImg" id="resolution" class="em-mb-16">
-          <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_ONBOARD_IMAGE_WIDTH') }}</label>
-          <div class="em-w-100 em-flex-row em-flex-space-between">
-            <div class="em-w-50 em-mr-4">
-              <label for="minResolutionW" class="em-font-weight-400">{{
+      <div id="advanced-properties" class="tw-p-4" v-show="tabs[1].active">
+        <div v-show="hasImg" id="resolution" class="tw-mb-4">
+          <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_IMAGE_WIDTH') }}</label>
+          <div class="tw-w-full tw-flex tw-items-center tw-justify-between">
+            <div class="tw-w-2/4 tw-mr-1">
+              <label for="minResolutionW" class="tw-font-normal">{{
                   translate("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER")
                 }}</label>
-              <input type="number" id="minResolutionW" class="em-w-100" v-model="document.minResolution.width"
+              <input type="number" id="minResolutionW" class="tw-w-full" v-model="document.minResolution.width"
                      :max="document.maxResolution.width">
             </div>
-            <div class="em-w-50 em-ml-4">
-              <label for="maxResolutionW" class="em-font-weight-400">{{
+            <div class="tw-w-2/4 tw-ml-1">
+              <label for="maxResolutionW" class="tw-font-normal">{{
                   translate("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER")
                 }}</label>
-              <input type="number" id="maxResolutionW" class="em-w-100" v-model="document.maxResolution.width"
+              <input type="number" id="maxResolutionW" class="tw-w-full" v-model="document.maxResolution.width"
                      :min="document.minResolution.width">
             </div>
           </div>
 
-          <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_ONBOARD_IMAGE_HEIGHT') }}</label>
-          <div class="em-w-100 em-flex-row em-flex-space-between">
-            <div class="em-w-50 em-mr-4">
-              <label for="minResolutionH" class="em-font-weight-400">{{
+          <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_IMAGE_HEIGHT') }}</label>
+          <div class="tw-w-full tw-flex tw-items-center tw-justify-between">
+            <div class="tw-w-2/4 tw-mr-1">
+              <label for="minResolutionH" class="tw-font-normal">{{
                   translate("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER")
                 }}</label>
-              <input type="number" id="minResolutionH" class="em-w-100" v-model="document.minResolution.height"
+              <input type="number" id="minResolutionH" class="tw-w-full" v-model="document.minResolution.height"
                      :max="document.maxResolution.height">
             </div>
-            <div class="em-w-50 em-ml-4">
-              <label for="maxResolutionH" class="em-font-weight-400">{{
+            <div class="tw-w-2/4 tw-ml-1">
+              <label for="maxResolutionH" class="tw-font-normal">{{
                   translate("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER")
                 }}</label>
-              <input type="number" id="maxResolutionH" class="em-w-100" v-model="document.maxResolution.height"
+              <input type="number" id="maxResolutionH" class="tw-w-full" v-model="document.maxResolution.height"
                      :min="document.minResolution.height">
             </div>
           </div>
         </div>
 
         <div id="document-sample">
-          <label class="em-font-weight-500">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_TITLE') }}</label>
-          <div class="em-mb-16 em-flex-row em-flex-space-between">
+          <label class="tw-font-medium">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_TITLE') }}</label>
+          <div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
             <label for="has-model"
-                   class="em-font-weight-500">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_GIVE_MODEL') }}</label>
+                   class="tw-font-medium">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_GIVE_MODEL') }}</label>
             <div class="em-toggle">
               <input type="checkbox" id="has-model" name="has-model" class="em-toggle-check" v-model="hasSample"
                      @change="onHasSampleChange">
@@ -125,7 +125,7 @@
               <strong class="b em-toggle-track"></strong>
             </div>
           </div>
-          <div v-if="hasSample && currentSample" id="current-sample" class="em-mb-16">
+          <div v-if="hasSample && currentSample" id="current-sample" class="tw-mb-4">
             <p>{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_CURRENT_MODEL') }}</p>
             <a :href="currentSample" target="_blank">{{
                 translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DOWNLOAD_SAMPLE')
@@ -135,20 +135,20 @@
             <label for="sample" id="formbuilder_attachments_sample_upload">
               <span v-if="!currentSample">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_ADD') }}</span>
               <span v-else>{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_EDIT') }}</span>
-              <span class="material-icons-outlined em-ml-4 em-text-neutral-900">backup</span>
+              <span class="material-icons-outlined tw-ml-1 tw-text-neutral-900">backup</span>
             </label>
             <input id="sample" style="display: none" name="sample" type="file" ref="sampleFileInput"
                    @change="onSampleFileInputChange" accept=".pdf,.doc,.docx,.png,.jpg,.xls,.xlsx"/>
           </div>
           <div v-if="newSample !== ''">
-            <p class="em-neutral-700-color">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_FILE_UPLOADED') }} :
+            <p class="tw-text-neutral-700">{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_FILE_UPLOADED') }} :
               {{ this.newSample.name }}</p>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="em-p-16">
+    <div class="tw-p-4">
       <button class="em-primary-button" @click="saveDocument">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE') }}
       </button>

@@ -154,7 +154,7 @@ export default {
           );
         },
         renderItem: (item, searchTerm) => {
-          return `<div><p>${item.value}</p><p class="em-font-size-12">${item.description}</p></div>`;
+          return `<div><p>${item.value}</p><p class="tw-text-xs">${item.description}</p></div>`;
         }
       }
     }

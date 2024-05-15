@@ -1,8 +1,8 @@
 <template>
   <div id="form-builder-page">
-    <div class="em-flex-row em-flex-space-between">
+    <div class="tw-flex tw-items-center tw-justify-between">
 	    <span
-          class="em-font-size-24 em-font-weight-600 editable-data"
+          class="tw-text-2xl tw-font-semibold editable-data"
           ref="pageTitle"
           @focusout="updateTitle"
           @keyup.enter="updateTitleKeyup"
@@ -10,13 +10,13 @@
           contenteditable="true"
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
           v-html="translate(title)"></span>
-      <a id="add-page-modele">
-        <span class="material-icons-outlined em-pointer"
+      <button id="add-page-modele" class="em-secondary-button !tw-w-auto">
+        <span class="material-icons-outlined tw-cursor-pointer"
               v-if="mode == 'forms'"
               :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
               @click="$emit('open-create-model', page.id)">post_add</span>
         {{ translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE') }}
-      </a>
+      </button>
     </div>
     <span class="description editable-data"
           id="pageDescription"

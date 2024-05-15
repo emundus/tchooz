@@ -11,18 +11,18 @@
     >
 
       <div class="em-modal-header tw-flew tw-items-center">
-        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('styleTool')">
-          <div class="em-w-max-content em-flex-row">
+        <div class="tw-justify-between tw-flex tw-items-center tw-cursor-pointer" @click.prevent="$modal.hide('styleTool')">
+          <div class="tw-w-max tw-flex tw-items-center">
             <span class="material-icons-outlined">navigate_before</span>
-            <span class="em-ml-8 em-text-neutral-900">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
+            <span class="tw-ml-2 tw-text-neutral-900">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
           </div>
-          <div v-if="saving" class="em-flex-row em-flex-start">
-            <div class="em-loader em-mr-8"></div>
-            <p class="em-font-size-14 em-flex-row">{{
+          <div v-if="saving" class="tw-flex tw-items-center tw-justify-start">
+            <div class="em-loader tw-mr-2"></div>
+            <p class="tw-text-sm tw-flex tw-items-center">{{
                 translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS')
               }}</p>
           </div>
-          <p class="em-font-size-14"
+          <p class="tw-text-sm"
              v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save }}</p>
         </div>
       </div>
@@ -31,10 +31,10 @@
         <div class="em-modal-menu__sidebar">
           <div v-for="menu in menus" :key="'menu_' + menu.index"
                @click="currentMenu = menu.index"
-               class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer"
+               class="translation-menu-item tw-p-4 tw-flex tw-items-center tw-justify-between pointer"
                :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''"
           >
-            <p class="em-font-size-16">{{ translate(menu.title) }}</p>
+            <p class="tw-text-base">{{ translate(menu.title) }}</p>
           </div>
         </div>
 

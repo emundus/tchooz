@@ -72,34 +72,34 @@
       <div class="non-editable-data">
         <div>
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}</span>
-          <span class="em-text-align-right">{{ formattedDate(attachment.timedate) }}</span>
+          <span class="tw-text-right">{{ formattedDate(attachment.timedate) }}</span>
         </div>
         <div v-if="attachment.user_id && canSee">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}</span>
-          <span class="em-text-align-right">{{ getUserNameById(attachment.user_id) }}</span>
+          <span class="tw-text-right">{{ getUserNameById(attachment.user_id) }}</span>
         </div>
         <div v-if="attachment.category">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
-          <span class="em-text-align-right">{{ this.categories[attachment.category] }}</span>
+          <span class="tw-text-right">{{ this.categories[attachment.category] }}</span>
         </div>
         <div v-if="attachment.modified_by && canSee">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
-          <span class="em-text-align-right">{{ getUserNameById(attachment.modified_by) }}</span>
+          <span class="tw-text-right">{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
         <div v-if="attachment.modified">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
-          <span class="em-text-align-right">{{ formattedDate(attachment.modified) }}</span>
+          <span class="tw-text-right">{{ formattedDate(attachment.modified) }}</span>
         </div>
         <!-- TODO: add file size -->
       </div>
     </div>
 
-    <div class="em-w-100 em-flex-row em-flex-space-between">
+    <div class="tw-w-full tw-flex tw-items-center tw-justify-between">
       <div id="toggle-display">
-			  <span v-if="displayed" class="material-icons-outlined displayed em-pointer" @click="toggleDisplay(false)">
+			  <span v-if="displayed" class="material-icons-outlined displayed tw-cursor-pointer" @click="toggleDisplay(false)">
 				  chevron_right
 			  </span>
-        <span v-else class="material-icons-outlined not-displayed em-pointer" @click="toggleDisplay(true)">
+        <span v-else class="material-icons-outlined not-displayed tw-cursor-pointer" @click="toggleDisplay(true)">
 				  menu_open
 			  </span>
       </div>

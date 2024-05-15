@@ -2,7 +2,7 @@
   <div class="em-settings-menu">
     <div class="em-w-80" v-if="!loading">
 
-      <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param) in displayedParams" :key="param.param">
+      <div class="form-group tw-justify-center tw-w-full tw-mb-4" v-for="(param) in displayedParams" :key="param.param">
           <label :for="'param_' + param.param" class="tw-flex tw-items-center">
             {{ translate(param.label) }}
             <span v-if="param.helptext" class="material-icons-outlined tw-ml-2" @click="displayHelp(param.helptext)">help_outline</span>

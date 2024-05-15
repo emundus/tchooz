@@ -1,18 +1,18 @@
 <template>
   <div>
-    <div class="em-flex-row em-mb-16" :class="'em-level-' + node.level">
+    <div class="tw-flex tw-items-center tw-mb-4" :class="'em-level-' + node.level">
       <span class="material-icons" v-if="node.type !== 0">folder</span>
       <span class="material-icons-outlined" v-else>folder</span>
 
       <select v-if="(other_tags.includes(node.type) || node.type === 0) && node.type !== ''"
-              class="em-ml-8 em-mr-8 em-clear-dropdown tree-branch" v-model="node.type">
+              class="tw-ml-2 tw-mr-2 em-clear-dropdown tree-branch" v-model="node.type">
         <option value="0" selected>/{{
             translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SELECT_TYPE')
           }}
         </option>
         <option :value="field.value" v-for="field in fieldsData">{{ translate(field.label) }}</option>
       </select>
-      <input v-else type="text" class="em-ml-8 em-mr-8 em-xs-input em-w-auto tree-branch" :value="node.type"
+      <input v-else type="text" class="tw-ml-2 tw-mr-2 em-xs-input tw-w-auto tree-branch" :value="node.type"
              @focusout="updateNodeType($event)"/>
 
       <v-popover :popoverArrowClass="'custom-popover-arrow'">
@@ -20,16 +20,16 @@
         <template slot="popover">
           <div
               v-if="(!other_tags.includes(node.type) && node.type !== 0) || node.type === ''"
-              class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300"
+              class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300"
               @click="node.type = 0"
           >
             {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GO_BACK_TO_SELECT') }}
           </div>
-          <div class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300"
+          <div class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300"
                v-if="node.level < level_max" @click="$emit('addNode',node)">
             {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_ADD_MENU') }}
           </div>
-          <div class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300 em-red-500-color"
+          <div class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300 tw-text-red-500"
                @click="$emit('deleteNode', node);">
             {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_DELETE') }}
           </div>
@@ -37,7 +37,7 @@
       </v-popover>
     </div>
 
-    <div v-for="children in node.childrens" class="em-flex-row" :class="'em-level-' + children.level">
+    <div v-for="children in node.childrens" class="tw-flex tw-items-center" :class="'em-level-' + children.level">
       <Tree :node="children" @addNode="addNode" @deleteNode="deleteNode" @saveConfig="$emit('saveConfig')"
             :level_max="level_max" :emundus_tags="emundus_tags"/>
     </div>

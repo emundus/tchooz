@@ -3,17 +3,17 @@
     <skeleton v-if="loading.lists" height="40px" width="100%" class="tw-mb-4 tw-mt-4 tw-rounded-lg"></skeleton>
     <div v-else class="head tw-flex tw-items-center tw-justify-between">
       <h2>{{ translate(currentList.title) }}</h2>
-      <a v-if="addAction" id="add-action-btn" class="em-primary-button em-w-auto tw-cursor-pointer"
+      <a v-if="addAction" id="add-action-btn" class="em-primary-button tw-w-auto tw-cursor-pointer"
          @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
     </div>
-    <hr class="tw-w-full mt-1.5 tw-mb-4">
+    <hr class="tw-w-full tw-mt-1.5 tw-mb-4">
 
     <div v-if="loading.tabs" id="tabs-loading">
       <div class="tw-flex tw-justify-between">
         <skeleton height="40px" width="20%" class="tw-mb-4 tw-rounded-lg"></skeleton>
         <skeleton height="40px" width="5%" class="tw-mb-4 tw-rounded-lg"></skeleton>
       </div>
-      <div :class="{'skeleton-grid': viewType === 'blocs','em-flex-column': viewType === 'list'}"
+      <div :class="{'skeleton-grid': viewType === 'blocs','tw-flex tw-flex-col': viewType === 'list'}"
            style="flex-wrap: wrap">
         <skeleton v-for="i in 9" :key="i" class="tw-rounded-lg skeleton-item"></skeleton>
       </div>
@@ -24,8 +24,8 @@
           <li v-for="tab in currentList.tabs" :key="tab.key"
               class="tw-cursor-pointer tw-font-normal tw-p-4"
               :class="{
-								'em-neutral-900-color em-border-bottom-coordinator': selectedListTab === tab.key,
-							  'em-neutral-700-color em-border-bottom-neutral-300': selectedListTab !== tab.key
+								'tw-text-neutral-900 tw-border-b tw-border-main-500': selectedListTab === tab.key,
+							  'tw-text-neutral-700 tw-border-b tw-border-neutral-300': selectedListTab !== tab.key
 							}"
               @click="onSelectTab(tab.key)"
           >
@@ -33,7 +33,7 @@
           </li>
         </ul>
       </nav>
-      <section id="actions" class="tw-flex tw-justify-between tw-mt-4 tw-mb-4">
+      <section id="actions" class="tw-flex tw-justify-between tw-mt-4 tw-mb-4" v-if="this.items[this.selectedListTab].length > 0">
         <section id="tab-actions">
           <select v-for="filter in filters[selectedListTab]" :key="selectedListTab + '-' + filter.key"
                   v-model="filter.value" @change="onChangeFilter(filter)" class="tw-mr-2">
@@ -70,7 +70,7 @@
         </section>
       </section>
 
-      <section id="pagination-wrapper" class="tw-flex tw-justify-end tw-items-center mb-3">
+      <section id="pagination-wrapper" class="tw-flex tw-justify-end tw-items-center tw-mb-3" v-if="this.items[this.selectedListTab].length > 0">
         <select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()">
           <option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
           <option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
@@ -81,7 +81,7 @@
             v-if="typeof currentTab.pagination !== undefined && currentTab.pagination && currentTab.pagination.total > 1"
             id="pagination" class="tw-text-center">
           <ul class="tw-flex tw-list-none tw-gap-1">
-						<span :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
+						<span :class="{'tw-text-neutral-600 em-disabled-events': currentTab.pagination.current === 1}"
                   class="material-icons-outlined tw-cursor-pointer tw-mr-2 tw-items-center"
                   style="display: flex"
                   @click="getListItems(currentTab.pagination.current - 1, selectedListTab)">
@@ -94,7 +94,7 @@
               {{ i }}
             </li>
             <span
-                :class="{'em-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
+                :class="{'tw-text-neutral-600 em-disabled-events': currentTab.pagination.current === currentTab.pagination.total}"
                 class="material-icons-outlined tw-cursor-pointer tw-ml-2 tw-items-center"
                 style="display: flex"
                 @click="getListItems(currentTab.pagination.current + 1, selectedListTab)">
@@ -107,7 +107,7 @@
 
       <div v-if="loading.items"
            id="items-loading"
-           :class="{'skeleton-grid': viewType === 'blocs','em-flex-column tw-mb-4': viewType === 'list'}"
+           :class="{'skeleton-grid': viewType === 'blocs','tw-flex tw-flex-col tw-mb-4': viewType === 'list'}"
            style="flex-wrap: wrap"
       >
         <skeleton v-for="i in 9" :key="i" class="tw-rounded-lg skeleton-item"></skeleton>
@@ -132,7 +132,7 @@
                 :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
             >
               <td class="tw-cursor-pointer" @click="onClickAction(editAction, item.id)">
-                <span :class="{'em-font-weight-600 tw-mb-4 tw-text-ellipsis tw-overflow-hidden':  viewType === 'blocs'}"
+                <span :class="{'tw-font-semibold tw-mb-4 tw-text-ellipsis tw-overflow-hidden':  viewType === 'blocs'}"
                       :title="item.label[params.shortlang]">{{ item.label[params.shortlang] }}</span>
               </td>
               <td class="columns" v-for="column in item.additional_columns" :key="column.key"
@@ -146,10 +146,10 @@
                 <hr v-if="viewType === 'blocs'" class="tw-w-full tw-mt-1.5 tw-mb-3">
                 <td class="actions">
                   <a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id)"
-                     class="em-primary-button tw-text-sm tw-cursor-pointer em-w-auto">
+                     class="em-primary-button tw-text-sm tw-cursor-pointer tw-w-auto">
                     {{ translate(editAction.label) }}
                   </a>
-                  <div class="tw-flex tw-items-center em-gap-8">
+                  <div class="tw-flex tw-items-center tw-gap-2">
                     <span v-if="previewAction" class="material-icons-outlined tw-cursor-pointer"
                           @click="onClickPreview(item)">visibility</span>
                     <span v-for="action in iconActions" :key="action.name" class="tw-cursor-pointer"
@@ -164,7 +164,8 @@
 											</span>
                     <v-popover
                         v-if="tabActionsPopover && tabActionsPopover.length > 0 && filterShowOnActions(tabActionsPopover, item).length"
-                        :popoverArrowClass="'custom-popover-arrow'">
+                        :popoverArrowClass="'custom-popover-arrow'"
+                        >
                       <span class="tooltip-target b3 material-icons">more_vert</span>
                       <template slot="popover">
                         <ul style="list-style-type: none; margin: 0;padding: 0">
@@ -172,7 +173,7 @@
                               :key="action.name"
                               :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
                               @click="onClickAction(action, item.id)"
-                              class="tw-cursor-pointer tw-p-2 em-font-size-16"
+                              class="tw-cursor-pointer tw-p-2 tw-text-base"
                           >
                             {{ translate(action.label) }}
                           </li>
@@ -186,7 +187,11 @@
             </tbody>
           </table>
         </div>
-        <div v-else id="empty-list" class="noneDiscover" v-html="noneDiscoverTranslation"></div>
+        <div v-else id="empty-list" class="tw-mt-6">
+          <div class="noneDiscover tw-text-center tw-mb-4" v-html="noneDiscoverTranslation"></div>
+          <div class="no-result tw-bg-no-repeat tw-w-64 tw-h-64 tw-my-0 tw-mx-auto"></div>
+        </div>
+
       </div>
     </div>
   </div>

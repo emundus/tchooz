@@ -7,17 +7,17 @@
           :cid="campaignId"
       />
       <div>
-        <div class="em-flex-row em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+        <div class="tw-flex tw-items-center tw-cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
           <span class="material-icons-outlined">navigate_before</span>
-          <span class="em-ml-8 em-text-neutral-900">{{ translate('BACK') }}</span>
+          <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
         </div>
-        <div class="em-flex-row em-mt-16">
+        <div class="tw-flex tw-items-center tw-mt-4">
           <h1>{{ translate(selectedMenuItem.label) }}</h1>
         </div>
-        <p> {{ translate(selectedMenuItem.description) }} </p>
+        <p v-html="translate(selectedMenuItem.description)"></p>
         <hr>
 
-        <div class="em-flex-row em-mb-32">
+        <div class="tw-flex tw-items-center tw-mb-8">
           <p>
             <b style="color: var(--em-profile-color); font-weight: 700 !important;"> {{ form.label }}</b>
             {{ translate('COM_EMUNDUS_ONBOARD_FROM') }}
@@ -26,19 +26,18 @@
             <strong>{{ form.end_date }}</strong>
           </p>
         </div>
-        <div class="flex flex-row">
-          <ul class="nav nav-tabs topnav">
 
-            <li v-for="menu in displayedMenus" :key="menu.component" @click="selectMenu(menu)" :class="{'w--current': selectedMenu === menu.component}">
-              <span class="cursor-pointer">{{ translate(menu.label) }}</span>
-            </li>
-          </ul>
-        </div>
+        <ul class="tw-flex tw-items-center tw-gap-2 tw-list-none tw-mb-4 tw-pl-0 tw-border-b tw-border-neutral-400">
+          <li v-for="menu in displayedMenus" :key="menu.component" @click="selectMenu(menu)" class="tw-border tw-border-transparent tw-flex tw-flex-col tw-rounded-t-lg hover:tw-border-neutral-300" :class="{'tw-border tw-border-neutral-300 tw-bg-neutral-300': selectedMenu === menu.component}">
+            <span class="tw-cursor-pointer tw-p-2 tw-text-neutral-700">{{ translate(menu.label) }}</span>
+          </li>
+        </ul>
+
         <br>
         <div v-if="selectedMenu === 'addEmail'" class="warning-message-program mb-1">
-          <p class="em-red-500-color flex flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
+          <p class="tw-text-red-500 flex flex-row"><span class="material-icons-outlined tw-mr-2 tw-text-red-500">warning_amber</span>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
           </p>
-          <ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32 em-pl-16">
+          <ul v-if="campaignsByProgram.length > 0" class="tw-mt-2 tw-mb-8 em-pl-16">
             <li v-for="campaign in campaignsByProgram" :key="'camp_progs_' + campaign.id">{{ campaign.label }}</li>
           </ul>
         </div>
@@ -85,11 +84,11 @@
         </transition>
       </div>
 
-      <div class="em-flex-row em-flex-space-between em-float-right"
+      <div class="tw-flex tw-items-center tw-justify-between tw-float-right"
            v-if="['addDocumentsDropfiles', 'addFormulaire'].includes(selectedMenu)">
         <button
             type="button"
-            class="em-primary-button em-w-auto mb-4"
+            class="em-primary-button tw-w-auto mb-4"
             @click="next">
           {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
         </button>
@@ -373,7 +372,7 @@ export default {
   color: var(--em-profile-color);
 }
 
-.em-pointer:hover {
+.tw-cursor-pointer:hover {
   color: var(--em-profile-color);
 }
 

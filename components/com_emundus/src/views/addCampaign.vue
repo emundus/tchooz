@@ -4,7 +4,7 @@
       <div class="tw-flex tw-items-center tw-cursor-pointer"
            @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons-outlined">navigate_before</span>
-        <span class="em-ml-8 em-text-neutral-900">{{ translate('BACK') }}</span>
+        <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
       </div>
 
       <h1 class="tw-mt-4">{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</h1>
@@ -16,11 +16,11 @@
     <div>
       <form @submit.prevent="submit" v-if="ready" class="emundus-form fabrikForm">
         <div>
-          <div class="em-red-500-color tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
+          <div class="tw-text-red-500 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
           <div class="tw-mb-4">
             <label for="campLabel">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span
-                class="em-red-500-color">*</span></label>
+                class="tw-text-red-500">*</span></label>
             <input
                 id="campLabel"
                 type="text"
@@ -30,8 +30,8 @@
                 class="tw-mt-2 form-control fabrikinput tw-w-full"
                 @focusout="onFormChange()"
             />
-            <span v-if="errors.label" class="em-red-500-color tw-mb-2">
-              <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
+            <span v-if="errors.label" class="tw-text-red-500 tw-mb-2">
+              <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
             </span>
           </div>
 
@@ -39,7 +39,7 @@
             <div>
               <div>
                 <label for="startDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span
-                    class="em-red-500-color">*</span></label>
+                    class="tw-text-red-500">*</span></label>
                 <datetime
                     v-model="form.start_date"
                     id="startDate"
@@ -56,7 +56,7 @@
             <div>
               <div>
                 <label for="endDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') }} <span
-                    class="em-red-500-color">*</span></label>
+                    class="tw-text-red-500">*</span></label>
                 <datetime
                     v-model="form.end_date"
                     id="endDate"
@@ -75,7 +75,7 @@
 
           <div class="tw-mb-4">
             <label for="year">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR') }} <span
-                class="em-red-500-color">*</span></label>
+                class="tw-text-red-500">*</span></label>
             <autocomplete
                 :id="'year'"
                 @searched="onSearchYear"
@@ -117,7 +117,7 @@
               <strong class="b em-toggle-track"></strong>
             </div>
             <span for="pinned" class="tw-ml-2 tw-flex tw-items-center">{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}
-              <span class="material-icons-outlined em-ml-4 em-font-size-16 em-pointer" @click="displayPinnedCampaignTip">help_outline</span>
+              <span class="material-icons-outlined tw-ml-1 tw-text-base tw-cursor-pointer" @click="displayPinnedCampaignTip">help_outline</span>
             </span>
           </div>
         </div>
@@ -131,7 +131,7 @@
 
           <div class="tw-mb-4">
             <label style="top: 5em">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }} <span
-                class="em-red-500-color">*</span></label>
+                class="tw-text-red-500">*</span></label>
             <editor-quill
                 style="height: 25em"
                 :text="form.short_description"
@@ -168,7 +168,7 @@
             <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
           </div>
           <div class="tw-mb-4">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC') }}<span
-              class="em-red-500-color">*</span></div>
+              class="tw-text-red-500">*</span></div>
 
           <div class="tw-flex tw-items-center tw-mb-4">
             <select
@@ -190,7 +190,7 @@
               </option>
             </select>
             <button v-if="coordinatorAccess != 0" :title="translate('COM_EMUNDUS_ONBOARD_ADDPROGRAM')" type="button"
-                    id="add-program" class="tw-ml-2 em-transparent-button" @click="displayProgram">
+                    id="add-program" class="tw-ml-2 tw-bg-transparent" @click="displayProgram">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
           </div>
@@ -200,7 +200,7 @@
               <div>
                 <div class="tw-mb-4">
                   <label for="prog_label">{{ translate('COM_EMUNDUS_ONBOARD_PROGNAME') }} <span
-                      class="em-red-500-color">*</span></label>
+                      class="tw-text-red-500">*</span></label>
                   <input
                       type="text"
                       id="prog_label"
@@ -210,8 +210,8 @@
                       :class="{ 'is-invalid': errors.progLabel }"
                   />
                 </div>
-                <p v-if="errors.progLabel" class="em-red-500-color tw-mb-2">
-                  <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
+                <p v-if="errors.progLabel" class="tw-text-red-500 tw-mb-2">
+                  <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
                 </p>
 
                 <div class="tw-mb-4" style="display: none">
@@ -235,10 +235,10 @@
 
         <hr class="tw-mt-1.5 tw-mb-1.5"/>
 
-        <div class="tw-flex tw-justify-between tw-float-right em-mb-16">
+        <div class="tw-flex tw-justify-between tw-float-right tw-mb-4">
           <button
               type="button"
-              class="em-primary-button em-w-auto"
+              class="em-primary-button tw-w-auto"
               @click="quit = 1; submit()">
             {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
           </button>
@@ -550,7 +550,7 @@ export default {
             confirmButtonText: this.translate("OK"),
             customClass: {
               title: 'em-swal-title',
-              confirmButton: 'em-flex-center',
+              confirmButton: 'tw-justify-center',
             }
           });
 

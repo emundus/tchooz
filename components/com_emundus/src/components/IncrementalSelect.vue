@@ -1,28 +1,28 @@
 <template>
   <div id="incremental-selector" class="tw-mt-2">
-    <div class="em-w-100 em-flex-row em-mb-16">
-      <div v-if="isNewVal" id="new-value" class="em-w-100">
-        <input type="text" class="em-w-100 em-mb-0-important" v-model="newValue.label" @focusin="showOptions = true"
+    <div class="tw-w-full tw-flex tw-items-center tw-mb-4">
+      <div v-if="isNewVal" id="new-value" class="tw-w-full">
+        <input type="text" class="tw-w-full !tw-mb-0" v-model="newValue.label" @focusin="showOptions = true"
                @keyup="emitValueChanges"/>
         <i class="em-main-500-color">({{ translate('COM_EMUNDUS_FORM_BUILDER_NEW_VALUE') }})</i>
       </div>
-      <div v-if="!isNewVal" id="existing-value" class="em-w-100">
-        <div class="em-w-100 em-flex-row em-flex-space-between">
-          <input type="text" class="em-w-100 em-mb-0-important em-border-main-500 important" v-model="newExistingLabel"
+      <div v-if="!isNewVal" id="existing-value" class="tw-w-full">
+        <div class="tw-w-full tw-flex tw-items-center tw-justify-between">
+          <input type="text" class="tw-w-full !tw-mb-0 em-border-main-500 important" v-model="newExistingLabel"
                  @keyup="emitValueChanges"/>
-          <span v-if="!locked" @click="unselectExistingValue" class="material-icons-outlined em-pointer"
+          <span v-if="!locked" @click="unselectExistingValue" class="material-icons-outlined tw-cursor-pointer"
                 @mouseenter="hoverUnselect = true" @mouseleave="hoverUnselect = false">close</span>
         </div>
         <i class="em-main-500-color">({{ translate('COM_EMUNDUS_FORM_BUILDER_EXISTING_VALUE') }})</i>
       </div>
     </div>
-    <ul v-if="existingValues && showOptions" class="em-custom-selector em-border-neutral-300 em-w-100"
+    <ul v-if="existingValues && showOptions" class="em-custom-selector em-border-neutral-300 tw-w-full"
         @mouseenter="hoverOptions = true" @mouseleave="hoverOptions = false">
       <li v-for="option in displayedOptions"
           :key="option.id"
           :value="option.id"
           :selected="selectedExistingValue == option.id"
-          class="em-custom-selector-option em-pointer  em-p-8"
+          class="em-custom-selector-option tw-cursor-pointer  em-p-8"
           @click="onSelectValue(option.id)"
       >
         {{ option.label }}
@@ -185,7 +185,6 @@ export default {
     span {
       position: absolute;
       right: 5px;
-      top: 12px;
     }
   }
 }

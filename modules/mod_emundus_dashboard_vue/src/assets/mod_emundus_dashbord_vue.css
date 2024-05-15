@@ -12,13 +12,13 @@
     float: right;
     justify-content: end;
     width: 500px;
+    gap: 12px;
 }
 
 .tchooz-widget__select {
     position: relative !important;
     right: 0;
     top: 0;
-    margin: 8px;
     cursor: pointer;
 }
 

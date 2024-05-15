@@ -13,16 +13,16 @@
           @closed="beforeClose"
           @opened="getTypesByCampaign"
       >
-        <div class="messages__attach_header em-p-16 em-w-100 em-flex-row-justify-end">
-          <span class="material-icons-outlined em-pointer" @click="$emit('close')">close</span>
+        <div class="messages__attach_header tw-p-4 tw-w-full tw-flex tw-items-center-justify-end">
+          <span class="material-icons-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
         </div>
         <div class="messages__attach_content">
           <ul class="messages__attach_actions_tabs" v-if="!applicant">
-            <li class="messages__attach_action em-mr-8" @click="action = 1" :class="action === 1 ? 'messages__attach_action__current' : ''">{{translations.sendDocument}}</li>
-            <li class="messages__attach_action em-mr-8" @click="action = 2" :class="action === 2 ? 'messages__attach_action__current' : ''">{{translations.askDocument}}</li>
+            <li class="messages__attach_action tw-mr-2" @click="action = 1" :class="action === 1 ? 'messages__attach_action__current' : ''">{{translations.sendDocument}}</li>
+            <li class="messages__attach_action tw-mr-2" @click="action = 2" :class="action === 2 ? 'messages__attach_action__current' : ''">{{translations.askDocument}}</li>
           </ul>
 
-          <div class="messages_action_container em-pt-16">
+          <div class="messages_action_container tw-pt-4">
             <div v-if="action === 1">
               <label v-if="applicant">{{translations.sendDocument}}</label>
               <div v-if="applicant && types.length > 0" class="messages__attach_applicant_doc">

@@ -1,5 +1,5 @@
 <template>
-  <div id="FormBuilder" class="em-mt-16 applicant-form">
+  <div id="FormBuilder" class="tw-mt-4 applicant-form">
     <div>
       <BuilderViewer
           :object="object"

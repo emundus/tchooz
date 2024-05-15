@@ -1,20 +1,20 @@
 <template>
   <div>
-    <h1 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELINS') }}</h1>
-    <p class="em-font-size-16 em-neutral-700-color em-mb-24 em-h-25" v-if="!saving && last_save == null">
+    <h1 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELINS') }}</h1>
+    <p class="tw-text-base tw-text-neutral-700 tw-mb-6 em-h-25" v-if="!saving && last_save == null">
       {{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
-    <div v-if="saving" class="em-mb-24 em-flex-row em-flex-start">
-      <div class="em-loader em-mr-8"></div>
-      <p class="em-font-size-16 em-flex-row">
+    <div v-if="saving" class="tw-mb-6 tw-flex tw-items-center tw-justify-start">
+      <div class="em-loader tw-mr-2"></div>
+      <p class="tw-text-base tw-flex tw-items-center">
         {{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS') }}</p>
     </div>
-    <p class="em-font-size-16 em-mb-24 em-h-25" v-if="!saving && last_save != null">
+    <p class="tw-text-base tw-mb-6 em-h-25" v-if="!saving && last_save != null">
       {{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save }}</p>
 
-    <p class="em-font-size-16 em-mb-24 em-h-25" v-if="availableLanguages.length === 0 && !loading">
+    <p class="tw-text-base tw-mb-6 em-h-25" v-if="availableLanguages.length === 0 && !loading">
       {{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_NO_LANGUAGES_AVAILABLE') }}</p>
 
-    <p class="em-font-size-16 em-mb-24 em-h-25" v-if="translations.length === 0 && !loading">
+    <p class="tw-text-base tw-mb-6 em-h-25" v-if="translations.length === 0 && !loading">
       {{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHANS_CONGRATULATIONS') }}</p>
 
     <div class="em-grid-4" v-else>
@@ -42,21 +42,21 @@
     <hr class="col-md-12" style="z-index: 0"/>
 
     <div class="col-md-12">
-      <div v-if="lang === '' || lang == null || translations.length === 0" class="text-center em-mt-80">
-        <h5 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_ORPHELINS_TITLE') }}</h5>
-        <p class="em-font-size-16 em-text-neutral-600" v-if="lang === '' || lang == null">
+      <div v-if="lang === '' || lang == null || translations.length === 0" class="text-center tw-mt-20">
+        <h5 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_ORPHELINS_TITLE') }}</h5>
+        <p class="tw-text-base em-text-neutral-600" v-if="lang === '' || lang == null">
           {{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_ORPHELINS_TEXT') }}</p>
       </div>
 
       <div v-else>
         <div v-for="translation in translations" :key="translation.id">
-          <div class="em-mb-32 em-neutral-100-box em-p-24">
-            <div class="em-flex-space-between em-mt-16 em-grid-50">
-              <p class="em-neutral-700-color">{{ translation.override }}</p>
+          <div class="tw-mb-8 em-neutral-100-box em-p-24">
+            <div class="tw-justify-between tw-mt-4 em-grid-50">
+              <p class="tw-text-neutral-700">{{ translation.override }}</p>
               <div class="tw-text-right">
-                <input class="mb-0 em-input em-w-100" type="text" :value="translation.override"
+                <input class="mb-0 em-input tw-w-full" type="text" :value="translation.override"
                        :ref="'translation-' + translation.id + ''"/>
-                <a role="button" class="tw-normal-case btn btn-primary em-pointer em-profile-color em-mt-16 em-font-size-16"
+                <a role="button" class="tw-normal-case btn btn-primary tw-cursor-pointer em-profile-color tw-mt-4 tw-text-base"
                    @click="saveTranslation(translation)">{{
                     translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELIN_CONFIRM_TRANSLATION')
                   }}</a>

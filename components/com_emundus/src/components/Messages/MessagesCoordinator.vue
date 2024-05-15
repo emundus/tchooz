@@ -1,5 +1,5 @@
 <template>
-  <div class="messages__coordinator_vue em-w-100">
+  <div class="messages__coordinator_vue tw-w-full">
     <div class="messages__list col-md-12">
       <label class="text-center" style="width: 100%">{{ translations.messages }}</label>
       <div class="messages__list-block" id="messages__list">
@@ -34,7 +34,7 @@
       </div>
       <div class="messages__bottom-input-actions">
         <div class="messages__actions_bar">
-          <span class="material-icons-outlined em-pointer"  @click="attachDocument">attach_file</span>
+          <span class="material-icons-outlined tw-cursor-pointer"  @click="attachDocument">attach_file</span>
         </div>
         <button type="button" class="messages__send_button btn btn-primary" @click="sendMessage">
           {{ translations.send }}

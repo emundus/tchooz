@@ -4,9 +4,9 @@
         ref="a-preview"
         class="attachment-preview"
         :class="{
-        'overflow-x': overflowX,
-        'overflow-y': overflowY,
-        'hidden': !needShadowDOM
+        'tw-overflow-x': overflowX,
+        'tw-overflow-y': overflowY,
+        'tw-hidden': !needShadowDOM
       }"
     ></div>
     <div v-if="!needShadowDOM" v-html="preview" class="attachment-preview"></div>

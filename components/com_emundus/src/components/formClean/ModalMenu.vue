@@ -13,19 +13,19 @@
         @closed="beforeClose"
         @before-open="beforeOpen"
     >
-      <div class="em-flex-row em-flex-space-between em-mb-16">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
         <h4>
           {{ translations.addMenu }}
         </h4>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalMenu')">
+        <button class="tw-cursor-pointer tw-bg-transparent" @click.prevent="$modal.hide('modalMenu')">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
 
       <div>
-        <div class="em-mb-16">
-          <label class="em-w-100">{{ translations.ChooseExistingPageModel }} :</label>
-          <select v-model="model_id" class="em-w-100" :disabled="Object.keys(models).length <= 0">
+        <div class="tw-mb-4">
+          <label class="tw-w-full">{{ translations.ChooseExistingPageModel }} :</label>
+          <select v-model="model_id" class="tw-w-full" :disabled="Object.keys(models).length <= 0">
             <option value="-1"></option>
             <option v-for="model in models" :key="model.form_id" :value="model.form_id"> {{
                 model.label[actualLanguage]
@@ -33,16 +33,16 @@
           </select>
         </div>
 
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <label>{{ translations.Name }}* :</label>
-          <input v-model="label[actualLanguage]" type="text" maxlength="40" id="menu_label" class="em-w-100"
+          <input v-model="label[actualLanguage]" type="text" maxlength="40" id="menu_label" class="tw-w-full"
                  :class="{ 'is-invalid': errors}"/>
         </div>
-        <p v-if="errors && model_id == -1" class="em-red-500-color">
-          <span class="em-red-500-color">{{ translations.LabelRequired }}</span>
+        <p v-if="errors && model_id == -1" class="tw-text-red-500">
+          <span class="tw-text-red-500">{{ translations.LabelRequired }}</span>
         </p>
 
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <label>{{ translations.Intro }}</label>
                 <editor v-for="(language,index_group) in languages"
                         v-if="language.sef === selectedLanguage"
@@ -57,16 +57,16 @@
         </div>
       </div>
 
-      <div class="em-flex-row em-flex-space-between em-mb-16">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
         <button
             type="button"
-            class="em-secondary-button em-w-auto"
+            class="em-secondary-button !tw-w-auto"
             @click.prevent="$modal.hide('modalMenu')">
           {{ translations.Retour }}
         </button>
         <button
             type="button"
-            class="em-primary-button em-w-auto"
+            class="em-primary-button tw-w-auto"
             @click.prevent="createMenu()">
           {{ translations.Add }}
         </button>

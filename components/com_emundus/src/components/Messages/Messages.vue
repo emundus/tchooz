@@ -14,11 +14,11 @@
           @closed="beforeClose"
           @opened="getFilesByUser"
       >
-        <div class="em-flex-row em-flex-align-start em-w-100 em-h-100 em-small-flex-column">
-          <div class="messages__campaigns-list em-h-100">
+        <div class="tw-flex tw-items-center tw-items-start tw-w-full tw-h-full em-small-flex-column">
+          <div class="messages__campaigns-list tw-h-full">
             <div v-for="file in files" :key="file.fnum" @click="fileSelected = file.fnum" :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
-              <div class="messages__campaign-block em-w-100">
-                <div class="em-w-100">
+              <div class="messages__campaign-block tw-w-full">
+                <div class="tw-w-full">
                   <p class="messages__campaigns_title">{{file.label}}</p>
                   <p class="messages__campaigns_fnum messages__campaigns_title">N° {{file.fnum}}</p>
                   <p class="messages__campaigns_fnum messages__campaigns_title">{{file.year}}</p>
@@ -34,12 +34,12 @@
             </select>
           </div>
 
-          <div class="messages__list em-w-100 em-h-100 em-flex-column em-flex-space-between">
-            <div class="message__header em-w-100">
+          <div class="messages__list tw-w-full tw-h-full tw-flex tw-flex-col tw-justify-between">
+            <div class="message__header tw-w-full">
               <label class="text-center" style="width: 100%">{{translations.messages}}</label>
               <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
             </div>
-            <div class="messages__list-block em-w-100 em-h-100" id="messages__list">
+            <div class="messages__list-block tw-w-full tw-h-full" id="messages__list">
               <div v-for="date in messageByDates">
                 <div class="messages__date-section">
                   <hr>
@@ -65,7 +65,7 @@
               </transition>
             </div>
 
-            <div style="position: sticky;bottom: 15px;padding: 0 15px;margin-right: 15px;" class="em-w-100">
+            <div style="position: sticky;bottom: 15px;padding: 0 15px;margin-right: 15px;" class="tw-w-full">
               <div class="messages__bottom-input">
                 <textarea type="text"
                           class="messages__input_text em-p-8"
@@ -79,7 +79,7 @@
               </div>
               <div class="messages__bottom-input-actions">
                 <div class="messages__actions_bar">
-                  <span class="material-icons-outlined em-pointer" @click="attachDocument">attach_file</span>
+                  <span class="material-icons-outlined tw-cursor-pointer" @click="attachDocument">attach_file</span>
                 </div>
                 <button type="button" class="messages__send_button btn btn-primary" @click="sendMessage">
                     {{ translations.send }}

@@ -15,11 +15,11 @@
     <ModalImportDatas
         @updateDatabases="getDatabases"
     />
-    <div class="em-flex-row">
-      <a @click="$modal.show('modalAddDatas')" class="bouton-ajouter-green bouton-ajouter pointer em-mr-4"
+    <div class="tw-flex tw-items-center">
+      <a @click="$modal.show('modalAddDatas')" class="bouton-ajouter-green bouton-ajouter pointer tw-mr-1"
          style="width: max-content">
         <div class="add-button-div">
-          <em class="fas fa-plus em-mr-4"></em>
+          <em class="fas fa-plus tw-mr-1"></em>
           {{ CreateDatas }}
         </div>
       </a>

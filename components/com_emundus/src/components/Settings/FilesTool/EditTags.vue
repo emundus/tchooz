@@ -2,27 +2,27 @@
   <div class="em-settings-menu">
     <div class="em-w-80">
 
-      <div class="em-grid-3 em-mb-16">
-        <button @click="pushTag" class="em-primary-button em-mb-24" style="width: max-content">
+      <div class="tw-grid tw-grid-cols-3 tw-gap-6 tw-mb-4">
+        <button @click="pushTag" class="em-primary-button tw-mb-6" style="width: max-content">
           <div class="add-button-div">
-            <em class="fas fa-plus em-mr-4"></em>
+            <em class="fas fa-plus tw-mr-1"></em>
             {{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_ADDTAG') }}
           </div>
         </button>
       </div>
 
-      <div v-for="(tag, index) in tags" class="em-mb-24" :id="'tag_' + tag.id" :key="'tag_' + tag.id"
+      <div v-for="(tag, index) in tags" class="tw-mb-6" :id="'tag_' + tag.id" :key="'tag_' + tag.id"
            @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-        <div class="em-flex-row em-flex-row-start em-w-100">
+        <div class="tw-flex tw-items-center tw-flex tw-items-center-start tw-w-full">
           <div class="status-field">
             <div style="width: 100%">
-              <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id"
+              <p class="tw-px-2 tw-py-3 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id"
                  @focusout="updateTag(tag)" @keyup.enter="manageKeyup(tag)" @keydown="checkMaxlength">
                 {{ tag.label }}</p>
             </div>
             <input type="hidden" :class="tag.class">
           </div>
-          <div class="em-flex-row">
+          <div class="tw-flex tw-items-center">
             <v-swatches
                 v-model="tag.class"
                 @input="updateTag(tag)"
@@ -34,8 +34,8 @@
                 popover-y="top"
             ></v-swatches>
             <a type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')" @click="removeTag(tag,index)"
-               class="em-flex-row em-ml-8 em-pointer">
-              <span class="material-icons-outlined em-red-500-color">delete_outline</span>
+               class="tw-flex tw-items-center tw-ml-2 tw-cursor-pointer">
+              <span class="material-icons-outlined tw-text-red-500">delete_outline</span>
             </a>
           </div>
         </div>

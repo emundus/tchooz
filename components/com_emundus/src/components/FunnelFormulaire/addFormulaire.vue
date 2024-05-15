@@ -1,20 +1,20 @@
 <template>
   <div>
-    <a class="em-pointer em-profile-color em-text-underline" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
+    <a class="tw-cursor-pointer em-profile-color em-text-underline" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
 
-    <div class="em-mb-4 em-mt-16 em-text-color">{{ ChooseForm }} :</div>
-    <div class="em-mb-4">
+    <div class="tw-mb-1 tw-mt-4 em-text-color">{{ ChooseForm }} :</div>
+    <div class="tw-mb-1">
       <select id="select_profile" v-model="$props.profileId" @change="updateProfileCampaign">
         <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
           {{ profile.form_label }}
         </option>
       </select>
     </div>
-    <a class="em-pointer em-profile-color em-text-underline" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
+    <a class="tw-cursor-pointer em-profile-color em-text-underline" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
 
     <hr/>
     <h5>{{ translate('COM_EMUNDUS_FORM_PAGES_PREVIEW') }}</h5>
-    <div class="em-flex-row em-flex-wrap">
+    <div class="tw-flex tw-items-center em-flex-wrap">
       <div v-for="form in fabrikFormList" :key="form.id"
            class="card-wrapper em-mr-32"
            :title="form.label"
@@ -29,7 +29,7 @@
 
     <div v-if="documentsList.length > 0">
       <h5 class="em-mt-12">{{ translate('COM_EMUNDUS_FORM_ATTACHMENTS_PREVIEW') }}</h5>
-      <div class="em-flex-row">
+      <div class="tw-flex tw-items-center">
         <div v-for="document in documentsList" :key="document.id"
              class="card-wrapper em-mr-32"
              :title="document.label"

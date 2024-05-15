@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h1 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h1>
-    <p class="em-font-size-16 em-neutral-700-color em-mb-24 em-h-25">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
+    <h1 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h1>
+    <p class="tw-text-base tw-text-neutral-700 tw-mb-6 em-h-25">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
 
-    <p class="em-font-size-16 em-mb-24 em-h-25" v-if="availableLanguages.length === 0 && !loading">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_NO_LANGUAGES_AVAILABLE') }}</p>
+    <p class="tw-text-base tw-mb-6 em-h-25" v-if="availableLanguages.length === 0 && !loading">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_NO_LANGUAGES_AVAILABLE') }}</p>
 
     <div class="em-grid-4" v-else>
       <!-- Languages -->
@@ -91,15 +91,15 @@
     <hr class="col-md-12" style="z-index: 0"/>
 
     <div class="col-md-12">
-      <div v-if="lang === '' || lang == null || object === '' || object == null || init_translations === false" class="text-center em-mt-80">
-        <h5 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</h5>
-        <p class="em-font-size-16 em-text-neutral-600">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}</p>
+      <div v-if="lang === '' || lang == null || object === '' || object == null || init_translations === false" class="text-center tw-mt-20">
+        <h5 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</h5>
+        <p class="tw-text-base em-text-neutral-600">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}</p>
       </div>
 
       <div v-else>
         <button v-if="object.table.name === 'emundus_setup_profiles'" class="float-right em-profile-color em-text-underline" @click="exportToCsv">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_EXPORT') }}</button>
 
-        <div v-for="section in object.fields.Sections" :key="section.Table" class="em-mb-32">
+        <div v-for="section in object.fields.Sections" :key="section.Table" class="tw-mb-8">
           <h4 class="mb-2">{{section.Label}}</h4>
 
           <TranslationRow :section="section" :translations="translations" @saveTranslation="saveTranslation"/>

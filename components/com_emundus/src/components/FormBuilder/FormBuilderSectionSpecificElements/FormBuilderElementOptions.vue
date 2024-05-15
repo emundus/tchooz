@@ -6,13 +6,13 @@
           v-model="arraySubValues"
           handle=".handle-options"
           @end="updateOrder">
-        <div class="element-option em-flex-row em-flex-space-between em-mt-8 em-mb-8"
+        <div class="element-option tw-flex tw-items-center tw-justify-between tw-mt-2 tw-mb-2"
              v-for="(option, index) in arraySubValues" :key="option" @mouseover="optionHighlight = index;"
              @mouseleave="optionHighlight = null">
           <div class="tw-flex tw-items-center tw-w-full">
             <div class="tw-flex tw-items-center">
               <span class="icon-handle" :style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'">
-                <span class="material-icons-outlined handle-options em-grab" style="font-size: 18px">drag_indicator</span>
+                <span class="material-icons-outlined handle-options tw-cursor-grab" style="font-size: 18px">drag_indicator</span>
               </span>
             </div>
             <input v-if="type !== 'dropdown'" :type="type" :name="'element-id-' + element.id"
@@ -20,18 +20,18 @@
             <div v-else>{{ index + 1 }}.</div>
             <input
                 type="text"
-                class="editable-data editable-data-input em-ml-4 em-w-100"
+                class="editable-data editable-data-input tw-ml-1 tw-w-full"
                 v-model="optionsTranslations[index]"
                 @focusout="updateOption(index, optionsTranslations[index])"
                 :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_OPTION')">
           </div>
-          <div class="em-flex-row">
-            <span class="material-icons-outlined em-pointer" @click="removeOption(index)"
+          <div class="tw-flex tw-items-center">
+            <span class="material-icons-outlined tw-cursor-pointer" @click="removeOption(index)"
                   :style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'">close</span>
           </div>
         </div>
       </draggable>
-      <div id="add-option" class="em-flex-row em-flex-start em-s-justify-content-center">
+      <div id="add-option" class="tw-flex tw-items-center lg:tw-justify-start md:tw-justify-center">
         <span class="icon-handle" style="opacity: 0">
           <span class="material-icons-outlined handle-options" style="font-size: 18px">drag_indicator</span>
         </span>
@@ -39,7 +39,7 @@
         <div v-else>{{ element.params.sub_options.sub_labels.length + 1 }}.</div>
         <input
             type="text"
-            class="editable-data editable-data-input em-ml-4 em-w-100"
+            class="editable-data editable-data-input tw-ml-1 tw-w-full"
             :id="'new-option-'+ element.id"
             v-model="newOption"
             @focusout="addOption"

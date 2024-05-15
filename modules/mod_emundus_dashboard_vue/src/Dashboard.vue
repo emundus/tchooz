@@ -23,7 +23,7 @@
         ghost-class="plugin-ghost">
       <div v-if="this.programmeFilter == 1" class="program-filter">
         <label>{{ translations.filterByProgram }}</label>
-        <select v-model="selectedProgramme">
+        <select v-model="selectedProgramme" class="tw-h-form">
           <option :value="null" selected>{{ translations.all }}</option>
           <option v-for="programme in programmes" v-bind:key="programme.id" :value="programme.code">
             {{ programme.label }}

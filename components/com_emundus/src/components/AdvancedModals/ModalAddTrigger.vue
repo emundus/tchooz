@@ -18,65 +18,65 @@
           :models="this.models"
       />
 
-      <div class="em-flex-row em-flex-space-between em-mb-16">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
         <h4>
           {{ addTrigger }}
         </h4>
-        <button class="em-pointer em-transparent-button"
+        <button class="tw-cursor-pointer tw-bg-transparent"
                 @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
 
       <div>
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <label>{{ Model }}* :</label>
-          <div class="em-flex-row">
-            <select v-if="models.length > 0" v-model="form.model" class="em-w-100"
+          <div class="tw-flex tw-items-center">
+            <select v-if="models.length > 0" v-model="form.model" class="tw-w-full"
                     :class="{ 'is-invalid': errors.model}">
               <option v-for="(model, index) in models" :key="index" :value="model.id">{{ model.subject }}</option>
             </select>
-	          <p v-else class="em-red-500-color">{{ translate('COM_EMUNDUS_ADD_TRIGGER_MISSING_EMAIL_MODELS') }}</p>
+	          <p v-else class="tw-text-red-500">{{ translate('COM_EMUNDUS_ADD_TRIGGER_MISSING_EMAIL_MODELS') }}</p>
           </div>
-          <span v-if="errors.model" class="em-red-500-color em-mb-8">
-            <span class="em-red-500-color">{{ ModelRequired }}</span>
+          <span v-if="errors.model" class="tw-text-red-500 tw-mb-2">
+            <span class="tw-text-red-500">{{ ModelRequired }}</span>
           </span>
         </div>
 
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <label>{{ Status }}* :</label>
-          <select v-model="form.status" class="em-w-100" :class="{ 'is-invalid': errors.status}">
+          <select v-model="form.status" class="tw-w-full" :class="{ 'is-invalid': errors.status}">
             <option v-for="(statu,index) in status" :key="index" :value="statu.step">{{ statu.value }}</option>
           </select>
-          <span v-if="errors.status" class="em-red-500-color em-mb-8">
-            <span class="em-red-500-color">{{ StatusRequired }}</span>
+          <span v-if="errors.status" class="tw-text-red-500 tw-mb-2">
+            <span class="tw-text-red-500">{{ StatusRequired }}</span>
           </span>
         </div>
 
-        <div class="em-mb-16">
+        <div class="tw-mb-4">
           <label>{{ Target }}* :</label>
-          <select v-model="form.target" class="em-w-100" :class="{ 'is-invalid': errors.target}">
+          <select v-model="form.target" class="tw-w-full" :class="{ 'is-invalid': errors.target}">
             <option value="5">{{ Administrators }}</option>
             <option value="6">{{ Evaluators }}</option>
             <option value="1000">{{ Candidates }}</option>
             <!--            <option value="0">{{DefinedUsers}}</option>-->
           </select>
-          <span v-if="errors.target" class="em-red-500-color em-mb-8">
-            <span class="em-red-500-color">{{ TargetRequired }}</span>
+          <span v-if="errors.target" class="tw-text-red-500 tw-mb-2">
+            <span class="tw-text-red-500">{{ TargetRequired }}</span>
           </span>
         </div>
 
-        <div class="em-mb-16" v-if="form.target == 0" style="align-items: baseline">
+        <div class="tw-mb-4" v-if="form.target == 0" style="align-items: baseline">
           <label>{{ ChooseUsers }}* :</label>
-          <div class="em-flex-row">
-            <input type="text" class="em-w-100" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">
-            <button type="button" class="em-transparent-button em-ml-8" @click="searchUserByTerm">
+          <div class="tw-flex tw-items-center">
+            <input type="text" class="tw-w-full" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">
+            <button type="button" class="tw-bg-transparent tw-ml-2" @click="searchUserByTerm">
               <span class="material-icons-outlined">search</span>
             </button>
           </div>
-          <div class="em-flex-row">
+          <div class="tw-flex tw-items-center">
             <input type="checkbox" @click="selectAllUsers" v-model="selectall">
-            <label class="em-ml-8">
+            <label class="tw-ml-2">
               {{ SelectAll }}
             </label>
           </div>
@@ -84,23 +84,23 @@
           <div :class="{ 'is-invalid': errors.selectedUsers}">
             <div v-for="(user, index) in users" :key="index">
               <input type="checkbox" v-model="selectedUsers[user.id]">
-              <div class="em-ml-8">
+              <div class="tw-ml-2">
                   <p>{{ user.name }}</p>
                   <p>{{ user.email }}</p>
               </div>
             </div>
           </div>
-          <span v-if="errors.selectedUsers" class="em-red-500-color em-mb-8">
-            <span class="em-red-500-color">{{ UsersRequired }}</span>
+          <span v-if="errors.selectedUsers" class="tw-text-red-500 tw-mb-2">
+            <span class="tw-text-red-500">{{ UsersRequired }}</span>
           </span>
         </div>
       </div>
 
-      <div class="em-flex-row em-flex-space-between em-mb-8">
-        <button type="button" class="em-secondary-button em-w-auto"
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
+        <button type="button" class="em-secondary-button !tw-w-auto"
                 @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)">{{ Retour }}</button>
         <button type="button"
-                class="em-primary-button em-w-auto"
+                class="em-primary-button !tw-w-auto"
                 @click.prevent="createTrigger()"
         >{{ Continuer }}</button>
       </div>

@@ -5,16 +5,16 @@
 
       <!-- DROPDOWN -->
       <div v-if="param.type === 'dropdown'">
-        <select v-model="section.params[param.name]" class="em-w-100">
+        <select v-model="section.params[param.name]" class="tw-w-full">
           <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
         </select>
       </div>
 
       <!-- TEXTAREA -->
-      <textarea v-else-if="param.type === 'textarea'" v-model="section.params[param.name]" class="em-w-100"></textarea>
+      <textarea v-else-if="param.type === 'textarea'" v-model="section.params[param.name]" class="tw-w-full"></textarea>
 
       <!-- INPUT (TEXT,NUMBER) -->
-      <input v-else :type="param.type" v-model="section.params[param.name]" class="em-w-100"
+      <input v-else :type="param.type" v-model="section.params[param.name]" class="tw-w-full"
              :placeholder="translate(param.placeholder)"/>
 
       <!-- HELPTEXT -->

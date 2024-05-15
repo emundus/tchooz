@@ -30,13 +30,13 @@
       </div>
 
       <div class="modalC-content">
-        <div class="em-flex-row em-flex-space-between tw-mb-1">
+        <div class="tw-flex tw-items-center tw-justify-between tw-mb-1">
           <button class="bouton-sauvergarder-et-continuer w-retour"
                   type="button"
                   @click.prevent="$modal.hide('modalWarningFormBuilder')">
             {{ Retour }}
           </button>
-            <button class="bouton-sauvergarder-et-continuer em-mr-4"
+            <button class="bouton-sauvergarder-et-continuer tw-mr-1"
                     type="button"
                     @click.prevent="formbuilder()">
             {{ Update }}

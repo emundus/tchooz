@@ -12,10 +12,10 @@
     >
 
       <div class="em-modal-header">
-        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('modalUpdateColors')">
-          <div class="em-w-max-content em-flex-row">
+        <div class="tw-justify-between tw-flex tw-items-center tw-cursor-pointer" @click.prevent="$modal.hide('modalUpdateColors')">
+          <div class="tw-w-max tw-flex tw-items-center">
             <span class="material-icons-outlined">navigate_before</span>
-            <span class="em-ml-8 em-text-neutral-900">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
+            <span class="tw-ml-2 tw-text-neutral-900">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
           </div>
         </div>
       </div>
