@@ -918,11 +918,14 @@ class EmundusHelperEmails
 		return $is_correct;
 	}
 
-	static function getLogo($only_filename = false): string
+	static function getLogo($only_filename = false, $training = null): string
 	{
 		$logo = 'images/custom/logo_custom.png';
 
-		if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml')) {
+		if (!empty($training) && file_exists(JPATH_ROOT . '/images/custom/' . $training . '.png')) {
+			$logo = JPATH_ROOT . '/images/custom/' . $training . '.png';
+		}
+		else if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml')) {
 			$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml'));
 
 			if (!empty($yaml)) {
@@ -964,8 +967,15 @@ class EmundusHelperEmails
 		{
 			return basename($logo);
 		}
+		
+		// Check if we are on http or https
+		$base_url = Uri::base();
+		$protocol = $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
+		if($protocol == 'http') {
+			$base_url = JPATH_BASE . '/';
+		}
 
-		return Uri::base() . $logo;
+		return $base_url . $logo;
 	}
 
 	public static function getCustomHeader(): string

@@ -875,44 +875,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    $item = $db->loadObject();
 
 		    /* GET LOGO */
-		    $template = $app->getTemplate(true);
-		    $params = $template->params;
+			$logo = EmundusHelperEmails::getLogo(false,$item->training);
 
-		    if (!empty($params->get('logo')->custom->image)) {
-
-			    $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-			    $logo = !empty($logo['path']) ? JPATH_ROOT . DS . $logo['path'] : "";
-
-		    } else {
-
-			    if (file_exists(JPATH_ROOT . DS . 'images/custom' . DS . $item->training . '.png')) {
-				    $logo = JPATH_ROOT . DS . 'images/custom' . DS . $item->training . '.png';
-			    } else {
-				    $logo_module = JModuleHelper::getModuleById('90');
-				    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-
-				    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-	            (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-	            (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-	            (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-
-				    if ((bool) preg_match($pattern, $tab[1])) {
-					    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
-				    }
-
-					if(empty($tab[1])){
-						$tab[1] = 'images/custom/logo_custom.png';
-					}
-				    $logo = JPATH_SITE . DS . $tab[1];
-			    }
-		    }
-
-		    // manage logo by programme
-		    $ext = substr($logo, -3);
-		    $logo_prg = substr($logo, 0, -4) . '-' . $item->training . '.' . $ext;
-		    if (is_file($logo_prg)) {
-			    $logo = $logo_prg;
-		    }
 		    $type = pathinfo($logo, PATHINFO_EXTENSION);
 		    $data = file_get_contents($logo);
 		    $logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
@@ -925,7 +889,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 		    } else {
 				$title = $config->get('sitename');
 		    }
-
 
 			$htmldata .= '<html>
 				<head>
