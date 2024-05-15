@@ -732,7 +732,7 @@ class Worker
 	 */
 	public function parseMessageForRepeats($msg, $searchData, $el, $repeatCounter)
 	{
-		if (strstr($msg, '{') && !empty($searchData))
+		if (strstr($msg??'', '{') && !empty($searchData))
 		{
 			$groupModel = $el->getGroupModel();
 			if ($groupModel->canRepeat())
@@ -802,6 +802,13 @@ class Worker
 				// Merge in request and specified search data
 				$f                 = InputFilter::getInstance();
 				$post              = $f->clean($_REQUEST, 'array');
+
+				//J!4 & SEF: $_REQUEST is empty, take also inputVars
+                $app = Factory::getApplication();
+                $inputVars = $app->getInput()->getArray();
+                $inputVars = $f->clean($inputVars,'string');
+				$searchData = is_null($searchData) ? $inputVars : array_merge($inputVars, $searchData);
+
 				$this->_searchData = is_null($searchData) ? $post : array_merge($post, $searchData);
 
 				// Enable users to use placeholder to insert session token
@@ -2625,7 +2632,7 @@ class Worker
 				{
 					$userColRaw = $userCol . '_raw';
 
-					if ((is_array($row) && array_key_exists($userColRaw, $row)) || (is_object($row) && isset($row->{$userColRaw})))
+					if ((is_array($row) && array_key_exists($userColRaw, $row)) || (is_object($row) && property_exists($row,$userColRaw)))
 					{
 						$userCol .= '_raw';
 					}

@@ -2015,8 +2015,9 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		if ($params->get('tipseval'))
 		{
+			FabrikWorker::clearEval();
 			$res = Php::Eval(['code' => $tip, 'vars' => ['data'=>$data]]);
-			FabrikWorker::logEval($res, 'Caught exception (%s) on eval of ' . $this->getElement()->name . ' tip: ' . $tip);
+			FabrikWorker::logEval($res, 'Caught exception (%s) on eval of ' . $this->getElement()->name . ' tip: ' . str_replace('%','&percnt;',$tip));
 			$tip = $res;
 		}
 
@@ -4882,7 +4883,8 @@ class PlgFabrik_Element extends FabrikPlugin
 		$params = $this->getParams();
 		$values = $this->getSubOptionValues();
 		$labels = $this->getSubOptionLabels();
-		$key    = array_search($v, $values, true);
+		//F4: Don't use strict search, in F4 values may be integer or string
+		$key    = array_search($v, $values, false);
 		/**
 		 * $$$ rob if we allow adding to the dropdown but not recording
 		 * then there will be no $key set to revert to the $val instead

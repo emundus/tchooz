@@ -2423,7 +2423,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
 
                     // Table group
                     var add = group.getElement('.addGroup');
-                    add.inject(sub.getElement('.fabrikGroupRepeater'),'top');
+                    add.inject(sub.getElement('div.fabrikGroupRepeater'),'top');
                     sub.setStyle('display', '');
                 } else {
                     subgroups[0].getElement('.fabrikNotice').dispose();
@@ -2602,8 +2602,10 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
             }.bind(this));
             
             // Update the element container label
-            lastinput.getParent('.fabrikElementContainer').getElement('label').htmlFor = container.id;
-
+            if( container )
+            {
+                lastinput.getParent('.fabrikElementContainer').getElement('label').htmlFor = container.id;
+            }
             var o = {};
             o[i] = newElementControllers;
             this.addElements(o);
