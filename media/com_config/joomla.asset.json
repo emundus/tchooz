@@ -15,7 +15,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "e767f4"
+      "version": "752453"
     },
     {
       "name": "com_config.modules",
@@ -27,19 +27,7 @@
       "attributes": {
         "type": "module"
       },
-      "version": "632e8b"
-    },
-    {
-      "name": "com_config.templates",
-      "type": "script",
-      "uri": "com_config/templates-default.min.js",
-      "dependencies": [
-        "core"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "version": "ba135d"
+      "version": "a96b5d"
     },
     {
       "name": "com_config.filters",
@@ -51,7 +39,19 @@
       "attributes": {
         "type": "module"
       },
-      "version": "6b2e5c"
+      "version": "2cad91"
+    },
+    {
+      "name": "com_config.templates",
+      "type": "script",
+      "uri": "com_config/templates-default.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "8e4ec9"
     }
   ]
 }

@@ -1,9 +1,10 @@
+@charset "UTF-8";
 .minicolors {
   position: relative;
 }
 
 .minicolors-sprite {
-  background-image: url("jquery.minicolors.png?v=1707821444542");
+  background-image: url("jquery.minicolors.png?v=171303");
 }
 
 .minicolors-swatch {
