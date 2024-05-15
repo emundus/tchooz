@@ -1,5 +1,6 @@
 <?php
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Date\Date;
@@ -824,8 +825,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     require_once(JPATH_SITE.'/components/com_emundus/models/files.php');
     require_once(JPATH_SITE.'/components/com_emundus/models/form.php');
 
-	$db = JFactory::getDBO();
-	$app = JFactory::getApplication();
+	$db = Factory::getContainer()->get('DatabaseDriver');
+	$app = Factory::getApplication();
 
 	if (is_null($options)) {
 		$options = [];
@@ -835,10 +836,10 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         $file_lbl = "_application";
     }
 
-    $eMConfig = JComponentHelper::getParams('com_emundus');
+    $eMConfig = ComponentHelper::getParams('com_emundus');
     $cTitle = $eMConfig->get('export_application_pdf_title_color', '#000000'); //déclaration couleur principale
 
-    $config = JFactory::getConfig();
+    $config = $app->getConfig();
 
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
@@ -856,7 +857,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 //    if ($form_post == 1 && (empty($form_ids) || is_null($form_ids)) && !empty($elements) && !is_null($elements)) {
     if (isset($form_post)) {
 	    try {
-		    $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+		    $anonymize_data = EmundusHelperAccess::isDataAnonymized($app->getIdentity()->id);
 
 		    // Users informations
 		    $query = $db->getQuery(true);

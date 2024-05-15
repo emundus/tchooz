@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
@@ -30,7 +31,7 @@ class EmundusModelsettings extends JModelList
 	{
 		parent::__construct();
 
-		$this->app = JFactory::getApplication();
+		$this->app = Factory::getApplication();
 
 		if (version_compare(JVERSION, '4.0', '>')) {
 			$this->db   = Factory::getContainer()->get('DatabaseDriver');
@@ -41,7 +42,7 @@ class EmundusModelsettings extends JModelList
 			$this->user = Factory::getUser();
 		}
 
-		JLog::addLogger(['text_file' => 'com_emundus.error.php'], JLog::ERROR, array('com_emundus'));
+		Log::addLogger(['text_file' => 'com_emundus.error.php'], Log::ERROR, array('com_emundus'));
 	}
 
 	/**
@@ -104,19 +105,18 @@ class EmundusModelsettings extends JModelList
 	 */
 	function getStatus()
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
 		$falang = new EmundusModelFalang;
 
 		$query->select('*')
-			->from($db->quoteName('#__emundus_setup_status'))
+			->from($this->db->quoteName('#__emundus_setup_status'))
 			->order('ordering ASC');
 
 		try {
-			$db->setQuery($query);
-			$status = $db->loadObjectList();
+			$this->db->setQuery($query);
+			$status = $this->db->loadObjectList();
 			foreach ($status as $statu) {
 				$statu->label = new stdClass;
 
@@ -125,10 +125,10 @@ class EmundusModelsettings extends JModelList
 				$statu->edit = 1;
 				$query->clear()
 					->select('count(id)')
-					->from($db->quoteName('#__emundus_campaign_candidature'))
-					->where($db->quoteName('status') . ' = ' . $db->quote($statu->step));
-				$db->setQuery($query);
-				$files = $db->loadResult();
+					->from($this->db->quoteName('#__emundus_campaign_candidature'))
+					->where($this->db->quoteName('status') . ' = ' . $this->db->quote($statu->step));
+				$this->db->setQuery($query);
+				$files = $this->db->loadResult();
 
 				if ($files > 0) {
 					$statu->edit = 0;
@@ -138,7 +138,7 @@ class EmundusModelsettings extends JModelList
 			return $status;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at getting status : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at getting status : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -153,20 +153,19 @@ class EmundusModelsettings extends JModelList
 	 */
 	function getTags()
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select('*')
-			->from($db->quoteName('#__emundus_setup_action_tag'))
-			->order($db->quoteName('label'));
+			->from($this->db->quoteName('#__emundus_setup_action_tag'))
+			->order($this->db->quoteName('label'));
 
 		try {
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at getting action tags : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at getting action tags : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -186,19 +185,18 @@ class EmundusModelsettings extends JModelList
 		$deleted = false;
 
 		if (!empty($id)) {
-			$db    = $this->getDbo();
-			$query = $db->getQuery(true);
+			
+			$query = $this->db->getQuery(true);
 
-			$query->delete($db->quoteName('#__emundus_setup_action_tag'))
-				->where($db->quoteName('id') . ' = ' . $id);
+			$query->delete($this->db->quoteName('#__emundus_setup_action_tag'))
+				->where($this->db->quoteName('id') . ' = ' . $id);
 
 			try {
-				$db->setQuery($query);
-				$deleted = $db->execute();
+				$this->db->setQuery($query);
+				$deleted = $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/settings | Cannot delete the tag ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-				$deleted = false;
+				Log::add('component/com_emundus/models/settings | Cannot delete the tag ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -214,30 +212,29 @@ class EmundusModelsettings extends JModelList
 	 */
 	function createTag()
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->insert('#__emundus_setup_action_tag')
-			->set($db->quoteName('label') . ' = ' . $db->quote('Nouvelle étiquette'))
-			->set($db->quoteName('class') . ' = ' . $db->quote('label-default'));
+			->set($this->db->quoteName('label') . ' = ' . $this->db->quote('Nouvelle étiquette'))
+			->set($this->db->quoteName('class') . ' = ' . $this->db->quote('label-default'));
 
 		try {
-			$db->setQuery($query);
-			$db->execute();
-			$newtagid = $db->insertid();
+			$this->db->setQuery($query);
+			$this->db->execute();
+			$newtagid = $this->db->insertid();
 
 			$query->clear()
 				->select('*')
-				->from($db->quoteName('#__emundus_setup_action_tag'))
-				->where($db->quoteName('id') . ' = ' . $db->quote($newtagid));
+				->from($this->db->quoteName('#__emundus_setup_action_tag'))
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($newtagid));
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObject();
+			return $this->db->loadObject();
 
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Cannot create a tag : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Cannot create a tag : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -252,29 +249,28 @@ class EmundusModelsettings extends JModelList
 	 */
 	function createStatus()
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
 		$falang = new EmundusModelFalang;
 
 		$query->select('MAX(step)')
-			->from($db->quoteName('#__emundus_setup_status'));
-		$db->setQuery($query);
-		$newstep = $db->loadResult() + 1;
+			->from($this->db->quoteName('#__emundus_setup_status'));
+		$this->db->setQuery($query);
+		$newstep = $this->db->loadResult() + 1;
 
 		$query->clear()
 			->select('MAX(ordering)')
-			->from($db->quoteName('#__emundus_setup_status'));
-		$db->setQuery($query);
-		$newordering = $db->loadResult() + 1;
+			->from($this->db->quoteName('#__emundus_setup_status'));
+		$this->db->setQuery($query);
+		$newordering = $this->db->loadResult() + 1;
 
 		$query->clear()
 			->select('COUNT(*)')
-			->from($db->quoteName('#__emundus_setup_status'))
-			->where($db->quoteName('value') . ' LIKE ' . $db->quote('Nouveau statut%'));
-		$db->setQuery($query);
-		$existing = $db->loadResult();
+			->from($this->db->quoteName('#__emundus_setup_status'))
+			->where($this->db->quoteName('value') . ' LIKE ' . $this->db->quote('Nouveau statut%'));
+		$this->db->setQuery($query);
+		$existing = $this->db->loadResult();
 		if ($existing > 0) {
 			$increment = $existing + 1;
 		}
@@ -284,23 +280,23 @@ class EmundusModelsettings extends JModelList
 
 		$query->clear()
 			->insert('#__emundus_setup_status')
-			->set($db->quoteName('value') . ' = ' . $db->quote('Nouveau statut ' . $increment))
-			->set($db->quoteName('step') . ' = ' . $db->quote($newstep))
-			->set($db->quoteName('ordering') . ' = ' . $db->quote($newordering))
-			->set($db->quoteName('class') . ' = ' . $db->quote('default'));
+			->set($this->db->quoteName('value') . ' = ' . $this->db->quote('Nouveau statut ' . $increment))
+			->set($this->db->quoteName('step') . ' = ' . $this->db->quote($newstep))
+			->set($this->db->quoteName('ordering') . ' = ' . $this->db->quote($newordering))
+			->set($this->db->quoteName('class') . ' = ' . $this->db->quote('default'));
 
 		try {
-			$db->setQuery($query);
-			$db->execute();
-			$newstatusid = $db->insertid();
+			$this->db->setQuery($query);
+			$this->db->execute();
+			$newstatusid = $this->db->insertid();
 
 			$query->clear()
 				->select('*')
-				->from($db->quoteName('#__emundus_setup_status'))
-				->where($db->quoteName('id') . ' = ' . $db->quote($newstatusid));
+				->from($this->db->quoteName('#__emundus_setup_status'))
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($newstatusid));
 
-			$db->setQuery($query);
-			$status = $db->loadObject();
+			$this->db->setQuery($query);
+			$status = $this->db->loadObject();
 
 			$status->label     = new stdClass;
 			$status->label->fr = 'Nouveau statut';
@@ -312,7 +308,7 @@ class EmundusModelsettings extends JModelList
 			return $status;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Cannot create a status : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Cannot create a status : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -329,8 +325,7 @@ class EmundusModelsettings extends JModelList
 	 */
 	function updateStatus($status, $label, $color)
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'translations.php');
 		$m_translations = new EmundusModelTranslations;
@@ -342,30 +337,30 @@ class EmundusModelsettings extends JModelList
 		try {
 			$query->clear()
 				->update('#__falang_content')
-				->set($db->quoteName('value') . ' = ' . $db->quote($color))
+				->set($this->db->quoteName('value') . ' = ' . $this->db->quote($color))
 				->where(array(
-					$db->quoteName('reference_id') . ' = ' . $db->quote($status),
-					$db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-					$db->quoteName('reference_field') . ' = ' . $db->quote('class'),
-					$db->quoteName('language_id') . ' = 2'
+					$this->db->quoteName('reference_id') . ' = ' . $this->db->quote($status),
+					$this->db->quoteName('reference_table') . ' = ' . $this->db->quote('emundus_setup_status'),
+					$this->db->quoteName('reference_field') . ' = ' . $this->db->quote('class'),
+					$this->db->quoteName('language_id') . ' = 2'
 				));
-			$db->setQuery($query);
-			$db->execute();
+			$this->db->setQuery($query);
+			$this->db->execute();
 
 			$results[] = $m_translations->updateFalangTranslation($label, $lang_to, 'emundus_setup_status', $status, 'value');
 
 			$query->clear()
 				->update('#__emundus_setup_status')
-				->set($db->quoteName('value') . ' = ' . $db->quote($label))
-				->set($db->quoteName('class') . ' = ' . $db->quote($color))
-				->where($db->quoteName('step') . ' = ' . $db->quote($status));
-			$db->setQuery($query);
-			$db->execute();
+				->set($this->db->quoteName('value') . ' = ' . $this->db->quote($label))
+				->set($this->db->quoteName('class') . ' = ' . $this->db->quote($color))
+				->where($this->db->quoteName('step') . ' = ' . $this->db->quote($status));
+			$this->db->setQuery($query);
+			$this->db->execute();
 
 			return $results;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Cannot update status : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Cannot update status : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -373,23 +368,22 @@ class EmundusModelsettings extends JModelList
 
 	function updateStatusOrder($status)
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		try {
 			foreach ($status as $order => $statu) {
 				$query->clear()
 					->update('#__emundus_setup_status')
-					->set($db->quoteName('ordering') . ' = ' . $db->quote($order))
-					->where($db->quoteName('step') . ' = ' . $db->quote($statu));
-				$db->setQuery($query);
-				$db->execute();
+					->set($this->db->quoteName('ordering') . ' = ' . $this->db->quote($order))
+					->where($this->db->quoteName('step') . ' = ' . $this->db->quote($statu));
+				$this->db->setQuery($query);
+				$this->db->execute();
 			}
 
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Cannot update status order : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Cannot update status order : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -407,26 +401,25 @@ class EmundusModelsettings extends JModelList
 	 */
 	function deleteStatus($id, $step)
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
-		$query->delete($db->quoteName('#__falang_content'))
-			->where($db->quoteName('reference_id') . ' = ' . $db->quote($step))
-			->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'));
+		$query->delete($this->db->quoteName('#__falang_content'))
+			->where($this->db->quoteName('reference_id') . ' = ' . $this->db->quote($step))
+			->andWhere($this->db->quoteName('reference_table') . ' = ' . $this->db->quote('emundus_setup_status'));
 		try {
-			$db->setQuery($query);
-			$db->execute();
+			$this->db->setQuery($query);
+			$this->db->execute();
 
 			$query->clear()
-				->delete($db->quoteName('#__emundus_setup_status'))
-				->where($db->quoteName('id') . ' = ' . $id);
+				->delete($this->db->quoteName('#__emundus_setup_status'))
+				->where($this->db->quoteName('id') . ' = ' . $id);
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->execute();
+			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Cannot delete the status ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Cannot delete the status ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -443,21 +436,20 @@ class EmundusModelsettings extends JModelList
 	 */
 	function updateTags($tag, $label, $color)
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		try {
 			$query->clear()
 				->update('#__emundus_setup_action_tag')
-				->set($db->quoteName('label') . ' = ' . $db->quote($label))
-				->set($db->quoteName('class') . ' = ' . $db->quote('label-' . $color))
-				->where($db->quoteName('id') . ' = ' . $db->quote($tag));
-			$db->setQuery($query);
+				->set($this->db->quoteName('label') . ' = ' . $this->db->quote($label))
+				->set($this->db->quoteName('class') . ' = ' . $this->db->quote('label-' . $color))
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($tag));
+			$this->db->setQuery($query);
 
-			return $db->execute();
+			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Cannot update tags : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Cannot update tags : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -472,19 +464,18 @@ class EmundusModelsettings extends JModelList
 	 */
 	function getFooterArticles()
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$footers = new stdClass();
 
 		$query->select('id as id, params as params')
-			->from($db->quoteName('#__modules'))
-			->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'))
-			->andWhere($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
+			->from($this->db->quoteName('#__modules'))
+			->where($this->db->quoteName('position') . ' LIKE ' . $this->db->quote('footer-a'))
+			->andWhere($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_footer'));
 
 		try {
-			$db->setQuery($query);
-			$params = $db->loadObject();
+			$this->db->setQuery($query);
+			$params = $this->db->loadObject();
 
 			if (!empty($params)) {
 				$params = json_decode($params->params);
@@ -499,7 +490,7 @@ class EmundusModelsettings extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at getting footer articles : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at getting footer articles : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -513,31 +504,29 @@ class EmundusModelsettings extends JModelList
 	 */
 	private function getOldFooterArticles()
 	{
-
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$footers = new stdClass();
 		$query->select('id as id,content as content')
-			->from($db->quoteName('#__modules'))
-			->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'));
+			->from($this->db->quoteName('#__modules'))
+			->where($this->db->quoteName('position') . ' LIKE ' . $this->db->quote('footer-a'));
 
 		try {
-			$db->setQuery($query);
-			$footers->column1 = $db->loadObject()->content;
+			$this->db->setQuery($query);
+			$footers->column1 = $this->db->loadObject()->content;
 
 			$query->clear()
 				->select('id as id,content as content')
-				->from($db->quoteName('#__modules'))
-				->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-b'));
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('position') . ' LIKE ' . $this->db->quote('footer-b'));
 
-			$db->setQuery($query);
-			$footers->column2 = $db->loadObject()->content;
+			$this->db->setQuery($query);
+			$footers->column2 = $this->db->loadObject()->content;
 
 			return $footers;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at getting footer articles : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at getting footer articles : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -557,43 +546,42 @@ class EmundusModelsettings extends JModelList
 	 */
 	function getArticle($lang_code, $article_id = 0, $article_alias = '', $reference_field = 'introtext')
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select('lang_id')
-			->from($db->quoteName('#__languages'))
-			->where($db->quoteName('lang_code') . ' = ' . $db->quote($lang_code));
-		$db->setQuery($query);
-		$lang_id = $db->loadResult();
+			->from($this->db->quoteName('#__languages'))
+			->where($this->db->quoteName('lang_code') . ' = ' . $this->db->quote($lang_code));
+		$this->db->setQuery($query);
+		$lang_id = $this->db->loadResult();
 
 		$query->clear()
 			->select('*')
-			->from($db->quoteName('#__content'));
+			->from($this->db->quoteName('#__content'));
 
 		if (!empty($article_id)) {
-			$query->where($db->quoteName('id') . ' = ' . $article_id);
+			$query->where($this->db->quoteName('id') . ' = ' . $article_id);
 		}
 		else {
-			$query->where($db->quoteName('alias') . ' = ' . $db->quote($article_alias));
+			$query->where($this->db->quoteName('alias') . ' = ' . $this->db->quote($article_alias));
 		}
 
 		try {
-			$db->setQuery($query);
-			$article = $db->loadObject();
+			$this->db->setQuery($query);
+			$article = $this->db->loadObject();
 
 			if (!empty($article)) {
 				$query->clear()
 					->select('value')
-					->from($db->quoteName('#__falang_content'))
+					->from($this->db->quoteName('#__falang_content'))
 					->where(array(
-						$db->quoteName('reference_id') . ' = ' . $article->id,
-						$db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-						$db->quoteName('reference_field') . ' = ' . $db->quote($reference_field),
-						$db->quoteName('language_id') . ' = ' . $db->quote($lang_id),
-						$db->quoteName('published') . ' = ' . $db->quote(1)
+						$this->db->quoteName('reference_id') . ' = ' . $article->id,
+						$this->db->quoteName('reference_table') . ' = ' . $this->db->quote('content'),
+						$this->db->quoteName('reference_field') . ' = ' . $this->db->quote($reference_field),
+						$this->db->quoteName('language_id') . ' = ' . $this->db->quote($lang_id),
+						$this->db->quoteName('published') . ' = ' . $this->db->quote(1)
 					));
-				$db->setQuery($query);
-				$result = $db->loadResult();
+				$this->db->setQuery($query);
+				$result = $this->db->loadResult();
 
 				if (!empty($result)) {
 					$article->{$reference_field} = $result;
@@ -603,11 +591,11 @@ class EmundusModelsettings extends JModelList
 					if ($currentLang->lang_code != $lang_code) {
 						$query->clear()
 							->select('title, introtext, alias')
-							->from($db->quoteName('#__content'))
+							->from($this->db->quoteName('#__content'))
 							->where('id = ' . $article->id);
 
-						$db->setQuery($query);
-						$article_content = $db->loadAssoc();
+						$this->db->setQuery($query);
+						$article_content = $this->db->loadAssoc();
 
 						foreach ($article_content as $key => $content) {
 							$article->{$key} = $content;
@@ -619,7 +607,7 @@ class EmundusModelsettings extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Cannot get article ' . $article_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Cannot get article ' . $article_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -640,69 +628,68 @@ class EmundusModelsettings extends JModelList
 	 */
 	function updateArticle($content, $lang_code, $article_id = 0, $article_alias = '', $reference_field = 'introtext')
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		try {
 			$query->select('lang_id')
-				->from($db->quoteName('#__languages'))
-				->where($db->quoteName('lang_code') . ' = ' . $db->quote($lang_code));
-			$db->setQuery($query);
-			$lang_id = $db->loadResult();
+				->from($this->db->quoteName('#__languages'))
+				->where($this->db->quoteName('lang_code') . ' = ' . $this->db->quote($lang_code));
+			$this->db->setQuery($query);
+			$lang_id = $this->db->loadResult();
 
 			$query->clear()
 				->select('*')
-				->from($db->quoteName('#__content'));
+				->from($this->db->quoteName('#__content'));
 
 			if (!empty($article_id)) {
-				$query->where($db->quoteName('id') . ' = ' . $article_id);
+				$query->where($this->db->quoteName('id') . ' = ' . $article_id);
 			}
 			else {
-				$query->where($db->quoteName('alias') . ' = ' . $db->quote($article_alias));
+				$query->where($this->db->quoteName('alias') . ' = ' . $this->db->quote($article_alias));
 			}
-			$db->setQuery($query);
-			$article = $db->loadObject();
+			$this->db->setQuery($query);
+			$article = $this->db->loadObject();
 
 			// Update content
 			$query->clear()
 				->select('value')
-				->from($db->quoteName('#__falang_content'))
+				->from($this->db->quoteName('#__falang_content'))
 				->where(array(
-					$db->quoteName('reference_id') . ' = ' . $article->id,
-					$db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-					$db->quoteName('reference_field') . ' = ' . $db->quote($reference_field),
-					$db->quoteName('language_id') . ' = ' . $db->quote($lang_id),
-					$db->quoteName('published') . ' = ' . $db->quote(1)
+					$this->db->quoteName('reference_id') . ' = ' . $article->id,
+					$this->db->quoteName('reference_table') . ' = ' . $this->db->quote('content'),
+					$this->db->quoteName('reference_field') . ' = ' . $this->db->quote($reference_field),
+					$this->db->quoteName('language_id') . ' = ' . $this->db->quote($lang_id),
+					$this->db->quoteName('published') . ' = ' . $this->db->quote(1)
 				));
-			$db->setQuery($query);
-			$falang_result = $db->loadResult();
+			$this->db->setQuery($query);
+			$falang_result = $this->db->loadResult();
 
 			if (empty($falang_result)) {
 				$query->clear()
-					->update($db->quoteName('#__content'))
-					->set($db->quoteName('introtext') . ' = ' . $db->quote($content))
-					->where($db->quoteName('id') . ' = ' . $article->id);
-				$db->setQuery($query);
+					->update($this->db->quoteName('#__content'))
+					->set($this->db->quoteName('introtext') . ' = ' . $this->db->quote($content))
+					->where($this->db->quoteName('id') . ' = ' . $article->id);
+				$this->db->setQuery($query);
 
-				return $db->execute();
+				return $this->db->execute();
 			}
 			else {
 				$query->clear()
 					->update('#__falang_content')
-					->set($db->quoteName('value') . ' = ' . $db->quote($content))
+					->set($this->db->quoteName('value') . ' = ' . $this->db->quote($content))
 					->where(array(
-						$db->quoteName('reference_id') . ' = ' . $article->id,
-						$db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-						$db->quoteName('reference_field') . ' = ' . $db->quote($reference_field),
-						$db->quoteName('language_id') . ' = ' . $db->quote($lang_id)
+						$this->db->quoteName('reference_id') . ' = ' . $article->id,
+						$this->db->quoteName('reference_table') . ' = ' . $this->db->quote('content'),
+						$this->db->quoteName('reference_field') . ' = ' . $this->db->quote($reference_field),
+						$this->db->quoteName('language_id') . ' = ' . $this->db->quote($lang_id)
 					));
-				$db->setQuery($query);
+				$this->db->setQuery($query);
 
-				return $db->execute();
+				return $this->db->execute();
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at updating article ' . $article_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at updating article ' . $article_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -720,15 +707,14 @@ class EmundusModelsettings extends JModelList
 	 */
 	function updateFooter($col1, $col2)
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select('params')
-			->from($db->quoteName('#__modules'))
-			->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
+			->from($this->db->quoteName('#__modules'))
+			->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_footer'));
 
-		$db->setQuery($query);
-		$params = $db->loadResult();
+		$this->db->setQuery($query);
+		$params = $this->db->loadResult();
 
 		if (!empty($params)) {
 			$params = json_decode($params);
@@ -737,17 +723,17 @@ class EmundusModelsettings extends JModelList
 			$params->mod_emundus_footer_texte_col_2 = $col2;
 
 			$query->clear()
-				->update($db->quoteName('#__modules'))
-				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
+				->update($this->db->quoteName('#__modules'))
+				->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_footer'));
 
 			try {
-				$db->setQuery($query);
+				$this->db->setQuery($query);
 
-				return $db->execute();
+				return $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/settings | Error at updating footer : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/settings | Error at updating footer : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -769,28 +755,27 @@ class EmundusModelsettings extends JModelList
 	 */
 	private function updateOldFooter($col1, $col2)
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
-		$query->update($db->quoteName('#__modules'))
-			->set($db->quoteName('content') . ' = ' . $db->quote($col1))
-			->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'));
+		$query->update($this->db->quoteName('#__modules'))
+			->set($this->db->quoteName('content') . ' = ' . $this->db->quote($col1))
+			->where($this->db->quoteName('position') . ' LIKE ' . $this->db->quote('footer-a'));
 
 		try {
-			$db->setQuery($query);
-			$db->execute();
+			$this->db->setQuery($query);
+			$this->db->execute();
 
 			$query->clear()
-				->update($db->quoteName('#__modules'))
-				->set($db->quoteName('content') . ' = ' . $db->quote($col2))
-				->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-b'));
-			$db->setQuery($query);
-			$db->execute();
+				->update($this->db->quoteName('#__modules'))
+				->set($this->db->quoteName('content') . ' = ' . $this->db->quote($col2))
+				->where($this->db->quoteName('position') . ' LIKE ' . $this->db->quote('footer-b'));
+			$this->db->setQuery($query);
+			$this->db->execute();
 
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at updating footer articles : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at updating footer articles : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -805,10 +790,9 @@ class EmundusModelsettings extends JModelList
 	 */
 	function getEditorVariables()
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
-		$lang           = JFactory::getLanguage();
+		$lang           = $this->app->getLanguage();
 		$actualLanguage = substr($lang->getTag(), 0, 2);
 		if ($actualLanguage == 'fr') {
 			$language = 2;
@@ -818,20 +802,20 @@ class EmundusModelsettings extends JModelList
 		}
 
 		$query->select('st.id as id,st.tag as `value`,fc.value as description')
-			->from($db->quoteName('#__emundus_setup_tags', 'st'))
-			->leftJoin($db->quoteName('#__falang_content', 'fc') . ' ON ' . $db->quoteName('fc.reference_id') . ' = ' . $db->quoteName('st.id'))
-			->where($db->quoteName('st.published') . ' = ' . $db->quote(1))
-			->andWhere($db->quoteName('fc.reference_field') . ' = ' . $db->quote('description'))
-			->andWhere($db->quoteName('fc.language_id') . ' = ' . $db->quote($language))
-			->andWhere($db->quoteName('fc.reference_table') . ' = ' . $db->quote('emundus_setup_tags'));
+			->from($this->db->quoteName('#__emundus_setup_tags', 'st'))
+			->leftJoin($this->db->quoteName('#__falang_content', 'fc') . ' ON ' . $this->db->quoteName('fc.reference_id') . ' = ' . $this->db->quoteName('st.id'))
+			->where($this->db->quoteName('st.published') . ' = ' . $this->db->quote(1))
+			->andWhere($this->db->quoteName('fc.reference_field') . ' = ' . $this->db->quote('description'))
+			->andWhere($this->db->quoteName('fc.language_id') . ' = ' . $this->db->quote($language))
+			->andWhere($this->db->quoteName('fc.reference_table') . ' = ' . $this->db->quote('emundus_setup_tags'));
 
 		try {
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at getting editor variables : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at getting editor variables : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -910,15 +894,15 @@ class EmundusModelsettings extends JModelList
 			}
 		}
 
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		
+		$query = $this->db->getQuery(true);
 		$query->select('count(id)')
-			->from($db->quoteName('#__emundus_setup_campaigns'));
+			->from($this->db->quoteName('#__emundus_setup_campaigns'));
 
 		try {
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			if ($db->loadResult() === '1') {
+			if ($this->db->loadResult() === '1') {
 				$this->removeParam('first_login', $user_id);
 
 				$event_runned = $this->createParam('first_form', $user_id);
@@ -927,8 +911,7 @@ class EmundusModelsettings extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at set tutorial param after create a campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-			$event_runned =  false;
+			Log::add('component/com_emundus/models/settings | Error at set tutorial param after create a campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $event_runned;
@@ -942,7 +925,7 @@ class EmundusModelsettings extends JModelList
 			$this->createParam('first_documents', $user_id);
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at set tutorial param after create a campaign : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at set tutorial param after create a campaign : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -960,7 +943,7 @@ class EmundusModelsettings extends JModelList
 	function createParam($param, $user_id)
 	{
 
-		$user = JFactory::getUser($user_id);
+		$user = Factory::getUser($user_id);
 
 		$table = JTable::getInstance('user', 'JTable');
 		$table->load($user->id);
@@ -982,7 +965,7 @@ class EmundusModelsettings extends JModelList
 
 		// Save user data
 		if (!$table->store()) {
-			JLog::add('component/com_emundus/models/settings | Error when create a param in the user ' . $user_id . ' : ' . $table->getError(), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error when create a param in the user ' . $user_id . ' : ' . $table->getError(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -992,8 +975,7 @@ class EmundusModelsettings extends JModelList
 
 	function removeParam($param, $user_id)
 	{
-
-		$user = JFactory::getUser($user_id);
+		$user = Factory::getUser($user_id);
 
 		$table = JTable::getInstance('user', 'JTable');
 		$table->load($user->id);
@@ -1015,7 +997,7 @@ class EmundusModelsettings extends JModelList
 
 		// Save user data
 		if (!$table->store()) {
-			JLog::add('component/com_emundus/models/settings | Error when remove a param from the user ' . $user_id . ' : ' . $table->getError(), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error when remove a param from the user ' . $user_id . ' : ' . $table->getError(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1025,16 +1007,15 @@ class EmundusModelsettings extends JModelList
 
 	function getDatasFromTable($table)
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		if (strpos($table, 'data_') !== false) {
 
 			$query->select('join_column_val,translation')
-				->from($db->quoteName('#__emundus_datas_library'))
-				->where($db->quoteName('database_name') . ' LIKE ' . $db->quote($table));
-			$db->setQuery($query);
-			$columntodisplay = $db->loadObject();
+				->from($this->db->quoteName('#__emundus_datas_library'))
+				->where($this->db->quoteName('database_name') . ' LIKE ' . $this->db->quote($table));
+			$this->db->setQuery($query);
+			$columntodisplay = $this->db->loadObject();
 
 			if (boolval($columntodisplay->translation)) {
 				$columntodisplay->join_column_val = $columntodisplay->join_column_val . '_en,' . $columntodisplay->join_column_val . '_fr';
@@ -1042,14 +1023,14 @@ class EmundusModelsettings extends JModelList
 
 			$query->clear()
 				->select('*')
-				->from($db->quoteName($table));
-			$db->setQuery($query);
+				->from($this->db->quoteName($table));
+			$this->db->setQuery($query);
 
 			try {
-				return $db->loadAssocList();
+				return $this->db->loadAssocList();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/settings | Error at getting datas from databasejoin table ' . $table . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/settings | Error at getting datas from databasejoin table ' . $table . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -1061,18 +1042,17 @@ class EmundusModelsettings extends JModelList
 
 	function saveDatas($form)
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$name = strtolower($this->clean($form['label']));
 
 		// Check if a table already get the same name and increment them
 		$query->clear()
 			->select('COUNT(*)')
-			->from($db->quoteName('information_schema.tables'))
-			->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%data_' . $name . '%'));
-		$db->setQuery($query);
-		$result = $db->loadResult();
+			->from($this->db->quoteName('information_schema.tables'))
+			->where($this->db->quoteName('table_name') . ' LIKE ' . $this->db->quote('%data_' . $name . '%'));
+		$this->db->setQuery($query);
+		$result = $this->db->loadResult();
 
 		$increment = '00';
 		if ($result < 10) {
@@ -1085,15 +1065,15 @@ class EmundusModelsettings extends JModelList
 		$table_name = 'data_' . $name . '_' . $increment;
 		//
 
-		$query->insert($db->quoteName('#__emundus_datas_library'));
-		$query->set($db->quoteName('database_name') . ' = ' . $db->quote($table_name))
-			->set($db->quoteName('join_column_val') . ' = ' . $db->quote('value'))
-			->set($db->quoteName('label') . ' = ' . $db->quote($form['label']))
-			->set($db->quoteName('description') . ' = ' . $db->quote($form['desc']))
-			->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')));
-		$db->setQuery($query);
+		$query->insert($this->db->quoteName('#__emundus_datas_library'));
+		$query->set($this->db->quoteName('database_name') . ' = ' . $this->db->quote($table_name))
+			->set($this->db->quoteName('join_column_val') . ' = ' . $this->db->quote('value'))
+			->set($this->db->quoteName('label') . ' = ' . $this->db->quote($form['label']))
+			->set($this->db->quoteName('description') . ' = ' . $this->db->quote($form['desc']))
+			->set($this->db->quoteName('created') . ' = ' . $this->db->quote(date('Y-m-d H:i:s')));
+		$this->db->setQuery($query);
 		try {
-			$db->execute();
+			$this->db->execute();
 
 			// Create the new table
 			$table_query = "CREATE TABLE IF NOT EXISTS " . $table_name . " (
@@ -1102,19 +1082,19 @@ class EmundusModelsettings extends JModelList
             value_en varchar(255) NOT NULL,
             PRIMARY KEY (id)
             ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
-			$db->setQuery($table_query);
-			$db->execute();
+			$this->db->setQuery($table_query);
+			$this->db->execute();
 			//
 
 			// Insert values
-			$query = $db->getQuery(true);
+			$query = $this->db->getQuery(true);
 			foreach ($form['db_values'] as $values) {
 				$query->clear()
-					->insert($db->quoteName($table_name));
-				$query->set($db->quoteName('value_fr') . ' = ' . $db->quote($values['fr']))
-					->set($db->quoteName('value_en') . ' = ' . $db->quote($values['en']));
-				$db->setQuery($query);
-				$db->execute();
+					->insert($this->db->quoteName($table_name));
+				$query->set($this->db->quoteName('value_fr') . ' = ' . $this->db->quote($values['fr']))
+					->set($this->db->quoteName('value_en') . ' = ' . $this->db->quote($values['en']));
+				$this->db->setQuery($query);
+				$this->db->execute();
 			}
 
 			//
@@ -1122,7 +1102,7 @@ class EmundusModelsettings extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at saving datas in a new databasejion table : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at saving datas in a new databasejion table : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1130,18 +1110,17 @@ class EmundusModelsettings extends JModelList
 
 	function saveImportedDatas($form, $datas)
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$name = strtolower($this->clean($form['label']));
 
 		// Check if a table already get the same name and increment them
 		$query->clear()
 			->select('COUNT(*)')
-			->from($db->quoteName('information_schema.tables'))
-			->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%data_' . $name . '%'));
-		$db->setQuery($query);
-		$result = $db->loadResult();
+			->from($this->db->quoteName('information_schema.tables'))
+			->where($this->db->quoteName('table_name') . ' LIKE ' . $this->db->quote('%data_' . $name . '%'));
+		$this->db->setQuery($query);
+		$result = $this->db->loadResult();
 
 		$increment = '00';
 		if ($result < 10) {
@@ -1160,42 +1139,42 @@ class EmundusModelsettings extends JModelList
 			$columns[$key] = strtolower($this->clean($column));
 		}
 
-		$query->insert($db->quoteName('#__emundus_datas_library'));
-		$query->set($db->quoteName('database_name') . ' = ' . $db->quote($table_name))
-			->set($db->quoteName('join_column_val') . ' = ' . $db->quote($columns[0]))
-			->set($db->quoteName('label') . ' = ' . $db->quote($form['label']))
-			->set($db->quoteName('description') . ' = ' . $db->quote($form['desc']))
-			->set($db->quoteName('translation') . ' = ' . $db->quote(0))
-			->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')));
-		$db->setQuery($query);
+		$query->insert($this->db->quoteName('#__emundus_datas_library'));
+		$query->set($this->db->quoteName('database_name') . ' = ' . $this->db->quote($table_name))
+			->set($this->db->quoteName('join_column_val') . ' = ' . $this->db->quote($columns[0]))
+			->set($this->db->quoteName('label') . ' = ' . $this->db->quote($form['label']))
+			->set($this->db->quoteName('description') . ' = ' . $this->db->quote($form['desc']))
+			->set($this->db->quoteName('translation') . ' = ' . $this->db->quote(0))
+			->set($this->db->quoteName('created') . ' = ' . $this->db->quote(date('Y-m-d H:i:s')));
+		$this->db->setQuery($query);
 		try {
-			$db->execute();
+			$this->db->execute();
 
 			// Create the new table
 			$table_query = "CREATE TABLE IF NOT EXISTS " . $table_name . " (
             id int(11) NOT NULL AUTO_INCREMENT,
             PRIMARY KEY (id)
             ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
-			$db->setQuery($table_query);
-			$db->execute();
+			$this->db->setQuery($table_query);
+			$this->db->execute();
 
 			foreach ($columns as $key => $column) {
 				$query = "ALTER TABLE " . $table_name . " ADD " . $column . " VARCHAR(255) NULL";
-				$db->setQuery($query);
-				$db->execute();
+				$this->db->setQuery($query);
+				$this->db->execute();
 			}
 			//
 
 			// Insert values
-			$query = $db->getQuery(true);
+			$query = $this->db->getQuery(true);
 			foreach ($datas as $value) {
 				$query->clear()
-					->insert($db->quoteName($table_name));
+					->insert($this->db->quoteName($table_name));
 				foreach (array_keys($value) as $key => $column) {
-					$query->set($db->quoteName(strtolower($this->clean($column))) . ' = ' . $db->quote(array_values($value)[$key]));
+					$query->set($this->db->quoteName(strtolower($this->clean($column))) . ' = ' . $this->db->quote(array_values($value)[$key]));
 				}
-				$db->setQuery($query);
-				$db->execute();
+				$this->db->setQuery($query);
+				$this->db->execute();
 			}
 
 			//
@@ -1203,7 +1182,7 @@ class EmundusModelsettings extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at saving imported datas : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at saving imported datas : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1211,7 +1190,7 @@ class EmundusModelsettings extends JModelList
 
 	function checkFirstDatabaseJoin($user_id)
 	{
-		$user = JFactory::getUser($user_id);
+		$user = Factory::getUser($user_id);
 
 		try {
 			$table = JTable::getInstance('user', 'JTable');
@@ -1223,7 +1202,7 @@ class EmundusModelsettings extends JModelList
 			return $params->get('first_databasejoin', true);
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at checking if its the first databasejoin of the user ' . $user_id . ' : ' . $table->getError(), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at checking if its the first databasejoin of the user ' . $user_id . ' : ' . $table->getError(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1231,45 +1210,44 @@ class EmundusModelsettings extends JModelList
 
 	function moveUploadedFileToDropbox($file, $name, $extension, $campaign_cat, $filesize)
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		try {
 			//CHECK OREDERING BEFORE INSERT
 			$query->select('ordering')
-				->from($db->quoteName('#__dropfiles_files'))
-				->where($db->quoteName('catid') . ' = ' . $db->quote($campaign_cat));
-			$db->setQuery($query);
-			$orderings = $db->loadColumn();
+				->from($this->db->quoteName('#__dropfiles_files'))
+				->where($this->db->quoteName('catid') . ' = ' . $this->db->quote($campaign_cat));
+			$this->db->setQuery($query);
+			$orderings = $this->db->loadColumn();
 			$order     = $orderings[sizeof($orderings) - 1] + 1;
 
 			$dateTime = new Date('now', 'UTC');
 			$now      = $dateTime->toSQL();
 
 			$query->clear()
-				->insert($db->quoteName('#__dropfiles_files'));
-			$query->set($db->quoteName('catid') . ' = ' . $db->quote($campaign_cat))
-				->set($db->quoteName('file') . ' = ' . $db->quote($file))
-				->set($db->quoteName('state') . ' = ' . $db->quote(1))
-				->set($db->quoteName('ordering') . ' = ' . $db->quote($order))
-				->set($db->quoteName('title') . ' = ' . $db->quote($name))
-				->set($db->quoteName('description') . ' = ' . $db->quote(''))
-				->set($db->quoteName('ext') . ' = ' . $db->quote($extension))
-				->set($db->quoteName('size') . ' = ' . $db->quote($filesize))
-				->set($db->quoteName('hits') . ' = ' . $db->quote(0))
-				->set($db->quoteName('version') . ' = ' . $db->quote(''))
-				->set($db->quoteName('created_time') . ' = ' . $db->quote($now))
-				->set($db->quoteName('modified_time') . ' = ' . $db->quote($now))
-				->set($db->quoteName('publish') . ' = ' . $db->quote($now))
-				->set($db->quoteName('author') . ' = ' . $db->quote(JFactory::getUser()->id))
-				->set($db->quoteName('language') . ' = ' . $db->quote(''));
-			$db->setQuery($query);
-			$db->execute();
+				->insert($this->db->quoteName('#__dropfiles_files'));
+			$query->set($this->db->quoteName('catid') . ' = ' . $this->db->quote($campaign_cat))
+				->set($this->db->quoteName('file') . ' = ' . $this->db->quote($file))
+				->set($this->db->quoteName('state') . ' = ' . $this->db->quote(1))
+				->set($this->db->quoteName('ordering') . ' = ' . $this->db->quote($order))
+				->set($this->db->quoteName('title') . ' = ' . $this->db->quote($name))
+				->set($this->db->quoteName('description') . ' = ' . $this->db->quote(''))
+				->set($this->db->quoteName('ext') . ' = ' . $this->db->quote($extension))
+				->set($this->db->quoteName('size') . ' = ' . $this->db->quote($filesize))
+				->set($this->db->quoteName('hits') . ' = ' . $this->db->quote(0))
+				->set($this->db->quoteName('version') . ' = ' . $this->db->quote(''))
+				->set($this->db->quoteName('created_time') . ' = ' . $this->db->quote($now))
+				->set($this->db->quoteName('modified_time') . ' = ' . $this->db->quote($now))
+				->set($this->db->quoteName('publish') . ' = ' . $this->db->quote($now))
+				->set($this->db->quoteName('author') . ' = ' . $this->db->quote(JFactory::getUser()->id))
+				->set($this->db->quoteName('language') . ' = ' . $this->db->quote(''));
+			$this->db->setQuery($query);
+			$this->db->execute();
 
-			return $db->insertid();
+			return $this->db->insertid();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/settings | Error at moving uploaded file ' . $file . ' to the dropbox category ' . $campaign_cat . ': ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/settings | Error at moving uploaded file ' . $file . ' to the dropbox category ' . $campaign_cat . ': ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1277,20 +1255,19 @@ class EmundusModelsettings extends JModelList
 
 	function getBannerModule()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		try {
 			$query->select('params')
-				->from($db->quoteName('#__modules'))
-				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_banner'))
-				->andWhere($db->quoteName('published') . ' = 1');
-			$db->setQuery($query);
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_banner'))
+				->andWhere($this->db->quoteName('published') . ' = 1');
+			$this->db->setQuery($query);
 
-			return $db->loadResult();
+			return $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -1298,35 +1275,34 @@ class EmundusModelsettings extends JModelList
 
 	function updateBannerImage()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		try {
 			$query->select('*')
-				->from($db->quoteName('#__modules'))
-				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_banner'))
-				->andWhere($db->quoteName('published') . ' = 1');
-			$db->setQuery($query);
-			$module = $db->loadObject();
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_banner'))
+				->andWhere($this->db->quoteName('published') . ' = 1');
+			$this->db->setQuery($query);
+			$module = $this->db->loadObject();
 
 			if (!empty($module)) {
 				$params                      = json_decode($module->params);
 				$params->mod_em_banner_image = 'images/custom/default_banner.png';
 
 				$query->clear()
-					->update($db->quoteName('#__modules'))
-					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-					->where($db->quoteName('id') . ' = ' . $db->quote($module->id));
-				$db->setQuery($query);
+					->update($this->db->quoteName('#__modules'))
+					->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($module->id));
+				$this->db->setQuery($query);
 
-				return $db->execute();
+				return $this->db->execute();
 			}
 			else {
 				return false;
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -1347,16 +1323,16 @@ class EmundusModelsettings extends JModelList
 		}
 
 		if (empty($cache_data)) {
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$this->db    = JFactory::getDbo();
+			$query = $this->db->getQuery(true);
 			$query->select('`default`, value')
-				->from($db->quoteName('#__emundus_setup_config'))
-				->where($db->quoteName('namekey') . ' = ' . $db->quote('onboarding_lists'));
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('onboarding_lists'));
 
 			try {
-				$db->setQuery($query);
+				$this->db->setQuery($query);
 
-				$data = $db->loadObject();
+				$data = $this->db->loadObject();
 				if (!empty($data->value) || !empty($data->default)) {
 					if (!empty($data->value)) {
 						$lists = json_decode($data->value, true);
@@ -1414,7 +1390,7 @@ class EmundusModelsettings extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting onboarding lists in model at query : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Error getting onboarding lists in model at query : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 		else {
@@ -1426,21 +1402,20 @@ class EmundusModelsettings extends JModelList
 
 	function getHomeArticle()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$article_id = 52;
 
 		try {
 			$query->select('id')
-				->from($db->quoteName('#__content'))
-				->where($db->quoteName('featured') . ' = 1')
-				->andWhere($db->quoteName('published') . ' = 1');
-			$db->setQuery($query);
-			$article_id = $db->loadResult();
+				->from($this->db->quoteName('#__content'))
+				->where($this->db->quoteName('featured') . ' = 1')
+				->andWhere($this->db->quoteName('published') . ' = 1');
+			$this->db->setQuery($query);
+			$article_id = $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $article_id;
@@ -1448,17 +1423,16 @@ class EmundusModelsettings extends JModelList
 
 	function getRgpdArticles()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$rgpd_articles = [];
 
 		try {
 			$query->select('params')
-				->from($db->quoteName('#__modules'))
-				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
-			$db->setQuery($query);
-			$params = $db->loadResult();
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_footer'));
+			$this->db->setQuery($query);
+			$params = $this->db->loadResult();
 
 			if (!empty($params)) {
 				$params = json_decode($params);
@@ -1467,10 +1441,10 @@ class EmundusModelsettings extends JModelList
 				if (!empty($params->mod_emundus_footer_legal_info_alias)) {
 					$query->clear()
 						->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1)')
-						->from($db->quoteName('#__menu'))
-						->where($db->quoteName('alias') . ' = ' . $db->quote($params->mod_emundus_footer_legal_info_alias));
-					$db->setQuery($query);
-					$legal_info->id = $db->loadResult();
+						->from($this->db->quoteName('#__menu'))
+						->where($this->db->quoteName('alias') . ' = ' . $this->db->quote($params->mod_emundus_footer_legal_info_alias));
+					$this->db->setQuery($query);
+					$legal_info->id = $this->db->loadResult();
 				}
 				else {
 					$legal_info->alias = 'mentions-legales';
@@ -1483,10 +1457,10 @@ class EmundusModelsettings extends JModelList
 				if (!empty($params->mod_emundus_footer_data_privacy_alias)) {
 					$query->clear()
 						->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1)')
-						->from($db->quoteName('#__menu'))
-						->where($db->quoteName('alias') . ' = ' . $db->quote($params->mod_emundus_footer_data_privacy_alias));
-					$db->setQuery($query);
-					$data_privacy->id = $db->loadResult();
+						->from($this->db->quoteName('#__menu'))
+						->where($this->db->quoteName('alias') . ' = ' . $this->db->quote($params->mod_emundus_footer_data_privacy_alias));
+					$this->db->setQuery($query);
+					$data_privacy->id = $this->db->loadResult();
 				}
 				else {
 					$data_privacy->alias = 'politique-de-confidentialite-des-donnees';
@@ -1499,10 +1473,10 @@ class EmundusModelsettings extends JModelList
 				if (!empty($params->mod_emundus_footer_rights_alias)) {
 					$query->clear()
 						->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1)')
-						->from($db->quoteName('#__menu'))
-						->where($db->quoteName('alias') . ' = ' . $db->quote($params->mod_emundus_footer_rights_alias));
-					$db->setQuery($query);
-					$rights->id = $db->loadResult();
+						->from($this->db->quoteName('#__menu'))
+						->where($this->db->quoteName('alias') . ' = ' . $this->db->quote($params->mod_emundus_footer_rights_alias));
+					$this->db->setQuery($query);
+					$rights->id = $this->db->loadResult();
 				}
 				else {
 					$rights->alias = 'gestion-des-droits';
@@ -1515,10 +1489,10 @@ class EmundusModelsettings extends JModelList
 				if (!empty($params->mod_emundus_footer_cookies_alias)) {
 					$query->clear()
 						->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1)')
-						->from($db->quoteName('#__menu'))
-						->where($db->quoteName('alias') . ' = ' . $db->quote($params->mod_emundus_footer_cookies_alias));
-					$db->setQuery($query);
-					$cookies->id = $db->loadResult();
+						->from($this->db->quoteName('#__menu'))
+						->where($this->db->quoteName('alias') . ' = ' . $this->db->quote($params->mod_emundus_footer_cookies_alias));
+					$this->db->setQuery($query);
+					$cookies->id = $this->db->loadResult();
 				}
 				else {
 					$cookies->alias = 'gestion-des-cookies';
@@ -1531,10 +1505,10 @@ class EmundusModelsettings extends JModelList
 				if (!empty($params->mod_emundus_footer_accessibility_alias)) {
 					$query->clear()
 						->select('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1)')
-						->from($db->quoteName('#__menu'))
-						->where($db->quoteName('alias') . ' = ' . $db->quote($params->mod_emundus_footer_accessibility_alias));
-					$db->setQuery($query);
-					$accessibility->id = $db->loadResult();
+						->from($this->db->quoteName('#__menu'))
+						->where($this->db->quoteName('alias') . ' = ' . $this->db->quote($params->mod_emundus_footer_accessibility_alias));
+					$this->db->setQuery($query);
+					$accessibility->id = $this->db->loadResult();
 				}
 				else {
 					$accessibility->alias = 'accessibilite';
@@ -1545,7 +1519,7 @@ class EmundusModelsettings extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $rgpd_articles;
@@ -1555,15 +1529,14 @@ class EmundusModelsettings extends JModelList
 	{
 		$result = false;
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		try {
 			$query->select('id,params')
-				->from($db->quoteName('#__modules'))
-				->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
-			$db->setQuery($query);
-			$footer = $db->loadObject();
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_footer'));
+			$this->db->setQuery($query);
+			$footer = $this->db->loadObject();
 
 			if (!empty($footer->params)) {
 				$params = json_decode($footer->params, true);
@@ -1590,10 +1563,10 @@ class EmundusModelsettings extends JModelList
 				else {
 					$query->clear()
 						->select('alias')
-						->from($db->quoteName('#__menu'))
-						->where('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1) = ' . $db->quote($article_id));
-					$db->setQuery($query);
-					$article_alias = $db->loadResult();
+						->from($this->db->quoteName('#__menu'))
+						->where('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1) = ' . $this->db->quote($article_id));
+					$this->db->setQuery($query);
+					$article_alias = $this->db->loadResult();
 
 					if (!empty($article_alias)) {
 						$section         = array_search($article_alias, $params, true);
@@ -1604,22 +1577,22 @@ class EmundusModelsettings extends JModelList
 				}
 
 				$query->clear()
-					->update($db->quoteName('#__modules'))
-					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-					->where($db->quoteName('id') . ' = ' . $db->quote($footer->id));
-				$db->setQuery($query);
-				$result = $db->execute();
+					->update($this->db->quoteName('#__modules'))
+					->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($footer->id));
+				$this->db->setQuery($query);
+				$result = $this->db->execute();
 
 				if ($result) {
 					$query->clear()
 						->select('id, value')
 						->from('#__falang_content')
-						->where('reference_id = ' . $db->quote($footer->id))
-						->andWhere('reference_table = ' . $db->quote('modules'))
-						->andWhere('reference_field = ' . $db->quote('params'));
+						->where('reference_id = ' . $this->db->quote($footer->id))
+						->andWhere('reference_table = ' . $this->db->quote('modules'))
+						->andWhere('reference_field = ' . $this->db->quote('params'));
 
-					$db->setQuery($query);
-					$falang_contents = $db->loadObjectList();
+					$this->db->setQuery($query);
+					$falang_contents = $this->db->loadObjectList();
 
 					if (!empty($falang_contents)) {
 						foreach ($falang_contents as $falang_content) {
@@ -1633,11 +1606,11 @@ class EmundusModelsettings extends JModelList
 
 							$query->clear()
 								->update('#__falang_content')
-								->set('value = ' . $db->quote(json_encode($falang_content->value)))
-								->where('id = ' . $db->quote($falang_content->id));
+								->set('value = ' . $this->db->quote(json_encode($falang_content->value)))
+								->where('id = ' . $this->db->quote($falang_content->id));
 
-							$db->setQuery($query);
-							$db->execute();
+							$this->db->setQuery($query);
+							$this->db->execute();
 						}
 					}
 
@@ -1648,7 +1621,7 @@ class EmundusModelsettings extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $result;
@@ -1673,7 +1646,7 @@ class EmundusModelsettings extends JModelList
 			$itemId = $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $itemId;
@@ -1738,21 +1711,20 @@ class EmundusModelsettings extends JModelList
 						$eMConfig->set($param, $value);
 
 						$componentid = ComponentHelper::getComponent('com_emundus')->id;
-						$db = JFactory::getDBO();
-						$query = $db->getQuery(true);
+						$query = $this->db->getQuery(true);
 
-						$query->update($db->quoteName('#__extensions'))
-							->set($db->quoteName('params') . ' = ' . $db->quote($eMConfig->toString()))
-							->where($db->quoteName('extension_id') . ' = ' . $db->quote($componentid));
+						$query->update($this->db->quoteName('#__extensions'))
+							->set($this->db->quoteName('params') . ' = ' . $this->db->quote($eMConfig->toString()))
+							->where($this->db->quoteName('extension_id') . ' = ' . $this->db->quote($componentid));
 
 						try {
-							$db->setQuery($query);
-							$updated = $db->execute();
+							$this->db->setQuery($query);
+							$updated = $this->db->execute();
 						} catch (Exception $e) {
-							JLog::add('Error set param '.$param . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+							Log::add('Error set param '.$param . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 						}
 					} else {
-						JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
+						Log::add('Error : unable to detect if param is writable or not : ' . $param , Log::WARNING, 'com_emundus.error');
 					}
 
 					break;
@@ -1765,11 +1737,11 @@ class EmundusModelsettings extends JModelList
 						$updated = EmundusHelperUpdate::updateConfigurationFile($param, $value);
 
 						if ($updated) {
-							$configuration = JFactory::getConfig();
+							$configuration = $this->app->getConfig();
 							$configuration->set($param, $value);
 						}
 					} else {
-						JLog::add('Error : unable to detect if param is writable or not : ' . $param , JLog::WARNING, 'com_emundus.error');
+						Log::add('Error : unable to detect if param is writable or not : ' . $param , Log::WARNING, 'com_emundus.error');
 					}
 				break;
 			}

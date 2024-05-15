@@ -51,6 +51,9 @@ function formCheck(id) {
 	let field = document.querySelector('#' + id);
 	let form_group = field.parentElement;
 	let help_block = document.querySelector('.em-addUser-detail-info-'+id+' .help-block');
+	if(id == 'login') {
+		help_block = document.querySelector('.em-addUser-detail-info-id .help-block');
+	}
 
 	field.style.border = null;
 
@@ -61,7 +64,7 @@ function formCheck(id) {
 		}
 	}
 
-	if (field.value.trim().length === 0 && check) {
+	if (field.value && field.value.trim().length === 0 && check) {
 		if(form_group) {
 			form_group.classList.add('has-error');
 		}
@@ -69,7 +72,7 @@ function formCheck(id) {
 
 		if(help_block) {
 			help_block.remove();
-			field.insertAdjacentHTML('afterend', '<span class="help-block">' + Joomla.JText._('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER') + '</span>');
+			field.insertAdjacentHTML('afterend', '<span class="help-block">' + Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER') + '</span>');
 		}
 
 		return false;
@@ -91,7 +94,7 @@ function formCheck(id) {
 					help_block.remove();
 				}
 
-				field.insertAdjacentHTML('afterend', '<span class="help-block">' + Joomla.JText._('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER') + '</span>');
+				field.insertAdjacentHTML('afterend', '<span class="help-block">' + Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER') + '</span>');
 
 			return false;
 		}
@@ -717,7 +720,7 @@ $(document).ready(function () {
 				break;
 			case 20:
 				title = 'COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER';
-				preconfirm = "let checklanme =formCheck('lname');let checkfname =formCheck('fname');let checkmail =formCheck('mail');let checklogin =formCheck('login'); if (!checklanme || !checkfname || !checkmail || !checklogin) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";
+				preconfirm = "let checklanme =formCheck('lname');let checkfname =formCheck('fname');let checkmail =formCheck('mail');let checklogin =formCheck('login'); if (!checklanme || !checkfname || !checkmail || !checklogin) {return Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";
 				swal_confirm_button = 'COM_EMUNDUS_USERS_CREATE_USER_CONFIRM';
 				break;
 			case 23:
@@ -754,7 +757,9 @@ $(document).ready(function () {
 				swalForm = true;
 				title = 'COM_EMUNDUS_ACTIONS_EDIT_USER';
 				swal_confirm_button = 'COM_EMUNDUS_USERS_EDIT_USER_CONFIRM';
-				preconfirm = "let checklanme =formCheck('lname');let checkfname =formCheck('fname');let checkmail =formCheck('mail');let checklogin =formCheck('login'); if (!checklanme || !checkfname || !checkmail || !checklogin) {Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";				html = '<div id="data"></div>';
+				preconfirm = "let checklanme =formCheck('lname');let checkfname =formCheck('fname');let checkmail =formCheck('mail');let checklogin =formCheck('login'); if (!checklanme || !checkfname || !checkmail || !checklogin) {return Swal.showValidationMessage(Joomla.JText._('COM_EMUNDUS_USERS_ERROR_PLEASE_COMPLETE'))}";
+
+				html = '<div id="data"></div>';
 
 				addLoader();
 
