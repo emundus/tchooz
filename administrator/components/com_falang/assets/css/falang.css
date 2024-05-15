@@ -145,8 +145,9 @@ button.btn.uptodate{
     border-top: 2px solid green;
     border-radius: 0px;
 }
-.table tbody a.quickjump{
-	text-decoration: none;
+
+.table tbody a.quickjump {
+	text-decoration: none !important;
 }
 
 a.quickjump.uptodate{
@@ -486,3 +487,9 @@ button .quicktranslate.unpublished{
 }
 
 #filter-bar{margin-bottom: 10px;}
+
+/*  dark mode change */
+
+[data-bs-theme=dark] a.quickmodal {
+	color: #fff !important;
+}

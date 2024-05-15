@@ -191,6 +191,7 @@ class plgSystemFalangquickjump extends CMSPlugin
 
     /*
      * @since 4.0.7 load jquery only on backend
+     * @update 5.7 add bootstrap render modal to allow popup (Fix for J5.1)
      *
      * */
     public function onBeforeRender(){
@@ -199,6 +200,7 @@ class plgSystemFalangquickjump extends CMSPlugin
         if ($app->isClient('administrator'))
         {
             HTMLHelper::_('jquery.framework');
+            HTMLHelper::_('bootstrap.renderModal');
         }
 
         Text::script('LIB_FALANG_TRANSLATION');
@@ -221,15 +223,9 @@ class plgSystemFalangquickjump extends CMSPlugin
     }
 
     public function gridIdHook() {
-        //force loading of JHtmlGrid
-        //sbou5
-//        if (!class_exists('JHtmlGrid')) {
-//            //@include_once(JPATH_LIBRARIES.'/joomla/html/html/grid.php');
-//        }
         $row = func_get_arg(0);
         $id = func_get_arg(1);
         $vars = func_get_args();
-        //sbou5
         $res = call_user_func_array('Joomla\CMS\HTML\Helpers\Grid::id', $vars);
         $ext = Factory::getApplication()->input->get('option', '', 'cmd');
         //get table by component

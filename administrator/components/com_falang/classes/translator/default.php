@@ -34,6 +34,14 @@ class TranslatorDefault {
 		return $this->defaultLanguage;
 	}
 
+    /*
+     * @update 5.8 add/replace langauge code for a specific langauge
+     * */
+    public function addServiceLanguage($key,$value){
+        unset(self::$languageCodeInISO[$key]) ;
+        self::$languageCodeInISO += [$key => $value];
+    }
+
     static private $languageCodeInISO = array (
         'af-za' => 'AF',	// Afrikaans
         'sq-al' => 'AL', 	// Albanian

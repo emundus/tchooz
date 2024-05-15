@@ -178,6 +178,18 @@
             <option value="Yandex">Yandex</option>
             <option value="Lingvanex">Lingvanex</option>
         </field>
+        <field
+                name="translator_deepl_free"
+                type="radio"
+                default="0"
+                layout="joomla.form.field.radio.switcher"
+                class="btn-group btn-group-yesno"
+                label="COM_FALANG_CONFIG_TRANSLATOR_DEEPL_FREE_LBL"
+                description="COM_FALANG_CONFIG_TRANSLATOR_DEEPL_FREE_DESC"
+        >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
         <field name="translator_deeplkey"
                type="text"
                label="COM_FALANG_CONFIG_TRANSLATOR_DEEPL_KEY"

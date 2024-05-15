@@ -7,7 +7,10 @@ use Joomla\CMS\Language\Text;
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 class TranslatorDeepl extends TranslatorDefault {
-	
+
+    /*
+     * @update 5.8 fix DeeplLangauge code for Norwegian
+     * */
 	function __construct()
 	{
 		$params = ComponentHelper::getParams('com_falang');
@@ -21,17 +24,26 @@ class TranslatorDeepl extends TranslatorDefault {
 			return;
 		}
 
+        $this->setServiceLanguage();
+
 		$this->script = 'translatorDeepl.js';
 	}
+
+    /*
+     * Add or replace language specific to a translation service
+     * @from 5.8
+     * */
+    private function setServiceLanguage(){
+        $this->addServiceLanguage('nb-no','nb');
+    }
 
     /*
      * Translate text with the deppl api
      *
      * @from 5.6
+     * @update 5.7 add free/paid url support
      * */
     public function getServiceTranslation(){
-
-        $url = "https://api-free.deepl.com/v2/translate";
 
         $input = Factory::getApplication()->getInput();
         $sourceLanguageCode        = $input->getString('source');
@@ -40,6 +52,14 @@ class TranslatorDeepl extends TranslatorDefault {
 
         //getKey from config
         $serviceKey = ComponentHelper::getParams('com_falang')->get('translator_deeplkey');
+
+        //get pro of free url
+        $url = "https://api.deepl.com/v2/translate";
+        $serviceFree = ComponentHelper::getParams('com_falang')->get('translator_deepl_free',0);
+        if ($serviceFree){
+            $url = "https://api-free.deepl.com/v2/translate";
+        }
+
 
         $postfields = array();
         $postfields['source_lang'] = strtoupper($sourceLanguageCode);
