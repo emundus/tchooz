@@ -8,12 +8,26 @@ use Gotenberg\Exceptions\NativeFunctionErrored;
 use Gotenberg\Stream;
 use Psr\Http\Message\RequestInterface;
 
+use function json_encode;
+
 class ChromiumPdf
 {
     use ChromiumMultipartFormDataModule;
 
     /**
-     * Overrides the default paper size, in inches.
+     * Defines whether to print the entire content in one single page.
+     */
+    public function singlePage(): self
+    {
+        $this->formValue('singlePage', true);
+
+        return $this;
+    }
+
+    /**
+     * Overrides the default paper size, using various units such as 72pt,
+     * 96px, 1in, 25.4mm, 2.54cm, or 6pc. The default unit is inches when
+     * not specified.
      *
      * Examples of paper size (width x height):
      *
@@ -29,7 +43,7 @@ class ChromiumPdf
      * A5 - 5.83 x 8.27
      * A6 - 4.13 x 5.83
      */
-    public function paperSize(float $width, float $height): self
+    public function paperSize(float|string $width, float|string $height): self
     {
         $this->formValue('paperWidth', $width);
         $this->formValue('paperHeight', $height);
@@ -38,9 +52,11 @@ class ChromiumPdf
     }
 
     /**
-     * Overrides the default margins (i.e., 0.39), in inches.
+     * Overrides the default margins (i.e., 0.39), using various units such as
+     * 72pt, 96px, 1in, 25.4mm, 2.54cm, or 6pc. The default unit is inches when
+     * not specified.
      */
-    public function margins(float $top, float $bottom, float $left, float $right): self
+    public function margins(float|string $top, float|string $bottom, float|string $left, float|string $right): self
     {
         $this->formValue('marginTop', $top);
         $this->formValue('marginBottom', $bottom);
@@ -143,6 +159,25 @@ class ChromiumPdf
     public function pdfua(): self
     {
         $this->formValue('pdfua', true);
+
+        return $this;
+    }
+
+    /**
+     * Sets the metadata to write.
+     *
+     * @param array<string,string|bool|float|int|array<string>> $metadata
+     *
+     * @throws NativeFunctionErrored
+     */
+    public function metadata(array $metadata): self
+    {
+        $json = json_encode($metadata);
+        if ($json === false) {
+            throw NativeFunctionErrored::createFromLastPhpError();
+        }
+
+        $this->formValue('metadata', $json);
 
         return $this;
     }

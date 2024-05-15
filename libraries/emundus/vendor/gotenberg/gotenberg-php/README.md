@@ -16,7 +16,11 @@ This package is a PHP client for [Gotenberg](https://gotenberg.dev), a developer
 tools like Chromium and LibreOffice for converting numerous document formats (HTML, Markdown, Word, Excel, etc.) into 
 PDF files, and more!
 
-⚠️ For **Gotenberg 6.x**, use [thecodingmachine/gotenberg-php-client](https://github.com/thecodingmachine/gotenberg-php-client) instead.
+⚠️ 
+
+For **Gotenberg 6.x**, use [thecodingmachine/gotenberg-php-client](https://github.com/thecodingmachine/gotenberg-php-client) instead.
+
+For **Gotenberg 7.x**, use version `v1.1.8`.
 
 ## Quick Examples
 
@@ -340,6 +344,19 @@ $request = Gotenberg::chromium($apiUrl)
     );
 ```
 
+### Single page
+
+You may print the entire content in one single page with:
+
+```php
+use Gotenberg\Gotenberg;
+
+$request = Gotenberg::chromium($apiUrl)
+    ->pdf()
+    ->singlePage()
+    ->url('https://my.url');
+```
+
 #### Paper size
 
 You may override the default paper size with:
@@ -369,7 +386,7 @@ Examples of paper size (width x height, in inches):
 
 #### Margins
 
-You may override the default margins (i.e., `0.39`, in inches):
+You may override the default margins (i.e., `0.39`):
 
 ```php
 use Gotenberg\Gotenberg;
@@ -476,7 +493,6 @@ $request = Gotenberg::chromium($apiUrl)
     ->pdf()
     ->header(Stream::path('/path/to/my_header.html'))
     ->footer(Stream::path('/path/to/my_footer.html'))
-    ->margins(1, 1, 0.39, 0.39)
     ->url('https://my.url');
 ```
 
@@ -531,6 +547,23 @@ use Gotenberg\Gotenberg;
 $request = Gotenberg::chromium($apiUrl)
     ->pdf()
     ->emulatePrintMediaType()
+    ->url('https://my.url');
+```
+
+#### Cookies
+
+You may add ccookies to store in the Chromium cookie jar:
+
+```php
+use Gotenberg\Modules\ChromiumCookie;
+use Gotenberg\Gotenberg;
+
+$request = Gotenberg::chromium($apiUrl)
+    ->pdf()
+    ->cookies([
+        new ChromiumCookie(name: 'yummy_cookie', value: 'choco', domain: 'theyummycookie.com'),
+        new ChromiumCookie(name: 'vanilla_cookie', value: 'vanilla', domain: 'theyummycookie.com', path: '/', secure: true, httpOnly: true, sameSite: 'Lax'),
+    ])
     ->url('https://my.url');
 ```
 
@@ -609,6 +642,21 @@ $request = Gotenberg::chromium($apiUrl)
     ->url('https://my.url');
 ```
 
+#### Metadata
+
+See https://gotenberg.dev/docs/routes#metadata-chromium.
+
+You may set the metadata to write with:
+
+```php
+use Gotenberg\Gotenberg;
+
+$request = Gotenberg::chromium($apiUrl)
+    ->pdf()
+    ->metadata(['Producer' => 'Gotenberg'])
+    ->url('https://my.url');
+```
+
 #### Screenshots
 
 You can capture full-page screenshots using the following three routes, which function similarly to their PDF equivalents:
@@ -618,6 +666,9 @@ use Gotenberg\Gotenberg;
 
 $request = Gotenberg::chromium($apiUrl)
     ->screenshot()
+    ->width(1280)
+    ->height(800)
+    ->clip()
     ->png()
     ->optimizeForSpeed()
     ->url('https://my.url');
@@ -736,6 +787,32 @@ $request = Gotenberg::libreOffice($apiUrl)
 
 ⚠️ The page ranges are applied to all files independently.
 
+#### Export form fields
+
+You may set whether to export the form fields or to use the inputted/selected content of the fields:
+
+```php
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+
+$request = Gotenberg::libreOffice($apiUrl)
+    ->exportFormFields(false)
+    ->convert(Stream::path('/path/to/my.docx'));
+```
+
+#### Single page sheets
+
+You may set whether to render the entire spreadsheet as a single page:
+
+```php
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+
+$request = Gotenberg::libreOffice($apiUrl)
+    ->singlePageSheets()
+    ->convert(Stream::path('/path/to/my.xlsx'));
+```
+
 #### PDF/A & PDF/UA
 
 See https://gotenberg.dev/docs/routes#pdfa-libreoffice.
@@ -749,6 +826,21 @@ use Gotenberg\Stream;
 $request = Gotenberg::libreOffice($apiUrl)
     ->pdfa('PDF/A-1a')
     ->pdfua()
+    ->convert(Stream::path('/path/to/my.docx'));
+```
+
+#### Metadata
+
+See https://gotenberg.dev/docs/routes#metadata-libreoffice.
+
+You may set the metadata to write with:
+
+```php
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+
+$request = Gotenberg::libreOffice($apiUrl)
+    ->metadata(['Producer' => 'Gotenberg'])
     ->convert(Stream::path('/path/to/my.docx'));
 ```
 
@@ -784,6 +876,21 @@ use Gotenberg\Stream;
 $request = Gotenberg::pdfEngines($apiUrl)
     ->pdfa('PDF/A-1a')
     ->pdfua()
+    ->merge(
+        Stream::path('/path/to/my.pdf'),
+        Stream::path('/path/to/my2.pdf'),
+        Stream::path('/path/to/my3.pdf')
+    );
+```
+
+You may also set the metadata to write with:
+
+```php
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+
+$request = Gotenberg::pdfEngines($apiUrl)
+    ->metadata(['Producer' => 'Gotenberg'])
     ->merge(
         Stream::path('/path/to/my.pdf'),
         Stream::path('/path/to/my2.pdf'),
@@ -828,6 +935,63 @@ $request = Gotenberg::pdfEngines($apiUrl)
 $filename = Gotenberg::save($request, $pathToSavingDirectory);
 ```
 
+#### Read PDF metadata
+
+See https://gotenberg.dev/docs/routes#read-pdf-metadata-route
+
+⚠️ You cannot use the `Gotenberg::save` method if you're using this feature.
+
+You may retrieve one or more PDFs metadata with:
+
+```php
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+
+$request = Gotenberg::pdfEngines($apiUrl)
+    ->readMetadata(
+        Stream::path('/path/to/my.pdf'),
+        Stream::path('/path/to/my2.pdf')
+    );
+```
+
+This request returns a JSON formatted response with the structure filename => metadata.
+
+#### Write PDF metadata
+
+See https://gotenberg.dev/docs/routes#write-pdf-metadata-route
+
+You may write specified metadata to one or more PDFs:
+
+```php
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+
+$request = Gotenberg::pdfEngines($apiUrl)
+    ->writeMetadata(
+        [ 'Producer' => 'Gotenberg' ],
+        Stream::path('/path/to/my.pdf')
+    );
+```
+
+If you send many PDFs, Gotenberg will return a ZIP archive with the PDFs:
+
+```php
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
+
+$request = Gotenberg::pdfEngines($apiUrl)
+    ->outputFilename('archive')
+    ->writeMetadata(
+        [ 'Producer' => 'Gotenberg' ],
+        Stream::path('/path/to/my.pdf'),
+        Stream::path('/path/to/my2.pdf'),
+        Stream::path('/path/to/my3.pdf')
+    );
+
+// $filename = archive.zip
+$filename = Gotenberg::save($request, $pathToSavingDirectory);
+```
+
 ### Webhook
 
 The [Webhook module](https://gotenberg.dev/docs/webhook) is a Gotenberg middleware that sends the API
@@ -842,6 +1006,7 @@ use Gotenberg\Gotenberg;
 
 $request = Gotenberg::chromium($apiUrl)
     ->webhook('https://my.webhook.url', 'https://my.webhook.error.url')
+    ->pdf()
     ->url('https://my.url'); 
 ```
 
@@ -854,6 +1019,7 @@ $request = Gotenberg::chromium($apiUrl)
     ->webhook('https://my.webhook.url', 'https://my.webhook.error.url')
     ->webhookMethod('PATCH')
     ->webhookErrorMethod('PUT')
+    ->pdf()
     ->url('https://my.url');
 ```
 
@@ -868,5 +1034,6 @@ $request = Gotenberg::chromium($apiUrl)
         'My-Header-1' => 'My value',
         'My-Header-2' => 'My value'    
     ])
+    ->pdf()
     ->url('https://my.url');
 ```

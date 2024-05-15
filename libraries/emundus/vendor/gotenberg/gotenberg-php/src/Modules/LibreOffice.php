@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Gotenberg\Modules;
 
+use Gotenberg\Exceptions\NativeFunctionErrored;
 use Gotenberg\HrtimeIndex;
 use Gotenberg\Index;
 use Gotenberg\MultipartFormDataModule;
 use Gotenberg\Stream;
 use Psr\Http\Message\RequestInterface;
+
+use function json_encode;
 
 class LibreOffice
 {
@@ -52,6 +55,27 @@ class LibreOffice
     }
 
     /**
+     * Set whether to export the form fields or to use the inputted/selected
+     * content of the fields.
+     */
+    public function exportFormFields(bool $export = true): self
+    {
+        $this->formValue('exportFormFields', $export ?: '0');
+
+        return $this;
+    }
+
+    /**
+     * Set whether to render the entire spreadsheet as a single page.
+     */
+    public function singlePageSheets(): self
+    {
+        $this->formValue('singlePageSheets', true);
+
+        return $this;
+    }
+
+    /**
      * Sets the PDF/A format of the resulting PDF.
      */
     public function pdfa(string $format): self
@@ -67,6 +91,25 @@ class LibreOffice
     public function pdfua(): self
     {
         $this->formValue('pdfua', true);
+
+        return $this;
+    }
+
+    /**
+     * Sets the metadata to write.
+     *
+     * @param array<string,string|bool|float|int|array<string>> $metadata
+     *
+     * @throws NativeFunctionErrored
+     */
+    public function metadata(array $metadata): self
+    {
+        $json = json_encode($metadata);
+        if ($json === false) {
+            throw NativeFunctionErrored::createFromLastPhpError();
+        }
+
+        $this->formValue('metadata', $json);
 
         return $this;
     }
