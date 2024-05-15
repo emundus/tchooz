@@ -1241,7 +1241,7 @@ class EmundusController extends JControllerLegacy
 						$can_be_deleted = $post['can_be_deleted_' . $attachments] != '' ? $post['can_be_deleted_' . $attachments] : $this->input->get('can_be_deleted', 1, 'POST');
 						$can_be_viewed  = $post['can_be_viewed_' . $attachments] != '' ? $post['can_be_viewed_' . $attachments] : $this->input->get('can_be_viewed', 1, 'POST');
 
-						$now = $h_date->getNow();
+						$now = EmundusHelperDate::getNow();
 
 						$query .= '(' . $user->id . ', ' . $attachments . ', \'' . $paths . '\', ' . $this->_db->Quote($descriptions) . ', ' . $can_be_deleted . ', ' . $can_be_viewed . ', ' . $fnumInfos['id'] . ', ' . $this->_db->Quote($fnum) . ', ' . $pageCount . ', ' . $this->_db->quote($local_filename) . ', ' . $this->_db->quote($now) . ', ' . $this->_db->quote($now) . ', ' . $this->_db->quote($file['size']) . '),';
 						$nb++;

@@ -12,12 +12,12 @@
         <div>
           <div class="tw-mb-4">
             <h1 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
-            <span class="tw-text-red-500 tw-mb-2">{{ translations.RequiredFieldsIndicate }}</span>
+            <span class="tw-text-red-500 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</span>
           </div>
 
           <div>
             <div class="tw-mb-4">
-              <label>{{ translations.emailName }} <span style="color: #E5283B">*</span></label>
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME') }} <span style="color: #E5283B">*</span></label>
               <input
                   type="text"
                   class="tw-w-full tw-mt-2"
@@ -26,17 +26,17 @@
               />
             </div>
             <span v-if="errors.subject" class="tw-text-red-500 tw-mb-2">
-              <span class="tw-text-red-500">{{ translations.SubjectRequired }}</span>
+              <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED') }}</span>
             </span>
 
             <div class="tw-mb-4">
-              <label>{{ translations.emailBody }} <span style="color: #E5283B">*</span></label>
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY') }} <span style="color: #E5283B">*</span></label>
               <editor-quill
                   style="height: 30em"
                   :text="form.message"
                   v-model="form.message"
                   :enable_variables="true"
-                  :placeholder="translations.EmailResume"
+                  :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME')"
                   :id="'email'"
                   :key="dynamicComponent"
                   :class="{ 'is-invalid': errors.message}"
@@ -49,11 +49,11 @@
               </div>
             </div>
             <p v-if="errors.message" class="tw-text-red-500 tw-mb-2">
-              <span class="tw-text-red-500">{{ translations.BodyRequired }}</span>
+              <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_BODY_REQUIRED') }}</span>
             </p>
 
             <div class="form-group">
-              <label>{{ translations.emailCategory }}</label>
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY') }}</label>
               <incremental-select
                   v-if="categories.length > 0"
                   :options="this.categoriesList"
@@ -70,12 +70,12 @@
 
         <div>
           <div class="tw-flex tw-items-center tw-mb-4 tw-gap-1">
-            <h3 class="tw-cursor-pointer !tw-mb-0" @click="displayAdvanced">{{ translations.Advanced }}</h3>
-            <button :title="translations.Advanced" type="button" class="tw-bg-transparent tw-flex tw-flex-col"
+            <h3 class="tw-cursor-pointer !tw-mb-0" @click="displayAdvanced">{{ translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING') }}</h3>
+            <button :title="translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING')" type="button" class="tw-bg-transparent tw-flex tw-flex-col"
                     @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
-            <button :title="translations.Advanced" type="button" @click="displayAdvanced"
+            <button :title="translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING')" type="button" @click="displayAdvanced"
                     class="tw-bg-transparent tw-flex tw-flex-col" v-show="displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
             </button>
@@ -87,7 +87,7 @@
             </div>
 
             <div class="form-group tw-mb-4">
-              <label>{{ translations.receiverName }}</label>
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER') }}</label>
               <input
                   type="text"
                   class="tw-w-full fabrikinput tw-mt-2"
@@ -96,7 +96,7 @@
             </div>
 
             <div class="form-group tw-mb-4">
-              <label>{{ translations.emailAddress }}</label>
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS') }}</label>
               <input
                   type="text"
                   class="tw-w-full fabrikinput tw-mt-2"
@@ -108,7 +108,7 @@
             </div>
 
             <div class="form-group tw-mb-4" id="receivers_cc">
-              <label>{{ translations.ReceiversCC }}</label>
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS') }}</label>
               <multiselect
                   :class="'tw-mt-2'"
                   v-model="selectedReceiversCC"
@@ -129,7 +129,7 @@
 
             <!-- Email -- BCC (in form of email adress or fabrik element -->
             <div class="form-group tw-mb-4" id="receivers_bcc">
-              <label>{{ translations.ReceiversBCC }}</label>
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS') }}</label>
               <multiselect
                   :class="'tw-mt-2'"
                   v-model="selectedReceiversBCC"
@@ -150,7 +150,7 @@
 
             <!-- Email -- Associated letters (in form of email adress or fabrik element -->
             <div class="form-group tw-mb-4" id="attached_letters" v-if="attached_letters">
-              <label>{{ translations.Letters }}</label>
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT') }}</label>
               <multiselect
                   :class="'tw-mt-2'"
                   v-model="selectedLetterAttachments"
@@ -162,7 +162,7 @@
                   select-label=""
                   selected-label=""
                   deselect-label=""
-                  :placeholder="translations.LettersPlaceHolder"
+                  :placeholder="translate('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT')"
                   :close-on-select="false"
                   :clear-on-select="false"
               ></multiselect>
@@ -170,7 +170,7 @@
 
             <!-- Email -- Action tags -->
             <div class="form-group tw-mb-4" v-if="tags">
-              <label>{{ translations.Tags }}</label>
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_EMAIL_TAGS') }}</label>
               <multiselect
                   :class="'tw-mt-2'"
                   v-model="selectedTags"
@@ -182,7 +182,7 @@
                   select-label=""
                   selected-label=""
                   deselect-label=""
-                  :placeholder="translations.TagsPlaceHolder"
+                  :placeholder="translate('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS')"
                   :close-on-select="false"
                   :clear-on-select="false"
               ></multiselect>
@@ -190,7 +190,7 @@
 
             <!-- Email -- Candidat attachments -->
             <div class="form-group tw-mb-4">
-              <label>{{ translations.CandidateAttachments }}</label>
+              <label>{{ translate('COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS') }}</label>
               <multiselect
                   :class="'tw-mt-2'"
                   v-model="selectedCandidateAttachments"
@@ -202,7 +202,7 @@
                   select-label=""
                   selected-label=""
                   deselect-label=""
-                  :placeholder="translations.CandidateAttachmentsPlaceholder"
+                  :placeholder="translate('COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS')"
                   :close-on-select="false"
                   :clear-on-select="false"
               ></multiselect>
@@ -215,10 +215,10 @@
               type="button"
               class="em-secondary-button !tw-w-auto"
               onclick="history.back()">
-            {{ translations.retour }}
+            {{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}
           </button>
-          <button type="submit" class="em-primary-button tw-w-auto">
-            {{ translations.continuer }}
+          <button type="submit" class="em-primary-button !tw-w-auto">
+            {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
           </button>
         </div>
       </form>
@@ -264,78 +264,13 @@ export default {
     dynamicComponent: false,
     displayAdvancedParameters: false,
 
-    translations: {
-      AddEmail: "COM_EMUNDUS_ONBOARD_ADD_EMAIL",
-      Advanced: "COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING",
-      Informations: "COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION",
-      Trigger: "COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER",
-      emailType: "COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE",
-      emailCategory: "COM_EMUNDUS_ONBOARD_CHOOSECATEGORY",
-      retour: "COM_EMUNDUS_ONBOARD_ADD_RETOUR",
-      continuer: "COM_EMUNDUS_ONBOARD_ADD_CONTINUER",
-      emailName: "COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME",
-      emailBody: "COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY",
-      receiverName: "COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER",
-      emailAddress: "COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS",
-      EmailResume: "COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME",
-      RequiredFieldsIndicate: "COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE",
-      EmailType: "COM_EMUNDUS_ONBOARD_EMAILTYPE",
-      SubjectRequired: "COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED",
-      BodyRequired: "COM_EMUNDUS_ONBOARD_BODY_REQUIRED",
-      Program: "COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM",
-      Model: "COM_EMUNDUS_ONBOARD_TRIGGERMODEL",
-      ModelRequired: "COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED",
-      Status: "COM_EMUNDUS_ONBOARD_TRIGGERSTATUS",
-      StatusRequired: "COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED",
-      Target: "COM_EMUNDUS_ONBOARD_TRIGGERTARGET",
-      TargetRequired: "COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED",
-      Administrators: "COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS",
-      Evaluators: "COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS",
-      Candidates: "COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES",
-      DefinedUsers: "COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS",
-      ChooseUsers: "COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS",
-      UsersRequired: "COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED",
-      Search: "COM_EMUNDUS_ONBOARD_SEARCH_USERS",
-      TheCandidate: "COM_EMUNDUS_ONBOARD_THE_CANDIDATE",
-      Manual: "COM_EMUNDUS_ONBOARD_MANUAL",
-      Actions: "COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS",
-      Tags: "COM_EMUNDUS_ONBOARD_EMAIL_TAGS",
-      DocumentType: "COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT",
-
-      /// Letters field
-      Letters: "COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT",
-      LettersPlaceHolder: "COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT",
-
-      /// Receiver CC field
-      ReceiversCC: "COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS",
-      ReceiversCCPlaceHolder: "COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER",
-
-      /// Receiver BCC field
-      ReceiversBCC: "COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS",
-      ReceiversBCCPlaceHolder: "COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER",
-
-      /// Receiver Tooltips
-      CopiesTooltips: "COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS",
-
-      /// Selected Action Tags
-      TagsPlaceHolder: "COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS",
-
-      /// Candidat Attachments (title, placeholder)
-      CandidateAttachments: "COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS",
-      CandidateAttachmentsPlaceholder: "COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS",
-    },
-
     categories: [],
-    programs: [],
-    status: [],
-    users: [],
-    selectedUsers: [],
     enableTip: false,
     searchTerm: '',
     selectall: false,
 
-    tags: [],         /// email --- tags
-    documents: [],    /// email -- document types
+    tags: [],
+    documents: [],
 
     selectedTags: [],
     selectedCandidateAttachments: [],
@@ -351,24 +286,9 @@ export default {
       category: "",
       published: 1
     },
-    trigger: {
-      model: null,
-      status: null,
-      action_status: null,
-      target: null,
-      program: null
-    },
-    triggered: false,
     errors: {
       subject: false,
       message: false,
-      trigger: {
-        model: false,
-        status: false,
-        target: false,
-        selectedUsers: false,
-        action_status: false
-      }
     },
     submitted: false,
     loading: false,
@@ -410,10 +330,7 @@ export default {
     });
     setTimeout(() => {
       this.enableVariablesTip();
-    }, 2000);
-    this.getProgramsList();
-    this.getStatus();
-    this.getUsers();
+    },2000);
   },
   mounted() {
     if (this.actualLanguage === "en") {
@@ -473,7 +390,7 @@ export default {
     displayAdvanced() {
       this.displayAdvancedParameters = !this.displayAdvancedParameters;
     },
-    addNewCC(newCC) {
+    addNewCC (newCC) {
       const tag = {
         email: newCC,
         id: newCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
@@ -483,66 +400,13 @@ export default {
     },
 
     /// add new BCC
-    addNewBCC(newBCC) {
+    addNewBCC (newBCC) {
       const tag = {
         email: newBCC,
         id: newBCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
       }
       this.receivers_bcc.push(tag);
       this.selectedReceiversBCC.push(tag);
-    },
-
-    /// get all users
-    getAllUsers: function () {
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus&controller=settings&task=getallusers',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-      }).then(response => {
-        this.receivers_cc = response.data.users;
-        this.receivers_bcc = response.data.users;
-      }).catch(error => {
-        console.log(error);
-      })
-    },
-
-    getProgramsList() {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=programme&task=getallprogram",
-        params: {
-          filter: '',
-          sort: '',
-          recherche: '',
-          lim: 100,
-          page: 1,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        this.programs = response.data.data;
-      });
-    },
-    getStatus() {
-      axios.get("index.php?option=com_emundus&controller=email&task=getstatus")
-          .then(response => {
-            this.status = response.data.data;
-          });
-    },
-    getUsers() {
-      axios.get("index.php?option=com_emundus&controller=programme&task=getuserswithoutapplicants")
-          .then(response => {
-            this.users = response.data.data;
-          });
-    },
-    searchUserByTerm() {
-      axios.get("index.php?option=com_emundus&controller=programme&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
-          .then(response => {
-            this.users = response.data.data;
-          });
     },
     getEmailSender() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getemailsender")
@@ -551,34 +415,10 @@ export default {
           });
     },
 
-    addTrigger() {
-      if (this.trigger.program != null) {
-        this.triggered = true;
-      } else {
-        this.triggered = false;
-      }
-    },
-    selectAllUsers() {
-      this.users.forEach(element => {
-        if (!this.selectall) {
-          this.selectedUsers[element.id] = true;
-        } else {
-          this.selectedUsers[element.id] = false;
-        }
-      });
-      this.$forceUpdate();
-    },
-
     submit() {
       this.errors = {
         subject: false,
         message: false,
-        trigger: {
-          model: false,
-          status: false,
-          target: false,
-          selectedUsers: false,
-        }
       };
 
       if (this.form.subject == "") {
@@ -591,42 +431,23 @@ export default {
         return 0;
       }
 
-      if (this.trigger.program != null) {
-        if (this.trigger.action_status == null) {
-          this.errors.trigger.action_status = true;
-          return 0;
-        }
-
-        if (this.trigger.status == null) {
-          this.errors.trigger.status = true;
-          return 0;
-        }
-
-        if (this.trigger.target == null) {
-          this.errors.trigger.target = true;
-          return 0;
-        } else if (this.trigger.target == 0) {
-          if (this.selectedUsers.length === 0) {
-            this.errors.trigger.selectedUsers = true;
-            return 0;
-          }
-        }
-      }
       this.submitted = true;
 
       if (this.email !== "") {
-        let formData = new FormData();
-        formData.append("body", JSON.stringify(this.form));
-        formData.append("code", this.email);
-        formData.append("selectedReceiversCC", this.selectedReceiversCC);
-        formData.append("selectedReceiversBCC", this.selectedReceiversBCC);
-        formData.append("selectedLetterAttachments", this.selectedLetterAttachments);
-        formData.append("selectedCandidateAttachments", this.selectedCandidateAttachments);
-        formData.append("selectedTags", this.selectedTags);
-
-        fetch("/index.php?option=com_emundus&controller=email&task=updateemail", {
-          method: "POST",
-          body: formData
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus&controller=email&task=updateemail",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({ body: this.form,
+            code: this.email,
+            selectedReceiversCC: this.selectedReceiversCC,
+            selectedReceiversBCC: this.selectedReceiversBCC,
+            selectedLetterAttachments:this.selectedLetterAttachments,
+            selectedCandidateAttachments: this.selectedCandidateAttachments,
+            selectedTags: this.selectedTags
+          })
         }).then(() => {
           history.back();
         }).catch(error => {
@@ -648,20 +469,7 @@ export default {
             selectedTags: this.selectedTags
           })
         }).then(response => {
-          this.trigger.model = response.data.data;
-          axios({
-            method: "post",
-            url: 'index.php?option=com_emundus&controller=email&task=createtrigger',
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              trigger: this.trigger,
-              users: this.selectedUsers
-            })
-          }).then(() => {
-            this.redirectJRoute('index.php?option=com_emundus&view=emails');
-          });
+          this.redirectJRoute('index.php?option=com_emundus&view=emails');
         }).catch(error => {
           console.log(error);
         });

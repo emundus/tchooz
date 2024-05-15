@@ -1454,8 +1454,8 @@ class EmundusHelperEvents
 			$query = $db->getQuery(true);
 
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
-			$h_date = new EmundusHelperDate();
-			$now    = $h_date->getNow();
+
+			$now    = EmundusHelperDate::getNow();
 
 			$query->update($db->quoteName('#__emundus_campaign_candidature'))
 				->set($db->quoteName('updated') . ' = ' . $db->quote($now))

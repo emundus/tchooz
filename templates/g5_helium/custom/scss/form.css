@@ -1238,7 +1238,7 @@
     width: 100% !important;
   }
   .chzn-container, .chzn-container.chzn-container-multi, .chzn-container.chzn-container-multi.chzn-container-active, .chosen-container, .chosen-container.chosen-container-multi, .chosen-container.chosen-container-multi.chosen-container-active {
-    width: auto;
+    width: 100% !important;
     max-width: unset !important;
 
     .chzn-drop,.chosen-drop {

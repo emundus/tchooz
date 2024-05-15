@@ -66,7 +66,7 @@
     <field name="template_style_id">0</field>
     <field name="params"></field>
     <field name="lft">0</field>
-    <field name="rgt">415</field>
+    <field name="rgt">419</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>
@@ -988,7 +988,7 @@
     <field name="access">7</field>
     <field name="img"> </field>
     <field name="template_style_id">24</field>
-    <field name="params">{&quot;show_title&quot;:&quot;0&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
+    <field name="params">{&quot;show_title&quot;:&quot;0&quot;,&quot;link_titles&quot;:&quot;&quot;,&quot;show_intro&quot;:&quot;&quot;,&quot;info_block_position&quot;:&quot;&quot;,&quot;info_block_show_title&quot;:&quot;&quot;,&quot;show_category&quot;:&quot;&quot;,&quot;link_category&quot;:&quot;&quot;,&quot;show_parent_category&quot;:&quot;&quot;,&quot;link_parent_category&quot;:&quot;&quot;,&quot;show_associations&quot;:&quot;&quot;,&quot;show_author&quot;:&quot;&quot;,&quot;link_author&quot;:&quot;&quot;,&quot;show_create_date&quot;:&quot;&quot;,&quot;show_modify_date&quot;:&quot;&quot;,&quot;show_publish_date&quot;:&quot;&quot;,&quot;show_item_navigation&quot;:&quot;&quot;,&quot;show_hits&quot;:&quot;&quot;,&quot;show_tags&quot;:&quot;&quot;,&quot;show_noauth&quot;:&quot;&quot;,&quot;urls_position&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;indicateurs-page&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;,&quot;gantry&quot;:1,&quot;gantry-dropdown_dir&quot;:&quot;right&quot;,&quot;gantry-width&quot;:&quot;auto&quot;,&quot;gantry-layout&quot;:&quot;list&quot;,&quot;gantry-visible&quot;:true,&quot;gantry-columns&quot;:&quot;[]&quot;,&quot;gantry-columns_count&quot;:&quot;[]&quot;,&quot;gantry-options&quot;:&quot;[]&quot;}</field>
     <field name="lft">88</field>
     <field name="rgt">89</field>
     <field name="home">0</field>
@@ -5863,6 +5863,62 @@
     <field name="params">{&quot;addurl&quot;:&quot;&quot;,&quot;show-title&quot;:&quot;1&quot;,&quot;calculations&quot;:&quot;0&quot;,&quot;listlayout&quot;:&quot;&quot;,&quot;fabriklayout&quot;:&quot;&quot;,&quot;resetfilters&quot;:&quot;0&quot;,&quot;list_elements&quot;:&quot;null&quot;,&quot;prefilters&quot;:&quot;null&quot;,&quot;rows_per_page&quot;:&quot;10&quot;,&quot;popup_width&quot;:&quot;340&quot;,&quot;popup_opts_width&quot;:&quot;200&quot;,&quot;csv_import_extensions&quot;:&quot;txt,csv,tsv&quot;,&quot;csv_import_sil_only&quot;:&quot;0&quot;,&quot;csv_import_dropdata&quot;:&quot;0&quot;,&quot;csv_import_overwrite&quot;:&quot;0&quot;,&quot;list_extra_query_string&quot;:&quot;&quot;,&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu_icon_css&quot;:&quot;&quot;,&quot;menu_image&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1,&quot;page_title&quot;:&quot;&quot;,&quot;show_page_heading&quot;:&quot;&quot;,&quot;page_heading&quot;:&quot;&quot;,&quot;pageclass_sfx&quot;:&quot;&quot;,&quot;menu-meta_description&quot;:&quot;&quot;,&quot;robots&quot;:&quot;&quot;}</field>
     <field name="lft">412</field>
     <field name="rgt">413</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">437</field>
+    <field name="menutype">actions-users</field>
+    <field name="title">Exporter</field>
+    <field name="alias">export</field>
+    <field name="note"></field>
+    <field name="path">export</field>
+    <field name="link">#</field>
+    <field name="type">heading</field>
+    <field name="published">1</field>
+    <field name="parent_id">1</field>
+    <field name="level">1</field>
+    <field name="component_id">0</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">22</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1}</field>
+    <field name="lft">415</field>
+    <field name="rgt">418</field>
+    <field name="home">0</field>
+    <field name="language">*</field>
+    <field name="client_id">0</field>
+    <field name="publish_up" value_is_null="true"></field>
+    <field name="publish_down" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">438</field>
+    <field name="menutype">actions-users</field>
+    <field name="title">Exporter vers Excel</field>
+    <field name="alias">export-excel</field>
+    <field name="note">12|r|1|6</field>
+    <field name="path">export/export-excel</field>
+    <field name="link">index.php?option=com_emundus&amp;view=users&amp;format=raw&amp;layout=export&amp;Itemid={Itemid}</field>
+    <field name="type">url</field>
+    <field name="published">1</field>
+    <field name="parent_id">437</field>
+    <field name="level">2</field>
+    <field name="component_id">0</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="browserNav">0</field>
+    <field name="access">1</field>
+    <field name="img"> </field>
+    <field name="template_style_id">22</field>
+    <field name="params">{&quot;menu-anchor_title&quot;:&quot;&quot;,&quot;menu-anchor_css&quot;:&quot;&quot;,&quot;menu-anchor_rel&quot;:&quot;&quot;,&quot;menu_image_css&quot;:&quot;&quot;,&quot;menu_text&quot;:1,&quot;menu_show&quot;:1}</field>
+    <field name="lft">416</field>
+    <field name="rgt">417</field>
     <field name="home">0</field>
     <field name="language">*</field>
     <field name="client_id">0</field>

@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * eMundus Component Controller
@@ -54,7 +55,7 @@ class EmundusControllerEmail extends JControllerLegacy
 			parent::display();
 		}
 		else {
-			echo JText::_('ACCESS_DENIED');
+			echo Text::_('ACCESS_DENIED');
 		}
 	}
 
@@ -84,7 +85,7 @@ class EmundusControllerEmail extends JControllerLegacy
 
 	function sendmail_expert()
 	{
-		$response = ['status' => false, 'sent' => null, 'failed' => true, 'message' => JText::_('ACCESS_DENIED')];
+		$response = ['status' => false, 'sent' => null, 'failed' => true, 'message' => Text::_('ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_em_user->id) || EmundusHelperAccess::asAccessAction(18, 'c', $this->_user->id)) {
 
@@ -95,7 +96,7 @@ class EmundusControllerEmail extends JControllerLegacy
 				$response = ['status' => true, 'sent' => $email['sent'], 'failed' => $email['failed'], 'message' => $email['message']];
 			}
 			else {
-				$response = ['status' => false, 'sent' => null, 'failed' => true, 'message' => JText::_('MISSING_PARAMS')];
+				$response = ['status' => false, 'sent' => null, 'failed' => true, 'message' => Text::_('MISSING_PARAMS')];
 			}
 		}
 
@@ -108,7 +109,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	 */
 	public function getallemail()
 	{
-		$tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
+		$tab = array('status' => false, 'msg' => Text::_("ACCESS_DENIED"));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 
@@ -122,10 +123,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$emails = $this->m_emails->getAllEmails($lim, $page, $filter, $sort, $recherche, $category);
 
 			if (count($emails) > 0) {
-				$tab = array('status' => true, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $emails);
+				$tab = array('status' => true, 'msg' => Text::_('EMAIL_RETRIEVED'), 'data' => $emails);
 			}
 			else {
-				$tab = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => $emails);
+				$tab = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => $emails);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -136,7 +137,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -146,10 +147,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$emails = $this->m_emails->deleteEmail($data);
 
 			if ($emails) {
-				$tab = array('status' => 1, 'msg' => JText::_('EMAIL_DELETED'), 'data' => $emails);
+				$tab = array('status' => 1, 'msg' => Text::_('EMAIL_DELETED'), 'data' => $emails);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_DELETE_EMAIL'), 'data' => $emails);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_DELETE_EMAIL'), 'data' => $emails);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -160,7 +161,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -170,10 +171,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$emails = $this->m_emails->unpublishEmail($data);
 
 			if ($emails) {
-				$tab = array('status' => 1, 'msg' => JText::_('EMAIL_UNPUBLISHED'), 'data' => $emails);
+				$tab = array('status' => 1, 'msg' => Text::_('EMAIL_UNPUBLISHED'), 'data' => $emails);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UNPUBLISH_EMAIL'), 'data' => $emails);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UNPUBLISH_EMAIL'), 'data' => $emails);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -184,7 +185,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -194,10 +195,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$emails = $this->m_emails->publishEmail($data);
 
 			if ($emails) {
-				$tab = array('status' => 1, 'msg' => JText::_('EMAIL_PUBLISHED'), 'data' => $emails);
+				$tab = array('status' => 1, 'msg' => Text::_('EMAIL_PUBLISHED'), 'data' => $emails);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_PUBLISH_EMAIL'), 'data' => $emails);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_PUBLISH_EMAIL'), 'data' => $emails);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -208,7 +209,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -221,7 +222,7 @@ class EmundusControllerEmail extends JControllerLegacy
 				$this->getallemail();
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_DUPLICATE_EMAIL'), 'data' => $email);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_DUPLICATE_EMAIL'), 'data' => $email);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -232,7 +233,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -299,10 +300,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$result = $this->m_emails->createEmail($data, $cc_list, $bcc_list, $letter_list, $document_list, $tag_list);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('EMAIL_ADDED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_EMAIL'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_ADD_EMAIL'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -314,11 +315,10 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
-			$data                  = $this->input->getRaw('body', '{}');
-			$data                  = json_decode($data, true);
+			$data                  = $this->input->getRaw('body');
 			$code                  = $this->input->getString('code');
 			$receivers_cc          = $this->input->getRaw('selectedReceiversCC');
 			$receivers_bcc         = $this->input->getRaw('selectedReceiversBCC');
@@ -381,10 +381,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$result = $this->m_emails->updateEmail($code, $data, $cc_list, $bcc_list, $letter_list, $document_list, $tag_list);        // updateEmail (models)
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('EMAIL_ADDED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('EMAIL'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('EMAIL'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -395,7 +395,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -405,10 +405,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$email = $this->m_emails->getAdvancedEmailById($id);
 
 			if (!empty($email)) {
-				$tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $email);
+				$tab = array('status' => 1, 'msg' => Text::_('EMAIL_RETRIEVED'), 'data' => $email);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => $email);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => $email);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -417,16 +417,16 @@ class EmundusControllerEmail extends JControllerLegacy
 
 	public function getemailcategories()
 	{
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$categories = $this->m_emails->getEmailCategories();
 
 			if (!empty($categories)) {
-				$response = array('status' => true, 'msg' => JText::_('EMAIL_CATEGORIES_RETRIEVED'), 'data' => $categories);
+				$response = array('status' => true, 'msg' => Text::_('EMAIL_CATEGORIES_RETRIEVED'), 'data' => $categories);
 			}
 			else {
-				$response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_EMAIL_CATEGORIES');
+				$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_EMAIL_CATEGORIES');
 			}
 		}
 
@@ -438,16 +438,16 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$email = $this->m_emails->getEmailTypes();
 
 			if (!empty($email)) {
-				$tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $email);
+				$tab = array('status' => 1, 'msg' => Text::_('EMAIL_RETRIEVED'), 'data' => $email);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => $email);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => $email);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -458,16 +458,16 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$status = $this->m_emails->getStatus();
 
 			if (!empty($status)) {
-				$tab = array('status' => 1, 'msg' => JText::_('STATUS_RETRIEVED'), 'data' => $status);
+				$tab = array('status' => 1, 'msg' => Text::_('STATUS_RETRIEVED'), 'data' => $status);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_STATUS'), 'data' => $status);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_STATUS'), 'data' => $status);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -478,7 +478,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -488,10 +488,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$triggers = $this->m_emails->getTriggersByProgramId($pid);
 
 			if (!empty($triggers)) {
-				$tab = array('status' => 1, 'msg' => JText::_('TRIGGERS_RETRIEVED'), 'data' => $triggers);
+				$tab = array('status' => 1, 'msg' => Text::_('TRIGGERS_RETRIEVED'), 'data' => $triggers);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_TRIGGERS'), 'data' => $triggers);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_TRIGGERS'), 'data' => $triggers);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -502,7 +502,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -512,10 +512,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$trigger = $this->m_emails->getTriggerById($tid);
 
 			if (!empty($trigger)) {
-				$tab = array('status' => 1, 'msg' => JText::_('TRIGGER_RETRIEVED'), 'data' => $trigger);
+				$tab = array('status' => 1, 'msg' => Text::_('TRIGGER_RETRIEVED'), 'data' => $trigger);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_TRIGGER'), 'data' => $trigger);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_TRIGGER'), 'data' => $trigger);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -526,7 +526,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -537,10 +537,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$status = $this->m_emails->createTrigger($trigger, $users, $this->_user);
 
 			if ($status) {
-				$tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);
+				$tab = array('status' => 1, 'msg' => Text::_('TRIGGER_CREATED'), 'data' => $status);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_CREATE_TRIGGER'), 'data' => $status);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_CREATE_TRIGGER'), 'data' => $status);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -551,7 +551,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -563,10 +563,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$status = $this->m_emails->updateTrigger($tid, $trigger, $users);
 
 			if (!empty($status)) {
-				$tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);
+				$tab = array('status' => 1, 'msg' => Text::_('TRIGGER_CREATED'), 'data' => $status);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_CREATE_TRIGGER'), 'data' => $status);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_CREATE_TRIGGER'), 'data' => $status);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -577,7 +577,7 @@ class EmundusControllerEmail extends JControllerLegacy
 	{
 		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -587,10 +587,10 @@ class EmundusControllerEmail extends JControllerLegacy
 			$status = $this->m_emails->removeTrigger($tid);
 
 			if (!empty($status)) {
-				$tab = array('status' => 1, 'msg' => JText::_('TRIGGER_CREATED'), 'data' => $status);
+				$tab = array('status' => 1, 'msg' => Text::_('TRIGGER_CREATED'), 'data' => $status);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_CREATE_TRIGGER'), 'data' => $status);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_CREATE_TRIGGER'), 'data' => $status);
 			}
 		}
 		echo json_encode((object) $tab);

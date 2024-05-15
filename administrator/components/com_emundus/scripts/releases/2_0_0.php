@@ -156,6 +156,38 @@ class Release2_0_0Installer extends ReleaseInstaller
 			EmundusHelperUpdate::installExtension('plg_emundus_system', 'emundus',null,'plugin',1,'system');
 			EmundusHelperUpdate::installExtension('eMundus - Update profile', 'emundusupdateprofile',null,'plugin',1,'fabrik_form');
 
+			if(!EmundusHelperUpdate::addColumn('jos_messages', 'email_cc', 'TEXT')['status']) {
+				throw new \Exception('Erreur lors de l\'ajout de la colonne email_cc à la table jos_messages.');
+			}
+
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_elements'))
+				->where($this->db->quoteName('plugin') . ' LIKE ' . $this->db->quote('textarea'));
+			$this->db->setQuery($query);
+			$elements = $this->db->loadObjectList();
+
+			foreach($elements as $element) {
+				$params = json_decode($element->params, true);
+				$params['wysiwyg_extra_buttons'] = 0;
+				$element->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_elements', $element, 'id');
+			}
+
+			$query->clear()
+				->update($this->db->quoteName('#__fabrik_forms'))
+				->set($this->db->quoteName('form_template') . ' = ' . $this->db->quote('emundus'))
+				->set($this->db->quoteName('view_only_template') . ' = ' . $this->db->quote('emundus'))
+				->where($this->db->quoteName('form_template') . ' IN (' . implode(',', $this->db->quote(['','bootstrap'])) . ')')
+				->orWhere($this->db->quoteName('view_only_template') . ' IN (' . implode(',', $this->db->quote(['','bootstrap'])) . ')');
+			$this->db->setQuery($query);
+			if($this->db->execute()) {
+				EmundusHelperUpdate::displayMessage('Les templates par défaut des formulaires ont été changés pour emundus.', 'success');
+			}
+			else {
+				throw new \Exception('Erreur lors de la modification des templates des formulaires.');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

@@ -686,6 +686,9 @@ class EmundusHelperFiles
 							continue;
 						}
 						$value->id            = $key;
+						$value->table_label = JText::_($value->table_label);
+	                    $value->group_label = JText::_($value->group_label);
+	                    $value->element_label = JText::_($value->element_label);
 						$elts[]               = $value;
 					}
 				}
@@ -769,6 +772,9 @@ class EmundusHelperFiles
 							continue;
 						}
 						$value->id            = $key;
+						$value->table_label = JText::_($value->table_label);
+	                    $value->group_label = JText::_($value->group_label);
+	                    $value->element_label = JText::_($value->element_label);
 						$elts[]               = $value;
 					}
 				}

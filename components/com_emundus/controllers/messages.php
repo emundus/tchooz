@@ -16,7 +16,9 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail;
+use Joomla\CMS\Uri\Uri;
 
 /**
  * eMundus Component Controller
@@ -529,12 +531,11 @@ class EmundusControllerMessages extends JControllerLegacy
 	 */
 	public function applicantemail()
 	{
-
 		if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
 			die(Text::_("ACCESS_DENIED"));
 		}
 
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
@@ -636,7 +637,7 @@ class EmundusControllerMessages extends JControllerLegacy
 				'CAMPAIGN_START' => JHTML::_('date', $fnum->start_date, Text::_('DATE_FORMAT_OFFSET1'), null),
 				'CAMPAIGN_END'   => JHTML::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
 				'DEADLINE'       => JHTML::_('date', $fnum->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
-				'SITE_URL'       => JURI::base(),
+				'SITE_URL'       => Uri::base(),
 				'USER_EMAIL'     => $fnum->email
 			];
 
@@ -670,7 +671,7 @@ class EmundusControllerMessages extends JControllerLegacy
 			];
 
 			// Configure email sender
-			$mailer = Factory::getMailer();
+			$mailer = Factory::getContainer()->get(Mail\MailerFactoryInterface::class)->createMailer();
 			$mailer->setSender($sender);
 			if (!empty($reply_to_from)) {
 				$mailer->addReplyTo($reply_to_from);
@@ -779,7 +780,7 @@ class EmundusControllerMessages extends JControllerLegacy
 			if ($send !== true) {
 				$failed[] = $fnum->email;
 				echo 'Error sending email: ' . $send->__toString();
-				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+				Log::add($send->__toString(), Log::ERROR, 'com_emundus');
 			}
 			else {
 				// Assoc tags if email has been sent
@@ -800,7 +801,7 @@ class EmundusControllerMessages extends JControllerLegacy
 							$db->execute();
 						}
 						catch (Exception $e) {
-							JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :' . $query->__toString() . " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
+							Log::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :' . $query->__toString() . " with " . $e->getMessage(), Log::ERROR, 'com_emundus');
 						}
 					}
 				}
@@ -972,7 +973,7 @@ class EmundusControllerMessages extends JControllerLegacy
 			if ($send !== true) {
 				$failed[] = $user->email;
 				echo 'Error sending email: ' . $send->__toString();
-				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+				Log::add($send->__toString(), Log::ERROR, 'com_emundus');
 			}
 			else {
 				$sent[] = $user->email;
@@ -1430,7 +1431,7 @@ class EmundusControllerMessages extends JControllerLegacy
 		if ($send !== true) {
 			$failed[] = $fnum_info['email'];
 			echo 'Error sending email: ' . $send->__toString();
-			JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+			Log::add($send->__toString(), Log::ERROR, 'com_emundus');
 		}
 		else {
 			$sent[] = $fnum_info['email'];

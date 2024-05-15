@@ -570,6 +570,12 @@
     <field name="group_id">798</field>
     <field name="ordering">1</field>
    </row>
+   <row>
+    <field name="id">4064</field>
+    <field name="form_id">379</field>
+    <field name="group_id">799</field>
+    <field name="ordering">0</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>
