@@ -3946,7 +3946,7 @@
     <field name="path">campaigns/add</field>
     <field name="link">index.php?option=com_emundus&amp;view=campaigns&amp;layout=add</field>
     <field name="type">component</field>
-    <field name="published">0</field>
+    <field name="published">1</field>
     <field name="parent_id">195</field>
     <field name="level">2</field>
     <field name="component_id">458</field>
@@ -3974,7 +3974,7 @@
     <field name="path">campaigns/edit</field>
     <field name="link">index.php?option=com_emundus&amp;view=campaigns&amp;layout=addnextcampaign</field>
     <field name="type">component</field>
-    <field name="published">0</field>
+    <field name="published">1</field>
     <field name="parent_id">195</field>
     <field name="level">2</field>
     <field name="component_id">458</field>
@@ -4002,7 +4002,7 @@
     <field name="path">emails/add</field>
     <field name="link">index.php?option=com_emundus&amp;view=emails&amp;layout=add</field>
     <field name="type">component</field>
-    <field name="published">0</field>
+    <field name="published">1</field>
     <field name="parent_id">197</field>
     <field name="level">2</field>
     <field name="component_id">458</field>
@@ -4030,7 +4030,7 @@
     <field name="path">forms/formbuilder</field>
     <field name="link">index.php?option=com_emundus&amp;view=form&amp;layout=formbuilder</field>
     <field name="type">component</field>
-    <field name="published">0</field>
+    <field name="published">1</field>
     <field name="parent_id">196</field>
     <field name="level">2</field>
     <field name="component_id">458</field>
@@ -4506,7 +4506,7 @@
     <field name="path">campaigns/modifier-un-programme</field>
     <field name="link">index.php?option=com_fabrik&amp;view=form&amp;formid=108</field>
     <field name="type">component</field>
-    <field name="published">0</field>
+    <field name="published">1</field>
     <field name="parent_id">195</field>
     <field name="level">2</field>
     <field name="component_id">332</field>
