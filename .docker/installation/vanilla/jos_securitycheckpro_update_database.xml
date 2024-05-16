@@ -255,6 +255,12 @@
     <field name="last_check" value_is_null="true"></field>
     <field name="message" value_is_null="true"></field>
    </row>
+   <row>
+    <field name="id">42</field>
+    <field name="version">1.3.22</field>
+    <field name="last_check" value_is_null="true"></field>
+    <field name="message" value_is_null="true"></field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

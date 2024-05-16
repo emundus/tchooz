@@ -10,11 +10,11 @@
   <table_data name="#__schemas">
    <row>
     <field name="extension_id">227</field>
-    <field name="version_id">5.0.0-2023-09-11</field>
+    <field name="version_id">5.1.0-2024-03-28</field>
    </row>
    <row>
     <field name="extension_id">332</field>
-    <field name="version_id">4.0-2023-05-27</field>
+    <field name="version_id">4.0-2024-05-09</field>
    </row>
    <row>
     <field name="extension_id">346</field>
@@ -26,7 +26,7 @@
    </row>
    <row>
     <field name="extension_id">601</field>
-    <field name="version_id">4.0.1</field>
+    <field name="version_id">4.1.1</field>
    </row>
   </table_data>
  </database>

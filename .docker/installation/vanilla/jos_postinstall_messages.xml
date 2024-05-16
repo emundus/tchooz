@@ -83,6 +83,22 @@
     <field name="version_introduced">4.2.0</field>
     <field name="enabled">0</field>
    </row>
+   <row>
+    <field name="postinstall_message_id">6</field>
+    <field name="extension_id">227</field>
+    <field name="title_key">COM_ADMIN_POSTINSTALL_MSG_HTACCESS_BROTLI_TITLE</field>
+    <field name="description_key">COM_ADMIN_POSTINSTALL_MSG_HTACCESS_BROTLI_DESCRIPTION</field>
+    <field name="action_key"></field>
+    <field name="language_extension">com_admin</field>
+    <field name="language_client_id">1</field>
+    <field name="type">message</field>
+    <field name="action_file"></field>
+    <field name="action"></field>
+    <field name="condition_file">admin://components/com_admin/postinstall/htaccessbrotli.php</field>
+    <field name="condition_method">admin_postinstall_htaccessbrotli_condition</field>
+    <field name="version_introduced">5.1.0</field>
+    <field name="enabled">1</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>
