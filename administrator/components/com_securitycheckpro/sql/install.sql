@@ -69,7 +69,9 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_jlexreview','component','6.0.1','<=','4.0.0','>=','JLex Review Component','Cross Site Scripting vulnerability','Nov 17 2023','Version 6.0.1 and maybe lower','none','No details'),
 ('com_jlexguestbook','component','1.6.4','<=','4.0.0','>=','JLex GuestBook Component','Cross Site Scripting vulnerability','Nov 17 2023','Version 1.6.4 and maybe lower','none','No details'),
 ('Joomla!','core','4.4.0','<=','4.0.0','>=','Joomla! core','One high vulnerability','Nov 30 2023','Joomla 1.6.0 to 4.4.0','update','4.4.1'),
-('Joomla!','core','5.0.0','<=','5.0.0','>=','Joomla! core','One high vulnerability','Nov 30 2023','Joomla 5.0.0','update','5.0.1');
+('Joomla!','core','5.0.0','<=','5.0.0','>=','Joomla! core','One high vulnerability','Nov 30 2023','Joomla 5.0.0','update','5.0.1'),
+('Joomla!','core','4.4.2','<=','4.0.0','>=','Joomla! core','Five vulnerabilities','Feb 21 2024','Joomla 3.2.0 to 4.4.2','update','4.4.3'),
+('Joomla!','core','5.0.2','<=','5.0.0','>=','Joomla! core','Five vulnerabilities','Feb 21 2024','Joomla 5.0.0 to 5.0.2','update','5.0.3');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -192,7 +194,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.20');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.22');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

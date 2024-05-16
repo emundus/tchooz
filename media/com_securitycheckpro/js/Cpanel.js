@@ -101,7 +101,7 @@
     }
 
     function Set_Easy_Config() {
-        url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Easy_Config';
+        var url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Easy_Config';
         jQuery.ajax({
             url: url,                            
             method: 'GET',
@@ -117,7 +117,7 @@
         if (!answer) {
             e.preventDefault();
         }
-        url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Default_Config';
+        var url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Default_Config';
         jQuery.ajax({
             url: url,                            
             method: 'GET',

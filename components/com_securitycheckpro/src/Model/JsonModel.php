@@ -38,6 +38,8 @@ use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\Datab
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\SecuritycheckproModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
 
+if (!defined('SCP_USER_AGENT')) define('SCP_USER_AGENT', 'Securitycheck Pro User agent');
+
 class JsonModel extends BaseModel
 {
 
@@ -474,6 +476,7 @@ class JsonModel extends BaseModel
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);	
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
 			
 		$response = curl_exec($ch);
 		
@@ -1829,11 +1832,13 @@ class JsonModel extends BaseModel
 				if ( is_array($dlid) ) {
 					$this->write_log("Dlid is an array. Extracting values...");
 					foreach($dlid as $key => $value) {
-						$url .= '&amp;' . $key . '=' . $value;
+						$url .= (strpos($url, '?') === false) ? '?' : '&amp;';
+						$url .= $key . '=' . $value;
 						$this->write_log("Url: " . $url);
 					}
 				} else {
-					$url .= '&amp;dlid=' . $dlid;
+					$url .= (strpos($url, '?') === false) ? '?' : '&amp;';
+					$url .= 'dlid=' . $dlid;
 					$this->write_log("Url: " . $url);
 				}
 								

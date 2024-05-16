@@ -6,6 +6,9 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\HTML\HTMLHelper;
+
+HTMLHelper::_('bootstrap.modal');
 
 // styles ('data-xxx' for J3 and 'data-bs-xxxx' for J4)
 $dropdown_style = "data-bs-toggle";

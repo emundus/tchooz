@@ -254,9 +254,10 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
             $db->execute();
             $update_site_data = $db->loadObject();
 						
-			// Remove the 'dlid=' part of the string
+			// Remove the part of the string not needed
 			if ( !empty($update_site_data) ) {
-				$update_site_data->extra_query = str_replace("dlid=", "",$update_site_data->extra_query);
+				$extra_info_to_replace = array("dlid=","key=");
+				$update_site_data->extra_query = str_replace($extra_info_to_replace, "",$update_site_data->extra_query);
 			}						
 			
 		} catch (Exception $e)		
@@ -499,7 +500,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         if (!empty($plugin)) {
 			$downloadid_core_data = $this->get_extra_query_update_sites_table('securitycheckpro_update_database');
 			if ( ($downloadid_core_data <> "error") && (!empty($downloadid_core_data->extra_query)) ) {
-				$downloadid = $downloadid_core_data->extra_query;
+				$downloadid = trim($downloadid_core_data->extra_query);
 			}  
         }
         if (empty($downloadid)) {
@@ -508,7 +509,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 			if (empty($downloadid)){				
 				$downloadid_core_data = $this->get_extra_query_update_sites_table('com_securitycheckpro');
 				if ( ($downloadid_core_data <> "error") && (!empty($downloadid_core_data->extra_query)) ) {
-					$downloadid = $downloadid_core_data->extra_query;
+					$downloadid = trim($downloadid_core_data->extra_query);
 				}				
 			}
         }
@@ -582,11 +583,28 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     
        // Si el campo obtenido no es numérico salimos
         if (!is_numeric($response)) {
-			$message = curl_error($ch);			
-			Factory::getApplication()->enqueueMessage("Unable to retrieve " . $product_name . " subscription's status. Message: " . $message, 'error');
-            return;        
-
-        }                           
+			if( strpos( $response, "well-known" ) !== false) {
+				// The IP has been blocked by the firewall of Siteground.
+				$number_of_dots = substr_count($response, ":");
+				
+				$pos_well_known = strpos($response, "well-known");
+				$pos_first_dots = strpos($response, ":", $pos_well_known)+1;				
+				$pos_second_dots = strrpos($response, ":");				
+				$ip_blocked=  substr($response,$pos_first_dots,$pos_second_dots-$pos_first_dots);				
+				
+				if (filter_var($ip_blocked, FILTER_VALIDATE_IP)) {
+					Factory::getApplication()->enqueueMessage("Your IP has been blocked by Siteground. Please, contact me to solve this. " . Text::_('COM_SECURITYCHECKPRO_IP_BLOCKED') . ":" . $ip_blocked, 'error');
+					$mainframe->setUserState("scp_subscription_status", Text::_('COM_SECURITYCHECKPRO_IP_BLOCKED') . ": " . $ip_blocked);
+				} else {
+					Factory::getApplication()->enqueueMessage("Your IP has been blocked by Siteground. Please, contact me to solve this.", 'error');
+					$mainframe->setUserState("scp_subscription_status", Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR'));
+				}				
+			} else {
+				$message = curl_error($ch);			
+				Factory::getApplication()->enqueueMessage("Unable to retrieve " . $product_name . " subscription's status. Message: " . $message, 'error');
+			}			
+            return;
+		}                           
 
         // Si el resultado de la petición es 'false' no podemos hacer nada
         if ($response === false) {  
@@ -613,7 +631,16 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
                 } else if ($product == "trackactions") {
                     $mainframe->setUserState("trackactions_subscription_status", Text::_('COM_SECURITYCHECKPRO_EXPIRED'));
                 }
-            }
+            } else {
+				// Some error. Let's set the status to error and show it.
+				if ($product == "update") {
+					$mainframe->setUserState("scp_update_database_subscription_status", Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR') . " code: " . $response);
+                } else if ($product == "scp") {
+                    $mainframe->setUserState("scp_subscription_status", Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR') . " code: " . $response);
+                } else if ($product == "trackactions") {
+                    $mainframe->setUserState("trackactions_subscription_status", Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_ERROR') . " code: " . $response);
+                }				
+			}
         }
         
         // Cerramos el manejador

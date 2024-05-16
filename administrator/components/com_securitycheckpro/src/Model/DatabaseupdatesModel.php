@@ -218,14 +218,14 @@ class DatabaseupdatesModel extends BaseModel
             if (!empty($plugin)) {                
 				$downloadid_core_data = $this->get_extra_query_update_sites_table('securitycheckpro_update_database');
 				if ( ($downloadid_core_data <> "error") && (!empty($downloadid_core_data->extra_query)) ) {
-					$downloadid = $downloadid_core_data->extra_query;
+					$downloadid =  trim($downloadid_core_data->extra_query);
 				}	
             }
         
             // Si el 'Download ID' está vacío, intentamos extraerlo de SCP
             if (empty($downloadid)) {            
                 $app = ComponentHelper::getParams('com_securitycheckpro');
-                $downloadid = $app->get('downloadid');            
+                $downloadid = trim($app->get('downloadid'));            
             }
         
             if (empty($downloadid)) {    

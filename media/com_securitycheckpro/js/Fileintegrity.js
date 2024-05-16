@@ -108,9 +108,8 @@
 		listTotal     = 0,
 		offset        = 0,
 		i             = 0,
-		pieElement    = id + " .pie-chart__pie"
-		dataElement   = id + " .pie-chart__legend"
-
+		pieElement    = id + " .pie-chart__pie",
+		dataElement   = id + " .pie-chart__legend",
 		color         = [
 		  "cornflowerblue",
 		  "olivedrab",

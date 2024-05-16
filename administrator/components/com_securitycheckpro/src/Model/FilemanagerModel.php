@@ -1509,8 +1509,7 @@ class FileManagerModel extends BaseModel
             $filename = $this->generateKey();
             try
             {
-				$this->Stack = mb_convert_encoding($this->Stack,'UTF-8', 'UTF-8');
-                $content_permissions = json_encode(array('files_folders'    => $this->Stack));
+				$content_permissions = json_encode(array('files_folders'    => $this->Stack));
 				if (json_last_error() != JSON_ERROR_NONE) {
 					$this->set_campo_filemanager('estado', 'DATABASE_ERROR');
 					$result_permissions = false;
@@ -1520,10 +1519,11 @@ class FileManagerModel extends BaseModel
                 $result_permissions = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_permissions);        
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
                 chmod($this->folder_path, 0755);            
-            } catch (Exception $e)
-            {    
-                $this->set_campo_filemanager('estado', 'DATABASE_ERROR');
-                $result_permissions = false;
+            } catch (\Throwable $e)
+            {    					
+				$this->set_campo_filemanager('estado', 'DATABASE_ERROR');
+				$result_permissions = false;
+                File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_permissions_scan.php', $e->getMessage());
             }
         
             // Vamos a limpiar las variables que no necesitamos. No uso unset() porque así no necesitamos esperar al garbage collector
@@ -1579,21 +1579,21 @@ class FileManagerModel extends BaseModel
         
             try
             {
-				$this->Stack_Integrity = mb_convert_encoding($this->Stack_Integrity,'UTF-8', 'UTF-8');
-                $content_integrity = json_encode(array('files_folders'    => $this->Stack_Integrity));
+				$content_integrity = json_encode(array('files_folders'    => $this->Stack_Integrity));
 				if (json_last_error() != JSON_ERROR_NONE) {
-					 $this->set_campo_filemanager('estado_integrity', 'DATABASE_ERROR');
+					$this->set_campo_filemanager('estado_integrity', 'DATABASE_ERROR');
 					$result_integrity = false;
-					$result_permissions = File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_integrity_scan.php', json_last_error_msg());
+					File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_integrity_scan.php', json_last_error_msg());
 				}                           
                 $content_integrity = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_integrity;
                 $result_integrity = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_integrity);    
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
                 chmod($this->folder_path, 0755);
-            } catch (Exception $e)
+            } catch (\Throwable $e)
             {    
                 $this->set_campo_filemanager('estado_integrity', 'DATABASE_ERROR');
                 $result_integrity = false;
+				File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_integrity_scan.php', $e->getMessage());
             }
             // Vamos a limpiar las variables que no necesitamos. No uso unset() porque así no necesitamos esperar al garbage collector
             $content_integrity = null;
@@ -1651,21 +1651,21 @@ class FileManagerModel extends BaseModel
         
             try 
             {
-				$this->Stack = mb_convert_encoding($this->Stack,'UTF-8', 'UTF-8');
-                 $content_malwarescan = json_encode(array('files_folders'    => $this->Stack));
+				$content_malwarescan = json_encode(array('files_folders'    => $this->Stack));
 				if (json_last_error() != JSON_ERROR_NONE) {
 					$this->set_campo_filemanager('estado_malwarescan', 'DATABASE_ERROR');
 					$result_malwarescan_resume = false;
-					$result_permissions = File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_malware_scan.php', json_last_error_msg());
+					File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_malware_scan.php', json_last_error_msg());
 				}                 
                 $content_malwarescan = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_malwarescan;
                 $result_malwarescan = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_malwarescan);
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
                 chmod($this->folder_path, 0755);
-            } catch (Exception $e)
+            } catch (\Throwable $e)
             {    
                 $this->set_campo_filemanager('estado_malwarescan', 'DATABASE_ERROR');
                 $result_malwarescan_resume = false;
+				File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_malware_scan.php', $e->getMessage());
             }
         
             // Vamos a limpiar las variables que no necesitamos. No uso unset() porque así no necesitamos esperar al garbage collector
@@ -3508,8 +3508,7 @@ class FileManagerModel extends BaseModel
         // ... y almacenamos el nuevo contenido
         try
         {
-			$malwarescan_data = mb_convert_encoding($malwarescan_data,'UTF-8', 'UTF-8');
-            $content_malwarescan = json_encode(array('files_folders'    => $malwarescan_data));
+			$content_malwarescan = json_encode(array('files_folders'    => $malwarescan_data));
             $content_malwarescan = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_malwarescan;
             $result_malwarescan = File::write($this->folder_path.DIRECTORY_SEPARATOR.$this->malwarescan_name, $content_malwarescan);
         } catch (Exception $e)
@@ -3846,8 +3845,7 @@ class FileManagerModel extends BaseModel
     
         try 
         {
-			$data = mb_convert_encoding($data,'UTF-8', 'UTF-8');
-            $malware_content = json_encode(array('files_folders'    => $data));
+			$malware_content = json_encode(array('files_folders'    => $data));
             $malware_content = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $malware_content;
             $result_malware = File::write($this->folder_path.DIRECTORY_SEPARATOR.$malwarescan_name, $malware_content);            
             
