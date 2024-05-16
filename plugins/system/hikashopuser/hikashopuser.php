@@ -6,6 +6,9 @@
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
+
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 include_once(JPATH_ROOT.'/administrator/components/com_hikashop/pluginCompat.php');
@@ -206,6 +209,12 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 		return $this->onBeforeStoreUser($user, $isnew);
 	}
 	public function onUserAfterSave($user, $isnew, $success, $msg) {
+		$app = Factory::getApplication();
+		// The method check here ensures that if running as a CLI Application we don't get any errors
+		if (method_exists($app, 'isClient') && ($app->isClient('cli'))) {
+			return;
+		}
+
 		return $this->onAfterStoreUser($user, $isnew, $success, $msg);
 	}
 	public function onUserAfterDelete($user, $success, $msg) {

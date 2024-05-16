@@ -249,7 +249,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
             </table>
         </div>
 	<?php else: ?>
-    <div class="text-center tw-mt-6">
+    <div class="tw-text-center tw-mt-6">
         <h1 class="tw-mb-8 !tw-text-neutral-600"><?= $this->datas ?></h1>
         <div class="no-result tw-bg-no-repeat tw-w-64 tw-h-64 tw-my-0 tw-mx-auto"></div>
     </div>

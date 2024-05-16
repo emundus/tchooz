@@ -746,6 +746,8 @@ $wa->registerAndUseScript('com_emundus_image_resize', 'media/com_emundus/js/lib/
 $wa->registerAndUseStyle('com_emundus_quill_mention', 'media/com_emundus/js/lib/quill/quill-mention/quill.mention.min.css');
 $wa->registerAndUseScript('com_emundus_quill_mention', 'media/com_emundus/js/lib/quill/quill-mention/quill.mention.min.js');
 
+$wa->registerAndUseScript('lottie', 'media/com_emundus/js/lib/@lottiefiles/lottie-player/dist/lottie-player.js');
+
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf') {
 	$controller->execute($task);
