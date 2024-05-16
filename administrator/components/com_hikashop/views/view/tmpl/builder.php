@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -229,14 +229,19 @@ function moveBlockCode(evt) {
         textarea.value = textarea.value.replace(empty_pos_code[0], code[0]);
     }
 
-    var editor = document.querySelector('.CodeMirror');
-    if(editor) {
-        editor = editor.CodeMirror;
-        var scrollInfo = editor.getScrollInfo();
-
+    if(Joomla && Joomla.editors) {
+        var editor = Joomla.editors.instances['jform_articletext'];
         editor.setValue(textarea.value);
+    }  else {
+        var editor = document.querySelector('.CodeMirror');
+        if(editor) {
+            editor = editor.CodeMirror;
+            var scrollInfo = editor.getScrollInfo();
 
-        editor.scrollTo(scrollInfo.left, scrollInfo.top);
+            editor.setValue(textarea.value);
+
+            editor.scrollTo(scrollInfo.left, scrollInfo.top);
+        }
     }
     window.sortableModifications = false;
     return true;

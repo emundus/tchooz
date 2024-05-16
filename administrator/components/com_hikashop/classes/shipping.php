@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -862,7 +862,7 @@ class hikashopShippingClass extends hikashopClass {
 					if($config->get('price_with_tax')){
 						$shipping_data .= ' (' . $currencyClass->format($price_params->price_with_tax, $order->order_currency_id) . ')';
 					}else{
-						$shipping_data .= ' (' . $currencyClass->format($price_params->price_with_tax-@$price_params->tax, $order->order_currency_id) . ')';
+						$shipping_data .= ' (' . $currencyClass->format((float)$price_params->price_with_tax-(float)@$price_params->tax, $order->order_currency_id) . ')';
 					}
 				}
 				$names[] = $shipping_data;

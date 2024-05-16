@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -42,6 +42,9 @@ class hikashopToggleHelper{
 				$url .= "+'&extra[".$k."]='+".$k;
 				$values .= ', \''.urlencode($v).'\'';
 			}
+		}
+		if(HIKASHOP_J50) {
+			$params->aclass[$value].=' badge';
 		}
 		if($params->mode == 'pictures'){
 			static $pictureincluded = false;
@@ -119,7 +122,14 @@ class hikashopToggleHelper{
 	function display($column, $value) {
 		$params = $this->_getToggle($column);
 		if(empty($params->pictures)) {
-			return '<div class="toggle_loading"><a class="'.$params->aclass[$value].'" href="#" onclick="return false;" style="cursor:default;"></a></div>';
+			if(HIKASHOP_J50) {
+				$params->aclass[$value].=' badge';
+			}
+			return '
+			<div class="toggle_loading">
+				<a class="'.$params->aclass[$value].'" href="#" onclick="return false;" style="cursor:default;">
+				</a>
+			</div>';
 		}
 		return '<img src="'.$params->pictures[$value].'"/>';
 	}
@@ -127,7 +137,12 @@ class hikashopToggleHelper{
 	function delete($lineId,$elementids,$table,$confirm = false,$text=''){
 		$this->addDeleteJS();
 		if(empty($text)) $text = '<i class="fas fa-trash"></i>';
-		return '<a href="javascript:void(0);" onclick="joomDelete(\''.$lineId.'\',\''.$elementids.'\',\''.$table.'\','. ($confirm ? 'true' : 'false').')" title="'.JText::_('HIKA_DELETE').'">'.$text.'</a>';
+
+		$attribs = '';
+		if(HIKASHOP_J50) {
+			$attribs.=' class="badge"';
+		}
+		return '<a'.$attribs.' href="javascript:void(0);" onclick="joomDelete(\''.$lineId.'\',\''.$elementids.'\',\''.$table.'\','. ($confirm ? 'true' : 'false').')" title="'.JText::_('HIKA_DELETE').'">'.$text.'</a>';
 	}
 
 	function addDeleteJS(){

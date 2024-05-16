@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -652,7 +652,21 @@ foreach($results as $i => $oneResult){
 					$field->field_value = $this->explodeValues($field->field_value);
 				$field->field_value_old = $field->field_value;
 			}
-			$this->database->setQuery($field->field_options['mysql_query']);
+
+			$query = $field->field_options['mysql_query'];
+			if(strpos($query,'{')) {
+				$user = hikashop_loadUser(true);
+				foreach(get_object_vars($user) as $key => $val) {
+					if(!is_numeric($val)) {
+						if(is_string($val))
+							$val = $this->database->Quote($val);
+						else
+							continue;
+					}
+					$query = str_replace('{'.$key.'}', $val, $query);
+				}
+			}
+			$this->database->setQuery($query);
 			$values = $this->database->loadObjectList();
 			$field->field_value = array();
 			if(!empty($values)) {
@@ -2188,9 +2202,9 @@ class hikashopFieldItem extends stdClass{
 				$cart_categories = $fieldClass->getCategories('order', $cart);
 
 				foreach($restricted_categories as $restricted_category){
-					if($field->field_with_sub_categories && in_array($restricted_category, $cart_categories['parents']))
+					if(!empty($cart_categories['parents']) && $field->field_with_sub_categories && in_array($restricted_category, $cart_categories['parents']))
 						$inCart = true;
-					else if(!$field->field_with_sub_categories && in_array($restricted_category, $cart_categories['originals']))
+					else if(!empty($cart_categories['originals']) && !$field->field_with_sub_categories && in_array($restricted_category, $cart_categories['originals']))
 						$inCart = true;
 				}
 			}
@@ -2847,13 +2861,14 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 			);
 		}
 
-		$ret->params->origin_url = hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($ret->params->file_path)));
+		$params = '&'.hikashop_getFormToken().'=1';
+		$ret->params->origin_url = hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($ret->params->file_path)).$params);
 
 		if($this->mode == 'image') {
 			$thumbnail_x = 100;
 			$thumbnail_y = 100;
-			$thumbnails_params = '&thumbnail_x='.$thumbnail_x.'&thumbnail_y='.$thumbnail_y;
-			$ret->params->thumbnail_url = hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($ret->params->file_path)).$thumbnails_params);
+			$params .= '&thumbnail_x='.$thumbnail_x.'&thumbnail_y='.$thumbnail_y;
+			$ret->params->thumbnail_url = hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($ret->params->file_path)).$params);
 		}
 	}
 

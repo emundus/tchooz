@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="2.5" method="upgrade">
 	<name>HikaShop</name>
-	<creationDate>31 janvier 2024</creationDate>
-	<version>5.0.3</version>
+	<creationDate>14 mai 2024</creationDate>
+	<version>5.0.4</version>
 	<author>hikashop.com</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -67,4 +67,4 @@
 		</files>
 		<menu img="../media/com_hikashop/images/icons/icon-16-hikashop.png" link="option=com_hikashop">HikaShop</menu>
 	</administration>
-<updateservers><server type="collection">http://www.hikashop.com/component/updateme/updatexml/component-hikashop/level-/file-extension.xml</server></updateservers></extension>
+<updateservers><server type="collection">http://www.hikashop.com/component/updateme/updatexml/component-hikashop/version-5.0.4/level-Business/li-aHR0cDovL2xvY2FsaG9zdDo4MzgzLw%3D%3D/file-extension.xml</server></updateservers></extension>

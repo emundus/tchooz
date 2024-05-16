@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -560,6 +560,7 @@ class hikashopMassactionClass extends hikashopClass{
 			'order_discount_tax'=>'order_currency_id',
 			'order_payment_price'=>'order_currency_id',
 			'price_value'=>'price_currency_id',
+			'price_value_with_tax'=>'price_currency_id',
 			'order_full_price'=>'order_currency_id',
 			'user_partner_price'=>'user_partner_currency_id',
 			'user_unpaid_amout'=>'user_currency_id'
@@ -585,6 +586,8 @@ class hikashopMassactionClass extends hikashopClass{
 				$type = new stdClass();
 				if($action == $key.'_id' || $action == $key.'_parent_id'){
 					$type->type = 'id';
+				}elseif(isset($prices[$action])){
+					$type->type = 'number';
 				}else{
 					$type->type = 'text';
 				}
@@ -741,7 +744,7 @@ class hikashopMassactionClass extends hikashopClass{
 								if(!empty($parentData)){
 									$var_name = $parentData->characteristic_value;
 									$characteristics[$elem->characteristic_parent_id] = $var_name;
-									if(!is_object($params->types[$var_name])) $params->types[$var_name] = new stdClass();
+									if(!isset($params->types[$var_name]) || !is_object($params->types[$var_name])) $params->types[$var_name] = new stdClass();
 									$params->types[$var_name]->type = 'characteristic';
 								}
 							}
@@ -1238,7 +1241,17 @@ class hikashopMassactionClass extends hikashopClass{
 							$square = $element->$column->value;
 						}
 						break;
-
+					case 'number':
+						$config = hikashop_config();
+						$decimal_separator = $config->get('csv_decimal_separator', '.');
+						$to_be_replaced = ',';
+						if($decimal_separator == ',')
+							$to_be_replaced = '.';
+						$square = str_replace($to_be_replaced, $decimal_separator, (string)$element->$column);
+						if(strpos($square,$decimal_separator)) {
+							$square = rtrim(rtrim($square, '0'),$decimal_separator);
+						}
+						break;
 					case 'date':
 						$square = hikashop_getDate($element->$column,$format);
 						break;
@@ -2751,7 +2764,6 @@ class hikashopMassactionClass extends hikashopClass{
 
 				$this->organizeExportColumn($params,$keyTable, $columnsArrays);
 			}
-
 			$types = array();
 			foreach($params->action as $keyTable=>$table){
 				foreach($table as $column){

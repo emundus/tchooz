@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -2184,6 +2184,9 @@ class hikashopProductClass extends hikashopClass{
 					continue;
 
 				$element->variants[$k]->characteristics[$characteristic->characteristic_parent_id] = $characteristic;
+				if(!isset($element->characteristics[$characteristic->characteristic_parent_id])) {
+					continue;
+				}
 				$element->characteristics[$characteristic->characteristic_parent_id]->values[$characteristic->characteristic_id] = $characteristic;
 				if($selected_variant_id && $variant->product_id==$selected_variant_id)
 					$element->characteristics[$characteristic->characteristic_parent_id]->default = $characteristic;
@@ -2219,7 +2222,7 @@ class hikashopProductClass extends hikashopClass{
 						$ok = false;
 						foreach($chars as $k => $char) {
 							if(!empty($char)) {
-								if($characteristic->characteristic_id == $char) {
+								if($characteristic->characteristic_id == $char->characteristic_id) {
 									$ok = true;
 									break;
 								}
@@ -3984,6 +3987,8 @@ class hikashopProductClass extends hikashopClass{
 	}
 
 	function addFiles(&$element, &$files) {
+		if(!is_object($element))
+			return;
 		if(!empty($element->variants)) {
 			foreach($element->variants as $k => $variant) {
 				$this->addFiles($element->variants[$k], $files);
@@ -3999,8 +4004,12 @@ class hikashopProductClass extends hikashopClass{
 				continue;
 
 			if($file->file_type == 'file') {
+				if(!isset($element->files))
+					$element->files = array();
 				$element->files[] = $file;
-			} else {
+			} else {	
+				if(!isset($element->images))
+					$element->images = array();
 				if(empty($file->file_name)) {
 					$file->file_name = $element->product_name;
 				}
@@ -4113,6 +4122,8 @@ class hikashopProductClass extends hikashopClass{
 			} else if($field == 'product_name') {
 				if(!empty($variant->characteristics)) {
 					foreach($variant->characteristics as $val) {
+						if(empty($val->characteristic_value))
+							continue;
 						$char_value = $val->characteristic_value;
 						if(strpos($char_value, '<') === false)
 							$char_value = hikashop_translate($char_value);
@@ -4678,7 +4689,8 @@ class hikashopProductClass extends hikashopClass{
 			if(!empty($products)) {
 				$ret[1] = array();
 				foreach($value as $v) {
-					$ret[1][(int)$v] = $products[(int)$v];
+					if(isset($products[(int)$v]))
+						$ret[1][(int)$v] = $products[(int)$v];
 				}
 			}
 

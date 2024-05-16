@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -237,7 +237,11 @@ class hikashopBadgeClass extends hikashopClass {
 			if(!$img)
 				continue;
 
-			$imageDisplayed = '<img class="hikashop_product_badge_image" title="'.htmlentities(@$badge->badge_name, ENT_COMPAT, 'UTF-8').'" alt="'.htmlentities(@$badge->badge_name, ENT_COMPAT, 'UTF-8').'" src="'.$img->url.'"/>';
+			$attributes = '';
+			if($img->ext == 'svg' && $img->req_width)
+				$attributes .= ' width="'.$img->req_width.'"';
+
+			$imageDisplayed = '<img'.$attributes.' class="hikashop_product_badge_image" title="'.htmlentities(@$badge->badge_name, ENT_COMPAT, 'UTF-8').'" alt="'.htmlentities(@$badge->badge_name, ENT_COMPAT, 'UTF-8').'" src="'.$img->url.'"/>';
 			if(!empty($badge->badge_url)) {
 				$imageDisplayed = '<a href="'.hikashop_cleanURL($badge->badge_url).'">'. $imageDisplayed . '</a>';
 			}

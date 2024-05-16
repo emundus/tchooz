@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -263,6 +263,22 @@ function descWidth(delay) {
 		return;
 	}
 }
+<?php 
+
+ if( $this->editor->editor == 'codemirror') { ?>
+var codeMirrorFix = function(){
+	var editors = document.querySelectorAll('.cm-editor');
+	if(!editors.length) {
+		setTimeout(codeMirrorFix, 500); return;
+	}
+	for(var i=0; i < editors.length; i++) {
+		if(editors[i].nextSibling && editors[i].nextSibling.classList.contains('cm-editor'))
+			editors[i].setAttribute('style', 'display:none !important');
+	}
+};
+window.hikashop.ready(codeMirrorFix);
+
+<?php } ?>
 </script>
 		<div style="clear:both"></div>
 	</div></div>
@@ -682,7 +698,9 @@ function descWidth(delay) {
 			<a href="#" class="btn btn-danger" onclick="window.formCustom.reset(window.productDragOptionsKey); return false;"><i class="fa fa-trash"></i> <?php
 					echo JText::_('RESET_TO_DEFAULT_VIEW');
 				?></a>
+			<?php if(hikashop_level(2)) { ?>
 			<p><?php echo JText::_('BLOCK_HIDDEN_ACCESS_LEVEL'); ?></p>
+			<?php } ?>
 		</div>
 <?php
 	} else {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -48,7 +48,9 @@ hikashopGallery.callbackSelection = function(tree,id) {
 			}
 			echo hikashop_completeLink('upload&task=galleryimage&folder={FOLDER}&uploader='.$this->uploader.'&field='.$this->field.$params, true, true) ;
 		?>";
-		document.location = url.replace('{FOLDER}', node.value.replace('/', '|'));
+		if(node.value != '<?php echo rtrim($this->destFolder, '/'); ?>') {
+			document.location = url.replace('{FOLDER}', node.value.replace('/', '|'));
+		}
 	}
 }
 </script>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -27,6 +27,8 @@ abstract class plgFinderHikashopBridge extends Adapter {
 			$plugin = PluginHelper::getPlugin('finder', 'hikashop');
 			$this->params = new Registry(@$plugin->params);
 		}
+
+		$this->setup();
 
 		parent::__construct($subject, $config);
 	}
@@ -80,6 +82,29 @@ abstract class plgFinderHikashopBridge extends Adapter {
 		$registry->loadString($item->metadata);
 		$item->metadata = $registry;
 
+		$productClass = hikashop_get('class.product');
+		$data = $productClass->getProduct($item->id);
+		if(!empty($data->images) && count($data->images)) {
+			$item->images = $data->images;
+		}
+
+		if(!empty($item->product_parent_id)) {
+			$db = JFactory::getDBO();
+			$query = 'SELECT * FROM '.hikashop_table('variant').' AS v '.
+				' LEFT JOIN '.hikashop_table('characteristic') .' AS c ON v.variant_characteristic_id = c.characteristic_id '.
+				' WHERE v.variant_product_id = '.(int)$item->product_id.' ORDER BY v.ordering';
+			$db->setQuery($query);
+			$item->characteristics = $db->loadObjectList();
+			$parentProduct = $productClass->getProduct((int)$item->product_parent_id);
+			$productClass->checkVariant($item, $parentProduct);
+			if(empty($item->summary)) {
+				$item->summary = $item->product_name;
+			}
+			if(empty($item->body)) {
+				$item->body = $item->product_description;
+			}
+		}
+
 		$item->summary = Helper::prepareContent($item->summary, $item->params);
 		$item->body    = Helper::prepareContent($item->body, $item->params);
 
@@ -102,10 +127,10 @@ abstract class plgFinderHikashopBridge extends Adapter {
 
 		$item->metaauthor = $item->metadata->get('author');
 
-		$class = hikashop_get('class.product');
-		$data = $class->getProduct($item->id);
-		if(!empty($data->images) && count($data->images)) {
-			$image = reset($data->images);
+
+		if(!empty($item->images) && count($item->images)) {
+			$keys = array_keys($item->images);
+			$image = $item->images[$keys[0]];
 		}
 		$imageHelper = hikashop_get('helper.image');
 		$imageHelper->uploadFolder_url =  rtrim(HIKASHOP_LIVE,'/').'/';
@@ -119,6 +144,7 @@ abstract class plgFinderHikashopBridge extends Adapter {
 			$item->imageAlt = @$image->file_name;
 		}
 
+
 		$item->addInstruction(Indexer::META_CONTEXT, 'metakey');
 		$item->addInstruction(Indexer::META_CONTEXT, 'metadesc');
 		$item->addInstruction(Indexer::META_CONTEXT, 'created_by_alias');
@@ -130,7 +156,7 @@ abstract class plgFinderHikashopBridge extends Adapter {
 		if(!empty($fields) && count($fields)) {
 			foreach($fields as $field) {
 				if(!in_array($field, array('product_name', 'product_description', 'product_keywords', 'product_meta_description')))
-					$item->addInstruction(Indexer::META_CONTEXT, $field);
+					$item->addInstruction(Indexer::TEXT_CONTEXT, $field);
 			}
 		}
 
@@ -145,9 +171,9 @@ abstract class plgFinderHikashopBridge extends Adapter {
 
 		Helper::getContentExtras($item);
 
-		$this->indexer->index($item);
-
-		$this->handleOtherLanguages($item);
+		if(!$this->handleOtherLanguages($item)) {
+			$this->indexer->index($item);
+		}
 	}
 
 	public function prepareContent($summary, $params) {
@@ -156,9 +182,13 @@ abstract class plgFinderHikashopBridge extends Adapter {
 
 	protected function addAlias(&$element){
 		if(empty($element->alias)){
-			if(empty($element->title))
-				return;
-			$element->alias = strip_tags(preg_replace('#<span class="hikashop_product_variant_subname">.*</span>#isU','',$element->title));
+			if(empty($element->product_alias)) {
+				if(empty($element->title))
+					return;
+				$element->alias = strip_tags(preg_replace('#<span class="hikashop_product_variant_subname">.*</span>#isU','',$element->title));
+			} else {
+				$element->alias = $element->product_alias;
+			}
 		}
 
 		$config = JFactory::getConfig();

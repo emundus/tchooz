@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -37,7 +37,12 @@ class JFormFieldPluginoptions extends JFormField{
 		}
 
 		$text = '<a style="float:left;" title="'.JText::_('HIKASHOP_OPTIONS').'"  href="'.JRoute::_('index.php?option=com_hikashop&ctrl=plugins&fromjoomla=1&task=listing&name='.$name.'&plugin_type='.$group).'" >'.JText::_('HIKASHOP_OPTIONS').'</a>';
-		return $text;
+
+		$j5_class = '';
+		if (HIKASHOP_J50) 
+			$j5_class = 'class="hika_j5"';
+
+		return '<div id="hikashop_main_content" '.$j5_class.' >'.$text.'</div>';
 	}
 }
 

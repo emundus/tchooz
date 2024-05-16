@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -766,8 +766,9 @@ class ProductViewProduct extends HikaShopView {
 			} else {
 				$categoryClass->parentObject =& $this;
 				$categoryClass->type = $type;
-
-				$children = $categoryClass->getChildren($pageInfo->filter->cid,true,array(),'',0,0);
+				$categoryFilters = array('a.category_published=1');
+				hikashop_addACLFilters($categoryFilters,'category_access', 'a');
+				$children = $categoryClass->getChildren($pageInfo->filter->cid,true, $categoryFilters,'',0,0);
 				$filter = $catName.' IN (';
 				foreach($children as $child){
 					$filter .= $child->category_id.',';
@@ -1499,6 +1500,10 @@ class ProductViewProduct extends HikaShopView {
 
 		$currency_id = hikashop_getCurrency();
 		$zone_id = hikashop_getZone(null);
+
+		$categoryClass = hikashop_get('class.category');
+		$manufacturer = $categoryClass->get($element->product_manufacturer_id);
+		$this->manufacturer = $manufacturer;
 
 		$null = null;
 		$currencies = $currencyClass->getCurrencies($currency_id, $null);
@@ -3164,5 +3169,90 @@ window.hikashop.ready( function() {
 			$doc = JFactory::getDocument();
 			$doc->addScriptDeclaration("\r\n<!--\r\n".trim($js)."\r\n//-->\r\n");
 		}
+	}
+
+	public function priceSelected($element, $priceDisplayed, $noDiscount, $taxedPrice) {
+		$prices_array = array();
+
+		if (isset($element->variants)) {
+			foreach ($element->variants as $key => $variant) {
+				foreach ($variant->prices as $k => $price) {
+					$price_value = ($taxedPrice == '0') ? $price->price_value : $price->price_value_with_tax;
+
+					if (isset($variant->discount)) {
+						$priceNoTax = $price->price_value_with_tax - ($price->price_value_without_discount_with_tax - $price->price_value_without_discount);
+						if ($noDiscount == '0')
+							$price_value = ($taxedPrice == '0') ? $priceNoTax : $price->price_value_with_tax;
+						else
+							$price_value = ($taxedPrice == '0') ? $price->price_value_without_discount : $price->price_value_without_discount_with_tax;
+					}
+					if ($price->price_min_quantity == 0 && $priceDisplayed == 'unit')
+						$prices_array['var_unit'.$variant->product_id] = $price_value;
+					else
+						$prices_array['var_'.$variant->product_id] = $price_value;
+
+					if ($price->price_min_quantity == 0 && $priceDisplayed == 'unit')
+					break;
+				}
+			}
+		} else {
+			foreach ($element->prices as $k => $price) {
+				$price_value = ($taxedPrice == '0') ? $price->price_value : $price->price_value_with_tax;
+
+				if (isset($element->discount)) {
+					$priceNoTax = $price->price_value_with_tax - ($price->price_value_without_discount_with_tax - $price->price_value_without_discount);
+					if ($noDiscount == '0')
+						$price_value = ($taxedPrice == '0') ? $priceNoTax : $price->price_value_with_tax;
+					else
+						$price_value = ($taxedPrice == '0') ? $price->price_value_without_discount : $price->price_value_without_discount_with_tax;
+				}
+				if ($price->price_min_quantity == 0 && $priceDisplayed == 'unit')
+					$prices_array['main_unit'.$element->product_id] = $price_value;
+				else
+					$prices_array['main_'.$element->product_id] = $price_value;
+			}
+		}
+		foreach($prices_array as $k => $price) {
+			if ($priceDisplayed == 'expensive') {
+				$selected = 0;
+				foreach ($prices_array as $k => $price) {
+					$curr = $price;
+
+					if ($curr > $selected) 
+						$selected = $curr;
+				}
+			}
+			if ($priceDisplayed == 'cheapest') {
+				$selected = $prices_array[array_key_first($prices_array)];
+				foreach ($prices_array as $k => $price) {
+					$curr = $price;
+
+					if ($curr < $selected) 
+						$selected = $curr;
+				}
+			}
+			if ($priceDisplayed == 'average') {
+				$total = 0;
+				foreach ($prices_array as $k => $price) {
+					$total += (float)$price;
+				}
+				$selected = $total / (int)count($prices_array);
+			}
+			if ($priceDisplayed == 'unit') {
+				if(str_contains($k, '_unit')) {
+					$selected = $price;
+				}
+			}
+		}
+		return $selected;
+	}
+
+	function _additionalParameter($product,$params_array) {
+		$new_array= array();
+		foreach ($params_array as $key => $value) {
+			if(isset($product->$value))
+				$new_array[$key] = $product->$value;
+		}
+		return $new_array;
 	}
 }

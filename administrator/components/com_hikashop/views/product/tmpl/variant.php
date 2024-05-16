@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -172,6 +172,20 @@ defined('_JEXEC') or die('Restricted access');
 <script type="text/javascript">
 window.productMgr.saveVariantEditor = function() { <?php echo $this->editor->jsCode(); ?> };
 window.productMgr.closeVariantEditor = function() { <?php echo $this->editor->jsUnloadCode(); ?> };
+<?php 
+ if( $this->editor->editor == 'codemirror') { ?>
+var codeMirrorFix = function(){
+	var editors = document.querySelectorAll('#hikashop_product_variant_edition .cm-editor');
+	if(!editors.length) {
+		setTimeout(codeMirrorFix, 500); return;
+	}
+	for(var i=0; i < editors.length; i++) {
+		if(editors[i].nextSibling && editors[i].nextSibling.classList.contains('cm-editor'))
+			editors[i].setAttribute('style', 'display:none !important');
+	}
+};
+window.hikashop.ready(codeMirrorFix);
+<?php } ?>
 </script>
 	</div></div>
 <?php } ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -111,13 +111,18 @@ class hikashopPluginsClass extends hikashopClass {
 		$query = 'SELECT * FROM '.hikashop_table('extensions',false).' WHERE folder='.$this->database->Quote($type).' AND element='.$this->database->Quote($name).' AND type=\'plugin\'';
 		$this->database->setQuery($query);
 		$result = $this->database->loadObject();
-		$this->loadParams($result);
+		if(!empty($result))
+			$this->loadParams($result);
 		return $result;
 	}
 
 	function loadParams(&$result){
-		if(empty($result->params) || is_array($result->params))
+		if(empty($result->params)) {
+			$result->params = array();
 			return;
+		} elseif(is_array($result->params)) {
+			return;
+		}
 
 		$registry = new JRegistry;
 		if(!HIKASHOP_J30) {

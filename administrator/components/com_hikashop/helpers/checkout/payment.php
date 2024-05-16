@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -138,7 +138,16 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 					$checkoutHelper->addMessage('payment', array(JText::_('CREDIT_CARD_INVALID'), 'error'));
 				}
 
-				if(isset($checkout_cc[$payment_id]['mm']) && isset($checkout_cc[$payment_id]['yy'])) {
+				if(empty($checkout_cc[$payment_id]['mm']) || empty($checkout_cc[$payment_id]['yy'])) {
+					$ret = false;
+					$checkoutHelper->addMessage('payment', array(JText::_('CREDIT_CARD_EXPIRATION_DATE_MISSING'), 'error'));
+				} else {
+					$cartdDate = DateTime::createFromFormat('m-y-d', ($checkout_cc[$payment_id]['mm']+1).'-'.$checkout_cc[$payment_id]['yy'].'-02');
+					$currentDate = new DateTime('now');
+					if ($cartdDate < $currentDate) {
+						$ret = false;
+						$checkoutHelper->addMessage('payment', array(JText::_('CREDIT_CARD_EXPIRED'), 'error'));
+					}
 				}
 
 				$plugin = hikashop_import('hikashoppayment', $cart->payment->payment_type);

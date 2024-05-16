@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -27,7 +27,7 @@ define('HIKASHOP_PHP5',version_compare(PHP_VERSION,'5.0.0', '>=') ? true : false
 define('HIKASHOP_PHP7',version_compare(PHP_VERSION,'7.0.0', '>=') ? true : false);
 define('HIKASHOP_PHP8',version_compare(PHP_VERSION,'8.0.0', '>=') ? true : false);
 
-define('HIKASHOP_VERSION', '5.0.3');
+define('HIKASHOP_VERSION', '5.0.4');
 
 
 if(HIKASHOP_J50 && !Joomla\CMS\Plugin\PluginHelper::isEnabled('behaviour', 'compat')) {
@@ -1452,7 +1452,7 @@ if(!function_exists('hikashop_footer')) {
 			$link.='?partner_id='.$aff;
 		}
 		$text = '<!--  HikaShop Component powered by '.$link.' -->
-		<!-- version '.$config->get('level').' : '.$config->get('version').' [2401311558] -->';
+		<!-- version '.$config->get('level').' : '.$config->get('version').' [2405141443] -->';
 		if(!$config->get('show_footer',true)) return $text;
 		$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 		$app= JFactory::getApplication();
@@ -1746,6 +1746,11 @@ if(!function_exists('hikashop_loadJslib')) {
 
 		if(HIKASHOP_J40) {
 			$app = JFactory::getApplication();
+			if(!method_exists($app, 'getDocument')) {
+				$toLoad[$name] = $name;
+				return;
+			}
+
 			$document = $app->getDocument();
 			if(empty($document)) {
 				$toLoad[$name] = $name;
@@ -3669,8 +3674,42 @@ if($css) {
 	if(!empty($css_file)) {
 		$doc->addStyleSheet(HIKASHOP_CSS.$css_type.'_'.$css_file.'.css?t='.@filemtime(HIKASHOP_MEDIA.'css'.DS.$css_type.'_'.$css_file.'.css'));
 	}
+	if ($admin) {
+		if (HIKASHOP_J50) {
+			$config =& hikashop_config();
+			$dark_mode = $config->get('dark_mode', '2');
+			$path = HIKASHOP_CSS.'backend_dark.css?t='.@filemtime(HIKASHOP_MEDIA.'css'.DS.$css_type.'_'.$css_file.'.css');
 
-	if(!$admin) {
+			if($dark_mode=='2') {
+				$tParams = $app->getTemplate(true)->params;
+				$colorSchemeSwitch = $tParams->get('colorScheme');
+				if(!empty($colorSchemeSwitch)) {
+					$userColorScheme = $app->getInput()->cookie->get('userColorScheme', $colorSchemeSwitch);
+					if($userColorScheme != 'os') {
+						if($userColorScheme == 'light') {
+							$dark_mode = '0';
+						}
+						if($userColorScheme == 'dark') {
+							$dark_mode = '1';
+						}
+					}
+				}
+			}
+
+			switch ($dark_mode) {
+				case '1':
+					$doc->addStyleSheet($path);
+					break;
+				case '2':
+					$media = 'screen and (prefers-color-scheme: dark)';
+					$doc->addStyleSheet($path, array(), array('type'=>'text/css', 'media'=>$media));
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	else {
 		$style = $configClass->get('css_style', '');
 		if(!empty($style)) {
 			$doc->addStyleSheet(HIKASHOP_CSS.'style_'.$style.'.css?t='.@filemtime(HIKASHOP_MEDIA.'css'.DS.'style_'.$style.'.css'));

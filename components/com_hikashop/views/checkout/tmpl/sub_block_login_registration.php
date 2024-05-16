@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 $labelcolumnclass = 'hkc-sm-4';
 $inputcolumnclass = 'hkc-sm-8';
 if(!empty($this->options['override_registration']) && !empty($this->options['registration_registration'])) {
-	echo hikashop_translate($this->options['text']);
+	echo JHTML::_('content.prepare', hikashop_translate($this->options['text']));
 	$this->options['registration_registration'] = false;
 }
 if(!empty($this->options['registration_registration'])) {

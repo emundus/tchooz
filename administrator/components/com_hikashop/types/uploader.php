@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -130,7 +130,7 @@ class HikashopUploaderType extends hikashopType {
 
 			$js .= "\r\n" . '
 			var hkFormData_'.$id.' = '.$options['formData'].';
-			if(Joomla.getOptions) {
+			if(Joomla && Joomla.getOptions) {
 				var csrf = Joomla.getOptions("csrf.token", "");
 				if(csrf)
 					hkFormData_'.$id.'[csrf] = 1;
@@ -298,7 +298,7 @@ class HikashopUploaderType extends hikashopType {
 		if(!empty($options['uploadUrls']) || !empty($options['buttons'])) {
 			$js .= "\r\n" . '
 			var hkFormData_'.$id.' = '.$options['formData'].';
-			if(Joomla.getOptions) {
+			if(Joomla && Joomla.getOptions) {
 				var csrf = Joomla.getOptions("csrf.token", "");
 				if(csrf)
 					hkFormData_'.$id.'[csrf] = 1;
@@ -356,7 +356,7 @@ class HikashopUploaderType extends hikashopType {
 
 			$js .= "\r\n" .
 			'var hkFormData_'.$id.' = '.$options['formData'].';
-			if(Joomla.getOptions) {
+			if(Joomla && Joomla.getOptions) {
 				var csrf = Joomla.getOptions("csrf.token", "");
 				if(csrf)
 					hkFormData_'.$id.'[csrf] = 1;
@@ -427,7 +427,7 @@ class HikashopUploaderType extends hikashopType {
 
 			$js .= "\r\n" . '
 			var hkFormData_'.$id.' = '.$options['formData'].';
-			if(Joomla.getOptions) {
+			if(Joomla && Joomla.getOptions) {
 				var csrf = Joomla.getOptions("csrf.token", "");
 				if(csrf)
 					hkFormData_'.$id.'[csrf] = 1;

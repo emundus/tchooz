@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -9,6 +9,9 @@
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 class hikashopAcltableType extends hikashopType {
+	var $groups = null;
+	var $choice = null;
+	var $config = null;
 	public function __construct() {
 		$db = JFactory::getDBO();
 		$db->setQuery('SELECT a.*, a.title as text, a.id as value  FROM #__usergroups AS a ORDER BY a.lft ASC');

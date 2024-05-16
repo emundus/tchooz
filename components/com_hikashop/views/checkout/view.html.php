@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -282,9 +282,7 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 			}
 			$first = false;
 		}
-		$app = JFactory::getApplication();
-		$obj =& $this;
-		if(!empty($ctrl)) {
+
 			$previous_options = null;
 			if(!empty($this->options))
 				$previous_options = $this->options;
@@ -292,20 +290,20 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 			$this->options = $options;
 			$this->module_position = (int)$pos;
 
-			$app->triggerEvent('onBeforeCheckoutViewDisplay', array($layout, &$obj));
+		$app = JFactory::getApplication();
+		$obj =& $this;
 
+		if(!empty($ctrl)) {
+			$app->triggerEvent('onBeforeCheckoutViewDisplay', array($layout, &$obj));
 			$this->setLayout('show_block_' . $layout);
 			$ret = $this->loadTemplate();
-
-
 			$app->triggerEvent('onAfterCheckoutViewDisplay', array($layout, &$obj, &$ret));
-
-			$this->options = $previous_options;
-
 		} else {
 			$ret = '';
 			$app->triggerEvent('onCheckoutStepDisplay', array($layout, &$ret, &$obj, $pos, $options));
 		}
+		$this->options = $previous_options;
+
 		if(!empty($options['process_content_tags'])) {
 			$ret = JHTML::_('content.prepare', $ret);
 		}

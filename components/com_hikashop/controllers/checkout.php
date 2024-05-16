@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -148,7 +148,7 @@ class checkoutController extends checkoutLegacyController {
 				$associations = MenusHelper::getAssociations($Itemid);
 				$menuClass = hikashop_get('class.menus');
 				$menu = $menuClass->get($checkout_itemid);
-				if($menu->link == 'index.php?option=com_hikashop&view=checkout&layout=show' && $menu->language == $code)
+				if(!empty($menu) && $menu->link == 'index.php?option=com_hikashop&view=checkout&layout=show' && $menu->language == $code)
 					$associations[$code] = $menu->id;
 				if(!empty($associations) && !empty($associations[$code])) {
 					$itemid_for_checkout = $associations[$code];

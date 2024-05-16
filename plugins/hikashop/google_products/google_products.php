@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -597,7 +597,7 @@ class plgHikashopGoogle_products extends JPlugin {
 					$name = "image_link";
 					foreach($product->images as $image){
 						if($i < 10){
-							 $xml .= "\t".'<g:'.$name.'>'.htmlspecialchars($siteAddress.$this->main_uploadFolder_url.$image->file_path).'</g:'.$name.'>'."\n";
+							 $xml .= "\t".'<g:'.$name.'>'.htmlspecialchars($siteAddress.$this->main_uploadFolder_url.(ltrim($image->file_path,'/'))).'</g:'.$name.'>'."\n";
 							 $name = "additional_image_link";
 							 $i++;
 						}
@@ -630,9 +630,10 @@ class plgHikashopGoogle_products extends JPlugin {
 				}
 				if( $product->product_weight > 0 && 
 					(
+						($product->product_weight < 32000 && $product->product_weight_unit == 'oz') ||
 						($product->product_weight < 1000000 && $product->product_weight_unit == 'g') ||
 						($product->product_weight < 1000 && $product->product_weight_unit == 'kg') ||
-						($product->product_weight < 2000000 && $product->product_weight_unit == 'lb' )
+						($product->product_weight < 2000 && $product->product_weight_unit == 'lb' )
 					))
 					$xml .= "\t".'<g:shipping_weight>'.ceil($product->product_weight).' '.$product->product_weight_unit.'</g:shipping_weight>'."\n";
 

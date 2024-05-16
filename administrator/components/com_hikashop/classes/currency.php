@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -2931,6 +2931,8 @@ class hikashopCurrencyClass extends hikashopClass{
 
 
 	function checkLocale(&$element) {
+		if(empty($element))
+			return;
 		if(empty($element->currency_locale)) {
 			$element->currency_locale =	array(
 					'mon_decimal_point' => ',',

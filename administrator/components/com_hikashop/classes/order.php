@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -399,7 +399,7 @@ class hikashopOrderClass extends hikashopClass {
 				} else {
 					$code = $order->order_discount_code;
 				}
-				$query = 'UPDATE '.hikashop_table('discount').' SET discount_used_times = discount_used_times - 1 WHERE discount_code='.$this->database->Quote($code).' AND discount_type=\'coupon\' LIMIT 1';
+				$query = 'UPDATE '.hikashop_table('discount').' SET discount_used_times = discount_used_times - 1 WHERE discount_used_times > 0 AND discount_code='.$this->database->Quote($code).' AND discount_type=\'coupon\' LIMIT 1';
 				$this->database->setQuery($query);
 				$this->database->execute();
 			}
@@ -1426,6 +1426,8 @@ class hikashopOrderClass extends hikashopClass {
 					$product_taxes = $product->order_product_tax_info;
 
 				foreach($product_taxes as $tax) {
+					if($tax->tax_namekey == '-1')
+						continue;
 					if(!isset($taxes[$tax->tax_namekey])) {
 						$taxes[$tax->tax_namekey] = 0;
 						$bases[$tax->tax_namekey] = 0;

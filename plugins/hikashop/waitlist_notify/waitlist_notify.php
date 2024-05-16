@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -19,6 +19,9 @@ class plgHikashopWaitlist_notify extends JPlugin
 	function onHikashopCronTrigger(&$messages) {
 		$pluginsClass = hikashop_get('class.plugins');
 		$plugin = $pluginsClass->getByName('hikashop','waitlist_notify');
+		if(empty($plugin->params)) {
+			$plugin->params = array();
+		}
 		if(empty($plugin->params['period'])){
 			$plugin->params['period'] = 7200;
 		}

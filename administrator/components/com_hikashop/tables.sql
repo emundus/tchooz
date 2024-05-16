@@ -165,7 +165,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_currency` (
 	`currency_format` varchar(255) NOT NULL DEFAULT '%i',
 	`currency_name` varchar(255) NOT NULL,
 	`currency_published` tinyint(4) NOT NULL DEFAULT '0',
-	`currency_rate` decimal(17,6) NOT NULL DEFAULT '1.000000',
+	`currency_rate` decimal(18,7) NOT NULL DEFAULT '1.000000',
 	`currency_locale` text NOT NULL,
 	`currency_displayed` tinyint(4) NOT NULL DEFAULT '0',
 	`currency_percent_fee` decimal(4,2) NOT NULL DEFAULT '0.00',

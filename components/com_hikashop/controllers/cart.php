@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -289,6 +289,7 @@ class CartController extends hikashopController {
 			$app->enqueueMessage(JText::_('THE_PRODUCT_BIENG_MODIFIED_IS_NOT_IN_THE_CURRENT_CART_ANYMORE'),'error');
 			return true;
 		}
+		$qty = hikaInput::get()->getInt('quantity', $qty);
 
 		$optionsData = null;
 		if(hikashop_level(1)) {
@@ -366,9 +367,6 @@ class CartController extends hikashopController {
 			$product_id = $new_product_id;
 		}
 
-		$cart_products = array(array('id'=>$cart_product_id,'qty'=>0));
-		$result = $cartClass->updateProduct($cart_id, $cart_products);
-
 		$cart_products[0]['id'] = $product_id;
 		$cart_products[0]['qty'] = $qty;
 		if(!empty($fieldData))
@@ -377,9 +375,27 @@ class CartController extends hikashopController {
 			$cart_products[0]['options'] = $optionsData;
 
 		$result = $cartClass->addProduct($cart_id, $cart_products, $options);
-
 		if(!$result) {
+			$cart = $cartClass->getFullCart($cart_id);
+			if(!empty($cart->messages)) {
+				foreach($cart->messages as $msg) {
+					hikashop_display($msg['msg'], $msg['type']);
+				}
+			}
 			return $this->product_edit();
+		}
+
+		$delete_old = false;
+		if($cart_products[0]['pid'] != $cart_product_id) {
+			$delete_old = true;
+		}
+
+		if($delete_old) {
+			$cart_products = array(array('id'=>$cart_product_id,'qty'=>0));
+			$result = $cartClass->updateProduct($cart_id, $cart_products);
+			if(!$result) {
+				return $this->product_edit();
+			}
 		}
 
 		hikaInput::get()->set('layout', 'product_save');

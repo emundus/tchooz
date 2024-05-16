@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -387,6 +387,11 @@ class plgSystemHikashopproductInsert extends hikashopJoomlaPlugin {
 		$productClass = hikashop_get('class.product');
 		foreach($products as $k => $row) {
 			$productClass->addAlias($products[$k]);
+			if(!empty($row->product_name))
+				$products[$k]->product_name = hikashop_translate($row->product_name);
+			if(!empty($row->product_description))
+				$products[$k]->product_description = hikashop_translate($row->product_description);
+
 			foreach($images as $j => $image) {
 				if($row->product_id != $image->file_ref_id)
 					continue;

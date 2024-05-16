@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.3
+ * @version	5.0.4
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -59,7 +59,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 				'mybank' => 'MyBank',
 				'p24' => 'Przelewy24',
 				'sepa' => 'SEPA-Lastschrift',
-				'sofort' => 'Sofort',
+				'multibanco' => 'Multibanco',
 			),
 			'tooltip' => 'PAYPAL_CHECKOUT_DISABLE_FUNDING_TOOLTIP',
 		),
@@ -80,7 +80,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 				'mybank' => 'MyBank',
 				'p24' => 'Przelewy24',
 				'sepa' => 'SEPA-Lastschrift',
-				'sofort' => 'Sofort',
+				'multibanco' => 'Multibanco',
 			),
 			'tooltip' => 'PAYPAL_CHECKOUT_ENABLE_FUNDING_TOOLTIP',
 		),
@@ -713,6 +713,197 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		return $html;
 	}
 
+	private function processCreateorder() {
+		$result = new stdClass();
+		$result->errorTitle = JText::_('PAYPAL_CHECKOUT_ERROR_OCCURRED');
+		$result->errorMessage = '';
+		$result->error = false;
+
+		$order_id = hikaInput::get()->getInt('order_id');
+		if(empty($order_id)) {
+			$result->error = true;
+			$result->errorMessage = 'Order id is missing';
+			return $result;
+		}
+
+		$dbOrder = $this->getOrder($order_id);
+		$this->loadPaymentParams($dbOrder);
+		if(empty($this->payment_params)) {
+			$result->error = true;
+			$result->errorMessage = 'Params could not be loaded for payment method';
+			return $result;
+		}
+
+		$orderClass = hikashop_get('class.order');
+		$order = $orderClass->loadFullOrder($order_id);
+		if(empty($order)) {
+			$result->error = true;
+			$result->errorMessage = 'Order could not be loaded';
+			return $result;
+		}
+
+		$userClass = hikashop_get('class.user');
+		$order->customer = $userClass->get($order->order_user_id);
+		$order->cart =& $order;
+
+		$price = new stdClass();
+		$price->price_value_with_tax = $order->order_full_price;
+		$order->cart->full_total = new stdClass();
+		$order->cart->full_total->prices = array($price);
+		$order->cart->total = new stdClass();
+
+		$config = hikashop_config();
+		if($config->get('group_options',0)){
+			foreach($order->cart->products as $k => $product){
+				if(!empty($product->order_product_option_parent_id)){
+					foreach($order->cart->products as $k2 => $product2){
+						if($product->order_product_option_parent_id == $product2->order_product_id){
+							$product2->order_product_price += $product->order_product_price;
+							$product2->order_product_tax += $product->order_product_tax;
+							$product2->order_product_total_price_no_vat += $product->order_product_total_price_no_vat;
+							$product2->order_product_total_price += $product->order_product_total_price;
+						}
+					}
+				}
+			}
+		}
+
+		$currencyClass = hikashop_get('class.currency');
+		$currencyClass->calculateTotal($order->cart->products, $order->cart->total, $order->order_currency_id);
+		if(bccomp(sprintf('%F',$order->order_discount_price), 0, 5) !== 0) {
+			$order->cart->coupon = new stdClass();
+			$order->cart->coupon->discount_value =& $order->order_discount_price;
+		}
+
+		try {
+			require __DIR__ . '/vendor/autoload.php';
+			if($this->payment_params->sandbox) {
+				$env = new PayPalCheckoutSdk\Core\SandboxEnvironment($this->payment_params->client_id, $this->payment_params->client_secret);
+			} else {
+				$env = new PayPalCheckoutSdk\Core\ProductionEnvironment($this->payment_params->client_id, $this->payment_params->client_secret);
+			}
+
+			$client = new PayPalCheckoutSdk\Core\PayPalHttpClient($env);
+			$request = new PayPalCheckoutSdk\Orders\OrdersCreateRequest();
+			$request->payPalPartnerAttributionId($this->bncode);
+			$request->prefer('return=representation');
+			$request->body = $this->getOrderData($order);
+			if($this->payment_params->debug) {
+				hikashop_writeToLog($request->body);
+			}
+			$response = $client->execute($request);
+			if(empty($response->result->id)) {
+				$result->error = true;
+				if(!empty($response->result->status)) {
+					$result->errorMessage = $response->result->status;
+				} else {
+					$result->errorMessage = 'Unkowned error when creating order';
+				}
+				hikashop_writeToLog($response);
+				return $result;
+			}
+			$result->id = $response->result->id;
+
+			if($this->payment_params->debug) {
+				hikashop_writeToLog($response);
+			}
+
+			return $result;
+		} catch(Exception $e) {
+			$result->error = true;
+			$result->errorMessage = $e->getMessage();
+			hikashop_writeToLog($result->errorMessage);
+			return $result;
+		}
+	}
+
+	private function processOnapprove() {
+		$result = new stdClass();
+		$result->errorTitle = JText::_('PAYPAL_CHECKOUT_ERROR_OCCURRED');
+		$result->errorMessage = '';
+		$result->error = false;
+
+		$order_id = hikaInput::get()->getInt('order_id');
+		if(empty($order_id)) {
+			$result->error = true;
+			$result->errorMessage = 'Order id is missing';
+			return $result;
+		}
+
+		$paypal_id = hikaInput::get()->getInt('orderID');
+		if(empty($paypal_id)) {
+			$result->error = true;
+			$result->errorMessage = 'PayPal Order id is missing';
+			return $result;
+		}
+
+		$dbOrder = $this->getOrder($order_id);
+		$this->loadPaymentParams($dbOrder);
+		if(empty($this->payment_params)) {
+			$result->error = true;
+			$result->errorMessage = 'Params could not be loaded for payment method';
+			return $result;
+		}
+
+		$orderClass = hikashop_get('class.order');
+		$order = $orderClass->loadFullOrder($order_id);
+		if(empty($order)) {
+			$result->error = true;
+			$result->errorMessage = 'Order could not be loaded';
+			return $result;
+		}
+
+		$updateOrder = new stdClass();
+		$updateOrder->order_id = $order_id;
+		$updateOrder->order_payment_params->paypal_checkout_id = $paypal_id;
+		$orderClass->save($updateOrder);
+
+		if($this->payment_params->debug) {
+			hikashop_writeToLog('on approve for '.$paypal_id);
+		}
+
+		try {
+			require __DIR__ . '/vendor/autoload.php';
+			if($this->payment_params->sandbox) {
+				$env = new PayPalCheckoutSdk\Core\SandboxEnvironment($this->payment_params->client_id, $this->payment_params->client_secret);
+			} else {
+				$env = new PayPalCheckoutSdk\Core\ProductionEnvironment($this->payment_params->client_id, $this->payment_params->client_secret);
+			}
+
+			$client = new PayPalCheckoutSdk\Core\PayPalHttpClient($env);
+			if(!empty($this->payment_params->capture)) {
+				$request = new PayPalCheckoutSdk\Orders\OrdersCaptureRequest($paypal_id);
+			} else {
+				$request = new PayPalCheckoutSdk\Orders\OrdersAuthorizeRequest($paypal_id);
+			}
+			$request->headers['PayPal-Partner-Attribution-Id'] = $this->bncode;
+
+			$response = $client->execute($request);
+			if(empty($response->result->id)) {
+				$result->error = true;
+				if(!empty($response->result->status)) {
+					$result->errorMessage = $response->result->status;
+				} else {
+					$result->errorMessage = 'Unkowned error when creating order';
+				}
+				hikashop_writeToLog($response);
+				return $result;
+			}
+			$result->id = $response->result->id;
+
+			if($this->payment_params->debug) {
+				hikashop_writeToLog($response);
+			}
+
+			return $result;
+		} catch(Exception $e) {
+			$result->error = true;
+			$result->errorMessage = $e->getMessage();
+			hikashop_writeToLog($result->errorMessage);
+			return $result;
+		}
+	}
+
 	private function processOnboarding() {
 		$result = new stdClass();
 		$result->errorTitle = JText::_('PAYPAL_CHECKOUT_ERROR_OCCURRED');
@@ -844,6 +1035,16 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 	}
 
 	public function onPaymentNotification(&$statuses) {
+		$createorder = hikaInput::get()->getInt('createorder');
+		if($createorder) {
+			echo json_encode($this->processCreateorder());
+			exit;
+		}
+		$onapprove = hikaInput::get()->getInt('onapprove');
+		if($onapprove) {
+			echo json_encode($this->processOnapprove());
+			exit;
+		}
 		$onboarding = hikaInput::get()->getInt('onboarding');
 		if($onboarding) {
 			echo json_encode($this->processOnboarding());
@@ -1154,15 +1355,26 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			'components' => 'buttons,funding-eligibility,messages',
 		];
 		if(!empty($this->payment_params->disable_funding)) {
-			if(!is_string($this->payment_params->disable_funding)) {
-				$this->payment_params->disable_funding = implode(',', $this->payment_params->disable_funding);
+			if(is_string($this->payment_params->disable_funding)) {
+				$this->payment_params->disable_funding = explode(',', $this->payment_params->disable_funding);
 			}
+			$key = array_search('sofort', $this->payment_params->disable_funding);
+			if ($key !== false) {
+				unset($this->payment_params->disable_funding[$key]);
+			}
+			$this->payment_params->disable_funding = implode(',', $this->payment_params->disable_funding);
+
 			$this->params['disable-funding'] = $this->payment_params->disable_funding;
 		}
 		if(!empty($this->payment_params->funding)) {
-			if(!is_string($this->payment_params->funding)) {
-				$this->payment_params->funding = implode(',', $this->payment_params->funding);
+			if(is_string($this->payment_params->funding)) {
+				$this->payment_params->funding = explode(',', $this->payment_params->funding);
 			}
+			$key = array_search('sofort', $this->payment_params->funding);
+			if ($key !== false) {
+				unset($this->payment_params->funding[$key]);
+			}
+			$this->payment_params->funding = implode(',', $this->payment_params->funding);
 			$this->params['enable-funding'] = $this->payment_params->funding;
 		}
 

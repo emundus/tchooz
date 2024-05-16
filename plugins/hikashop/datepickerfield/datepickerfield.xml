@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="hikashop" method="upgrade">
 	<name>HikaShop: Date Picker Custom Field</name>
-	<creationDate>31 janvier 2024</creationDate>
-	<version>5.0.3</version>
+	<creationDate>14 mai 2024</creationDate>
+	<version>5.0.4</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>
