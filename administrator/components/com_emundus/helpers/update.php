@@ -246,7 +246,7 @@ class EmundusHelperUpdate
         if (!empty($element)) {
             $db = Factory::getDbo();
             $query = $db->getQuery(true);
-			
+
 			if(empty($manifest_cache) && (!empty($folder) && !empty($type))) {
 				$folder_type = '';
 				switch ($type) {
@@ -263,7 +263,7 @@ class EmundusHelperUpdate
 						$folder_type = 'libraries';
 						break;
 				}
-				
+
 				if(!empty($folder_type))
 				{
 					$manifest_path = JPATH_BASE . '/' . $folder_type . '/' . $folder . '/' . $element . '/'.$element.'.xml';
@@ -573,8 +573,8 @@ class EmundusHelperUpdate
 
         $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml,4,2);
 
-        file_put_contents($file, $new_yaml);
-    }
+		return file_put_contents($file, $new_yaml);
+	}
 
     public static function addYamlVariable($key,$value,$file,$parent = null,$breakline = false,$check_existing = false,$is_array = true) {
         $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));

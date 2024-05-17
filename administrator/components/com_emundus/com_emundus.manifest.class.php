@@ -154,86 +154,37 @@ class Com_EmundusInstallerScript
 	    $db    = Factory::getContainer()->get('DatabaseDriver');
 	    $query = $db->getQuery(true);
 
-	    $query->select('custom_data')
-		    ->from($db->quoteName('#__extensions'))
-		    ->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
-	    $db->setQuery($query);
-	    $custom_data = $db->loadResult();
-
-	    if (!empty($custom_data))
-	    {
-		    $custom_data = json_decode($custom_data, true);
-
-		    $custom_data['sitename'] = Factory::getApplication()->get('sitename');
-	    }
-	    else
-	    {
-		    $custom_data = [
-			    'sitename' => Factory::getApplication()->get('sitename'),
-		    ];
-	    }
-
-	    $query->clear()
-		    ->update($db->quoteName('#__extensions'))
-		    ->set($db->quoteName('custom_data') . ' = ' . $db->quote(json_encode($custom_data)))
-		    ->where($db->quoteName('element') . ' LIKE ' . $db->quote('com_emundus'));
-	    $db->setQuery($query);
-
-		if(!$db->execute()) {
-			return false;
+		if(!$this->setSitename()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour du nom du site dans la configuration de eMundus.', 'error');
 		}
-		
-		// Sync gantry5 logo
-	    if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml')) {
-		    $logo = JPATH_SITE . '/images/logo_custom.png';
-		    $query->clear()
-			    ->select('id,content')
-			    ->from($db->quoteName('#__modules'))
-			    ->where($db->quoteName('module') . ' = ' . $db->quote('mod_custom'))
-			    ->where($db->quoteName('title') . ' LIKE ' . $db->quote('Logo'));
-		    $db->setQuery($query);
-		    $logo_module = $db->loadObject();
 
-		    preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-		    $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+		if(!$this->syncGantryLogo()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la synchronisation du logo dans la configuration de Gantry5.', 'error');
+		}
 
-		    if (preg_match($pattern, $tab[1])) {
-			    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
-		    }
-
-		    if (!empty($tab[1])) {
-			    $logo = str_replace('images/', 'gantry-media://', $tab[1]);
-
-			    EmundusHelperUpdate::updateYamlVariable('image', $logo, JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml');
-		    } elseif(file_exists($logo)) {
-			    $logo = str_replace('images/', 'gantry-media://', $tab[1]);
-
-			    EmundusHelperUpdate::updateYamlVariable('image', $logo, JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml');
-		    }
+	    if(!EmundusHelperUpdate::languageBaseToFile()['status']) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour des fichiers de langue.', 'error');
 	    }
 
-	    // Insert new translations in overrides files
-	    EmundusHelperUpdate::languageBaseToFile();
+	    if(!EmundusHelperUpdate::recompileGantry5()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la recompilation de Gantry5.', 'error');
+	    }
 
-	    // Recompile Gantry5 css at each update
-	    EmundusHelperUpdate::recompileGantry5();
+	    if(!EmundusHelperUpdate::clearJoomlaCache()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression du cache Joomla.', 'error');
+	    }
 
-	    // Clear Joomla Cache
-	    EmundusHelperUpdate::clearJoomlaCache();
+	    if(!$this->clearDashboard()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression des tableaux de bord par défaut.', 'error');
+	    }
 
-	    // Clear dashboard of emundus accounts
-	    $query->clear()
-		    ->delete($db->quoteName('#__emundus_setup_dashboard'))
-		    ->where($db->quoteName('user') . ' IN (62,95)');
-	    $db->setQuery($query);
-	    $db->execute();
+	    if(!EmundusHelperUpdate::checkHealth()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la santé de l\'installation.', 'error');
+	    }
 
-	    EmundusHelperUpdate::checkHealth();
-
-	    EmundusHelperUpdate::checkPageClass();
+	    if(!EmundusHelperUpdate::checkPageClass()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des classes de pages.', 'error');
+	    }
 
 	    // if payment is activated, remove cookie samesite line in .htaccess file, else add it
 	    $eMConfig = ComponentHelper::getParams('com_emundus');
@@ -246,4 +197,94 @@ class Com_EmundusInstallerScript
 
 		return true;
     }
+
+	private function setSitename() {
+		$updated = false;
+
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select('custom_data')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('element') . ' LIKE ' . $this->db->quote('com_emundus'));
+			$this->db->setQuery($query);
+			$custom_data = $this->db->loadResult();
+
+			if (!empty($custom_data))
+			{
+				$custom_data = json_decode($custom_data, true);
+
+				$custom_data['sitename'] = Factory::getApplication()->get('sitename');
+			}
+			else
+			{
+				$custom_data = [
+					'sitename' => Factory::getApplication()->get('sitename'),
+				];
+			}
+
+			$query->clear()
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('custom_data') . ' = ' . $this->db->quote(json_encode($custom_data)))
+				->where($this->db->quoteName('element') . ' LIKE ' . $this->db->quote('com_emundus'));
+			$this->db->setQuery($query);
+			$updated = $this->db->execute();
+		}
+		catch (Exception $e)
+		{}
+
+		return $updated;
+	}
+
+	private function syncGantryLogo() {
+		$synced = false;
+
+		$query = $this->db->getQuery(true);
+
+		if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml')) {
+			$logo = JPATH_SITE . '/images/logo_custom.png';
+			$query->clear()
+				->select('id,content')
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' = ' . $this->db->quote('mod_custom'))
+				->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote('Logo'));
+			$this->db->setQuery($query);
+			$logo_module = $this->db->loadObject();
+
+			preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+			$pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+			if (preg_match($pattern, $tab[1])) {
+				$tab[1] = parse_url($tab[1], PHP_URL_PATH);
+			}
+
+			if (!empty($tab[1])) {
+				$logo = str_replace('images/', 'gantry-media://', $tab[1]);
+
+				$synced = EmundusHelperUpdate::updateYamlVariable('image', $logo, JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml');
+			} elseif(file_exists($logo)) {
+				$logo = str_replace('images/', 'gantry-media://', $tab[1]);
+
+				$synced = EmundusHelperUpdate::updateYamlVariable('image', $logo, JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml');
+			}
+		} else {
+			$synced = true;
+		}
+
+		return $synced;
+	}
+
+	private function clearDashboard() {
+		$query = $this->db->getQuery(true);
+
+		$query->clear()
+			->delete($this->db->quoteName('#__emundus_setup_dashboard'))
+			->where($this->db->quoteName('user') . ' IN (62,95)');
+		$this->db->setQuery($query);
+		return $this->db->execute();
+	}
 }
