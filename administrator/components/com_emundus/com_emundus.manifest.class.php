@@ -186,6 +186,10 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des classes de pages.', 'error');
 	    }
 
+		if(!$this->setAdminColorPalette()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour de la palette de couleurs de l\'administration.', 'error');
+		}
+
 	    // if payment is activated, remove cookie samesite line in .htaccess file, else add it
 	    $eMConfig = ComponentHelper::getParams('com_emundus');
 	    $payment_activated = $eMConfig->get('application_fee');
@@ -286,5 +290,38 @@ class Com_EmundusInstallerScript
 			->where($this->db->quoteName('user') . ' IN (62,95)');
 		$this->db->setQuery($query);
 		return $this->db->execute();
+	}
+
+	private function setAdminColorPalette() {
+		$colors_updated = false;
+
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select('id,params')
+				->from($this->db->quoteName('#__template_styles'))
+				->where($this->db->quoteName('template') . ' = ' . $this->db->quote('atum'))
+				->where($this->db->quoteName('client_id') . ' = 1');
+			$this->db->setQuery($query);
+			$atum_template = $this->db->loadObject();
+
+			if(!empty($atum_template->id)) {
+				$params = json_decode($atum_template->params, true);
+
+				$params['bg-light'] = '#e4e6eb';
+
+				$update = [
+					'id' => $atum_template->id,
+					'params' => json_encode($params)
+				];
+				$update = (object) $update;
+				$colors_updated = $this->db->updateObject('#__template_styles', $update, 'id');
+			}
+		}
+		catch (Exception $e)
+		{}
+
+		return $colors_updated;
 	}
 }

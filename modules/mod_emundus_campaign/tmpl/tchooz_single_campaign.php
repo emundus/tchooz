@@ -121,7 +121,7 @@ if ($currentCampaign->apply_online == 0) {
                 </div>
 			<?php endif; ?>
 
-			<?php if ($mod_em_campaign_show_admission_start_date && $currentCampaign->admission_start_date !== '0000-00-00 00:00:00') : ?>
+			<?php if ($mod_em_campaign_show_admission_start_date && !empty($currentCampaign->admission_start_date) && $currentCampaign->admission_start_date !== '0000-00-00 00:00:00') : ?>
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row"><span
                                 class="material-icons em-mr-8">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>
@@ -130,7 +130,7 @@ if ($currentCampaign->apply_online == 0) {
                 </div>
 			<?php endif; ?>
 
-			<?php if ($mod_em_campaign_show_admission_end_date && $currentCampaign->admission_end_date !== '0000-00-00 00:00:00') : ?>
+			<?php if ($mod_em_campaign_show_admission_end_date && !empty($currentCampaign->admission_end_date) && $currentCampaign->admission_end_date !== '0000-00-00 00:00:00') : ?>
                 <div class="em-flex-row" style="white-space: nowrap;">
                     <p class="em-text-neutral-600 em-flex-row"><span
                                 class="material-icons em-mr-8">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>

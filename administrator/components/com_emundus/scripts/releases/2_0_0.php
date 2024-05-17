@@ -188,6 +188,9 @@ class Release2_0_0Installer extends ReleaseInstaller
 				throw new \Exception('Erreur lors de la modification des templates des formulaires.');
 			}
 
+			EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_CSV','Export');
+			EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_CSV','Export', 'override', 0, null, null, 'en-GB');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

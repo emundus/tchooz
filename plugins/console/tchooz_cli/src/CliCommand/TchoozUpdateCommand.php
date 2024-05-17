@@ -101,8 +101,7 @@ class TchoozUpdateCommand extends AbstractCommand
 		$this->components = explode(',',$this->getApplication()->getConsoleInput()->getOption('component'));
 
 		if(empty($components)) {
-			$availableComponents = array('all', 'com_emundus', 'com_fabrik', 'com_hikashop', 'com_hikamarket', 'com_falang', 'com_dpcalendar', 'com_dropfiles', 'com_loginguard', 'com_admintools',
-				'com_jumi', 'com_gantry5', 'com_securitycheckpro');
+			$availableComponents = array('all', 'com_emundus', 'com_fabrik', 'com_hikashop', 'com_falang', 'com_gantry5', 'com_securitycheckpro');
 			$choice              = new ChoiceQuestion(
 				'Please select components to update (separate multiple profiles with a comma)',
 				$availableComponents
@@ -176,31 +175,6 @@ class TchoozUpdateCommand extends AbstractCommand
 			}
 			$path     = is_dir(JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/') ? JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' : JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
 			$xml_path = $path . $xml_file;
-
-			if ($element == 'com_extplorer' || $element == 'com_dropfiles') {
-				if (empty($manifest_cache['version'])) {
-					$manifest_cache['version'] = $this->refreshManifestCache($elementArr['extension_id'], $elementArr['element']);
-				}
-				if (!file_exists($xml_path)) {
-					if ($element == 'com_extplorer') {
-						$short_element = str_replace('com_', '', $element);
-						$file          = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.j30.xml';
-					}
-					elseif ($element == 'com_dropfiles') {
-						$file          = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $element . '.xml';
-						$short_element = str_replace('com_', '', $element);
-					}
-
-					if (file_exists($file)) {
-						$rename_file = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.xml';
-						rename($file, $rename_file);
-						$xml_path = $rename_file;
-					}
-					else {
-						$xml_path = JPATH_ADMINISTRATOR . '/components/' . $element . '/' . $short_element . '.xml';
-					}
-				}
-			}
 
 			$schema_version = '';
 			if (file_exists($xml_path)) {

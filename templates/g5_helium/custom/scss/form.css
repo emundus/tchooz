@@ -1409,3 +1409,38 @@
 .SumoSelect {
   width: 100%;
 }
+
+/** MODAL FABRIK **/
+.fabrikWindow-modal.modal {
+  height: auto !important;
+  box-shadow: 0 0 0 50vmax rgba(0, 0, 0, .5) !important;
+  border: unset !important;
+  div.modal-header {
+    min-height: unset;
+    background: unset;
+    border: unset;
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    a.closeFabWin {
+      position: static;
+      color: black;
+    }
+  }
+  div.contentWrapper {
+    height: auto !important;
+    .itemContent {
+      #csvmsg {
+        .alert.alert-success {
+          background-color: unset !important;
+        }
+        h3 {
+          display: none;
+        }
+        .btn.btn-success {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
