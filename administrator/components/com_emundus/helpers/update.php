@@ -60,6 +60,11 @@ class EmundusHelperUpdate
 			}
 		}
 
+		if(is_file(JPATH_BASE . '/administrator/cache/autoload_psr4.php'))
+		{
+			unlink(JPATH_BASE . '/administrator/cache/autoload_psr4.php');
+		}
+
 		return true;
 	}
 
