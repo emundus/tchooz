@@ -33,7 +33,7 @@
           </li>
         </ul>
       </nav>
-      <section id="actions" class="tw-flex tw-justify-between tw-mt-4 tw-mb-4" v-if="this.items[this.selectedListTab].length > 0">
+      <section id="actions" class="tw-flex tw-justify-between tw-mt-4 tw-mb-4">
         <section id="tab-actions">
           <select v-for="filter in filters[selectedListTab]" :key="selectedListTab + '-' + filter.key"
                   v-model="filter.value" @change="onChangeFilter(filter)" class="tw-mr-2">
@@ -350,7 +350,15 @@ export default {
               debounce: null
             };
           }
+
+          // Init search value from sessionStorage
+          const searchValue = sessionStorage.getItem('tchooz_filter_'+this.selectedListTab+'_search/' + document.location.hostname);
+          if(searchValue !== null) {
+            this.searches[this.selectedListTab].search = searchValue;
+          }
+
           this.setTabFilters(tab);
+
           if (typeof tab.getter !== 'undefined') {
             let url = 'index.php?option=com_emundus&controller=' + tab.controller + '&task=' + tab.getter + '&lim=' + this.numberOfItemsToDisplay + '&page=' + page;
             if (this.searches[tab.key].search !== '') {
@@ -407,6 +415,12 @@ export default {
           this.filters[tab.key] = [];
 
           tab.filters.forEach(filter => {
+            //get the filter value from sessionStorage
+            let filterValue = sessionStorage.getItem('tchooz_filter_'+this.selectedListTab+'_'+filter.key + '/' + document.location.hostname);
+            if(filterValue == null) {
+              filterValue = filter.default ? filter.default : 'all'
+            }
+
             if (filter.values === null) {
               if (filter.getter) {
                 const controller = typeof filter.controller !== 'undefined' ? filter.controller : tab.controller;
@@ -424,7 +438,7 @@ export default {
 
                         this.filters[tab.key].push({
                           key: filter.key,
-                          value: filter.default ? filter.default : 'all',
+                          value: filterValue,
                           options: options
                         });
                       }
@@ -433,7 +447,7 @@ export default {
             } else {
               this.filters[tab.key].push({
                 key: filter.key,
-                value: filter.default ? filter.default : 'all',
+                value: filterValue,
                 options: filter.values
               });
             }
@@ -444,6 +458,12 @@ export default {
     searchItems() {
       if (this.searches[this.selectedListTab].searchDebounce !== null) {
         clearTimeout(this.searches[this.selectedListTab].searchDebounce);
+      }
+
+      if(this.searches[this.selectedListTab].search === '') {
+        sessionStorage.removeItem('tchooz_filter_'+this.selectedListTab+'_search/' + document.location.hostname);
+      } else {
+        sessionStorage.setItem('tchooz_filter_'+this.selectedListTab+'_search/' + document.location.hostname, this.searches[this.selectedListTab].search);
       }
 
       this.searches[this.selectedListTab].searchDebounce = setTimeout(() => {
@@ -566,7 +586,10 @@ export default {
         });
       }
     },
-    onChangeFilter() {
+    onChangeFilter(filter) {
+      // Store value to sessionStorage
+      sessionStorage.setItem('tchooz_filter_'+this.selectedListTab+'_'+ filter.key + '/' + document.location.hostname, filter.value);
+
       // when we change a filter, we reset the pagination
       this.getListItems(1, this.selectedListTab);
     },

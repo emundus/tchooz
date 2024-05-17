@@ -104,8 +104,6 @@ defined('_JEXEC') or die;
                 }
             });
 
-            console.log(clickInsideModule)
-
             if (clickInsideModule) {
                 jQuery('p.mod_emundus_help__popover[data-toggle="popover"]').click();
             } else {
