@@ -28,7 +28,7 @@ foreach ($group->subgroups as $subgroup) :
 		</div>
 		<div class="fabrikSubGroupElements em-repeat-card tw-mb-4 tw-mt-7">
             <?php if ($group->canDeleteRepeat) : ?>
-                <div class="fabrikGroupRepeater pull-right">
+                <div class="fabrikGroupRepeater">
                     <?php echo $this->removeRepeatGroupButton; ?>
                 </div>
             <?php endif; ?>
