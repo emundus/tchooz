@@ -1588,7 +1588,7 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio in
                         height: var(--em-form-radio-height);
                         margin-right: var(--em-form-radio-margin-right);
                         margin-left: 0;
-                        margin-top: 0;
+                        margin-top: 2px;
                     }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label {
                         cursor: pointer;
@@ -1597,6 +1597,8 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
                     }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio label span {
                             word-wrap: break-word;
+                            -webkit-hyphens: auto;
+                                    hyphens: auto;
                         }
 @supports selector(:has(*)) {
                         form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio:has(input[type='radio']:checked) {

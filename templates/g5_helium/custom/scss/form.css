@@ -777,7 +777,7 @@
                         height: var(--em-form-radio-height);
                         margin-right: var(--em-form-radio-margin-right);
                         margin-left: 0;
-                        margin-top: 0;
+                        margin-top: 2px;
                     }
 
                     label {
@@ -787,6 +787,7 @@
 
                         span {
                             word-wrap: break-word;
+                            hyphens: auto;
                         }
                     }
 
