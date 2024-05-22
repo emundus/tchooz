@@ -26,7 +26,7 @@
 
 .com-users-profile__edit-form#member-profile {
     background: #fff;
-    margin: 0 auto;
+    margin: 0 auto 50px auto;
     padding: 24px;
     border-radius: var(--em-form-br-block) !important;
     border: 1px solid #EDEDED;
@@ -174,6 +174,13 @@ form#member-profile.form-validate.form-horizontal.well span.star {
     padding-left: 0;
 }
 
+.view-profile.gantry .em-coordinator #g-container-main {
+    padding: 32px 20px 20px 96px !important;
+}
+
+.view-profile.gantry .em-applicant #g-container-main {
+    padding: 32px 20px 20px 20px !important;
+}
 
 @media screen and (max-width: 767px) {
     form#member-profile {
@@ -184,8 +191,14 @@ form#member-profile.form-validate.form-horizontal.well span.star {
         margin-right: 0 !important;
     }
 
+    .view-profile #member-profile > .control-group .controls {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .view-profile .em-applicant #g-container-main .g-container,
     .view-profile .em-coordinator #g-container-main .g-container {
-        max-width: 100%;
+        width: 100%;
     }
 }
 
@@ -195,20 +208,43 @@ form#member-profile.form-validate.form-horizontal.well span.star {
     }
 }
 
-@media screen  and (max-width: 1366px) {
+@media screen  and (min-width: 768px) and (max-width: 959px) {
+    .view-profile .em-applicant #g-container-main .g-container,
     .view-profile .em-coordinator #g-container-main .g-container {
-        width: 80%;
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 960px) and (max-width: 1199px) {
+    .view-profile .em-applicant #g-container-main .g-container {
+        width: 60rem;
+    }
+    .view-profile .em-coordinator #g-container-main .g-container {
+        width: 60rem;
+        max-width: 100%;
+    }
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1366px) {
+    .view-profile .em-applicant #g-container-main .g-container{
+        width: 75rem;
+    }
+    .view-profile .em-coordinator #g-container-main .g-container{
+        width: 75rem;
+        max-width: 100%;
     }
 }
 
 @media screen  and (min-width: 1367px) and (max-width: 1919px) {
-    .view-profile .em-coordinator #g-container-main .g-container {
+    .view-profile .em-applicant #g-container-main .g-container,
+    .view-profile .em-coordinator #g-container-main .g-container{
         width: 70%;
     }
 }
+
 @media screen and (min-width: 1920px) {
+    .view-profile .em-applicant #g-container-main .g-container,
     .view-profile .em-coordinator #g-container-main .g-container {
         width: 50%;
     }
 }
-
