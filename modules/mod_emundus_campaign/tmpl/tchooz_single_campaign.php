@@ -15,10 +15,12 @@ $document = $app->getDocument();
 $wa       = $document->getWebAssetManager();
 $lang_tag = $app->getLanguage()->getTag();
 
-if ($lang_tag == "fr-FR") {
+if ($lang_tag == "fr-FR")
+{
 	setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
 }
-else {
+else
+{
 	setlocale(LC_ALL, 'en_GB');
 }
 
@@ -35,20 +37,61 @@ $dteDiff         = $dteStart->diff($dteEnd);
 $j               = $dteDiff->format("%a");
 $h               = $dteDiff->format("%H");
 
-if (empty($currentCampaign)) {
+if (empty($currentCampaign))
+{
 	$app->enqueueMessage(JText::_('MOD_EM_CAMPAIGN_NOT_ACCESSIBLE'));
 	$app->redirect('index.php');
 }
 
 $can_apply = 0;
-if (strtotime($now) < strtotime($currentCampaign->end_date) && strtotime($now) > strtotime($currentCampaign->start_date)) {
+if (strtotime($now) < strtotime($currentCampaign->end_date) && strtotime($now) > strtotime($currentCampaign->start_date))
+{
 	$can_apply = 1;
 }
-elseif (strtotime($now) > strtotime($currentCampaign->end_date)) {
+elseif (strtotime($now) > strtotime($currentCampaign->end_date))
+{
 	$can_apply = -1;
 }
 
-if ($currentCampaign->apply_online == 0) {
+if ($currentCampaign->is_limited == 1 && $currentCampaign->limit > 0)
+{
+	$db    = Factory::getContainer()->get('DatabaseDriver');
+	$query = $db->getQuery(true);
+
+	$query->clear()
+		->select($db->quoteName('limit_status'))
+		->from($db->quoteName('jos_emundus_setup_campaigns_repeat_limit_status'))
+		->where($db->quoteName('parent_id') . ' = ' . $db->quote($currentCampaign->id));
+	$db->setQuery($query);
+	$limit_status = $db->loadColumn();
+
+	$files_sent = 0;
+	if (!empty($limit_status))
+	{
+		$query->clear()
+			->select('COUNT(id)')
+			->from($db->quoteName('jos_emundus_campaign_candidature'))
+			->where($db->quoteName('campaign_id') . ' = ' . $db->quote($currentCampaign->id))
+			->andWhere($db->quoteName('status') . ' IN (' . implode(',', $limit_status) . ')');
+		$db->setQuery($query);
+		$files_sent = $db->loadResult();
+	}
+
+	$files_sent = $files_sent > $currentCampaign->limit ? $currentCampaign->limit : $files_sent;
+	if ($files_sent == 1)
+	{
+		$files_sent_tag = 'MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER_SINGULAR';
+	}
+	else
+	{
+		$files_sent_tag = 'MOD_EM_CAMPAIGN_CAMPAIGN_SENT_NUMBER_PLURAL';
+	}
+
+	$is_limit_obtained = $m_campaign->isLimitObtained($currentCampaign->id);
+}
+
+if ($currentCampaign->apply_online == 0)
+{
 	$can_apply = 0;
 }
 ?>
@@ -56,15 +99,18 @@ if ($currentCampaign->apply_online == 0) {
 <div class="mod_emundus_campaign__grid em-mt-24 em-mb-64" style="grid-gap: 64px">
     <div>
         <div class="em-flex-row em-mb-12 em-pointer em-w-max-content" onclick="history.go(-1)">
-            <span class="material-icons">navigate_before</span><span class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
+            <span class="material-icons">navigate_before</span><span
+                    class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
         </div>
 		<?php if ($mod_em_campaign_details_show_programme == 1) : ?>
 			<?php
 			$color      = '#0A53CC';
 			$background = '#C8E1FE';
-			if (!empty($currentCampaign->tag_color)) {
+			if (!empty($currentCampaign->tag_color))
+			{
 				$color = $currentCampaign->tag_color;
-				switch ($currentCampaign->tag_color) {
+				switch ($currentCampaign->tag_color)
+				{
 					case '#106949':
 						$background = '#DFF5E9';
 						break;
@@ -146,16 +192,16 @@ if ($currentCampaign->apply_online == 0) {
             </div>
 		<?php endif; ?>
 
+		<?php if ($mod_em_campaign_show_faq == 1 && !empty($faq_articles)) : ?>
         <div class="mod_emundus_campaign__tabs em-flex-row">
             <a class="em-applicant-text-color current-tab em-mr-24" onclick="displayTab('campaign')" id="campaign_tab">
                 <span><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
             </a>
-			<?php if ($mod_em_campaign_show_faq == 1 && !empty($faq_articles)) : ?>
-                <a class="em-applicant-text-color" onclick="displayTab('faq')" id="faq_tab">
-                    <span><?php echo JText::_('MOD_EM_CAMPAIGN_FAQ') ?></span>
-                </a>
-			<?php endif; ?>
+            <a class="em-applicant-text-color" onclick="displayTab('faq')" id="faq_tab">
+                <span><?php echo JText::_('MOD_EM_CAMPAIGN_FAQ') ?></span>
+            </a>
         </div>
+		<?php endif; ?>
 
         <div class="g-block size-100 tchooz-single-campaign">
             <div class="single-campaign" id="campaign">
@@ -189,10 +235,13 @@ if ($currentCampaign->apply_online == 0) {
             <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
 
 				<?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
+                    <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 				<?php endif; ?>
 
                 <h4 class="em-mb-24"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></h4>
+	            <?php  if ($currentCampaign->is_limited == 1 && $currentCampaign->limit > 0) : ?>
+                    <div class="flex em-flex-center em-mb-24"><p class="mr-2 h-max em-p-5-12 em-font-weight-600 em-text-neutral-300 em-font-size-14 em-border-radius" style="background:var(--bg-3);"><?= $files_sent.' '.JText::_($files_sent_tag).' '.$currentCampaign->limit ?></p></div>
+	            <?php endif; ?>
 				<?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
                     <div class="em-mt-24">
 						<?php $index = 1; ?>
@@ -207,27 +256,35 @@ if ($currentCampaign->apply_online == 0) {
 				<?php if ($can_apply == 1) : ?>
 					<?php
 					// The register URL does not work  with SEF, this workaround helps counter this.
-					if ($sef == 0) {
-						if (!isset($redirect_url) || empty($redirect_url)) {
+					if ($sef == 0)
+					{
+						if (!isset($redirect_url) || empty($redirect_url))
+						{
 							$redirect_url = "index.php?option=com_users&view=registration";
 						}
 						$register_url = $redirect_url . "&course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id;
 					}
-					else {
+					else
+					{
 						$register_url = JUri::base() . $redirect_url . "?course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id;
 					}
-                    if(!empty($mod_em_campaign_itemid)) {
-                        $register_url .= "&Itemid=" . $mod_em_campaign_itemid;
-                    }
-					if (!$user->guest && !empty($formUrl)) {
+					if (!empty($mod_em_campaign_itemid))
+					{
+						$register_url .= "&Itemid=" . $mod_em_campaign_itemid;
+					}
+					if (!$user->guest && !empty($formUrl))
+					{
 						$register_url .= "&redirect=" . $formUrl;
 					}
-					?>
+					if ($is_limit_obtained) : ?>
+                        <button class="em-disabled-button em-w-100" role="button" data-toggle="sc-modal"><?= JText::_('MOD_EM_CAMPAIGN_DETAILS_LIMIT_OBTAINED'); ?></button>
+					<?php else : ?>
                     <a class="btn btn-primary em-w-100 em-applicant-default-font" role="button"
                        href='<?php echo $register_url; ?>'
                        data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+					<?php endif; ?>
 				<?php elseif ($can_apply == -1) : ?>
-                    <button class="em-disabled-button em-w-100 em-mt-24" role="button"
+                    <button class="em-disabled-button em-w-100" role="button"
                             data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
 				<?php endif; ?>
             </div>
@@ -238,7 +295,7 @@ if ($currentCampaign->apply_online == 0) {
             <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
 
 				<?php if ($mod_em_campaign_display_svg == 1) : ?>
-                <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
+                    <div id="background-shapes" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 				<?php endif; ?>
 
                 <h4><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></h4>
@@ -268,6 +325,12 @@ if ($currentCampaign->apply_online == 0) {
     var current_tab = 'campaign';
 
     window.onload = function () {
+        // Set sidebar sticky depends on height of header
+        const headerNav = document.getElementById('g-navigation');
+        const sidebar = document.querySelector('.view-programme .mod_emundus_campaign__details_content');
+        if (headerNav && sidebar) {
+            sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
+        }
         document.getElementById('campaign_tab').classList.add('current-tab');
 
 		<?php if (is_array($modules_tabs) && in_array('faq', $modules_tabs)) : ?>

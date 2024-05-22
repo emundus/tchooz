@@ -16,6 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * Form Controller
@@ -45,7 +46,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function getallform()
 	{
-		$tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$tab = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$page      = $this->input->getInt('page', 0);
@@ -56,11 +57,49 @@ class EmundusControllerForm extends JControllerLegacy
 
 			$data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page);
 
+			foreach ($data['datas'] as $key => $form) {
+				// find campaigns associated with form
+				$campaigns = $this->m_form->getAssociatedCampaign($form->id);
+
+				if (!empty($campaigns)) {
+					if (count($campaigns) < 2) {
+						$short_tags = '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaigns[0]->id . '" class="mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius"> ' . $campaigns[0]->label . '</a>';
+					} else {
+						$tags = '<div class="flex flex-row flex-wrap">';
+						$short_tags = $tags;
+						foreach ($campaigns as $index => $campaign) {
+							$tags .= '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaign->id . '" class="mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius"> ' . $campaign->label . '</a>';
+						}
+
+						$short_tags .= '<span class="em-pointer mr-2 mb-2 h-max em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius">' . count($campaigns) . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
+						$short_tags .= '</div>';
+						$tags .= '</div>';
+					}
+				} else {
+					$short_tags = Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_NOT');
+				}
+
+				$new_column = [
+					'key' => Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE'),
+					'value' => $short_tags,
+					'classes' => '',
+					'display' => 'all'
+				];
+
+				if (isset($tags)) {
+					$new_column['long_value'] = $tags;
+				}
+
+				$form->additional_columns = [
+					$new_column
+				];
+			}
+
 			if (!empty($data)) {
-				$tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $data);
+				$tab = array('status' => true, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $data);
 			}
 			else {
-				$tab['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_FORM');
+				$tab['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_FORM');
 			}
 		}
 
@@ -71,7 +110,7 @@ class EmundusControllerForm extends JControllerLegacy
 	public function getallgrilleEval()
 	{
 
-		$tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
+		$tab = array('status' => false, 'msg' => Text::_("ACCESS_DENIED"));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -84,10 +123,10 @@ class EmundusControllerForm extends JControllerLegacy
 			$forms = $this->m_form->getAllGrilleEval($filter, $sort, $recherche, $lim, $page);
 
 			if (count($forms) > 0) {
-				$tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
+				$tab = array('status' => true, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $forms);
 			}
 			else {
-				$tab['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_FORM');
+				$tab['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_FORM');
 			}
 		}
 		echo json_encode((object) $tab);
@@ -101,16 +140,16 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$forms = $this->m_form->getAllFormsPublished();
 
 			if (count($forms) > 0) {
-				$tab = array('status' => 1, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
+				$tab = array('status' => 1, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $forms);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $forms);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $forms);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -124,7 +163,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -134,10 +173,10 @@ class EmundusControllerForm extends JControllerLegacy
 			$forms = $this->m_form->deleteForm($data);
 
 			if ($forms) {
-				$tab = array('status' => 1, 'msg' => JText::_('FORM_DELETED'), 'data' => $forms);
+				$tab = array('status' => 1, 'msg' => Text::_('FORM_DELETED'), 'data' => $forms);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_DELETE_FORM'), 'data' => $forms);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_DELETE_FORM'), 'data' => $forms);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -147,7 +186,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function unpublishform()
 	{
-		$response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -156,10 +195,10 @@ class EmundusControllerForm extends JControllerLegacy
 			$result = $this->m_form->unpublishForm([$id]);
 
 			if ($result['status']) {
-				$response = array('status' => 1, 'msg' => JText::_('FORM_UNPUBLISHED'));
+				$response = array('status' => 1, 'msg' => Text::_('FORM_UNPUBLISHED'));
 			}
 			else {
-				$response = array('status' => 0, 'msg' => !empty($result['msg']) ? JText::_($result['msg']) : JText::_('ERROR_CANNOT_UNPUBLISH_FORM'));
+				$response = array('status' => 0, 'msg' => !empty($result['msg']) ? Text::_($result['msg']) : Text::_('ERROR_CANNOT_UNPUBLISH_FORM'));
 			}
 		}
 
@@ -173,7 +212,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -182,10 +221,10 @@ class EmundusControllerForm extends JControllerLegacy
 			$forms = $this->m_form->publishForm([$id]);
 
 			if ($forms) {
-				$tab = array('status' => 1, 'msg' => JText::_('FORM_PUBLISHED'), 'data' => $forms);
+				$tab = array('status' => 1, 'msg' => Text::_('FORM_PUBLISHED'), 'data' => $forms);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_PUBLISH_FORM'), 'data' => $forms);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_PUBLISH_FORM'), 'data' => $forms);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -195,7 +234,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function duplicateform()
 	{
-		$tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$tab = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -204,14 +243,14 @@ class EmundusControllerForm extends JControllerLegacy
 			if (!empty($data)) {
 				$form = $this->m_form->duplicateForm($data);
 				if ($form) {
-					$tab = array('status' => true, 'msg' => JText::_('FORM_DUPLICATED'), 'data' => $form);
+					$tab = array('status' => true, 'msg' => Text::_('FORM_DUPLICATED'), 'data' => $form);
 				}
 				else {
-					$tab['msg'] = JText::_('ERROR_CANNOT_DUPLICATE_FORM');
+					$tab['msg'] = Text::_('ERROR_CANNOT_DUPLICATE_FORM');
 				}
 			}
 			else {
-				$tab['msg'] = JText::_('MISSING_PARAMS');
+				$tab['msg'] = Text::_('MISSING_PARAMS');
 			}
 		}
 
@@ -222,16 +261,16 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function createform()
 	{
-		$tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$tab = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = $this->m_form->createApplicantProfile();
 
 			if ($result) {
-				$tab = array('status' => true, 'msg' => JText::_('FORM_ADDED'), 'data' => $result, 'redirect' => 'forms/formbuilder?prid=' . $result);
+				$tab = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $result, 'redirect' => 'forms/formbuilder?prid=' . $result);
 			}
 			else {
-				$tab['msg'] = JText::_('ERROR_CANNOT_ADD_FORM');
+				$tab['msg'] = Text::_('ERROR_CANNOT_ADD_FORM');
 			}
 		}
 		echo json_encode((object) $tab);
@@ -240,16 +279,16 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function createformeval()
 	{
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			try {
 				$form_id = $this->m_form->createFormEval();
 
 				if ($form_id > 0) {
-					$response = array('status' => true, 'msg' => JText::_('FORM_ADDED'), 'data' => $form_id, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' . $form_id . '&mode=eval');
+					$response = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $form_id, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' . $form_id . '&mode=eval');
 				} else {
-					$response['msg'] = JText::_('ERROR_CANNOT_ADD_FORM');
+					$response['msg'] = Text::_('ERROR_CANNOT_ADD_FORM');
 				}
 			} catch (Exception $e) {
 				$response['msg'] = $e->getMessage();
@@ -266,7 +305,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -277,10 +316,10 @@ class EmundusControllerForm extends JControllerLegacy
 			$result = $this->m_form->updateForm($pid, $data);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('FORM_ADDED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('FORM_ADDED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('FORM'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('FORM'), 'data' => $result);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -290,7 +329,7 @@ class EmundusControllerForm extends JControllerLegacy
 	public function updateformlabel()
 	{
 
-		$tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+		$tab = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -300,10 +339,10 @@ class EmundusControllerForm extends JControllerLegacy
 			$result = $this->m_form->updateFormLabel($prid, $label);
 
 			if ($result) {
-				$tab = array('status' => 1, 'msg' => JText::_('FORM_UPDATED'), 'data' => $result);
+				$tab = array('status' => 1, 'msg' => Text::_('FORM_UPDATED'), 'data' => $result);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('FORM_NOT_UPDATED'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('FORM_NOT_UPDATED'), 'data' => $result);
 			}
 		}
 
@@ -318,7 +357,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -327,10 +366,10 @@ class EmundusControllerForm extends JControllerLegacy
 
 			$form = $this->m_form->getFormById($id);
 			if (!empty($form)) {
-				$tab = array('status' => 1, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $form);
+				$tab = array('status' => 1, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $form);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $form);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $form);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -339,7 +378,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function getFormByFabrikId()
 	{
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -348,14 +387,14 @@ class EmundusControllerForm extends JControllerLegacy
 			if (!empty($id)) {
 				$form = $this->m_form->getFormByFabrikId($id);
 				if (!empty($form)) {
-					$response = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $form);
+					$response = array('status' => true, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $form);
 				}
 				else {
-					$response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_FORM');
+					$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_FORM');
 				}
 			}
 			else {
-				$response['msg'] = JText::_('MISSING_PARAMS');
+				$response['msg'] = Text::_('MISSING_PARAMS');
 			}
 		}
 
@@ -369,7 +408,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -380,10 +419,10 @@ class EmundusControllerForm extends JControllerLegacy
 			$form = $this->m_form->getAllDocuments($prid, $cid);
 
 			if (!empty($form)) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_RETRIEVED'), 'data' => $form);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENTS_RETRIEVED'), 'data' => $form);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS'), 'data' => $form);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS'), 'data' => $form);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -397,16 +436,16 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$form = $this->m_form->getUnDocuments();
 
 			if (!empty($form)) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_RETRIEVED'), 'data' => $form);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENTS_RETRIEVED'), 'data' => $form);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS'), 'data' => $form);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS'), 'data' => $form);
 			}
 		}
 		echo json_encode((object) $tab);
@@ -415,17 +454,17 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function getAttachments()
 	{
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$attachments = $this->m_form->getAttachments();
 			if (!empty($attachments)) {
 				$response['status'] = true;
-				$response['msg']    = JText::_('DOCUMENTS_RETRIEVED');
+				$response['msg']    = Text::_('DOCUMENTS_RETRIEVED');
 				$response['data']   = $attachments;
 			}
 			else {
-				$response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS');
+				$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS');
 			}
 		}
 
@@ -436,7 +475,7 @@ class EmundusControllerForm extends JControllerLegacy
 	public function getdocumentsusage()
 	{
 
-		$tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
+		$tab = array('status' => 0, 'msg' => Text::_("ACCESS_DENIED"));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$document_ids = $this->input->getString('documentIds');
@@ -451,11 +490,11 @@ class EmundusControllerForm extends JControllerLegacy
 					$tab['data']   = $forms;
 				}
 				else {
-					$tab['msg'] = JText::_("ERROR_GETTING_DOCUMENT_USAGE");
+					$tab['msg'] = Text::_("ERROR_GETTING_DOCUMENT_USAGE");
 				}
 			}
 			else {
-				$tab['msg'] = JText::_('MISSING_PARAMS');
+				$tab['msg'] = Text::_('MISSING_PARAMS');
 			}
 		}
 		echo json_encode((object) $tab);
@@ -468,7 +507,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -480,10 +519,10 @@ class EmundusControllerForm extends JControllerLegacy
 			$documents = $this->m_form->updateMandatory($did, $prid, $cid);
 
 			if ($documents) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_UPDATED'), 'data' => $documents);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENTS_UPDATED'), 'data' => $documents);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
 			}
 		}
 
@@ -497,7 +536,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -509,10 +548,10 @@ class EmundusControllerForm extends JControllerLegacy
 			$documents = $this->m_form->addDocument($did, $prid, $cid);
 
 			if ($documents) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_UPDATED'), 'data' => $documents);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENTS_UPDATED'), 'data' => $documents);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
 			}
 		}
 
@@ -527,7 +566,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -539,10 +578,10 @@ class EmundusControllerForm extends JControllerLegacy
 			$documents = $this->m_form->removeDocument($did, $prid, $cid);
 
 			if ($documents) {
-				$tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_UPDATED'), 'data' => $documents);
+				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENTS_UPDATED'), 'data' => $documents);
 			}
 			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENTS'), 'data' => $documents);
 			}
 		}
 
@@ -557,7 +596,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -566,7 +605,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 			$state = $this->m_form->deleteDocument($did);
 
-			$tab = array('status' => $state, 'msg' => JText::_('DOCUMENT_DELETED'));
+			$tab = array('status' => $state, 'msg' => Text::_('DOCUMENT_DELETED'));
 
 		}
 
@@ -580,7 +619,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 			$profile_id = $this->input->getInt('profile_id');
@@ -601,7 +640,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function getDocuments()
 	{
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$profile_id = $this->input->getInt('pid');
@@ -631,7 +670,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -657,7 +696,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -683,7 +722,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -710,7 +749,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -737,7 +776,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -759,7 +798,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -780,7 +819,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -802,7 +841,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -822,7 +861,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -840,10 +879,10 @@ class EmundusControllerForm extends JControllerLegacy
 
 
 		if (EmundusHelperAccess::asAdministratorAccessLevel($this->_user->id)) {
-			$response = array('status' => 1, 'msg' => JText::_("ACCESS_SYSADMIN"), 'access' => true);
+			$response = array('status' => 1, 'msg' => Text::_("ACCESS_SYSADMIN"), 'access' => true);
 		}
 		else {
-			$response = array('status' => 0, 'msg' => JText::_("ACCESS_REFUSED"), 'access' => false);
+			$response = array('status' => 0, 'msg' => Text::_("ACCESS_REFUSED"), 'access' => false);
 		}
 		echo json_encode((object) $response);
 		exit;
@@ -857,7 +896,7 @@ class EmundusControllerForm extends JControllerLegacy
 			$response = array('status' => 1, 'msg' => substr($lang->getTag(), 0, 2));
 		}
 		else {
-			$response = array('status' => 0, 'msg' => JText::_("ACCESS_REFUSED"));
+			$response = array('status' => 0, 'msg' => Text::_("ACCESS_REFUSED"));
 		}
 
 		echo json_encode((object) $response);
@@ -870,7 +909,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			$changeresponse = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
 		}
 		else {
 
@@ -903,7 +942,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function checkcandocbedeleted()
 	{
-		$response = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
+		$response = array('status' => 0, 'msg' => Text::_("ACCESS_DENIED"));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -914,11 +953,11 @@ class EmundusControllerForm extends JControllerLegacy
 				$canBeDeleted = $this->m_form->checkIfDocCanBeRemovedFromCampaign($docid, $prid);
 
 				$response['status'] = 1;
-				$response['msg']    = JText::_("SUCCESS");
+				$response['msg']    = Text::_("SUCCESS");
 				$response['data']   = $canBeDeleted;
 			}
 			else {
-				$response['msg'] = JText::_("MISSING_PARAMS");
+				$response['msg'] = Text::_("MISSING_PARAMS");
 			}
 		}
 
@@ -928,7 +967,7 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function getpagegroups()
 	{
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 
@@ -938,16 +977,16 @@ class EmundusControllerForm extends JControllerLegacy
 				$groups = $this->m_form->getGroupsByForm($formId);
 
 				if ($groups !== false) {
-					$response['msg']    = JText::_('SUCCESS');
+					$response['msg']    = Text::_('SUCCESS');
 					$response['status'] = true;
 					$response['data']   = ['groups' => $groups];
 				}
 				else {
-					$response['msg'] = JText::_('FAILED');
+					$response['msg'] = Text::_('FAILED');
 				}
 			}
 			else {
-				$response['msg'] = JText::_('MISSING_PARAMS');
+				$response['msg'] = Text::_('MISSING_PARAMS');
 			}
 		}
 

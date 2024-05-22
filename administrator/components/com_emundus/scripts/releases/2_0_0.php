@@ -191,6 +191,29 @@ class Release2_0_0Installer extends ReleaseInstaller
 			EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_CSV','Export');
 			EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_CSV','Export', 'override', 0, null, null, 'en-GB');
 
+			// 1.38.10 : Set default params for checklist menu
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=checklist'));
+			$this->db->setQuery($query);
+			$menus = $this->db->loadObjectList();
+
+			foreach ($menus as $menu) {
+				$params = json_decode($menu->params);
+				$params->show_info_panel = 0;
+				$params->show_info_legend = 1;
+				$params->show_browse_button = 0;
+				$params->show_nb_column = 1;
+
+				$update = [
+					'id' => $menu->id,
+					'params' => json_encode($params)
+				];
+				$update = (object) $update;
+				$this->db->updateObject('#__menu', $update, 'id');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

@@ -17,8 +17,10 @@ use Joomla\CMS\Access\Access;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
@@ -53,7 +55,7 @@ class EmundusHelperEvents
 	function onBeforeLoad($params): bool
 	{
 		jimport('joomla.log.log');
-		JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));
+		Log::addLogger(array('text_file' => 'com_emundus.helper_events.php'), Log::ALL, array('com_emundus.helper_events'));
 
 		try {
 			$this->isApplicationSent($params);
@@ -82,7 +84,7 @@ class EmundusHelperEvents
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('Error when run event onBeforeLoad | ' . $e->getMessage() . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error when run event onBeforeLoad | ' . $e->getMessage() . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -99,7 +101,7 @@ class EmundusHelperEvents
 	function onBeforeStore($params): bool
 	{
 		jimport('joomla.log.log');
-		JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));
+		Log::addLogger(array('text_file' => 'com_emundus.helper_events.php'), Log::ALL, array('com_emundus.helper_events'));
 
 		try {
 			$eMConfig          = JComponentHelper::getParams('com_emundus');
@@ -112,7 +114,7 @@ class EmundusHelperEvents
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('Error when run event onBeforeStore | ' . $e->getMessage() . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error when run event onBeforeStore | ' . $e->getMessage() . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -129,7 +131,7 @@ class EmundusHelperEvents
 	function onAfterProcess($params): bool
 	{
 		jimport('joomla.log.log');
-		JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));
+		Log::addLogger(array('text_file' => 'com_emundus.helper_events.php'), Log::ALL, array('com_emundus.helper_events'));
 
 		try {
 			$user = JFactory::getSession()->get('emundusUser');
@@ -175,7 +177,7 @@ class EmundusHelperEvents
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('Error when run event onBeforeLoad | ' . $e->getMessage() . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error when run event onBeforeLoad | ' . $e->getMessage() . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -280,12 +282,12 @@ class EmundusHelperEvents
 
 			$is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
 
-			$edit_status = array();
 			if (!empty($current_phase) && !empty($current_phase->entry_status)) {
-				$edit_status = array_merge($edit_status, $current_phase->entry_status);
+				$edit_status = $current_phase->entry_status;
 			}
 			else {
-				$edit_status[] = 0;
+				$status_for_send = explode(',',$eMConfig->get('status_for_send', '0'));
+				$edit_status = array_unique(array_merge(['0'], $status_for_send));
 			}
 
 			$is_app_sent = !in_array($user->status, $edit_status);
@@ -307,23 +309,25 @@ class EmundusHelperEvents
 				if ($fnum == $user->fnum) {
 					//try to access edit view
 					if ($view == 'form') {
-						if (in_array($user->id, $applicants)
-							|| ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true)
-							|| ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true)
-							|| (!$is_dead_line_passed && !$is_app_sent)) {
+						if (
+							(!$is_app_sent && !$is_dead_line_passed && $isLimitObtained !== true)
+							|| in_array($user->id, $applicants)
+							|| ($is_app_sent && !$is_dead_line_passed && $can_edit_until_deadline)
+							|| ($is_dead_line_passed && $can_edit_after_deadline && ((!$is_app_sent && $isLimitObtained !== true) || $is_app_sent))
+							|| $can_edit) {
 							$reload_url = false;
 						}
 					}
 					//try to access detail view or other
 					else {
 						if (!$can_edit && $is_app_sent) {
-							$mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_READ_ONLY'), 'warning');
+							$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_READ_ONLY'), 'warning');
 						}
 						else if ($fnumDetail['published'] == -1) {
-							$mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_DELETED_FILE'), 'warning');
+							$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_DELETED_FILE'), 'warning');
 						}
 						else if ($is_dead_line_passed) {
-							$mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
+							$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
 						}
 						$reload_url = false;
 					}
@@ -364,10 +368,10 @@ class EmundusHelperEvents
 					if (($is_dead_line_passed && $can_edit_after_deadline == 0) || $isLimitObtained === true) {
 						if ($reload_url) {
 							if ($isLimitObtained === true) {
-								$mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_LIMIT_OBTAINED'), 'warning');
+								$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_LIMIT_OBTAINED'), 'warning');
 							}
 							else {
-								$mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
+								$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
 							}
 							$mainframe->redirect(Route::_("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid. "&r=" . $reload) . '&fnum=' . $fnum);
 						}
@@ -382,7 +386,7 @@ class EmundusHelperEvents
 							}
 							else {
 								if ($reload_url) {
-									$mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_READ_ONLY'), 'warning');
+									$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_READ_ONLY'), 'warning');
 									$mainframe->redirect(Route::_("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid ."&r=" . $reload) . '&fnum=' . $fnum);
 								}
 							}
@@ -410,7 +414,7 @@ class EmundusHelperEvents
 						}
 					}
 					else {
-						$mainframe->enqueueMessage(JText::_('ACCESS_DENIED'), 'error');
+						$mainframe->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
 						$mainframe->redirect("index.php");
 					}
 				}
@@ -522,7 +526,7 @@ class EmundusHelperEvents
 											}
 											catch (Exception $e) {
 												$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
-												JLog::add($error, JLog::ERROR, 'com_emundus');
+												Log::add($error, Log::ERROR, 'com_emundus');
 												$repeat_table = $table->db_table_name . '_' . $group->group_id . '_repeat';
 											}
 
@@ -626,7 +630,7 @@ class EmundusHelperEvents
 									}
 									catch (Exception $e) {
 										$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
-										JLog::add($error, JLog::ERROR, 'com_emundus');
+										Log::add($error, Log::ERROR, 'com_emundus');
 									}
 								}
 							}
@@ -639,7 +643,7 @@ class EmundusHelperEvents
 					}
 					catch (Exception $e) {
 						$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
-						JLog::add($error, JLog::ERROR, 'com_emundus');
+						Log::add($error, Log::ERROR, 'com_emundus');
 					}
 				}
 			}
@@ -720,18 +724,6 @@ class EmundusHelperEvents
 			}
 
 			if ($application_fee) {
-				if ($params->get('hikashop_session', 0)) {
-					// check if there is not another cart open
-					$hikashop_user = $mainframe->getSession()->get('emundusPayment');
-					if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
-						$user->fnum = $hikashop_user->fnum;
-						$mainframe->getSession()->set('emundusUser', $user);
-
-						$mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
-						$mainframe->redirect('/');
-					}
-				}
-
 				$fnumInfos = $mFiles->getFnumInfos($user->fnum);
 
 				// If students with a scholarship have a different fee.
@@ -748,7 +740,7 @@ class EmundusHelperEvents
 						$uploaded_document = $db->loadResult();
 					}
 					catch (Exception $e) {
-						JLog::Add('Error in plugin/isApplicationCompleted at SQL query : ' . $query, Jlog::ERROR, 'plugins');
+						Log::Add('Error in plugin/isApplicationCompleted at SQL query : ' . $query, Log::ERROR, 'plugins');
 					}
 
 					$pay_scholarship = $params->get('pay_scholarship', 0);
@@ -764,6 +756,18 @@ class EmundusHelperEvents
 					else if (!empty($pay_scholarship) && empty($mApplication->getHikashopOrder($fnumInfos))) {
 						$scholarship_product = $params->get('scholarship_product', 0);
 						if (!empty($scholarship_product)) {
+							if($params->get('hikashop_session', 0)) {
+								// check if there is not another cart open
+								$hikashop_user = $mainframe->getSession()->get('emundusPayment');
+								if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+									$user->fnum = $hikashop_user->fnum;
+									$mainframe->getSession()->set('emundusUser', $user);
+
+									$mainframe->enqueueMessage(Text::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+									$mainframe->redirect('/');
+								}
+							}
+							
 							$return_url   = $mApplication->getHikashopCheckoutUrl($user->profile);
 							$return_url   = preg_replace('/&product_id=[0-9]+/', "&product_id=$scholarship_product", $return_url);
 							$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($return_url));
@@ -778,6 +782,18 @@ class EmundusHelperEvents
 				if (count($fnumInfos) > 0) {
 					$checkout_cart_url = $mApplication->getHikashopCartUrl($user->profile);
 					if (!empty($checkout_cart_url)) {
+						if($params->get('hikashop_session', 0)) {
+							// check if there is not another cart open
+							$hikashop_user = $mainframe->getSession()->get('emundusPayment');
+							if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+								$user->fnum = $hikashop_user->fnum;
+								$mainframe->getSession()->set('emundusUser', $user);
+
+								$mainframe->enqueueMessage(Text::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+								$mainframe->redirect('/');
+							}
+						}
+
 						PluginHelper::importPlugin('emundus', 'custom_event_handler');
 						$mainframe->triggerEvent('onCallEventHandler', ['onBeforeEmundusRedirectToHikashopCart', ['url' => $checkout_cart_url, 'fnum' => $user->fnum, 'user' => $user]]);
 						$mainframe->redirect($checkout_cart_url);
@@ -790,6 +806,17 @@ class EmundusHelperEvents
 						}
 						// If $accept_other_payments is 2 : that means we do not redirect to the payment page.
 						if ($accept_other_payments != 2 && empty($mApplication->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
+							if($params->get('hikashop_session', 0)) {
+								// check if there is not another cart open
+								$hikashop_user = $mainframe->getSession()->get('emundusPayment');
+								if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
+									$user->fnum = $hikashop_user->fnum;
+									$mainframe->getSession()->set('emundusUser', $user);
+
+									$mainframe->enqueueMessage(Text::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+									$mainframe->redirect('/');
+								}
+							}
 							// Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
 							$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
 							$mainframe->redirect($checkout_url);
@@ -851,8 +878,8 @@ class EmundusHelperEvents
 				$link = $db->loadResult();
 			}
 			catch (Exception $e) {
-				$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
-				JLog::add($error, JLog::ERROR, 'com_emundus');
+				$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
+				Log::add($error, Log::ERROR, 'com_emundus');
 			}
 
 			if (empty($link)) {
@@ -865,8 +892,8 @@ class EmundusHelperEvents
 					$link = $db->loadResult();
 				}
 				catch (Exception $e) {
-					$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
-					JLog::add($error, JLog::ERROR, 'com_emundus');
+					$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
+					Log::add($error, Log::ERROR, 'com_emundus');
 				}
 
 				if (!empty($link)) {
@@ -885,7 +912,7 @@ class EmundusHelperEvents
 						}
 					}
 					catch (Exception $e) {
-						JLog::add('Error trying to find document attached to profiles, unable to say if we can redirect to submission page directly', JLog::ERROR, 'com_emundus.events');
+						Log::add('Error trying to find document attached to profiles, unable to say if we can redirect to submission page directly', Log::ERROR, 'com_emundus.events');
 					}
 				}
 
@@ -898,8 +925,8 @@ class EmundusHelperEvents
 						$link = $db->loadResult();
 					}
 					catch (Exception $e) {
-						$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
-						JLog::add($error, JLog::ERROR, 'com_emundus');
+						$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
+						Log::add($error, Log::ERROR, 'com_emundus');
 					}
 				}
 			}
@@ -926,8 +953,8 @@ class EmundusHelperEvents
 				$db->execute();
 			}
 			catch (Exception $e) {
-				$error = JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
-				JLog::add($error, JLog::ERROR, 'com_emundus');
+				$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $e->getMessage();
+				Log::add($error, Log::ERROR, 'com_emundus');
 			}
 
 			EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_COORDINATOR');
@@ -960,9 +987,9 @@ class EmundusHelperEvents
 
 	function confirmpost($params): bool
 	{
-		$db      = JFactory::getDBO();
-		$app     = JFactory::getApplication();
-		$student = JFactory::getSession()->get('emundusUser');
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$app     = Factory::getApplication();
+		$student = $app->getSession()->get('emundusUser');
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -979,7 +1006,7 @@ class EmundusHelperEvents
 		$applicant_id = ($mFiles->getFnumInfos($student->fnum))['applicant_id'];
 
 		// Get params set in eMundus component configuration
-		$eMConfig                = JComponentHelper::getParams('com_emundus');
+		$eMConfig                = ComponentHelper::getParams('com_emundus');
 		$can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
 		$can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
 		$application_form_order  = $eMConfig->get('application_form_order', null);
@@ -988,7 +1015,7 @@ class EmundusHelperEvents
 		$export_pdf              = $eMConfig->get('export_application_pdf', 0);
 		$export_path             = $eMConfig->get('export_path', null);
 		$id_applicants           = explode(',', $eMConfig->get('id_applicants', '0'));
-		$new_status              = 1;
+		$new_status              = $eMConfig->get('default_send_status', 1);
 
 
 		$offset   = $app->get('offset', 'UTC');
@@ -1017,10 +1044,10 @@ class EmundusHelperEvents
 		// If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
 		if ((($is_dead_line_passed && $can_edit_after_deadline != 1) || $isLimitObtained === true) && !in_array($student->id, $id_applicants)) {
 			if ($isLimitObtained === true) {
-				$params['formModel']->formErrorMsg = JText::_('COM_EMUNDUS_EVENTS_APPLICATION_LIMIT_OBTAINED');
+				$params['formModel']->formErrorMsg = Text::_('COM_EMUNDUS_EVENTS_APPLICATION_LIMIT_OBTAINED');
 			}
 			else {
-				$params['formModel']->formErrorMsg = JText::_('CANDIDATURE_PERIOD_TEXT');
+				$params['formModel']->formErrorMsg = Text::_('CANDIDATURE_PERIOD_TEXT');
 			}
 
 			return false;
@@ -1035,14 +1062,14 @@ class EmundusHelperEvents
 			}
 			catch (Exception $e) {
 				// catch any database errors.
-				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
 		$old_status = $student->fnums[$student->fnum]->status;
-		JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-		\Joomla\CMS\Factory::getApplication()->triggerEvent('onBeforeSubmitFile', [$student->id, $student->fnum]);
-		\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+		PluginHelper::importPlugin('emundus', 'custom_event_handler');
+		Factory::getApplication()->triggerEvent('onBeforeSubmitFile', [$student->id, $student->fnum]);
+		Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		$query = $db->getQuery(true);
 		$query->update($db->quoteName('#__emundus_campaign_candidature'))
@@ -1057,13 +1084,13 @@ class EmundusHelperEvents
 		}
 		catch (Exception $e) {
 			$updated = false;
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		if ($updated && $old_status != $new_status) {
 			$this->logUpdateState($old_status, $new_status, $student->id, $applicant_id, $student->fnum);
-			\Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterStatusChange', [$student->fnum, $new_status]);
-			\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterStatusChange', ['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]]);
+			Factory::getApplication()->triggerEvent('onAfterStatusChange', [$student->fnum, $new_status]);
+			Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterStatusChange', ['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]]);
 		}
 
 		$query = 'UPDATE #__emundus_declaration SET time_date=' . $db->Quote($now) . ' WHERE user=' . $student->id . ' AND fnum like ' . $db->Quote($student->fnum);
@@ -1073,10 +1100,10 @@ class EmundusHelperEvents
 			$db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
-		\Joomla\CMS\Factory::getApplication()->triggerEvent('onAfterSubmitFile', [$student->id, $student->fnum]);
-		\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+		Factory::getApplication()->triggerEvent('onAfterSubmitFile', [$student->id, $student->fnum]);
+		Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		$student->candidature_posted = 1;
 
@@ -1188,7 +1215,7 @@ class EmundusHelperEvents
 
 		EmundusModelLogs::log($student->id, $applicant_id, $student->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_SENT_BY_APPLICANT');
 
-		$redirect_message = !empty($params['plugin_options']) && !empty($params['plugin_options']->get('trigger_confirmpost_success_msg')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_success_msg')) : JText::_('APPLICATION_SENT');
+		$redirect_message = !empty($params['plugin_options']) && !empty($params['plugin_options']->get('trigger_confirmpost_success_msg')) ? Text::_($params['plugin_options']->get('trigger_confirmpost_success_msg')) : Text::_('APPLICATION_SENT');
 
 		if (!empty($params['plugin_options'])) {
 			$go_to_next_step = false;
@@ -1205,7 +1232,7 @@ class EmundusHelperEvents
 				$redirect_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $student->fnum;
 			}
 			else {
-				$redirect_url = !empty($params['plugin_options']->get('trigger_confirmpost_redirect_url')) ? JText::_($params['plugin_options']->get('trigger_confirmpost_redirect_url')) : EmundusHelperMenu::getHomepageLink();
+				$redirect_url = !empty($params['plugin_options']->get('trigger_confirmpost_redirect_url')) ? Text::_($params['plugin_options']->get('trigger_confirmpost_redirect_url')) : EmundusHelperMenu::getHomepageLink();
 				if ($params['plugin_options']->get('trigger_confirmpost_display_success_msg', 1) == 1) {
 					$app->enqueueMessage($redirect_message, 'success');
 				}
@@ -1227,16 +1254,16 @@ class EmundusHelperEvents
 	function onAfterProgramCreate($params): bool
 	{
 		jimport('joomla.log.log');
-		JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));
+		Log::addLogger(array('text_file' => 'com_emundus.helper_events.php'), Log::ALL, array('com_emundus.helper_events'));
 
 		try {
 			$code = $params['data']['jos_emundus_setup_programmes___code_raw'];
 
 			if (!empty($code)) {
-				$db    = JFactory::getDbo();
+				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
-				$eMConfig            = JComponentHelper::getParams('com_emundus');
+				$eMConfig            = ComponentHelper::getParams('com_emundus');
 				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
 
 				$query->clear()
@@ -1266,7 +1293,7 @@ class EmundusHelperEvents
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('Error when run event onAfterProgramCreate | ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error when run event onAfterProgramCreate | ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -1279,7 +1306,7 @@ class EmundusHelperEvents
 
 		$form_data = $params['formModel']->formData;
 		if (!empty($forms_to_log) && in_array($form_data['formid'], $forms_to_log)) {
-			$emundusUser = JFactory::getSession()->get('emundusUser');
+			$emundusUser = Factory::getApplication()->getSession()->get('emundusUser');
 			$fnum        = $emundusUser->fnum;
 
 			if (empty($fnum)) {
@@ -1292,7 +1319,7 @@ class EmundusHelperEvents
 			}
 
 			if (!empty($fnum)) {
-				$db    = JFactory::getDbo();
+				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
 				$query->select('applicant_id')
@@ -1304,7 +1331,7 @@ class EmundusHelperEvents
 					$applicant_id = $db->loadResult();
 				}
 				catch (Exception $e) {
-					JLog::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 
 				if (!empty($applicant_id)) {
@@ -1321,14 +1348,14 @@ class EmundusHelperEvents
 
 							try {
 								$db->setQuery($query);
-								$form_label = JText::_($db->loadResult());
+								$form_label = Text::_($db->loadResult());
 							}
 							catch (Exception $e) {
-								JLog::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+								Log::add("Failed to get applicant_id from fnum $fnum : " . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 							}
 
 							$m_application   = new EmundusModelApplication();
-							$user            = JFactory::getUser();
+							$user            = Factory::getApplication()->getIdentity();
 							$logged_elements = [];
 
 							foreach ($form_elements as $element) {
@@ -1362,7 +1389,7 @@ class EmundusHelperEvents
 								if ($old_value != $new_value) {
 									$log_params = [
 										'description' => '[' . $form_label . ']',
-										'element'     => JText::_($element->label),
+										'element'     => Text::_($element->label),
 										'old'         => $old_value,
 										'new'         => $new_value
 									];
@@ -1390,7 +1417,7 @@ class EmundusHelperEvents
 			$excluded_name    = ['fnum', 'time_date', 'user', 'date_time'];
 			$excluded_plugins = ['display', 'internalid'];
 
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('fe.id, fe.name, fe.plugin, fe.label, fe.params, fe.group_id, fe.default, fl.db_table_name, fg.params as group_params')
@@ -1409,7 +1436,7 @@ class EmundusHelperEvents
 				$elements = $db->loadObjectList();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get elements from form id ' . $form_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get elements from form id ' . $form_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -1418,7 +1445,7 @@ class EmundusHelperEvents
 
 	private function logUpdateState($old_status, $new_status, $user_id, $applicant_id, $fnum)
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$query->select('step, value')
@@ -1441,7 +1468,7 @@ class EmundusHelperEvents
 			)), JSON_UNESCAPED_UNICODE);
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting status labels in plugin confirmpost at line: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting status labels in plugin confirmpost at line: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -1450,7 +1477,7 @@ class EmundusHelperEvents
 		$result = false;
 
 		try {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
@@ -1459,13 +1486,121 @@ class EmundusHelperEvents
 
 			$query->update($db->quoteName('#__emundus_campaign_candidature'))
 				->set($db->quoteName('updated') . ' = ' . $db->quote($now))
-				->set($db->quoteName('updated_by') . ' = ' . JFactory::getUser()->id)
+				->set($db->quoteName('updated_by') . ' = ' . Factory::getApplication()->getIdentity()->id)
 				->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 			$db->setQuery($query);
 			$result = $db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('Error when try to log update of application: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('Error when try to log update of application: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $result;
+	}
+
+	private function checkQcmCompleted($fnum,$forms_ids,$items_ids)
+	{
+		$result = ['status' => true, 'msg' => '', 'link' => ''];
+
+		try
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$db->setQuery('show tables');
+			$existingTables = $db->loadColumn();
+			if (in_array('jos_emundus_setup_qcm', $existingTables))
+			{
+
+				$query->clear()
+					->select('distinct sq.id,sq.form_id,sq.group_id')
+					->from($db->quoteName('#__emundus_setup_qcm', 'sq'))
+					->where($db->quoteName('sq.form_id') . ' IN (' . implode(',', $db->quote($forms_ids)) . ')');
+				$db->setQuery($query);
+				$qcms     = $db->loadObjectList();
+				$qcms_ids = array_column($qcms, 'id');
+
+				if (!empty($qcms))
+				{
+					$query->clear()
+						->select('count(id)')
+						->from($db->quoteName('#__emundus_qcm_applicants', 'qa'))
+						->where($db->quoteName('qa.fnum') . ' LIKE ' . $db->quote($fnum))
+						->where($db->quoteName('qa.qcmid') . ' IN (' . implode(',', $db->quote($qcms_ids)) . ')');
+					$db->setQuery($query);
+					$applicants_qcms = $db->loadResult();
+
+					if (sizeof($qcms) == $applicants_qcms)
+					{
+						foreach ($qcms as $qcm)
+						{
+							$query->clear()
+								->select('questions')
+								->from($db->quoteName('#__emundus_qcm_applicants'))
+								->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+								->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm->id));
+							$db->setQuery($query);
+							$q_numbers = sizeof(explode(',', $db->loadResult()));
+
+							$query->clear()
+								->select('db_table_name')
+								->from($db->quoteName('#__fabrik_lists'))
+								->where($db->quoteName('form_id') . ' = ' . $db->quote($qcm->form_id));
+							$db->setQuery($query);
+							$table = $db->loadResult();
+
+							$query->clear()
+								->select('table_join')
+								->from($db->quoteName('#__fabrik_joins'))
+								->where($db->quoteName('group_id') . ' = ' . $db->quote($qcm->group_id))
+								->where($db->quoteName('join_from_table') . ' = ' . $db->quote($table))
+								->where($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
+							$db->setQuery($query);
+							$repeat_table = $db->loadResult();
+
+							if (!empty($repeat_table))
+							{
+								$query->clear()
+									->select('count(rt.id) as answers')
+									->from($db->quoteName($repeat_table, 'rt'))
+									->leftJoin($db->quoteName($table, 't') . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('rt.parent_id'))
+									->where($db->quoteName('t.fnum') . ' LIKE ' . $db->quote($fnum));
+								$db->setQuery($query);
+								$answers_given = $db->loadResult();
+
+								if ((int) $answers_given != $q_numbers)
+								{
+									$result['status'] = false;
+									$result['msg']    = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
+									$result['link']   = "index.php?option=com_fabrik&view=form&formid=" . $qcm->form_id . "&Itemid=" . $items_ids[$qcm->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
+
+									// We break the loop because we have found a qcm that is not completed
+									return $result;
+								}
+							}
+							else
+							{
+								$result['status'] = false;
+								$result['msg']    = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
+								$result['link']   = "index.php?option=com_fabrik&view=form&formid=" . $qcm->form_id . "&Itemid=" . $items_ids[$qcm->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
+							}
+						}
+					}
+					else
+					{
+						$result['status'] = false;
+						$result['msg']    = 'PLEASE_COMPLETE_QCM_BEFORE_SEND';
+						$result['link']   = "index.php?option=com_fabrik&view=form&formid=" . $qcms[0]->form_id . "&Itemid=" . $items_ids[$qcms[0]->form_id] . "&usekey=fnum&rowid=" . $fnum . "&r=1";
+
+						// We break the loop because we have found a qcm that is not completed
+						return $result;
+					}
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error when try to check if qcm is completed: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $result;

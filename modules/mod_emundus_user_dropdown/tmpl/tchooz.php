@@ -7,11 +7,15 @@
  */
 
 // No direct access.
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
 
 require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
+
+Text::script('COM_EMUNDUS_SWITCH_PROFILE_ERROR');
 
 ?>
 

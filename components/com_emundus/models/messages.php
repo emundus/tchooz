@@ -248,6 +248,7 @@ class EmundusModelMessages extends JModelList
 			$query->where($db->quoteName('e.lbl') . ' LIKE ' . $db->quote($id));
 		}
 
+		$query->group('e.id');
 
 		try {
 			$db->setQuery($query);

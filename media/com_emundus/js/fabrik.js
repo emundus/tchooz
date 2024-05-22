@@ -393,11 +393,17 @@ function checkPasswordSymbols(element) {
     }
 }
 
-function cleanNumberInput(element, maxDecimals) {
+function cleanNumberInput(element, maxDecimals = 0,noGreaterThan = null,authorizeNegativeNumber = false) {
     var value = element.get('value');
     const input = document.getElementById(element.strElement);
+    var nonDigitExceptCommaDot = '';
 
-    const nonDigitExceptCommaDot = /[^0-9.,]/;
+    if(authorizeNegativeNumber){
+        nonDigitExceptCommaDot = /[^-0-9.,]/;
+    }
+    else{
+        nonDigitExceptCommaDot = /[^0-9.,]/;
+    }
 
     const moreThanOneCommaDot = /[.,].*[.,]/;
 
@@ -424,6 +430,14 @@ function cleanNumberInput(element, maxDecimals) {
             value = value.substring(0, caretPosition - 1) + value.substring(caretPosition);
         }
     }
+    if (maxDecimals === 0 && value.indexOf(".") !== -1) {
+        value = value.replace(".", "");
+    }
+
+    if(value > noGreaterThan){
+        value = '';
+    }
+
 
     return value;
 }
