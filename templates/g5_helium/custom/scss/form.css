@@ -1380,7 +1380,7 @@
                 input[type="text"] {
                     outline: none;
                     height: 20px;
-                    width: 17vw !important;
+                    width: 100vw !important;
                 }
             }
         }
