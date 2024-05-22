@@ -140,6 +140,9 @@
                 <div v-if="column.type === 'tags'" class="tw-flex tw-items-center tw-flex-wrap tw-gap-2" :class="column.classes">
 										<span v-for="tag in column.values" :key="tag.key" class="tw-mr-2 tw-h-max" :class="tag.classes" v-html="tag.value"></span>
                 </div>
+                <div v-else-if="column.hasOwnProperty('long_value')" >
+                  <span @click="displayLongValue(column.long_value)" class="tw-mt-2 tw-mb-2" :class="column.classes" v-html="column.value"></span>
+                </div>
 									<span v-else class="tw-mt-2 tw-mb-2" :class="column.classes" v-html="column.value"></span>
               </td>
               <div>
@@ -647,6 +650,18 @@ export default {
       }
 
       return show;
+    },
+
+    displayLongValue(html) {
+      Swal.fire({
+        html: '<div style="text-align: left;">' + html + '</div>',
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          actions: 'em-swal-single-action',
+        }
+      });
     }
   },
   computed: {

@@ -418,7 +418,7 @@ class EmundusModelFormbuilder extends JModelList
 				->select('*')
 				->from('#__menu')
 				->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($menutype))
-				->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('heading'));
+				->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('heading') . ' OR ' . $this->db->quoteName('type') . ' = ' . $this->db->quote('url'));
 			$this->db->setQuery($query);
 			$menu_parent = $this->db->loadObject();
 

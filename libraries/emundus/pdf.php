@@ -859,6 +859,8 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    try {
 		    $anonymize_data = EmundusHelperAccess::isDataAnonymized($app->getIdentity()->id);
 
+		    $photo_attachment_id = $eMConfig->get('photo_attachment', 10);
+
 		    // Users informations
 		    $query = $db->getQuery(true);
 			$query->select('u.id as user_id, c.firstname, c.lastname, a.filename AS avatar, p.label AS cb_profile, c.profile, esc.label, esc.year AS cb_schoolyear, esc.training, u.id, u.registerDate, u.email, epd.gender, epd.nationality, epd.birth_date, ed.user, ecc.date_submitted')
@@ -866,7 +868,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 				->leftJoin('#__users AS u ON u.id=ecc.applicant_id')
 				->leftJoin('#__emundus_users AS c ON u.id = c.user_id')
 				->leftJoin('#__emundus_setup_campaigns AS esc ON esc.id = ' . $campaign_id)
-				->leftJoin('#__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = ' . EMUNDUS_PHOTO_AID . ' AND a.fnum like ' . $db->quote($fnum))
+				->leftJoin('#__emundus_uploads AS a ON a.user_id=u.id AND a.attachment_id = ' . $db->quote($photo_attachment_id) . ' AND a.fnum like ' . $db->quote($fnum))
 				->leftJoin('#__emundus_setup_profiles AS p ON p.id = esc.profile_id')
 				->leftJoin('#__emundus_personal_detail AS epd ON epd.user = u.id AND epd.fnum like ' . $db->quote($fnum))
 				->leftJoin('#__emundus_declaration AS ed ON ed.user = u.id AND ed.fnum like ' . $db->quote($fnum))

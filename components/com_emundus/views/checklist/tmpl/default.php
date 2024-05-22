@@ -3,6 +3,8 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 
 $app     = Factory::getApplication();
 $sesdion = $app->getSession();
@@ -80,12 +82,12 @@ if (!empty($this->custom_title)) :?>
 <?php endif; ?>
 <?php if ($this->show_info_panel) : ?>
     <fieldset>
-        <legend><?= $this->need < 2 ? JText::_('COM_EMUNDUS_ATTACHMENTS_CHECKLIST') : JText::_('COM_EMUNDUS_ATTACHMENTS_RESULTS'); ?></legend>
+        <legend><?= $this->need < 2 ? Text::_('COM_EMUNDUS_ATTACHMENTS_CHECKLIST') : Text::_('COM_EMUNDUS_ATTACHMENTS_RESULTS'); ?></legend>
         <div class="<?= $this->need ? 'checklist' . $this->need : 'checklist' . '0'; ?>" id="info_checklist">
             <h3><?= $this->title; ?></h3>
 			<?php
 			if ($this->sent && count($this->result) == 0) {
-				echo '<h3>' . JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_SENT') . '</h3>';
+				echo '<h3>' . Text::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_SENT') . '</h3>';
 			}
 			else {
 				echo $this->text;
@@ -94,7 +96,7 @@ if (!empty($this->custom_title)) :?>
 			if (!$this->need) { ?>
                 <h3><a href="<?= $this->sent ? 'index.php?option=com_emundus&task=pdf' : $this->confirm_form_url; ?>"
                        class="<?= $this->sent ? 'appsent' : 'sent'; ?>"
-                       target="<?= $this->sent ? '_blank' : ''; ?>"><?= $this->sent ? JText::_('COM_EMUNDUS_APPLICATION_PRINT_APPLICATION') : JText::_('COM_EMUNDUS_APPLICATION_SEND_APPLICATION'); ?></a>
+                       target="<?= $this->sent ? '_blank' : ''; ?>"><?= $this->sent ? Text::_('COM_EMUNDUS_APPLICATION_PRINT_APPLICATION') : Text::_('COM_EMUNDUS_APPLICATION_SEND_APPLICATION'); ?></a>
                 </h3>
 			<?php } ?>
         </div>
@@ -115,27 +117,27 @@ if (!empty($this->custom_title)) :?>
 
     <div id="attachment_list" class="em-attachmentList em-repeat-card tw-p-6">
         <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg"
-                alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
-        <h2 class="after-em-border after:tw-bg-red-800 tw-mb-4"><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
+                alt="<?= Text::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+        <h2 class="after-em-border after:tw-bg-red-800 tw-mb-4"><?php echo Text::_('COM_EMUNDUS_ATTACHMENTS_TITLE') ?></h2>
         <div class="alert alert-info tw-flex tw-items-center tw-gap-1 tw-mt-1">
             <span class="material-icons">info</span>
             <div>
-                <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' ' . JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
+                <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' ' . ini_get("upload_max_filesize") . ' ' . Text::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
             </div>
         </div>
 		<?php if ($this->show_info_legend) : ?>
             <div id="legend" class="em-mt-4">
                 <div class="em-flex-row em-mb-4">
                     <span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>
-                    <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></p>
+                    <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></p>
                 </div>
                 <div class="em-flex-row em-mb-4">
                     <span class="material-icons-outlined em-green-500-color em-mr-4">check_circle</span>
-                    <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></p>
+                    <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></p>
                 </div>
                 <div class="em-flex-row em-mb-4">
                     <span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>
-                    <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC'); ?></p>
+                    <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC'); ?></p>
                 </div>
             </div>
 		<?php endif; ?>
@@ -173,8 +175,8 @@ if (!empty($this->custom_title)) :?>
 			$div .= '<div>';
 
 			if ($attachment->has_sample && !empty($attachment->sample_filepath)) {
-				$div .= '<div class="em-ml-8 em-mb-8 em-flex-row attachment_model">
-                            <span>' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="em-flex-row" href="' . JUri::root() . $attachment->sample_filepath . '" target="_blank"> <span> ' . JText::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE') . '</span><span class="material-icons-outlined em-ml-8 em-text-neutral-900">cloud_download</span></a>
+				$div .= '<div class="tw-ml-2 tw-mb-2 tw-flex tw-items-center tw-gap-1 attachment_model">
+                            <span>'.Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE') . '</span><a class="tw-flex tw-items-center" href="'.Uri::root() . $attachment->sample_filepath.'" target="_blank"> <span> ' . Text::_('COM_EMUNDUS_ATTACHMENTS_SAMPLE_FILE').'</span><span class="material-icons-outlined tw-ml-2 tw-text-neutral-900">cloud_download</span></a>
                          </div>';
 			}
 
@@ -187,27 +189,27 @@ if (!empty($this->custom_title)) :?>
 						$div .= $item->local_filename;
 					}
 					else {
-						$div .= JText::_('COM_EMUNDUS_ONBOARD_TYPE_FILE') . ' ' . $nb;
+						$div .= Text::_('COM_EMUNDUS_ONBOARD_TYPE_FILE') . ' ' . $nb;
 					}
 					$div .= ' | <span style="font-size: 13px">' . ucfirst(EmundusHelperDate::displayDate($item->timedate, 'DATE_FORMAT_LC2', 0)) . '</span>';
 					if ($this->show_shortdesc_input) {
 						$div .= ' | ';
-						$div .= empty($item->description) ? JText::_('COM_EMUNDUS_ATTACHMENTS_NO_DESC') : $item->description;
+						$div .= empty($item->description) ? Text::_('COM_EMUNDUS_ATTACHMENTS_NO_DESC') : $item->description;
 					}
 					$div .= '</td></tr>';
 					$div .= '<tr class="em-added-files">
                     <td class="em-flex-row">';
 					if ($item->can_be_viewed == 1) {
-						$div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>' . JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
+						$div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>' . Text::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
 					}
 					else {
-						$div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
+						$div .= Text::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
 					}
 					if (($item->can_be_deleted == 1 || $item->is_validated == "0") && !$block_upload) {
-						$div .= '<a class="em-flex-row em-error-button" href="' . JRoute::_('index.php?option=com_emundus&task=delete&uid=' . $item->id . '&aid=' . $item->attachment_id . '&duplicate=' . $attachment->duplicate . '&nb=' . $attachment->nb . '&Itemid=' . $itemid . '#a' . $attachment->id) . '"><span class="material-icons-outlined em-mr-4">delete_outline</span> ' . JText::_('COM_EMUNDUS_ACTIONS_DELETE') . '</a>';
+						$div .= '<a class="em-flex-row em-error-button" href="' . JRoute::_('index.php?option=com_emundus&task=delete&uid=' . $item->id . '&aid=' . $item->attachment_id . '&duplicate=' . $attachment->duplicate . '&nb=' . $attachment->nb . '&Itemid=' . $itemid . '#a' . $attachment->id) . '"><span class="material-icons-outlined em-mr-4">delete_outline</span> ' . Text::_('COM_EMUNDUS_ACTIONS_DELETE') . '</a>';
 					}
 					else {
-						$div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_DELETE') . '</br>';
+						$div .= Text::_('COM_EMUNDUS_ATTACHMENTS_CANT_DELETE') . '</br>';
 					}
 					$div .= '</td></tr>';
 					$div .= '<tr><td><hr class="em-mt-4 em-mb-4"></td></tr>';
@@ -259,7 +261,7 @@ if (!empty($this->custom_title)) :?>
                         //DESKTOP EVENTS API
                         recorderInserted.userHasCamMic = function(id,camNr, micNr){
                             //var args = Array.prototype.slice.call(arguments);
-                            __log("' . JText::_('VIDEO_INSTR_CAM_ACCESS') . '");
+                            __log("' . Text::_('VIDEO_INSTR_CAM_ACCESS') . '");
                         }
             
                         recorderInserted.btRecordPressed = function(id){
@@ -269,7 +271,7 @@ if (!empty($this->custom_title)) :?>
             
                         recorderInserted.btStopRecordingPressed = function(id){
                             //var args = Array.prototype.slice.call(arguments);
-                            __log("' . JText::_('VIDEO_INSTR_STOP_RECORDING') . '");
+                            __log("' . Text::_('VIDEO_INSTR_STOP_RECORDING') . '");
                         }
             
                         recorderInserted.btPlayPressed = function(id){
@@ -290,7 +292,7 @@ if (!empty($this->custom_title)) :?>
             
                         recorderInserted.onCamAccess = function(id, allowed){
                             //var args = Array.prototype.slice.call(arguments);
-                            __log("' . JText::_('VIDEO_INSTR_CAM_ACCESS_READY') . '");
+                            __log("' . Text::_('VIDEO_INSTR_CAM_ACCESS_READY') . '");
                         }
             
                         recorderInserted.onPlaybackComplete = function(id){
@@ -300,7 +302,7 @@ if (!empty($this->custom_title)) :?>
             
                         recorderInserted.onRecordingStarted = function(id){
                             //var args = Array.prototype.slice.call(arguments);
-                            __log("' . JText::_('VIDEO_INSTR_RECORDING') . '");
+                            __log("' . Text::_('VIDEO_INSTR_RECORDING') . '");
                         }
             
                         recorderInserted.onConnectionClosed = function(id){
@@ -325,7 +327,7 @@ if (!empty($this->custom_title)) :?>
             
                         recorderInserted.onSaveOk = function(recorderId, streamName, streamDuration, cameraName, micName, audioCodec, videoCodec, filetype, videoId, audioOnly, location){
                             //var args = Array.prototype.slice.call(arguments);
-                            __log("' . JText::_('VIDEO_INSTR_RECORD_SAVED') . '");
+                            __log("' . Text::_('VIDEO_INSTR_RECORD_SAVED') . '");
                 
                             //reload page
                             recorderInserted.remove();
@@ -335,18 +337,18 @@ if (!empty($this->custom_title)) :?>
                         //DESKTOP UPLOAD EVENTS API
                         recorderInserted.onFlashReady = function(id){
                             //var args = Array.prototype.slice.call(arguments);
-                            __log("' . JText::_('VIDEO_INSTR_CLICK_TO_RECORD') . '");
+                            __log("' . Text::_('VIDEO_INSTR_CLICK_TO_RECORD') . '");
                         }
             
                         recorderInserted.onDesktopVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
                             //var args = Array.prototype.slice.call(arguments);
                             document.querySelector(".em-page-loader").style.display = "block";
-                            __log("' . JText::_('VIDEO_INSTR_UPLOADING') . '");
+                            __log("' . Text::_('VIDEO_INSTR_UPLOADING') . '");
                         }
             
                         recorderInserted.onDesktopVideoUploadSuccess = function(recorderId, filename, filetype, videoId, audioOnly, location){
                             //var args = Array.prototype.slice.call(arguments);
-                            __log("' . JText::_('VIDEO_INSTR_RECORD_SAVED') . '");
+                            __log("' . Text::_('VIDEO_INSTR_RECORD_SAVED') . '");
                 
                             //reload page
                             recorderInserted.remove();
@@ -355,19 +357,19 @@ if (!empty($this->custom_title)) :?>
             
                         recorderInserted.onDesktopVideoUploadFailed = function(id, error){
                             //var args = Array.prototype.slice.call(arguments);
-                            __log("' . JText::_('VIDEO_INSTR_RECORD_FAILED') . '");
+                            __log("' . Text::_('VIDEO_INSTR_RECORD_FAILED') . '");
                         }
             
                         //MOBILE EVENTS API
                         recorderInserted.onVideoUploadStarted = function(recorderId, filename, filetype, audioOnly){
                             //var args = Array.prototype.slice.call(arguments);
                             document.querySelector(".em-page-loader").style.display = "block";
-                            __log("' . JText::_('VIDEO_INSTR_RECORD_SAVED') . '");
+                            __log("' . Text::_('VIDEO_INSTR_RECORD_SAVED') . '");
                         }
     
                         recorderInserted.onVideoUploadSuccess = function(recorderId, filename, filetype, videoId, audioOnly, location){
                             //var args = Array.prototype.slice.call(arguments);
-                            __log("' . JText::_('VIDEO_INSTR_RECORD_SAVED') . '");
+                            __log("' . Text::_('VIDEO_INSTR_RECORD_SAVED') . '");
                 
                             //reload page
                             recorderInserted.remove();
@@ -376,12 +378,12 @@ if (!empty($this->custom_title)) :?>
             
                         recorderInserted.onVideoUploadProgress = function(recorderId, percent){
                             //var args = Array.prototype.slice.call(arguments);
-                            __log("' . JText::_('VIDEO_INSTR_UPLOADING') . '");
+                            __log("' . Text::_('VIDEO_INSTR_UPLOADING') . '");
                         }
             
                         recorderInserted.onVideoUploadFailed = function(id, error){
                             //var args = Array.prototype.slice.call(arguments);
-                            __log("' . JText::_('VIDEO_INSTR_RECORD_FAILED') . '");
+                            __log("' . Text::_('VIDEO_INSTR_RECORD_FAILED') . '");
                         }
         
                     });
@@ -398,14 +400,14 @@ if (!empty($this->custom_title)) :?>
                 <input type="hidden" name="required_desc" value="' . $this->required_desc . '"/>
                 <div>';
 						if ($this->show_shortdesc_input) {
-							$div .= '<div class="row"><div class="tw-mb-2"><label><span>' . JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC') . '</span></label><input type="text" class="em-w-100" maxlength="80" name="description" placeholder="' . (($this->required_desc != 0) ? JText::_('EMUNDUS_REQUIRED_FIELD') : '') . '" /></div></div>';
+							$div .= '<div class="row"><div class="tw-mb-2"><label><span>' . Text::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC') . '</span></label><input type="text" class="em-w-100" maxlength="80" name="description" placeholder="' . (($this->required_desc != 0) ? Text::_('EMUNDUS_REQUIRED_FIELD') : '') . '" /></div></div>';
 						}
 						if ($this->show_browse_button) {
-							$div .= '<div class="row" id="upload-files-' . $file_upload . '"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input class="em-send-attachment" id="em-send-attachment-' . $file_upload . '" type="file" name="file" multiple onchange="processSelectedFiles(this)"/><span style="display: none;" >' . JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE") . '</span></label>';
+							$div .= '<div class="row" id="upload-files-' . $file_upload . '"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input class="em-send-attachment" id="em-send-attachment-' . $file_upload . '" type="file" name="file" multiple onchange="processSelectedFiles(this)"/><span style="display: none;" >' . Text::_("COM_EMUNDUS_SELECT_UPLOAD_FILE") . '</span></label>';
 						}
 						$div .= '<input type="hidden" class="form-control" readonly="">';
 						if ($this->show_browse_button) {
-							$div .= '<input class="btn btn-success em_send_uploaded_file" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="' . JText::_('COM_EMUNDUS_ATTACHMENTS_SEND_ATTACHMENT') . '"/></div></div>';
+							$div .= '<input class="btn btn-success em_send_uploaded_file" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="' . Text::_('COM_EMUNDUS_ATTACHMENTS_SEND_ATTACHMENT') . '"/></div></div>';
 						}
 						$div .= '</div>';
 
@@ -414,8 +416,8 @@ if (!empty($this->custom_title)) :?>
                     Dropzone.options.formA' . $attachment->id . ' =  {
                         maxFiles: ' . $attachment->nbmax . ',
                         maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
-                        dictDefaultMessage: "' . JText::_('COM_EMUNDUS_ATTACHMENTS_UPLOAD_DROP_FILE_OR_CLICK') . '",
-                        dictInvalidFileType: "' . JText::_('COM_EMUNDUS_WRONG_FORMAT') . ' ' . $attachment->allowed_types . '",
+                        dictDefaultMessage: "' . Text::_('COM_EMUNDUS_ATTACHMENTS_UPLOAD_DROP_FILE_OR_CLICK') . '",
+                        dictInvalidFileType: "' . Text::_('COM_EMUNDUS_WRONG_FORMAT') . ' ' . $attachment->allowed_types . '",
                         url: "index.php?option=com_emundus&task=upload&duplicate=' . $attachment->duplicate . '&Itemid=' . $itemid . '&format=raw",
                 
                         accept: function(file, done) {
@@ -423,7 +425,7 @@ if (!empty($this->custom_title)) :?>
                             var sFileExtension = sFileName.split(".")[sFileName.split(".").length - 1].toLowerCase();
                 
                             if (sFileExtension == "php") {
-                              done("' . JText::_('COM_EMUNDUS_WRONG_FORMAT') . ' ' . $attachment->allowed_types . '");
+                              done("' . Text::_('COM_EMUNDUS_WRONG_FORMAT') . ' ' . $attachment->allowed_types . '");
                             } else {
                                 var allowedExtension = "' . $attachment->allowed_types . '";
                                 var n = allowedExtension.indexOf(sFileExtension);
@@ -438,8 +440,8 @@ if (!empty($this->custom_title)) :?>
                                         Swal.fire({
                                             position: "top",
                                             type: "warning",
-                                            title: "' . JText::_("COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED") . '",
-                                            confirmButtonText: "' . JText::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
+                                            title: "' . Text::_("COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED") . '",
+                                            confirmButtonText: "' . Text::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
                                             showCancelButton: false,
                                             customClass: {
                                               title: "em-swal-title",
@@ -447,7 +449,7 @@ if (!empty($this->custom_title)) :?>
                                               actions: "em-flex-center",
                                             },
                                         });
-                                        done("' . JText::_('COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED') . '");
+                                        done("' . Text::_('COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED') . '");
                                         this.removeFile(file);
                                     } else {
                                         done();
@@ -456,8 +458,8 @@ if (!empty($this->custom_title)) :?>
                                     Swal.fire({
                                             position: "top",
                                             type: "warning",
-                                            title: "' . JText::_("COM_EMUNDUS_WRONG_FORMAT") . ' ' . $attachment->allowed_types . '",
-                                            confirmButtonText: "' . JText::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
+                                            title: "' . Text::_("COM_EMUNDUS_WRONG_FORMAT") . ' ' . $attachment->allowed_types . '",
+                                            confirmButtonText: "' . Text::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
                                             showCancelButton: false,
                                             customClass: {
                                               title: "em-swal-title",
@@ -465,7 +467,7 @@ if (!empty($this->custom_title)) :?>
                                               actions: "em-flex-center",
                                             },
                                         });
-                                    done("' . JText::_('COM_EMUNDUS_WRONG_FORMAT') . ' ' . $attachment->allowed_types . '");
+                                    done("' . Text::_('COM_EMUNDUS_WRONG_FORMAT') . ' ' . $attachment->allowed_types . '");
                                     this.removeFile(file);
                                 }
                             }
@@ -475,7 +477,7 @@ if (!empty($this->custom_title)) :?>
                 
                           this.on("maxfilesexceeded", function(file) {
                             this.removeFile(file);
-                            alert("' . JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE') . ' : ' . $attachment->value . '. ' . JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED') . ' ' . $attachment->nbmax . '");
+                            alert("' . Text::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE') . ' : ' . $attachment->value . '. ' . Text::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED') . ' ' . $attachment->nbmax . '");
                           });
                 
                           this.on("success", function(file, responseText) {
@@ -493,7 +495,7 @@ if (!empty($this->custom_title)) :?>
                                     position: "top",
                                     type: "warning",
                                     title: response["message"],
-                                    confirmButtonText: "' . JText::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
+                                    confirmButtonText: "' . Text::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
                                     showCancelButton: false,
                                     customClass: {
                                        title: "em-swal-title",
@@ -506,11 +508,11 @@ if (!empty($this->custom_title)) :?>
                                     Swal.fire({
                                         position: "top",
                                         type: "info",
-                                        title: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND") . '",
-                                        text: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_TEXT") . '",
-                                        confirmButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_UPDATE") . '",
+                                        title: "' . Text::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND") . '",
+                                        text: "' . Text::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_TEXT") . '",
+                                        confirmButtonText: "' . Text::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_UPDATE") . '",
                                         showCancelButton: true,
-                                        cancelButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_CONTINUE_WITHOUT_UPDATE") . '",
+                                        cancelButtonText: "' . Text::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_CONTINUE_WITHOUT_UPDATE") . '",
                                         reverseButtons: true,
                                         customClass: {
                                            title: "em-swal-title",
@@ -560,7 +562,7 @@ if (!empty($this->custom_title)) :?>
                                             // Change icon on fieldset
                                             document.getElementById("l' . $attachment->id . '").className = "";
                                             document.getElementById("' . $attachment->id . '").className = "";
-                                            alert("' . JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED') . '");
+                                            alert("' . Text::_('COM_EMUNDUS_ATTACHMENTS_DELETED') . '");
                                         }
                     
                                     },
@@ -579,7 +581,7 @@ if (!empty($this->custom_title)) :?>
                                     position: "top",
                                     type: "warning",
                                     text: responseText,
-                                    confirmButtonText: "' . JText::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
+                                    confirmButtonText: "' . Text::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
                                     showCancelButton: false,
                                     customClass: {
                                        title: "em-swal-title",
@@ -597,11 +599,11 @@ if (!empty($this->custom_title)) :?>
                 </tr>
                 <tr class="em-allowed-files">
                     <td>
-                    <div class="em-ml-8">
-                    <p style="word-break: break-all;" class="text-neutral-600">' . JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY') . ' ' . $attachment->allowed_types . '</p>
-                    <div class="em-flex-row em-flex-space-between">';
+                    <div class="tw-ml-2">
+                     <p style="word-break: break-all;" class="tw-text-neutral-600">'. Text::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.' | '.Text::sprintf('COM_EMUNDUS_ATTACHMENTS_MAXNB_TIP', $attachment->nbmax).'</p>
+                    <div class="tw-flex tw-items-center tw-justify-between">';
 					if (!empty($this->attachments_to_upload) && in_array($attachment->id, $this->attachments_to_upload)) {
-						$div .= '<button class="btn btn-danger btn-xs em-pointer" onclick="uploadfromprofile(' . "$attachment->id" . ')">' . JText::_('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD') . '</button>';
+						$div .= '<button class="btn btn-danger btn-xs em-pointer" onclick="uploadfromprofile(' . "$attachment->id" . ')">' . Text::_('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD') . '</button>';
 					}
 
 					$div .= '</div></div></td>';
@@ -615,10 +617,10 @@ if (!empty($this->custom_title)) :?>
 			}
 			else {
 				if ($this->isLimitObtained === true) {
-					$app->enqueueMessage(JText::_('LIMIT_OBTAINED'), 'notice');
+					$app->enqueueMessage(Text::_('LIMIT_OBTAINED'), 'notice');
 				}
 				else {
-					$app->enqueueMessage(JText::_('COM_EMUNDUS_READONLY'), 'warning');
+					$app->enqueueMessage(Text::_('COM_EMUNDUS_READONLY'), 'warning');
 				}
 			}
 			$div .= '</table></div></fieldset>';
@@ -638,7 +640,7 @@ if (!empty($this->custom_title)) :?>
             <div class="col-md-<?= (int) (12 / $this->show_nb_column); ?>">
 				<?php
 				if ($attachment_list_mand != '') {
-					echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h3 class="after-em-border after:bg-neutral-500">' . JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS') . '</h3>' . $attachment_list_mand . '</div>';
+					echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h3 class="after-em-border after:bg-neutral-500">' . Text::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS') . '</h3>' . $attachment_list_mand . '</div>';
 				}
 				?>
             </div>
@@ -650,7 +652,7 @@ if (!empty($this->custom_title)) :?>
             <div class="col-md-<?= (int) (12 / $this->show_nb_column); ?>">
 				<?php
 				if ($attachment_list_opt != '') {
-					echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h3 class="after-em-border after:bg-neutral-500">' . JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS') . '</h3>' . $attachment_list_opt . '</div>';
+					echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h3 class="after-em-border after:bg-neutral-500">' . Text::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS') . '</h3>' . $attachment_list_opt . '</div>';
 				}
 				?>
             </div>
@@ -662,7 +664,7 @@ if (!empty($this->custom_title)) :?>
                             <div class="em-goback-btn tw-flex tw-items-center"><span class="material-icons-outlined"
                                                                                style="color:var(--neutral-900);">navigate_before</span>
                                 <button type="button" class="btn goback-btn button" onclick="window.history.go(-1)"
-                                        name="Goback"><?php echo JText::_('GO_BACK') ?></button>
+                                        name="Goback"><?php echo Text::_('GO_BACK') ?></button>
                             </div>
                         </div>
                     </div>
@@ -677,7 +679,7 @@ if (!empty($this->custom_title)) :?>
 								<?php endif; ?>
                                     class="btn btn-primary save-btn sauvegarder button save_continue" name="Submit"
                                     id="fabrikSubmit_287">
-								<?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_SEND_FILE') ?>
+								<?php echo Text::_('COM_EMUNDUS_ATTACHMENTS_SEND_FILE') ?>
                             </button>
 
                         </div>
@@ -697,12 +699,18 @@ if (!empty($this->custom_title)) :?>
         });
 
         $(document).ready(function () {
+            // Set sidebar sticky depends on height of header
+            const headerNav = document.getElementById('g-navigation');
+            const sidebar = document.querySelector('.view-checklist #g-sidebar');
+            if (headerNav && sidebar) {
+                sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
+            }
             $('.em_send_uploaded_file').attr("disabled", "disabled");
 
             $('.btn-file :file').on('fileselect', function (event, numFiles, label) {
 
                 var input = $(this).parents('.input-group').find(':text'),
-                    log = numFiles > 1 ? numFiles + ' <?= JText::_("FILES_SELECTED"); ?>' : label;
+                    log = numFiles > 1 ? numFiles + ' <?= Text::_("FILES_SELECTED"); ?>' : label;
 
                 if (input.length) {
                     input.val(log);
@@ -735,12 +743,12 @@ if (!empty($this->custom_title)) :?>
 
             for (i = 0; i < btn.length; i++) {
                 btn[i].disabled = "disabled";
-                btn[i].value = "<?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENDING_ATTACHMENT'); ?>";
+                btn[i].value = "<?= Text::_('COM_EMUNDUS_ATTACHMENTS_SENDING_ATTACHMENT'); ?>";
             }
 
             switch (document.pressed) {
                 case 'sendAttachment':
-                    document.checklistForm.action = "<?= JURI::base();?>index.php?option=com_emundus&task=upload&Itemid=<?= $itemid; ?>";
+                    document.checklistForm.action = "<?= Uri::base();?>index.php?option=com_emundus&task=upload&Itemid=<?= $itemid; ?>";
                     break;
                 default:
                     return false;
@@ -774,11 +782,11 @@ if (!empty($this->custom_title)) :?>
                 $(rowId).find(".em_send_uploaded_file").removeAttr("disabled");
             } else {
                 if ($(rowId).find('.em-added-file').length > 0) {
-                    $(rowId).find('.em-added-file')[0].innerHTML = "<?= JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG')?>";
+                    $(rowId).find('.em-added-file')[0].innerHTML = "<?= Text::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG')?>";
                 } else {
                     var fileParagraphe = document.createElement("p");
                     fileParagraphe.className = "em-added-file em-added-file-error";
-                    fileParagraphe.innerHTML = "<?= JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG')?>";
+                    fileParagraphe.innerHTML = "<?= Text::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG')?>";
                     rowId.append(fileParagraphe);
                 }
                 $(rowId).find(".em_send_uploaded_file").attr("disabled", "disabled");
@@ -790,10 +798,10 @@ if (!empty($this->custom_title)) :?>
             Swal.fire({
                 position: 'top',
                 type: 'success',
-                title: '<?= JText::_('COM_EMUNDUS_CHECKLIST_FILE_COMPLETE'); ?>',
-                confirmButtonText: '<?= JText::_('COM_EMUNDUS_CHECKLIST_SEND_FILE'); ?>',
+                title: '<?= Text::_('COM_EMUNDUS_CHECKLIST_FILE_COMPLETE'); ?>',
+                confirmButtonText: '<?= Text::_('COM_EMUNDUS_CHECKLIST_SEND_FILE'); ?>',
                 showCancelButton: true,
-                cancelButtonText: '<?= JText::_('COM_EMUNDUS_ATTACHMENTS_EM_CONTINUE'); ?>',
+                cancelButtonText: '<?= Text::_('COM_EMUNDUS_ATTACHMENTS_EM_CONTINUE'); ?>',
                 reverseButtons: true,
                 customClass: {
                     title: 'em-swal-title',
@@ -822,11 +830,11 @@ if (!empty($this->custom_title)) :?>
             Swal.fire({
                 position: 'top',
                 type: 'info',
-                title: '<?= JText::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND'); ?>',
-                html: '<p><?= JText::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT') . '</p><div class="em-mt-8">' . $attachments_label . '</div><p class="em-mt-8">' . JText::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT_2'); ?></p>',
-                confirmButtonText: '<?= JText::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_UPLOAD'); ?>',
+                title: '<?= Text::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND'); ?>',
+                html: '<p><?= Text::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT') . '</p><div class="em-mt-8">' . $attachments_label . '</div><p class="em-mt-8">' . Text::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT_2'); ?></p>',
+                confirmButtonText: '<?= Text::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_UPLOAD'); ?>',
                 showCancelButton: true,
-                cancelButtonText: '<?= JText::_('COM_EMUNDUS_ONBOARD_CANCEL'); ?>',
+                cancelButtonText: '<?= Text::_('COM_EMUNDUS_ONBOARD_CANCEL'); ?>',
                 reverseButtons: true,
                 customClass: {
                     title: 'em-swal-title',
@@ -865,7 +873,7 @@ if (!empty($this->custom_title)) :?>
                     Swal.fire({
                         position: 'top',
                         type: 'success',
-                        title: "<?= JText::_('COM_EMUNDUS_UPLOAD_SUCCESS'); ?>",
+                        title: "<?= Text::_('COM_EMUNDUS_UPLOAD_SUCCESS'); ?>",
                         showCancelButton: false,
                         showConfirmButton: false,
                         customClass: {
@@ -883,7 +891,7 @@ if (!empty($this->custom_title)) :?>
                 Swal.fire({
                     position: 'top',
                     type: 'error',
-                    title: "<?= JText::_('COM_EMUNDUS_ERROR_OCCURED'); ?>",
+                    title: "<?= Text::_('COM_EMUNDUS_ERROR_OCCURED'); ?>",
                     showCancelButton: false,
                     showConfirmButton: false,
                     customClass: {
@@ -942,8 +950,8 @@ if (!empty($this->custom_title)) :?>
 
 <?php else: ?>
     <div id="attachment_list" class="em-attachmentList em-repeat-card em-w-100">
-        <h3><?= JText::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM') ?></h3>
-        <p class="em-mt-16"><?= JText::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM_DESC') ?></p>
+        <h3><?= Text::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM') ?></h3>
+        <p class="em-mt-16"><?= Text::_('COM_EMUNDUS_CHECKLIST_NO_DOCUMENTS_ASSOCIATED_TO_FORM_DESC') ?></p>
     </div>
 <?php endif; ?>
 

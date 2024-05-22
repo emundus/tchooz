@@ -10,6 +10,8 @@
 
 // No direct access
 
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Uri\Uri;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 defined('_JEXEC') or die('Restricted access');
@@ -1085,7 +1087,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 		catch (Exception $e) {
 			echo $query . ' ' . $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . str_replace('#_', 'jos', $query), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . str_replace('#_', 'jos', $query), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -1501,7 +1503,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -1525,7 +1527,7 @@ class EmundusModelEvaluation extends JModelList
 			$evaluations_by_student = $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $evaluations_by_student;
@@ -1550,7 +1552,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -1578,7 +1580,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1637,7 +1639,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1665,7 +1667,7 @@ class EmundusModelEvaluation extends JModelList
 			$decision = $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add(JUri::getInstance() . ' :: -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $decision;
@@ -1689,7 +1691,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 	}
@@ -1713,7 +1715,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -1751,7 +1753,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		if (!empty($group_id)) {
@@ -1767,7 +1769,7 @@ class EmundusModelEvaluation extends JModelList
 			}
 			catch (Exception $e) {
 				echo $e->getMessage();
-				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1781,39 +1783,33 @@ class EmundusModelEvaluation extends JModelList
 */
 	function getDecisionFormByProgramme($code = null)
 	{
-		$form = 0;
+		$decision_form = 0;
 
-		if ($code === null) {
-			if (version_compare(JVERSION, '4.0', '>')) {
-				$session = Factory::getApplication()->getSession();
-			}
-			else {
-				$session = Factory::getSession();
-			}
-
+		if ($code === NULL) {
+			$session = $this->app->getSession();
 			if ($session->has('filt_params')) {
 				$filt_params = $session->get('filt_params');
-				if (count($filt_params['programme']) > 0) {
+				if (!empty($filt_params['programme'])) {
 					$code = $filt_params['programme'][0];
 				}
 			}
 		}
 
-		try {
-			$query = $this->db->getQuery(true);
+		if (!empty($code)) {
+			try {
+				$query = 'SELECT ff.form_id
+                    FROM #__fabrik_formgroup ff
+                    WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
+					$this->_db->Quote($code) . ') AND ff.group_id <> \'\'';
 
-			$query->select('ff.form_id')
-				->from($this->db->quoteName('#__fabrik_formgroup', 'ff'))
-				->where($this->db->quoteName('ff.group_id') . ' IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' . $this->db->quote($code) . ')');
-			$this->db->setQuery($query);
-			$form = $this->db->loadResult();
-		}
-		catch (Exception $e) {
-			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				$this->_db->setQuery($query);
+				$decision_form = $this->_db->loadResult();
+			} catch (Exception $e) {
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
 		}
 
-		return $form;
+		return $decision_form;
 	}
 
 	/**
@@ -1838,7 +1834,7 @@ class EmundusModelEvaluation extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting evaluation averages : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting evaluation averages : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $evaluations_average;
@@ -1856,7 +1852,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -1871,7 +1867,7 @@ class EmundusModelEvaluation extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error in model/evaluation at query: ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add('Error in model/evaluation at query: ' . $query, Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -1886,7 +1882,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -2043,7 +2039,7 @@ class EmundusModelEvaluation extends JModelList
 			$letters = $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Error in getLettersByProgrammesStatusCampaigns: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Error in getLettersByProgrammesStatusCampaigns: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			$letters = [];
 		}
 
@@ -2079,7 +2075,7 @@ class EmundusModelEvaluation extends JModelList
 				}
 				catch (Exception $e) {
 					$letters = [];
-					JLog::add('Error in getLetterTemplateForFnum: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Error in getLetterTemplateForFnum: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
 		}
@@ -2385,19 +2381,13 @@ class EmundusModelEvaluation extends JModelList
 									$params      = json_decode($elt['params']);
 									$groupParams = json_decode($elt['group_params']);
 
-									if (@$groupParams->repeat_group_button == 1 || $elt['plugin'] === 'databasejoin') {
+									if (!empty($groupParams) && $groupParams->repeat_group_button == 1) {
 										$fabrikValues[$elt['id']] = $_mFile->getFabrikValueRepeat($elt, [$fnum], $params, $groupParams->repeat_group_button == 1);
 									}
-									else {
-										if ($elt['plugin'] == 'date') {
-											$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
-										}
-										else {
-											$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name']);
-										}
+									else if ($elt['plugin'] == 'date') {
+										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
 									}
-
-									if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
+									else if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
 
 										foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
 											if ($elt['plugin'] == "checkbox") {
@@ -2540,7 +2530,7 @@ class EmundusModelEvaluation extends JModelList
 											}
 										}
 										catch (Exception $e) {
-											JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+											Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 											return false;
 										}
@@ -3374,7 +3364,7 @@ class EmundusModelEvaluation extends JModelList
 			return array('evaluations' => $evaluations, 'elements' => $eval_elements, 'evaluation_form' => $form_id);
 		}
 		catch (Exception $e) {
-			JLog::add('Problem to get files associated to user ' . $user . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Problem to get files associated to user ' . $user . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return array('evaluations' => [], 'elements' => [], 'evaluation_form' => 0);
 		}
@@ -3537,7 +3527,7 @@ class EmundusModelEvaluation extends JModelList
 			return $h_array->mergeAndSumPropertyOfSameObjects($campaigns, 'id', 'files');
 		}
 		catch (Exception $e) {
-			JLog::add('Problem to get campaigns to evaluate for user ' . $user . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Problem to get campaigns to evaluate for user ' . $user . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return array();
 		}
@@ -3666,7 +3656,7 @@ class EmundusModelEvaluation extends JModelList
 		catch (Exception $e) {
 			$message = 'COM_EMUNDUS_ERROR';
 			$url     = '';
-			JLog::add('Cannot get evaluation URL with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Cannot get evaluation URL with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		if (!empty($url)) {
@@ -3691,7 +3681,7 @@ class EmundusModelEvaluation extends JModelList
 			return $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('Problem to get row by fnum ' . $fnum . ' in table ' . $table_name . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Problem to get row by fnum ' . $fnum . ' in table ' . $table_name . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return 0;
 		}
@@ -3719,7 +3709,7 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('Cannot get reasons for evaluation | ' . $eid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Cannot get reasons for evaluation | ' . $eid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return [];
 		}

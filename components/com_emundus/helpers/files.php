@@ -2205,10 +2205,10 @@ class EmundusHelperFiles
 			$fnum  = $tag['fnum'];
 			$class = str_replace('label-', '', $tag['class']);
 			if (!isset($tagsList[$fnum])) {
-				$tagsList[$fnum] = '<div class="tw-flex tw-items-center tw-gap-2 sticker label-'.$class.'"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-max-w-[100px] tw-text-sm">'.$tag['label'].'</span></div>';
+				$tagsList[$fnum] = '<div class="tw-flex tw-items-center tw-gap-2 sticker label-'.$class.'"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">'.$tag['label'].'</span></div>';
 			}
 			else {
-				$tagsList[$fnum] .= '<div class="tw-flex tw-items-center tw-gap-2 sticker label-'.$class.'"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-max-w-[100px] tw-text-sm">'.$tag['label'].'</span></div>';
+				$tagsList[$fnum] .= '<div class="tw-flex tw-items-center tw-gap-2 sticker label-'.$class.'"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">'.$tag['label'].'</span></div>';
 			}
 		}
 
@@ -3893,8 +3893,12 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND (' . $programme_where_cond . $fnum_assoc_where_cond . ') ';
 		}
 
+		if ($caller == 'files') {
+			$where['q'] .= ' AND esc.published > 0';
+		}
+
 		$app = Factory::getApplication();
-		$menu = Factory::getApplication()->getMenu();
+		$menu = $app->getMenu();
 		if (!empty($menu)) {
 			$active = $menu->getActive();
 
@@ -3950,7 +3954,7 @@ class EmundusHelperFiles
 
 				$at_least_one = false;
 
-				$scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email', 'u.username'];
+				$scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email'];
 				foreach ($quick_search_filters as $index => $filter) {
 					if (!empty($filter['scope'])) {
 						if ($filter['scope'] === 'everywhere') {
