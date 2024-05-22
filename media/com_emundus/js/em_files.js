@@ -4202,7 +4202,7 @@ $(document).ready(function() {
                     success: function(result) {
                         tags = result;
 
-                        html = '<form>'+
+                        html = '<form class="tw-mb-4">'+
                             '<div class="em-flex-row"><input type="radio" name="em-tags" id="em-tags-add" value="0" checked><label for="em-tags-add" class="em-mb-0-important">' +Joomla.Text._('COM_EMUNDUS_APPLICATION_ADD_TAGS')+'</label></div>' +
                             '<div class="em-flex-row"><input type="radio" name="em-tags" id="em-tags-delete" value="1"><label for="em-tags-delete" class="em-mb-0-important">' +Joomla.Text._('COM_EMUNDUS_TAGS_DELETE_TAGS')+'</label></div>' +
                             '</form>';

@@ -1317,7 +1317,7 @@
         height: auto;
         input[type="text"] {
           outline: none;
-          height: 15px;
+          height: 20px;
           width: 17vw !important;
         }
       }
