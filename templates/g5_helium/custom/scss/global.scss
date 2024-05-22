@@ -4306,12 +4306,12 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
     padding-left: 20px;
   }
 
-  a {
-    text-decoration: underline;
-    &:hover {
-      text-decoration: none;
+  .col-sm-12 .btn-group button.btn.goback-btn {
+    margin-top: 24px;
+  }
 
-    }
+  .fabrikForm .row-striped .row-fluid {
+    padding: 0.75rem;
   }
 }
 
