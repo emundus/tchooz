@@ -157,4 +157,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@media all and (max-width: 959px) {
+  .view-settings .em-modal-menu__sidebar .translation-menu-item p {
+    word-break: break-word;
+    hyphens: auto;
+  }
+}
 </style>

@@ -26,10 +26,9 @@
 
 .com-users-profile__edit-form#member-profile {
     background: #fff;
-    margin: 0 auto 50px auto;
-    padding: 32px 32px 24px 32px;
+    margin: 0 auto;
+    padding: 24px;
     border-radius: var(--em-form-br-block) !important;
-    width: 84%;
     border: 1px solid #EDEDED;
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
@@ -175,15 +174,41 @@ form#member-profile.form-validate.form-horizontal.well span.star {
     padding-left: 0;
 }
 
-@media all and (max-width: 767px) {
+
+@media screen and (max-width: 767px) {
     form#member-profile {
-        padding: 2rem 3rem 1rem 3rem;
         width: 100% !important;
-        margin: 0 0 50px 0 !important;
     }
 
     .view-profile form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.validate {
         margin-right: 0 !important;
     }
 
+    .view-profile .em-coordinator #g-container-main .g-container {
+        max-width: 100%;
+    }
 }
+
+@media screen and (max-width: 1024px) {
+    .com-users-profile__edit-form#member-profile {
+        width: auto;
+    }
+}
+
+@media screen  and (max-width: 1366px) {
+    .view-profile .em-coordinator #g-container-main .g-container {
+        width: 80%;
+    }
+}
+
+@media screen  and (min-width: 1367px) and (max-width: 1919px) {
+    .view-profile .em-coordinator #g-container-main .g-container {
+        width: 70%;
+    }
+}
+@media screen and (min-width: 1920px) {
+    .view-profile .em-coordinator #g-container-main .g-container {
+        width: 50%;
+    }
+}
+

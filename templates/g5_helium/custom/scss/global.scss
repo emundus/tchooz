@@ -154,7 +154,7 @@ p,
   padding: 0 32px !important;
 }
 
-.view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
+.view-form .em-coordinator #g-container-main .g-container {
   width: auto;
   position: relative;
 }
@@ -1198,7 +1198,7 @@ footer#g-footer > .g-container {
 }
 
 .view-list .form-search {
-  overflow: visible !important;
+  overflow: auto;
   .nav {
     .dropdown-menu {
       a {
@@ -3044,15 +3044,6 @@ ul.unstyled.em-linkForgot li a {
   position: relative;
   width: 100%;
 }
-
-.g-back-office-emundus-tableau.indicateurs-page #g-container-main .g-container {
-  left: 30px;
-}
-
-.g-back-office-emundus-tableau.indicateurs-page #g-container-main {
-  padding-left: 80px !important;
-}
-
 
 /* EMAILS */
 
@@ -5393,10 +5384,6 @@ screen and (max-height: 769px) {
   button.save {
     margin-left: 20px !important;
   }
-
-  .gantry:not(.files-board)  #g-container-main {
-    padding: 0 !important;
-  }
 }
 
 
@@ -5622,9 +5609,6 @@ screen and (max-height: 769px) {
 @media all and (max-width: 1024px) {
   #g-container-main {
     padding: 20px 20px 20px 20px;
-  }
-  .gantry.view-form:not(.applicant-form):not(.mon-profil) #g-container-main {
-    padding-right: 0;
   }
 }
 
@@ -6876,11 +6860,7 @@ tbody .el-table__row:nth-child(odd){
     bottom: 10%;
   }
 
-  .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main .g-container {
-      width: 90%;
-  }
-
-  .view-form.com_fabrik:not(.applicant-form):not(.mon-profil):not(.view-registration) #g-container-main {
+  .gantry .em-coordinator #g-container-main {
     padding: 0 0 0 76px;
   }
 }

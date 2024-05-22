@@ -265,7 +265,6 @@
 .etiquette .filter form {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    width: max-content;
     gap: 16px;
     margin-top: 24px;
 }
@@ -287,11 +286,6 @@
 .closeButtonWelcomeStat:hover {
     color: #ccc;
 }
-
-.indicateurs-page #g-container-main {
-    padding-left: 5% !important;
-}
-
 
 .btn a {
     color: var(--neutral-0);
@@ -401,6 +395,9 @@
     color: var(--em-profile-color);
 }
 
+.indicateurs-page #g-container-main .g-container.g-flushed {
+    padding: 0 20px !important;
+}
 
 @media (max-width: 600px) {
     .queryBuilder {
@@ -412,3 +409,24 @@
         font-size: 12%;
     }
 }
+
+@media screen and (max-width: 1366px) {
+    .indicateurs-page #g-container-main .g-container {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+}
+
+@media screen  and (min-width: 1367px) and (max-width: 1919px) {
+    .indicateurs-page #g-container-main .g-container {
+        max-width: 70% !important;
+        margin: 0 auto;
+    }
+}
+@media screen and (min-width: 1920px) {
+    .indicateurs-page #g-container-main .g-container {
+        width: 50% !important;
+        margin: 0 auto;
+    }
+}
+

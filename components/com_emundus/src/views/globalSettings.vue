@@ -231,9 +231,20 @@ export default {
   margin: unset;
 }
 
-@media all and (max-width: 959px) {
-  div.tw-grid tw-grid-cols-3 tw-gap-6 {
-    padding: var(--p-24);
+@media all and (max-width: 767px) {
+  .view-settings  .tw-grid.tw-grid-cols-3 {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .view-settings .tw-grid.tw-grid-cols-3 .em-shadow-cards {
+    width: 100%;
+  }
+}
+
+@media all and (max-width: 1024px) {
+ .view-settings .em-shadow-cards {
+    height: auto;
   }
 }
 </style>
