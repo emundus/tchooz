@@ -92,11 +92,11 @@ $user       = $this->userid;
                            style="margin-left: 0 !important;"><?= JText::_('PROFILE_FORM'); ?></label>
                 </div>
 
-                <div class="em-flex-row em-border-bottom-neutral-300" style="overflow:hidden; overflow-x: auto;">
+                <div class="em-flex-row" style="overflow:hidden; overflow-x: auto;">
 
                     <div id="tab_link_<?php echo $defaultpid->pid; ?>"
                          onclick="updateProfileForm(<?php echo $defaultpid->pid ?>)"
-                         class="em-mr-16 em-flex-row em-light-tabs profile_tab em-pointer em-light-selected-tab mb-2">
+                         class="em-flex-row em-light-tabs profile_tab em-pointer em-light-selected-tab">
                         <p class="em-font-size-14 em-neutral-900-color" title="<?= $defaultpid->label; ?>"
                            style="white-space: nowrap"> <?= $defaultpid->label; ?></p>
                     </div>
@@ -108,7 +108,7 @@ $user       = $this->userid;
 									<?php if ($data->step !== null) : ?>
                                         <div id="tab_link_<?php echo $data->pid; ?>"
                                              onclick="updateProfileForm(<?php echo $data->pid ?>)"
-                                             class="em-mr-16 em-flex-row profile_tab em-light-tabs em-pointer mb-2">
+                                             class="em-flex-row profile_tab em-light-tabs em-pointer">
                                             <p class="em-font-size-14 em-neutral-600-color"
                                                title="<?php echo $data->label; ?>"
                                                style="white-space: nowrap"><?php echo $data->label; ?></p>
@@ -116,7 +116,7 @@ $user       = $this->userid;
 									<?php else: ?>
                                         <div id="tab_link_<?php echo $data->pid; ?>"
                                              onclick="updateProfileForm(<?php echo $data->pid ?>)"
-                                             class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer mb-2">
+                                             class="profile_tab em-flex-row em-light-tabs em-pointer">
                                             <p class="em-font-size-14 em-neutral-600-color"
                                                title="<?php echo $data->label; ?>"
                                                style="white-space: nowrap"><?php echo $data->label; ?></p>
@@ -125,7 +125,7 @@ $user       = $this->userid;
 								<?php endif ?>
 							<?php endforeach; ?>
 						<?php else : ?>
-                                <div id="tab_link_<?php echo $pid['data']->pid; ?>" onclick="updateProfileForm(<?php echo $pid['data']->pid ?>)" class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer mb-2">
+                                <div id="tab_link_<?php echo $pid['data']->pid; ?>" onclick="updateProfileForm(<?php echo $pid['data']->pid ?>)" class="profile_tab em-flex-row em-light-tabs em-pointer">
                                     <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $pid['data']->label; ?>" style="white-space: nowrap"> <?php echo $pid['data']->label; ?></p>
                             </div>
 						<?php endif; ?>
@@ -167,3 +167,9 @@ $user       = $this->userid;
         }
     });
 </script>
+
+<style>
+    #em-switch-profiles >.em-flex-row {
+        border-bottom: solid 1px var(--neutral-400);
+    }
+</style>

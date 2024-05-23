@@ -22,10 +22,10 @@
       <nav v-if="currentList.tabs.length > 1" id="list-nav">
         <ul style="list-style-type: none;margin-left:0; padding-left: 0" class="tw-flex">
           <li v-for="tab in currentList.tabs" :key="tab.key"
-              class="tw-cursor-pointer tw-font-normal tw-p-4"
+              class="tw-cursor-pointer tw-font-normal"
               :class="{
-								'tw-text-neutral-900 tw-border-b tw-border-main-500': selectedListTab === tab.key,
-							  'tw-text-neutral-700 tw-border-b tw-border-neutral-300': selectedListTab !== tab.key
+								'em-light-tabs em-light-selected-tab': selectedListTab === tab.key,
+							  'em-light-tabs ': selectedListTab !== tab.key
 							}"
               @click="onSelectTab(tab.key)"
           >

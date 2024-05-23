@@ -5,7 +5,7 @@
       v-if="selectedFile !== null && selectedFile !== undefined"
       :class="{ 'context-files': context === 'files', 'hidden': hidden }"
   >
-    <div class="em-modal-header tw-w-full tw-h-2/4 tw-px-3 tw-py-4 tw-bg-main-900 tw-flex tw-items-center">
+    <div class="em-modal-header tw-w-full tw-px-3 tw-py-4 tw-bg-main-900 tw-flex tw-items-center">
       <div class="tw-flex tw-items-center tw-cursor-pointer tw-justify-between tw-w-full" id="evaluation-modal-close">
         <div class="tw-flex tw-items-center tw-gap-2">
           <div class="tw-w-max tw-flex tw-items-center">
@@ -60,8 +60,8 @@
 
       <div id="modal-evaluationgrid">
         <div class="tw-flex tw-flex-col" v-if="!loading" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
-          <div class="em-circle-main-100 tw-flex tw-flex-col" style="width: 40px">
-            <div class="em-circle-main-200 tw-flex tw-flex-col" style="width: 24px">
+          <div class="em-circle-main-100 tw-flex tw-justify-center tw-items-center" style="width: 40px; height: 40px;">
+            <div class="em-circle-main-200 tw-flex tw-justify-center tw-items-center" style="width: 24px; height: 24px">
               <span class="material-icons-outlined tw-text-main-400" style="font-size: 14px">troubleshoot</span>
             </div>
           </div>

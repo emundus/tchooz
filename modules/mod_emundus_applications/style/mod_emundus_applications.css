@@ -583,10 +583,6 @@ a.btn.btn-success:not(.btn-xs) {
     color: var(--neutral-800);
 }
 
-.em-light-selected-tab p {
-    color: var(--neutral-900);
-}
-
 .mod_emundus_application_swal_manage_tabs_popup {
     min-width: 40em;
 }

@@ -160,11 +160,11 @@ $current_tab = 0;
 </div>
 
 <?php if ($show_tabs == 1 && sizeof($applications) > 0) : ?>
-    <div class="em-mt-32 em-flex-row em-border-bottom-neutral-300"
+    <div class="em-mt-32 em-flex-row em-border-bottom-neutral-400"
          style="height: 50px; overflow:hidden; overflow-x: auto;">
 		<?php foreach ($tabs as $tab) : ?>
             <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"
-                 class="em-mr-16 em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
+                 class="em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
                 <p class="em-font-size-14"
                    style="white-space: nowrap"><?php echo JText::_($tab['name']) ?></p>
 				<?php if ($tab['id'] != 0) : ?>
@@ -173,13 +173,13 @@ $current_tab = 0;
             </div>
 		<?php endforeach; ?>
         <div id="tab_adding_link" onclick="createTab()"
-             class="em-mr-16 em-light-tabs em-flex-row em-pointer <?php if (count($tabs) > 1) : ?>em-display-none<?php endif; ?>">
+             class="em-light-tabs em-flex-row em-pointer <?php if (count($tabs) > 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer" style="white-space: nowrap"><span
                         class="material-icons-outlined em-font-size-14 em-mr-4">add</span><?php echo JText::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
             </a>
         </div>
         <div id="tab_manage_links" onclick="manageTabs()"
-             class="em-mr-16 em-light-tabs em-flex-row em-pointer <?php if (count($tabs) == 1) : ?>em-display-none<?php endif; ?>">
+             class="em-light-tabs em-flex-row em-pointer <?php if (count($tabs) == 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer"
                style="white-space: nowrap"><?php echo JText::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS') ?></a>
         </div>
@@ -1160,7 +1160,7 @@ $current_tab = 0;
                 }
             }).then((res) => {
                 if (res.tab != 0) {
-                    let html = '<div id="tab_link_' + res.tab + '" onclick="updateTab(' + res.tab + ')" class="em-mr-16 em-flex-row em-light-tabs em-pointer"><p class="em-font-size-14 em-text-neutral-600" style="white-space: nowrap">' + tabName + '</p><span class="mod_emundus_applications_badge">0</span></div>';
+                    let html = '<div id="tab_link_' + res.tab + '" onclick="updateTab(' + res.tab + ')" class="em-flex-row em-light-tabs em-pointer"><p class="em-font-size-14 em-text-neutral-600" style="white-space: nowrap">' + tabName + '</p><span class="mod_emundus_applications_badge">0</span></div>';
                     document.getElementById('tab_adding_link').insertAdjacentHTML('beforebegin', html);
                     document.getElementById('tab_adding_link').style.display = 'none';
                     document.getElementById('tab_manage_links').style.display = 'flex';
