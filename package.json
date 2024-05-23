@@ -1,6 +1,6 @@
 {
   "name": "tchooz",
-  "version": "1.37.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,9 +10,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@git.emundus.io:2617/emundus/cms/core.git"
+    "url": "https://git.emundus.io/emundus/cms/tchooz.git"
   },
-  "author": "dev@emundus.io",
+  "author": "support@emundus.fr",
   "license": "GPL-3.0",
   "devDependencies": {
     "autoprefixer": "^10.4.14",

@@ -214,6 +214,160 @@ class Release2_0_0Installer extends ReleaseInstaller
 				$this->db->updateObject('#__menu', $update, 'id');
 			}
 
+			// 1.39.0 : Add evaluation form to program
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__fabrik_groups'))
+				->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('GROUP_PROGRAM_DETAIL'));
+			$this->db->setQuery($query);
+			$group_program_detail = $this->db->loadResult();
+
+			if(!empty($group_program_detail)){
+				EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'evaluation_form', 'INT',11,1);
+
+				EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Formulaire d\'évaluation');
+				EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Evaluation form', 'override', null, null, null, 'en-GB');
+
+				$datas = [
+					'name' => 'evaluation_form',
+					'group_id' => $group_program_detail,
+					'plugin' => 'databasejoin',
+					'label' => 'ELEMENT_PROGRAM_FORM_EVALUATION',
+				];
+				$params = [
+					'join_db_name' => 'jos_fabrik_lists',
+					'join_key_column' => 'form_id',
+					'join_val_column' => "label",
+					'join_val_column_concat' => "{thistable}.label",
+					'database_join_where_sql' => "WHERE {thistable}.db_table_name = 'jos_emundus_evaluations'"
+				];
+				$eid = EmundusHelperUpdate::addFabrikElement($datas,$params,false)['id'];
+
+				if(!empty($eid))
+				{
+					$datas = [
+						'element_id' => $eid,
+						'join_from_table' => '',
+						'table_join' => 'jos_fabrik_lists',
+						'table_key' => 'evaluation_form',
+						'table_join_key' => 'form_id',
+						'join_type' => 'left',
+						'group_id' => $group_program_detail
+					];
+					$params = [
+						'join-label' => 'label',
+						'type' => 'element',
+						'pk' => "`jos_fabrik_lists`.`id`"
+					];
+					EmundusHelperUpdate::addFabrikJoin($datas,$params);
+
+					$query->clear()
+						->update($this->db->quoteName('#__fabrik_elements'))
+						->set($this->db->quoteName('hidden') . ' = 1')
+						->where($this->db->quoteName('name') . ' = ' . $this->db->quote('fabrik_group_id'));
+					$this->db->setQuery($query);
+					$this->db->execute();
+
+					$query->clear()
+						->select('id,fabrik_group_id')
+						->from($this->db->quoteName('#__emundus_setup_programmes'))
+						->where($this->db->quoteName('fabrik_group_id') . ' IS NOT NULL');
+					$this->db->setQuery($query);
+					$programs = $this->db->loadAssocList();
+
+					foreach ($programs as $program) {
+						if(!empty($program['fabrik_group_id']))
+						{
+							$fabrik_groups = explode(',', $program['fabrik_group_id']);
+
+							$query->clear()
+								->select('form_id')
+								->from($this->db->quoteName('#__fabrik_formgroup'))
+								->where($this->db->quoteName('group_id') . ' IN (' . implode(',',$this->db->quote($fabrik_groups)) .')');
+							$this->db->setQuery($query);
+							$evaluation_form_id = $this->db->loadResult();
+
+							if(!empty($evaluation_form_id))
+							{
+								$query->clear()
+									->update($this->db->quoteName('#__emundus_setup_programmes'))
+									->set($this->db->quoteName('evaluation_form') . ' = ' . $this->db->quote($evaluation_form_id))
+									->where($this->db->quoteName('id') . ' = ' . $this->db->quote($program['id']));
+								$this->db->setQuery($query);
+								$this->db->execute();
+							}
+						}
+					}
+				}
+			}
+			//
+
+			// 1.39.0 : Add cron to purge logs
+			$query->clear()
+				->select('extension_id,params')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('plg_system_logrotation'));
+			$this->db->setQuery($query);
+			$logrotation = $this->db->loadObject();
+
+			if(!empty($logrotation->extension_id))
+			{
+				$params = json_decode($logrotation->params, true);
+
+				$params['cachetimeout'] = 7;
+				$params['logstokeep']   = 4;
+
+				$query->clear()
+					->update($this->db->quoteName('#__extensions'))
+					->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+					->where($this->db->quoteName('extension_id') . ' = ' . $logrotation->extension_id);
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+			EmundusHelperUpdate::installExtension('plg_cron_logspurge','emunduslogsandmessagespurge','{"name":"plg_cron_logspurge","type":"plugin","creationDate":"May 2024","author":"eMundus","copyright":"Copyright (C) 2024 emundus.fr - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"1.39.0","description":"PLG_CRON_LOGSPURGE_DESC","group":"","filename":"emunduslogsandmessagespurge"}','plugin',1,'fabrik_cron', '{"amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}');
+
+			$query->clear()
+				->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('jos_fabrik_cron'))
+				->where($this->db->quoteName('plugin') . ' = ' . $this->db->quote('emunduslogsandmessagespurge'));
+
+			$this->db->setQuery($query);
+			$existing_cron = $this->db->loadResult();
+
+			if ($existing_cron !== null)
+			{
+				echo "Plugin cron already created.";
+			}
+			else
+			{
+				$current_hour = date('G');
+				if ($current_hour < 4)
+				{
+					$last_four_hour = date('Y-m-d 04:00:00', strtotime('yesterday'));
+				}
+				else
+				{
+					$last_four_hour = date('Y-m-d 04:00:00');
+				}
+
+				$inserted = [
+					'label' => 'Logs and messages purge',
+					'frequency' => 1,
+					'unit' => 'day',
+					'created' => date('0000-00-00 00:00:00'),
+					'modified' => date('0000-00-00 00:00:00'),
+					'checked_out_time' => date('0000-00-00 00:00:00'),
+					'plugin' => 'emunduslogsandmessagespurge',
+					'published' => 1,
+					'lastrun' => date($last_four_hour),
+					'params' => '{"connection":"1","table":"","cron_row_limit":"100","log":"0","log_email":"","require_qs":"0","require_qs_secret":"","cron_rungate":"1","cron_reschedule_manual":"0","amount_time":"1","unit_time":"year","export_zip":"1", "amount_time_tmp":"1","unit_time_tmp":"week"}'
+				];
+				$inserted = (object) $inserted;
+				$this->db->insertObject('jos_fabrik_cron', $inserted);
+			}
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

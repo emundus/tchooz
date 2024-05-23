@@ -32,7 +32,7 @@ class EmundusModelForm extends JModelList
 		$this->app = Factory::getApplication();
 		$this->db = Factory::getDbo();
 
-		JLog::addLogger(['text_file' => 'com_emundus.form.php'], JLog::ALL, array('com_emundus.form'));
+		Log::addLogger(['text_file' => 'com_emundus.form.php'], Log::ALL, array('com_emundus.form'));
 	}
 
 	/**
@@ -146,7 +146,7 @@ class EmundusModelForm extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $data;
@@ -200,6 +200,7 @@ class EmundusModelForm extends JModelList
 						$label[$language->sef] = $m_form_builder->getTranslation($evaluation_form->label, $language->lang_code) ?: $evaluation_form->label;
 					}
 					$evaluation_form->label = $label;
+					$evaluation_form->programs_count = count($this->getProgramsByForm($evaluation_form->id));
 				}
 			}
 
@@ -207,7 +208,7 @@ class EmundusModelForm extends JModelList
 			$data['count'] = sizeof($evaluation_forms);
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Cannot getting the list of forms : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $data;
@@ -234,7 +235,7 @@ class EmundusModelForm extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Cannot getting the published forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Cannot getting the published forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return new stdClass();
 		}
@@ -516,13 +517,13 @@ class EmundusModelForm extends JModelList
 
 				}
 				catch (Exception $e) {
-					JLog::add('component/com_emundus/models/form | Error when try to delete forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+					Log::add('component/com_emundus/models/form | Error when try to delete forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 					return false;
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/form | Error when try to delete forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/form | Error when try to delete forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -577,7 +578,7 @@ class EmundusModelForm extends JModelList
 				$response['status'] = $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/form | Error when unpublish forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/form | Error when unpublish forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 				$response['status'] = false;
 			}
 		}
@@ -609,7 +610,7 @@ class EmundusModelForm extends JModelList
 				return $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/form | Error when publish forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/form | Error when publish forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -846,7 +847,7 @@ class EmundusModelForm extends JModelList
 				$new_profile_exists = $this->db->loadResult();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/form | Error when get profile : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/form | Error when get profile : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 
 			if (!empty($new_profile_exists)) {
@@ -860,7 +861,7 @@ class EmundusModelForm extends JModelList
 					$attachments = $this->db->loadAssocList();
 				}
 				catch (Exception $e) {
-					JLog::add('component/com_emundus/models/form | Error when get attachments to copy : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+					Log::add('component/com_emundus/models/form | Error when get attachments to copy : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 					return false;
 				}
@@ -897,7 +898,7 @@ class EmundusModelForm extends JModelList
 						$copied = $this->db->execute();
 					}
 					catch (Exception $e) {
-						JLog::add('component/com_emundus/models/form | Error when copy attachments to new profile : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+						Log::add('component/com_emundus/models/form | Error when copy attachments to new profile : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 					}
 				}
 			}
@@ -927,7 +928,7 @@ class EmundusModelForm extends JModelList
 			return $this->db->loadObject();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error when get form by id ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error when get form by id ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -955,7 +956,7 @@ class EmundusModelForm extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/form | Error when get form by fabrik id ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/form | Error when get form by fabrik id ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1095,7 +1096,7 @@ class EmundusModelForm extends JModelList
 			return $newprofile;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error when create a setup_profile : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.error');
+			Log::add('component/com_emundus/models/form | Error when create a setup_profile : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 
 			return false;
 		}
@@ -1133,18 +1134,18 @@ class EmundusModelForm extends JModelList
 				$list_id = $m_formbuilder->copyList($list, $form_id);
 
 				if (empty($list_id)) {
-					JLog::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations', JLog::WARNING, 'com_emundus.error');
+					Log::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations', Log::WARNING, 'com_emundus.error');
 
 					throw new Exception('Error when create a list for evaluation form, could not copy list based on jos_emundus_evaluations');
 				}
 			}
 			else {
-				JLog::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not find list with jos_emundus_evaluations', JLog::WARNING, 'com_emundus.error');
+				Log::add('component/com_emundus/models/form | Error when create a list for evaluation form, could not find list with jos_emundus_evaluations', Log::WARNING, 'com_emundus.error');
 				throw new Exception('Error when create a list for evaluation form, could not find list with jos_emundus_evaluations');
 			}
 		}
 		else {
-			JLog::add('component/com_emundus/models/form | Error when create a form for evaluation form', JLog::WARNING, 'com_emundus.error');
+			Log::add('component/com_emundus/models/form | Error when create a form for evaluation form', Log::WARNING, 'com_emundus.error');
 			throw new Exception('Error when create a form for evaluation form');
 		}
 
@@ -1188,7 +1189,7 @@ class EmundusModelForm extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Cannot create the menutype ' . $menutype . ' : -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Cannot create the menutype ' . $menutype . ' : -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return '';
 		}
@@ -1264,7 +1265,7 @@ class EmundusModelForm extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Cannot create the menu : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Cannot create the menu : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1293,7 +1294,7 @@ class EmundusModelForm extends JModelList
 				return $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/form | Cannot update the form ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query_pid . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/form | Cannot update the form ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query_pid . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -1345,7 +1346,7 @@ class EmundusModelForm extends JModelList
 				$results[] = $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/form | Cannot update the form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/form | Cannot update the form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1443,7 +1444,7 @@ class EmundusModelForm extends JModelList
 			return $documents;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error at getting documents of the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error at getting documents of the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1489,7 +1490,7 @@ class EmundusModelForm extends JModelList
 			return $undocuments;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error getting documents not associated : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error getting documents not associated : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1522,7 +1523,7 @@ class EmundusModelForm extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('Failed to get attachments ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Failed to get attachments ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $attachments;
@@ -1553,7 +1554,7 @@ class EmundusModelForm extends JModelList
 			}
 			catch (Exception $e) {
 				$msg = 'Error trying to get profile info from attachment_id ' . $e->getMessage();
-				JLog::add($msg, JLog::ERROR, 'com_emundus');
+				Log::add($msg, Log::ERROR, 'com_emundus');
 			}
 
 			if (!empty($profile_infos)) {
@@ -1606,7 +1607,7 @@ class EmundusModelForm extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error deleting documents : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error deleting documents : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1635,7 +1636,7 @@ class EmundusModelForm extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error remove document ' . $did . ' associated to the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error remove document ' . $did . ' associated to the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1673,7 +1674,7 @@ class EmundusModelForm extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error remove document ' . $did . ' associated to the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error remove document ' . $did . ' associated to the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1718,7 +1719,7 @@ class EmundusModelForm extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error remove document ' . $did . ' associated to the campaign ' . $campaign . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error remove document ' . $did . ' associated to the campaign ' . $campaign . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1753,7 +1754,7 @@ class EmundusModelForm extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error when delete the document ' . $did . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error when delete the document ' . $did . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1865,7 +1866,7 @@ class EmundusModelForm extends JModelList
 			return $newmenuid;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error to add the checklist module to form (' . $prid . ') menus : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error to add the checklist module to form (' . $prid . ') menus : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1920,7 +1921,7 @@ class EmundusModelForm extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error to remove the checklist module to form (' . $prid . ') menus : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error to remove the checklist module to form (' . $prid . ') menus : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1970,7 +1971,7 @@ class EmundusModelForm extends JModelList
 			return $forms;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error at getting form pages by profile_id ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error at getting form pages by profile_id ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1993,7 +1994,7 @@ class EmundusModelForm extends JModelList
 				$campaigns = $this->db->setQuery($query)->loadAssocList();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get campaigns from form_id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get campaigns from form_id ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -2031,7 +2032,7 @@ class EmundusModelForm extends JModelList
 			return $groups;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error at getting groups by form_id ' . $form_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error at getting groups by form_id ' . $form_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2083,7 +2084,7 @@ class EmundusModelForm extends JModelList
 			return $sub_page;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error at getting the submittion page of the form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error at getting the submittion page of the form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2109,7 +2110,7 @@ class EmundusModelForm extends JModelList
 			return $this->db->loadObject();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error at getting name of the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error at getting name of the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2146,7 +2147,7 @@ class EmundusModelForm extends JModelList
 			return $files;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error at getting files by form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error at getting files by form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2167,7 +2168,7 @@ class EmundusModelForm extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error at getting campaigns link to the form ' . $profile_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2201,7 +2202,7 @@ class EmundusModelForm extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error at getting eval form program link to the form ' . $form_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error at getting eval form program link to the form ' . $form_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2238,7 +2239,7 @@ class EmundusModelForm extends JModelList
 
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/form | Error when affect campaigns to the form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/form | Error when affect campaigns to the form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -2266,7 +2267,7 @@ class EmundusModelForm extends JModelList
 				$attachments_by_profile = $this->db->loadObjectList();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/form | Error cannot get documents by profile_id : ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/form | Error cannot get documents by profile_id : ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -2296,7 +2297,7 @@ class EmundusModelForm extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error cannot reorder documents : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error cannot reorder documents : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2315,7 +2316,7 @@ class EmundusModelForm extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error cannot remove document : ' . $did . ' with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error cannot remove document : ' . $did . ' with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2346,7 +2347,7 @@ class EmundusModelForm extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error cannot delete document template : ' . $did . ' with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error cannot delete document template : ' . $did . ' with query : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2377,7 +2378,7 @@ class EmundusModelForm extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/form | Error at getDatabaseJoinOptions : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/form | Error at getDatabaseJoinOptions : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2405,7 +2406,7 @@ class EmundusModelForm extends JModelList
 			$nb_uploads = $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('Error trying to know if i can remove document from profile ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('Error trying to know if i can remove document from profile ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		if ($nb_uploads < 1) {
@@ -2418,5 +2419,119 @@ class EmundusModelForm extends JModelList
 		}
 
 		return $data;
+	}
+
+	public function getProgramsByForm($form_id,$mode = 'eval')
+	{
+		$programs = [];
+		
+		$query = $this->db->getQuery(true);
+
+		if(!empty($form_id)) {
+			try
+			{
+				$query->select('group_id')
+					->from($this->db->quoteName('#__fabrik_formgroup'))
+					->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($form_id));
+				$this->db->setQuery($query);
+				$fabrik_groups = $this->db->loadColumn();
+
+				switch ($mode) {
+					case 'decision':
+						$column = 'fabrik_decision_group_id';
+						break;
+					default:
+						$column = 'fabrik_group_id';
+						break;
+				}
+
+				if(!empty($fabrik_groups)) {
+					$query->clear()
+						->select('label,code,'.$column)
+						->from($this->db->quoteName('#__emundus_setup_programmes'));
+					$this->db->setQuery($query);
+					$programs = $this->db->loadAssocList();
+
+					foreach ($programs as $key => $program) {
+						$program_fabrik_groups = explode(',', $program[$column]);
+
+						if(!empty($program_fabrik_groups)) {
+							$program_fabrik_groups = array_intersect($program_fabrik_groups, $fabrik_groups);
+
+							if(empty($program_fabrik_groups)) {
+								unset($programs[$key]);
+							}
+						}
+					}
+
+					$programs = array_values($programs);
+				}
+			}
+			catch (Exception $e)
+			{
+				Log::add('component/com_emundus/models/form | Error at getProgramsByForm : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $programs;
+	}
+
+	public function associateFabrikGroupsToProgram($form_id,$programs,$mode = 'eval')
+	{
+		$associated = false;
+
+		$query = $this->db->getQuery(true);
+
+		if(!empty($form_id) && !empty($programs) && is_array($programs))
+		{
+			try
+			{
+				$query->select('group_id')
+					->from($this->db->quoteName('#__fabrik_formgroup'))
+					->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($form_id));
+				$this->db->setQuery($query);
+				$fabrik_groups = $this->db->loadColumn();
+
+				if (!empty($fabrik_groups))
+				{
+					switch ($mode) {
+						case 'decision':
+							$column = 'fabrik_decision_group_id';
+							break;
+						default:
+							$column = 'fabrik_group_id';
+							break;
+					}
+
+					$existing_programs = $this->getProgramsByForm($form_id,$mode);
+
+					foreach ($programs as $program) {
+						$query->clear()
+							->update($this->db->quoteName('#__emundus_setup_programmes'))
+							->set($this->db->quoteName($column) . ' = ' . $this->db->quote(implode(',', $fabrik_groups)))
+							->set($this->db->quoteName('evaluation_form') . ' = ' . $this->db->quote($form_id))
+							->where($this->db->quoteName('code') . ' LIKE ' . $this->db->quote($program));
+						$this->db->setQuery($query);
+						$associated = $this->db->execute();
+					}
+
+					foreach ($existing_programs as $program) {
+						if(!in_array($program['code'],$programs)) {
+							$query->clear()
+								->update($this->db->quoteName('#__emundus_setup_programmes'))
+								->set($this->db->quoteName($column) . ' = ' . $this->db->quote(''))
+								->where($this->db->quoteName('code') . ' LIKE ' . $this->db->quote($program['code']));
+							$this->db->setQuery($query);
+							$removed = $this->db->execute();
+						}
+					}
+				}
+			} catch (Exception $e)
+			{
+				Log::add('component/com_emundus/models/form | Error at associateFabrikGroupsToProgram : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $associated;
 	}
 }
