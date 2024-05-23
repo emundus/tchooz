@@ -122,7 +122,20 @@ class EmundusControllerForm extends JControllerLegacy
 
 			$forms = $this->m_form->getAllGrilleEval($filter, $sort, $recherche, $lim, $page);
 
-			if (count($forms) > 0) {
+			if (count($forms) > 0)
+			{
+				// this data formatted is used in onboarding lists
+				foreach ($forms['datas'] as $key => $form)
+				{
+					$form->additional_columns = [
+						[
+							'key' => Text::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
+							'value' => $form->programs_count . ' ' . Text::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
+							'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+							'display' => 'blocs'
+						],
+					];
+				}
 				$tab = array('status' => true, 'msg' => Text::_('FORM_RETRIEVED'), 'data' => $forms);
 			}
 			else {

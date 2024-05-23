@@ -214,6 +214,94 @@ class Release2_0_0Installer extends ReleaseInstaller
 				$this->db->updateObject('#__menu', $update, 'id');
 			}
 
+			// 1.39.0 : Add evaluation form to program
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__fabrik_groups'))
+				->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('GROUP_PROGRAM_DETAIL'));
+			$this->db->setQuery($query);
+			$group_program_detail = $this->db->loadResult();
+
+			if(!empty($group_program_detail)){
+				EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'evaluation_form', 'INT',11,1);
+
+				EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Formulaire d\'évaluation');
+				EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Evaluation form', 'override', null, null, null, 'en-GB');
+
+				$datas = [
+					'name' => 'evaluation_form',
+					'group_id' => $group_program_detail,
+					'plugin' => 'databasejoin',
+					'label' => 'ELEMENT_PROGRAM_FORM_EVALUATION',
+				];
+				$params = [
+					'join_db_name' => 'jos_fabrik_lists',
+					'join_key_column' => 'form_id',
+					'join_val_column' => "label",
+					'join_val_column_concat' => "{thistable}.label",
+					'database_join_where_sql' => "WHERE {thistable}.db_table_name = 'jos_emundus_evaluations'"
+				];
+				$eid = EmundusHelperUpdate::addFabrikElement($datas,$params,false)['id'];
+
+				if(!empty($eid))
+				{
+					$datas = [
+						'element_id' => $eid,
+						'join_from_table' => '',
+						'table_join' => 'jos_fabrik_lists',
+						'table_key' => 'evaluation_form',
+						'table_join_key' => 'form_id',
+						'join_type' => 'left',
+						'group_id' => $group_program_detail
+					];
+					$params = [
+						'join-label' => 'label',
+						'type' => 'element',
+						'pk' => "`jos_fabrik_lists`.`id`"
+					];
+					EmundusHelperUpdate::addFabrikJoin($datas,$params);
+
+					$query->clear()
+						->update($this->db->quoteName('#__fabrik_elements'))
+						->set($this->db->quoteName('hidden') . ' = 1')
+						->where($this->db->quoteName('name') . ' = ' . $this->db->quote('fabrik_group_id'));
+					$this->db->setQuery($query);
+					$this->db->execute();
+
+					$query->clear()
+						->select('id,fabrik_group_id')
+						->from($this->db->quoteName('#__emundus_setup_programmes'))
+						->where($this->db->quoteName('fabrik_group_id') . ' IS NOT NULL');
+					$this->db->setQuery($query);
+					$programs = $this->db->loadAssocList();
+
+					foreach ($programs as $program) {
+						if(!empty($program['fabrik_group_id']))
+						{
+							$fabrik_groups = explode(',', $program['fabrik_group_id']);
+
+							$query->clear()
+								->select('form_id')
+								->from($this->db->quoteName('#__fabrik_formgroup'))
+								->where($this->db->quoteName('group_id') . ' IN (' . implode(',',$this->db->quote($fabrik_groups)) .')');
+							$this->db->setQuery($query);
+							$evaluation_form_id = $this->db->loadResult();
+
+							if(!empty($evaluation_form_id))
+							{
+								$query->clear()
+									->update($this->db->quoteName('#__emundus_setup_programmes'))
+									->set($this->db->quoteName('evaluation_form') . ' = ' . $this->db->quote($evaluation_form_id))
+									->where($this->db->quoteName('id') . ' = ' . $this->db->quote($program['id']));
+								$this->db->setQuery($query);
+								$this->db->execute();
+							}
+						}
+					}
+				}
+			}
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

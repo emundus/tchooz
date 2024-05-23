@@ -509,6 +509,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 
 
 			$fid = $this->input->getInt('fid');
+			$mode = $this->input->getString('mode');
 			if ($this->input->getRaw('label')) {
 				$label = $this->input->getRaw('label');
 			}
@@ -519,7 +520,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 				);
 			}
 
-			$group = $this->m_formbuilder->createGroup($label, $fid);
+			$group = $this->m_formbuilder->createGroup($label, $fid,1,$mode);
 
 			if (!empty($group['group_id'])) {
 				$response           = $group;
