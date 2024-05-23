@@ -11,7 +11,6 @@ stages:
   - test
   - release
   - deploy
-  # - publish
 
 include:
 - project: 'emundus/devops/ci-cd-templates'
@@ -136,6 +135,20 @@ release-job:
         - administrator/components/com_emundus/emundus.xml
       when: on_success
     - when: never
+
+sync-documentation-job:
+  stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - administrator/components/com_emundus/emundus.xml
+      when: on_success
+    - when: never
+  image: emundus/sync-documentation:latest
+  script:
+    - /go/generate-release-note.sh "$CI_SERVER_URL" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$ATLASSIAN_URL" "$ATLASSIAN_USER" "$ATLASSIAN_TOKEN" "$ATLASSIAN_SPACE" "$ATLASSIAN_PARENT_PAGE" "$ATLASSIAN_PAGE_TITLE"
+  needs:
+    - release-job
 
 deployer:
   stage: test
