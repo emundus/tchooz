@@ -10,13 +10,19 @@
  */
 
 // No direct access
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\MVC\Model\ListModel;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
-class EmundusModelMessages extends JModelList
+class EmundusModelMessages extends ListModel
 {
-	var $user = null;
+	private $user;
+	private $db;
 
 	/**
 	 * Constructor
@@ -28,9 +34,10 @@ class EmundusModelMessages extends JModelList
 	 */
 	public function __construct($config = array())
 	{
-		$this->user = JFactory::getSession()->get('emundusUser');
+		$this->user = Factory::getApplication()->getSession()->get('emundusUser');
+		$this->db   = Factory::getContainer()->get('DatabaseDriver');
 
-		JLog::addLogger(['text_file' => 'com_emundus.chatroom.error.php'], JLog::ERROR, 'com_emundus.chatroom');
+		Log::addLogger(['text_file' => 'com_emundus.chatroom.error.php'], Log::ERROR, 'com_emundus.chatroom');
 
 		parent::__construct($config);
 	}
@@ -44,26 +51,23 @@ class EmundusModelMessages extends JModelList
 	 */
 	function getAllMessages($type = 2)
 	{
-
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select('*')
-			->from($db->quoteName('#__emundus_setup_emails'))
-			->where($db->quoteName('type') . ' IN (' . $db->Quote($type) . ')')
-			->andWhere($db->quoteName('published') . ' = ' . $db->quote(1))
-			->order($db->quoteName('subject'));
+			->from($this->db->quoteName('#__emundus_setup_emails'))
+			->where($this->db->quoteName('type') . ' IN (' . $this->db->Quote($type) . ')')
+			->andWhere($this->db->quoteName('published') . ' = ' . $this->db->quote(1))
+			->order($this->db->quoteName('subject'));
 
 		try {
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting emails in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting emails in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -80,26 +84,23 @@ class EmundusModelMessages extends JModelList
 	 */
 	function getAllCategories($type = 2)
 	{
-
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select('DISTINCT(category)')
-			->from($db->quoteName('#__emundus_setup_emails'))
-			->where($db->quoteName('type') . ' IN (' . $db->Quote($type) . ')')
-			->andWhere($db->quoteName('published') . ' = ' . $db->quote(1))
-			->order($db->quoteName('category'));
+			->from($this->db->quoteName('#__emundus_setup_emails'))
+			->where($this->db->quoteName('type') . ' IN (' . $this->db->Quote($type) . ')')
+			->andWhere($this->db->quoteName('published') . ' = ' . $this->db->quote(1))
+			->order($this->db->quoteName('category'));
 
 		try {
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadColumn();
+			return $this->db->loadColumn();
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting email categories in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting email categories in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -114,17 +115,15 @@ class EmundusModelMessages extends JModelList
 	 */
 	function getAttachments()
 	{
-
-		$db      = JFactory::getDbo();
-		$session = JFactory::getSession();
+		$session = Factory::getApplication()->getSession();
 
 		$filt_params = $session->get('filt_params');
 
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		// Get all info about the attachments in the table.
 		$query->select('a.*')
-			->from($db->quoteName('#__emundus_setup_attachments', 'a'));
+			->from($this->db->quoteName('#__emundus_setup_attachments', 'a'));
 
 		$where = '1 = 1 ';
 
@@ -132,35 +131,35 @@ class EmundusModelMessages extends JModelList
 		if (isset($filt_params['campaign'][0]) && $filt_params['campaign'][0] != '%') {
 
 			// Joins are added in the ifs, even though some are redundant it's better than doing tons of joins when not needed.
-			$query->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles', 'ap') . ' ON ' . $db->QuoteName('ap.attachment_id') . ' = ' . $db->QuoteName('a.id'))
-				->leftJoin($db->quoteName('#__emundus_setup_profiles', 'p') . ' ON ' . $db->QuoteName('ap.profile_id') . ' = ' . $db->QuoteName('p.id'))
-				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->QuoteName('c.profile_id') . ' = ' . $db->QuoteName('p.id'));
+			$query->leftJoin($this->db->quoteName('#__emundus_setup_attachment_profiles', 'ap') . ' ON ' . $this->db->QuoteName('ap.attachment_id') . ' = ' . $this->db->QuoteName('a.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_profiles', 'p') . ' ON ' . $this->db->QuoteName('ap.profile_id') . ' = ' . $this->db->QuoteName('p.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->db->QuoteName('c.profile_id') . ' = ' . $this->db->QuoteName('p.id'));
 
-			$where .= ' AND ' . $db->quoteName('c.id') . ' LIKE ' . $filt_params['campaign'][0];
+			$where .= ' AND ' . $this->db->quoteName('c.id') . ' LIKE ' . $filt_params['campaign'][0];
 
 		}
 		else if (isset($filt_params['programme'][0]) && $filt_params['programme'][0] != '%') {
 
-			$query->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles', 'ap') . ' ON ' . $db->QuoteName('ap.attachment_id') . ' = ' . $db->QuoteName('a.id'))
-				->leftJoin($db->quoteName('#__emundus_setup_profiles', 'p') . ' ON ' . $db->QuoteName('ap.profile_id') . ' = ' . $db->QuoteName('p.id'))
-				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->QuoteName('c.profile_id') . ' = ' . $db->QuoteName('p.id'))
-				->leftJoin($db->quoteName('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->QuoteName('c.training') . ' = ' . $db->QuoteName('pr.code'));
+			$query->leftJoin($this->db->quoteName('#__emundus_setup_attachment_profiles', 'ap') . ' ON ' . $this->db->QuoteName('ap.attachment_id') . ' = ' . $this->db->QuoteName('a.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_profiles', 'p') . ' ON ' . $this->db->QuoteName('ap.profile_id') . ' = ' . $this->db->QuoteName('p.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->db->QuoteName('c.profile_id') . ' = ' . $this->db->QuoteName('p.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->QuoteName('c.training') . ' = ' . $this->db->QuoteName('pr.code'));
 
-			$where .= ' AND ' . $db->quoteName('pr.code') . ' LIKE ' . $db->Quote($filt_params['programme'][0]);
+			$where .= ' AND ' . $this->db->quoteName('pr.code') . ' LIKE ' . $this->db->Quote($filt_params['programme'][0]);
 
 		}
 
-		$query->where($where . ' AND ' . $db->quoteName('a.published') . '=1');
+		$query->where($where . ' AND ' . $this->db->quoteName('a.published') . '=1');
 
 		try {
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting attachments in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting attachments in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -176,43 +175,41 @@ class EmundusModelMessages extends JModelList
 	 */
 	function getLetters()
 	{
-
-		$db      = JFactory::getDbo();
-		$session = JFactory::getSession();
+		$session = Factory::getApplication()->getSession();
 
 		$filt_params = $session->get('filt_params');
 
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		// Get all info about the letters in the table.
 		$query->select('l.*')
-			->from($db->quoteName('#__emundus_setup_letters', 'l'));
+			->from($this->db->quoteName('#__emundus_setup_letters', 'l'));
 
 		// if a filter is added then we need to filter out the letters that dont match.
 		if (isset($filt_params['campaign'][0]) && $filt_params['campaign'][0] != '%') {
 
-			$query->leftJoin($db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $db->quoteName('lrt.parent_id') . ' = ' . $db->quoteName('l.id'))
-				->leftJoin($db->quoteName('#__emundus_setup_programmes', 'p') . ' ON ' . $db->QuoteName('lrt.training') . ' = ' . $db->QuoteName('p.code'))
-				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $db->QuoteName('c.training') . ' = ' . $db->QuoteName('p.code'))
-				->where($db->quoteName('c.id') . ' LIKE ' . $filt_params['campaign'][0]);
+			$query->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $this->db->quoteName('lrt.parent_id') . ' = ' . $this->db->quoteName('l.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'p') . ' ON ' . $this->db->QuoteName('lrt.training') . ' = ' . $this->db->QuoteName('p.code'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->db->QuoteName('c.training') . ' = ' . $this->db->QuoteName('p.code'))
+				->where($this->db->quoteName('c.id') . ' LIKE ' . $filt_params['campaign'][0]);
 
 		}
 		else if (isset($filt_params['programme'][0]) && $filt_params['programme'][0] != '%') {
 
-			$query->leftJoin($db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $db->quoteName('lrt.parent_id') . ' = ' . $db->quoteName('l.id'))
-				->where($db->quoteName('lrt.training') . ' LIKE ' . $db->Quote($filt_params['programme'][0]));
+			$query->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $this->db->quoteName('lrt.parent_id') . ' = ' . $this->db->quoteName('l.id'))
+				->where($this->db->quoteName('lrt.training') . ' LIKE ' . $this->db->Quote($filt_params['programme'][0]));
 
 		}
 
 		try {
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting letters in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting letters in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -229,34 +226,33 @@ class EmundusModelMessages extends JModelList
 	 */
 	function getEmail($id)
 	{
-		$db    = JFactory::getDBO();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select('e.*, et.*, GROUP_CONCAT(etr.tags) as tags, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments, GROUP_CONCAT(la.letter_attachment) AS letter_attachments, GROUP_CONCAT(r.receivers) AS receivers')
-			->from($db->quoteName('#__emundus_setup_emails', 'e'))
-			->leftJoin($db->quoteName('#__emundus_email_templates', 'et') . ' ON ' . $db->quoteName('e.email_tmpl') . ' = ' . $db->quoteName('et.id'))
-			->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags', 'etr') . ' ON ' . $db->quoteName('e.id') . ' = ' . $db->quoteName('etr.parent_id'))
-			->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment', 'ca') . ' ON ' . $db->quoteName('e.id') . ' = ' . $db->quoteName('ca.parent_id'))
-			->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment', 'la') . ' ON ' . $db->quoteName('e.id') . ' = ' . $db->quoteName('la.parent_id'))
-			->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_receivers', 'r') . ' ON ' . $db->quoteName('e.id') . ' = ' . $db->quoteName('r.parent_id'));
+			->from($this->db->quoteName('#__emundus_setup_emails', 'e'))
+			->leftJoin($this->db->quoteName('#__emundus_email_templates', 'et') . ' ON ' . $this->db->quoteName('e.email_tmpl') . ' = ' . $this->db->quoteName('et.id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_emails_repeat_tags', 'etr') . ' ON ' . $this->db->quoteName('e.id') . ' = ' . $this->db->quoteName('etr.parent_id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment', 'ca') . ' ON ' . $this->db->quoteName('e.id') . ' = ' . $this->db->quoteName('ca.parent_id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_emails_repeat_letter_attachment', 'la') . ' ON ' . $this->db->quoteName('e.id') . ' = ' . $this->db->quoteName('la.parent_id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_emails_repeat_receivers', 'r') . ' ON ' . $this->db->quoteName('e.id') . ' = ' . $this->db->quoteName('r.parent_id'));
 
 		// Allow the function to dynamically decide if it is getting by ID or label depending on the value submitted.
 		if (is_numeric($id)) {
-			$query->where($db->quoteName('e.id') . ' = ' . $id);
+			$query->where($this->db->quoteName('e.id') . ' = ' . $id);
 		}
 		else {
-			$query->where($db->quoteName('e.lbl') . ' LIKE ' . $db->quote($id));
+			$query->where($this->db->quoteName('e.lbl') . ' LIKE ' . $this->db->quote($id));
 		}
 
 		$query->group('e.id');
 
 		try {
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObject();
+			return $this->db->loadObject();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting template in model/messages at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting template in model/messages at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return new stdClass;
 		}
@@ -273,28 +269,25 @@ class EmundusModelMessages extends JModelList
 	 */
 	function getEmailsByCategory($category)
 	{
-
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select('id, subject')
-			->from($db->quoteName('#__emundus_setup_emails'))
-			->where($db->quoteName('type') . ' = 2')
-			->andWhere($db->quoteName('published') . ' = 1');
+			->from($this->db->quoteName('#__emundus_setup_emails'))
+			->where($this->db->quoteName('type') . ' = 2')
+			->andWhere($this->db->quoteName('published') . ' = 1');
 
 		if ($category != 'all')
-			$query->andWhere($db->quoteName('category') . ' = ' . $db->quote($category));
+			$query->andWhere($this->db->quoteName('category') . ' = ' . $this->db->quote($category));
 
 		try {
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting emails by category in model/messages at query ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting emails by category in model/messages at query ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -315,24 +308,21 @@ class EmundusModelMessages extends JModelList
 	 */
 	function get_upload($fnum, $attachment_id)
 	{
+		$query = $this->db->getQuery(true);
 
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName('filename'))
-			->from($db->quoteName('#__emundus_uploads'))
-			->where($db->quoteName('attachment_id') . ' = ' . $attachment_id . ' AND ' . $db->quoteName('fnum') . ' = ' . $db->Quote($fnum));
+		$query->select($this->db->quoteName('filename'))
+			->from($this->db->quoteName('#__emundus_uploads'))
+			->where($this->db->quoteName('attachment_id') . ' = ' . $attachment_id . ' AND ' . $this->db->quoteName('fnum') . ' = ' . $this->db->Quote($fnum));
 
 		try {
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadResult();
+			return $this->db->loadResult();
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting upload filename in model/messages at query ' . $query, JLog::ERROR, 'com_emudus');
+			Log::add('Error getting upload filename in model/messages at query ' . $query, Log::ERROR, 'com_emudus');
 
 			return false;
 		}
@@ -349,23 +339,20 @@ class EmundusModelMessages extends JModelList
 	 */
 	function get_filename($attachment_id)
 	{
+		$query = $this->db->getQuery(true);
 
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true);
-		$query->select($db->quoteName('value'))
-			->from($db->quoteName('#__emundus_setup_attachments'))
-			->where($db->quoteName('id') . ' = ' . $attachment_id);
+		$query->select($this->db->quoteName('value'))
+			->from($this->db->quoteName('#__emundus_setup_attachments'))
+			->where($this->db->quoteName('id') . ' = ' . $attachment_id);
 
 		try {
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadResult();
-
+			return $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting upload filename in model/messages at query ' . $query, JLog::ERROR, 'com_emudus');
+			Log::add('Error getting upload filename in model/messages at query ' . $query, Log::ERROR, 'com_emudus');
 
 			return false;
 		}
@@ -381,26 +368,22 @@ class EmundusModelMessages extends JModelList
 	 */
 	function get_letter($letter_id)
 	{
-
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select("l.*, GROUP_CONCAT( DISTINCT(lrs.status) SEPARATOR ',' ) as status, CONCAT(GROUP_CONCAT( DISTINCT(lrt.training) SEPARATOR '\",\"' )) as training")
-			->from($db->quoteName('#__emundus_setup_letters', 'l'))
-			->leftJoin($db->quoteName('#__emundus_setup_letters_repeat_status', 'lrs') . ' ON ' . $db->quoteName('lrs.parent_id') . ' = ' . $db->quoteName('l.id'))
-			->leftJoin($db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $db->quoteName('lrt.parent_id') . ' = ' . $db->quoteName('l.id'))
-			->where($db->quoteName('l.id') . ' = ' . $letter_id);
+			->from($this->db->quoteName('#__emundus_setup_letters', 'l'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_status', 'lrs') . ' ON ' . $this->db->quoteName('lrs.parent_id') . ' = ' . $this->db->quoteName('l.id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $this->db->quoteName('lrt.parent_id') . ' = ' . $this->db->quoteName('l.id'))
+			->where($this->db->quoteName('l.id') . ' = ' . $letter_id);
 
 		try {
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObject();
-
+			return $this->db->loadObject();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting upload filename in model/messages at query ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emudus');
+			Log::add('Error getting upload filename in model/messages at query ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emudus');
 
 			return false;
 		}
@@ -417,24 +400,20 @@ class EmundusModelMessages extends JModelList
 	 */
 	function getCandidateFileNames($ids)
 	{
+		$query = $this->db->getQuery(true);
 
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName(['id', 'value']))
-			->from($db->quoteName('#__emundus_setup_attachments'))
-			->where($db->quoteName('id') . ' IN (' . $ids . ')');
+		$query->select($this->db->quoteName(['id', 'value']))
+			->from($this->db->quoteName('#__emundus_setup_attachments'))
+			->where($this->db->quoteName('id') . ' IN (' . $ids . ')');
 
 		try {
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
-
+			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting candidate file attachment name in model/messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting candidate file attachment name in model/messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -451,24 +430,21 @@ class EmundusModelMessages extends JModelList
 	 */
 	function getLetterFileNames($ids)
 	{
+		$query = $this->db->getQuery(true);
 
-		$db = JFactory::getDbo();
-
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName(['id', 'title']))
-			->from($db->quoteName('#__emundus_setup_letters'))
-			->where($db->quoteName('id') . ' IN (' . $ids . ')');
+		$query->select($this->db->quoteName(['id', 'title']))
+			->from($this->db->quoteName('#__emundus_setup_letters'))
+			->where($this->db->quoteName('id') . ' IN (' . $ids . ')');
 
 		try {
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting letter attachment name in model/messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error getting letter attachment name in model/messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -488,7 +464,6 @@ class EmundusModelMessages extends JModelList
 	 */
 	function generateLetterDoc($letter, $fnum)
 	{
-
 		//require_once (JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php');
 		require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'vendor' . DS . 'autoload.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
@@ -503,10 +478,10 @@ class EmundusModelMessages extends JModelList
 		$fnumsInfos  = $m_files->getFnumTagsInfos($fnum);
 		$attachInfos = $m_files->getAttachmentInfos($letter->attachment_id);
 
-		$eMConfig             = JComponentHelper::getParams('com_emundus');
+		$eMConfig             = ComponentHelper::getParams('com_emundus');
 		$gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
 
-		$user = JFactory::getUser();
+		$user = Factory::getApplication()->getIdentity();
 
 		$const = [
 			'user_id'      => $user->id,
@@ -541,7 +516,7 @@ class EmundusModelMessages extends JModelList
 				$isDate         = ($elt['plugin'] == 'date');
 				$isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
 
-				if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+				if ($groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
 					$fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnum, $params, $groupParams->repeat_group_button == 1);
 				}
 				else {
@@ -660,7 +635,7 @@ class EmundusModelMessages extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error generating DOC file in model/messages', JLog::ERROR, 'com_emundus');
+			Log::add('Error generating DOC file in model/messages', Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -679,12 +654,10 @@ class EmundusModelMessages extends JModelList
 	 */
 	public function getContacts($user = null)
 	{
-
 		if (empty($user)) {
 			$user = $this->user->id;
 		}
 
-		$db    = JFactory::getDbo();
 		$query = "SELECT jos_messages.*, sender.name as name_from, sp_sender.label as profile_from, recipient.name as name_to, sp_recipient.label as profile_to, recipientUpload.attachment_id as photo_to, senderUpload.attachment_id as photo_from
                   FROM jos_messages
                   INNER JOIN jos_emundus_users AS sender ON sender.user_id = jos_messages.user_id_from
@@ -710,14 +683,11 @@ class EmundusModelMessages extends JModelList
                   ORDER BY date_time DESC";
 
 		try {
-
-			$db->setQuery($query);
-
-			return $db->loadObjectList();
-
+			$this->db->setQuery($query);
+			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting candidate file attachment name in model/messages at query: ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add('Error getting candidate file attachment name in model/messages at query: ' . $query, Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -738,26 +708,24 @@ class EmundusModelMessages extends JModelList
 			$user = $this->user->id;
 		}
 
-		$db = JFactory::getDbo();
-
-		$where = $db->quoteName('message_id') . ' > ' . $lastId . ' AND ' . $db->quoteName('user_id_to') . ' = ' . $user . ' AND ' . $db->quoteName('state') . ' = 1 AND ' . $db->quoteName('folder_id') . ' = 2';
+		$where = $this->db->quoteName('message_id') . ' > ' . $lastId . ' AND ' . $this->db->quoteName('user_id_to') . ' = ' . $user . ' AND ' . $this->db->quoteName('state') . ' = 1 AND ' . $this->db->quoteName('folder_id') . ' = 2';
 		if (!empty($other_user)) {
-			$where .= ' AND ' . $db->quoteName('user_id_from') . ' = ' . $other_user;
+			$where .= ' AND ' . $this->db->quoteName('user_id_from') . ' = ' . $other_user;
 		}
 
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 		$query->select('*')
-			->from($db->quoteName('#__messages'))
+			->from($this->db->quoteName('#__messages'))
 			->where($where)
 			->order('message_id DESC');
 
 		try {
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Error loading messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error loading messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -779,19 +747,18 @@ class EmundusModelMessages extends JModelList
 			$receiver = $this->user->id;
 		}
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select('COUNT(state)')
-			->from($db->quoteName('#__messages'))
-			->where($db->quoteName('state') . ' = 1 AND ' . $db->quoteName('folder_id') . ' = 2 AND ' . $db->quoteName('user_id_to') . ' = ' . $receiver . ' AND ' . $db->quoteName('user_id_from') . ' = ' . $sender);
+			->from($this->db->quoteName('#__messages'))
+			->where($this->db->quoteName('state') . ' = 1 AND ' . $this->db->quoteName('folder_id') . ' = 2 AND ' . $this->db->quoteName('user_id_to') . ' = ' . $receiver . ' AND ' . $this->db->quoteName('user_id_from') . ' = ' . $sender);
 		try {
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadResult();
+			return $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('Error loading unread messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error loading unread messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -812,38 +779,36 @@ class EmundusModelMessages extends JModelList
 			$user2 = $this->user->id;
 		}
 
-		$db = JFactory::getDbo();
-
 		// update message state to read
-		$query = $db->getQuery(true);
-		$query->update($db->quoteName('#__messages'))
-			->set([$db->quoteName('state') . ' = 0'])
-			->where('(' . $db->quoteName('user_id_to') . ' = ' . $user2 . ' AND ' . $db->quoteName('user_id_from') . ' = ' . $user1 . ') OR (' . $db->quoteName('user_id_from') . ' = ' . $user2 . ' AND ' . $db->quoteName('user_id_to') . ' = ' . $user1 . ')');
+		$query = $this->db->getQuery(true);
+		$query->update($this->db->quoteName('#__messages'))
+			->set([$this->db->quoteName('state') . ' = 0'])
+			->where('(' . $this->db->quoteName('user_id_to') . ' = ' . $user2 . ' AND ' . $this->db->quoteName('user_id_from') . ' = ' . $user1 . ') OR (' . $this->db->quoteName('user_id_from') . ' = ' . $user2 . ' AND ' . $this->db->quoteName('user_id_to') . ' = ' . $user1 . ')');
 
 		try {
-			$db->setQuery($query);
-			$db->execute();
+			$this->db->setQuery($query);
+			$this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('Error loading messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error loading messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
 
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 		$query->select('*')
-			->from($db->quoteName('#__messages'))
-			->where('(' . $db->quoteName('user_id_from') . ' = ' . $user2 . ' AND ' . $db->quoteName('user_id_to') . ' = ' . $user1 . ' AND ' . $db->quoteName('folder_id') . ' = 2) OR (' . $db->quoteName('user_id_from') . ' = ' . $user1 . ' AND ' . $db->quoteName('user_id_to') . ' = ' . $user2 . ' AND ' . $db->quoteName('folder_id') . ' IN (2,3))')
-			->order($db->quoteName('date_time') . ' ASC')
+			->from($this->db->quoteName('#__messages'))
+			->where('(' . $this->db->quoteName('user_id_from') . ' = ' . $user2 . ' AND ' . $this->db->quoteName('user_id_to') . ' = ' . $user1 . ' AND ' . $this->db->quoteName('folder_id') . ' = 2) OR (' . $this->db->quoteName('user_id_from') . ' = ' . $user1 . ' AND ' . $this->db->quoteName('user_id_to') . ' = ' . $user2 . ' AND ' . $this->db->quoteName('folder_id') . ' IN (2,3))')
+			->order($this->db->quoteName('date_time') . ' ASC')
 			->setLimit('100');
 
 		try {
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Error loading messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error loading messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -866,8 +831,7 @@ class EmundusModelMessages extends JModelList
 			$user = $this->user->id;
 		}
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		if ($system_message) {
 			$folder = 3;
@@ -878,22 +842,22 @@ class EmundusModelMessages extends JModelList
 
 		$columns = array('user_id_from', 'user_id_to', 'folder_id', 'date_time', 'state', 'priority', 'message');
 
-		$values = array($user, $receiver, $folder, $db->quote(date("Y-m-d H:i:s")), 1, 0, $db->quote($message));
+		$values = array($user, $receiver, $folder, $this->db->quote(date("Y-m-d H:i:s")), 1, 0, $this->db->quote($message));
 
-		$query->insert($db->quoteName('#__messages'))
-			->columns($db->quoteName($columns))
+		$query->insert($this->db->quoteName('#__messages'))
+			->columns($this->db->quoteName($columns))
 			->values(implode(',', $values));
 
 		try {
 
-			$db->setQuery($query);
-			$db->execute();
+			$this->db->setQuery($query);
+			$this->db->execute();
 
 			return true;
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error sending message at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error sending message at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -902,24 +866,21 @@ class EmundusModelMessages extends JModelList
 
 	public function deleteSystemMessages($user1, $user2)
 	{
+		$query = $this->db->getQuery(true);
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-
-		$query->delete($db->quoteName('#__messages'))
-			->where('((' . $db->quoteName('user_id_from') . ' = ' . $user1 . ' AND ' . $db->quoteName('user_id_to') . ' = ' . $user2 . ') OR (' . $db->quoteName('user_id_from') . ' = ' . $user2 . ' AND ' . $db->quoteName('user_id_to') . ' = ' . $user1 . ')) AND ' . $db->quoteName('folder_id') . ' = 3 ');
+		$query->delete($this->db->quoteName('#__messages'))
+			->where('((' . $this->db->quoteName('user_id_from') . ' = ' . $user1 . ' AND ' . $this->db->quoteName('user_id_to') . ' = ' . $user2 . ') OR (' . $this->db->quoteName('user_id_from') . ' = ' . $user2 . ' AND ' . $this->db->quoteName('user_id_to') . ' = ' . $user1 . ')) AND ' . $this->db->quoteName('folder_id') . ' = 3 ');
 
 		try {
 
-			$db->setQuery($query);
-			$db->execute();
+			$this->db->setQuery($query);
+			$this->db->execute();
 
 			return true;
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error deleting messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error deleting messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -937,8 +898,6 @@ class EmundusModelMessages extends JModelList
 	Chatrooms are joined by adding user in jos_emundus_chatroom_users
 	Chatrooms may be linked to an fnum or not, by addding the fnum in jos_emundus_chatroom.
 	*/
-
-
 	/**
 	 * @param   null  $fnum
 	 * @param   null  $id
@@ -949,32 +908,30 @@ class EmundusModelMessages extends JModelList
 	 */
 	public function createChatroom($fnum = null, $id = null)
 	{
+		$query = $this->db->getQuery(true);
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$columns = [$db->quoteName('fnum')];
-		$values  = [$db->quote($fnum)];
+		$columns = [$this->db->quoteName('fnum')];
+		$values  = [$this->db->quote($fnum)];
 
 		if (!empty($id)) {
-			$columns[] = $db->quoteName('id');
+			$columns[] = $this->db->quoteName('id');
 			$values[]  = $id;
 		}
 
-		$query->insert($db->quoteName('jos_emundus_chatroom'))
+		$query->insert($this->db->quoteName('jos_emundus_chatroom'))
 			->columns($columns)
 			->values($values);
-		$db->setQuery($query);
+		$this->db->setQuery($query);
 
 		try {
 
-			$db->execute();
+			$this->db->execute();
 
-			return $db->insertid();
+			return $this->db->insertid();
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error creating chatroom : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			Log::add('Error creating chatroom : ' . $e->getMessage(), Log::ERROR, 'com_emundus.chatroom');
 
 			return false;
 		}
@@ -1001,24 +958,23 @@ class EmundusModelMessages extends JModelList
 			return false;
 		}
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
-		$query->insert($db->quoteName('jos_emundus_chatroom_users'))
-			->columns([$db->quoteName('chatroom_id'), $db->quoteName('user_id')]);
+		$query->insert($this->db->quoteName('jos_emundus_chatroom_users'))
+			->columns([$this->db->quoteName('chatroom_id'), $this->db->quoteName('user_id')]);
 		foreach ($users as $user) {
 			$query->values($chatroom . ', ' . $user);
 		}
 
-		$db->setQuery($query);
+		$this->db->setQuery($query);
 
 		try {
-			$db->execute();
+			$this->db->execute();
 
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('Error joining chatroom : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			Log::add('Error joining chatroom : ' . $e->getMessage(), Log::ERROR, 'com_emundus.chatroom');
 
 			return false;
 		}
@@ -1037,27 +993,26 @@ class EmundusModelMessages extends JModelList
 	{
 
 		if (!$this->chatRoomExists($chatroom)) {
-			JLog::add('Sending message to non-existant chatroom.', JLog::ERROR, 'com_emundus.chatroom');
+			Log::add('Sending message to non-existant chatroom.', Log::ERROR, 'com_emundus.chatroom');
 
 			return false;
 		}
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
-		$query->insert($db->quoteName('#__messages'))
-			->columns($db->quoteName(['user_id_from', 'folder_id', 'date_time', 'state', 'priority', 'message', 'page']))
-			->values($this->user->id . ', 4, ' . $db->quote(date("Y-m-d H:i:s")) . ', 1, 0, ' . $db->quote($message) . ', ' . $chatroom);
+		$query->insert($this->db->quoteName('#__messages'))
+			->columns($this->db->quoteName(['user_id_from', 'folder_id', 'date_time', 'state', 'priority', 'message', 'page']))
+			->values($this->user->id . ', 4, ' . $this->db->quote(date("Y-m-d H:i:s")) . ', 1, 0, ' . $this->db->quote($message) . ', ' . $chatroom);
 
-		$db->setQuery($query);
+		$this->db->setQuery($query);
 
 		try {
-			$db->execute();
+			$this->db->execute();
 
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('Error sending chatroom message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			Log::add('Error sending chatroom message : ' . $e->getMessage(), Log::ERROR, 'com_emundus.chatroom');
 
 			return false;
 		}
@@ -1075,24 +1030,23 @@ class EmundusModelMessages extends JModelList
 	{
 
 		if (!$this->chatRoomExists($chatroom)) {
-			JLog::add('Getting messages from non-existant chatroom.', JLog::ERROR, 'com_emundus.chatroom');
+			Log::add('Getting messages from non-existant chatroom.', Log::ERROR, 'com_emundus.chatroom');
 
 			return false;
 		}
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select('*')
-			->from($db->quoteName('#__messages'))
-			->where($db->quoteName('folder_id') . ' = 4 AND ' . $db->quoteName('page') . ' = ' . $chatroom);
-		$db->setQuery($query);
+			->from($this->db->quoteName('#__messages'))
+			->where($this->db->quoteName('folder_id') . ' = 4 AND ' . $this->db->quoteName('page') . ' = ' . $chatroom);
+		$this->db->setQuery($query);
 
 		try {
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting chatroom messages : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			Log::add('Error getting chatroom messages : ' . $e->getMessage(), Log::ERROR, 'com_emundus.chatroom');
 
 			return false;
 		}
@@ -1108,22 +1062,21 @@ class EmundusModelMessages extends JModelList
 	public function updateChatroomMessages($lastId, $chatroom)
 	{
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select(['m.*', 'u.name as user_from'])
-			->from($db->quoteName('#__messages', 'm'))
-			->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('m.user_id_from'))
-			->where($db->quoteName('folder_id') . ' = 4 AND ' . $db->quoteName('page') . ' = ' . $chatroom . ' AND ' . $db->quoteName('user_id_from') . ' <> ' . JFactory::getUser()->id . ' AND ' . $db->quoteName('message_id') . ' > ' . $lastId)
+			->from($this->db->quoteName('#__messages', 'm'))
+			->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('m.user_id_from'))
+			->where($this->db->quoteName('folder_id') . ' = 4 AND ' . $this->db->quoteName('page') . ' = ' . $chatroom . ' AND ' . $this->db->quoteName('user_id_from') . ' <> ' . JFactory::getUser()->id . ' AND ' . $this->db->quoteName('message_id') . ' > ' . $lastId)
 			->order('message_id DESC');
 
 		try {
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Error loading messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error loading messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1140,19 +1093,18 @@ class EmundusModelMessages extends JModelList
 	public function getChatroom($id)
 	{
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select('*')
-			->from($db->quoteName('jos_emundus_chatroom'))
-			->where($db->quoteName('id') . ' = ' . $id);
-		$db->setQuery($query);
+			->from($this->db->quoteName('jos_emundus_chatroom'))
+			->where($this->db->quoteName('id') . ' = ' . $id);
+		$this->db->setQuery($query);
 
 		try {
-			return $db->loadObject();
+			return $this->db->loadObject();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting chatroom : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			Log::add('Error getting chatroom : ' . $e->getMessage(), Log::ERROR, 'com_emundus.chatroom');
 
 			return false;
 		}
@@ -1168,20 +1120,19 @@ class EmundusModelMessages extends JModelList
 	public function getChatroomUsersId($chatroom_id)
 	{
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$query->select('cu.user_id')
-			->from($db->quoteName('jos_emundus_chatroom', 'c'))
-			->leftJoin($db->quoteName('jos_emundus_chatroom_users', 'cu') . ' ON ' . $db->quoteName('cu.chatroom_id') . ' = ' . $db->quoteName('c.id'))
-			->where($db->quoteName('c.id') . ' = ' . $chatroom_id);
-		$db->setQuery($query);
+			->from($this->db->quoteName('jos_emundus_chatroom', 'c'))
+			->leftJoin($this->db->quoteName('jos_emundus_chatroom_users', 'cu') . ' ON ' . $this->db->quoteName('cu.chatroom_id') . ' = ' . $this->db->quoteName('c.id'))
+			->where($this->db->quoteName('c.id') . ' = ' . $chatroom_id);
+		$this->db->setQuery($query);
 
 		try {
-			return $db->loadColumn();
+			return $this->db->loadColumn();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting chatroom users : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			Log::add('Error getting chatroom users : ' . $e->getMessage(), Log::ERROR, 'com_emundus.chatroom');
 
 			return false;
 		}
@@ -1198,24 +1149,23 @@ class EmundusModelMessages extends JModelList
 	public function getChatroomByUsers(...$users)
 	{
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		// Get all chatrooms containing at least one of our three users and that contain all memebers.
 		// We then will check for a chatroom having ONLY these three users using PHP.
 		$query->select('c.id, GROUP_CONCAT(cu.user_id) AS users, count(cu.user_id) as nbusers')
-			->from($db->quoteName('jos_emundus_chatroom', 'c'))
-			->leftJoin($db->quoteName('jos_emundus_chatroom_users', 'cu') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('cu.chatroom_id'))
-			->where($db->quoteName('cu.user_id') . ' IN (' . implode(',', $users) . ')')
-			->group($db->quoteName('c.id'))
-			->having($db->quoteName('nbusers') . ' = ' . count($users));
-		$db->setQuery($query);
+			->from($this->db->quoteName('jos_emundus_chatroom', 'c'))
+			->leftJoin($this->db->quoteName('jos_emundus_chatroom_users', 'cu') . ' ON ' . $this->db->quoteName('c.id') . ' = ' . $this->db->quoteName('cu.chatroom_id'))
+			->where($this->db->quoteName('cu.user_id') . ' IN (' . implode(',', $users) . ')')
+			->group($this->db->quoteName('c.id'))
+			->having($this->db->quoteName('nbusers') . ' = ' . count($users));
+		$this->db->setQuery($query);
 
 		try {
-			$chatrooms = $db->loadObjectList();
+			$chatrooms = $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting chatroom by users : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			Log::add('Error getting chatroom by users : ' . $e->getMessage(), Log::ERROR, 'com_emundus.chatroom');
 
 			return false;
 		}
@@ -1238,22 +1188,20 @@ class EmundusModelMessages extends JModelList
 
 	private function chatRoomExists($chatroom)
 	{
+		$query = $this->db->getQuery(true);
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->select($db->quoteName('id'))
-			->from($db->quoteName('jos_emundus_chatroom'))
-			->where($db->quoteName('id') . ' = ' . $chatroom);
-		$db->setQuery($query);
+		$query->select($this->db->quoteName('id'))
+			->from($this->db->quoteName('jos_emundus_chatroom'))
+			->where($this->db->quoteName('id') . ' = ' . $chatroom);
+		$this->db->setQuery($query);
 
 		try {
 
-			return !empty($db->loadResult());
+			return !empty($this->db->loadResult());
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error getting chatroom : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.chatroom');
+			Log::add('Error getting chatroom : ' . $e->getMessage(), Log::ERROR, 'com_emundus.chatroom');
 
 			return false;
 		}
@@ -1263,8 +1211,7 @@ class EmundusModelMessages extends JModelList
 	/// get message recap by fnum
 	public function getMessageRecapByFnum($fnum)
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -1288,13 +1235,13 @@ class EmundusModelMessages extends JModelList
 				$query->clear()
 //                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
 					->select('distinct jos_emundus_setup_emails.*, jos_emundus_email_templates.Template')
-					->from($db->quoteName('#__emundus_setup_emails'))
-					->leftJoin($db->quoteName('#__emundus_email_templates') . ' ON ' . $db->quoteName('#__emundus_email_templates.id') . ' = ' . $db->quoteName('#__emundus_setup_emails.email_tmpl'))
-					->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
-					->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
+					->from($this->db->quoteName('#__emundus_setup_emails'))
+					->leftJoin($this->db->quoteName('#__emundus_email_templates') . ' ON ' . $this->db->quoteName('#__emundus_email_templates.id') . ' = ' . $this->db->quoteName('#__emundus_setup_emails.email_tmpl'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $this->db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $this->db->quoteName('#__emundus_setup_emails.id'))
+					->where($this->db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
 
-				$db->setQuery($query);
-				$_message_Info = $db->loadObjectList();
+				$this->db->setQuery($query);
+				$_message_Info = $this->db->loadObjectList();
 
 				/// third, for each $attachment ids --> detect the uploaded letters (if any), otherwise, detect the letter (default)
 				$uploads = array();
@@ -1320,7 +1267,7 @@ class EmundusModelMessages extends JModelList
 				return array('message_recap' => $_message_Info, 'attached_letter' => $uploads, 'tags' => $_tags);
 			}
 			catch (Exception $e) {
-				JLog::add('Error get available message by fnum : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.message');
+				Log::add('Error get available message by fnum : ' . $e->getMessage(), Log::ERROR, 'com_emundus.message');
 
 				return false;
 			}
@@ -1335,23 +1282,22 @@ class EmundusModelMessages extends JModelList
 	{
 		if (!empty($eid)) {
 			try {
-				$db    = JFactory::getDbo();
-				$query = $db->getQuery(true);
+				$query = $this->db->getQuery(true);
 
 				$query->clear()
 					->select('#__emundus_setup_action_tag.*')
-					->from($db->quoteName('#__emundus_setup_action_tag'))
-					->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags') . ' ON ' . $db->quoteName('#__emundus_setup_action_tag.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.tags'))
-					->leftJoin($db->quoteName('#__emundus_setup_emails') . ' ON ' . $db->quoteName('#__emundus_setup_emails.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id'))
-					->where($db->quoteName('#__emundus_setup_emails.id') . ' = ' . (int) $eid);
+					->from($this->db->quoteName('#__emundus_setup_action_tag'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_emails_repeat_tags') . ' ON ' . $this->db->quoteName('#__emundus_setup_action_tag.id') . ' = ' . $this->db->quoteName('#__emundus_setup_emails_repeat_tags.tags'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_emails') . ' ON ' . $this->db->quoteName('#__emundus_setup_emails.id') . ' = ' . $this->db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id'))
+					->where($this->db->quoteName('#__emundus_setup_emails.id') . ' = ' . (int) $eid);
 
-				$db->setQuery($query);
+				$this->db->setQuery($query);
 
-				return $db->loadObjectList();
+				return $this->db->loadObjectList();
 
 			}
 			catch (Exception $e) {
-				JLog::add('Error get tags by fnum : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.message');
+				Log::add('Error get tags by fnum : ' . $e->getMessage(), Log::ERROR, 'com_emundus.message');
 
 				return false;
 			}
@@ -1392,8 +1338,7 @@ class EmundusModelMessages extends JModelList
 	{
 		if (!empty($fnum)) {
 			/// from fnum --> detect the message
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$query = $this->db->getQuery(true);
 
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -1416,12 +1361,12 @@ class EmundusModelMessages extends JModelList
 					/// get message template from attachment list
 					$query->clear()
 						->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
-						->from($db->quoteName('#__emundus_setup_emails'))
-						->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
-						->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
+						->from($this->db->quoteName('#__emundus_setup_emails'))
+						->leftJoin($this->db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $this->db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $this->db->quoteName('#__emundus_setup_emails.id'))
+						->where($this->db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
 
-					$db->setQuery($query);
-					$_message_Info = $db->loadObjectList();
+					$this->db->setQuery($query);
+					$_message_Info = $this->db->loadObjectList();
 					if (!empty($_message_Info)) {
 						return true;
 					}
@@ -1434,7 +1379,7 @@ class EmundusModelMessages extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('Error get getActionByFnum : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.message');
+				Log::add('Error get getActionByFnum : ' . $e->getMessage(), Log::ERROR, 'com_emundus.message');
 
 				return false;
 			}
@@ -1447,21 +1392,20 @@ class EmundusModelMessages extends JModelList
 	/// get all documents being letter
 	public function getAllDocumentsLetters()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		try {
 			$query->clear()
 				->select('#__emundus_setup_attachments.*')
-				->from($db->quoteName('#__emundus_setup_attachments'))
-				->where($db->quoteName('#__emundus_setup_attachments.id') . ' IN (SELECT DISTINCT #__emundus_setup_letters.attachment_id FROM #__emundus_setup_letters)');
+				->from($this->db->quoteName('#__emundus_setup_attachments'))
+				->where($this->db->quoteName('#__emundus_setup_attachments.id') . ' IN (SELECT DISTINCT #__emundus_setup_letters.attachment_id FROM #__emundus_setup_letters)');
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Cannot get all documents being letter : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('Cannot get all documents being letter : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return [];      /// return empty array
 		}
@@ -1470,8 +1414,7 @@ class EmundusModelMessages extends JModelList
 	/// get attachments by profile (jos_emundus_setup_attachment_profiles)
 	public function getAttachmentsByProfiles($fnums = [])
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		$results = [];
 
@@ -1509,12 +1452,12 @@ class EmundusModelMessages extends JModelList
 
 					$query->clear()
 						->select('#__emundus_setup_attachments.*, #__emundus_setup_profiles.id AS pr_id, #__emundus_setup_profiles.label as pr_label')
-						->from($db->quoteName('#__emundus_setup_attachments'))
-						->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles') . ' ON ' . $db->quoteName('#__emundus_setup_attachment_profiles.attachment_id') . ' = ' . $db->quoteName('#__emundus_setup_attachments.id'))
-						->leftJoin($db->quoteName('#__emundus_setup_profiles') . ' ON ' . $db->quoteName('#__emundus_setup_attachment_profiles.profile_id') . ' = ' . $db->quoteName('#__emundus_setup_profiles.id'))
-						->where($db->quoteName('#__emundus_setup_attachment_profiles.profile_id') . ' = ' . $profile);
-					$db->setQuery($query);
-					$res = $db->loadObjectList();
+						->from($this->db->quoteName('#__emundus_setup_attachments'))
+						->leftJoin($this->db->quoteName('#__emundus_setup_attachment_profiles') . ' ON ' . $this->db->quoteName('#__emundus_setup_attachment_profiles.attachment_id') . ' = ' . $this->db->quoteName('#__emundus_setup_attachments.id'))
+						->leftJoin($this->db->quoteName('#__emundus_setup_profiles') . ' ON ' . $this->db->quoteName('#__emundus_setup_attachment_profiles.profile_id') . ' = ' . $this->db->quoteName('#__emundus_setup_profiles.id'))
+						->where($this->db->quoteName('#__emundus_setup_attachment_profiles.profile_id') . ' = ' . $profile);
+					$this->db->setQuery($query);
+					$res = $this->db->loadObjectList();
 
 					foreach ($res as $r) {
 						$letters[] = ['letter_id' => $r->id, 'letter_label' => $r->value];
@@ -1527,7 +1470,7 @@ class EmundusModelMessages extends JModelList
 				$results = (array) $attachments;
 			}
 			catch (Exception $e) {
-				JLog::add('Cannot get attachments by profiles : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add('Cannot get attachments by profiles : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1537,21 +1480,20 @@ class EmundusModelMessages extends JModelList
 	/// get all attachments
 	public function getAllAttachments()
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		try {
 			$query->clear()
 				->select('#__emundus_setup_attachments.*')
-				->from($db->quoteName('#__emundus_setup_attachments'))
-				->where($db->quoteName('published') . " = 1");
+				->from($this->db->quoteName('#__emundus_setup_attachments'))
+				->where($this->db->quoteName('published') . " = 1");
 
-			$db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $db->loadObjectList();
+			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('Cannot get all attachments : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('Cannot get all attachments : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return [];      /// return empty array
 		}
@@ -1562,8 +1504,7 @@ class EmundusModelMessages extends JModelList
 	{
 		$set_tag = [];
 
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+		$query = $this->db->getQuery(true);
 
 		if (!empty($fnums) and !empty($tmpl)) {
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
@@ -1578,5 +1519,96 @@ class EmundusModelMessages extends JModelList
 		else {
 			return false;       /// no fnum or no email template, cannot add tag
 		}
+	}
+
+	/**
+	 * @param $date   DateTime  Date to delete messages before
+	 * @description             Deletes messages before a given date.
+	 * @return int
+	 */
+	public function deleteMessagesBeforeADate($date)
+	{
+		$deleted_messages = 0;
+
+		if (!empty($date))
+		{
+			if(version_compare(JVERSION, '4.0', '>=')) {
+				$this->db = Factory::getContainer()->get('DatabaseDriver');
+			} else {
+				$this->db = Factory::getDbo();
+			}
+
+			$query = $this->db->getQuery(true);
+
+			$query->delete($this->db->quoteName('#__messages'))
+				->where($this->db->quoteName('date_time') . ' < ' . $this->db->quote($date->format('Y-m-d H:i:s')))
+				->where($this->db->quoteName('folder_id') . ' <> 2')
+				->where($this->db->quoteName('page') . ' IS NULL');
+
+			try
+			{
+				$this->db->setQuery($query);
+				$this->db->execute();
+				$deleted_messages = $this->db->getAffectedRows();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Could not delete messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $deleted_messages;
+	}
+
+	/**
+	 * @param $date   DateTime  Date to export messages before
+	 * @description             Exports messages before a given date.
+	 * @return string
+	 */
+	public function exportMessagesBeforeADate($date)
+	{
+		$csv_filename = null;
+
+		if (!(empty($date)))
+		{
+			if(version_compare(JVERSION, '4.0', '>=')) {
+				$this->db = Factory::getContainer()->get('DatabaseDriver');
+			} else {
+				$this->db = Factory::getDbo();
+			}
+
+			$query = $this->db->getQuery(true);
+
+			$query->select('*')
+				->from($this->db->quoteName('#__messages'))
+				->where($this->db->quoteName('date_time') . ' < ' . $this->db->quote($date->format('Y-m-d H:i:s')))
+				->where($this->db->quoteName('folder_id') . ' <> 2')
+				->where($this->db->quoteName('page') . ' IS NULL');
+
+			try
+			{
+				$this->db->setQuery($query);
+				$messages = $this->db->loadAssocList();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Could not fetch messages from jos_messages table in model messages at query: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+
+			if (!empty($messages))
+			{
+				$csv_filename = JPATH_SITE . '/tmp/backup_messages_' . date('Y-m-d_H-i-s') . '.csv';
+				$csv_file     = fopen($csv_filename, 'w');
+				fputcsv($csv_file, array_keys($messages[0]));
+				foreach ($messages as $message)
+				{
+					fputcsv($csv_file, $message);
+				}
+
+				fclose($csv_file);
+			}
+		}
+
+		return $csv_filename;
 	}
 }
