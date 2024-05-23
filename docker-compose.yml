@@ -16,20 +16,20 @@ services:
       JOOMLA_DB_PASSWORD: password
       JOOMLA_DB_NAME: joomla5
 
-      TCHOOZ_OFFLINE: false
+      TCHOOZ_OFFLINE: 0
       TCHOOZ_OFFLINE_MESSAGE: 'This site is down for maintenance.<br />Please check back again soon.'
       TCHOOZ_DISPLAY_OFFLINE_MESSAGE: 1
       TCHOOZ_OFFLINE_IMAGE: images/logo.png
       TCHOOZ_SITENAME: Tchooz
-      TCHOOZ_DEBUG: false
-      TCHOOZ_DEBUG_LANG: false
+      TCHOOZ_DEBUG: 0
+      TCHOOZ_DEBUG_LANG: 0
       TCHOOZ_LIVE_SITE: 'http://localhost:8383/'
       TCHOOZ_SECRET: TXGin8XS4BEqA8cA
       TCHOOZ_OFFSET: Europe/Paris
       TCHOOZ_MAILER: smtp
       TCHOOZ_MAIL_FROM: dev@emundus.fr
       TCHOOZ_MAIL_FROM_NAME: EMUNDUS Dev
-      TCHOOZ_MAIL_SMTP_AUTH: true
+      TCHOOZ_MAIL_SMTP_AUTH: 1
       TCHOOZ_MAIL_SMTP_USER: 4e280ecaa19d8e
       TCHOOZ_MAIL_SMTP_PASS: b86e475ed3d798
       TCHOOZ_MAIL_SMTP_HOST: smtp.mailtrap.io

@@ -74,6 +74,7 @@ custom_variables.js
 
 # INSTALLATION FOLDER
 /installation/*
+README.txt
 
 # FRONTEND LANGUAGES
 /language/overrides/*
