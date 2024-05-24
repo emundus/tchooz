@@ -138,11 +138,14 @@
         margin: 16px 0;
     }
 
-    ol {
-        list-style: decimal;
-    }
     ul {
-        list-style: disc;
+        list-style: initial;
+        padding-left: 24px;
+    }
+
+    ol {
+        list-style: auto;
+        padding-left: 24px;
     }
 
     legend {

@@ -2105,8 +2105,8 @@ input[type="text"],
             }
 .chzn-container .chzn-single li.search-field input[type="text"], .chzn-container .chzn-choices li.search-field input[type="text"], .chzn-container .chosen-single li.search-field input[type="text"], .chzn-container .chosen-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi .chosen-single li.search-field input[type="text"], .chzn-container.chzn-container-multi .chosen-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chosen-single li.search-field input[type="text"], .chzn-container.chzn-container-multi.chzn-container-active .chosen-choices li.search-field input[type="text"], .chosen-container .chzn-single li.search-field input[type="text"], .chosen-container .chzn-choices li.search-field input[type="text"], .chosen-container .chosen-single li.search-field input[type="text"], .chosen-container .chosen-choices li.search-field input[type="text"], .chosen-container.chosen-container-multi .chzn-single li.search-field input[type="text"], .chosen-container.chosen-container-multi .chzn-choices li.search-field input[type="text"], .chosen-container.chosen-container-multi .chosen-single li.search-field input[type="text"], .chosen-container.chosen-container-multi .chosen-choices li.search-field input[type="text"], .chosen-container.chosen-container-multi.chosen-container-active .chzn-single li.search-field input[type="text"], .chosen-container.chosen-container-multi.chosen-container-active .chzn-choices li.search-field input[type="text"], .chosen-container.chosen-container-multi.chosen-container-active .chosen-single li.search-field input[type="text"], .chosen-container.chosen-container-multi.chosen-container-active .chosen-choices li.search-field input[type="text"] {
                     outline: none;
-                    height: 20px;
-                    width: 100vw !important;
+                    height: 18px;
+                    min-width: 254px;
                 }
 .chzn-container .chzn-search, .chzn-container .chosen-search, .chzn-container.chzn-container-multi .chzn-search, .chzn-container.chzn-container-multi .chosen-search, .chzn-container.chzn-container-multi.chzn-container-active .chzn-search, .chzn-container.chzn-container-multi.chzn-container-active .chosen-search, .chosen-container .chzn-search, .chosen-container .chosen-search, .chosen-container.chosen-container-multi .chzn-search, .chosen-container.chosen-container-multi .chosen-search, .chosen-container.chosen-container-multi.chosen-container-active .chzn-search, .chosen-container.chosen-container-multi.chosen-container-active .chosen-search {
             padding: 4px 12px;
@@ -2168,6 +2168,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-relative {
     position: relative;
+}
+.tw-sticky {
+    position: sticky;
 }
 .tw-left-\[-12px\] {
     left: -12px;
@@ -4049,9 +4052,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-border-opacity: 1;
     border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
-.tw-border-main-500 {
-    border-color: var(--em-profile-color);
-}
 .tw-border-neutral-300 {
     border-color: var(--neutral-300);
 }
@@ -5076,11 +5076,13 @@ ul, ol {
 hr {
         margin: 16px 0;
     }
-ol {
-        list-style: decimal;
-    }
 ul {
-        list-style: disc;
+        list-style: initial;
+        padding-left: 24px;
+    }
+ol {
+        list-style: auto;
+        padding-left: 24px;
     }
 legend {
         margin: 10px 0 20px 0;
