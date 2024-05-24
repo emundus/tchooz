@@ -23,12 +23,12 @@
       </div>
 
       <div class="form-group controls" v-if="selectedColumn.index === 0 && this.form.content.col1 != null">
-        <editor :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false"
-                :id="'editor_1'" :key="dynamicComponent" v-model="form.content.col1" @focusout="saveFooter"></editor>
+        <editor-quill :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false"
+                :id="'editor_1'" :key="dynamicComponent" v-model="form.content.col1" @focusout="saveFooter"></editor-quill>
       </div>
       <div class="form-group controls" v-if="selectedColumn.index === 1 && this.form.content.col2 != null">
-        <editor :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false"
-                :id="'editor_2'" :key="dynamicComponent" v-model="form.content.col2" @focusout="saveFooter"></editor>
+        <editor-quill :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false"
+                :id="'editor_2'" :key="dynamicComponent" v-model="form.content.col2" @focusout="saveFooter"></editor-quill>
       </div>
     </div>
 
@@ -38,8 +38,8 @@
 
 <script>
 /* COMPONENTS */
-import Editor from "../../editor";
 import Multiselect from 'vue-multiselect';
+import EditorQuill from "@/components/editorQuill.vue";
 
 /* SERVICES */
 import client from "com_emundus/src/services/axiosClient";
@@ -49,7 +49,7 @@ export default {
   name: "EditFooter",
 
   components: {
-    Editor,
+    EditorQuill,
     Multiselect
   },
 

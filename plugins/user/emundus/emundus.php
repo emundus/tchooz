@@ -636,15 +636,22 @@ class plgUserEmundus extends CMSPlugin
 			}
 
 			// Init first_login parameter
-			$user  = Factory::getUser();
 			$table = JTable::getInstance('user', 'JTable');
 
-			$user = Factory::getSession()->get('emundusUser');
+			$user = $this->app->getSession()->get('emundusUser');
 			if (empty($user) || empty($user->id)) {
+				include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 				include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+				$m_users = new EmundusModelUsers();
 				$m_profile = new EmundusModelProfile();
+
+				$user_repaired = $m_users->repairEmundusUser($this->app->getIdentity()->id);
+				if (!$user_repaired) {
+					return false;
+				}
+
 				$m_profile->initEmundusSession();
-				$user = Factory::getSession()->get('emundusUser');
+				$user = $this->app->getSession()->get('emundusUser');
 
 				$user->just_logged = true;
 			}
