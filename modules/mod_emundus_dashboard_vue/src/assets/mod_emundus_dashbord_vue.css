@@ -152,12 +152,12 @@
 
 .widget-files-status-number .widget-files-status-number-block p {
     color: var(--neutral-600);
-    font-family: var(--em-coordinator-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
 .widget-files-status-number h1 {
     color: var(--neutral-900);
-    font-family: var(--em-coordinator-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
 }
 
 #g-container-main .g-container {
@@ -210,7 +210,7 @@
 .profile_widget-text h1,
 .profile_widget-text h1 span {
     color: var(--neutral-0);
-    font-family: var(--em-coordinator-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
     font-size: var(--em-coordinator-h1);
     font-style: normal;
     line-height: 28.8px;

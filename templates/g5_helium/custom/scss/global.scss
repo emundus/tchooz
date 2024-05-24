@@ -206,11 +206,11 @@ div#frame.outline {
   box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 
   p, a {
-    font-family: var(--em-coordinator-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
   }
 
   h1 {
-    font-family: var(--em-coordinator-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
   }
 
   input {
@@ -222,7 +222,7 @@ div#frame.outline {
     padding: 16px 12px;
     text-transform: initial;
     width: 100%;
-    font-family: var(--em-coordinator-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     background: var(--em-primary-color);
     border: 1px solid var(--em-primary-color);
     color: var(--neutral-0);
@@ -683,7 +683,7 @@ footer#g-footer > .g-container {
   border-color: var(--em-primary-color);
   text-transform: initial;
   margin-left: 0 !important;
-  font-family: var(--em-applicant-font);
+  font-family: var(--em-profile-font), Inter, sans-serif;
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 
   &:hover,
@@ -757,7 +757,7 @@ footer#g-footer > .g-container {
 #attachment_list_mand .em-fieldset-attachment p:not(.em-h5),
 #attachment_list_opt .em-fieldset-attachment p:not(.em-h5) {
   color: var(--neutral-800);
-  font-family: var(--em-coordinator-font);
+  font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
 .view-checklist {
@@ -865,7 +865,7 @@ footer#g-footer > .g-container {
       button.btn, a.btn {
         text-transform: inherit;
         border-radius: var(--em-coordinator-br) !important;
-        font-family: var(--em-coordinator-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         letter-spacing: inherit;
       }
 
@@ -1154,7 +1154,7 @@ footer#g-footer > .g-container {
     margin-right: 0;
     border-radius: var(--em-applicant-br) !important;
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     line-height: normal;
     font-size: var(--em-applicant-font-size);
     letter-spacing: normal;
@@ -1387,7 +1387,7 @@ footer#g-footer > .g-container {
     background: var(--em-profile-color);
     border: 1px solid var(--em-profile-color);
     border-radius: var(--em-coordinator-br) !important;
-    font-family: var(--em-coordinator-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-weight: 400;
     letter-spacing: normal;
     font-style: normal;
@@ -2946,8 +2946,8 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 /* CONNEXION */
 
 h1.em-titre-connectez-vous {
-  color: $accent-color-1;
-  font-family: var(--em-applicant-font-title);
+  color: var(--em-default-title-color-1);
+  font-family: var(--em-profile-font-title), Inter, sans-serif;
 }
 
 ul.nav.nav-tabs.nav-stacked span {
@@ -3097,7 +3097,7 @@ ul.unstyled.em-linkForgot li a {
   }
   h1,h2,h3,h4,h5,h6 {
     color: var(--em-coordinator-title-color);
-    font-family: var(--em-coordinator-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
   }
 }
 
@@ -3105,28 +3105,28 @@ ul.unstyled.em-linkForgot li a {
 .com_emundus.view-form .com_emundus_vue {
 
   *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico):not(.fa):not([class^=icon-]) {
-    font-family: var(--em-coordinator-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
   }
 }
 
 .files-board.com_emundus, .view-list.com_fabrik {
   *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico):not(.fa):not([class^=icon-]) {
-    font-family: var(--em-coordinator-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
   }
 }
 
 .com_emundus.view-users.layout-edit .em-container-profile-view-pict h1 {
-  font-family: var(--em-coordinator-font-title);
+  font-family: var(--em-profile-font-title), Inter, sans-serif;
 }
 
 .indicateurs-page *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico):not(.fa):not([class^=icon-]) {
-  font-family: var(--em-coordinator-font);
+  font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
 .com_emundus.view-users .em-container-profile-view-form .fabrikGroup {
   legend {
     color: var(--neutral-800);
-    font-family: var(--em-coordinator-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
   }
 
   input {
@@ -3149,7 +3149,7 @@ ul.unstyled.em-linkForgot li a {
   border: 1px solid var(--dark-grey) !important;
   border-radius: var(--em-coordinator-br) !important;
   color: var(--neutral-0) !important;
-  font-family: var(--em-coordinator-font);
+  font-family: var(--em-profile-font), Inter, sans-serif;
 
   &:active, &:focus, &:hover {
     background: var(--grey) !important;
@@ -3849,7 +3849,7 @@ div#em-appli-block {
 /* ERREUR 404 */
 
 .error-page {
-  font-family: var(--em-default-font);
+  font-family: var(--em-profile-font), Inter, sans-serif;
 
   @supports (-webkit-background-clip: text) {
     .gradient-404 {
@@ -4092,7 +4092,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
       /* GROUPE */
       .fabrikGroup {
         background: white;
-        font-family: var(--em-coordinator-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
 
         /* LEGEND */
         .legend {
@@ -4284,18 +4284,18 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
 .view-details {
   .col h1 {
     margin: 12px 0;
-    font-family: var(--em-coordinator-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
     color: var(--neutral-900);
   }
 
   .col .fabrikGroup .legend {
-    font-family: var(--em-coordinator-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
     color: var(--neutral-900);
   }
 
   .fabrikLabel {
     color: var(--neutral-700);
-    font-family: var(--em-coordinator-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
   }
 
   ul {

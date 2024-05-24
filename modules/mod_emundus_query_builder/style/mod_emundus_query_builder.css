@@ -300,7 +300,7 @@
 
 .item-pageindicateurs-page h1 {
     color: var(--neutral-900);
-    font-family: var(--em-coordinator-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
 }
 
 .etiquette label {

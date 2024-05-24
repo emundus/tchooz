@@ -122,7 +122,7 @@ if ($user != null)
             width: 100%;
             color: #353544;
             background-color: var(--neutral-50);
-            font-family: var(--em-coordinator-font);
+            font-family: var(--em-profile-font), Inter, sans-serif;
         }
 
         .select .profile-select:hover {
@@ -187,13 +187,12 @@ if ($user != null)
             overflow: hidden;
             max-width: 140px;
             max-height: 30px;
-            font-family: var(--em-applicant-font);
+            font-family: var(--em-profile-font), Inter, sans-serif;
             font-size: 12px;
             font-style: normal;
             font-weight: 400;
             line-height: 15px;
             letter-spacing: 0.004em;
-            overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
         }
@@ -331,7 +330,7 @@ if ($user != null)
 
 			if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (!$only_applicant))
 			{
-				echo '<h5 class="mb-2">' . JText::_('SELECT_PROFILE') . '</h5>';
+				echo '<h5 class="mb-2 em-profile-font">' . JText::_('SELECT_PROFILE') . '</h5>';
 				echo '<div class="select">';
 				echo '<select class="profile-select" id="profile" name="profiles" onchange="postCProfile()"> ';
 				foreach ($user->emProfiles as $profile)

@@ -58,7 +58,7 @@
   border: solid 1px var(--em-coordinator-secondary-color);
   background: transparent;
   color: var(--em-coordinator-secondary-color);
-  font-family: var(--em-coordinator-font);
+  font-family: var(--em-profile-font), Inter, sans-serif;
   &:hover {
     background-color: var(--em-coordinator-secondary-color) !important;
     color: var(--neutral-0);
@@ -154,7 +154,7 @@
   border-radius: var(--em-coordinator-br);
   padding: 6px 20px;
   color: var(--neutral-900);
-  font-family: var(--em-coordinator-font);
+  font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
 .em-back-button:focus{
@@ -877,6 +877,14 @@ input:focus + .em-slider {
   }
 }
 
+.em-profile-font {
+  font-family: var(--em-profile-font), sans-serif;
+}
+
+.em-profile-font-title {
+  font-family: var(--em-profile-font-title), sans-serif;
+}
+
 .em-form-success-color{
   color: var(--em-form-success-color);
 }
@@ -1450,7 +1458,7 @@ input:focus + .em-slider {
   TITLES
 */
 .em-h1{
-  font-family: var(--em-coordinator-font-title);
+  font-family: var(--em-profile-font-title), Inter, sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 32px;
@@ -1458,7 +1466,7 @@ input:focus + .em-slider {
   color: var(--night-blue);
 }
 .em-h2{
-  font-family: var(--em-coordinator-font-title);
+  font-family: var(--em-profile-font-title), Inter, sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 24px;
@@ -1466,7 +1474,7 @@ input:focus + .em-slider {
   color: var(--night-blue);
 }
 .em-h3{
-  font-family: var(--em-coordinator-font-title);
+  font-family: var(--em-profile-font-title), Inter, sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 20px;
@@ -1474,7 +1482,7 @@ input:focus + .em-slider {
   color: var(--night-blue);
 }
 .em-h4{
-  font-family: var(--em-coordinator-font-title);
+  font-family: var(--em-profile-font-title), Inter, sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
@@ -1482,7 +1490,7 @@ input:focus + .em-slider {
   color: var(--night-blue);
 }
 .em-h5{
-  font-family: var(--em-coordinator-font-title);
+  font-family: var(--em-profile-font-title), Inter, sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
@@ -1490,7 +1498,7 @@ input:focus + .em-slider {
   color: var(--night-blue);
 }
 .em-h6{
-  font-family: var(--em-coordinator-font-title);
+  font-family: var(--em-profile-font-title), Inter, sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
@@ -1499,16 +1507,16 @@ input:focus + .em-slider {
 }
 
 .em-applicant-default-font {
-  font-family: var(--em-applicant-font);
+  font-family: var(--em-profile-font), Inter, sans-serif;
   text-transform: inherit;
 }
 
 .em-applicant-title-font {
-  font-family: var(--em-applicant-font-title);
+  font-family: var(--em-profile-font-title), Inter, sans-serif;
 }
 
 .em-default-font {
-  font-family: var(--em-applicant-font);
+  font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
 .em-caption{
@@ -1968,7 +1976,7 @@ button.em-swal-delete-button:hover{
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 12px;
-  font-family: var(--em-default-font);
+  font-family: var(--em-profile-font), Inter, sans-serif;
   height: fit-content;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -1993,7 +2001,7 @@ button.em-swal-delete-button:hover{
   background-image: url('/images/emundus/searchbar/search.svg') !important;
   background-repeat: no-repeat !important;
   background-position: 96% 50% !important;
-  font-family: var(--em-applicant-font);
+  font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
 /**

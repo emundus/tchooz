@@ -45,7 +45,7 @@ if ($just_logged && !$only_applicant) {
         }
 
         .em-switch-profile-swal-container h1, .em-switch-profile-swal-container h2 {
-            font-family: var(--em-coordinator-font-title);
+            font-family: var(--em-profile-font-title), Inter, sans-serif;
         }
 
         .em-switch-profile-swal-container .swal2-modal {

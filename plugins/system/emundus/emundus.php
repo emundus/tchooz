@@ -76,5 +76,43 @@ class PlgSystemEmundus extends CMSPlugin
 
 			$app->setBody($body);
 		}
+?>
+		<script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+                let containerClass = document.querySelector("#g-page-surround");
+                let profileClass = containerClass.getAttribute("class");
+                let root = document.querySelector(':root');
+
+                if (profileClass === 'em-applicant') {
+                    let textVar = getComputedStyle(root).getPropertyValue("--em-applicant-font");
+                    let titleVar = getComputedStyle(root).getPropertyValue("--em-applicant-font-title");
+
+                    updateFont(textVar);
+                    updateFontTitle(titleVar);
+
+                } else if (profileClass === 'em-coordinator') {
+                    let textVar = getComputedStyle(root).getPropertyValue("--em-coordinator-font");
+                    let titleVar = getComputedStyle(root).getPropertyValue("--em-coordinator-font-title");
+
+                    updateFont(textVar);
+                    updateFontTitle(titleVar);
+                } else {
+                    let textVar = getComputedStyle(root).getPropertyValue("--em-applicant-font");
+                    let titleVar = getComputedStyle(root).getPropertyValue("--em-applicant-font-title");
+
+                    updateFont(textVar);
+                    updateFontTitle(titleVar);
+                }
+
+                function updateFont(textVar) {
+                    document.documentElement.style.setProperty("--em-profile-font", textVar);
+                }
+                function updateFontTitle(titleVar) {
+                    document.documentElement.style.setProperty("--em-profile-font-title", titleVar);
+                }
+            });
+		</script>
+<?php
 	}
 }

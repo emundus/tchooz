@@ -12,7 +12,7 @@
     }
 
     h4 {
-        font-family: var(--em-default-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: var(--em-applicant-h4);
@@ -21,7 +21,7 @@
     }
 
     h5 {
-        font-family: var(--em-default-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: var(--em-applicant-h5);
@@ -30,7 +30,7 @@
     }
 
     h6 {
-        font-family: var(--em-default-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         font-style: normal;
         font-weight: 500;
         font-size: var(--em-applicant-h6);
@@ -339,7 +339,7 @@
     }
 
     button.swal2-confirm.save-btn.sauvegarder.save_continue {
-        font-family: var(--em-coordinator-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         background: var(--em-primary-color) !important;
         border: 1px solid var(--em-primary-color) !important;
         border-radius: var(--em-coordinator-br);
@@ -358,7 +358,7 @@
     }
 
     button.swal2-cancel.goback-btn {
-        font-family: var(--em-coordinator-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         background: var(--em-secondary-color) !important;
         border: 1px solid var(--em-secondary-color) !important;
         border-radius: var(--em-coordinator-br) !important;
@@ -379,7 +379,7 @@
     }
 
     .swal2-content {
-        font-family: var(--em-coordinator-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
     }
 
     /* ALERTES */
@@ -402,7 +402,7 @@
 
         p {
             color: inherit;
-            font-family: var(--em-coordinator-font);
+            font-family: var(--em-profile-font), Inter, sans-serif;
             line-height: 24px;
         }
     }

@@ -78,7 +78,7 @@ button.btn-primary:hover{
     text-transform: initial;
     width: 100%;
     border-radius: var(--em-applicant-br) !important;
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     line-height: normal;
 }
 
@@ -87,7 +87,7 @@ button.btn-primary:hover{
     font-weight: 600;
 }
 .login .well label {
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
@@ -211,7 +211,7 @@ footer div{
     width: 100% !important;
     margin-right: 0 !important;
     margin-bottom: 0;
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-weight: 500;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
@@ -252,7 +252,7 @@ h1.em-titre-connectez-vous {
 }
 
 .page-header h1 {
-    font-family: var(--em-applicant-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
     color: var(--em-default-title-color-1);
 }
 

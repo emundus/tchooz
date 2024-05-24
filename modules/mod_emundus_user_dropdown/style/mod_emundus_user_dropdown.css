@@ -54,7 +54,7 @@
 
 #userDropdownMenu h5 {
     color: var(--neutral-900);
-    font-family: var(--em-default-font-title);
+    font-family: var(--em-profile-font-title), Inter, sans-serif;
 }
 
 
@@ -81,7 +81,7 @@
 }
 
 #g-navigation .header-c .open > #userDropdownMenu li.dropdown-header {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
 

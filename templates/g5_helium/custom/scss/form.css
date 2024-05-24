@@ -158,7 +158,7 @@
         }
 
         .clockpicker-popover {
-            font-family: var(--em-default-font);
+            font-family: var(--em-profile-font), Inter, sans-serif;
 
             .arrow {
                 display: none;
@@ -224,7 +224,7 @@
             display: inline-block !important;
             font-size: var(--em-form-label-size);
             @apply tw-w-full;
-            font-family: var(--em-applicant-font);
+            font-family: var(--em-profile-font), Inter, sans-serif;
             font-style: normal;
             font-weight: var(--em-form-label-weight);
             margin-bottom: 0;
@@ -238,7 +238,7 @@
             color: var(--em-form-tip-color);
             @apply tw-text-base;
             font-weight: 400;
-            font-family: var(--em-applicant-font);
+            font-family: var(--em-profile-font), Inter, sans-serif;
             font-style: normal;
 
             * {
@@ -642,7 +642,7 @@
         }
 
         .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_1"] span {
-            font-family: var(--em-default-font);
+            font-family: var(--em-profile-font), Inter, sans-serif;
             font-size: 16px;
             font-style: normal;
             line-height: 24px;
@@ -689,7 +689,7 @@
         }
 
         .plg-radiobutton .btn-group label.btn-outline-secondary.btn:not(.active)[for*="input_0"] span {
-            font-family: var(--em-default-font);
+            font-family: var(--em-profile-font), Inter, sans-serif;
             font-size: 16px;
             font-style: normal;
             line-height: 24px;
@@ -1202,7 +1202,7 @@
     textarea {
         background-color: var(--neutral-0);
         color: var(--neutral-900);
-        font-family: var(--em-default-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
     }
 
     .g-back-office-emundus-tableau {

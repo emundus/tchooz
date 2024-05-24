@@ -11,7 +11,7 @@
         color: var(--neutral-0);
         background-color: var(--em-profile-color);
         border: solid 1px transparent;
-        font-family: var(--em-coordinator-font);
+        font-family: var(--em-profile-font), Inter, sans-serif;
         font-size: var(--em-coordinator-font-size) !important;
 
         &:hover, &:focus, &:active {

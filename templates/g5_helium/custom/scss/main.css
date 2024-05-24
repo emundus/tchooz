@@ -78,7 +78,7 @@
 }
 
 body {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
 }
 
 /***********

@@ -85,7 +85,7 @@ div.advanced-dropdown span.caret{
     align-items: center;
     justify-content: center;
     background-color: var(--transparent);
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     color: var(--em-profile-color);
 }
 

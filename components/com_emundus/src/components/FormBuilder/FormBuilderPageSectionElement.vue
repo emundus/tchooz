@@ -380,7 +380,7 @@ export default {
     font-size: 12px;
     line-height: 1.5rem;
     font-weight: 400;
-    font-family: var(--em-applicant-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-style: normal;
     display: flex;
   }
@@ -434,7 +434,7 @@ export default {
   }
 
   label.btn-default.btn.btn-success.active:hover span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
@@ -444,7 +444,7 @@ export default {
   }
 
   label.btn-default.btn.btn-success.active span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
@@ -479,7 +479,7 @@ export default {
   }
 
   label.btn-default.btn.btn-danger.active:hover span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
@@ -489,7 +489,7 @@ export default {
   }
 
   label.btn-default.btn.btn-danger.active span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
@@ -522,7 +522,7 @@ export default {
   }
 
   label.btn-default.btn:not(.active):hover span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
@@ -532,7 +532,7 @@ export default {
   }
 
   label.btn-default.btn:not(.active) span {
-    font-family: var(--em-default-font);
+    font-family: var(--em-profile-font), Inter, sans-serif;
     font-size: 16px;
     font-style: normal;
     line-height: 24px;
