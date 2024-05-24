@@ -4388,4 +4388,93 @@ class EmundusModelUsers extends JModelList
 		}
 		return $user_details;
 	}
+
+	/**
+	 * Check if user is already registered in emundus_users, if not, create it
+	 * @param $user_id
+	 * @return bool true if user is already registered or if we are able to create it, false otherwise
+	 */
+	public function repairEmundusUser($user_id)
+	{
+		$repaired = false;
+
+		if (!empty($user_id)) {
+			$query = $this->db->getQuery(true);
+
+			$query->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__emundus_users'))
+				->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id));
+			$this->db->setQuery($query);
+			$user = $this->db->loadResult();
+
+			if (empty($user)) {
+				$query->clear()
+					->select('*')
+					->from($this->db->quoteName('#__users'))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($user_id));
+				$this->db->setQuery($query);
+				$user_details = $this->db->loadObject();
+
+				if (!empty($user_details)) {
+					list($firstname, $lastname) = !empty($user_details->name) ? explode(' ', $user_details->name, 2) : ['',''];
+
+					$no_profile = null;
+
+					$query->clear()
+						->select('id')
+						->from('#__emundus_setup_profiles')
+						->where('label like ' . $this->db->quote('noprofile'));
+
+					$this->db->setQuery($query);
+					$no_profile = $this->db->loadResult();
+
+					if (empty($no_profile)) {
+						// select first applicant profile
+						$query->clear()
+							->select('id')
+							->from('#__emundus_setup_profiles')
+							->where('published = 1');
+
+						$this->db->setQuery($query);
+						$no_profile = $this->db->loadResult();
+					}
+
+					$query->clear()
+						->insert($this->db->quoteName('#__emundus_users'))
+						->set($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id))
+						->set($this->db->quoteName('firstname') . ' = ' . $this->db->quote($firstname))
+						->set($this->db->quoteName('lastname') . ' = ' . $this->db->quote($lastname))
+						->set($this->db->quoteName('profile') . ' = ' . $no_profile)
+						->set($this->db->quoteName('schoolyear') . ' = ' . $this->db->quote(''))
+						->set($this->db->quoteName('disabled') . ' = 0')
+						->set($this->db->quoteName('university_id') . ' = 0')
+						->set($this->db->quoteName('email') . ' = ' . $this->db->quote($user_details->email))
+						->set($this->db->quoteName('registerDate') . ' = ' . $this->db->quote($user_details->registerDate))
+						->set($this->db->quoteName('name') . ' = ' . $this->db->quote($user_details->name));
+
+					try {
+						$this->db->setQuery($query);
+						$inserted = $this->db->execute();
+
+						if ($inserted) {
+							Log::add('com_emundus/models/users.php | reconstruction of user ' . $user_id, Log::INFO, 'com_emundus.error');
+							$repaired = true;
+
+							require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+							$m_profile = new EmundusModelProfile;
+							$m_profile->initEmundusSession();
+						} else {
+							Log::add('com_emundus/models/users.php | failed to repair user ' . $user_id, Log::ERROR, 'com_emundus.error');
+						}
+					} catch (Exception $e) {
+						Log::add('com_emundus/models/users.php | error while trying to repair user ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+					}
+				}
+			} else {
+				$repaired = true;
+			}
+		}
+
+		return $repaired;
+	}
 }

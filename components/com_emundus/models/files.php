@@ -16,6 +16,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
+require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 
@@ -565,7 +566,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfileAcces($user)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esg.profile_id FROM #__emundus_setup_groups as esg
                     LEFT JOIN #__emundus_groups as eg on esg.id=eg.group_id
                     WHERE esg.published=1 AND eg.user_id=' . $user;
@@ -888,7 +889,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfiles()
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
         ORDER BY caag.lft, esp.label';
@@ -904,7 +905,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfileByID($id)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esp.* FROM jos_emundus_setup_profiles as esp
                 LEFT JOIN jos_emundus_users as eu ON eu.profile=esp.id
                 WHERE eu.user_id=' . $id;
@@ -920,7 +921,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getProfilesByIDs($ids)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
         FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
@@ -936,7 +937,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAuthorProfiles()
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft
         FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
@@ -952,7 +953,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function getApplicantsProfiles()
 	{
 		$user      = JFactory::getUser();
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esp.id, esp.label FROM #__emundus_setup_profiles esp
                   WHERE esp.published=1 ';
 		$no_filter = array("Super Users", "Administrator");
@@ -972,7 +973,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getApplicantsByProfile($profile)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT eup.user_id FROM #__emundus_users_profiles eup WHERE eup.profile_id=' . $profile;
 		$this->_db->setQuery($query);
 
@@ -985,7 +986,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAuthorUsers()
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT u.id, u.gid, u.name
         FROM #__users u
         WHERE u.gid=19';
@@ -999,7 +1000,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getMobility()
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT esm.id, esm.label, esm.value
         FROM #__emundus_setup_mobility esm
         ORDER BY ordering';
@@ -1015,7 +1016,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$elements = [];
 
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
                  groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
                  tab.db_table_name AS table_name, tab.label AS table_label
@@ -1046,7 +1047,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$elements_name = array();
 
-		$this->_db = JFactory::getDBO();
+		
 		$query = 'SELECT element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin,
                  groupe.label AS group_label, INSTR(groupe.params,\'"repeat_group_button":"1"\') AS group_repeated,
                  tab.db_table_name AS table_name, tab.label AS table_label
@@ -1179,7 +1180,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getSchoolyears()
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = 'SELECT DISTINCT(schoolyear) as schoolyear
         FROM #__emundus_users
         WHERE schoolyear is not null AND schoolyear != ""
@@ -1751,6 +1752,8 @@ class EmundusModelFiles extends JModelLegacy
 						$this->_db->execute();
 					}
 				}
+
+				$this->makeAttachmentsEditableByApplicant($fnums, $state);
 			}
 			catch (Exception $e) {
 				echo $e->getMessage();
@@ -1949,7 +1952,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function unlinkEvaluators($fnum, $id, $isGroup)
 	{
 		try {
-			$this->_db = JFactory::getDbo();
+			
 
 			if ($isGroup) {
 				$query = 'delete from #__emundus_group_assoc where fnum like ' . $this->_db->Quote($fnum) . ' and group_id =' . $id;
@@ -4199,7 +4202,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$all_status = [];
 
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 		$query->select('*')
 			->from('#__emundus_setup_status')
@@ -4285,7 +4288,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function programSessions($program)
 	{
 		try {
-			$this->_db = JFactory::getDbo();
+			
 
 			$query = $this->_db->getQuery(true);
 			$query->select('DISTINCT(t.session_code) AS sc, t.*')
@@ -4338,7 +4341,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function getBirthdate($fnum = null, $format = 'd-m-Y', $age = false)
 	{
 
-		$this->_db = JFactory::getDbo();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$query->select($this->_db->quoteName('birth_date'))->from($this->_db->quoteName('#__emundus_personal_detail'))->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
@@ -4368,7 +4371,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getDocumentCategory()
 	{
-		$this->_db = JFactory::getDbo();
+		
 		$query     = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('esa.*'))
 			->from($this->_db->quoteName('#__emundus_setup_attachments', 'esa'))
@@ -4381,7 +4384,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getParamsCategory($idCategory)
 	{
-		$this->_db = JFactory::getDbo();
+		
 		$query     = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('fe.params'))
 			->from($this->_db->quoteName('#__fabrik_elements', 'fe'))
@@ -4405,7 +4408,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getAttachmentCategories()
 	{
-		$this->_db = JFactory::getDbo();
+		
 
 		$query = $this->_db->getQuery(true);
 		$query->select($this->_db->quoteName('fe.params'))
@@ -4430,7 +4433,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectCity($insee)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('insee_code') . ' LIKE ' . $this->_db->quote($insee);
@@ -4446,7 +4449,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectNameCity($name)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('name') . ' LIKE ' . $this->_db->quote($name);
@@ -4462,7 +4465,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function selectMultiplePayment($fnum)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum);
@@ -4569,7 +4572,7 @@ class EmundusModelFiles extends JModelLegacy
 	public function getUnreadMessages()
 	{
 
-		$this->_db = JFactory::getDbo();
+		
 		$query     = $this->_db->getQuery(true);
 		$user      = JFactory::getUser();
 		$default   = array();
@@ -4597,7 +4600,7 @@ class EmundusModelFiles extends JModelLegacy
 
 	public function getTagsAssocStatus($status)
 	{
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$conditions = $this->_db->quoteName('ss.step') . ' = ' . $this->_db->quote($status);
@@ -4625,7 +4628,7 @@ class EmundusModelFiles extends JModelLegacy
 		$editing_time = $config->get('alert_editing_time', 2);
 
 		$actions   = array(1, 4, 5, 10, 11, 12, 13, 14);
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 
 		$query->select('DISTINCT ju.id, ju.name')
@@ -4675,7 +4678,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$logs = [];
 
-		$this->_db = JFactory::getDBO();
+		
 		$query     = $this->_db->getQuery(true);
 		$query->clear()->select('*')->from($this->_db->quoteName('#__emundus_setup_actions', 'jesa'))->order('jesa.id ASC');
 
@@ -4703,7 +4706,7 @@ class EmundusModelFiles extends JModelLegacy
 		$bound_fnums = [false];
 
 		if (!empty($fnums) && !empty($user_to)) {
-			$this->_db = JFactory::getDBO();
+			
 			$query     = $this->_db->getQuery(true);
 
 			$query->select('id')
@@ -5048,7 +5051,7 @@ class EmundusModelFiles extends JModelLegacy
 							else {
 								// Assoc tags if email has been sent
 								if (!empty($trigger['tmpl']['tags'])) {
-									$this->_db = JFactory::getDBO();
+									
 									$query     = $this->_db->getQuery(true);
 
 									$tags = array_filter(explode(',', $trigger['tmpl']['tags']));
@@ -5131,7 +5134,7 @@ class EmundusModelFiles extends JModelLegacy
 						else {
 							// Assoc tags if email has been sent
 							if (!empty($trigger['tmpl']['tags'])) {
-								$this->_db = JFactory::getDBO();
+								
 								$query     = $this->_db->getQuery(true);
 
 								$tags = array_filter(explode(',', $trigger['tmpl']['tags']));
@@ -5176,7 +5179,7 @@ class EmundusModelFiles extends JModelLegacy
 		$saved = false;
 
 		if (!empty($user_id) && !empty($name) && !empty($filters)) {
-			$this->_db = JFactory::getDbo();
+			
 			$query     = $this->_db->getQuery(true);
 			$query->insert($this->_db->quoteName('#__emundus_filters'))
 				->columns(['user', 'name', 'constraints', 'mode', 'item_id'])
@@ -5199,7 +5202,7 @@ class EmundusModelFiles extends JModelLegacy
 		$filters = array();
 
 		if (!empty($user_id)) {
-			$this->_db = JFactory::getDbo();
+			
 			$query     = $this->_db->getQuery(true);
 			$query->select('id, name, constraints')
 				->from($this->_db->quoteName('#__emundus_filters'))
@@ -5224,7 +5227,7 @@ class EmundusModelFiles extends JModelLegacy
 		$updated = false;
 
 		if (!empty($user_id) && !empty($filter_id) && !empty($filters)) {
-			$this->_db = JFactory::getDbo();
+			
 			$query     = $this->_db->getQuery(true);
 			$query->update($this->_db->quoteName('#__emundus_filters'))
 				->set('constraints = ' . $this->_db->quote($filters))
@@ -5471,5 +5474,81 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $nom;
+	}
+
+	/**
+	 * @param $fnums
+	 * @param $state
+	 * @return bool|mixed
+	 */
+	public function makeAttachmentsEditableByApplicant($fnums, $state)
+	{
+		$updated = false;
+
+		if (!empty($fnums) && isset($state)) {
+			$fnums = is_array($fnums) ? $fnums : [$fnums];
+			$emundus_config = ComponentHelper::getParams('com_emundus');
+			$can_edit_back_attachments = $emundus_config->get('can_edit_back_attachments', 0);
+			if ($can_edit_back_attachments) {
+				$attachment_to_keep_non_deletable = $emundus_config->get('attachment_to_keep_non_deletable', []);
+
+				$status_for_send = $emundus_config->get('status_for_send', '0');
+				$status_for_send = explode(',', $status_for_send);
+
+				$edit_status = array_unique(array_merge(['0'], $status_for_send));
+				$m_profile = new EmundusModelProfile();
+
+				$tasks = [];
+				foreach ($fnums as $fnum) {
+					$current_profile = $m_profile->getProfileByStatus($fnum);
+
+					if (empty($current_profile)) {
+						continue;
+					}
+
+					if (empty($current_profile['workflow_id'])) {
+						if (!in_array($state, $edit_status)) {
+							continue;
+						}
+					}
+
+					$fnumInfos = $this->getFnumInfos($fnum);
+					
+					$query = $this->_db->getQuery(true);
+
+					$query->select('attachment_id')
+						->from('#__emundus_setup_attachment_profiles')
+						->where('profile_id = ' . $this->_db->quote($current_profile['profile']));
+
+					if (!empty($attachment_to_keep_non_deletable)) {
+						$query->andWhere('attachment_id NOT IN (' . implode(',', $this->_db->quote($attachment_to_keep_non_deletable)) . ')');
+					}
+
+					$this->_db->setQuery($query);
+					$attachments = $this->_db->loadColumn();
+
+					if (!empty($attachments)) {
+						try {
+							$query->clear()
+								->update('#__emundus_uploads')
+								->set('can_be_deleted = 1')
+								->where('fnum LIKE ' . $this->_db->quote($fnum))
+								->andWhere('attachment_id IN (' . implode(',', $attachments) . ')')
+								->andWhere('user_id = ' . $fnumInfos['applicant_id']);
+							$this->_db->setQuery($query);
+							$tasks[] = $this->_db->execute();
+						} catch (Exception $e) {
+							Log::add('Error making attachments editable by applicant for fnum: ' . $fnum . ' and profile: ' . $current_profile['profile'] . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+						}
+					} else {
+						$tasks[] = true;
+					}
+				}
+
+				$updated = !in_array(false, $tasks, true);
+			}
+		}
+
+		return $updated;
 	}
 }

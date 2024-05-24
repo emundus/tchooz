@@ -229,7 +229,7 @@ if ($currentCampaign->apply_online == 0)
         </div>
     </div>
 
-    <div>
+    <aside id="campaign-sidebar" class="tw-sticky">
         <!-- INFO BLOCK -->
 		<?php if ($can_apply != 0 || $mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
             <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
@@ -318,7 +318,7 @@ if ($currentCampaign->apply_online == 0)
                 <h4><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_CONTACT') ?></h4>
             </div>
 		<?php endif; ?>
-    </div>
+    </aside>
 </div>
 
 <script>
@@ -327,7 +327,7 @@ if ($currentCampaign->apply_online == 0)
     window.onload = function () {
         // Set sidebar sticky depends on height of header
         const headerNav = document.getElementById('g-navigation');
-        const sidebar = document.querySelector('.view-programme .mod_emundus_campaign__details_content');
+        const sidebar = document.querySelector('aside#campaign-sidebar');
         if (headerNav && sidebar) {
             sidebar.style.top = headerNav.offsetHeight + 8 + 'px';
         }

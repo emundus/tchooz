@@ -418,9 +418,22 @@ class EmundusModelFormbuilder extends JModelList
 				->select('*')
 				->from('#__menu')
 				->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($menutype))
-				->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('heading') . ' OR ' . $this->db->quoteName('type') . ' = ' . $this->db->quote('url'));
+				->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('heading'));
 			$this->db->setQuery($query);
 			$menu_parent = $this->db->loadObject();
+
+			/**
+			 * Case of old platforms. deprecated
+			 */
+			if (empty($menu_parent) || empty($menu_parent->id)) {
+				$query->clear()
+					->select('*')
+					->from('#__menu')
+					->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($menutype))
+					->andWhere($this->db->quoteName('type') . ' = ' . $this->db->quote('url'));
+				$this->db->setQuery($query);
+				$menu_parent = $this->db->loadObject();
+			}
 
 			$query->clear()
 				->select('rgt')

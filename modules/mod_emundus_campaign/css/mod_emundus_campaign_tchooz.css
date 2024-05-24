@@ -580,6 +580,11 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     display: grid;
     grid-gap: 0;
     grid-template-columns: 64% 30%;
+    align-items: start;
+
+    aside {
+        align-self: start;
+    }
 }
 
 @media (max-width: 479px) {
