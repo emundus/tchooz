@@ -16,12 +16,12 @@ admin/blueprints/menu/block.yaml	da3b3b7948002ba1c9d84618ab67fb08
 admin/blueprints/position/chrome.yaml	9706c328779547e22edd19147b02b2ab
 blueprints/page/assets.yaml	c68b786eee9ccd0ed6a1c947ee62cbb9
 blueprints/page/body.yaml	7f6fc9e8368dbfcdb7ca1846d3394839
-blueprints/page/fontawesome.yaml	abbafb56a806437cde3c22eabb80bbf5
+blueprints/page/fontawesome.yaml	2f9294310bc4a536e0e20d19e760b051
 blueprints/page/head.yaml	da69f501e6c1adbf91e2e14d12ee62fe
 css-compiled/bootstrap5-rtl.css	ef9800f64c5ac65eaa9f974636adaf96
 css-compiled/bootstrap5.css	7607268074c08a998c78d888e8be02ac
 css-compiled/joomla.css	0beeb71afad57bbb183394dfebd635ff
-css-compiled/nucleus.css	52101adde6040037d0cb82132179ad71
+css-compiled/nucleus.css	d14cf7a40a014e6d48c2b04e974c24bd
 images/select-bg-active-rtl.svg	fba1f6dc1ef5cbf28e00351ea1d311c1
 images/select-bg-active.svg	86a33e7b1e2b0c4ed98ca9630a66b9a4
 images/select-bg-rtl.svg	e50af231567cd9e4934ca50e2abcfb98
@@ -36,8 +36,8 @@ particles/assets.yaml	7301addeae37a1b8a99dd4a7865ce31f
 particles/branding.html.twig	162bcc6af168b8c113a3d365c8e6c7b4
 particles/branding.yaml	e17cb1fcbad0c9af4d9119f8544d3bc9
 particles/content.yaml	68d6d57c5f088d16e2c6b03e0c8753e0
-particles/contentarray.html.twig	52540362d38a6442fb3c78f992791c3c
-particles/contentarray.yaml	ad0819d1dd23f46f56a6b47fd4c1227a
+particles/contentarray.html.twig	c79cf90e14cba61510a59f48e899bcac
+particles/contentarray.yaml	dc5ef2d3c9c2ee276b088dc56367d48a
 particles/copyright.html.twig	9cdfc98efcfa0bd5f37c012bad8e2345
 particles/copyright.yaml	2f80b0c680382d94eabc8c83478ff979
 particles/custom.html.twig	9c932ef8b906302b739c67bd5949b7f1
@@ -90,7 +90,7 @@ scss/nucleus.scss	df2f0a99e82ce9b5e60a2a2bbc9b677d
 scss/nucleus/_core.scss	8c780db2f1dea1f823c3accabc9d142e
 scss/nucleus/_flex.scss	71ecd5c612c9053e5b737cbf766d32bd
 scss/nucleus/_forms.scss	f18766ef3b73ccc25678bd32622bba60
-scss/nucleus/_nav.scss	044633d831e49ede09ca5a4438af2055
+scss/nucleus/_nav.scss	d54b6e574acdd1eda2f55d63ae07ce4d
 scss/nucleus/_offcanvas.scss	14b6f5dfe660b92728c93d78b2af6707
 scss/nucleus/_sizes.scss	64e8dd8180e26298f4075b5089293dde
 scss/nucleus/_typography.scss	68e850f09212761a1e9ed488b68e627b
@@ -318,7 +318,7 @@ templates/layout/offcanvas.html.twig	04001d9f6b7c5573236c14b9a28cfa7a
 templates/layout/section.html.twig	9fbd8525cbb293ea652d74bbf1aec361
 templates/layout/wrapper.html.twig	80575cb54b77a5b88b8299c99fda28e1
 templates/page.html.twig	d72c3386374c413acba5ea7ba499a755
-templates/page_head.html.twig	7733f8efba607694f6cd048229915015
+templates/page_head.html.twig	078952395209583b1784dc2ba1a2978f
 templates/partials/particle.html.twig	07935cff8475093e4c5e315985b39b99
 twig/component.html.twig	abdb4071d7588181a6c4c196436b3e5d
 twig/error.html.twig	53af3ecf22a84bc4e01e7f2c64c4da0d
