@@ -63,7 +63,7 @@ $selectors: "div[itemprop="articleBody"], div[itemprop="blogPost"], .ql-editor, 
 #{$selectors}{
   box-sizing: border-box;
   line-height: 1.5em;
-  height: 100%;
+  height: auto;
   outline: none;
   overflow-y: auto;
   tab-size: 4;
