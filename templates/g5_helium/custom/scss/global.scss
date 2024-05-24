@@ -4489,6 +4489,10 @@ screen and (max-height: 769px) {
 
 @media all and (max-width: 479px) {
 
+  .mon-profil #g-container-main .g-container {
+    padding: 0 20px;
+  }
+
   .view-checklist table form .dz-default.dz-message {
     padding-right: 8px !important;
   }
@@ -5603,7 +5607,7 @@ screen and (max-height: 769px) {
 }
 
 @media all and (max-width: 1024px) {
-  #g-container-main {
+  .gantry:not(.mon-profil) #g-container-main {
     padding: 20px 20px 20px 20px;
   }
 }
