@@ -721,6 +721,7 @@ if (!in_array($name, ['settings', 'campaigns', 'emails', 'form'])) {
 
 	$wa->registerAndUseScript('com_emundus', 'media/com_emundus/js/em_files.js', ['version' => $hash]);
 	$wa->registerAndUseScript('com_emundus_export', 'media/com_emundus/js/mixins/exports.js', ['version' => $hash]);
+	$wa->registerAndUseScript('com_emundus_utilities', 'media/com_emundus/js/mixins/utilities.js', ['version' => $hash]);
 
 	$wa->registerAndUseScript('com_emundus_selectize', 'media/com_emundus/lib/selectize/dist/js/standalone/selectize.js');
 	$wa->registerAndUseScript('com_emundus_sumoselect', 'media/com_emundus/lib/sumoselect/jquery.sumoselect.min.js');
