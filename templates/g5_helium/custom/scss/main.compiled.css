@@ -4065,6 +4065,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-bg-opacity: 1;
     background-color: rgb(107 114 128 / var(--tw-bg-opacity));
 }
+.tw-bg-main-100 {
+    background-color: var(--main-100);
+}
 .tw-bg-main-500 {
     background-color: var(--em-profile-color);
 }
