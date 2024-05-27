@@ -226,7 +226,7 @@ class Release2_0_0Installer extends ReleaseInstaller
 				EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes', 'evaluation_form', 'INT',11,1);
 
 				EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Formulaire d\'évaluation');
-				EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Evaluation form', 'override', null, null, null, 'en-GB');
+				EmundusHelperUpdate::insertTranslationsTag('ELEMENT_PROGRAM_FORM_EVALUATION', 'Evaluation form', 'override', 0, null, null, 'en-GB');
 
 				$datas = [
 					'name' => 'evaluation_form',
@@ -367,6 +367,14 @@ class Release2_0_0Installer extends ReleaseInstaller
 				$this->db->insertObject('jos_fabrik_cron', $inserted);
 			}
 			//
+
+			$query->clear()
+				->delete($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&view=samples'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			EmundusHelperUpdate::installExtension('plg_sampledata_emundus','emundus',null,'plugin',1,'sampledata');
 
 			$result['status'] = true;
 		}

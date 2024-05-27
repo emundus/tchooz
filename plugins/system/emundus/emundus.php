@@ -75,7 +75,7 @@ class PlgSystemEmundus extends CMSPlugin
 			}
 
 			$app->setBody($body);
-		}
+		}/*
 ?>
 		<script>
             document.addEventListener("DOMContentLoaded", function() {
@@ -113,6 +113,6 @@ class PlgSystemEmundus extends CMSPlugin
                 }
             });
 		</script>
-<?php
+<?php*/
 	}
 }

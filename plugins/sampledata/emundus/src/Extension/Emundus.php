@@ -317,208 +317,208 @@ final class Emundus extends CMSPlugin
 
 			$users = [
 				[
-					'firstname' => 'John',
-					'lastname'  => 'Doe',
-					'name'  => 'John Doe',
-					'username' => 'johndoe@emundus.fr',
-					'email' => 'johndoe@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'John',
+					'lastname'      => 'Doe',
+					'name'          => 'John Doe',
+					'username'      => 'johndoe@emundus.fr',
+					'email'         => 'johndoe@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => [$campaigns[rand(1, count($campaigns))]]
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => [$campaigns[rand(1, count($campaigns))]]
 				],
 				[
-					'firstname' => 'Jane',
-					'lastname'  => 'Doe',
-					'name'  => 'Jane Doe',
-					'username' => 'janedoe@emundus.fr',
-					'email' => 'janedoe@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'Jane',
+					'lastname'      => 'Doe',
+					'name'          => 'Jane Doe',
+					'username'      => 'janedoe@emundus.fr',
+					'email'         => 'janedoe@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => array_unique([$campaigns[rand(1, count($campaigns))],$campaigns[rand(1, count($campaigns))]])
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => array_unique([$campaigns[rand(1, count($campaigns))], $campaigns[rand(1, count($campaigns))]])
 				],
 				[
-					'firstname' => 'John',
-					'lastname'  => 'Smith',
-					'name'  => 'John Smith',
-					'username' => 'johnsmith@emundus.fr',
-					'email' => 'johnsmith@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'John',
+					'lastname'      => 'Smith',
+					'name'          => 'John Smith',
+					'username'      => 'johnsmith@emundus.fr',
+					'email'         => 'johnsmith@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => [$campaigns[rand(1, count($campaigns))]]
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => [$campaigns[rand(1, count($campaigns))]]
 				],
 				[
-					'firstname' => 'Alice',
-					'lastname'  => 'Johnson',
-					'name'  => 'Alice Johnson',
-					'username' => 'alicejohnson@emundus.fr',
-					'email' => 'alicejohnson@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'Alice',
+					'lastname'      => 'Johnson',
+					'name'          => 'Alice Johnson',
+					'username'      => 'alicejohnson@emundus.fr',
+					'email'         => 'alicejohnson@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => []
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => []
 				],
 				[
-					'firstname' => 'Robert',
-					'lastname'  => 'Brown',
-					'name'  => 'Robert Brown',
-					'username' => 'robertbrown@emundus.fr',
-					'email' => 'robertbrown@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'Robert',
+					'lastname'      => 'Brown',
+					'name'          => 'Robert Brown',
+					'username'      => 'robertbrown@emundus.fr',
+					'email'         => 'robertbrown@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => [$campaigns[rand(1, count($campaigns))]]
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => [$campaigns[rand(1, count($campaigns))]]
 				],
 				[
-					'firstname' => 'Emily',
-					'lastname'  => 'Davis',
-					'name'  => 'Emily Davis',
-					'username' => 'emilydavis@emundus.fr',
-					'email' => 'emilydavis@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'Emily',
+					'lastname'      => 'Davis',
+					'name'          => 'Emily Davis',
+					'username'      => 'emilydavis@emundus.fr',
+					'email'         => 'emilydavis@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => [$campaigns[rand(1, count($campaigns))]]
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => [$campaigns[rand(1, count($campaigns))]]
 				],
 				[
-					'firstname' => 'Michael',
-					'lastname'  => 'Wilson',
-					'name'  => 'Michael Wilson',
-					'username' => 'michaelwilson@emundus.fr',
-					'email' => 'michaelwilson@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'Michael',
+					'lastname'      => 'Wilson',
+					'name'          => 'Michael Wilson',
+					'username'      => 'michaelwilson@emundus.fr',
+					'email'         => 'michaelwilson@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => array_unique([$campaigns[rand(1, count($campaigns))],$campaigns[rand(1, count($campaigns))],$campaigns[rand(1, count($campaigns))]])
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => array_unique([$campaigns[rand(1, count($campaigns))], $campaigns[rand(1, count($campaigns))], $campaigns[rand(1, count($campaigns))]])
 				],
 				[
-					'firstname' => 'Laura',
-					'lastname'  => 'Martinez',
-					'name'  => 'Laura Martinez',
-					'username' => 'lauramartinez@emundus.fr',
-					'email' => 'lauramartinez@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'Laura',
+					'lastname'      => 'Martinez',
+					'name'          => 'Laura Martinez',
+					'username'      => 'lauramartinez@emundus.fr',
+					'email'         => 'lauramartinez@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => [$campaigns[rand(1, count($campaigns))]]
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => [$campaigns[rand(1, count($campaigns))]]
 				],
 				[
-					'firstname' => 'David',
-					'lastname'  => 'Garcia',
-					'name'  => 'David Garcia',
-					'username' => 'davidgarcia@emundus.fr',
-					'email' => 'davidgarcia@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'David',
+					'lastname'      => 'Garcia',
+					'name'          => 'David Garcia',
+					'username'      => 'davidgarcia@emundus.fr',
+					'email'         => 'davidgarcia@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => [$campaigns[rand(1, count($campaigns))]]
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => [$campaigns[rand(1, count($campaigns))]]
 				],
 				[
-					'firstname' => 'Sophia',
-					'lastname'  => 'Anderson',
-					'name'  => 'Sophia Anderson',
-					'username' => 'sophiaanderson@emundus.fr',
-					'email' => 'sophiaanderson@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'Sophia',
+					'lastname'      => 'Anderson',
+					'name'          => 'Sophia Anderson',
+					'username'      => 'sophiaanderson@emundus.fr',
+					'email'         => 'sophiaanderson@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => [$campaigns[rand(1, count($campaigns))]]
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => [$campaigns[rand(1, count($campaigns))]]
 				],
 				[
-					'firstname' => 'James',
-					'lastname'  => 'Taylor',
-					'name'  => 'James Taylor',
-					'username' => 'jamestaylor@emundus.fr',
-					'email' => 'jamestaylor@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'James',
+					'lastname'      => 'Taylor',
+					'name'          => 'James Taylor',
+					'username'      => 'jamestaylor@emundus.fr',
+					'email'         => 'jamestaylor@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => [$campaigns[rand(1, count($campaigns))]]
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => [$campaigns[rand(1, count($campaigns))]]
 				],
 				[
-					'firstname' => 'Olivia',
-					'lastname'  => 'Moore',
-					'name'  => 'Olivia Moore',
-					'username' => 'oliviamoore@emundus.fr',
-					'email' => 'oliviamoore@emundus.fr',
-					'password' => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
-					'block' => 0,
-					'sendEmail' => 0,
-					'registerDate' => date('Y-m-d H:i:s'),
+					'firstname'     => 'Olivia',
+					'lastname'      => 'Moore',
+					'name'          => 'Olivia Moore',
+					'username'      => 'oliviamoore@emundus.fr',
+					'email'         => 'oliviamoore@emundus.fr',
+					'password'      => ApplicationHelper::getHash(UserHelper::genRandomPassword()),
+					'block'         => 0,
+					'sendEmail'     => 0,
+					'registerDate'  => date('Y-m-d H:i:s'),
 					'lastvisitDate' => date('Y-m-d H:i:s'),
-					'activation' => 1,
-					'params' => '{}',
-					'profile' => 9,
-					'j_groups' => [2],
-					'campaigns' => [$campaigns[rand(1, count($campaigns))]],
+					'activation'    => 1,
+					'params'        => '{}',
+					'profile'       => 9,
+					'j_groups'      => [2],
+					'campaigns'     => [$campaigns[rand(1, count($campaigns))]],
 				]
 			];
 
@@ -537,18 +537,21 @@ final class Emundus extends CMSPlugin
 				$this->db->setQuery($query);
 				$fnums = $this->db->loadColumn();
 
-				foreach($fnums as $fnum)
+				foreach ($fnums as $fnum)
 				{
 					$datas = $this->createSampleDatas($user);
 
-					foreach ($datas as $table => $data) {
-						$data['fnum'] = $fnum;
-						$data['user'] = $user_id;
+					foreach ($datas as $table => $data)
+					{
+						$data['fnum']      = $fnum;
+						$data['user']      = $user_id;
 						$data['time_date'] = date('Y-m-d H:i:s');
 
 						$repeat_datas = [];
-						foreach ($data as $key => $value) {
-							if (is_array($value)) {
+						foreach ($data as $key => $value)
+						{
+							if (is_array($value))
+							{
 								$repeat_datas[$key] = $value;
 								unset($data[$key]);
 							}
@@ -562,10 +565,12 @@ final class Emundus extends CMSPlugin
 
 						$parent_id = $this->db->insertid();
 
-						foreach ($repeat_datas as $repeat_table => $repeat_data) {
-							foreach ($repeat_data as $repeat) {
+						foreach ($repeat_datas as $repeat_table => $repeat_data)
+						{
+							foreach ($repeat_data as $repeat)
+							{
 								$repeat['parent_id'] = $parent_id;
-								$repeat = (object) $repeat;
+								$repeat              = (object) $repeat;
 								if (!$this->db->insertObject('#__' . $repeat_table, $repeat))
 								{
 									throw new \RuntimeException($this->db->getErrorMsg());
@@ -616,20 +621,22 @@ final class Emundus extends CMSPlugin
 			$this->db->setQuery($query);
 			$applications = $this->db->loadObjectList();
 
-			foreach ($applications as $application) {
-				$source = JPATH_ROOT . '/plugin/sampledata/emundus/src/samples/pdf_emundus.pdf';
+			foreach ($applications as $application)
+			{
+				$source      = JPATH_ROOT . '/plugin/sampledata/emundus/src/samples/pdf_emundus.pdf';
 				$destination = JPATH_ROOT . '/images/emundus/files/' . $application->applicant_id;
-				if (!is_dir($destination)) {
+				if (!is_dir($destination))
+				{
 					mkdir($destination, 0755, true);
 				}
 				copy($source, $destination . '/pdf_emundus.pdf');
 
 				$upload = [
-					'timedate' => date('Y-m-d H:i:s'),
-					'user_id' => $application->applicant_id,
-					'fnum' => $application->fnum,
+					'timedate'      => date('Y-m-d H:i:s'),
+					'user_id'       => $application->applicant_id,
+					'fnum'          => $application->fnum,
 					'attachment_id' => 12,
-					'filename' => 'pdf_emundus.pdf',
+					'filename'      => 'pdf_emundus.pdf',
 				];
 				$upload = (object) $upload;
 				if (!$this->db->insertObject('#__emundus_uploads', $upload))
@@ -652,7 +659,7 @@ final class Emundus extends CMSPlugin
 	}
 
 	/**
-	 * Third step to enter the sampledata. Add sample files to applications
+	 * Fourth step to enter the sampledata. Add sample files to applications
 	 *
 	 * @return  array|void  Will be converted into the JSON response to the module.
 	 *
@@ -673,30 +680,50 @@ final class Emundus extends CMSPlugin
 			$query = $this->db->getQuery(true);
 			$query->select('fnum,applicant_id')
 				->from($this->db->quoteName('#__emundus_campaign_candidature'))
-				->order('RAND()')
-				->setLimit(8);
+				->order('RAND()');
 			$this->db->setQuery($query);
 			$applications = $this->db->loadObjectList();
 
-			foreach ($applications as $application) {
-				$source = JPATH_ROOT . '/plugin/sampledata/emundus/src/samples/pdf_emundus.pdf';
-				$destination = JPATH_ROOT . '/images/emundus/files/' . $application->applicant_id;
-				if (!is_dir($destination)) {
-					mkdir($destination, 0755, true);
-				}
-				copy($source, $destination . '/pdf_emundus.pdf');
+			$query->clear()
+				->select('step')
+				->from($this->db->quoteName('#__emundus_setup_status'));
+			$this->db->setQuery($query);
+			$status = $this->db->loadColumn();
 
-				$upload = [
-					'timedate' => date('Y-m-d H:i:s'),
-					'user_id' => $application->applicant_id,
-					'fnum' => $application->fnum,
-					'attachment_id' => 12,
-					'filename' => 'pdf_emundus.pdf',
-				];
-				$upload = (object) $upload;
-				if (!$this->db->insertObject('#__emundus_uploads', $upload))
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_setup_action_tag'));
+			$this->db->setQuery($query);
+			$tags = $this->db->loadColumn();
+
+			foreach ($applications as $application)
+			{
+				$query->clear()
+					->update($this->db->quoteName('#__emundus_campaign_candidature'))
+					->set($this->db->quoteName('status') . ' = ' . $this->db->quote($status[array_rand($status)]))
+					->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($application->fnum));
+				$this->db->setQuery($query);
+				$this->db->execute();
+
+				$no_tags = rand(0, 2);
+				if (!empty($no_tags))
 				{
-					throw new \RuntimeException($this->db->getErrorMsg());
+					$tags_key = array_rand($tags, $no_tags);
+					if (!is_array($tags_key)) $tags_key = [$tags_key];
+
+					foreach ($tags_key as $key)
+					{
+						$insert = [
+							'fnum'    => $application->fnum,
+							'id_tag'  => $tags[$key],
+							'user_id' => $application->applicant_id,
+						];
+						$insert = (object) $insert;
+						if (!$this->db->insertObject('#__emundus_tag_assoc', $insert))
+						{
+							throw new \RuntimeException($this->db->getErrorMsg());
+						}
+					}
 				}
 			}
 		}
@@ -713,8 +740,6 @@ final class Emundus extends CMSPlugin
 		return $response;
 	}
 
-	//TODO: Random status, random tags,
-
 	private function createSampleDatas($user)
 	{
 		$query = $this->db->getQuery(true);
@@ -725,65 +750,69 @@ final class Emundus extends CMSPlugin
 			->from('data_nationality');
 		$this->db->setQuery($query);
 		$nationalities = $this->db->loadColumn();
-		$cities = ['Paris','La Rochelle','Nantes','Marseille','Bruxelles','New York','Madrid','Barcelone'];
-		$zip_codes = ['75001','75002','75003','75004','75005','75006','75007','75008','75009','75010','64505','17000','16100','75014','75015','75016','75017','75018','75019','75020'];
+		$cities        = ['Paris', 'La Rochelle', 'Nantes', 'Marseille', 'Bruxelles', 'New York', 'Madrid', 'Barcelone'];
+		$zip_codes     = ['75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '64505', '17000', '16100', '75014', '75015', '75016', '75017', '75018', '75019', '75020'];
 		$query->clear()
 			->select('id')
 			->from('data_country');
 		$this->db->setQuery($query);
 		$countries = $this->db->loadColumn();
-		$yes_no = ['Non','Oui'];
+		$yes_no    = ['Non', 'Oui'];
 		//
 
 		$datas = [
 			'emundus_personal_detail' => [
-				'gender' => $genders[array_rand($genders)],
-				'first_name' => $user['firstname'],
-				'last_name' => $user['lastname'],
-				'birth_date' => date('Y-m-d', strtotime('-'.rand(18, 50).' years')),
-				'birth_place' => $cities[array_rand($cities)],
+				'gender'        => $genders[array_rand($genders)],
+				'first_name'    => $user['firstname'],
+				'last_name'     => $user['lastname'],
+				'birth_date'    => date('Y-m-d', strtotime('-' . rand(18, 50) . ' years')),
+				'birth_place'   => $cities[array_rand($cities)],
 				'birth_country' => $countries[array_rand($countries)],
-				'nationality' => $nationalities[array_rand($nationalities)],
-				'country_1' => $countries[array_rand($countries)],
-				'city_1' => $cities[array_rand($cities)],
-				'zipcode_1' => $zip_codes[array_rand($zip_codes)],
-				'telephone_1' => '+33 '.rand(6, 9).' '.rand(10, 99).' '.rand(10, 99).' '.rand(10, 99).' '.rand(10, 99),
-				'street_1' => rand(1, 200).' rue de '.ucfirst($cities[array_rand($cities)]),
+				'nationality'   => $nationalities[array_rand($nationalities)],
+				'country_1'     => $countries[array_rand($countries)],
+				'city_1'        => $cities[array_rand($cities)],
+				'zipcode_1'     => $zip_codes[array_rand($zip_codes)],
+				'telephone_1'   => '+33 ' . rand(6, 9) . ' ' . rand(10, 99) . ' ' . rand(10, 99) . ' ' . rand(10, 99) . ' ' . rand(10, 99),
+				'street_1'      => rand(1, 200) . ' rue de ' . ucfirst($cities[array_rand($cities)]),
 			],
-			'emundus_qualifications' => [
+			'emundus_qualifications'  => [
 				'e_324_7736' => $yes_no[array_rand($yes_no)],
 				'e_324_7737' => $yes_no[array_rand($yes_no)],
 			]
 		];
 
 		// Repeat datas
-		if($datas['emundus_qualifications']['e_324_7736'] == 'Oui') {
+		if ($datas['emundus_qualifications']['e_324_7736'] == 'Oui')
+		{
 			$rand_repeat = rand(1, 3);
 
-			for ($i=0; $i < $rand_repeat; $i++) {
+			for ($i = 0; $i < $rand_repeat; $i++)
+			{
 				$datas['emundus_qualifications']['emundus_qualifications_686_repeat'][] = [
-					'from' => date('Y', strtotime('-'.rand(1, 5).' years')),
-					'grade' => 'Bac +'.rand(1, 5),
-					'diploma' => 'Baccalauréat',
-					'university' => 'Lycée '.ucfirst($cities[array_rand($cities)]),
-					'city' => $cities[array_rand($cities)],
-					'country' => $countries[array_rand($countries)],
+					'from'       => date('Y', strtotime('-' . rand(1, 5) . ' years')),
+					'grade'      => 'Bac +' . rand(1, 5),
+					'diploma'    => 'Baccalauréat',
+					'university' => 'Lycée ' . ucfirst($cities[array_rand($cities)]),
+					'city'       => $cities[array_rand($cities)],
+					'country'    => $countries[array_rand($countries)],
 				];
 			}
 		}
-		if($datas['emundus_qualifications']['e_324_7737'] == 'Oui') {
+		if ($datas['emundus_qualifications']['e_324_7737'] == 'Oui')
+		{
 			$rand_repeat = rand(1, 3);
 
-			for ($i=0; $i < $rand_repeat; $i++) {
+			for ($i = 0; $i < $rand_repeat; $i++)
+			{
 				$datas['emundus_qualifications']['emundus_qualifications_689_repeat'][] = [
-					'e_324_7738' => date('Y-m-d', strtotime('-'.rand(1, 5).' years')),
-					'e_324_7739' => date('Y-m-d', strtotime('-'.rand(2, 5).' years')),
-					'e_324_7740' => 'Formation '.rand(1, 5),
-					'e_324_7741' => 'Certification '.rand(1, 5),
+					'e_324_7738' => date('Y-m-d', strtotime('-' . rand(1, 5) . ' years')),
+					'e_324_7739' => date('Y-m-d', strtotime('-' . rand(2, 5) . ' years')),
+					'e_324_7740' => 'Formation ' . rand(1, 5),
+					'e_324_7741' => 'Certification ' . rand(1, 5),
 				];
 			}
 		}
-		
+
 		return $datas;
 	}
 
@@ -795,36 +824,42 @@ final class Emundus extends CMSPlugin
 			$m_users = Factory::getApplication()->bootComponent('com_emundus')->getMVCFactory()->createModel('Users', 'EmundusModel');
 
 			$userObject = (object) $user;
-			if(!$this->db->insertObject('#__users', $userObject)) {
+			if (!$this->db->insertObject('#__users', $userObject))
+			{
 				throw new \RuntimeException($this->db->getErrorMsg());
 			}
 
 			$user_id = $this->db->insertid();
-			if (!empty($user_id)) {
-				if(!empty($user['j_groups'])) {
-					foreach ($user['j_groups'] as $j_group) {
+			if (!empty($user_id))
+			{
+				if (!empty($user['j_groups']))
+				{
+					foreach ($user['j_groups'] as $j_group)
+					{
 						$group_map = [
-							'user_id' => $user_id,
+							'user_id'  => $user_id,
 							'group_id' => $j_group
 						];
 						$group_map = (object) $group_map;
-						if(!$this->db->insertObject('#__user_usergroup_map', $group_map))
+						if (!$this->db->insertObject('#__user_usergroup_map', $group_map))
 						{
 							throw new \RuntimeException($this->db->getErrorMsg());
 						}
 					}
 				}
 
-				$emundus_user['firstname'] 		= $user['firstname'];
-				$emundus_user['lastname'] 		= $user['lastname'];
-				$emundus_user['profile'] 		= $user['profile'];
-				$emundus_user['em_oprofiles'] 	= '';
-				$emundus_user['univ_id'] 		= 0;
-				$emundus_user['em_groups'] 		= '';
-				$emundus_user['em_campaigns'] 	= $user['campaigns'];
-				$emundus_user['news'] 			= '';
+				$emundus_user['firstname']    = $user['firstname'];
+				$emundus_user['lastname']     = $user['lastname'];
+				$emundus_user['profile']      = $user['profile'];
+				$emundus_user['em_oprofiles'] = '';
+				$emundus_user['univ_id']      = 0;
+				$emundus_user['em_groups']    = '';
+				$emundus_user['em_campaigns'] = $user['campaigns'];
+				$emundus_user['news']         = '';
 				$m_users->addEmundusUser($user_id, $emundus_user);
-			} else {
+			}
+			else
+			{
 				error_log('Failed to create sample user');
 			}
 		}
