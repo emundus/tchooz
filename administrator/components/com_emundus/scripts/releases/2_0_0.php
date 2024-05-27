@@ -376,6 +376,16 @@ class Release2_0_0Installer extends ReleaseInstaller
 
 			EmundusHelperUpdate::installExtension('plg_sampledata_emundus','emundus',null,'plugin',1,'sampledata');
 
+			// 1.38.11
+			$query->clear()
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('enabled') . ' = 0')
+				->where($this->db->quoteName('element') . ' LIKE ' . $this->db->quote('com_contact'))
+				->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('component'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
