@@ -3141,9 +3141,11 @@ class EmundusModelFiles extends JModelLegacy
 						if (is_array($value)) {
 							$separator = ComponentHelper::getParams('com_emundus')->get('export_concat_separator', ', ');
 							$data[$d_key][$r_key] = '"' . implode($separator, $value) . '"';
-                        } else if (!empty($value) && is_string($value)) {
+                        }
+						/*
+						else if (!empty($value) && is_string($value)) {
 							$data[$d_key][$r_key] = str_replace('-', '\-', $value);
-						}
+						} */
 					}
 				}
 
