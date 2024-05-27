@@ -1,12 +1,13 @@
 <?php
 /**
- * @package     eMundus.Plugin
- * @subpackage  System.emundus
+ * @package         eMundus.Plugin
+ * @subpackage      System.emundus
  *
  * @copyright   (C) 2011 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license         GNU General Public License version 2 or later; see LICENSE.txt
  */
 
+use Gantry\Framework\Document;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -24,11 +25,33 @@ use Joomla\CMS\Plugin\CMSPlugin;
  */
 class PlgSystemEmundus extends CMSPlugin
 {
+	private $label_colors = [
+        'lightpurple' => '--em-purple-2',
+        'purple'=> '--em-purple-2',
+        'darkpurple'=> '--em-purple-2',
+        'lightblue'=> '--em-light-blue-2',
+        'blue'=> '--em-blue-2',
+        'darkblue'=> '--em-blue-3',
+        'lightgreen'=> '--em-green-2',
+        'green'=> '--em-green-2',
+        'darkgreen'=> '--em-green-2',
+        'lightyellow'=> '--em-yellow-2',
+        'yellow'=> '--em-yellow-2',
+        'darkyellow'=> '--em-yellow-2',
+        'lightorange'=> '--em-orange-2',
+        'orange'=> '--em-orange-2',
+        'darkorange'=> '--em-orange-2',
+        'lightred'=> '--em-red-1',
+        'red'=> '--em-red-2',
+        'darkred'=> '--em-red-2',
+        'pink'=> '--em-pink-2',
+        'default'=> '--neutral-600',
+    ];
 	/**
 	 * Constructor
 	 *
-	 * @param   object &$subject The object to observe
-	 * @param   array  $config   An array that holds the plugin configuration
+	 * @param   object &$subject  The object to observe
+	 * @param   array   $config   An array that holds the plugin configuration
 	 *
 	 * @since    1.0
 	 */
@@ -41,6 +64,60 @@ class PlgSystemEmundus extends CMSPlugin
 		}
 	}
 
+	public function onBeforeCompileHead()
+	{
+		if (version_compare(JVERSION, '3.7', '<'))
+		{
+			return;
+		}
+
+		$app = Factory::getApplication();
+		if ($app->isClient('administrator'))
+		{
+			if (empty($_REQUEST['option']) || $_REQUEST['option'] != 'com_emundus')
+				return;
+		}
+
+		$doc  = $app->getDocument();
+		$head = $doc->getHeadData();
+		$wa   = $doc->getWebAssetManager();
+
+		$e_session = $app->getSession()->get('emundusUser');
+
+		$profile_details = null;
+		if (!$app->getIdentity()->guest)
+		{
+			if (!empty($e_session->profile))
+			{
+				require_once JPATH_ROOT . '/components/com_emundus/models/users.php';
+				$m_users = $app->bootComponent('com_emundus')->getMVCFactory()->createModel('Users', 'EmundusModel');
+
+				$profile_details = $m_users->getProfileDetails($e_session->profile);
+
+				if(strpos($profile_details->class, 'label-') !== false)
+				{
+					$profile_details->class = str_replace('label-','--em-',$profile_details->class);
+				}
+				elseif(!empty($this->label_colors[$profile_details->class])) {
+					$profile_details->class = $this->label_colors[$profile_details->class];
+				}
+
+				$profile_font = $profile_details->published !== 1 ? '--em-coordinator-font' : '--em-applicant-font';
+				$profile_font_title = $profile_details->published !== 1 ? '--em-coordinator-font-title' : '--em-applicant-font-title';
+
+				$style = ':root {
+					--em-profile-color: var(' . $profile_details->class . ');
+					--em-profile-font: var(' . $profile_font . ');
+					--em-profile-font-title: var(' . $profile_font_title . ');
+				}';
+
+				$wa->addInlineStyle($style);
+			}
+		}
+
+		$doc->setHeadData($head);
+	}
+
 	/**
 	 * Insert classes into the body tag depending on user profile
 	 *
@@ -49,70 +126,34 @@ class PlgSystemEmundus extends CMSPlugin
 	public function onAfterRender()
 	{
 		$app = Factory::getApplication();
-		
-		if ($app->isClient('site')) {
-			$e_session = $app->getSession()->get('emundusUser');
 
+		if ($app->isClient('site'))
+		{
 			$body = $app->getBody();
 
-			preg_match_all(\chr(1) . '(<div.*\s+id="g-page-surround".*>)' . \chr(1) . 'i', $body, $matches);
-			
-			if(!empty($e_session))
+			$e_session = $app->getSession()->get('emundusUser');
+
+			// Define class via emundus profile
+			if (!empty($e_session))
 			{
 				$class = $e_session->applicant == 1 ? 'em-applicant' : 'em-coordinator';
 			}
-			else {
+			else
+			{
 				$class = 'em-guest';
 			}
 
+			preg_match_all(\chr(1) . '(<div.*\s+id="g-page-surround".*>)' . \chr(1) . 'i', $body, $matches);
 			foreach ($matches[0] as $match)
 			{
 				if (!strpos($match, 'class='))
 				{
-					$replace = '<div id="g-page-surround" class="'.$class.'">';
+					$replace = '<div id="g-page-surround" class="' . $class . '">';
 					$body    = str_replace($match, $replace, $body);
 				}
 			}
 
 			$app->setBody($body);
-		}/*
-?>
-		<script>
-            document.addEventListener("DOMContentLoaded", function() {
-
-                let containerClass = document.querySelector("#g-page-surround");
-                let profileClass = containerClass.getAttribute("class");
-                let root = document.querySelector(':root');
-
-                if (profileClass === 'em-applicant') {
-                    let textVar = getComputedStyle(root).getPropertyValue("--em-applicant-font");
-                    let titleVar = getComputedStyle(root).getPropertyValue("--em-applicant-font-title");
-
-                    updateFont(textVar);
-                    updateFontTitle(titleVar);
-
-                } else if (profileClass === 'em-coordinator') {
-                    let textVar = getComputedStyle(root).getPropertyValue("--em-coordinator-font");
-                    let titleVar = getComputedStyle(root).getPropertyValue("--em-coordinator-font-title");
-
-                    updateFont(textVar);
-                    updateFontTitle(titleVar);
-                } else {
-                    let textVar = getComputedStyle(root).getPropertyValue("--em-applicant-font");
-                    let titleVar = getComputedStyle(root).getPropertyValue("--em-applicant-font-title");
-
-                    updateFont(textVar);
-                    updateFontTitle(titleVar);
-                }
-
-                function updateFont(textVar) {
-                    document.documentElement.style.setProperty("--em-profile-font", textVar);
-                }
-                function updateFontTitle(titleVar) {
-                    document.documentElement.style.setProperty("--em-profile-font-title", titleVar);
-                }
-            });
-		</script>
-<?php*/
+		}
 	}
 }

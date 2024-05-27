@@ -391,84 +391,6 @@ if ($user != null)
     </div>
 
     <script>
-        // get current profile color and state
-        let profile_color = '<?php echo $profile_details->class; ?>';
-        let profile_state = <?php echo $profile_details->published; ?>;
-
-        // if session storage is empty, get profile color and state from server
-        if (profile_color === null || profile_state === null) {
-            getProfileColorAndState();
-        } else {
-            applyColors(profile_color, profile_state);
-        }
-
-        function getProfileColorAndState() {
-            fetch('/index.php?option=com_emundus&controller=users&task=getcurrentprofile', {
-                method: 'GET',
-            }).then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
-                }
-            }).then((result) => {
-                if (result.status) {
-                    let profile_color = result.data.class;
-                    let profile_state = result.data.published;
-
-                    // save profile color and state in local storage
-                    sessionStorage.setItem('profile_color', profile_color);
-                    sessionStorage.setItem('profile_state', profile_state);
-                    //applyColors(profile_color, profile_state);
-                }
-            });
-        }
-
-        function applyColors(profile_color, profile_state) {
-            const label_colors = {
-                'lightpurple': '--em-purple-2',
-                'purple': '--em-purple-2',
-                'darkpurple': '--em-purple-2',
-                'lightblue': '--em-light-blue-2',
-                'blue': '--em-blue-2',
-                'darkblue': '--em-blue-3',
-                'lightgreen': '--em-green-2',
-                'green': '--em-green-2',
-                'darkgreen': '--em-green-2',
-                'lightyellow': '--em-yellow-2',
-                'yellow': '--em-yellow-2',
-                'darkyellow': '--em-yellow-2',
-                'lightorange': '--em-orange-2',
-                'orange': '--em-orange-2',
-                'darkorange': '--em-orange-2',
-                'lightred': '--em-red-1',
-                'red': '--em-red-2',
-                'darkred': '--em-red-2',
-                'pink': '--em-pink-2',
-                'default': '--neutral-600',
-            };
-
-            if (profile_state == 1) { // it's an applicant profile
-
-                let root = document.querySelector(':root');
-                let css_var = getComputedStyle(root).getPropertyValue("--em-primary-color");
-
-                updateSvgColors(css_var);
-            } else { // it's a coordinator profile
-                if (profile_color != '') {
-
-                    profile_color = profile_color.split('-')[1];
-
-                    if (label_colors[profile_color] != undefined) {
-                        let root = document.querySelector(':root');
-                        let css_var = getComputedStyle(root).getPropertyValue(label_colors[profile_color]);
-
-                        updateSvgColors(css_var);
-                    }
-                }
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', function () {
             if (document.getElementById('profile_chzn') != null) {
                 document.getElementById('profile_chzn').style.display = 'none';
@@ -482,10 +404,6 @@ if ($user != null)
                 document.getElementById("g-navigation").style.top = hauteurTotaleElem + 'px';
             }
         });
-
-        function updateSvgColors(css_var) {
-            document.documentElement.style.setProperty("--em-profile-color", css_var);
-        }
 
         function displayUserOptions() {
             var dropdown = document.getElementById('userDropdown');
