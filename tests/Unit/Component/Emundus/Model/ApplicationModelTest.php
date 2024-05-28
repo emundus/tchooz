@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @package     Joomla.UnitTest
- * @subpackage  Extension
+ * @package         Joomla.UnitTest
+ * @subpackage      Extension
  *
  * @copyright   (C) 2022 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license         GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 namespace Unit\Component\Emundus\Model;
@@ -22,7 +22,7 @@ class ApplicationModelTest extends UnitTestCase
 	}
 
 	/**
-	 * @group application
+	 * @group   application
 	 *
 	 * @return  void
 	 *
@@ -36,25 +36,33 @@ class ApplicationModelTest extends UnitTestCase
 
 	public function testGetUserAttachmentsByFnum()
 	{
-		if (!defined('EMUNDUS_PATH_ABS')) {
+		if (!defined('EMUNDUS_PATH_ABS'))
+		{
 			define('EMUNDUS_PATH_ABS', JPATH_ROOT);
 		}
 
 		$attachments = $this->model->getUserAttachmentsByFnum('');
 		$this->assertSame([], $attachments);
 
-		$user_id     = $this->h_dataset->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program     = $this->h_dataset->createSampleProgram();
-		$campaign_id = $this->h_dataset->createSampleCampaign($program);
-		$fnum        = $this->h_dataset->createSampleFile($campaign_id, $user_id);
+		// Datasets
+		$user_id             = $this->h_dataset->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
+		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
+		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $user_id);
+		//
+
 		$attachments = $this->model->getUserAttachmentsByFnum($fnum);
 		$this->assertEmpty($attachments);
 
+		// Datasets
 		$first_attachment_id  = $this->h_dataset->createSampleAttachment();
 		$second_attachment_id = $this->h_dataset->createSampleAttachment();
-		$this->h_dataset->createSampleUpload($fnum, $campaign_id, $user_id, $first_attachment_id);
-		$this->h_dataset->createSampleUpload($fnum, $campaign_id, $user_id, $second_attachment_id);
-		$attachments = $this->model->getUserAttachmentsByFnum($fnum, '', 0, $user_id);
+		$first_upload         = $this->h_dataset->createSampleUpload($fnum, $campaign_id, $user_id, $first_attachment_id);
+		$second_upload        = $this->h_dataset->createSampleUpload($fnum, $campaign_id, $user_id, $second_attachment_id);
+		//
+
+		$attachments = $this->model->getUserAttachmentsByFnum($fnum, '', null, false, $user_id_coordinator);
 		$this->assertNotEmpty($attachments);
 		$this->assertSame(count($attachments), 2);
 
@@ -68,10 +76,18 @@ class ApplicationModelTest extends UnitTestCase
 
 		// if i use search parameter, only pertinent attachments should be returned
 		$search      = $attachments[0]->value;
-		$attachments = $this->model->getUserAttachmentsByFnum($fnum, $search, 0, $user_id);
+		$attachments = $this->model->getUserAttachmentsByFnum($fnum, $search, null, false, $user_id_coordinator);
 		$this->assertNotEmpty($attachments);
 		$this->assertSame($attachments[0]->value, $search);
 		$this->assertSame(count($attachments), 1);
+
+		// Clear datasets
+		$this->h_dataset->deleteSampleUser($user_id);
+		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+		$this->h_dataset->deleteSampleAttachment($first_attachment_id);
+		$this->h_dataset->deleteSampleAttachment($second_attachment_id);
+		//
 	}
 
 	public function testuploadAttachment()
@@ -79,11 +95,12 @@ class ApplicationModelTest extends UnitTestCase
 		$upload = $this->model->uploadAttachment([]);
 		$this->assertSame($upload, false);
 
-		$user_id       = $this->h_dataset->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program       = $this->h_dataset->createSampleProgram();
-		$campaign_id   = $this->h_dataset->createSampleCampaign($program);
-		$fnum          = $this->h_dataset->createSampleFile($campaign_id, $user_id);
-		$attachment_id = $this->h_dataset->createSampleAttachment();
+		$user_id             = $this->h_dataset->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
+		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
+		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $user_id);
+		$attachment_id       = $this->h_dataset->createSampleAttachment();
 
 		$data          = [];
 		$data['key']   = ['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'];
@@ -91,6 +108,13 @@ class ApplicationModelTest extends UnitTestCase
 
 		$upload = $this->model->uploadAttachment($data);
 		$this->assertGreaterThan(0, $upload);
+
+		// Clear datasets
+		$this->h_dataset->deleteSampleUser($user_id);
+		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+		$this->h_dataset->deleteSampleAttachment($attachment_id);
+		//
 	}
 
 	public function testgetTabs()
@@ -113,10 +137,12 @@ class ApplicationModelTest extends UnitTestCase
 
 	public function testupdateTabs()
 	{
+		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+
 		$updated = $this->model->updateTabs([], 0);
 		$this->assertSame(false, $updated, 'No tabs to update');
 
-		$updated = $this->model->updateTabs([], 95);
+		$updated = $this->model->updateTabs([], $user_id_coordinator);
 		$this->assertSame(false, $updated, 'No tabs to update');
 
 		$tab           = new stdClass();
@@ -127,18 +153,24 @@ class ApplicationModelTest extends UnitTestCase
 		$updated = $this->model->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], 0);
 		$this->assertSame(false, $updated, 'Missing user id');
 
-		$updated = $this->model->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], 95);
+		$updated = $this->model->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], $user_id_coordinator);
 		$this->assertSame(false, $updated,);
 
-		$tab->id = $this->model->createTab('Test', 95);
+		$tab->id = $this->model->createTab('Test', $user_id_coordinator);
 		$this->assertNotEmpty($tab->id);
 
-		$updated = $this->model->updateTabs([$tab], 95);
+		$updated = $this->model->updateTabs([$tab], $user_id_coordinator);
 		$this->assertSame(true, $updated, 'Tab updated');
 
+		$origin_tab_id = $tab->id;
 		$tab->id = $tab->id . ' OR 1=1';
 		$updated = $this->model->updateTabs([$tab], 0);
 		$this->assertSame(false, $updated, 'SQL Injection impossible');
+
+		// Clear datasets
+		$this->model->deleteTab($origin_tab_id, $user_id_coordinator);
+		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		//
 	}
 
 	/**
@@ -147,7 +179,9 @@ class ApplicationModelTest extends UnitTestCase
 	 */
 	public function testisTabOwnedByUser()
 	{
-		$owned = $this->model->isTabOwnedByUser(0, 95);
+		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+
+		$owned = $this->model->isTabOwnedByUser(0, $user_id_coordinator);
 		$this->assertSame(false, $owned, 'An invalid tab id should return false');
 
 		$owned = $this->model->isTabOwnedByUser(1);
@@ -156,17 +190,22 @@ class ApplicationModelTest extends UnitTestCase
 		$tab           = new stdClass();
 		$tab->name     = 'Unit Test ' . time();
 		$tab->ordering = 9999;
-		$tab->id       = $this->model->createTab('Test', 95);
+		$tab->id       = $this->model->createTab('Test', $user_id_coordinator);
 		$this->assertNotEmpty($tab->id);
 
-		$owned = $this->model->isTabOwnedByUser($tab->id, 95);
+		$owned = $this->model->isTabOwnedByUser($tab->id, $user_id_coordinator);
 		$this->assertSame(true, $owned, 'Tab is owned by user');
 
 		$owned = $this->model->isTabOwnedByUser($tab->id, 0);
 		$this->assertSame(false, $owned, 'Tab is not owned by user');
 
-		$owned = $this->model->isTabOwnedByUser(9999 . ' OR 1=1', 95);
+		$owned = $this->model->isTabOwnedByUser(9999 . ' OR 1=1', $user_id_coordinator);
 		$this->assertSame(false, $owned, 'SQL Injection impossible');
+
+		// Clear datasets
+		$this->model->deleteTab($tab->id, $user_id_coordinator);
+		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		//
 	}
 
 	/**
@@ -179,8 +218,9 @@ class ApplicationModelTest extends UnitTestCase
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action and fnum are empty');
 
 		$user_id     = $this->h_dataset->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program     = $this->h_dataset->createSampleProgram();
-		$campaign_id = $this->h_dataset->createSampleCampaign($program);
+		$user_id_coordinator     = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
+		$program     = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
+		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
 		$fnum        = $this->h_dataset->createSampleFile($campaign_id, $user_id);
 
 		$done = $this->model->applicantCustomAction(0, $fnum);
@@ -221,6 +261,18 @@ class ApplicationModelTest extends UnitTestCase
 
 		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $fnum);
 		$this->assertFalse($done, 'Action should no longer work because file status has changed');
+
+		// Clear datasets
+		$this->h_dataset->deleteSampleUser($user_id);
+		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+		$query->clear()
+			->update('#__modules')
+			->set('params = ' . $this->db->quote($module['params']))
+			->where('id = ' . $this->db->quote($module['id']));
+		$this->db->setQuery($query);
+		$this->db->execute();
+		//
 	}
 
 	public function testgetApplicationMenu()
@@ -235,5 +287,10 @@ class ApplicationModelTest extends UnitTestCase
 
 		$menus = $this->model->getApplicationMenu($applicant);
 		$this->assertEmpty($menus, 'An applicant should not have access to the application menu');
+
+		// Clear datasets
+		$this->h_dataset->deleteSampleUser($coordinator);
+		$this->h_dataset->deleteSampleUser($applicant);
+		//
 	}
 }
