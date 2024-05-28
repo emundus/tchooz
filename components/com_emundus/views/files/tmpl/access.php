@@ -51,7 +51,7 @@ $current_user = JFactory::getUser();
 
     <div class="em-access" style="min-height: 282px;">
         <div class="em-access-form">
-            <div class="em-flex-column em-mt-12">
+            <div class="tw-flex tw-flex-col tw-items-start em-mt-12">
                 <label><?= JText::_('COM_EMUNDUS_SHARE_MESSAGE') ?></label>
                 <div  class="em-mb-6" style="width: 100%;">
                     <input type="checkbox" id="group-user-choice">
