@@ -898,8 +898,17 @@ video {
                         }
 /* COORDINATOR FORMS*/
 .emundus-form.tw-p-6.homepage {
-        background: var(--neutral-0);
+          background: var(--neutral-0);
+          height: 100vh;
+          padding: 0 24px 0 0;
+          overflow: auto;
     }
+.emundus-form.tw-p-6.homepage .tw-mb-8 {
+            margin-bottom: 0;
+        }
+.emundus-form.tw-p-6.homepage .fabrikForm {
+            background: var(--neutral-0);
+        }
 /** APPLICANT **/
 .emundus-form .page-header h1 {
     color: var(--em-default-title-color-1);
@@ -5168,6 +5177,10 @@ div:where(.swal2-container) div:where(.swal2-popup) {
             padding: var(--em-alert-modal-padding) !important;
             align-items: flex-start;
         }
+div:where(.swal2-container) div:where(.swal2-popup) iframe {
+                padding-top: 0;
+                margin-top: 10px;
+            }
 div:where(.swal2-container) div:where(.swal2-popup) .swal2-title {
     color: var(--em-default-title-color-1);
     font-family: var(--em-profile-font-title);
@@ -5218,9 +5231,6 @@ div:where(.swal2-container) div:where(.swal2-popup) .swal2-actions {
 div:where(.swal2-container) div:where(.swal2-popup) .swal2-actions button {
     margin: 0px;
 }
-.gantry.g-back-office-emundus-tableau .swal2-popup iframe {
-        padding-top: 30px;
-    }
 /* .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:active,
     .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:focus,
     .swal2-actions button.swal2-confirm.em-swal-confirm-button.btn.btn-success.swal2-styled:hover {

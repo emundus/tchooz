@@ -2,7 +2,18 @@
 
     /* COORDINATOR FORMS*/
     .emundus-form.tw-p-6.homepage {
-        background: var(--neutral-0);
+          background: var(--neutral-0);
+          height: 100vh;
+          padding: 0 24px 0 0;
+          overflow: auto;
+
+        .tw-mb-8 {
+            margin-bottom: 0;
+        }
+
+        .fabrikForm {
+            background: var(--neutral-0);
+        }
     }
 
     /** APPLICANT **/

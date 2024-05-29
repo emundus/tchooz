@@ -244,6 +244,11 @@
             padding: var(--em-alert-modal-padding) !important;
             align-items: flex-start;
 
+            iframe {
+                padding-top: 0;
+                margin-top: 10px;
+            }
+
             .swal2-title {
                 @apply tw-em-default-title-3;
                 padding: 0;
@@ -293,9 +298,6 @@
                 }
             }
         }
-    }
-    .gantry.g-back-office-emundus-tableau .swal2-popup iframe {
-        padding-top: 30px;
     }
 
     .swal2-icon.swal2-question {
