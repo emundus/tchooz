@@ -33,6 +33,7 @@ use Exception;
 use JFactory;
 use JLog;
 use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 
 class Dataset
 {
@@ -130,6 +131,22 @@ class Dataset
 		}
 
 		return $fnum;
+	}
+
+	public function deleteSampleFile($fnum)
+	{
+		$deleted = false;
+		if (!empty($fnum)) {
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_campaign_candidature')
+				->where('fnum = ' . $this->db->quote($fnum));
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
 	}
 
 	public function createSampleTag(){
@@ -237,11 +254,10 @@ class Dataset
 		return $deleted;
 	}
 
-	public function createSampleProgram($label = 'Programme Test Unitaire')
+	public function createSampleProgram($label = 'Programme Test Unitaire',$user_id = 1)
 	{
 		$m_programme = new EmundusModelProgramme;
-		$program = $m_programme->addProgram(['label' => $label, 'published' => 1]);
-		return $program;
+		return $m_programme->addProgram(['label' => $label, 'published' => 1],Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id));
 	}
 
 	public function deleteSampleProgram($program_id) {
@@ -260,7 +276,7 @@ class Dataset
 		return $deleted;
 	}
 
-	public function createSampleCampaign($program)
+	public function createSampleCampaign($program, $user_id = 1)
 	{
 		$campaign_id = 0;
 
@@ -272,7 +288,7 @@ class Dataset
 			$end_date = new DateTime();
 			$end_date->modify('+1 year');
 			$campaign_id = $m_campaign->createCampaign([
-				'label' =>  json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
+				'label' =>  json_encode(['fr' => 'Campagne test unitaire '.rand(1,9999), 'en' => 'Campagne test unitaire '.rand(1,9999)]),
 				'description' => 'Lorem ipsum',
 				'short_description' => 'Lorem ipsum',
 				'start_date' => $start_date->format('Y-m-d H:i:s'),
@@ -282,7 +298,7 @@ class Dataset
 				'year' => '2022-2023',
 				'published' => 1,
 				'is_limited' => 0,
-				'user' => 1
+				'user' => $user_id
 			]);
 		}
 
@@ -324,6 +340,22 @@ class Dataset
 		}
 
 		return $sample_id;
+	}
+
+	public function deleteSampleAttachment($aid) {
+		$deleted = false;
+		if (!empty($aid)) {
+
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_setup_attachments')
+				->where('id = ' . $aid);
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
 	}
 
 	public function createSampleLetter($attachment_id, $template_type = 2, $programs = [], $status = [], $campaigns = []) {
@@ -394,7 +426,7 @@ class Dataset
 	}
 
 	public function createSampleUpload($fnum, $campaign_id, $user_id = 95, $attachment_id = 1) {
-		$inserted = false;
+		$upload_id = 0;
 
 		if (!empty($fnum)) {
 			$filename = $user_id . '-' . $campaign_id . '-unittest' . rand(0, 100) . '.pdf';
@@ -409,14 +441,31 @@ class Dataset
 
 			try {
 				$this->db->setQuery($query);
-				$inserted = $this->db->execute();
+				if($this->db->execute()) {
+					$upload_id = $this->db->insertid();
+				}
 			} catch (Exception $e) {
-				$inserted = false;
 				error_log('attachment insertion failed');
 			}
 		}
 
-		return $inserted;
+		return $upload_id;
+	}
+
+	public function deleteSampleUpload($upload_id) {
+		$deleted = false;
+		if (!empty($upload_id)) {
+
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_uploads')
+				->where('id = ' . $upload_id);
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
 	}
 
 	public function  duplicateSampleProfile($profile_id)

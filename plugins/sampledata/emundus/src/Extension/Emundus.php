@@ -623,7 +623,7 @@ final class Emundus extends CMSPlugin
 
 			foreach ($applications as $application)
 			{
-				$source      = JPATH_ROOT . '/plugin/sampledata/emundus/src/samples/pdf_emundus.pdf';
+				$source      = JPATH_ROOT . '/plugins/sampledata/emundus/src/samples/pdf_emundus.pdf';
 				$destination = JPATH_ROOT . '/images/emundus/files/' . $application->applicant_id;
 				if (!is_dir($destination))
 				{
@@ -749,9 +749,14 @@ final class Emundus extends CMSPlugin
 		$query->select('id')
 			->from('data_nationality');
 		$this->db->setQuery($query);
-		$nationalities = $this->db->loadColumn();
-		$cities        = ['Paris', 'La Rochelle', 'Nantes', 'Marseille', 'Bruxelles', 'New York', 'Madrid', 'Barcelone'];
-		$zip_codes     = ['75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '64505', '17000', '16100', '75014', '75015', '75016', '75017', '75018', '75019', '75020'];
+		$nationalities     = $this->db->loadColumn();
+		$cities            = ['Paris', 'La Rochelle', 'Nantes', 'Marseille', 'Bruxelles', 'New York', 'Madrid', 'Barcelone'];
+		$zip_codes         = ['75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010', '64505', '17000', '16100', '75014', '75015', '75016', '75017', '75018', '75019', '75020'];
+		$fonctions         = ['Développeur', 'Business Développeur', 'Chef de projet', 'Directeur', 'Manager', 'Responsable', 'Consultant', 'Ingénieur', 'Architecte', 'Designer', 'Graphiste', 'Décorateur'];
+		$languages         = [1, 2, 3, 4, 5, 6, 7];
+		$languages_repeat         = ['Anglais', 'Allemand', 'Arabe', 'Chinois', 'Espagnol', 'Italien', 'Russe'];
+		$languages_writing = ['Débutant', 'Intermédiaire', 'Avancé'];
+		$survey            = [1, 2, 3, 4];
 		$query->clear()
 			->select('id')
 			->from('data_country');
@@ -778,6 +783,15 @@ final class Emundus extends CMSPlugin
 			'emundus_qualifications'  => [
 				'e_324_7736' => $yes_no[array_rand($yes_no)],
 				'e_324_7737' => $yes_no[array_rand($yes_no)],
+			],
+			'emundus_cv'              => [
+				'e_325_7742' => $yes_no[array_rand($yes_no)],
+			],
+			'emundus_languages'       => [
+				'first_language' => $languages[array_rand($languages)],
+			],
+			'emundus_9_00'            => [
+				'e_360_7754' => '["'.$survey[array_rand($survey)].'"]',
 			]
 		];
 
@@ -811,6 +825,33 @@ final class Emundus extends CMSPlugin
 					'e_324_7741' => 'Certification ' . rand(1, 5),
 				];
 			}
+		}
+		if ($datas['emundus_cv']['e_325_7742'] == 'Oui')
+		{
+			$rand_repeat = rand(1, 3);
+
+			for ($i = 0; $i < $rand_repeat; $i++)
+			{
+				$datas['emundus_cv']['emundus_cv_690_repeat'][] = [
+					'start_date'         => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years')),
+					'end_date'           => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years')),
+					'Present_employment' => $fonctions[array_rand($fonctions)],
+					'Organisation'       => 'eMundus',
+					'e_325_7743'         => $cities[array_rand($cities)],
+					'country'            => $countries[array_rand($countries)],
+					'description'        => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi.'
+				];
+			}
+		}
+
+		$rand_repeat = rand(1, 3);
+
+		for ($i = 0; $i < $rand_repeat; $i++)
+		{
+			$datas['emundus_languages']['emundus_languages_692_repeat'][] = [
+				'language'         => $languages_repeat[array_rand($languages_repeat)],
+				'Language_writing' => $languages_writing[array_rand($languages_writing)]
+			];
 		}
 
 		return $datas;
