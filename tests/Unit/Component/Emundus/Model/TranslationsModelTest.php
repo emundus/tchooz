@@ -150,21 +150,24 @@ class TranslationsModelTest extends UnitTestCase
 
 	public function testgetTranslationsFalang()
 	{
-		$reference_id = 9999;
+		$reference_id = rand(1, 9999);
+		$name = 'Translation Status '.rand(1, 9999);
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
-		$query->insert('#__emundus_setup_status')
-			->columns('`step`, `value`, `ordering`')
-			->values($reference_id . ', "Translation Status", 1');
 
-		$db->setQuery($query);
-		$db->execute();
+		$inserted = [
+			'step' => $reference_id,
+			'value' => $name,
+			'ordering' => 1
+		];
+		$inserted = (object) $inserted;
+		$db->insertObject('#__emundus_setup_status', $inserted);
 
 		$translations = $this->model->getTranslationsFalang('fr-FR', 'en-GB', $reference_id, 'value', 'emundus_setup_status');
 		$this->assertNotEmpty($translations, 'Falang translations should not be empty');
-		$this->assertObjectHasAttribute('9999', $translations, 'Falang translations should have a key 9999');
-		$this->assertObjectHasAttribute('value', $translations->{9999}, 'Falang translations should have a key 9999 with a value attribute');
-		$this->assertSame('Translation Status', $translations->{9999}->value->default_lang, 'Falang translations should have a key 9999 with a value attribute equal to "Translation Status"');
+		$this->assertObjectHasProperty($reference_id, $translations, 'Falang translations should have a key 9999');
+		$this->assertObjectHasProperty('value', $translations->{$reference_id}, 'Falang translations should have a key 9999 with a value attribute');
+		$this->assertSame($name, $translations->{$reference_id}->value->default_lang, 'Falang translations should have a key 9999 with a value attribute equal to "Translation Status"');
 
 		// cleanup
 		$query = $db->getQuery(true);

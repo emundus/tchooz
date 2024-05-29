@@ -512,7 +512,7 @@ class EmundusModelEvaluation extends JModelList
 	 * @return array list of Fabrik element ID used in evaluation form
 	 * @throws Exception
 	 */
-    public function getAllEvaluationElements($show_in_list_summary=1, $programme_code) {
+    public function getAllEvaluationElements($show_in_list_summary, $programme_code) {
 		$session = JFactory::getSession();
 
 		$jinput = JFactory::getApplication()->input;
@@ -568,7 +568,7 @@ class EmundusModelEvaluation extends JModelList
 	 * @return    array list of Fabrik element ID used in evaluation form
 	 **@throws Exception
 	 */
-    public function getAllDecisionElements($show_in_list_summary=1, $programme_code) {
+    public function getAllDecisionElements($show_in_list_summary, $programme_code) {
 		$session = JFactory::getSession();
 
 		$jinput = JFactory::getApplication()->input;

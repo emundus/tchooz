@@ -48,11 +48,9 @@ class EmailsHelperTest extends UnitTestCase
 	{
 		$this->assertSame(false, $this->helper->assertCanSendMailToUser(), 'can send mail returns false if nor user_id nor fnum given');
 
-		$user_id = $this->h_dataset->createSampleUser();
-
 		// User with correct email
-		if (!empty($user_id)) {
-			$this->assertSame(true, $this->helper->assertCanSendMailToUser($user_id), 'A new created user with valid adress can receive emails');
+		if (!empty($this->dataset['applicant'])) {
+			$this->assertSame(true, $this->helper->assertCanSendMailToUser($this->dataset['applicant']), 'A new created user with valid adress can receive emails');
 
 			$query = $this->db->getQuery(true);
 
@@ -60,25 +58,25 @@ class EmailsHelperTest extends UnitTestCase
 			$query->clear()
 				->update('#__users')
 				->set('params = ' . $this->db->quote($params))
-				->where('id = ' . $user_id);
+				->where('id = ' . $this->dataset['applicant']);
 			$this->db->setQuery($query);
 			$this->db->execute();
 
-			$this->assertSame(false, $this->helper->assertCanSendMailToUser($user_id), 'A user with param send email to false does not pass assertCanSendMailToUser function');
+			$this->assertSame(false, $this->helper->assertCanSendMailToUser($this->dataset['applicant']), 'A user with param send email to false does not pass assertCanSendMailToUser function');
 
 			$params = json_encode(array('send_mail' => true));
 			$query->clear()
 				->update('#__users')
 				->set('params = ' . $this->db->quote($params))
-				->where('id = ' . $user_id);
+				->where('id = ' . $this->dataset['applicant']);
 			$this->db->setQuery($query);
 			$this->db->execute();
 
-			$this->assertSame(true, $this->helper->assertCanSendMailToUser($user_id), 'A user with param send email to true pass assertCanSendMailToUser function');
+			$this->assertSame(true, $this->helper->assertCanSendMailToUser($this->dataset['applicant']), 'A user with param send email to true pass assertCanSendMailToUser function');
 
 			$query->clear()
 				->delete($this->db->quoteName('#__users'))
-				->where('id = ' . $user_id);
+				->where('id = ' . $this->dataset['applicant']);
 			$this->db->setQuery($query);
 			$this->db->execute();
 		}

@@ -1317,9 +1317,13 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return bool|string
 	 */
-	public function shareUsers($users, $actions, $fnums)
+	public function shareUsers($users, $actions, $fnums, $current_user = null)
 	{
 		$error = null;
+
+		if(empty($current_user)) {
+			$current_user = $this->app->getIdentity();
+		}
 
 		if (!empty($users) && !empty($fnums)) {
 			try {
@@ -1359,13 +1363,12 @@ class EmundusModelFiles extends JModelLegacy
 
 					foreach ($fnums as $fnum) {
 						$logsParams = array('created' => array_unique($user_names, SORT_REGULAR));
-						EmundusModelLogs::log($this->app->getIdentity()->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($current_user->id, '', $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
 			catch (Exception $e) {
-				$error = Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage();
-				Log::add($error, Log::ERROR, 'com_emundus');
+				Log::add('Failed to share users' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				$shared = false;
 			}
 		}
@@ -2204,13 +2207,14 @@ class EmundusModelFiles extends JModelLegacy
     *   @param elements     array of element to get value
     *   @return array
     */
-	public function getFnumArray($fnums, $elements, $methode = 0, $start = 0, $pas = 0, $raw = 0, $defaultElement = '')
+	public function getFnumArray($fnums, $elements, $methode = 0, $start = 0, $pas = 0, $raw = 0, $defaultElement = '',$user = null)
 	{
+		if(empty($user)) {
+			$user = $this->app->getIdentity();
+		}
+		$locales = substr($this->app->getLanguage()->getTag(), 0, 2);
 
-
-		$locales = substr(JFactory::getLanguage()->getTag(), 0, 2);
-
-		$anonymize_data = EmundusHelperAccess::isDataAnonymized($this->app->getIdentity()->id);
+		$anonymize_data = EmundusHelperAccess::isDataAnonymized($user->id);
 
 		if (empty($defaultElement)) {
 			if ($anonymize_data) {

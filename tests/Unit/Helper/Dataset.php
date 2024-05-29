@@ -161,9 +161,9 @@ class Dataset
 		return $m_settings->createStatus()->step;
 	}
 
-	public function createSampleForm($prid = 9, $label = ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], $intro = ['fr' => 'Ce formulaire est un formulaire de test eMundus, utilisé uniquement pour tester le bon fonctionnement de la plateforme.', 'en' => '']) {
+	public function createSampleForm($prid = 9, $label = ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], $intro = ['fr' => 'Ce formulaire est un formulaire de test eMundus, utilisé uniquement pour tester le bon fonctionnement de la plateforme.', 'en' => ''], $user = 1) {
 		$m_formbuilder = new EmundusModelFormbuilder;
-		return $m_formbuilder->createFabrikForm($prid, $label, $intro);
+		return $m_formbuilder->createFabrikForm($prid, $label, $intro, '', $user);
 	}
 
 	public function createSampleGroup() {
@@ -423,6 +423,24 @@ class Dataset
 		}
 
 		return $letter_id;
+	}
+
+	public function deleteSampleLetter($letter_id)
+	{
+		$deleted = false;
+		if (!empty($letter_id)) {
+
+			$query = $this->db->getQuery(true);
+
+			$query->delete('#__emundus_setup_letters')
+				->where('id = ' . $letter_id);
+
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+		}
+
+		return $deleted;
+
 	}
 
 	public function createSampleUpload($fnum, $campaign_id, $user_id = 95, $attachment_id = 1) {

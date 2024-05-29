@@ -28,7 +28,7 @@ class CampaignModelTest extends UnitTestCase
 	 * @since  4.2.0
 	 */
 	private $m_programme;
-	
+
 	/**
 	 * @var    EmundusModelProfile
 	 * @since  4.2.0
@@ -52,12 +52,14 @@ class CampaignModelTest extends UnitTestCase
 		$query->select('*')
 			->from($this->db->quoteName('#__emundus_campaign_workflow'));
 
-		try {
+		try
+		{
 			$this->db->setQuery($query);
 			$this->db->loadObjectList();
 			$table_exists = true;
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			$table_exists = false;
 		}
 
@@ -69,12 +71,14 @@ class CampaignModelTest extends UnitTestCase
 			->where($this->db->quoteName('display_preliminary_documents') . ' IS NULL')
 			->orWhere($this->db->quoteName('specific_documents') . ' IS NULL');
 
-		try {
+		try
+		{
 			$this->db->setQuery($query);
 			$this->db->loadObjectList();
 			$columns_exists = true;
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			$columns_exists = false;
 		}
 
@@ -84,12 +88,14 @@ class CampaignModelTest extends UnitTestCase
 			->select('*')
 			->from($this->db->quoteName('#__emundus_campaign_workflow_repeat_documents'));
 
-		try {
+		try
+		{
 			$this->db->setQuery($query);
 			$this->db->loadObjectList();
 			$table_exists = true;
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			$table_exists = false;
 		}
 
@@ -115,66 +121,55 @@ class CampaignModelTest extends UnitTestCase
 
 	public function testCreateCampaign()
 	{
-		$user_id_coordinator     = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-
 		$new_campaign_id = $this->model->createCampaign([]);
 		$this->assertEmpty($new_campaign_id, 'Assert can not create campaign without data');
 
 		$new_campaign_id = $this->model->createCampaign(['limit_status' => 1, 'profile_id' => 9]);
 		$this->assertEmpty($new_campaign_id, 'Assert can not create campaign without label');
 
-		$created_program = $this->h_dataset->createSampleProgram('Programme test unitaire', $user_id_coordinator);
-		$this->assertNotEmpty($created_program);
+		$start_date = new DateTime();
+		$start_date->modify('-1 day');
 
-		if (!empty($created_program)) {
-			$start_date = new DateTime();
-			$start_date->modify('-1 day');
+		$end_date = new DateTime();
+		$end_date->modify('+1 year');
 
-			$end_date = new DateTime();
-			$end_date->modify('+1 year');
+		$inserting_datas = [
+			'label'             => json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
+			'description'       => 'Lorem ipsum',
+			'short_description' => 'Lorem ipsum',
+			'start_date'        => $start_date->format('Y-m-d H:i:s'),
+			'end_date'          => $end_date->format('Y-m-d H:i:s'),
+			'profile_id'        => 9,
+			'training'          => $this->dataset['program']['programme_code'],
+			'year'              => '2022-2023',
+			'published'         => 1,
+			'is_limited'        => 0
+		];
 
-			$inserting_datas = [
-				'label'             => json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
-				'description'       => 'Lorem ipsum',
-				'short_description' => 'Lorem ipsum',
-				'start_date'        => $start_date->format('Y-m-d H:i:s'),
-				'end_date'          => $end_date->format('Y-m-d H:i:s'),
-				'profile_id'        => 9,
-				'training'          => $created_program['programme_code'],
-				'year'              => '2022-2023',
-				'published'         => 1,
-				'is_limited'        => 0
-			];
+		$new_campaign_id = $this->model->createCampaign($inserting_datas);
+		$this->assertGreaterThan(0, $new_campaign_id, 'Assert campaign creation works.');
 
-			$new_campaign_id = $this->model->createCampaign($inserting_datas);
-			$this->assertGreaterThan(0, $new_campaign_id, 'Assert campaign creation works.');
+		$program = $this->model->getProgrammeByCampaignID($new_campaign_id);
+		$this->assertNotEmpty($program, 'Getting program from campaign id works');
+		$this->assertSame($program['code'], $this->dataset['program']['programme_code'], 'The program code used in creation is retrieved when getting program by the new campaign id');
 
-			$program = $this->model->getProgrammeByCampaignID($new_campaign_id);
-			$this->assertNotEmpty($program, 'Getting program from campaign id works');
-			$this->assertSame($program['code'], $created_program['programme_code'], 'The program code used in creation is retrieved when getting program by the new campaign id');
+		$program_by_training = $this->model->getProgrammeByTraining($program['code']);
+		$this->assertNotEmpty($program_by_training->id, 'Assert getting program by his training code works');
 
-			$program_by_training = $this->model->getProgrammeByTraining($program['code']);
-			$this->assertNotEmpty($program_by_training->id, 'Assert getting program by his training code works');
-
-			$campaigns_by_program    = $this->model->getCampaignsByProgramId($program_by_training->id);
-			$campaign_ids_by_program = [];
-			foreach ($campaigns_by_program as $campaign) {
-				$campaign_ids_by_program[] = $campaign->id;
-			}
-			$this->assertTrue(in_array($new_campaign_id, $campaign_ids_by_program), 'Assert campaign is found in getCampaignsByProgramId function');
-
-			$this->assertTrue($this->model->unpublishCampaign([$new_campaign_id]), 'Assert unpublish campaign works');
-			$this->assertTrue($this->model->publishCampaign([$new_campaign_id]), 'Assert publish campaign works');
-			$this->assertTrue($this->model->pinCampaign($new_campaign_id), 'Assert pin campaign works properly');
-
-			$deleted = $this->model->deleteCampaign([$new_campaign_id]);
-			$this->assertTrue($deleted, 'Campaign deletion works properly');
-
-			// Clear datasets
-			$this->h_dataset->deleteSampleUser($user_id_coordinator);
-			$this->h_dataset->deleteSampleProgram($created_program['programme_id']);
-			//
+		$campaigns_by_program    = $this->model->getCampaignsByProgramId($program_by_training->id);
+		$campaign_ids_by_program = [];
+		foreach ($campaigns_by_program as $campaign)
+		{
+			$campaign_ids_by_program[] = $campaign->id;
 		}
+		$this->assertTrue(in_array($new_campaign_id, $campaign_ids_by_program), 'Assert campaign is found in getCampaignsByProgramId function');
+
+		$this->assertTrue($this->model->unpublishCampaign([$new_campaign_id]), 'Assert unpublish campaign works');
+		$this->assertTrue($this->model->publishCampaign([$new_campaign_id]), 'Assert publish campaign works');
+		$this->assertTrue($this->model->pinCampaign($new_campaign_id), 'Assert pin campaign works properly');
+
+		$deleted = $this->model->deleteCampaign([$new_campaign_id]);
+		$this->assertTrue($deleted, 'Campaign deletion works properly');
 	}
 
 	public function testUpdateCampaign()
@@ -216,15 +211,14 @@ class CampaignModelTest extends UnitTestCase
 		$this->assertTrue($this->model->canCreateWorkflow(9, [0], ['programs' => ['program-1']]), 'On devrait pouvoir créer un workflow sur le même statut mais en spécifiant une campagne.');
 
 		// Datasets
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program = $this->h_dataset->createSampleProgram('Programme test unitaire', $user_id_coordinator);
-		$workflow_on_program = $this->model->createWorkflow(9, [0], 1, null, ['programs' => [$program['programme_code']]]);
+		$workflow_on_program = $this->model->createWorkflow(9, [0], 1, null, ['programs' => [$this->dataset['program']['programme_code']]]);
 		$this->assertNotEmpty($workflow_on_program);
-		$this->assertFalse($this->model->canCreateWorkflow(9, [0], ['programs' => ['program-1', $program['programme_code']]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut et en spécifiant un progamme commun.');
+		$this->assertFalse($this->model->canCreateWorkflow(9, [0], ['programs' => ['program-1', $this->dataset['program']['programme_code']]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut et en spécifiant un progamme commun.');
 
-		$new_campaign_id = $this->h_dataset->createSampleCampaign($program,$user_id_coordinator);
+		$new_campaign_id = $this->h_dataset->createSampleCampaign($this->dataset['program'], $this->dataset['coordinator']);
 
-		if (!empty($new_campaign_id)) {
+		if (!empty($new_campaign_id))
+		{
 			$this->assertTrue($this->model->canCreateWorkflow(9, [0], ['campaigns' => [$new_campaign_id]]), 'On devrait toujours pouvoir créer un workflow sur le même statut mais en spécifiant une campagne.');
 
 			$workflow_on_campaign = $this->model->createWorkflow(9, [0], 1, null, ['campaigns' => [$new_campaign_id]]);
@@ -232,13 +226,12 @@ class CampaignModelTest extends UnitTestCase
 			$this->assertFalse($this->model->canCreateWorkflow(9, [0], ['campaigns' => [12, $new_campaign_id, 15]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut-campagne.');
 			$this->assertFalse($this->model->canCreateWorkflow(9, [0], ['programs' => ['test-emundus'], 'campaigns' => [$new_campaign_id]]), 'On ne devrait plus pouvoir créer un workflow sur le même statut-campagne. Même test avec des données de programme.');
 		}
-		else {
+		else
+		{
 			Log::add('Warning, test canCreateWorkflow on campaign has not been launched', Log::WARNING, 'com_emundus.unittest');
 		}
 
 		// Clear datasets
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
 		$this->model->deleteWorkflows();
 		//
 	}
@@ -250,98 +243,69 @@ class CampaignModelTest extends UnitTestCase
 
 	public function testGetCurrentCampaignWorkflow()
 	{
-		// Datasets
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$user_id = $this->h_dataset->createSampleUser(9, 'user.test.emundus_' . rand() . '@emundus.fr');
-		$program = $this->h_dataset->createSampleProgram('Programme test unitaire', $user_id_coordinator);
-		$this->assertNotEmpty($program, 'La création de programme depuis un label fonctionne');
-		
 		$query = $this->db->getQuery(true);
 
-		if (!empty($program['programme_code'])) {
-			$new_campaign_id = $this->h_dataset->createSampleCampaign($program,$user_id_coordinator);
+		$workflow_on_all       = $this->model->createWorkflow(9, [0], 1, null, []);
+		$current_file_workflow = $this->model->getCurrentCampaignWorkflow($this->dataset['fnum']);
+		$this->assertNotNull($current_file_workflow, 'La phase courante doit être non nulle.');
+		$this->assertSame(intval($workflow_on_all), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui n\'a ni campagne ni programme par défaut, mais est sur le même statut.');
 
-			$this->assertGreaterThan(0, $new_campaign_id);
-			if ($new_campaign_id) {
-				$this->assertGreaterThan(0, $user_id);
-				$fnum = $this->h_dataset->createSampleFile($new_campaign_id, $user_id);
-				$this->assertNotEmpty($fnum, 'La création de dossier test fonctionne');
+		$workflow_on_program   = $this->model->createWorkflow(9, [0], 1, null, ['programs' => [$this->dataset['program']['programme_code']]]);
+		$current_file_workflow = $this->model->getCurrentCampaignWorkflow($this->dataset['fnum']);
+		$this->assertSame(intval($workflow_on_program), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui a un programme et un statut commun.');
 
-				$workflow_on_all       = $this->model->createWorkflow(9, [0], 1, null, []);
-				$current_file_workflow = $this->model->getCurrentCampaignWorkflow($fnum);
-				$this->assertNotNull($current_file_workflow, 'La phase courante doit être non nulle.');
-				$this->assertSame(intval($workflow_on_all), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui n\'a ni campagne ni programme par défaut, mais est sur le même statut.');
+		$workflow_on_campaign  = $this->model->createWorkflow(9, [0], 1, null, ['campaigns' => [$this->dataset['campaign']]]);
+		$current_file_workflow = $this->model->getCurrentCampaignWorkflow($this->dataset['fnum']);
+		$this->assertSame(intval($workflow_on_campaign), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui a une campagne et un statut commun.');
 
-				$workflow_on_program   = $this->model->createWorkflow(9, [0], 1, null, ['programs' => [$program['programme_code']]]);
-				$current_file_workflow = $this->model->getCurrentCampaignWorkflow($fnum);
-				$this->assertSame(intval($workflow_on_program), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui a un programme et un statut commun.');
+		$profile = $this->m_profile->getProfileByFnum($this->dataset['fnum']);
+		$this->assertSame(intval($current_file_workflow->profile), intval($profile), 'La récupération de profile prend en compte le workflow');
+		$profileByStatus = $this->m_profile->getProfileByStatus($this->dataset['fnum']);
+		$this->assertSame(intval($current_file_workflow->profile), intval($profileByStatus['profile']));
 
-				$workflow_on_campaign  = $this->model->createWorkflow(9, [0], 1, null, ['campaigns' => [$new_campaign_id]]);
-				$current_file_workflow = $this->model->getCurrentCampaignWorkflow($fnum);
-				$this->assertSame(intval($workflow_on_campaign), intval($current_file_workflow->id), 'Le dossier est impacté par le workflow qui a une campagne et un statut commun.');
+		$new_workflow_id       = $this->model->createWorkflow(9, [1], 2, null, ['campaigns' => [$this->dataset['campaign']]]);
+		$current_file_workflow = $this->model->getCurrentCampaignWorkflow($this->dataset['fnum']);
+		$this->assertNotSame(intval($new_workflow_id), intval($current_file_workflow->id), 'Mon dossier au statut Brouillon n\'est pas impacté par la phase sur la même campagne mais sur le statut Envoyé');
 
-				$profile = $this->m_profile->getProfileByFnum($fnum);
-				$this->assertSame(intval($current_file_workflow->profile), intval($profile), 'La récupération de profile prend en compte le workflow');
-				$profileByStatus = $this->m_profile->getProfileByStatus($fnum);
-				$this->assertSame(intval($current_file_workflow->profile), intval($profileByStatus['profile']));
+		$query->clear()
+			->update('#__emundus_campaign_candidature')
+			->set('status = 1')
+			->where('fnum LIKE ' . $this->db->quote($this->dataset['fnum']));
 
-				$new_workflow_id       = $this->model->createWorkflow(9, [1], 2, null, ['campaigns' => [$new_campaign_id]]);
-				$current_file_workflow = $this->model->getCurrentCampaignWorkflow($fnum);
-				$this->assertNotSame(intval($new_workflow_id), intval($current_file_workflow->id), 'Mon dossier au statut Brouillon n\'est pas impacté par la phase sur la même campagne mais sur le statut Envoyé');
+		$this->db->setQuery($query);
+		$this->db->execute();
 
-				$query->clear()
-					->update('#__emundus_campaign_candidature')
-					->set('status = 1')
-					->where('fnum LIKE ' . $this->db->quote($fnum));
+		$current_file_workflow = $this->model->getCurrentCampaignWorkflow($this->dataset['fnum'], 'Mon dossier au statut 1 récupère le workflow associé à sa campagne');
+		$this->assertSame(intval($new_workflow_id), intval($current_file_workflow->id));
 
-				$this->db->setQuery($query);
-				$this->db->execute();
+		$this->assertTrue($this->model->deleteWorkflows(), 'La suppression de workflow fonctionne');
 
-				$current_file_workflow = $this->model->getCurrentCampaignWorkflow($fnum, 'Mon dossier au statut 1 récupère le workflow associé à sa campagne');
-				$this->assertSame(intval($new_workflow_id), intval($current_file_workflow->id));
+		$this->assertObjectHasProperty('display_preliminary_documents', $current_file_workflow, 'Le workflow contient un attribut "Afficher les Documents à télécharger"');
+		$this->assertSame(0, (int) $current_file_workflow->display_preliminary_documents, 'Le workflow contient un attribut "Afficher les Documents à télécharger" à 0 par défaut');
 
-				$this->assertTrue($this->model->deleteWorkflows(), 'La suppression de workflow fonctionne');
+		$this->assertObjectHasProperty('specific_documents', $current_file_workflow, 'Le workflow contient un attribut "Documents spécifique"');
+		$this->assertSame(0, (int) $current_file_workflow->specific_documents, 'Le workflow contient un attribut "Documents spécifique" à 0 par défaut');
 
-				$this->assertObjectHasAttribute('display_preliminary_documents', $current_file_workflow, 'Le workflow contient un attribut "Afficher les Documents à télécharger"');
-				$this->assertSame(0, (int)$current_file_workflow->display_preliminary_documents, 'Le workflow contient un attribut "Afficher les Documents à télécharger" à 0 par défaut');
-
-				$this->assertObjectHasAttribute('specific_documents', $current_file_workflow, 'Le workflow contient un attribut "Documents spécifique"');
-				$this->assertSame(0, (int)$current_file_workflow->specific_documents, 'Le workflow contient un attribut "Documents spécifique" à 0 par défaut');
-
-				$this->assertObjectHasAttribute('documents', $current_file_workflow, 'Le workflow contient des documents');
-				$this->assertSame([], $current_file_workflow->documents, 'Le workflow contient un tableau vide par défaut');
-			}
-		}
-
-		// Clear datasets
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		$this->h_dataset->deleteSampleUser($user_id);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
-		//
+		$this->assertObjectHasProperty('documents', $current_file_workflow, 'Le workflow contient des documents');
+		$this->assertSame([], $current_file_workflow->documents, 'Le workflow contient un tableau vide par défaut');
 	}
 
 	function testGetAllCampaignWorkflows()
 	{
 		$this->assertEmpty($this->model->getAllCampaignWorkflows(0), 'Pas de workflow renvoyés si la campagne n\'existe pas.');
 
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program = $this->h_dataset->createSampleProgram('Programme test unitaire', $user_id_coordinator);
-		$new_campaign_id = $this->h_dataset->createSampleCampaign($program,$user_id_coordinator);
+		$this->assertEmpty($this->model->getAllCampaignWorkflows($this->dataset['campaign']), 'Pas encore de workflow sur une nouvelle campagne, nouveau programme');
 
-		$this->assertEmpty($this->model->getAllCampaignWorkflows($new_campaign_id), 'Pas encore de workflow sur une nouvelle campagne, nouveau programme');
+		$workflow_on_program = $this->model->createWorkflow(9, [0], 1, null, ['programs' => [$this->dataset['program']['programme_code']]]);
+		$this->assertSame(1, sizeof($this->model->getAllCampaignWorkflows($this->dataset['campaign'])), 'getAllCampaignWorkflows renvoie 1 workflow à la création du workflow sur le programme de la campagne');
 
-		$workflow_on_program = $this->model->createWorkflow(9, [0], 1, null, ['programs' => [$program['programme_code']]]);
-		$this->assertSame(1, sizeof($this->model->getAllCampaignWorkflows($new_campaign_id)), 'getAllCampaignWorkflows renvoie 1 workflow à la création du workflow sur le programme de la campagne');
+		$workflow_on_campaign_same_state = $this->model->createWorkflow(9, [0], 1, null, ['campaigns' => [$this->dataset['campaign']]]);
+		$this->assertSame(1, sizeof($this->model->getAllCampaignWorkflows($this->dataset['campaign'])), 'getAllCampaignWorkflows renvoie 1 seul workflow à la création du workflow sur la campagne avec le même statut d\'entrée que le workflow précédent');
 
-		$workflow_on_campaign_same_state = $this->model->createWorkflow(9, [0], 1, null, ['campaigns' => [$new_campaign_id]]);
-		$this->assertSame(1, sizeof($this->model->getAllCampaignWorkflows($new_campaign_id)), 'getAllCampaignWorkflows renvoie 1 seul workflow à la création du workflow sur la campagne avec le même statut d\'entrée que le workflow précédent');
-
-		$this->model->createWorkflow(9, [1], 1, null, ['programs' => [$program['programme_code']]]);
-		$this->assertSame(2, sizeof($this->model->getAllCampaignWorkflows($new_campaign_id)));
+		$this->model->createWorkflow(9, [1], 1, null, ['programs' => [$this->dataset['program']['programme_code']]]);
+		$this->assertSame(2, sizeof($this->model->getAllCampaignWorkflows($this->dataset['campaign'])));
 
 		// Clear datasets
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
 		$this->model->deleteWorkflows();
 		//
 	}
@@ -351,33 +315,24 @@ class CampaignModelTest extends UnitTestCase
 		$pinned = $this->model->pinCampaign(9999);
 		$this->assertFalse($pinned, 'La campagne 9999 n\'existe pas, donc on ne peut pas la mettre en avant');
 
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program = $this->h_dataset->createSampleProgram('Programme test unitaire', $user_id_coordinator);
-		$campaign_id = $this->h_dataset->createSampleCampaign($program,$user_id_coordinator);
-
-		$pinned      = $this->model->pinCampaign($campaign_id);
+		$pinned = $this->model->pinCampaign($this->dataset['campaign']);
 		$this->assertTrue($pinned, 'La campagne existe, on peut la mettre en avant');
 
-		$campaign = $this->model->getCampaignByID($campaign_id);
-		$this->assertSame(1, (int)$campaign['pinned'], 'La campagne est bien mise en avant');
+		$campaign = $this->model->getCampaignByID($this->dataset['campaign']);
+		$this->assertSame(1, (int) $campaign['pinned'], 'La campagne est bien mise en avant');
 
-		$new_campaign_id = $this->h_dataset->createSampleCampaign($program,$user_id_coordinator);
-		$pinned          = $this->model->pinCampaign($new_campaign_id);
-
-		// assert old campaign is not pinned anymore
-		$campaign = $this->model->getCampaignByID($campaign_id);
-		$this->assertSame(0, (int)$campaign['pinned'], 'La campagne n\'est plus mise en avant');
+		$pinned          = $this->model->pinCampaign($this->dataset['campaign']);
 
 		// assert new campaign is pinned
-		$campaign = $this->model->getCampaignByID($new_campaign_id);
-		$this->assertSame(1, (int)$campaign['pinned'], 'La nouvelle campagne est mise en avant');
+		$campaign = $this->model->getCampaignByID($this->dataset['campaign']);
+		$this->assertSame(1, (int) $campaign['pinned'], 'La nouvelle campagne est mise en avant');
 
 		// on duplicate campaign, pinned is not duplicated
-		$duplicated = $this->model->duplicateCampaign($new_campaign_id);
+		$duplicated = $this->model->duplicateCampaign($this->dataset['campaign']);
 		$this->assertTrue($duplicated, 'La campagne a bien été dupliquée');
 
 		// get the last campaign
-		
+
 		$query = $this->db->getQuery(true);
 		$query->select('id')
 			->from('#__emundus_setup_campaigns')
@@ -388,11 +343,6 @@ class CampaignModelTest extends UnitTestCase
 
 		$campaign = $this->model->getCampaignByID($last_campaign_id);
 		$this->assertEmpty($campaign['pinned'], 'La nouvelle campagne dupliquée n\'est pas mise en avant');
-
-		// Clear datasets
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
-		//
 	}
 
 	function testunpinCampaign()
@@ -400,24 +350,15 @@ class CampaignModelTest extends UnitTestCase
 		$unpinned = $this->model->unpinCampaign(0);
 		$this->assertFalse($unpinned, 'La campagne 0 n\'existe pas, donc on ne peut pas la retirer de la mise en avant');
 
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program = $this->h_dataset->createSampleProgram('Programme test unitaire', $user_id_coordinator);
-		$campaign_id = $this->h_dataset->createSampleCampaign($program,$user_id_coordinator);
-
-		$pinned   = $this->model->pinCampaign($campaign_id);
-		$unpinned = $this->model->unpinCampaign($campaign_id);
+		$pinned   = $this->model->pinCampaign($this->dataset['campaign']);
+		$unpinned = $this->model->unpinCampaign($this->dataset['campaign']);
 
 		$this->assertTrue($unpinned, 'La campagne existe, on peut la retirer de la mise en avant');
 
-		$campaign = $this->model->getCampaignByID($campaign_id);
-		$this->assertSame(0, (int)$campaign['pinned'], 'La campagne n\'est plus mise en avant');
+		$campaign = $this->model->getCampaignByID($this->dataset['campaign']);
+		$this->assertSame(0, (int) $campaign['pinned'], 'La campagne n\'est plus mise en avant');
 
 		$this->assertFalse($this->model->unpinCampaign(['svsfg', 'dsgdfg', 'dsg']), 'Un tableau mal formé ne peut pas être passé en paramètre');
-
-		// Clear datasets
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
-		//
 	}
 
 	function testeditDocumentDropfile()
@@ -454,19 +395,10 @@ class CampaignModelTest extends UnitTestCase
 
 	function testduplicateCampaign()
 	{
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program = $this->h_dataset->createSampleProgram('Programme test unitaire', $user_id_coordinator);
-		$campaign_id = $this->h_dataset->createSampleCampaign($program,$user_id_coordinator);
-
-		$duplicated = $this->model->duplicateCampaign($campaign_id);
+		$duplicated = $this->model->duplicateCampaign($this->dataset['campaign']);
 		$this->assertTrue($duplicated, 'La campagne a bien été dupliquée');
 
 		$duplicated = $this->model->duplicateCampaign(0);
 		$this->assertFalse($duplicated, 'La campagne 0 n\'existe pas, donc on ne peut pas la dupliquer');
-
-		// Clear datasets
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
-		//
 	}
 }

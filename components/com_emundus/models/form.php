@@ -1102,11 +1102,11 @@ class EmundusModelForm extends JModelList
 		}
 	}
 
-	public function createFormEval()
+	public function createFormEval($user = null)
 	{
 		require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
 		$m_formbuilder = new EmundusModelFormbuilder();
-		$form_id       = $m_formbuilder->createFabrikForm('EVALUATION', ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction'], 'eval');
+		$form_id       = $m_formbuilder->createFabrikForm('EVALUATION', ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction'], 'eval',$user);
 
 		if (!empty($form_id)) {
 			$group = $m_formbuilder->createGroup(array('fr' => 'Hidden group', 'en' => 'Hidden group'), $form_id, -1);

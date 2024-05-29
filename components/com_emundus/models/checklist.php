@@ -41,7 +41,10 @@ class EmundusModelChecklist extends JModelList
 
 		if (version_compare(JVERSION, '4.0', '>')) {
 			$this->_db    = Factory::getContainer()->get('DatabaseDriver');
-			$current_user = $this->app->getIdentity()->id;
+			if(Factory::getApplication()->isClient('site'))
+			{
+				$current_user = $this->app->getIdentity()->id;
+			}
 
 			if (!empty($student_id)) {
 				$this->_user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($student_id);

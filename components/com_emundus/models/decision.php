@@ -407,7 +407,7 @@ class EmundusModelDecision extends JModelList
 	 * @return    array list of Fabrik element ID used in evaluation form
 	 * @throws Exception
 	 */
-	public function getAllDecisionElements($show_in_list_summary = 1, $programme_code)
+	public function getAllDecisionElements($show_in_list_summary, $programme_code)
 	{
 		if (version_compare(JVERSION, '4.0', '>')) {
 			$session = $this->app->getSession();

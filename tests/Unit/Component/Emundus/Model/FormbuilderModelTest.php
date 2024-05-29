@@ -13,6 +13,8 @@ use EmundusModelForm;
 use EmundusModelTranslations;
 use Exception;
 use JLog;
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
@@ -95,7 +97,7 @@ class FormbuilderModelTest extends UnitTestCase
 	{
 		// Test 1 - Création de formulaire basique
 		$prid    = 9;
-		$form_id = $this->h_dataset->createSampleForm($prid);
+		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'],['fr' => 'Introduction pour les tests unitaires', 'en' => 'Introduction for unit tests'],Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
 
 		$this->assertGreaterThan(0, $form_id, 'le formulaire a bien été créé');
 
@@ -125,7 +127,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertSame(0, $form_id);
 
 		// Se tromper pour le champ introduction ne devrait pas causer d'erreur
-		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro');
+		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro',Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
 		$this->assertGreaterThan(0, $form_id);
 
 		$deleted = $this->h_dataset->deleteSampleForm($form_id);
@@ -139,7 +141,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$this->assertArrayNotHasKey('group_id', $group);
 
 		$prid    = 9;
-		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests']);
+		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro',Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
 		$this->assertGreaterThan(0, $form_id);
 
 		$group = $this->model->createGroup(['fr' => 'Groupe Tests unitaires', 'en' => 'Group Unit tests'], $form_id);
@@ -174,7 +176,7 @@ class FormbuilderModelTest extends UnitTestCase
 	public function testUpdateGroupParams()
 	{
 		$prid    = 9;
-		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro');
+		$form_id = $this->h_dataset->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro',Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
 		$this->assertGreaterThan(0, $form_id);
 
 		$group = $this->model->createGroup(['fr' => 'Groupe Tests unitaires', 'en' => 'Group Unit tests'], $form_id);

@@ -28,7 +28,7 @@ class ChecklistModelTest extends UnitTestCase
 
 		// set session
 		$user               = new stdClass();
-		$user->id           = Factory::getUser()->id;
+		$user->id           = $this->dataset['coordinator'];
 		$user->profile      = 1;
 		$user->fnum         = '00000000';
 		$user->applicant_id = 1;

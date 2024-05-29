@@ -4959,6 +4959,10 @@ class EmundusHelperFiles
 					$cache_key = 'emundus_joins_between_tables_' . $searched_table . '_' . $base_table;
 					$joins     = $h_cache->get($cache_key);
 
+					if(!$joins) {
+						$joins = [];
+					}
+
 					if (!empty($joins))
 					{
 						$found_from_cache = true;

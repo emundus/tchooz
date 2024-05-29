@@ -9,6 +9,8 @@
 
 namespace Unit\Component\Emundus\Model;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 
 class FormModelTest extends UnitTestCase
@@ -64,7 +66,7 @@ class FormModelTest extends UnitTestCase
 
 	public function testcreateFormEval()
 	{
-		$form_id = $this->model->createFormEval();
+		$form_id = $this->model->createFormEval(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
 		$this->assertNotEmpty($form_id, 'Evaluation form creation succeeds');
 
 		
