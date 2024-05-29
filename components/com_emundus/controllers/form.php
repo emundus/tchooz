@@ -65,12 +65,14 @@ class EmundusControllerForm extends JControllerLegacy
 					if (count($campaigns) < 2) {
 						$short_tags = '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaigns[0]->id . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator"> ' . $campaigns[0]->label . '</a>';
 					} else {
-						$tags = '<div class="tw-flex tw-flex-row tw-flex-wrap">';
+						$tags = '<div>';
 						$short_tags = $tags;
 						$tags .= '<h2 class="tw-mb-2">'.Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE').'</h2>';
+						$tags .= '<div class="tw-flex tw-flex-wrap">';
 						foreach ($campaigns as $campaign) {
 							$tags .= '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaign->id . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator"> ' . $campaign->label . '</a>';
 						}
+						$tags .= '</div>';
 
 						$short_tags .= '<span class="tw-cursor-pointer tw-font-semibold tw-text-main-500 tw-flex tw-items-center tw-underline">' . count($campaigns) . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
 						$short_tags .= '</div>';
