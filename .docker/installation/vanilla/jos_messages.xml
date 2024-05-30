@@ -11,6 +11,7 @@
    <field Field="priority" Type="tinyint unsigned" Null="NO" Key="" Default="0" Extra="" />
    <field Field="subject" Type="varchar(255)" Null="NO" Key="" Default="" Extra="" />
    <field Field="message" Type="text" Null="NO" Key="" Extra="" />
+   <field Field="email_cc" Type="text" Null="YES" Key="" Extra="" />
    <key Table="#__messages" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="message_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__messages" Non_unique="1" Key_name="useridto_state" Seq_in_index="1" Column_name="user_id_to" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__messages" Non_unique="1" Key_name="useridto_state" Seq_in_index="2" Column_name="state" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />

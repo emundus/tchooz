@@ -158,15 +158,6 @@ if(value != &amp;#039;Oui&amp;#039;){
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group691&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4330</field>
-    <field name="element_id">6045</field>
-    <field name="action">load</field>
-    <field name="code">if($(this).is(&amp;quot;select&amp;quot;)) {
-  $(document).ready(function() {$(&amp;quot;#jos_emundus_evaluations___user&amp;quot;).chosen({width: &amp;quot;75%&amp;quot;});})
-}</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group551&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
     <field name="id">4331</field>
     <field name="element_id">600</field>
     <field name="action">keyup</field>
