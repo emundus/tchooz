@@ -580,6 +580,12 @@ div#em-appli-block .panel-heading {
     padding-top: 5px;
     border-radius: 0;
 }
+
+.panel-default .panel-heading h3.panel-title .chzn-choices {
+    overflow: auto;
+    height: 40px;
+}
+
 div#em-appli-block button.btn.btn-default {
     border: none !important;
 }
