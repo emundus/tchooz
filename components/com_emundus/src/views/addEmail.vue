@@ -68,8 +68,8 @@
 
         <hr/>
 
-        <div>
-          <div class="tw-flex tw-items-center tw-mb-4 tw-gap-1">
+        <div class="em-container-accordeon">
+          <div class="tw-flex tw-items-center  tw-gap-1 tw-justify-between">
             <h3 class="tw-cursor-pointer !tw-mb-0" @click="displayAdvanced">{{ translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING') }}</h3>
             <button :title="translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING')" type="button" class="tw-bg-transparent tw-flex tw-flex-col"
                     @click="displayAdvanced" v-show="!displayAdvancedParameters">
@@ -80,7 +80,7 @@
               <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
             </button>
           </div>
-          <div id="email-advanced-parameters" v-if="displayAdvancedParameters">
+          <div id="email-advanced-parameters" class="tw-mt-4" v-if="displayAdvancedParameters">
             <div class="form-group tw-mb-4">
               <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL') }}</label>
               <p class="tw-mt-2">{{ email_sender }}</p>
@@ -596,5 +596,12 @@ export default {
 .emails__add-email {
   width: 100%;
   margin-left: auto;
+}
+
+.em-container-accordeon {
+  background: var(--neutral-0);
+  padding: 24px;
+  border-radius: var(--em-coordinator-br-cards);
+  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 </style>
