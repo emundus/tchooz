@@ -1481,78 +1481,86 @@ class EmundusHelperEvents
 		jimport('joomla.log.log');
 		Log::addLogger(array('text_file' => 'com_emundus.helper_events.php'), Log::ALL, array('com_emundus.helper_events'));
 
-		try
+		if(!empty($params['data']))
 		{
-			$db    = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
-
-			$code = $params['data']['jos_emundus_setup_programmes___code_raw'];
-			$evaluation_form = $params['data']['jos_emundus_setup_programmes___evaluation_form_raw'];
-
-			if(is_array($evaluation_form)) {
-				$evaluation_form = $evaluation_form[0];
-			}
-
-			if(!empty($evaluation_form)) {
-				require_once (JPATH_SITE.'/components/com_emundus/models/form.php');
-				$m_form = new EmundusModelForm();
-
-				$programs = $m_form->getProgramsByForm($evaluation_form);
-				$codes = array_map(function($program) {
-					return $program['code'];
-				}, $programs);
-
-				$codes[] = $code;
-				$codes = array_unique($codes);
-
-				$m_form->associateFabrikGroupsToProgram($evaluation_form,$codes);
-			} else {
-				$query->clear()
-					->update($db->quoteName('#__emundus_setup_programmes'))
-					->set($db->quoteName('fabrik_group_id') . ' = ' . $db->quote(''))
-					->where($db->quoteName('code') . ' LIKE ' . $db->quote($code));
-				$db->setQuery($query);
-				$db->execute();
-			}
-
-			if (!empty($code))
+			try
 			{
-				$eMConfig            = ComponentHelper::getParams('com_emundus');
-				$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
+				$db    = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
 
-				$query->clear()
-					->select('id')
-					->from($db->quoteName('#__emundus_setup_groups_repeat_course'))
-					->where($db->quoteName('course') . ' LIKE ' . $db->quote($code))
-					->where($db->quoteName('parent_id') . ' = ' . $db->quote($all_rights_group_id));
-				$db->setQuery($query);
-				$exists = $db->loadResult();
+				$code            = $params['data']['jos_emundus_setup_programmes___code_raw'];
+				$evaluation_form = $params['data']['jos_emundus_setup_programmes___evaluation_form_raw'];
 
-				if (!empty($exists))
+				if (is_array($evaluation_form))
 				{
-					return true;
+					$evaluation_form = $evaluation_form[0];
 				}
 
-				$columns = array('parent_id', 'course');
-				$values  = array($db->quote($all_rights_group_id), $db->quote($code));
+				if (!empty($evaluation_form))
+				{
+					require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
+					$m_form = new EmundusModelForm();
 
-				$query->clear()
-					->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
-					->columns($db->quoteName($columns))
-					->values(implode(',', $values));
-				$db->setQuery($query);
-				$db->execute();
+					$programs = $m_form->getProgramsByForm($evaluation_form);
+					$codes    = array_map(function ($program) {
+						return $program['code'];
+					}, $programs);
+
+					$codes[] = $code;
+					$codes   = array_unique($codes);
+
+					$m_form->associateFabrikGroupsToProgram($evaluation_form, $codes);
+				}
+				else
+				{
+					$query->clear()
+						->update($db->quoteName('#__emundus_setup_programmes'))
+						->set($db->quoteName('fabrik_group_id') . ' = ' . $db->quote(''))
+						->where($db->quoteName('code') . ' LIKE ' . $db->quote($code));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				if (!empty($code))
+				{
+					$eMConfig            = ComponentHelper::getParams('com_emundus');
+					$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
+
+					$query->clear()
+						->select('id')
+						->from($db->quoteName('#__emundus_setup_groups_repeat_course'))
+						->where($db->quoteName('course') . ' LIKE ' . $db->quote($code))
+						->where($db->quoteName('parent_id') . ' = ' . $db->quote($all_rights_group_id));
+					$db->setQuery($query);
+					$exists = $db->loadResult();
+
+					if (!empty($exists))
+					{
+						return true;
+					}
+
+					$columns = array('parent_id', 'course');
+					$values  = array($db->quote($all_rights_group_id), $db->quote($code));
+
+					$query->clear()
+						->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
+						->columns($db->quoteName($columns))
+						->values(implode(',', $values));
+					$db->setQuery($query);
+					$db->execute();
+				}
+
+				return true;
 			}
+			catch (Exception $e)
+			{
+				Log::add('Error when run event onAfterProgramCreate | ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
-			return true;
-		}
-		catch (Exception $e)
-		{
-			Log::add('Error when run event onAfterProgramCreate | ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-
-			return false;
+				return false;
+			}
 		}
 
+		return true;
 	}
 
 	private function logUpdateForms($params, $forms_to_log = []): bool

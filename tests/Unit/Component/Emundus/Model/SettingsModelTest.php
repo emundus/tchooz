@@ -23,7 +23,7 @@ class SettingsModelTest extends UnitTestCase
 	{
 		parent::__construct('settings', $data, $dataName, 'EmundusModelSettings');
 
-		$this->config = Factory::getConfig();
+		$this->config = Factory::getApplication()->getConfig();
 		$this->config->set('cache_handler', 'file');
 	}
 

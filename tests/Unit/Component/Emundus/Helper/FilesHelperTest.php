@@ -38,16 +38,12 @@ class FilesHelperTest extends UnitTestCase
 	public function testCreateFnum()
 	{
 		$this->assertSame('', EmundusHelperFiles::createFnum(0, 0, false), 'Create fnum with wrong campaign_id and user_id returns empty');
-		$this->assertSame('', EmundusHelperFiles::createFnum(0, 95, false), 'Create fnum with wrong campaign_id returns empty');
+		$this->assertSame('', EmundusHelperFiles::createFnum(0, $this->dataset['coordinator'], false), 'Create fnum with wrong campaign_id returns empty');
 
-		if (Factory::getUser()->id) {
-			$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, 0, false), 'Create fnum with empty user_id  will use current user_id and returns not empty');
-		}
-		else {
-			$this->assertSame('', EmundusHelperFiles::createFnum(1, 0, false), 'Create fnum with nio user id connected or given returns empty');
-		}
-		$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, 95, false), 'Create fnum with correct campaign_id and user_id returns not empty');
-		$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, 95), 'Create fnum with correct campaign_id and user_id and redirect to true returns not empty');
+		$this->assertSame('', EmundusHelperFiles::createFnum(1, 0, false), 'Create fnum with nio user id connected or given returns empty');
+
+		$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, $this->dataset['coordinator'], false), 'Create fnum with correct campaign_id and user_id returns not empty');
+		$this->assertNotEmpty(EmundusHelperFiles::createFnum(1, $this->dataset['coordinator']), 'Create fnum with correct campaign_id and user_id and redirect to true returns not empty');
 	}
 
 	/**
@@ -58,7 +54,7 @@ class FilesHelperTest extends UnitTestCase
 	{
 		$this->assertFalse($this->helper->getExportExcelFilter(0), 'Get export excel filter with wrong user id returns false');
 
-		$coord_filters = $this->helper->getExportExcelFilter(95);
+		$coord_filters = $this->helper->getExportExcelFilter($this->dataset['coordinator']);
 		$this->assertNotFalse($coord_filters, 'Get export excel filter with correct user id returns not false');
 		$this->assertSame('array', gettype($coord_filters), 'Get export excel filter with correct user id returns an array even if empty');
 	}

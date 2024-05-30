@@ -543,12 +543,15 @@ class EmundusModelFormbuilder extends JModelList
 	 *
 	 * @return false|int|mixed
 	 */
-	function createFabrikForm($prid, $label, $intro, $type = '')
+	function createFabrikForm($prid, $label, $intro, $type = '', $user = null)
 	{
 		$form_id = 0;
 
 		if (!empty($prid) && !empty($label) && is_array($label)) {
-			$user = Factory::getApplication()->getIdentity();
+			if(empty($user))
+			{
+				$user = Factory::getApplication()->getIdentity();
+			}
 			
 			$query = $this->db->getQuery(true);
 

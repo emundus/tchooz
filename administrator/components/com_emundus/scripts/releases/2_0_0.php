@@ -386,6 +386,40 @@ class Release2_0_0Installer extends ReleaseInstaller
 			$this->db->execute();
 			//
 
+			// Add missing falang tableinfo
+			$table_names = [
+				'emundus_plugin_events' => 'id',
+				'emundus_setup_action_tag' => 'id',
+				'emundus_setup_attachments' => 'id',
+				'emundus_setup_campaigns' => 'id',
+				'emundus_setup_checklist' => 'id',
+				'emundus_setup_emails' => 'id',
+				'emundus_setup_groups' => 'id',
+				'emundus_setup_mobility' => 'id',
+				'emundus_setup_profiles' => 'id',
+				'emundus_setup_programmes' => 'id',
+				'emundus_setup_status' => 'step',
+				'emundus_setup_tags,emundus_widgets' => 'id'
+			];
+			foreach ($table_names as $table_name => $primary_key) {
+				$query->clear()
+					->select('id')
+					->from($this->db->quoteName('#__falang_tableinfo'))
+					->where($this->db->quoteName('joomlatablename') . ' LIKE ' . $this->db->quote($table_name));
+				$this->db->setQuery($query);
+				$existing = $this->db->loadResult();
+
+				if (empty($existing)) {
+					$inserted = [
+						'joomlatablename' => $table_name,
+						'tablepkID' => $primary_key
+					];
+					$inserted = (object) $inserted;
+					$this->db->insertObject('#__falang_tableinfo', $inserted);
+				}
+			}
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

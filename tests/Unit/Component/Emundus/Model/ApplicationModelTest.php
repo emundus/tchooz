@@ -72,7 +72,7 @@ class ApplicationModelTest extends UnitTestCase
 		$this->assertSame($current_attachment->existsOnServer, false);
 
 		// attachments should contain profiles attribute
-		$this->assertObjectHasAttribute('profiles', $current_attachment);
+		$this->assertObjectHasProperty('profiles', $current_attachment);
 
 		// if i use search parameter, only pertinent attachments should be returned
 		$search      = $attachments[0]->value;
@@ -217,13 +217,7 @@ class ApplicationModelTest extends UnitTestCase
 		$done = $this->model->applicantCustomAction(0, '');
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action and fnum are empty');
 
-		$user_id     = $this->h_dataset->createSampleUser(9, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$user_id_coordinator     = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program     = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
-		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
-		$fnum        = $this->h_dataset->createSampleFile($campaign_id, $user_id);
-
-		$done = $this->model->applicantCustomAction(0, $fnum);
+		$done = $this->model->applicantCustomAction(0, $this->dataset['fnum']);
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action is empty');
 
 		// get module params
@@ -253,19 +247,16 @@ class ApplicationModelTest extends UnitTestCase
 		$this->db->setQuery($query);
 		$this->db->execute();
 
-		$done = $this->model->applicantCustomAction(0, $fnum);
+		$done = $this->model->applicantCustomAction(0, $this->dataset['fnum']);
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action is not found in module params');
 
-		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $fnum);
+		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $this->dataset['fnum']);
 		$this->assertTrue($done, 'Custom action should be done because file is in correct status');
 
-		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $fnum);
+		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $this->dataset['fnum']);
 		$this->assertFalse($done, 'Action should no longer work because file status has changed');
 
 		// Clear datasets
-		$this->h_dataset->deleteSampleUser($user_id);
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
 		$query->clear()
 			->update('#__modules')
 			->set('params = ' . $this->db->quote($module['params']))
@@ -277,20 +268,10 @@ class ApplicationModelTest extends UnitTestCase
 
 	public function testgetApplicationMenu()
 	{
-		$username    = 'test-application-coordinator-' . rand(0, 1000) . '@emundus.fr';
-		$coordinator = $this->h_dataset->createSampleUser(9, $username, 'test1234', [2, 7]);
-		$username    = 'test-application-applicant-' . rand(0, 1000) . '@emundus.fr';
-		$applicant   = $this->h_dataset->createSampleUser(9, $username);
-
-		$menus = $this->model->getApplicationMenu($coordinator);
+		$menus = $this->model->getApplicationMenu($this->dataset['coordinator']);
 		$this->assertNotEmpty($menus, 'A coordinator should have access to the application menu');
 
-		$menus = $this->model->getApplicationMenu($applicant);
+		$menus = $this->model->getApplicationMenu($this->dataset['applicant']);
 		$this->assertEmpty($menus, 'An applicant should not have access to the application menu');
-
-		// Clear datasets
-		$this->h_dataset->deleteSampleUser($coordinator);
-		$this->h_dataset->deleteSampleUser($applicant);
-		//
 	}
 }
