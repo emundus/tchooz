@@ -366,7 +366,7 @@ export default {
 
 #modal-evaluationgrid {
   border-left: 1px solid #EBECF0;
-  box-shadow: 0px 4px 16px rgba(32, 35, 44, 0.1);
+  box-shadow: 0 4px 16px rgba(32, 35, 44, 0.1);
 }
 
 .sticky-tab {
