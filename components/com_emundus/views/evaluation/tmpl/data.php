@@ -32,7 +32,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
     .em-double-scroll-bar {
         position: sticky;
         padding: 0 !important;
-        z-index: 999;
+        z-index: 1;
     }
     div.top-scrollbars::-webkit-scrollbar, .em-double-scroll-bar::-webkit-scrollbar {
         -webkit-appearance: none;
