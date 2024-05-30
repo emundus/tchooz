@@ -231,7 +231,7 @@
 <script>
 import Autocomplete from "../components/autocomplete";
 import axios from "axios";
-import EditorQuill from "../components/editorQuill";
+import EditorQuill from "@/components/editorQuill";
 import Multiselect from 'vue-multiselect';
 import IncrementalSelect from "@/components/IncrementalSelect.vue";
 import settingsService from '../services/settings';

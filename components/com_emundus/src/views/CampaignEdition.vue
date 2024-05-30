@@ -53,13 +53,13 @@
               @updateHeader="updateHeader"
           ></add-campaign>
           <campaign-more
-              v-if="selectedMenu === 'campaignMore' && campaignId !== ''"
+              v-else-if="selectedMenu === 'campaignMore' && campaignId !== ''"
               :campaignId="campaignId"
               :defaultFormUrl="campaignMoreFormUrl"
           >
           </campaign-more>
           <addFormulaire
-              v-if="selectedMenu === 'addFormulaire'"
+              v-else-if="selectedMenu === 'addFormulaire'"
               :profileId="profileId"
               :campaignId="campaignId"
               :profiles="profiles"
@@ -69,7 +69,7 @@
           ></addFormulaire>
 
           <add-documents-dropfiles
-              v-if="selectedMenu === 'addDocumentsDropfiles'"
+              v-else-if="selectedMenu === 'addDocumentsDropfiles'"
               :funnelCategorie="selectedMenuItem.label"
               :profileId="getProfileId"
               :campaignId="campaignId"
@@ -78,7 +78,7 @@
           />
 
           <add-email
-              v-if="selectedMenu === 'addEmail' && program.id != 0"
+              v-else-if="selectedMenu === 'addEmail' && program.id != 0"
               :prog="Number(program.id)"
           ></add-email>
         </transition>
@@ -110,7 +110,6 @@ import AddDocumentsDropfiles from "@/components/FunnelFormulaire/addDocumentsDro
 import addEmail from "@/components/FunnelFormulaire/addEmail";
 import addFormulaire from "@/components/FunnelFormulaire/addFormulaire";
 import campaignMore from "@/components/FunnelFormulaire/CampaignMore";
-import Swal from "sweetalert2";
 
 const qs = require("qs");
 

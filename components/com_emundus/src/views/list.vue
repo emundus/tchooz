@@ -377,26 +377,26 @@ export default {
 
             try {
               client().get(url)
-                  .then(response => {
-                    if (response.data.status === true) {
-                      if (typeof response.data.data.datas !== 'undefined') {
-                        this.items[tab.key] = response.data.data.datas;
-                        tab.pagination = {
-                          current: page,
-                          total: Math.ceil(response.data.data.count / this.numberOfItemsToDisplay)
-                        }
+                .then(response => {
+                  if (response.data.status === true) {
+                    if (typeof response.data.data.datas !== 'undefined') {
+                      this.items[tab.key] = response.data.data.datas;
+                      tab.pagination = {
+                        current: page,
+                        total: Math.ceil(response.data.data.count / this.numberOfItemsToDisplay)
                       }
-                    } else {
-                      console.error('Failed to get data : ' + response.data.data.msg);
                     }
-                    this.loading.tabs = false;
-                    this.loading.items = false;
-                  })
-                  .catch(error => {
-                    console.error(error);
-                    this.loading.tabs = false;
-                    this.loading.items = false;
-                  });
+                  } else {
+                    console.error('Failed to get data : ' + response.data.data.msg);
+                  }
+                  this.loading.tabs = false;
+                  this.loading.items = false;
+                })
+                .catch(error => {
+                  console.error(error);
+                  this.loading.tabs = false;
+                  this.loading.items = false;
+                });
             } catch (e) {
               console.error(e);
               this.loading.tabs = false;
@@ -428,24 +428,24 @@ export default {
               if (filter.getter) {
                 const controller = typeof filter.controller !== 'undefined' ? filter.controller : tab.controller;
                 client().get('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
-                    .then(response => {
-                      if (response.data.status === true) {
-                        let options = response.data.data;
+                  .then(response => {
+                    if (response.data.status === true) {
+                      let options = response.data.data;
 
-                        // if options is an array of strings, convert it to an array of objects
-                        if (typeof options[0] === 'string') {
-                          options = options.map(option => ({value: option, label: option}));
-                        }
-
-                        options.unshift({value: 'all', label: this.translate(filter.label)});
-
-                        this.filters[tab.key].push({
-                          key: filter.key,
-                          value: filterValue,
-                          options: options
-                        });
+                      // if options is an array of strings, convert it to an array of objects
+                      if (typeof options[0] === 'string') {
+                        options = options.map(option => ({value: option, label: option}));
                       }
-                    });
+
+                      options.unshift({value: 'all', label: this.translate(filter.label)});
+
+                      this.filters[tab.key].push({
+                        key: filter.key,
+                        value: filterValue,
+                        options: options
+                      });
+                    }
+                  });
               }
             } else {
               this.filters[tab.key].push({
@@ -546,34 +546,34 @@ export default {
       this.loading.items = true;
 
       client().get(url)
-          .then(response => {
-            if (response.data.status === true || response.data.status === 1) {
-              if (response.data.redirect) {
-                window.location.href = response.data.redirect;
-              }
-
-              this.getListItems();
-            } else {
-              if (response.data.msg) {
-                Swal.fire({
-                  type: 'error',
-                  title: this.translate(response.data.msg),
-                  reverseButtons: true,
-                  customClass: {
-                    title: 'em-swal-title',
-                    confirmButton: 'em-swal-confirm-button',
-                    actions: 'em-swal-single-action'
-                  }
-                });
-              }
+        .then(response => {
+          if (response.data.status === true || response.data.status === 1) {
+            if (response.data.redirect) {
+              window.location.href = response.data.redirect;
             }
 
-            this.loading.items = false;
-          })
-          .catch(error => {
-            console.error(error);
-            this.loading.items = false;
-          });
+            this.getListItems();
+          } else {
+            if (response.data.msg) {
+              Swal.fire({
+                type: 'error',
+                title: this.translate(response.data.msg),
+                reverseButtons: true,
+                customClass: {
+                  title: 'em-swal-title',
+                  confirmButton: 'em-swal-confirm-button',
+                  actions: 'em-swal-single-action'
+                }
+              });
+            }
+          }
+
+          this.loading.items = false;
+        })
+        .catch(error => {
+          console.error(error);
+          this.loading.items = false;
+        });
     },
     onClickPreview(item) {
       if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
@@ -626,27 +626,27 @@ export default {
     evaluateShowOn(item, showon) {
       let show = true;
       switch (showon.operator) {
-        case '==':
-        case '=':
-          show = item[showon.key] == showon.value;
-          break;
-        case '!=':
-          show = item[showon.key] != showon.value;
-          break;
-        case '>':
-          show = item[showon.key] > showon.value;
-          break;
-        case '<':
-          show = item[showon.key] < showon.value;
-          break;
-        case '>=':
-          show = item[showon.key] >= showon.value;
-          break;
-        case '<=':
-          show = item[showon.key] <= showon.value;
-          break;
-        default:
-          show = true;
+      case '==':
+      case '=':
+        show = item[showon.key] == showon.value;
+        break;
+      case '!=':
+        show = item[showon.key] != showon.value;
+        break;
+      case '>':
+        show = item[showon.key] > showon.value;
+        break;
+      case '<':
+        show = item[showon.key] < showon.value;
+        break;
+      case '>=':
+        show = item[showon.key] >= showon.value;
+        break;
+      case '<=':
+        show = item[showon.key] <= showon.value;
+        break;
+      default:
+        show = true;
       }
 
       return show;

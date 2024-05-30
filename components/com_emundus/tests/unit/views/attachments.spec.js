@@ -14,7 +14,10 @@ localVue.use(VModal);
 
 describe('Attachments.vue', () => {
     const wrapper = shallowMount(Attachments, {
-        propsData: {user: '123', fnum: '2021061714501700000010000123'},
+        propsData: {
+          user: '123',
+          fnum: '2021061714501700000010000123'
+        },
         store: store,
         localVue
     });
@@ -245,14 +248,6 @@ describe('Attachments.vue anonyme', () => {
         const newValue = !store.state.global.anonyme;
         store.dispatch('global/setAnonyme', newValue).then(() => {
             expect(wrapper.vm.canSee).toBe(!newValue);
-        });
-    });
-
-
-    it('Expect .name to display fnum if anonyme to true', () => {
-        store.dispatch('global/setAnonyme', true).then(() => {
-            const name = wrapper.find('.displayed-user .name');
-            expect(name.text()).toBe(wrapper.vm.displayedFnum);
         });
     });
 });

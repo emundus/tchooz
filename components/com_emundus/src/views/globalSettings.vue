@@ -156,15 +156,17 @@ export default {
     });
 
     let conteneur = document.querySelector(".view-settings #g-page-surround");
-    let containerDivShapes = document.createElement("div");
-    let divShapes = document.createElement("div");
-    containerDivShapes.id = "container-parameters-background-shapes";
-    divShapes.id = "parameters-background-shapes";
+    if(conteneur) {
+      let containerDivShapes = document.createElement("div");
+      let divShapes = document.createElement("div");
+      containerDivShapes.id = "container-parameters-background-shapes";
+      divShapes.id = "parameters-background-shapes";
 
-    let firstDiv = conteneur.firstChild;
+      let firstDiv = conteneur.firstChild;
 
-    conteneur.insertBefore(containerDivShapes, firstDiv);
-    conteneur.insertBefore(divShapes, firstDiv);
+      conteneur.insertBefore(containerDivShapes, firstDiv);
+      conteneur.insertBefore(divShapes, firstDiv);
+    }
   },
 
   methods: {

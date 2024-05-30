@@ -1,4 +1,4 @@
-import {mount, createLocalVue} from '@vue/test-utils';
+import { mount, createLocalVue } from '@vue/test-utils';
 import '../../../mocks/matchMedia.mock';
 import Editor from '../../../../src/components/editor';
 import ModalAddDocuments from '../../../../src/components/AdvancedModals/ModalAddDocuments';
@@ -23,7 +23,7 @@ describe('ModalAddDocuments.vue', () => {
         localVue
     });
 
-    it('ModalAddDocuments constructed', () => {
+    it ('ModalAddDocuments constructed', () => {
         expect(wrapper.find('#modalAddDocuments').exists()).toBeTruthy();
     });
 });

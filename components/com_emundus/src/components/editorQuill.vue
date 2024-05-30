@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import Quill from '../../../../media/com_emundus/js/lib/quill.min.js';
+
 /* IMPORT YOUR COMPONENTS */
 var DirectionAttribute = Quill.import('attributors/attribute/direction');
 Quill.register(DirectionAttribute, true);
