@@ -975,6 +975,10 @@ class EmundusHelperEmails
 			$base_url = JPATH_BASE . '/';
 		}
 
+		if(!file_exists($logo)) {
+			$logo = 'images/custom/logo.png';
+		}
+
 		return $base_url . $logo;
 	}
 
