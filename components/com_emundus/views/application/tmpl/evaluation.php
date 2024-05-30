@@ -16,13 +16,11 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 
-if (version_compare(JVERSION, '4.0', '>')) {
-	Factory::getApplication()->getSession()->set('application_layout', 'evaluation');
-}
-else {
-	Factory::getSession()->set('application_layout', 'evaluation');
-}
+Factory::getApplication()->getSession()->set('application_layout', 'evaluation');
+
 
 ?>
 
@@ -31,27 +29,27 @@ else {
         <div class="panel-heading em-container-evaluation-heading">
             <h3 class="panel-title">
                 <span class="glyphicon glyphicon-check"></span>
-				<?= JText::_('COM_EMUNDUS_ASSESSMENT'); ?>
-				<?php if (EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum) && !empty($this->url_form)) : ?>
+				<?= Text::_('COM_EMUNDUS_ASSESSMENT'); ?>
+				<?php if (EmundusHelperAccess::asAccessAction(8, 'c', Factory::getApplication()->getIdentity()->id, $this->fnum) && !empty($this->url_form)) : ?>
                     <a class="  clean" target="_blank"
-                       href="<?= JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf&user=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
+                       href="<?= Uri::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf&user=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
                         <button class="btn btn-default"
-                                data-title="<?= JText::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>" data-toggle="tooltip"
-                                data-placement="bottom" title="<?= JText::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>">
+                                data-title="<?= Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>" data-toggle="tooltip"
+                                data-placement="bottom" title="<?= Text::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>">
                             <span class="material-icons">file_download</span></button>
                     </a>
 				<?php endif; ?>
                 <div class="em-flex-row">
 					<?php if (!empty($this->url_form)) : ?>
                         <a href="<?= $this->url_form; ?>" target="_blank" class="em-flex-row"
-                           title="<?= JText::_('COM_EMUNDUS_EVALUATIONS_OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span
+                           title="<?= Text::_('COM_EMUNDUS_EVALUATIONS_OPEN_EVALUATION_FORM_IN_NEW_TAB_DESC'); ?>"><span
                                     class="material-icons">open_in_new</span></a>
 					<?php endif; ?>
 					<?php
 					if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $this->fnum)) :?>
                         <div>
                             <button class="btn btn-danger btn-xs btn-attach"
-                                    title="<?= JText::_('COM_EMUNDUS_EVALUATIONS_DELETE_SELECTED_EVALUATIONS'); ?>"
+                                    title="<?= Text::_('COM_EMUNDUS_EVALUATIONS_DELETE_SELECTED_EVALUATIONS'); ?>"
                                     id="em_delete_evals" name="em_delete_evals"
                                     link="index.php?option=com_emundus&controller=evaluation&task=delevaluation&applicant=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
                                 <span class="material-icons">delete_outline</span></button>
@@ -70,9 +68,9 @@ else {
             <div class="content" style="display: flex; flex-direction: column;">
 				<?php if (!empty($this->evaluation_select)) : ?>
                     <label for="copy_evaltuations"
-                           class="em-container-evaluation-body-label"><?= JText::_('COM_EMUNDUS_EVALUATION_PICK_EVAL_TO_COPY'); ?></label>
+                           class="em-container-evaluation-body-label"><?= Text::_('COM_EMUNDUS_EVALUATION_PICK_EVAL_TO_COPY'); ?></label>
                     <select id="copy_evaluations">
-                        <option value="0" selected><?= JText::_('COM_EMUNDUS_EVALUATION_PICK_EVAL_TO_COPY'); ?></option>
+                        <option value="0" selected><?= Text::_('COM_EMUNDUS_EVALUATION_PICK_EVAL_TO_COPY'); ?></option>
 						<?php
 						foreach ($this->evaluation_select as $eval) {
 							foreach ($eval as $fnum => $evaluators) {
@@ -96,7 +94,7 @@ else {
                         <iframe id="iframe" src="<?= $this->url_form; ?>" height="600" width="100%" onload="onLoadIframe(this)">
                         </iframe>
 					<?php else : ?>
-                        <div class="em_no-form"><?= JText::_($this->message); ?></div>
+                        <div class="em_no-form"><?= Text::_($this->message); ?></div>
 					<?php endif; ?>
                 </div>
                 <div class="evaluations" id="evaluations"></div>
@@ -105,11 +103,11 @@ else {
     </div>
 </div>
 <script type="text/javascript">
-    $('#iframe').mouseleave(function () {
+    document.getElementById('iframe').addEventListener('mouseleave', function () {
         resizeIframe(document.getElementById('iframe'));
     });
 
-    $('#iframe').mouseover(function () {
+    document.getElementById('iframe').addEventListener('mouseover', function () {
         resizeIframe(document.getElementById('iframe'));
     });
 
@@ -131,7 +129,8 @@ else {
     };
 
     var url_evaluation = '<?php echo $this->url_evaluation; ?>';
-    if (url_evaluation != '') {
+
+    if (url_evaluation !== '') {
         $.ajax({
             type: "GET",
             url: url_evaluation,
@@ -224,11 +223,11 @@ else {
 
         if (checked.length > 0) {
             Swal.fire({
-                title: "<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_CONFIRM_DELETE_SELETED_EVALUATIONS')?>",
+                title: "<?php echo Text::_('COM_EMUNDUS_EVALUATIONS_CONFIRM_DELETE_SELETED_EVALUATIONS')?>",
                 type: 'warning',
                 showCancelButton: true,
-                confirmButtonText: "<?php echo JText::_('JYES') ?>",
-                cancelButtonText: "<?php echo JText::_('JNO') ?>",
+                confirmButtonText: "<?php echo Text::_('JYES') ?>",
+                cancelButtonText: "<?php echo Text::_('JNO') ?>",
                 reverseButtons: true,
                 customClass: {
                     title: 'em-swal-title',
@@ -241,7 +240,7 @@ else {
 
                     $('#em-modal-actions .modal-body').empty();
                     $('#em-modal-actions .modal-body').append('<div><img src="' + loadingLine + '" alt="' +
-                        Joomla.JText._('COM_EMUNDUS_LOADING') + '"/></div>');
+                        Joomla.Text._('COM_EMUNDUS_LOADING') + '"/></div>');
                     $('#em-modal-actions .modal-footer').hide();
                     $('#em-modal-actions .modal-dialog').addClass('modal-lg');
                     $('#em-modal-actions .modal').show();
@@ -276,10 +275,10 @@ else {
             });
         } else {
             Swal.fire({
-                title: "<?php echo JText::_('COM_EMUNDUS_EVALUATIONS_YOU_MUST_SELECT_EVALUATIONS')?>",
+                title: "<?php echo Text::_('COM_EMUNDUS_EVALUATIONS_YOU_MUST_SELECT_EVALUATIONS')?>",
                 type: 'warning',
                 showCancelButton: false,
-                confirmButtonText: "<?php echo JText::_('CONFIRM') ?>",
+                confirmButtonText: "<?php echo Text::_('CONFIRM') ?>",
                 reverseButtons: true,
                 customClass: {
                     title: 'em-swal-title',

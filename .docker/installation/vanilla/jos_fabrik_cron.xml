@@ -71,6 +71,23 @@
     <field name="lastrun">2021-11-24 23:00:00</field>
     <field name="params">{&quot;connection&quot;:&quot;1&quot;,&quot;table&quot;:&quot;&quot;,&quot;cron_row_limit&quot;:&quot;100&quot;,&quot;log&quot;:&quot;0&quot;,&quot;log_email&quot;:&quot;&quot;,&quot;require_qs&quot;:&quot;0&quot;,&quot;require_qs_secret&quot;:&quot;&quot;,&quot;cron_rungate&quot;:&quot;0&quot;,&quot;cron_reschedule_manual&quot;:&quot;0&quot;,&quot;reminder_mail_id&quot;:&quot;79&quot;,&quot;reminder_mail_id_coordinator&quot;:&quot;81&quot;}</field>
    </row>
+   <row>
+    <field name="id">5</field>
+    <field name="label">Logs and messages purge</field>
+    <field name="frequency">1</field>
+    <field name="unit">day</field>
+    <field name="created">0000-00-00 00:00:00</field>
+    <field name="created_by">0</field>
+    <field name="created_by_alias"></field>
+    <field name="modified">0000-00-00 00:00:00</field>
+    <field name="modified_by"></field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
+    <field name="published">1</field>
+    <field name="plugin">emunduslogsandmessagespurge</field>
+    <field name="lastrun">2024-05-30 04:00:00</field>
+    <field name="params">{&quot;connection&quot;:&quot;1&quot;,&quot;table&quot;:&quot;&quot;,&quot;cron_row_limit&quot;:&quot;100&quot;,&quot;log&quot;:&quot;0&quot;,&quot;log_email&quot;:&quot;&quot;,&quot;require_qs&quot;:&quot;0&quot;,&quot;require_qs_secret&quot;:&quot;&quot;,&quot;cron_rungate&quot;:&quot;1&quot;,&quot;cron_reschedule_manual&quot;:&quot;0&quot;,&quot;amount_time&quot;:&quot;1&quot;,&quot;unit_time&quot;:&quot;year&quot;,&quot;export_zip&quot;:&quot;1&quot;, &quot;amount_time_tmp&quot;:&quot;1&quot;,&quot;unit_time_tmp&quot;:&quot;week&quot;}</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

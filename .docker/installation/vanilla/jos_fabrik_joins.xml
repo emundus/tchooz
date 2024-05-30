@@ -1279,6 +1279,18 @@
     <field name="group_id">795</field>
     <field name="params">{&quot;type&quot;:&quot;group&quot;,&quot;pk&quot;:&quot;`jos_emundus_campaign_workflow_repeat_documents`.`id`&quot;}</field>
    </row>
+   <row>
+    <field name="id">1372</field>
+    <field name="list_id">0</field>
+    <field name="element_id">7983</field>
+    <field name="join_from_table"></field>
+    <field name="table_join">jos_fabrik_lists</field>
+    <field name="table_key">evaluation_form</field>
+    <field name="table_join_key">form_id</field>
+    <field name="join_type">left</field>
+    <field name="group_id">182</field>
+    <field name="params">{&quot;join-label&quot;:&quot;label&quot;,&quot;type&quot;:&quot;element&quot;,&quot;pk&quot;:&quot;`jos_fabrik_lists`.`id`&quot;}</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>
