@@ -97,7 +97,7 @@ header('Content-Type: text/html; charset=utf-8');
         jQuery('.g-content').has('.etiquette').attr('style', 'margin:auto!important');
         jQuery('.g-content').has('.etiquette').attr('style', 'display:grid;grid-column-gap:15px;grid-row-gap:15px;grid-template-columns:repeat(3, 1fr);margin-bottom:15px!important;');
         jQuery('.platform-content').attr('style', 'width:100%!important');
-        jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: 0 1px 2px 0 hsla(0,0%,41.2%,.19);');
+        jQuery('.platform-content').has('.container-stat').attr('style', 'margin-bottom:50px;background-color:white;padding-bottom:1%;box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);border-radius: var(--em-default-br);border: 1px solid #EDEDED;');
         jQuery('.etiquette').attr('style', 'grid-column-end:span 3;');
         jQuery('.informationStatistique').attr('style', 'grid-column-end:span 3;');
 

@@ -275,6 +275,17 @@
     text-align: left;
 }
 
+.etiquette .filter .inputFilter select {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    width: 100%;
+    background-image: url('/images/emundus/arrow.svg');
+    background-position: 95%;
+    background-repeat: no-repeat;
+    padding: 0.5rem;
+}
+
+
 .closeButtonWelcomeStat {
     float: right;
     cursor: pointer;
