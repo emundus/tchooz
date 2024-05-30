@@ -3192,6 +3192,98 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
+/* INDICATORS PAGE */
+
+.view-list .fabrikForm {
+
+  /* FILTERS */
+  & > div {
+    padding: 0;
+    margin-top: 16px;
+
+    .fabrikFilterContainer {
+      padding: 0 !important;
+
+      .fabrik___heading {
+        padding: 0;
+      }
+
+      a {
+        color: var(--em-profile-color);
+      }
+    }
+
+    .fabrikButtonsContainer {
+      padding: 0;
+
+      .row-cols-auto {
+        display: flex;
+        justify-content: end;
+        gap: 8px;
+        margin-bottom: 12px;
+
+        li a.btn {
+          background: #FFFFFF;
+          border: 1px solid #EDEDED;
+          border-radius: 8px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          padding: 10px 16px;
+          color: black;
+
+          &:hover {
+            text-decoration: none;
+          }
+        }
+
+          ul.dropdown-menu {
+            padding: 8px;
+
+            li a {
+            color: var(--neutral-900);
+            border-radius: 8px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+
+            &:hover {
+              background: #EBECF0 !important;
+              border-radius: 4px !important;
+              text-decoration: none;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* DATAS */
+  .fabrikDataContainer tbody {
+    border: 1px solid #e0e0e5;
+  }
+
+  /* NAV*/
+
+  .fabrikNav {
+    .list-footer {
+        padding-left: 0;
+        margin-left: 0;
+        margin-top: 12px;
+
+      .col-sm-2 {
+        width: 8%;
+
+        p {
+          text-align: left;
+        }
+      }
+    }
+  }
+}
+
+
+
 
 /* SIDEBAR FILTRES */
 
