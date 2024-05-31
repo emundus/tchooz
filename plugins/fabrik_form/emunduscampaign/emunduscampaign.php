@@ -99,9 +99,8 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 	 * @return Bool
 	 * @throws Exception
 	 */
-	public function onAfterProcess()
+	public function onBeforeCalculations()
 	{
-
 		jimport('joomla.log.log');
 		Log::addLogger(array('text_file' => 'com_emundus.campaign.php'), Log::ALL, array('com_emundus'));
 
@@ -116,13 +115,15 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 		$query = $this->_db->getQuery(true);
 
+		$formModel = $this->getModel();
+
 		// This allows the plugin to be run from a different context while retaining the same functionality.
 		switch ($form_type) {
 
 			case 'user':
 				$query->select($this->_db->quoteName('id'))
 					->from($this->_db->quoteName('#__users'))
-					->where($this->_db->quoteName('email') . ' LIKE ' . $this->_db->quote($this->app->getInput()->getString('jos_emundus_users___email_raw')));
+					->where($this->_db->quoteName('email') . ' LIKE ' . $this->_db->quote($formModel->formData['email_raw']));
 				$this->_db->setQuery($query);
 				try {
 					$user = $this->_db->loadResult();
@@ -136,11 +137,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 				$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user);
 
-				$campaign_id = $this->app->getInput()->get('jos_emundus_campaign_candidature___campaign_id_raw', 0);
-
-				if (empty($campaign_id)) {
-					$campaign_id = $this->app->getInput()->get('jos_emundus_campaign_candidature___campaign_id', 0);
-				}
+				$campaign_id = $formModel->formData['campaign_id_raw'];
 
 				$campaign_id = is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
 				if (empty($campaign_id)) {
@@ -162,7 +159,8 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 				}
 
 				// create new fnum
-				$fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($user->id, 7, '0', STR_PAD_LEFT);
+				require_once JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php';
+				$fnum = EmundusHelperFiles::createFnum($campaign_id, $user->id);
 
 				$query->clear()
 					->insert($this->_db->quoteName('#__emundus_campaign_candidature'))
@@ -176,13 +174,9 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 				if (empty($user)) {
 					$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user);
 				}
-				$fnum_tmp    = $this->app->getInput()->getString('jos_emundus_campaign_candidature___fnum', '');
-				$id          = $this->app->getInput()->getInt('jos_emundus_campaign_candidature___id', 0);
-				$campaign_id = $this->app->getInput()->get('jos_emundus_campaign_candidature___campaign_id_raw', 0);
-
-				if (empty($campaign_id)) {
-					$campaign_id = $this->app->getInput()->get('jos_emundus_campaign_candidature___campaign_id', 0);
-				}
+				$fnum_tmp    = $formModel->formData['fnum'];
+				$id          = $formModel->formData['id'];
+				$campaign_id = $formModel->formData['campaign_id_raw'];
 
 				$campaign_id = is_array($campaign_id) ? $campaign_id[0] : $campaign_id;
 				if (empty($campaign_id)) {
@@ -190,7 +184,8 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 				}
 
 				// create new fnum
-				$fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($user->id, 7, '0', STR_PAD_LEFT);
+				require_once JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php';
+				$fnum = EmundusHelperFiles::createFnum($campaign_id, $user);
 
 				$query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
 					->set($this->_db->quoteName('fnum') . ' = ' . $this->_db->Quote($fnum))
@@ -210,7 +205,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 		}
 		catch (Exception $e) {
-			Log::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 		}
 
 		$query->clear()
@@ -224,7 +219,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 			$campaign = $this->_db->loadAssoc();
 		}
 		catch (Exception $e) {
-			Log::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
 		}
 
 		if (!empty($campaign)) {
@@ -249,7 +244,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 					$this->_db->execute();
 				}
 				catch (Exception $e) {
-					Log::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
+					Log::add(Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
 				}
 			}
 
@@ -271,12 +266,12 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 						$this->_db->execute();
 					}
 					catch (Exception $e) {
-						Log::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
+						Log::add(Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
 					}
 				}
 			}
 			catch (Exception $e) {
-				Log::add(JUri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query, Log::ERROR, 'com_emundus');
 			}
 		}
 

@@ -283,14 +283,6 @@ class plgUserEmundus_registration_email extends CMSPlugin
 				->where($conditions);
 			$this->db->setQuery($query);
 			$this->db->execute();
-
-			$credentials             = array();
-			$credentials['username'] = $options['username'];
-			$credentials['password'] = $options['password_clear'];
-
-			$options             = array();
-			$options['redirect'] = '/index.php?option=com_emundus&view=user';
-			$this->app->login($credentials, $options);
 		}
 		else {
 			$fields     = array(
