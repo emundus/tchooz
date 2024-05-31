@@ -2265,6 +2265,10 @@ class PlgFabrik_Element extends FabrikPlugin
 		$groupModel = $this->getGroup();
 		$group      = $groupModel->getGroupProperties($model);
 
+		if(is_null($model->data)) {
+			$model->data = array();
+		}
+
 		if (!$this->canUse() && !$this->canView())
 		{
 			return false;
