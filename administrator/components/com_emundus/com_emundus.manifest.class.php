@@ -190,14 +190,9 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour de la palette de couleurs de l\'administration.', 'error');
 		}
 
-	    // if payment is activated, remove cookie samesite line in .htaccess file, else add it
-	    $eMConfig = ComponentHelper::getParams('com_emundus');
-	    $payment_activated = $eMConfig->get('application_fee');
-
-	    EmundusHelperUpdate::removeFromFile(JPATH_ROOT . '/.htaccess', ['php_value session.cookie_samesite Strict']);
-	    if (!$payment_activated) {
-		    EmundusHelperUpdate::insertIntoFile(JPATH_ROOT . '/.htaccess', "php_value session.cookie_samesite Lax" . PHP_EOL);
-	    }
+		if(!$this->checkHtAccess()) {
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du fichier .htaccess.', 'error');
+		}
 
 		return true;
     }
@@ -323,5 +318,59 @@ class Com_EmundusInstallerScript
 		{}
 
 		return $colors_updated;
+	}
+
+	private function checkHtAccess()
+	{
+		$current_htaccess = file_get_contents(JPATH_ROOT . '/.htaccess');
+
+		// First we backup current htaccess file
+		copy(JPATH_ROOT . '/.htaccess', JPATH_ROOT . '/.htaccess.bak');
+
+		$tchooz_base_rules = file_get_contents(JPATH_ROOT . '/.htaccess.tchooz.base.rules.txt');
+		$joomla_rules = file_get_contents(JPATH_ROOT . '/htaccess.txt');
+		$tchooz_custom_rules = file_get_contents(JPATH_ROOT . '/.htaccess.tchooz.custom.rules.txt');
+
+		// First run we empty current htaccess file
+		if(!strpos($current_htaccess,'# Start of Tchooz .htaccess file (BASE)') && !strpos($current_htaccess,'# Start of Tchooz .htaccess file (CUSTOM)'))
+		{
+			$current_htaccess = '';
+			$current_htaccess .= $joomla_rules;
+			$current_htaccess .= PHP_EOL.PHP_EOL;
+			$current_htaccess .= $tchooz_base_rules;
+			$current_htaccess .= PHP_EOL;
+			$current_htaccess .= $tchooz_custom_rules;
+
+			$checked = file_put_contents(JPATH_ROOT . '/.htaccess', $current_htaccess);
+		} else {
+			// Replace Joomla rules
+			$cur_htaccess_joomla_rules = strstr($current_htaccess, '# Start of Tchooz .htaccess file (BASE)', true);
+			$current_htaccess = str_replace($cur_htaccess_joomla_rules, $joomla_rules.PHP_EOL, $current_htaccess);
+			//
+
+			// Replace base rules
+			$tchooz_base_starts = strpos($tchooz_base_rules, "# Start of Tchooz .htaccess file (BASE)") + strlen("# Start of Tchooz .htaccess file (BASE)");
+			$tchooz_base_ends = strpos($tchooz_base_rules, "# End of Tchooz .htaccess file (BASE)", $tchooz_base_starts);
+			$tchooz_base_block = substr($tchooz_base_rules, $tchooz_base_starts, $tchooz_base_ends - $tchooz_base_starts);
+
+			$cur_htaccess_base_starts = strpos($current_htaccess, "# Start of Tchooz .htaccess file (BASE)") + strlen("# Start of Tchooz .htaccess file (BASE)");
+			$cur_htaccess_base_ends = strpos($current_htaccess, "# End of Tchooz .htaccess file (BASE)", $cur_htaccess_base_starts);
+			$cur_htaccess_base_block = substr($current_htaccess, $cur_htaccess_base_starts, $cur_htaccess_base_ends - $cur_htaccess_base_starts);
+
+			$current_htaccess = str_replace($cur_htaccess_base_block, $tchooz_base_block, $current_htaccess);
+			//
+
+			// Check if Custom rules are present
+			if (!strpos($current_htaccess,'# Start of Tchooz .htaccess file (CUSTOM)')) {
+				$current_htaccess .= PHP_EOL;
+				$current_htaccess .= $tchooz_custom_rules;
+			}
+			//
+
+			// Save file
+			$checked = file_put_contents(JPATH_ROOT . '/.htaccess', $current_htaccess);
+		}
+
+		return $checked;
 	}
 }
