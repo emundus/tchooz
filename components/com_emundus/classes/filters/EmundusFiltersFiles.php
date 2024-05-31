@@ -573,6 +573,9 @@ class EmundusFiltersFiles extends EmundusFilters
 				];
 			}
 
+
+			$session = $this->app->getSession();
+
 			if (!empty($config['more_filter_elements'])) {
 				foreach ($config['more_filter_elements'] as  $more_filter) {
 					if (!empty($more_filter['fabrik_element_id'])) {
@@ -639,7 +642,6 @@ class EmundusFiltersFiles extends EmundusFilters
 							$this->applied_filters[] = $new_default_filter;
 
 							// add filter to adv cols
-							$session = $this->app->getSession();
 							$files_displayed_columns = $session->get('adv_cols');
 							if (!empty($files_displayed_columns)) {
 								$files_displayed_columns[] = $new_default_filter['id'];
@@ -651,6 +653,8 @@ class EmundusFiltersFiles extends EmundusFilters
 					}
 				}
 			}
+
+			$session->set('em-applied-filters', $this->applied_filters);
 
 			// sort applied filters array by array entry 'order'
 			usort($this->applied_filters, function ($a, $b) {

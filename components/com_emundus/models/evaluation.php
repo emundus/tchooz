@@ -936,10 +936,12 @@ class EmundusModelEvaluation extends JModelList
 		$h_files = new EmundusHelperFiles();
 
 		if ($this->use_module_filters) {
-			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
+			$caller_params = array(
 				'fnum_assoc' => $this->fnum_assoc,
-				'code'       => $this->code
-			));
+				'code'       => $this->code,
+				'eval'       => true,
+			);
+			return $h_files->_moduleBuildWhere($already_joined_tables, 'files',$caller_params);
 		}
 		else {
 			return $h_files->_buildWhere($already_joined_tables, 'files', array(

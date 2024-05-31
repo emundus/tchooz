@@ -4389,8 +4389,13 @@ class EmundusHelperFiles
 	 *
 	 * @return array containing 'q' the where clause and 'join' the join clause
 	 */
-	public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = [], $menu_item = null)
+	public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = [], $menu_item = null, $user = null)
 	{
+		$app = Factory::getApplication();
+		if(empty($user)) {
+			$user = $app->getIdentity();
+		}
+
 		$where = ['q' => '', 'join' => ''];
 
 		$db = Factory::getContainer()->get('DatabaseDriver');
@@ -4420,7 +4425,9 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND esc.published > 0';
 		}
 
-		$app = Factory::getApplication();
+		if (!empty($caller_params) && $caller_params['eval']) {
+			$where['q'] .= ' AND jecc.status <> 0';
+		}
 
 		if (empty($menu_item))
 		{
@@ -5468,15 +5475,25 @@ class EmundusHelperFiles
 	/*
      *
      */
-	public function setFiltersValuesAvailability($applied_filters, $user_id = null): array
+	public function setFiltersValuesAvailability($applied_filters, $user_id = null,$menu_item = null): array
 	{
 		$applied_filters = empty($applied_filters) ? [] : $applied_filters;
 
 		if (!empty($applied_filters))
 		{
+			$app = Factory::getApplication();
 			if (empty($user_id))
 			{
-				$user_id = Factory::getApplication()->getIdentity()->id;
+				$user_id = $app->getIdentity()->id;
+			}
+
+			if (empty($menu_item))
+			{
+				$menu = $app->getMenu();
+				if (!empty($menu))
+				{
+					$menu_item = $menu->getActive();
+				}
 			}
 
 			require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
@@ -5685,6 +5702,7 @@ class EmundusHelperFiles
 						}
 						else
 						{
+							$where_params = [];
 							$query = 'SELECT ' . $table_column_to_count . ' as count_value, COUNT(DISTINCT jecc.fnum) as count
                             FROM #__emundus_campaign_candidature as jecc
                             LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
@@ -5702,7 +5720,16 @@ class EmundusHelperFiles
 								$query .= $leftJoins;
 							}
 
-							$whereConditions = $this->_moduleBuildWhere($already_joined, 'files', ['code' => $user_programmes, 'fnum_assoc' => $user_fnums_assoc], [$applied_filter['uid']]);
+							if(!empty($menu_item)) {
+								if($menu_item->query['view'] == 'evaluation') {
+									$where_params['eval'] = true;
+								}
+							}
+
+							$where_params['code'] = $user_programmes;
+							$where_params['fnum_assoc'] = $user_fnums_assoc;
+
+							$whereConditions = $this->_moduleBuildWhere($already_joined, 'files', $where_params, [$applied_filter['uid']]);
 
 							$query .= $whereConditions['join'];
 							$query .= ' WHERE u.block=0 ' . $whereConditions['q'];
