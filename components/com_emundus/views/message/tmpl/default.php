@@ -1202,7 +1202,7 @@ if ($allowed_attachments !== true) {
 
         $.ajax({
             type: "POST",
-            url: "index.php?option=com_emundus&controller=messages&task=uploadfiletosend",
+            url: "/index.php?option=com_emundus&controller=messages&task=uploadfiletosend",
             xhr: function () {
                 var myXhr = $.ajaxSettings.xhr();
                 if (myXhr.upload) {

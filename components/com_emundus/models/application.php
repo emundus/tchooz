@@ -4064,6 +4064,8 @@ class EmundusModelApplication extends JModelList
 		return $deleted;
 	}
 
+	//TODO: Add the deleteGroupsAccess function here (multiple groups, if no id provided all groups of fnum
+
 	/**
 	 * @param $fnum string
 	 * @param $uid int

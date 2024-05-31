@@ -5779,7 +5779,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="width">44</field>
     <field name="height">0</field>
     <field name="default"></field>
-    <field name="hidden">0</field>
+    <field name="hidden">1</field>
     <field name="eval">0</field>
     <field name="ordering">4</field>
     <field name="show_in_list_summary">0</field>

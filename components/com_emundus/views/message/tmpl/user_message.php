@@ -598,7 +598,7 @@ $uids       = array();
 
         $.ajax({
             type: "POST",
-            url: "index.php?option=com_emundus&controller=messages&task=uploadfiletosend",
+            url: "/index.php?option=com_emundus&controller=messages&task=uploadfiletosend",
             xhr: () => {
                 var myXhr = $.ajaxSettings.xhr();
                 if (myXhr.upload) {
