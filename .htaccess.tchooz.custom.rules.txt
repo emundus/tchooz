@@ -1,0 +1,20 @@
+# Start of Tchooz .htaccess file (CUSTOM)
+############################################
+
+php_value post_max_size 100M
+php_value upload_max_filesize 100M
+
+php_value session.cookie_secure On
+php_value session.cookie_samesite Lax
+
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+
+	RewriteCond %{HTTP_REFERER} !.*administrator/
+	RewriteCond %{QUERY_STRING} !^X3xAqXmxNkAKd5ckHBqmT$
+	RewriteCond %{QUERY_STRING} !com_securitycheckprocontrolcenter [NC]
+	RewriteRule ^.*administrator/? / [R,L]
+</IfModule>
+
+############################################
+# End of Tchooz .htaccess file (CUSTOM)

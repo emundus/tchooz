@@ -159,7 +159,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ] || [ "$CI_PROJECT_DIR" ]; then
 
     echo >&2 "Init configuration variables..."
     cp configuration.php.dist configuration.php
-    cp .htaccess.txt .htaccess
+    cp htaccess.txt .htaccess
 
     sed -i "s:\$host = '.*':\$host = '$JOOMLA_DB_HOST':g" configuration.php
     sed -i "s:\$user = '.*':\$user = '$JOOMLA_DB_USER':g" configuration.php

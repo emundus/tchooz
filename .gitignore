@@ -132,6 +132,7 @@ libraries/emundus/custom/*
 /configuration*.php
 /configuration.php
 /.htaccess
+/.htaccess.bak
 
 # WAITING QUEUE
 waiting-queue.html

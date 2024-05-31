@@ -1,9 +1,9 @@
 <?php
 class JConfig {
 	public $offline = false;
-	public $offline_message = 'This site is down for maintenance.<br />Please check back again soon.';
+	public $offline_message = 'La plateforme est actuellement en maintenance.<br />Merci pour votre compréhension.';
 	public $display_offline_message = 1;
-	public $offline_image = '';
+	public $offline_image = 'images/custom/logo.png';
 	public $sitename = 'Tchooz';
 	public $editor = 'tinymce';
 	public $captcha = '0';
@@ -11,7 +11,7 @@ class JConfig {
 	public $access = 1;
 	public $debug = false;
 	public $debug_lang = false;
-	public $debug_lang_const = true;
+	public $debug_lang_const = false;
 	public $dbtype = 'mysqli';
 	public $host = 'database';
 	public $user = 'user';
@@ -26,17 +26,17 @@ class JConfig {
 	public $dbsslcipher = '';
 	public $force_ssl = 0;
 	public $live_site = '';
-	public $secret = 'AfsBFYp9cXAKPWyG';
+	public $secret = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 	public $gzip = false;
 	public $error_reporting = 'default';
 	public $helpurl = 'https://help.joomla.org/proxy?keyref=Help{major}{minor}:{keyref}&lang={langcode}';
-	public $offset = 'UTC';
+	public $offset = 'Europe/Paris';
 	public $mailonline = true;
-	public $mailer = 'mail';
-	public $mailfrom = 'sysadmin@emundus.io';
+	public $mailer = 'smtp';
+	public $mailfrom = 'support@emundus.fr';
 	public $fromname = 'Tchooz';
 	public $sendmail = '/usr/sbin/sendmail';
-	public $smtpauth = false;
+	public $smtpauth = true;
 	public $smtpuser = '';
 	public $smtppass = '';
 	public $smtphost = 'localhost';
@@ -46,12 +46,12 @@ class JConfig {
 	public $cache_handler = 'file';
 	public $cachetime = 15;
 	public $cache_platformprefix = false;
-	public $MetaDesc = '';
+	public $MetaDesc = 'Tchooz';
 	public $MetaAuthor = true;
 	public $MetaVersion = false;
 	public $robots = '';
 	public $sef = true;
-	public $sef_rewrite = false;
+	public $sef_rewrite = true;
 	public $sef_suffix = false;
 	public $unicodeslugs = false;
 	public $feed_limit = 10;

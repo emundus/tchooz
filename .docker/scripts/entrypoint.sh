@@ -155,7 +155,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 
     echo >&2 "Init configuration variables..."
     cp configuration.php.dist configuration.php
-    cp .htaccess.txt .htaccess
+    cp htaccess.txt .htaccess
 
     sed -i "s:\$host = '.*':\$host = '$JOOMLA_DB_HOST':g" configuration.php
     sed -i "s:\$user = '.*':\$user = '$JOOMLA_DB_USER':g" configuration.php
@@ -186,6 +186,10 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2 "Set Fabrik connection..."
 
     php cli/joomla.php tchooz:fabrik_connection_reset -n
+
+    echo >&2 "Run eMundus updates..."
+    php cli/joomla.php tchooz:update -n --component=com_emundus
+    php cli/joomla.php maintenance:database --fix
 
     chown www-data: configuration.php
     chown www-data: .htaccess
