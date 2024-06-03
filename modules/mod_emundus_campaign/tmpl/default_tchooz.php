@@ -77,9 +77,16 @@ if (sizeof($tmp_campaigns) > 0)
 	}
     elseif ($group_by == 'month')
 	{
-		usort($tmp_campaigns, function ($a, $b) {
-			return (int) $a->{$order} - (int) $b->{$order};
-		});
+        if($mod_em_campaign_order_type == 'desc')
+        {
+	        usort($tmp_campaigns, function ($a, $b) use ($order) {
+		        return strtotime($b->{$order}) - strtotime($a->{$order});
+	        });
+        } elseif ($mod_em_campaign_order_type == 'asc' || empty($mod_em_campaign_order_type)) {
+	        usort($tmp_campaigns, function ($a, $b) use ($order) {
+		        return strtotime($a->{$order}) - strtotime($b->{$order});
+	        });
+        }
 
 		foreach ($tmp_campaigns as $campaign)
 		{

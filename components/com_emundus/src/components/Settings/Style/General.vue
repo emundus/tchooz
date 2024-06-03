@@ -65,7 +65,7 @@
         </div>
 
         <div class="em-logo-box pointer tw-mt-4" v-if="!favicon_updating">
-          <img class="logo-settings" v-if="!hideIcon" :src="iconLink" :srcset="iconLink" @error="hideIcon = true">
+          <img class="logo-settings" v-if="!hideIcon" :src="iconLink" :srcset="'/'+iconLink" @error="hideIcon = true">
           <p v-if="hideIcon">{{ translate('COM_EMUNDUS_ONBOARD_INSERT_ICON') }}</p>
         </div>
         <div class="tw-mt-4" v-if="favicon_updating">

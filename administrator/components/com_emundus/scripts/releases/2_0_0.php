@@ -420,6 +420,22 @@ class Release2_0_0Installer extends ReleaseInstaller
 			}
 			//
 
+			// Add autocomplete filter to fields
+			$query->clear()
+				->select('id,filter_type,filter_exact_match')
+				->from($this->db->quoteName('#__fabrik_elements'))
+				->where($this->db->quoteName('plugin') . ' LIKE ' . $this->db->quote('field'))
+				->where($this->db->quoteName('filter_type') . ' NOT LIKE ' . $this->db->quote(''));
+			$this->db->setQuery($query);
+			$elements = $this->db->loadObjectList();
+
+			foreach($elements as $element) {
+				$element->filter_type = 'auto-complete';
+				$element->filter_exact_match = 0;
+				$this->db->updateObject('#__fabrik_elements', $element, 'id');
+			}
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
