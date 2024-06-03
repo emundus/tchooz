@@ -436,6 +436,32 @@ class Release2_0_0Installer extends ReleaseInstaller
 			}
 			//
 
+			// Install new emundusattachment plugin
+			EmundusHelperUpdate::installExtension('PLG_FABRIK_FORM_EMUNDUSATTACHMENT','emundusattachment',null,'plugin',1,'fabrik_form');
+
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_forms'))
+				->where($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('SETUP_UPLOAD_FILE_FOR_APPLICANT'));
+			$this->db->setQuery($query);
+			$setup_upload_file_for_applicant = $this->db->loadObject();
+
+			if(!empty($setup_upload_file_for_applicant)) {
+				$params = json_decode($setup_upload_file_for_applicant->params, true);
+				$params['curl_code'] = '';
+				$params['plugin_state'] = [1];
+				$params['plugins'] = ['emundusattachment'];
+				$params['plugin_locations'] = ['front'];
+				$params['plugin_events'] = ['both'];
+				$params['plugin_description'] = ['upload_attachment'];
+				$setup_upload_file_for_applicant->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_forms', $setup_upload_file_for_applicant, 'id');
+			}
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ATTACHMENT_ADDED','Le fichier a été ajouté avec succès.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ATTACHMENT_ADDED','The file has been successfully added.', 'override', 0, null, null, 'en-GB');
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
