@@ -22,6 +22,7 @@ use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 
@@ -80,7 +81,7 @@ class EmundusModelApplication extends JModelList
 				$applicant_infos = $this->_db->loadAssoc();
 			}
 			catch (Exception $e) {
-				JLog::add("Failed to get applicant infos for user_id $aid " . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add("Failed to get applicant infos for user_id $aid " . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -235,7 +236,7 @@ class EmundusModelApplication extends JModelList
 				$attachments = $this->_db->loadObjectList();
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting user attachments in model at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus.error');
+				Log::add('Error getting user attachments in model at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
 			}
 
 			if (!empty($attachments)) {
@@ -403,7 +404,7 @@ class EmundusModelApplication extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add('Query: ' . $query . ' Error:' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('Query: ' . $query . ' Error:' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -425,7 +426,7 @@ class EmundusModelApplication extends JModelList
 				$this->_db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting fnum for comment id ' . $id . ' in m/application.', JLog::ERROR, 'com_emundus');
+				Log::add('Error getting fnum for comment id ' . $id . ' in m/application.', Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -448,7 +449,7 @@ class EmundusModelApplication extends JModelList
 			$res = $this->_db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('Error deleting comment id ' . $id . ' in m/application. ERROR -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('Error deleting comment id ' . $id . ' in m/application. ERROR -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -540,7 +541,7 @@ class EmundusModelApplication extends JModelList
 			return $this->_db->insertid();
 		}
 		catch (Exception $e) {
-			JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 
 			return null;
 		}
@@ -564,7 +565,7 @@ class EmundusModelApplication extends JModelList
 			$file = $this->_db->loadAssoc();
 		}
 		catch (Exception $e) {
-			JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 		}
 
 		$f = EMUNDUS_PATH_ABS . $file['user_id'] . DS . $file['filename'];
@@ -590,7 +591,7 @@ class EmundusModelApplication extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+			Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 		}
 
 		return $deleted;
@@ -615,7 +616,7 @@ class EmundusModelApplication extends JModelList
 			}
 			catch (RuntimeException $e) {
 				JFactory::getApplication()->enqueueMessage($e->getMessage());
-				JLog::add('Error in model/application at query: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add('Error in model/application at query: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -701,7 +702,7 @@ class EmundusModelApplication extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('Error trying to check if at least one of the form of the profile is filled: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add('Error trying to check if at least one of the form of the profile is filled: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1112,7 +1113,7 @@ class EmundusModelApplication extends JModelList
 						$elements_params = $this->_db->loadObjectList();
 					}
 					catch (Exception $e) {
-						JLog::add('Failed to check if emundus fileuploads fields are correctly filled ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+						Log::add('Failed to check if emundus fileuploads fields are correctly filled ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
 					if (!empty($elements_params)) {
@@ -1150,7 +1151,7 @@ class EmundusModelApplication extends JModelList
 									}
 								}
 								catch (Exception $e) {
-									JLog::add('Failed to check if emundus fileuploads fields are correctly filled ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+									Log::add('Failed to check if emundus fileuploads fields are correctly filled ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 								}
 							}
 						}
@@ -1373,7 +1374,7 @@ class EmundusModelApplication extends JModelList
 											$elt = implode(', ', $res);
 										}
 										catch (Exception $e) {
-											JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+											Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 											throw $e;
 										}
 									}
@@ -1517,7 +1518,7 @@ class EmundusModelApplication extends JModelList
 													$elt = implode(', ', $res);
 												}
 												catch (Exception $e) {
-													JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+													Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 													throw $e;
 												}
 											}
@@ -1830,7 +1831,7 @@ class EmundusModelApplication extends JModelList
 							$elements = $this->_db->loadObjectList();
 						}
 						catch (Exception $e) {
-							JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+							Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 							throw $e;
 						}
 
@@ -1849,7 +1850,7 @@ class EmundusModelApplication extends JModelList
 									$table = $this->_db->loadResult();
 								}
 								catch (Exception $e) {
-									JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+									Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 									throw $e;
 								}
 
@@ -1895,7 +1896,7 @@ class EmundusModelApplication extends JModelList
 										$repeated_elements = $this->_db->loadObjectList();
 									}
 									catch (Exception $e) {
-										JLog::Add('ERROR getting repeated elements in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+										Log::Add('ERROR getting repeated elements in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 									}
 
 									unset($t_elt);
@@ -1968,7 +1969,7 @@ class EmundusModelApplication extends JModelList
 																$elt .= "</ul>";
 															}
 															catch (Exception $e) {
-																JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+																Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 																throw $e;
 															}
 														}
@@ -2258,7 +2259,7 @@ class EmundusModelApplication extends JModelList
 														$elt .= "</ul>";
 													}
 													catch (Exception $e) {
-														JLog::add('Line 997 - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+														Log::add('Line 997 - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 														throw $e;
 													}
 												}
@@ -2388,7 +2389,7 @@ class EmundusModelApplication extends JModelList
 													}
 												}
 												catch (Exception $e) {
-													JLog::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+													Log::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 													$elt = '';
 												}
 											}
@@ -2477,7 +2478,7 @@ class EmundusModelApplication extends JModelList
 					$groupes = $this->_db->loadObjectList();
 				}
 				catch (Exception $e) {
-					JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+					Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 					throw $e;
 				}
 
@@ -2538,7 +2539,7 @@ class EmundusModelApplication extends JModelList
 						$elements = $this->_db->loadObjectList();
 					}
 					catch (Exception $e) {
-						JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+						Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 						throw $e;
 					}
 
@@ -2582,7 +2583,7 @@ class EmundusModelApplication extends JModelList
 								$table = $this->_db->loadResult();
 							}
 							catch (Exception $e) {
-								JLog::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+								Log::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 								throw $e;
 							}
 
@@ -2610,7 +2611,7 @@ class EmundusModelApplication extends JModelList
 									$repeated_elements = $this->_db->loadObjectList();
 								}
 								catch (Exception $e) {
-									JLog::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+									Log::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 									throw $e;
 								}
 
@@ -2662,7 +2663,7 @@ class EmundusModelApplication extends JModelList
 															$elt .= "</ul>";
 														}
 														catch (Exception $e) {
-															JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+															Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 															throw $e;
 														}
 													}
@@ -2864,7 +2865,7 @@ class EmundusModelApplication extends JModelList
 															$elt .= "</ul>";
 														}
 														catch (Exception $e) {
-															JLog::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+															Log::add('Line ' . __LINE__ . ' - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 															throw $e;
 														}
 													}
@@ -3029,7 +3030,7 @@ class EmundusModelApplication extends JModelList
 										$res = $this->_db->loadRow();
 									}
 									catch (Exception $e) {
-										JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+										Log::add('Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 										throw $e;
 									}
 
@@ -3120,7 +3121,7 @@ class EmundusModelApplication extends JModelList
 														$elt .= "</ul>";
 													}
 													catch (Exception $e) {
-														JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+														Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 														throw $e;
 													}
 												}
@@ -3448,7 +3449,7 @@ class EmundusModelApplication extends JModelList
 													$elt = implode(', ', $res);
 												}
 												catch (Exception $e) {
-													JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+													Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 													throw $e;
 												}
 											}
@@ -3551,7 +3552,7 @@ class EmundusModelApplication extends JModelList
 												$elt = implode(', ', $res);
 											}
 											catch (Exception $e) {
-												JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
+												Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 												throw $e;
 											}
 										}
@@ -3672,7 +3673,7 @@ class EmundusModelApplication extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+			Log::add('line ' . __LINE__ . ' - Error in model/application at query: ' . $query->__toString(), Log::ERROR, 'com_emundus');
 		}
 
 		return $menus;
@@ -4091,7 +4092,7 @@ class EmundusModelApplication extends JModelList
 				$this->_db->setQuery($query);
 				$deleted = $this->_db->execute();
 			} catch (Exception $e) {
-				JLog::add('Error in model/application at query: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add('Error in model/application at query: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 
 			if ($deleted) {
@@ -4298,7 +4299,7 @@ class EmundusModelApplication extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -4362,7 +4363,7 @@ class EmundusModelApplication extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -4440,7 +4441,7 @@ class EmundusModelApplication extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -4463,7 +4464,7 @@ class EmundusModelApplication extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -4500,7 +4501,7 @@ class EmundusModelApplication extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -4527,7 +4528,7 @@ class EmundusModelApplication extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -4600,7 +4601,7 @@ class EmundusModelApplication extends JModelList
 		catch (Exception $e) {
 
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -4635,7 +4636,7 @@ class EmundusModelApplication extends JModelList
 			}
 
 			if (empty($pid) && empty($campaign_id)) {
-				$pids[] = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form'])) ? $fnumInfos['profile_id_form'] : $fnumInfos['profile_id'];
+				$pids[] = (!empty($fnumInfos['profile_id_form'])) ? $fnumInfos['profile_id_form'] : $fnumInfos['profile_id'];
 			}
 			elseif (!empty($pid)) {
 				$pids[] = $pid;
@@ -4643,7 +4644,7 @@ class EmundusModelApplication extends JModelList
 
 			$forms = array();
 			foreach ($pids as $profile) {
-				$menus = @EmundusHelperMenu::buildMenuQuery($profile);
+				$menus = EmundusHelperMenu::buildMenuQuery($profile);
 				foreach ($menus as $menu) {
 					$forms[] = $menu;
 				}
@@ -4653,40 +4654,50 @@ class EmundusModelApplication extends JModelList
 			$forms     = array_values(array_intersect_key($forms, $tempArray));
 
 			foreach ($forms as $form) {
-				$query = 'SELECT * FROM ' . $form->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum_from);
+				$query = $this->_db->getQuery(true);
+
+				$query->clear()
+					->select('*')
+					->from($this->_db->quoteName($form->db_table_name))
+					->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum_from));
 				$this->_db->setQuery($query);
 				$stored = $this->_db->loadAssoc();
 
 				if (!empty($stored)) {
-					// update form data
 					$parent_id = $stored['id'];
 					unset($stored['id']);
 					$stored['fnum'] = $fnum_to;
 					$q              = 1;
 
-					if ($divergent_users) {
-						foreach ($stored as $key => $value) {
-							if ($key === 'user' && $value == $fnumInfos['applicant_id']) {
-								$stored[$key] = $fnumToInfos['applicant_id'];
-							}
+
+					foreach ($stored as $key => $value) {
+						if(is_null($value)) {
+							unset($stored[$key]);
+						}
+						if ($divergent_users && $key === 'user' && $value == $fnumInfos['applicant_id']) {
+							$stored[$key] = $fnumToInfos['applicant_id'];
 						}
 					}
 
-					$query = 'INSERT INTO ' . $form->db_table_name . ' (`' . implode('`,`', array_keys($stored)) . '`) VALUES(' . implode(',', $this->_db->Quote($stored)) . ')';
+					$query->clear()
+						->insert($this->_db->quoteName($form->db_table_name))
+						->columns(array_keys($stored))
+						->values(implode(',', $this->_db->quote($stored)));
 					$this->_db->setQuery($query);
 					$this->_db->execute();
 					$id = $this->_db->insertid();
 
 					// liste des groupes pour le formulaire d'une table
-					$query = 'SELECT ff.id, ff.group_id, fe.name, fg.id, fg.label, (IF( ISNULL(fj.table_join), fl.db_table_name, fj.table_join)) as `table`, fg.params as `gparams`
-                                FROM #__fabrik_formgroup ff
-                                LEFT JOIN #__fabrik_lists fl ON fl.form_id=ff.form_id
-                                LEFT JOIN #__fabrik_groups fg ON fg.id=ff.group_id
-                                LEFT JOIN #__fabrik_elements fe ON fe.group_id=fg.id
-                                LEFT JOIN #__fabrik_joins AS fj ON (fj.group_id = fe.group_id AND fj.list_id != 0 AND fj.element_id = 0)
-                                WHERE ff.form_id = "' . $form->form_id . '"
-                                AND fe.published = 1
-                                ORDER BY ff.ordering';
+					$query->clear()
+						->select('ff.id, ff.group_id, fe.name, fg.id, fg.label, (IF( ISNULL(fj.table_join), fl.db_table_name, fj.table_join)) as `table`, fg.params as `gparams`')
+						->from($this->_db->quoteName('#__fabrik_formgroup', 'ff'))
+						->leftJoin($this->_db->quoteName('#__fabrik_lists', 'fl') . ' ON fl.form_id=ff.form_id')
+						->leftJoin($this->_db->quoteName('#__fabrik_groups', 'fg') . ' ON fg.id=ff.group_id')
+						->leftJoin($this->_db->quoteName('#__fabrik_elements', 'fe') . ' ON fe.group_id=fg.id')
+						->leftJoin($this->_db->quoteName('#__fabrik_joins', 'fj') . ' ON (fj.group_id = fe.group_id AND fj.list_id != 0 AND fj.element_id = 0)')
+						->where($this->_db->quoteName('ff.form_id') . ' = ' . $this->_db->quote($form->form_id))
+						->where($this->_db->quoteName('fe.published') . ' = 1')
+						->order($this->_db->quoteName('ff.ordering'));
 					$q     = 2;
 					$this->_db->setQuery($query);
 					$groups = $this->_db->loadObjectList();
@@ -4696,7 +4707,7 @@ class EmundusModelApplication extends JModelList
 					if (count($groups) > 0) {
 						foreach ($groups as $group) {
 							$group_params = json_decode($group->gparams);
-							if (@$group_params->repeat_group_button == 1) {
+							if ($group_params->repeat_group_button == 1) {
 								$data[$group->group_id]['repeat_group']   = $group_params->repeat_group_button;
 								$data[$group->group_id]['group_id']       = $group->group_id;
 								$data[$group->group_id]['element_name'][] = $group->name;
@@ -4718,7 +4729,6 @@ class EmundusModelApplication extends JModelList
 										unset($rowvalues['id']);
 										$rowvalues['parent_id'] = $id;
 										$arrayValue[]           = '(' . implode(',', $this->_db->quote($rowvalues)) . ')';
-										$keyValue[]             = $rowvalues;
 									}
 									unset($stored[0]['id']);
 									$q = 4;
@@ -4751,7 +4761,7 @@ class EmundusModelApplication extends JModelList
 					$documents = $this->_db->loadAssocList();
 				}
 				catch (Exception $e) {
-					JLog::add('Error getting documents for fnum ' . $fnum_from . ' in emundus model application at query ' . $query, JLog::ERROR, 'com_emundus');
+					Log::add('Error getting documents for fnum ' . $fnum_from . ' in emundus model application at query ' . $query, Log::ERROR, 'com_emundus');
 				}
 
 				if (!empty($documents)) {
@@ -4762,7 +4772,7 @@ class EmundusModelApplication extends JModelList
 						// try to copy file with new name
 						$copied = copy(JPATH_SITE . DS . "images/emundus/files" . DS . $fnumInfos['applicant_id'] . DS . $document['filename'], JPATH_SITE . DS . "images/emundus/files" . DS . $fnumToInfos['applicant_id'] . DS . $new_file);
 						if (!$copied) {
-							JLog::add("La copie " . $document['file'] . " du fichier a échoué...\n", JLog::ERROR, 'com_emundus');
+							Log::add("La copie " . $document['file'] . " du fichier a échoué...\n", Log::ERROR, 'com_emundus');
 						}
 
 						$document['user_id']      = $fnumToInfos['applicant_id'];
@@ -4775,7 +4785,7 @@ class EmundusModelApplication extends JModelList
 
 						try {
 							$query->clear();
-							$query->insert('jos_emundus_uploads')
+							$query->insert($this->_db->quoteName('#__emundus_uploads'))
 								->columns(array_keys($document))
 								->values(implode(", ", $this->_db->quote($document)));
 
@@ -4784,7 +4794,7 @@ class EmundusModelApplication extends JModelList
 
 						}
 						catch (Exception $e) {
-							JLog::add('Error inserting document in jos_emundus_uploads table for fnum ' . $fnum_to . ' : ' . $e, JLog::ERROR, 'com_emundus');
+							Log::add('Error inserting document in jos_emundus_uploads table for fnum ' . $fnum_to . ' : ' . $e, Log::ERROR, 'com_emundus');
 						}
 					}
 				}
@@ -4838,13 +4848,14 @@ class EmundusModelApplication extends JModelList
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $q . ' :: ' . $query, JLog::ERROR, 'com_emundus');
+			echo $query->__toString();
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->_mainframe->getIdentity()->id . ' -> ' . $q . ' :: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
 
-		JPluginHelper::importPlugin('emundus');
-		JFactory::getApplication()->triggerEvent('onCallEventHandler', array(
+		PluginHelper::importPlugin('emundus');
+		$this->_mainframe->triggerEvent('onCallEventHandler', array(
 				'onAfterCopyApplication',
 				array(
 					'fnum_from'             => $fnum_from,
@@ -4924,14 +4935,14 @@ class EmundusModelApplication extends JModelList
 					}
 					catch (Exception $e) {
 						$error = JUri::getInstance() . ' :: USER ID : ' . $row['user_id'] . ' -> ' . $e->getMessage();
-						JLog::add($error, JLog::ERROR, 'com_emundus');
+						Log::add($error, Log::ERROR, 'com_emundus');
 					}
 				}
 			}
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -4967,14 +4978,14 @@ class EmundusModelApplication extends JModelList
 					}
 					catch (Exception $e) {
 						$error = JUri::getInstance() . ' :: USER ID : ' . $user['user_id'] . ' -> ' . $e->getMessage();
-						JLog::add($error, JLog::ERROR, 'com_emundus');
+						Log::add($error, Log::ERROR, 'com_emundus');
 					}
 				}
 			}
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -5009,14 +5020,14 @@ class EmundusModelApplication extends JModelList
 					}
 					catch (Exception $e) {
 						$error = JUri::getInstance() . ' :: fnum : ' . $group['user_id'] . ' :: group : ' . $group['group_id'] . ' -> ' . $e->getMessage();
-						JLog::add($error, JLog::ERROR, 'com_emundus');
+						Log::add($error, Log::ERROR, 'com_emundus');
 					}
 				}
 			}
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -5081,7 +5092,7 @@ class EmundusModelApplication extends JModelList
 		}
 		catch (Exception $e) {
 			// catch any database errors.
-			JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return true;
@@ -5145,7 +5156,7 @@ class EmundusModelApplication extends JModelList
 				$redirect = $this->_db->loadAssocList('fnum');
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+				Log::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 			}
 
 		}
@@ -5164,7 +5175,7 @@ class EmundusModelApplication extends JModelList
 						$redirect = EmundusHelperAccess::buildFormUrl($redirect, $user->fnum);
 					}
 				} catch (Exception $e) {
-					JLog::add('Error getting first page of application at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+					Log::add('Error getting first page of application at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), Log::ERROR, 'com_emundus');
 				}
 			}
 		}
@@ -5214,7 +5225,7 @@ class EmundusModelApplication extends JModelList
 				return $this->_db->loadAssocList('fnum');
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting confirm URLs in model/application at query -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+				Log::add('Error getting confirm URLs in model/application at query -> ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -5237,7 +5248,7 @@ class EmundusModelApplication extends JModelList
 				return $res->link . '&Itemid=' . $res->id;
 			}
 			catch (Exception $e) {
-				JLog::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+				Log::add('Error getting first page of application at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 				return false;
 			}
@@ -5331,7 +5342,7 @@ class EmundusModelApplication extends JModelList
 
 		}
 		catch (Exception $e) {
-			JLog::add('Error checking if repeat group is empty at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error checking if repeat group is empty at model/application in query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -5418,7 +5429,7 @@ class EmundusModelApplication extends JModelList
 			return true;
 
 		} catch (Exception $e ) {
-			JLog::add('Error checking if group is empty at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+			Log::add('Error checking if group is empty at model/application in query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), Log::ERROR, 'com_emundus');
 			return false;
 		}
 	}
@@ -5907,7 +5918,7 @@ class EmundusModelApplication extends JModelList
 			$result = implode(',', $elt);
 		}
 		catch (Exception $e) {
-			JLog::add('Problem when get values of element ' . $eid . ' with fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Problem when get values of element ' . $eid . ' with fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $result;
@@ -5981,7 +5992,7 @@ class EmundusModelApplication extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to get ' . $order_column . ' in __emundus_campaign_candidature for ' . $fnum_from . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to get ' . $order_column . ' in __emundus_campaign_candidature for ' . $fnum_from . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -6030,7 +6041,7 @@ class EmundusModelApplication extends JModelList
 					$tab_id = $this->_db->insertid();
 				}
 				catch (Exception $e) {
-					JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Failed to create for user ' . $user_id . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
 		}
@@ -6058,7 +6069,7 @@ class EmundusModelApplication extends JModelList
 				$tabs = $this->_db->loadAssocList();
 			}
 			catch (Exception $e) {
-				JLog::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add(JUri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -6094,7 +6105,7 @@ class EmundusModelApplication extends JModelList
 				$updated = !in_array(false, $updates) && !empty($updates);
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to update tabs for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to update tabs for user ' . $user_id . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -6128,7 +6139,7 @@ class EmundusModelApplication extends JModelList
 					$deleted = $this->_db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add('Failed to create for user ' . $user_id . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Failed to create for user ' . $user_id . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					$deleted = false;
 				}
 			}
@@ -6158,7 +6169,7 @@ class EmundusModelApplication extends JModelList
 					$moved = $this->_db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add('Failed to move fnum ' . $fnum . ' in tab ' . $tab . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Failed to move fnum ' . $fnum . ' in tab ' . $tab . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
 		}
@@ -6183,7 +6194,7 @@ class EmundusModelApplication extends JModelList
 				$result = $this->_db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to copy fnum from ' . $fnum . ' to ' . $fnum_to . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to copy fnum from ' . $fnum . ' to ' . $fnum_to . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -6211,7 +6222,7 @@ class EmundusModelApplication extends JModelList
 					$result = $this->_db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add('Failed to rename file ' . $fnum . ' with name ' . $new_name . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Failed to rename file ' . $fnum . ' with name ' . $new_name . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
 			else {
@@ -6253,7 +6264,7 @@ class EmundusModelApplication extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('Failed to get available campaigns via fnum ' . $fnum . ' with error ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+			Log::add('Failed to get available campaigns via fnum ' . $fnum . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $campaigns;

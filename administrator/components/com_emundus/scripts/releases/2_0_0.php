@@ -462,6 +462,38 @@ class Release2_0_0Installer extends ReleaseInstaller
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ATTACHMENT_ADDED','The file has been successfully added.', 'override', 0, null, null, 'en-GB');
 			//
 
+			// Install new copy/move plugin
+			EmundusHelperUpdate::installExtension('PLG_FABRIK_FORM_EMUNDUSCOPYFILE','emunduscopyfile',null,'plugin',1,'fabrik_form');
+
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_forms'))
+				->where($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('COPY_MOVE_FILE'));
+			$this->db->setQuery($query);
+			$copy_form = $this->db->loadObject();
+
+			if(!empty($copy_form)) {
+				$params = json_decode($copy_form->params, true);
+				$params['curl_code'] = '';
+				$params['plugin_state'] = [1];
+				$params['plugins'] = ['emunduscopyfile'];
+				$params['plugin_locations'] = ['front'];
+				$params['plugin_events'] = ['both'];
+				$params['plugin_description'] = ['Copy file'];
+				$copy_form->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_forms', $copy_form, 'id');
+			}
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COPIED_SUCCESSFULLY','Le dossier a été copié avec succès.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COPIED_SUCCESSFULLY','The application file has been successfully copied.', 'override', 0, null, null, 'en-GB');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MOVED_SUCCESSFULLY','Le dossier a été déplacé avec succès.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MOVED_SUCCESSFULLY','The application file has been successfully moved.', 'override', 0, null, null, 'en-GB');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COPIED_SUCCESSFULLY_PLURAL','Les dossiers ont été copiés avec succès.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_COPIED_SUCCESSFULLY_PLURAL','The application files have been successfully copied.', 'override', 0, null, null, 'en-GB');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MOVED_SUCCESSFULLY_PLURAL','Les dossiers ont été déplacés avec succès.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MOVED_SUCCESSFULLY_PLURAL','The application files have been successfully moved.', 'override', 0, null, null, 'en-GB');
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

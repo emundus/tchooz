@@ -71,6 +71,13 @@ var shareModalClick = function(event) {
     }
 };
 
+window.addEventListener('message', function (e) {
+    if (e.data === 'reloadData') {
+        console.log('event');
+        this.reloadData($('#view').val());
+    }
+}.bind(this));
+
 function search() {
     const controller = $('#view').val();
 
