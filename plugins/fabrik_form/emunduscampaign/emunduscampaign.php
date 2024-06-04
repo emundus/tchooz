@@ -185,7 +185,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 				// create new fnum
 				require_once JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php';
-				$fnum = EmundusHelperFiles::createFnum($campaign_id, $user);
+				$fnum = EmundusHelperFiles::createFnum($campaign_id, $user->id);
 
 				$query->update($this->_db->quoteName('#__emundus_campaign_candidature'))
 					->set($this->_db->quoteName('fnum') . ' = ' . $this->_db->Quote($fnum))
