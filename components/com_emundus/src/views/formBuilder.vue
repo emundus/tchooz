@@ -73,7 +73,7 @@
                @mouseleave="showMinimizedLeft = false">
             <span class="material-icons-outlined tw-absolute tw-right-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
                   :class="minimizedLeft ? 'tw-rotate-180' : ''"
-                  v-show="showMinimizedLeft === true"
+                  v-show="showMinimizedLeft === true || minimizedLeft"
                   @click="handleSidebarSize('left')">chevron_left</span>
           </div>
 
@@ -114,7 +114,7 @@
                  @mouseleave="showMinimizedRight = false">
             <span class="material-icons-outlined tw-absolute tw-left-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
                   :class="minimizedRight ? 'tw-rotate-180' : ''"
-                  v-show="showMinimizedRight === true"
+                  v-show="showMinimizedRight === true || minimizedRight"
                   @click="handleSidebarSize('right')">chevron_right</span>
             </div>
             <transition name="fade" mode="out-in">
