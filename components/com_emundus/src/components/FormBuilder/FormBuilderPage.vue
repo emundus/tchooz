@@ -115,9 +115,9 @@ export default {
           if(eltid) {
             setTimeout(() => {
               document.getElementById('center_content').scrollTo(0, document.getElementById('center_content').scrollHeight);
-              console.log(document.getElementById('element_' + eltid))
               document.getElementById('element_' + eltid).style.backgroundColor = 'var(--main-50)';
               document.getElementById('element_' + eltid).style.borderColor = 'var(--main-400)';
+              document.getElementById('element-label-'+eltid).focus();
               setTimeout(() => {
                 document.getElementById('element_' + eltid).style.backgroundColor = 'inherit';
                 document.getElementById('element_' + eltid).style.borderColor = '';

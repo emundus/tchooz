@@ -730,32 +730,37 @@ die("<script>
 	static function initLabel($plugin)
 	{
 		$label = array();
-		if ($plugin == 'nom') {
-			$label = array(
-				'fr' => 'Nom',
-				'en' => 'Name',
-			);
-		}
-
-		if ($plugin == 'prenom') {
-			$label = array(
-				'fr' => 'Prénom',
-				'en' => 'First name',
-			);
-		}
-
-		if ($plugin == 'email') {
-			$label = array(
-				'fr' => 'Adresse email',
-				'en' => 'Email address',
-			);
-		}
-
-		if (empty($label)) {
-			$label = array(
-				'fr' => 'Element sans titre',
-				'en' => 'Unnamed item',
-			);
+		switch ($plugin) {
+			case 'nom':
+				$label = array(
+					'fr' => 'Nom',
+					'en' => 'Name',
+				);
+				break;
+			case 'prenom':
+				$label = array(
+					'fr' => 'Prénom',
+					'en' => 'First name',
+				);
+				break;
+			case 'email':
+				$label = array(
+					'fr' => 'Adresse email',
+					'en' => 'Email address',
+				);
+				break;
+			case 'emundus_phonenumber':
+				$label = array(
+					'fr' => 'Numéro de téléphone',
+					'en' => 'Phone number',
+				);
+				break;
+			default:
+				$label = array(
+					'fr' => '',
+					'en' => '',
+				);
+				break;
 		}
 
 		return $label;

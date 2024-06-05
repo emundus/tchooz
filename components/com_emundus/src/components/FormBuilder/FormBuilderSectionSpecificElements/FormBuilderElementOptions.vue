@@ -21,9 +21,10 @@
             <input
                 type="text"
                 class="editable-data editable-data-input tw-ml-1 tw-w-full"
+                :id="'option-' + element.id + '-' + index"
                 v-model="optionsTranslations[index]"
                 @focusout="updateOption(index, optionsTranslations[index])"
-                @keyup.enter="updateOption(index, optionsTranslations[index], true)"
+                @keyup.enter="updateOption(index, optionsTranslations[index],true)"
                 @keyup.tab="document.getElementById('new-option-' + element.id).focus();"
                 :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_OPTION')">
           </div>
@@ -132,11 +133,17 @@ export default {
         this.loading = false;
       })
     },
-    updateOption(index, option, new_option = false) {
+    updateOption(index, option, next = false) {
       this.loading = true;
       formBuilderService.updateOption(this.element.id, this.element.params.sub_options, index, option, this.shortDefaultLang).then((response) => {
         if (response.data.status) {
-          this.reloadOptions(new_option);
+          this.reloadOptions().then(() => {
+            if(next) {
+              setTimeout(() => {
+                document.getElementById('option-' + this.element.id + '-' + (index + 1)).focus();
+              }, 300)
+            }
+          })
         } else {
           this.loading = false;
         }

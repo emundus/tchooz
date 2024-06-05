@@ -15,6 +15,7 @@
             :name="'element-label-' + element.id"
             type="text"
             v-model="element.label[shortDefaultLang]"
+            :placeholder="translate('COM_EMUNDUS_ONBOARD_TYPE_'+element.plugin.toUpperCase())"
             @focusout="updateLabel"
             @keyup.enter="updateLabelKeyup"
         />
