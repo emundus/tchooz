@@ -619,6 +619,33 @@ class Release2_0_0Installer extends ReleaseInstaller
 				}
 			}
 
+			$query->clear()
+				->select('form_id')
+				->from($this->db->quoteName('#__emundus_setup_formlist'))
+				->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('profile'));
+			$this->db->setQuery($query);
+			$profile_form = $this->db->loadResult();
+
+			if(!empty($profile_form))
+			{
+				$query->clear()
+					->select('id,params')
+					->from($this->db->quoteName('#__fabrik_forms'))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($profile_form));
+				$this->db->setQuery($query);
+				$profile_form = $this->db->loadObject();
+
+				if(!empty($profile_form->id)) {
+					$params = json_decode($profile_form->params, true);
+					$params['plugins'] = ['emundusupdateprofile'];
+					$params['plugin_locations'] = ['both'];
+					$params['plugin_events'] = ['both'];
+					$params['plugin_description'] = ['Update eMundus session'];
+					$profile_form->params = json_encode($params);
+					$this->db->updateObject('#__fabrik_forms', $profile_form, 'id');
+				}
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

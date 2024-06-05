@@ -47,12 +47,31 @@ class PlgFabrik_FormEmundusupdateprofile extends plgFabrik_Form {
 		jimport('joomla.log.log');
 		Log::addLogger(['text_file' => 'com_emundus.emundusupdateprofile.php'], Log::ALL, array('com_emundus.emundusupdateprofile'));
 
-		$app = Factory::getApplication();
 		$base_route = Uri::base();
+		
 
-		$menu = $app->getMenu();
+		$menu = $this->app->getMenu();
 		$formModel = $this->getModel();
-		$app->enqueueMessage(Text::_('PROFILE_SAVED'), 'info');
+		$this->app->enqueueMessage(Text::_('PROFILE_SAVED'), 'info');
+		
+		$lastname = $formModel->formData['lastname_raw'];
+		$firstname = $formModel->formData['firstname_raw'];
+		
+		if(!empty($lastname) && !empty($firstname))
+		{
+			// Update the user's name
+			$user = $this->app->getIdentity();
+			$user->set('name', $firstname . ' ' . $lastname);
+			$user->save();
+
+			// Update emundusUser session
+			$emundusUser = $this->app->getSession()->get('emundusUser');
+			$emundusUser->name = $firstname . ' ' . $lastname;
+			$emundusUser->lastname = $lastname;
+			$emundusUser->firstname = $firstname;
+			$this->app->getSession()->set('emundusUser', $emundusUser);
+		}
+
 
 		$alias = $this->getParams()->get('emundusupdateprofile_field_alias','');
 
@@ -64,14 +83,14 @@ class PlgFabrik_FormEmundusupdateprofile extends plgFabrik_Form {
 			}
 		}
 		
-		$current_lang = $app->getLanguage()->getTag();
+		$current_lang = $this->app->getLanguage()->getTag();
 		$default_lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 		if($current_lang != $default_lang) {
 			$base_route = $base_route.substr($current_lang, 0, 2).'/';
 		}
 
 		if (!empty($alias)) {
-			$app->redirect($base_route . $alias);
+			$this->app->redirect($base_route . $alias);
 		}
 	}
 }
