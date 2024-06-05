@@ -27,13 +27,13 @@ if (document.getElementById('em-dashboard-vue')) {
         render(h) {
             return h(Dashboard, {
                 props: {
-                    programmeFilter: element.attributes['programmeFilter'].value,
-                    displayDescription: element.attributes['displayDescription'].value,
-                    displayShapes: element.attributes['displayShapes'].value,
-                    displayTchoozy: element.attributes['displayTchoozy'].value,
-                    displayName: element.attributes['displayName'].value,
+                    programmeFilter: parseInt(element.attributes['programmeFilter'].value),
+                    displayDescription: parseInt(element.attributes['displayDescription'].value),
+                    displayShapes: parseInt(element.attributes['displayShapes'].value),
+                    displayTchoozy: parseInt(element.attributes['displayTchoozy'].value),
+                    displayName: parseInt(element.attributes['displayName'].value),
                     name: element.attributes['name'].value,
-                    language: element.attributes['language'].value,
+                    language: parseInt(element.attributes['language'].value),
                     profile_name: element.attributes['profile_name'].value,
                     profile_description: element.attributes['profile_description'].value,
                 }

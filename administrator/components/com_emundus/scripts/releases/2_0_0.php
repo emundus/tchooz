@@ -587,6 +587,38 @@ class Release2_0_0Installer extends ReleaseInstaller
 			}
 			//
 
+			$column_added = EmundusHelperUpdate::addColumn('jos_emundus_setup_profiles', 'display_description', 'TINYINT(1)');
+
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__fabrik_groups'))
+				->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('GROUPE_SETUP_PROFILE'));
+			$this->db->setQuery($query);
+			$group_setup_profile = $this->db->loadResult();
+
+			if(!empty($group_setup_profile))
+			{
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_SETUP_PROFILE_DISPLAY_DESCRIPTION','Afficher cette description sur le tableau de bord des utilisateurs ayant ce profil.');
+				EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_SETUP_PROFILE_DISPLAY_DESCRIPTION','Display this description on the dashboard of users with this profile.', 'override', 0, null, null, 'en-GB');
+
+				$datas = [
+					'name' => 'display_description',
+					'label' => 'COM_EMUNDUS_SETUP_PROFILE_DISPLAY_DESCRIPTION',
+					'group_id' => $group_setup_profile,
+					'plugin' => 'yesno',
+				];
+				$display_desc_element = EmundusHelperUpdate::addFabrikElement($datas,[],false);
+
+				if(!empty($display_desc_element['id'])) {
+					$query->clear()
+						->update($this->db->quoteName('#__fabrik_elements'))
+						->set($this->db->quoteName('ordering') . ' = 4')
+						->where($this->db->quoteName('id') . ' = ' . $this->db->quote($display_desc_element['id']));
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

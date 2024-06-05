@@ -533,7 +533,7 @@ class EmundusModelUsers extends JModelList
 			if (empty($profile_info)) {
 				$query = $this->_db->getQuery(true);
 
-				$query->select('id,label,description,class,published')
+				$query->select('id,label,description,class,published,display_description')
 					->from($this->_db->quoteName('#__emundus_setup_profiles'))
 					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($profile_id));
 

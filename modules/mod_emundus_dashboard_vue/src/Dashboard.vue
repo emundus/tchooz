@@ -1,15 +1,15 @@
 <template>
   <div id="app">
     <div class="profile_widget">
-      <div v-if="displayShapes == 1" id="background-shapes"></div>
+      <div v-if="displayShapes === 1" id="background-shapes"></div>
       <div class="profile_widget-text-container">
         <div class="profile_widget-text">
-          <h1 v-if="language == 1">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}} <span class="em-lowercase" v-if="profile_name !== ''">{{ profile_name }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span></h1>
+          <h1 v-if="language === 1">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}} <span class="em-lowercase" v-if="profile_name !== ''">{{ profile_name }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span></h1>
           <h1 v-else><span v-if="profile_name!== ''">{{ profile_name }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span> <span class="em-lowercase">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}}</span></h1>
-          <p v-if="displayName == 1">{{ translate('COM_EMUNDUS_DASHBOARD_HELLO') }} {{name}} {{ translate('COM_EMUNDUS_DASHBOARD_WELCOME') }}</p>
-          <p v-if="displayDescription == 1" class="profile_widget-desc">{{profile_description}}</p>
+          <p v-if="displayName === 1">{{ translate('COM_EMUNDUS_DASHBOARD_HELLO') }} {{name}} {{ translate('COM_EMUNDUS_DASHBOARD_WELCOME') }}</p>
+          <p v-if="displayDescription === 1" class="profile_widget-desc">{{profile_description}}</p>
         </div>
-        <div v-if="displayTchoozy == 1" id="background-tchoozy"></div>
+        <div v-if="displayTchoozy === 1" id="background-tchoozy"></div>
       </div>
       <div class="profile_widget-container"></div>
     </div>
@@ -21,7 +21,7 @@
         drag-class="plugin-drag"
         chosen-class="plugin-chosen"
         ghost-class="plugin-ghost">
-      <div v-if="this.programmeFilter == 1" class="program-filter">
+      <div v-if="programmeFilter === 1" class="program-filter">
         <label>{{ translations.filterByProgram }}</label>
         <select v-model="selectedProgramme" class="tw-h-form">
           <option :value="null" selected>{{ translations.all }}</option>
@@ -80,7 +80,7 @@ export default {
   created() {
     this.getTranslations();
     this.getWidgets();
-    if (this.programmeFilter == 1) {
+    if (this.programmeFilter === 1) {
       this.getProgrammes();
     }
   },
