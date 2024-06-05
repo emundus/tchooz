@@ -23,6 +23,8 @@
                 class="editable-data editable-data-input tw-ml-1 tw-w-full"
                 v-model="optionsTranslations[index]"
                 @focusout="updateOption(index, optionsTranslations[index])"
+                @keyup.enter="updateOption(index, optionsTranslations[index], true)"
+                @keyup.tab="document.getElementById('new-option-' + element.id).focus();"
                 :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_OPTION')">
           </div>
           <div class="tw-flex tw-items-center">
@@ -109,7 +111,7 @@ export default {
             if(new_option) {
               document.getElementById('new-option-' + this.element.id).focus();
             }
-          }, 500)
+          }, 200)
 
         }
 
@@ -130,11 +132,11 @@ export default {
         this.loading = false;
       })
     },
-    updateOption(index, option) {
+    updateOption(index, option, new_option = false) {
       this.loading = true;
       formBuilderService.updateOption(this.element.id, this.element.params.sub_options, index, option, this.shortDefaultLang).then((response) => {
         if (response.data.status) {
-          this.reloadOptions();
+          this.reloadOptions(new_option);
         } else {
           this.loading = false;
         }
