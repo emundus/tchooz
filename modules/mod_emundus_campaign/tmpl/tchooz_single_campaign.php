@@ -266,7 +266,7 @@ if ($currentCampaign->apply_online == 0)
 					}
 					else
 					{
-						$register_url = JUri::base() . $redirect_url . "?course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id;
+						$register_url = $redirect_url . "?course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id;
 					}
 					if (!empty($mod_em_campaign_itemid))
 					{

@@ -486,28 +486,7 @@ if(value == &amp;#039;chart&amp;#039;){
     <field name="id">4408</field>
     <field name="element_id">1906</field>
     <field name="action">load</field>
-    <field name="code">var campaign = document.getElementById(&amp;#039;jos_emundus_campaign_candidature___campaign_id&amp;#039;);
-for (var i = 0; i &amp;lt; campaign.length; i++){
-  if (campaign.options[i].value == -1) {
-    campaign.options[i].disabled = true;
-    campaign.options[i].style.backgroundColor = &amp;quot;#efefef&amp;quot;;
-    campaign.options[i].style.fontStyle = &amp;quot;italic&amp;quot;;
-  }
-  
-}
-
-var cid = document.querySelector(&amp;#039;#jos_emundus_campaign_candidature___campaign_id option:checked&amp;#039;).value;
-if(cid !== &amp;quot;&amp;quot;) {
-  document.querySelector(&amp;#039;#form_102&amp;#039;).style.visibility = &amp;#039;hidden&amp;#039;;
-  Swal.fire({
-    title: &amp;#039;Nouveau dossier&amp;#039;,
-    text: &amp;#039;Votre dossier est en cours de création, merci de patienter...&amp;#039;,
-    type: &amp;#039;success&amp;#039;,
-    showConfirmButton: false
-    }
-  );
-  document.querySelector(&amp;#039;#form_102&amp;#039;).submit();
-}</field>
+    <field name="code">submitNewFile();</field>
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group175&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
