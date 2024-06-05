@@ -494,6 +494,99 @@ class Release2_0_0Installer extends ReleaseInstaller
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_MOVED_SUCCESSFULLY_PLURAL','The application files have been successfully moved.', 'override', 0, null, null, 'en-GB');
 			//
 
+			// Install new module for back button
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote('%Back button%'))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_custom'));
+			$this->db->setQuery($query);
+			$old_back_button = $this->db->loadResult();
+
+			if(!empty($old_back_button)) {
+				$query->clear()
+					->delete($this->db->quoteName('#__modules_menu'))
+					->where($this->db->quoteName('moduleid') . ' = ' . $this->db->quote($old_back_button));
+				$this->db->setQuery($query);
+				$this->db->execute();
+
+				$query->clear()
+					->delete($this->db->quoteName('#__modules'))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($old_back_button));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+			EmundusHelperUpdate::installExtension('mod_emundus_back','mod_emundus_back','{"name":"mod_emundus_back","type":"module","creationDate":"2024-06","author":"eMundus","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"www.emundus.fr","version":"2.0.0","description":"MOD_EMUNDUS_BACK_XML_DESCRIPTION","group":"","namespace":"Emundus\\Module\\BackButton","filename":"mod_emundus_back"}','module');
+
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_back'));
+			$this->db->setQuery($query);
+			$back_button = $this->db->loadResult();
+
+			if(empty($back_button))
+			{
+				$params        = [
+					'module_tag'     => 'div',
+					'bootstrap_size' => 0,
+					'header_tag'     => 'h3',
+					'header_class'   => '',
+					'style'          => 0
+				];
+				$insert_module = [
+					'title'     => '[GUEST] Back button',
+					'note'      => 'Back button available on login and register views',
+					'ordering'  => 0,
+					'position'  => 'header-a',
+					'published' => 1,
+					'module'    => 'mod_emundus_back',
+					'access'    => 9,
+					'showtitle' => 0,
+					'params'    => json_encode($params),
+					'client_id' => 0,
+					'language'  => '*',
+				];
+				$insert_module = (object) $insert_module;
+				$this->db->insertObject('#__modules', $insert_module);
+
+				$back_button = $this->db->insertid();
+			}
+
+			$query->clear()
+				->select('moduleid')
+				->from($this->db->quoteName('#__modules_menu'))
+				->where($this->db->quoteName('moduleid') . ' = ' . $this->db->quote($back_button));
+			$this->db->setQuery($query);
+			$back_button_menu = $this->db->loadResult();
+
+			if(empty($back_button_menu))
+			{
+				$link_to_menu = [
+					'index.php?option=com_users&view=login',
+					'index.php?option=com_fabrik&view=form&formid=307',
+					'index.php?option=com_users&view=reset'
+				];
+				$query->clear()
+					->select('id')
+					->from($this->db->quoteName('#__menu'))
+					->where($this->db->quoteName('link') . ' IN (' . implode(',',$this->db->quote($link_to_menu)) . ')');
+				$this->db->setQuery($query);
+				$menus = $this->db->loadColumn();
+
+				foreach ($menus as $menu)
+				{
+					$insert_menu = [
+						'moduleid'  => $back_button,
+						'menuid'    => $menu,
+					];
+					$insert_menu = (object) $insert_menu;
+					$this->db->insertObject('#__modules_menu', $insert_menu);
+				}
+			}
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
