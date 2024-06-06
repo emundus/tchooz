@@ -1790,12 +1790,12 @@ button.em-swal-delete-button{
   justify-content: center;
   align-items: center;
   width: auto !important;
-  padding: 0 var(--p-16) !important;
+  padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal) !important;
   border-radius: var(--em-coordinator-br) !important;
-  border: unset !important;
-  color: white !important;
-  background-color: var(--red-500) !important;
   border: 1px solid var(--red-500) !important;
+  color: var(--neutral-0) !important;
+  background-color: var(--red-500) !important;
+  font-size: var(--em-coordinator-font-size) !important;
 }
 
 button.em-swal-delete-button:hover{

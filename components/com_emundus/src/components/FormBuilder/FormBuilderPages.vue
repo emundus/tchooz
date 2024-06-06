@@ -18,22 +18,20 @@
                 page.label !== '' ? translate(page.label) : (translate('COM_EMUNDUS_FILES_PAGE') + ' ' + (index + 1))
               }}</p>
             <div class="tw-flex tw-items-center tw-p-4" :style="pageOptionsShown == page.id ? 'opacity:1' : 'opacity: 0'">
-              <v-popover :popoverArrowClass="'custom-popover-arraow'" :open-class="'form-builder-pages-popover'"
+              <v-popover :popoverArrowClass="'custom-popover-arrow'"
                          :placement="'left'">
                 <span class="material-icons">more_horiz</span>
 
                 <template slot="popover">
                   <transition :name="'slide-down'" type="transition">
-                    <div>
-                      <nav aria-label="action" class="tw-flex tw-flex-col tw-justify-center tw-items-start tw-h-full">
-                        <p @click="deletePage(page)" class="tw-px-2 tw-py-3 tw-w-full tw-text-red-500">
+                    <ul style="list-style-type: none; margin: 0;padding: 0">
+                        <li @click="deletePage(page)" class="tw-cursor-pointer tw-p-2 tw-text-base tw-text-red-500">
                           {{ translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE') }}
-                        </p>
-                        <p @click="createModelFrom(page)" class="tw-px-2 tw-py-3 tw-w-full">
+                        </li>
+                        <li @click="createModelFrom(page)" class="tw-cursor-pointer tw-p-2 tw-text-base">
                           {{ translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE') }}
-                        </p>
-                      </nav>
-                    </div>
+                        </li>
+                      </ul>
                   </transition>
                 </template>
               </v-popover>
@@ -100,7 +98,6 @@ export default {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION') + page.label,
           text: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION_TEXT'),
-          type: "warning",
           showCancelButton: true,
           confirmButtonText: this.translate('COM_EMUNDUS_ACTIONS_DELETE'),
           cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
