@@ -26,9 +26,7 @@ $redirect = base64_decode($jinput->get->getBase64('redirect'));
 $eMConfig = ComponentHelper::getParams('com_emundus');
 
 if (!empty($cookieLogin) || $this->user->get('guest')) {
-
-	// TODO: get registration link from jos_menu
-
+	
 	$this->campaign            = $jinput->get('cid');
 	$this->course              = $jinput->get('course');
 	$this->displayRegistration = $eMConfig->get('display_registration_link', 1);
@@ -37,11 +35,19 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 	$this->forgottenLink       = $eMConfig->get('forgotten_password_link', 'index.php?option=com_users&view=reset') ?: 'index.php?option=com_users&view=reset';
 
 	if (empty($this->registrationLink)) {
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+		$alias = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_fabrik&view=form&formid=307');
+
+		if(empty($alias)) {
+			$alias = 'inscription';
+		}
+
 		if (!empty($this->campaign) && !empty($this->course)) {
-			$this->registrationLink = 'inscription?course=' . $this->course . '&cid=' . $this->campaign;
+			$this->registrationLink = $alias.'?course=' . $this->course . '&cid=' . $this->campaign;
 		}
 		else {
-			$this->registrationLink = 'inscription';
+
+			$this->registrationLink = $alias;
 		}
 	}
 	$session->set('cid', $this->campaign);

@@ -222,6 +222,27 @@ class EmundusHelperMenu
 
 		return $menu;
 	}
+
+	static function getSefAliasByLink($link) {
+		$alias = '';
+
+		$activeLanguage = Factory::getLanguage()->getTag();
+		$languages = LanguageHelper::getLanguages('lang_code');
+		$sef = '';
+		if (isset($languages[$activeLanguage]))
+		{
+			$sef = $languages[$activeLanguage]->sef;
+		}
+
+		$menu  = Factory::getApplication()->getMenu();
+		$item = $menu->getItems('link', $link, true);
+
+		if(!empty($item)) {
+			$alias = !empty($sef) ? $sef.'/'.$item->alias : $item->alias;
+		}
+
+		return $alias;
+	}
 }
 
 ?>
