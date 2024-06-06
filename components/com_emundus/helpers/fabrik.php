@@ -806,7 +806,8 @@ die("<script>
 			$params['sub_options']['sub_values'][] = $value;
 			$params['sub_options']['sub_labels'][] = $label;
 
-			$query->update($db->quoteName('#__fabrik_elements'))
+			$query->clear()
+				->update($db->quoteName('#__fabrik_elements'))
 				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
 				->where($db->quoteName('id') . ' = ' . $db->quote($eid));
 			$db->setQuery($query);
