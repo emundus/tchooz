@@ -368,8 +368,8 @@ export default {
     onReorderedPages(reorderedPages) {
       this.pages = reorderedPages;
     },
-    onElementCreated(eltid) {
-      this.$refs.formBuilderPage.getSections(eltid);
+    onElementCreated(eltid,scrollTo) {
+      this.$refs.formBuilderPage.getSections(eltid,scrollTo);
     },
     createElementLastGroup(element) {
       const groups = Object.values(this.$refs.formBuilderPage.fabrikPage.Groups);
@@ -381,7 +381,7 @@ export default {
         mode: this.mode
       }).then(response => {
         if (response.status && response.data > 0) {
-          this.onElementCreated(response.data);
+          this.onElementCreated(response.data,true);
           this.updateLastSave();
           this.loading = false;
         } else {

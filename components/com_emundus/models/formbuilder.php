@@ -573,7 +573,7 @@ class EmundusModelFormbuilder extends JModelList
 					'reset_button_label'  => 'RESET',
 					'submit_button_label' => 'SAVE_CONTINUE',
 					'form_template'       => 'emundus',
-					'view_only_template'  => 'bootstrap',
+					'view_only_template'  => 'emundus',
 					'published'           => 1,
 					'params'              => json_encode($params),
 				);

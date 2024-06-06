@@ -103,7 +103,7 @@ export default {
     }
   },
   methods: {
-    getSections(eltid = null) {
+    getSections(eltid = null, scrollTo = false) {
       this.loading = true;
       formService.getPageObject(this.page.id).then(response => {
         if (response.status && response.data != '') {
@@ -114,7 +114,9 @@ export default {
           this.getDescription();
           if(eltid) {
             setTimeout(() => {
-              document.getElementById('center_content').scrollTo(0, document.getElementById('center_content').scrollHeight);
+              if(scrollTo) {
+                document.getElementById('center_content').scrollTo(0, document.getElementById('center_content').scrollHeight);
+              }
               document.getElementById('element_' + eltid).style.backgroundColor = 'var(--main-50)';
               document.getElementById('element_' + eltid).style.borderColor = 'var(--main-400)';
               document.getElementById('element-label-'+eltid).focus();

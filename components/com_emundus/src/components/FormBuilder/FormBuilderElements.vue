@@ -135,7 +135,7 @@ export default {
       }).then(response => {
         if (response.status && response.data > 0) {
           formBuilderService.updateElementOrder(group_id, response.data, event.newDraggableIndex).then(() => {
-            this.$emit('element-created');
+            this.$emit('element-created', response.data);
             this.updateLastSave();
             this.loading = false;
           });
