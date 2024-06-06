@@ -1860,17 +1860,22 @@ class EmundusModelEvaluation extends JModelList
 
 	public function delevaluation($id)
 	{
-		try {
+		$deleted = false;
 
-			$query = 'DELETE FROM #__emundus_evaluations WHERE id=' . $id;
+		try {
+			$query = $this->db->getQuery(true);
+
+			$query->delete($this->db->qn('#__emundus_evaluations'))
+				->where($this->db->qn('id') . ' = ' . $id);
 			$this->db->setQuery($query);
 
-			return $this->db->Query();
-
+			$deleted = $this->db->execute();
 		}
 		catch (Exception $e) {
-			Log::add('Error in model/evaluation at query: ' . $query, Log::ERROR, 'com_emundus');
+			Log::add('Error in model/evaluation at query: ' . $query->__toString(), Log::ERROR, 'com_emundus');
 		}
+
+		return $deleted;
 	}
 
 	function getEvaluationById($id)

@@ -179,6 +179,13 @@ class PlgFabrik_FormEmundusFinalGrade extends plgFabrik_Form {
 
 	    echo '<script>window.parent.ScrollToTop();</script>';
 
+	    echo '<style>
+.em-swal-title{
+  margin: 8px 8px 32px 8px !important;
+  font-family: "Maven Pro", sans-serif;
+}
+</style>';
+
 	    die("<script>
      document.addEventListener('DOMContentLoaded', function() {
         Swal.fire({
