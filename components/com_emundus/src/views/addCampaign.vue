@@ -237,6 +237,7 @@
 
         <div class="tw-flex tw-justify-between tw-float-right tw-mb-4">
           <button
+              id="save-btn"
               type="button"
               class="em-primary-button tw-w-auto"
               @click="quit = 1; submit()">
