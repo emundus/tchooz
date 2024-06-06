@@ -110,6 +110,7 @@ import AddDocumentsDropfiles from "@/components/FunnelFormulaire/addDocumentsDro
 import addEmail from "@/components/FunnelFormulaire/addEmail";
 import addFormulaire from "@/components/FunnelFormulaire/addFormulaire";
 import campaignMore from "@/components/FunnelFormulaire/CampaignMore";
+import settingsService from "@/services/settings";
 
 const qs = require("qs");
 
@@ -326,7 +327,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      window.location.href = link;
+      settingsService.redirectJRoute(link);
     },
 
     getCookie(cname) {
