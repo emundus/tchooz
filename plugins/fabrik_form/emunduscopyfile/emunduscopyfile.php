@@ -172,6 +172,13 @@ class PlgFabrik_FormEmundusCopyFile extends plgFabrik_Form
 
 		echo '<script src="' . Uri::base() . 'media/com_emundus/js/lib/sweetalert/sweetalert.min.js"></script>';
 
+		echo '<style>
+.em-swal-title{
+  margin: 8px 8px 32px 8px !important;
+  font-family: "Maven Pro", sans-serif;
+}
+</style>';
+
 		die("<script>
      document.addEventListener('DOMContentLoaded', function() {
         Swal.fire({
