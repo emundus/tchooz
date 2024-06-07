@@ -325,20 +325,24 @@ class EmundusControllerFile extends JControllerLegacy
 
 		$fnum = $this->input->getString('fnum', '');
 
-		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(10, 'c', JFactory::getUser()->id, $fnum)) {
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum)) {
 			$reason       = $this->input->getString('reason', '');
 			$comment_body = $this->input->getString('comment_body', '');
 
-			$comment = $this->files->saveComment($fnum, $reason, $comment_body);
+			if (!empty($comment_body)) {
+				$comment = $this->files->saveComment($fnum, $reason, $comment_body);
 
-			if (!empty($comment->id)) {
-				$results['status'] = 1;
-				$results['msg']    = '';
-				$results['data']   = $comment;
-			}
-			else {
-				$results['msg']    = JText::_('COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS');
-				$results['status'] = 0;
+				if (!empty($comment->id)) {
+					$results['status'] = 1;
+					$results['msg']    = '';
+					$results['data']   = $comment;
+				}
+				else {
+					$results['msg']    = JText::_('COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS');
+					$results['status'] = 0;
+				}
+			} else {
+				$results['msg'] = JText::_('COM_EMUNDUS_FILES_COMMENT_EMPTY');
 			}
 		}
 

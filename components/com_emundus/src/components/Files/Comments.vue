@@ -125,8 +125,8 @@ export default {
           this.loading = false;
         } else {
           this.displayError(
-              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS',
-              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS_DESC'
+              'COM_EMUNDUS_FILES_CANNOT_SAVE_COMMENT',
+              response.msg
           );
           this.loading = false;
         }
