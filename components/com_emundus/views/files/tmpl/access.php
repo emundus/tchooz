@@ -64,7 +64,7 @@ $current_user = JFactory::getUser();
             </div>
 			<?php if (EmundusHelperAccess::asAccessAction(11, 'c', $current_user->id)) { ?>
                 <div id="group-div" class="em-mt-12 hidden">
-                    <label><?= JText::_('COM_EMUNDUS_GROUPS') ?></label>
+                    <label><?= JText::_('COM_EMUNDUS_GROUPS_SHARE') ?></label>
                     <select class="modal-chzn-select" multiple="true"
                             data-placeholder="<?= JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_GROUP'); ?>"
                             name="em-access-groups-eval" id="em-access-groups-eval" value="">
