@@ -95,10 +95,17 @@ defined('_JEXEC') or die;
 
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item span[class*="material-icons"] {
         color: var(--em-profile-color) !important;
+        background-color: #008A351A;
+        border-radius: var(--em-default-br);
     }
 
     .active .item .image-title {
         color: var(--em-profile-color);
+    }
+
+    .item:hover .material-icons-outlined {
+        background-color: var(--neutral-300);
+        border-radius: var(--em-default-br);
     }
 
     .g-menu-parent-indicator {
@@ -274,9 +281,7 @@ defined('_JEXEC') or die;
 </style>
 <nav class="g-main-nav <?php echo $class_sfx; ?>" data-g-hover-expand="true"
 	<?php
-	$tag = '';
-	if ($params->get('tag_id') != null) {
-		$tag = $params->get('tag_id') . '';
+	if (!empty($tag)) {
 		echo ' id="' . $tag . '"';
 	}
 	?>>

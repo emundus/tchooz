@@ -1,6 +1,11 @@
 const path = require('path');
 
 module.exports = {
+    pages: {
+        index: {
+            entry: './vue/src/main.js',
+        }
+    },
     lintOnSave: false,
     outputDir: path.resolve(__dirname, '../../media/mod_emundus_dashboard_vue'),
     assetsDir: '../mod_emundus_dashboard_vue',
@@ -8,13 +13,13 @@ module.exports = {
     css: {
         modules: false,
         extract: {
-            filename: '[name].css',
+            filename: 'app.css',
             chunkFilename: '[name].css',
         },
     },
     configureWebpack: {
         output: {
-            filename: '[name].js',
+            filename: 'app.js',
             chunkFilename: '[name].js',
         },
     },
