@@ -18,6 +18,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 
 class EmundusModelFormbuilder extends JModelList
@@ -41,7 +42,7 @@ class EmundusModelFormbuilder extends JModelList
 		$this->m_translations = new EmundusModelTranslations;
 		$this->h_fabrik       = new EmundusHelperFabrik;
 
-		JLog::addLogger(['text_file' => 'com_emundus.formbuilder.php'], JLog::ALL, array('com_emundus.formbuilder'));
+		Log::addLogger(['text_file' => 'com_emundus.formbuilder.php'], Log::ALL, array('com_emundus.formbuilder'));
 	}
 
 	public function replaceAccents($value)
@@ -201,7 +202,7 @@ class EmundusModelFormbuilder extends JModelList
 				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel, 'fabrik_groups', $group);
 
 				if (!empty($new_key) && !is_bool($new_key)) {
-					$translation = JText::_($new_key);
+					$translation = Text::_($new_key);
 					$new_name    = !empty($translation) && $translation != "Nouvelle section" ? $translation : $new_key;
 
 					$query->update($this->db->quoteName('#__fabrik_groups'))
@@ -228,7 +229,7 @@ class EmundusModelFormbuilder extends JModelList
 		}
 		catch (Exception $e) {
 			error_log($e->getMessage());
-			JLog::add('component/com_emundus/models/formbuilder | Error when update the translation of ' . $labelTofind . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error when update the translation of ' . $labelTofind . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			$new_key = false;
 		}
 
@@ -268,7 +269,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error update label of the element ' . $eid . ' without translation : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error update label of the element ' . $eid . ' without translation : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -289,7 +290,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error update label of the group ' . $gid . ' without translation : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error update label of the group ' . $gid . ' without translation : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -316,7 +317,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error update label of the page ' . $pid . ' without translation : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error update label of the page ' . $pid . ' without translation : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -343,7 +344,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error update label of the page intro ' . $pid . ' without translation : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error update label of the page intro ' . $pid . ' without translation : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -352,7 +353,7 @@ class EmundusModelFormbuilder extends JModelList
 	function createApplicantMenu($label, $intro, $prid, $template)
 	{
 		if (empty($prid)) {
-			JLog::add('component/com_emundus/models/formbuilder | Error when create a new page in form, missing prid', JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error when create a new page in form, missing prid', Log::ERROR, 'com_emundus');
 
 			return [
 				'status' => false,
@@ -529,7 +530,7 @@ class EmundusModelFormbuilder extends JModelList
 		}
 		catch (Exception $e) {
 			$query_str = !is_string($query) ? $query->__toString() : $query;
-			JLog::add('component/com_emundus/models/formbuilder | Error when create a new page in form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query_str . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error when create a new page in form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query_str . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return array();
 		}
@@ -603,7 +604,7 @@ class EmundusModelFormbuilder extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/formbuilder | Error when create a form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/formbuilder | Error when create a form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -719,7 +720,7 @@ class EmundusModelFormbuilder extends JModelList
 		}
 		catch (Exception $e) {
 			$query_str = is_string($query) ? $query : $query->__toString();
-			JLog::add('component/com_emundus/models/formbuilder | Error when create a list ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query_str . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error when create a list ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query_str . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $response;
@@ -751,7 +752,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error when join list ' . $listid . ' to profile ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error when join list ' . $listid . ' to profile ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -760,7 +761,7 @@ class EmundusModelFormbuilder extends JModelList
 	function createSubmittionPage($label, $intro, $prid)
 	{
 		if (empty($prid)) {
-			JLog::add('component/com_emundus/models/formbuilder | Error when create a new page in form, missing prid', JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error when create a new page in form, missing prid', Log::ERROR, 'com_emundus');
 
 			return [
 				'status' => false,
@@ -958,7 +959,7 @@ class EmundusModelFormbuilder extends JModelList
 			);
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error when create the submittion page of the form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error when create the submittion page of the form ' . $prid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return array();
 		}
@@ -984,7 +985,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at move to trash the menu with the fabrik_form ' . $menu . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at move to trash the menu with the fabrik_form ' . $menu . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1027,7 +1028,7 @@ class EmundusModelFormbuilder extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error when save a page as a model : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error when save a page as a model : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1184,7 +1185,7 @@ class EmundusModelFormbuilder extends JModelList
 			}
 			catch (Exception $e) {
 				error_log($e->getMessage());
-				JLog::add('component/com_emundus/models/formbuilder | Error at creating a group for fabrik_form ' . $fid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/formbuilder | Error at creating a group for fabrik_form ' . $fid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1205,7 +1206,7 @@ class EmundusModelFormbuilder extends JModelList
 			return true;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error when move to trash the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error when move to trash the group ' . $group . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -1468,7 +1469,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $eid;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error when create an element in group ' . $group_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error when create an element in group ' . $group_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 
 			return 0;
 		}
@@ -1623,7 +1624,7 @@ class EmundusModelFormbuilder extends JModelList
 								$query->select('table_join')
 									->from($this->db->quoteName('#__fabrik_joins'))
 									->where($this->db->quoteName('group_id') . ' = ' . $this->db->quote($gid))
-									->and($this->db->quoteName('table_join_key') . '=' . $this->db->quote('parent_id'));
+									->andWhere($this->db->quoteName('table_join_key') . '=' . $this->db->quote('parent_id'));
 								$this->db->setQuery($query);
 								$table_join_name = $this->db->loadObject();
 
@@ -1633,7 +1634,7 @@ class EmundusModelFormbuilder extends JModelList
 									$this->db->execute();
 								}
 								catch (Exception $e) {
-									JLog::add('component/com_emundus/models/formbuilder | Cannot not create new colum in the repeat table case: new element form group to an target group witc at group   because column already exist ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+									Log::add('component/com_emundus/models/formbuilder | Cannot not create new colum in the repeat table case: new element form group to an target group witc at group   because column already exist ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 								}
 							}
 
@@ -1646,7 +1647,7 @@ class EmundusModelFormbuilder extends JModelList
 								$column_added = $this->db->execute();
 							}
 							catch (Exception $e) {
-								JLog::add('Failed to add column for element ' . $elementId . ' in group ' . $gid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+								Log::add('Failed to add column for element ' . $elementId . ' in group ' . $gid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 								$column_added = false;
 							}
 
@@ -1674,27 +1675,27 @@ class EmundusModelFormbuilder extends JModelList
 										$this->db->execute();
 									}
 									catch (Exception $e) {
-										JLog::add('component/com_emundus/models/formbuilder | Failed to alter table for ' . $repeat_table_name . $gid . '_' . $elementId . ' ' . $dbtype . ' ' . $dbnull . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+										Log::add('component/com_emundus/models/formbuilder | Failed to alter table for ' . $repeat_table_name . $gid . '_' . $elementId . ' ' . $dbtype . ' ' . $dbnull . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 									}
 								}
 
 								$this->h_fabrik->addJsAction($elementId, $plugin);
 
-								JLog::add($user->id . ' Element ' . $elementId . ' created in group ' . $gid, JLog::INFO, 'com_emundus.formbuilder');
+								Log::add($user->id . ' Element ' . $elementId . ' created in group ' . $gid, Log::INFO, 'com_emundus.formbuilder');
 							}
 						}
 					}
 					else {
-						JLog::add($user->id . ' could not find new element id, for type ' . $plugin . ' group ' . $gid, JLog::WARNING, 'com_emundus.formbuilder');
+						Log::add($user->id . ' could not find new element id, for type ' . $plugin . ' group ' . $gid, Log::WARNING, 'com_emundus.formbuilder');
 					}
 				}
 				else {
-					JLog::add($user->id . ' element insertion failed, type ' . $plugin . ' group ' . $gid, JLog::WARNING, 'com_emundus.formbuilder');
+					Log::add($user->id . ' element insertion failed, type ' . $plugin . ' group ' . $gid, Log::WARNING, 'com_emundus.formbuilder');
 				}
 			}
 			catch (Exception $e) {
 				$query_str = is_string($query) ? $query : $query->__toString();
-				JLog::add('Problem when create a simple element in the group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query_str . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.formbuilder');
+				Log::add('Problem when create a simple element in the group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query_str . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.formbuilder');
 				$elementId = false;
 			}
 		}
@@ -1729,7 +1730,7 @@ class EmundusModelFormbuilder extends JModelList
 				$updated = $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/formbuilder | Cannot reorder elements : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/formbuilder | Cannot reorder elements : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -1807,7 +1808,7 @@ class EmundusModelFormbuilder extends JModelList
 						$this->db->execute();
 					}
 					catch (Exception $e) {
-						JLog::add('component/com_emundus/models/formbuilder | Cannot not create new colum in the repeat table case: moving element form group to an target group witch is repeat group because column already exist ' . $group_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+						Log::add('component/com_emundus/models/formbuilder | Cannot not create new colum in the repeat table case: moving element form group to an target group witch is repeat group because column already exist ' . $group_id . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 					}
 				}
 
@@ -1942,7 +1943,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Problem when change require of the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Problem when change require of the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2133,10 +2134,10 @@ class EmundusModelFormbuilder extends JModelList
 		}
 		catch (Exception $e) {
 			if (gettype($query) == 'string') {
-				JLog::add('component/com_emundus/models/formbuilder | Error at updating the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/formbuilder | Error at updating the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 			else {
-				JLog::add('component/com_emundus/models/formbuilder | Error at updating the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/formbuilder | Error at updating the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 
 			return false;
@@ -2151,15 +2152,15 @@ class EmundusModelFormbuilder extends JModelList
 
 		// Get old params
 		$query->select('params')
-			->from('#__fabrik_groups')
-			->where('id = ' . $this->db->quote($group_id));
+			->from($this->db->quoteName('#__fabrik_groups'))
+			->where($this->db->quoteName('id') . ' = ' . $this->db->quote($group_id));
 		$this->db->setQuery($query);
 
 		try {
 			$group_params = json_decode($this->db->loadResult(), true);
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at getting group params : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at getting group params : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2173,7 +2174,7 @@ class EmundusModelFormbuilder extends JModelList
 
 		if (!empty($params['intro'])) {
 			$stripped_intro = strip_tags($group_params['intro']);
-			if ($stripped_intro != JText::_($stripped_intro)) {
+			if ($stripped_intro != Text::_($stripped_intro)) {
 				$new_intro = $params['intro'];
 				$intro_tag = trim($stripped_intro);
 
@@ -2194,7 +2195,7 @@ class EmundusModelFormbuilder extends JModelList
 		if (!empty($params['outro'])) {
 			$stripped_outro = strip_tags($group_params['outro']);
 
-			if ($stripped_outro != JText::_($stripped_outro)) {
+			if ($stripped_outro != Text::_($stripped_outro)) {
 				$new_outro = $params['outro'];
 				$outro_tag = trim($stripped_outro);
 
@@ -2229,7 +2230,7 @@ class EmundusModelFormbuilder extends JModelList
 				$updated = $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/formbuilder | Error at updating group params : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/formbuilder | Error at updating group params : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 				$updated = false;
 			}
 		}
@@ -2354,7 +2355,7 @@ class EmundusModelFormbuilder extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot duplicate the element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot duplicate the element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2511,7 +2512,7 @@ class EmundusModelFormbuilder extends JModelList
 			$element = $this->db->loadAssoc();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot get simple element : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot get simple element : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $element;
@@ -2531,7 +2532,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot move the element to trash ' . $elt . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot move the element to trash ' . $elt . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 	}
 
@@ -2571,7 +2572,7 @@ class EmundusModelFormbuilder extends JModelList
 				$updated = $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/formbuilder | Error at reorder the menu with link : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/formbuilder | Error at reorder the menu with link : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -2594,7 +2595,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot get ordering of group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot get ordering of group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2617,7 +2618,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot reorder group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot reorder group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -2671,7 +2672,7 @@ class EmundusModelFormbuilder extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at getting pages models : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at getting pages models : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $models;
@@ -2701,7 +2702,7 @@ class EmundusModelFormbuilder extends JModelList
 				if ($used) {
 					$keep_structure  = false;
 					$response['msg'] = 'The table is already used in another form of same workflow, the structure will be changed';
-					JLog::add($user->id . ' The table of form ' . $formid . ' is already used in another form of same profile ' . $prid . ', the data structure will be duplicated in new table', JLog::INFO, 'com_emundus.formbuilder');
+					Log::add($user->id . ' The table of form ' . $formid . ' is already used in another form of same profile ' . $prid . ', the data structure will be duplicated in new table', Log::INFO, 'com_emundus.formbuilder');
 				}
 			}
 
@@ -3177,7 +3178,7 @@ class EmundusModelFormbuilder extends JModelList
 					}
 				}
 				catch (Exception $e) {
-					JLog::add('component/com_emundus/models/formbuilder | Error at create a table from the template ' . $template_table_name . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.formbuilder');
+					Log::add('component/com_emundus/models/formbuilder | Error at create a table from the template ' . $template_table_name . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
 				}
 			}
 		}
@@ -3202,7 +3203,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at check constraints groups of the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at check constraints groups of the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3227,7 +3228,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at check visibility of the group ' . $group . ' in campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at check visibility of the group ' . $group . ' in campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3259,7 +3260,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at publish/unpublish element ' . $element . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at publish/unpublish element ' . $element . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3291,7 +3292,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at publish/unpublish element ' . $element . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at publish/unpublish element ' . $element . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3309,7 +3310,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at getting databases references : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at getting databases references : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3327,7 +3328,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at getting databases references columns : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at getting databases references columns : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3346,7 +3347,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at getting databases references : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at getting databases references : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3357,9 +3358,10 @@ class EmundusModelFormbuilder extends JModelList
 		$saved = false;
 		
 		$query = $this->db->getQuery(true);
-		$user  = JFactory::getUser()->id;
+		$user  = $this->app->getIdentity()->id;
 
 		$group = $this->getFabrikGroup($gid);
+
 		if (!empty($group)) {
 			// Prepare Fabrik API
 			JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
@@ -3371,7 +3373,7 @@ class EmundusModelFormbuilder extends JModelList
 			$db_table  = $list->db_table_name;
 			$list_id   = $list->id;
 			$form_id   = $list->form_id;
-
+			
 			$group_params                      = json_decode($group->params);
 			$group_params->repeat_group_button = 1;
 
@@ -3393,7 +3395,7 @@ class EmundusModelFormbuilder extends JModelList
             ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
 			$this->db->setQuery($query);
 			$this->db->execute();
-
+			
 			// Create parent_id element
 			$query  = $this->db->getQuery(true);
 			$params = $this->h_fabrik->prepareElementParameters('field', false);
@@ -3505,7 +3507,7 @@ class EmundusModelFormbuilder extends JModelList
 			$query->select('id')
 				->from($this->db->quoteName('#__fabrik_joins'))
 				->where($this->db->quoteName('table_join') . ' = ' . $this->db->quote($newtablename))
-				->and($this->db->quoteName('table_join_key') . ' = ' . $this->db->quote('parent_id'));
+				->andWhere($this->db->quoteName('table_join_key') . ' = ' . $this->db->quote('parent_id'));
 			$this->db->setQuery($query);
 			$left_join_exist = $this->db->loadObject();
 
@@ -3575,7 +3577,7 @@ class EmundusModelFormbuilder extends JModelList
 			$group = $this->db->loadObject();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot get group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot get group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $group;
@@ -3598,7 +3600,7 @@ class EmundusModelFormbuilder extends JModelList
 			$group = $this->db->loadAssoc();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at enabling repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at enabling repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		if (!empty($group)) {
@@ -3672,7 +3674,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $group_params->repeat_group_show_first;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot disable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot disable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3700,7 +3702,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $falang->updateFalang($label, $menuid->id, 'menu', 'title');
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot update the menu label of the fabrik_form ' . $pid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot update the menu label of the fabrik_form ' . $pid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3733,7 +3735,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $campaigns;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at getting files and campaigns of the form ' . $prid . ' and of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at getting files and campaigns of the form ' . $prid . ' and of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3760,7 +3762,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $fnum;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at creating a testing file in the campaign ' . $cid . ' of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at creating a testing file in the campaign ' . $cid . ' of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3780,7 +3782,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot delete testing file ' . $fnum . ' of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot delete testing file ' . $fnum . ' of the user ' . $uid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3802,7 +3804,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->loadObject();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot get ordering of group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot get ordering of group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3822,7 +3824,7 @@ class EmundusModelFormbuilder extends JModelList
 			return $this->db->execute();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot update default value of element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot update default value of element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3840,16 +3842,16 @@ class EmundusModelFormbuilder extends JModelList
 			$this->db->setQuery($query);
 			$group = $this->db->loadObject();
 
-			$group->label  = JText::_($group->label);
+			$group->label  = Text::_($group->label);
 			$group->params = json_decode($group->params);
 
-			$group->params->intro = JText::_(trim(strip_tags($group->params->intro)));
-			$group->params->outro = JText::_(trim(strip_tags($group->params->outro)));
+			$group->params->intro = Text::_(trim(strip_tags($group->params->intro)));
+			$group->params->outro = Text::_(trim(strip_tags($group->params->outro)));
 
 			return $group;
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Cannot get group ' . $section . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Cannot get group ' . $section . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
 			return false;
 		}
@@ -3887,7 +3889,7 @@ class EmundusModelFormbuilder extends JModelList
 			$group = $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('formbuilder | Error when  trying to find group from element: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('formbuilder | Error when  trying to find group from element: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $group;
@@ -3912,7 +3914,7 @@ class EmundusModelFormbuilder extends JModelList
 			}
 		}
 		catch (Exception $e) {
-			JLog::add('formbuilder | Error when  trying to find params from element: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add('formbuilder | Error when  trying to find params from element: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $params;
@@ -3936,7 +3938,7 @@ class EmundusModelFormbuilder extends JModelList
 				$updated = $this->db->execute();
 			}
 			catch (Exception $e) {
-				JLog::add("formbuilder | Error when  trying to update params of element $element : " . $e->getMessage(), JLog::ERROR, 'com_emundus');
+				Log::add("formbuilder | Error when  trying to update params of element $element : " . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -4053,7 +4055,7 @@ class EmundusModelFormbuilder extends JModelList
 			$form_id = $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			JLog::add('formBuilder model: Error trying to find fotm id from group id', JLog::ERROR, 'com_emundus.error');
+			Log::add('formBuilder model: Error trying to find fotm id from group id', Log::ERROR, 'com_emundus.error');
 		}
 
 		return $form_id;
@@ -4096,23 +4098,23 @@ class EmundusModelFormbuilder extends JModelList
 							}
 							catch (Exception $e) {
 								$inserted = false;
-								JLog::add('Failed to create new form model ' . $e->getMessage(), JLog::ERROR, 'com_emundus.formbuilder');
+								Log::add('Failed to create new form model ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
 							}
 						}
 						else {
-							JLog::add('Failed to copy groups in new form model  (new form : ' . $new_form_id . ', form model : ' . $form_id_to_copy . ')', JLog::WARNING, 'com_emundus.formbuilder');
+							Log::add('Failed to copy groups in new form model  (new form : ' . $new_form_id . ', form model : ' . $form_id_to_copy . ')', Log::WARNING, 'com_emundus.formbuilder');
 						}
 					}
 					else {
-						JLog::add('Failed to copy List for new form model (new form : ' . $new_form_id . ', list to copy : ' . $list_to_copy . ')', JLog::WARNING, 'com_emundus.formbuilder');
+						Log::add('Failed to copy List for new form model (new form : ' . $new_form_id . ', list to copy : ' . $list_to_copy . ')', Log::WARNING, 'com_emundus.formbuilder');
 					}
 				}
 				else {
-					JLog::add('Failed to get List from form model (form model : ' . $form_id_to_copy . ')', JLog::WARNING, 'com_emundus.formbuilder');
+					Log::add('Failed to get List from form model (form model : ' . $form_id_to_copy . ')', Log::WARNING, 'com_emundus.formbuilder');
 				}
 			}
 			else {
-				JLog::add('Failed to copy Form for new form model (new form : ' . $new_form_id . ', form model : ' . $form_id_to_copy . ')', JLog::WARNING, 'com_emundus.formbuilder');
+				Log::add('Failed to copy Form for new form model (new form : ' . $new_form_id . ', form model : ' . $form_id_to_copy . ')', Log::WARNING, 'com_emundus.formbuilder');
 			}
 		}
 
@@ -4139,7 +4141,7 @@ class EmundusModelFormbuilder extends JModelList
 					$deleted = $this->db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add('Failed to delete form ' . $form_id . ' model ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Failed to delete form ' . $form_id . ' model ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
 			else {
@@ -4178,7 +4180,7 @@ class EmundusModelFormbuilder extends JModelList
 					$deleted = $this->db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add('Failed to delete ' . implode(',', $models_to_delete) . ' model ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Failed to delete ' . implode(',', $models_to_delete) . ' model ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
 			else {
@@ -4244,7 +4246,7 @@ class EmundusModelFormbuilder extends JModelList
 					}
 				}
 				catch (Exception $e) {
-					JLog::add('Failed to copy form from id : ' . $form_id_to_copy . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Failed to copy form from id : ' . $form_id_to_copy . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
 		}
@@ -4279,7 +4281,7 @@ class EmundusModelFormbuilder extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to copy Fabrik list ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to copy Fabrik list ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
 			if (!empty($new_list_id)) {
@@ -4294,7 +4296,7 @@ class EmundusModelFormbuilder extends JModelList
 					$this->db->execute();
 				}
 				catch (Exception $e) {
-					JLog::add('Failed to update Fabrik list label and intro ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					Log::add('Failed to update Fabrik list label and intro ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
 		}
@@ -4319,7 +4321,7 @@ class EmundusModelFormbuilder extends JModelList
 				$list = $this->db->loadObject();
 			}
 			catch (Exception $e) {
-				JLog::add('Failed to find list id from form id ' . $form_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				Log::add('Failed to find list id from form id ' . $form_id . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -4475,7 +4477,7 @@ class EmundusModelFormbuilder extends JModelList
 								$this->db->execute();
 							}
 							catch (Exception $e) {
-								JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $form_id_to_copy . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+								Log::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $form_id_to_copy . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 							}
 						}
 
@@ -4508,7 +4510,7 @@ class EmundusModelFormbuilder extends JModelList
 				$document = $this->db->loadAssoc();
 			}
 			catch (Exception $e) {
-				JLog::add('component/com_emundus/models/formbuilder | Error at getting document sample : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+				Log::add('component/com_emundus/models/formbuilder | Error at getting document sample : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
 
@@ -4561,7 +4563,7 @@ class EmundusModelFormbuilder extends JModelList
 			$datas = $db->loadAssocList();
 		}
 		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/formbuilder | Error at getting sql dropdown options : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+			Log::add('component/com_emundus/models/formbuilder | Error at getting sql dropdown options : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), Log::ERROR, 'com_emundus');
 		}
 
 		return $datas;

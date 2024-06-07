@@ -1879,14 +1879,14 @@ class EmundusModelApplication extends JModelList
 
 									if ($itemg->group_id == 174) {
 										$query->clear()
-											->select(implode(',', $t_elt) . ', id')
+											->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 											->from($this->_db->quoteName($table))
 											->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')')
 											->orWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($aid));
 									}
 									else {
 										$query->clear()
-											->select(implode(',', $t_elt) . ', id')
+											->select(implode(',', $this->_db->quoteName($t_elt)) . ', id')
 											->from($this->_db->quoteName($table))
 											->where($this->_db->quoteName('parent_id') . ' = (SELECT id FROM ' . $this->_db->quoteName($itemt->db_table_name) . ' WHERE fnum like ' . $this->_db->quote($fnum) . ')');
 									}
