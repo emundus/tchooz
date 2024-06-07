@@ -43,7 +43,7 @@
                 v-if="selected === 'attachments'"
                 :fnum="selectedFile.fnum"
                 :user="$props.user"
-                :columns="['name','date','category','status']"
+                :columns="['check', 'name','date','category','status']"
                 :displayEdit="false"
                 :key="selectedFile.fnum"
             />
