@@ -3,6 +3,7 @@
     <div class="tw-flex tw-items-center tw-justify-between">
 	    <span
           class="tw-text-2xl tw-font-semibold editable-data"
+          id="page-title"
           ref="pageTitle"
           @focusout="updateTitle"
           @keyup.enter="updateTitleKeyup"

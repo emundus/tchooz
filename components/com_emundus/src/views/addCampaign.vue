@@ -18,9 +18,8 @@
         <div>
           <div class="tw-text-red-500 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
-          <div class="tw-mb-4">
-            <label for="campLabel">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span
-                class="tw-text-red-500">*</span></label>
+          <div class="tw-mb-4" id="campaign-label-wrapper">
+            <label for="campLabel">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span class="tw-text-red-500">*</span></label>
             <input
                 id="campLabel"
                 type="text"
@@ -30,8 +29,8 @@
                 class="tw-mt-2 form-control fabrikinput tw-w-full"
                 @focusout="onFormChange()"
             />
-            <span v-if="errors.label" class="tw-text-red-500 tw-mb-2">
-              <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
+            <span v-if="errors.label" id="error-campaign-name" class="tw-text-red-500 tw-mb-2">
+              {{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}
             </span>
           </div>
 
