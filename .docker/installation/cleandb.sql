@@ -129,6 +129,11 @@ DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos
 DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_contact_details) AND `reference_table` like 'contact_details';
 DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_modules) AND `reference_table` like 'modules';
 DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_tags) AND `reference_table` like 'emundus_setup_tags';
+DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_campaigns) AND `reference_table` like 'emundus_setup_campaigns';
+DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_programmes) AND `reference_table` like 'emundus_setup_programmes';
+DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_status) AND `reference_table` like 'emundus_setup_status';
+DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_attachments) AND `reference_table` like 'emundus_setup_attachments';
+DELETE FROM `jos_falang_content` WHERE `reference_id` not in (select id from jos_emundus_setup_action_tag) AND `reference_table` like 'emundus_setup_action_tag';
 
 UPDATE `jos_fabrik_elements` set hidden=1 WHERE `plugin` LIKE 'fabrikinternalid' OR `plugin` LIKE 'internalid';
 

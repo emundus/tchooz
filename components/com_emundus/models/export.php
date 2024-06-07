@@ -111,7 +111,9 @@ class EmundusModelExport extends JModelList
 					Gotenberg::save($request, $dest_path .'/', $client);
 				} else {
 					$request = Gotenberg::chromium($gotenberg_url)
-						->html(Stream::string('my.html', $src));
+						->pdf()
+						->outputFilename($dest_file)
+						->html(Stream::path($src));
 
 					Gotenberg::save($request, $dest_path .'/', $client);
 				}
