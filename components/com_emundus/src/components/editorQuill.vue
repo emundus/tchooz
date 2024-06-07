@@ -99,7 +99,7 @@ export default {
       'formula',
       // 'image'
       // 'video',
-      'mention'
+      //'mention'
     ]
   }),
   mounted() {
@@ -113,14 +113,14 @@ export default {
     var options = {
       modules: {
         toolbar: this.toolbarOptions[this.$props.toolbar],
-        mention: null
+        //mention: null
       },
       placeholder: this.$props.placeholder,
       theme: 'snow',
       formats: this.formats
     };
 
-    if (this.$props.enable_variables) {
+    /*if (this.$props.enable_variables) {
       options.modules.mention = {
         allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
         mentionDenotationChars: ["/"],
@@ -157,7 +157,7 @@ export default {
           return `<div><p>${item.value}</p><p class="tw-text-xs">${item.description}</p></div>`;
         }
       }
-    }
+    }*/
 
     this.editor = new Quill('.editor_' + this.$attrs.id, options);
     if (this.text !== '' && this.text !== null && typeof this.text !== 'undefined') {

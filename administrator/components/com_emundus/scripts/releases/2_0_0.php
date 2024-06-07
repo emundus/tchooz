@@ -646,6 +646,42 @@ class Release2_0_0Installer extends ReleaseInstaller
 				}
 			}
 
+			// Update email activation
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_email_templates'))
+				->where($this->db->quoteName('lbl') . ' LIKE ' . $this->db->quote('registration'));
+			$this->db->setQuery($query);
+			$registration_tmpl = $this->db->loadResult();
+
+			if(empty($registration_tmpl))
+			{
+				$registration_email_tmpl = file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/scripts/html/registration_template.html');
+				$tmpl_insert             = [
+					'date_time' => date('Y-m-d H:i:s'),
+					'lbl'       => 'registration',
+					'Template'  => $registration_email_tmpl,
+					'type'      => 1,
+					'published' => 1
+				];
+				$tmpl_insert             = (object) $tmpl_insert;
+				$this->db->insertObject('#__emundus_email_templates', $tmpl_insert);
+
+				$registration_tmpl = $this->db->insertid();
+			}
+
+			$registration_email_content = '<p>[USER_NAME],</p><p>Vous venez de créer un compte <a href="[SITE_URL]" target="_blank">sur cette plateforme</a>.</p>
+<p>Pour l\'activer veuillez cliquer sur le lien ci-dessous :&nbsp;</p><p></p><hr/><p>[USER_NAME],</p><p>You have just created an account <a href="[SITE_URL]"
+                                                                                                      target="_blank">on
+    this platform</a>.</p><p>To activate it, please click on the link below:&nbsp;</p>';
+			$query->clear()
+				->update($this->db->quoteName('#__emundus_setup_emails'))
+				->set($this->db->quoteName('message') . ' = ' . $this->db->quote($registration_email_content))
+				->set($this->db->quoteName('email_tmpl') . ' = ' . $this->db->quote($registration_tmpl))
+				->where($this->db->quoteName('lbl') . ' LIKE ' . $this->db->quote('registration_email'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

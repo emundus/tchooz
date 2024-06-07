@@ -76,6 +76,7 @@ Text::script('SEND_ON');
 Text::script('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE');
 Text::script('COM_EMUNDUS_ONBOARD_OK');
 Text::script('COM_EMUNDUS_ONBOARD_CANCEL');
+Text::script('COM_EMUNDUS_MAIL_SENDED');
 
 Text::script('COM_EMUNDUS_EX');
 Text::script('COM_EMUNDUS_ADD');

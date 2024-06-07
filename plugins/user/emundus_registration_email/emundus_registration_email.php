@@ -345,6 +345,8 @@ class plgUserEmundus_registration_email extends CMSPlugin
 		}
 		$activation_url = $baseURL . $activation_url_rel;
 
+		$logo = EmundusHelperEmails::getLogo(true);
+
 		$post = [
 			'CIVILITY'           => $civility,
 			'USER_NAME'          => $data['name'],
@@ -354,7 +356,8 @@ class plgUserEmundus_registration_email extends CMSPlugin
 			'ACTIVATION_URL_REL' => $activation_url_rel,
 			'BASE_URL'           => $baseURL,
 			'USER_LOGIN'         => $data['username'],
-			'USER_PASSWORD'      => $password
+			'USER_PASSWORD'      => $password,
+			'LOGO'               => Uri::base().'images/custom/'.$logo
 		];
 
 		// Send the email.
