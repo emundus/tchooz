@@ -360,7 +360,7 @@ export default {
 
 .iframe-evaluation {
   width: 100%;
-  height: 90%;
+  height: calc(100% - 124px);
   border: unset;
 }
 

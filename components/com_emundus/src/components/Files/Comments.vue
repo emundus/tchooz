@@ -1,6 +1,6 @@
 <template>
   <div id="comments">
-    <div class="tw-flex tw-flex-col tw-justify-center tw-mt-6">
+    <div class="tw-flex tw-flex-col tw-justify-center tw-mt-6 tw-items-center">
       <div v-for="comment in comments" class="em-input-card tw-w-2/4 tw-mb-4" :key="comment.id">
         <div class="tw-flex tw-items-center tw-justify-between">
           <div>
