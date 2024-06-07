@@ -740,39 +740,39 @@ class EmundusModelProgramme extends ListModel
                     if ($create_program_groups == 1) {
                         // Create user group
                         $columns = array('label', 'published', 'class');
-                        $values = array($db->quote($programme->label), $db->quote(1), $db->quote('label-default'));
+                        $values = array($this->_db->quote($programme->label), $this->_db->quote(1), $this->_db->quote('label-default'));
 
                         $query->clear()
-                            ->insert($db->quoteName('#__emundus_setup_groups'))
-                            ->columns($db->quoteName($columns))
+                            ->insert($this->_db->quoteName('#__emundus_setup_groups'))
+                            ->columns($this->_db->quoteName($columns))
                             ->values(implode(',',$values));
-                        $db->setQuery($query);
-                        $db->execute();
-                        $group_id = $db->insertid();
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
+                        $group_id = $this->_db->insertid();
                         //
 
                         // Link group with programme
                         $columns = array('parent_id', 'course');
-                        $values = array($db->quote($group_id), $db->quote($programme->code));
+                        $values = array($this->_db->quote($group_id), $this->_db->quote($programme->code));
 
                         $query->clear()
-                            ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
-                            ->columns($db->quoteName($columns))
+                            ->insert($this->_db->quoteName('#__emundus_setup_groups_repeat_course'))
+                            ->columns($this->_db->quoteName($columns))
                             ->values(implode(',',$values));
-                        $db->setQuery($query);
-                        $db->execute();
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
                         //
 
                         // Affect coordinator to the group of the program
                         $columns = array('user_id', 'group_id');
-                        $values = array($db->quote($user_id), $group_id);
+                        $values = array($this->_db->quote($user_id), $group_id);
 
                         $query->clear()
-                            ->insert($db->quoteName('#__emundus_groups'))
-                            ->columns($db->quoteName($columns))
+                            ->insert($this->_db->quoteName('#__emundus_groups'))
+                            ->columns($this->_db->quoteName($columns))
                             ->values(implode(',',$values));
-                        $db->setQuery($query);
-                        $db->execute();
+	                    $this->_db->setQuery($query);
+	                    $this->_db->execute();
                         //
 
                         // Create evaluator and manager group
