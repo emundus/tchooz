@@ -14,8 +14,8 @@ else {
 
 <div class="tags">
     <div class="row">
-        <div class="panel panel-default widget em-container-tags">
-            <div class="panel-heading em-container-tags-heading">
+        <div class="panel panel-default widget em-container-tag">
+            <div class="panel-heading em-container-tag-heading">
                 <h3 class="panel-title">
                     <span class="glyphicon glyphicon-tags"></span>
 					<?php echo JText::_('COM_EMUNDUS_TAGS'); ?>
@@ -48,7 +48,7 @@ else {
                                 class="material-icons">arrow_forward</span></button>
                 </div>
             </div>
-            <div class="panel-body em-container-tags-body">
+            <div class="panel-body em-container-tag-body">
                 <ul class="list-group">
 					<?php
 					if (count($this->tags) > 0) {
