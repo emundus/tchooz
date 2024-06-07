@@ -714,23 +714,20 @@ class EmundusControllerApplication extends JControllerLegacy
 		$update = false;
 		$msg    = '';
 
-		// get post data
+		$fnum = $this->input->getString('fnum', '');
 
-		$data = $this->input->post->getArray();
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(4, 'u', $this->_user->id, $fnum)) {
+			$data = $this->input->post->getArray();
 
-		if (EmundusHelperAccess::asAccessAction(4, 'u', JFactory::getUser()->id, $data['fnum'])) {
-			$m_application = $this->getModel('Application');
-
+			if (empty($data['user'])) {
+				$data['user'] = $this->_user->id;
+			}
 			if ($this->input->files->get('file')) {
 				$data['file'] = $this->input->files->get('file');
 			}
 
-			if ($data['fnum'] && $data['user']) {
-				$update = $m_application->updateAttachment($data);
-			}
-			else {
-				$msg = JText::_('INVALID_PARAMETERS');
-			}
+			$m_application = $this->getModel('Application');
+			$update = $m_application->updateAttachment($data);
 		}
 		else {
 			$msg = JText::_('ACCESS_DENIED');
