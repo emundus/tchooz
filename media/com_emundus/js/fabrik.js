@@ -4,6 +4,26 @@
  **
  ***/
 
+function addLoader(container = 'body') {
+    if(window.document.getElementById('em-dimmer') === null) {
+        let loaderElement = window.document.createElement('div');
+        loaderElement.id = 'em-dimmer';
+        loaderElement.classList.add('em-page-loader');
+
+        let containerElement = window.document.querySelector(container);
+        if(containerElement) {
+            containerElement.insertAdjacentElement('afterend', loaderElement);
+        }
+    }
+}
+
+function removeLoader() {
+    const loader = document.getElementById('em-dimmer');
+    if (loader!== null) {
+        loader.remove();
+    }
+}
+
 /**
  * Hide one or multiple elements
  *
