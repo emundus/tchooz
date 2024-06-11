@@ -57,6 +57,7 @@ endif;
     <div class="tw-mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
         <span class="material-icons">cancel</span>
 		<?php echo $form->error; ?>
+        <span class="material-icons-outlined tw-absolute tw-top-[3px] tw-right-[1px] !tw-text-base tw-cursor-pointer" onclick="closeAlert()">close</span>
     </div>
     <div class="tw-mb-8">
         <div>
@@ -227,5 +228,30 @@ endif;
             }
             elt.classList.add('skeleton');
         }
+
+        var errorMessage = document.querySelector('.fabrikMainError');
+        if(errorMessage) {
+            setTimeout(() => {
+                errorMessage.style.opacity = 1;
+                errorMessage.style.bottom = '10px'
+            }, 450)
+
+            setTimeout(function () {
+                errorMessage.style.opacity = 0;
+                errorMessage.style.bottom = '-100px'
+            }, 5000);
+        }
     });
+
+    closeAlert = function(type) {
+        var errorMessage = document.querySelector('.fabrikMainError');
+
+        if(errorMessage) {
+            errorMessage.style.opacity = 0;
+            errorMessage.style.bottom = '-100px'
+            setTimeout(() => {
+                errorMessage.remove();
+            }, 300)
+        }
+    }
 </script>

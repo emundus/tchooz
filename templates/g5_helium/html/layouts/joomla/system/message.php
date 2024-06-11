@@ -23,7 +23,7 @@ $msgList = $displayData['msgList'];
 ?>
 <div id="system-message-container">
 	<?php if (is_array($msgList) && !empty($msgList)) : ?>
-        <div id="system-message" class="tw-mt-4">
+        <div id="system-message" class="tw-flex tw-flex-col tw-mt-4 tw-gap-2">
 			<?php foreach ($msgList as $type => $msgs) : ?>
 				<?php
 				switch ($type) {
@@ -31,7 +31,7 @@ $msgList = $displayData['msgList'];
 						$icon = 'cancel';
 						break;
 					case 'warning':
-						$icon = 'error';
+						$icon = 'report_problem';
 						break;
 					case 'success':
 						$icon = 'check_circle';
@@ -42,17 +42,50 @@ $msgList = $displayData['msgList'];
 						break;
 				}
 				?>
-                <div class="alert alert-<?php echo $type; ?>">
+                <div class="tw-shadow alert alert-<?php echo $type; ?>">
 					<?php if (!empty($msgs)) : ?>
-                        <span class="material-icons"><?php echo $icon ?></span>
+                        <span class="material-icons-outlined tw-mr-3"><?php echo $icon ?></span>
                         <div>
 							<?php foreach ($msgs as $msg) : ?>
                                 <p id="alert-message-text"><?php echo $msg; ?></p>
 							<?php endforeach; ?>
                         </div>
+                        <span class="material-icons-outlined tw-absolute tw-top-[3px] tw-right-[1px] !tw-text-base tw-cursor-pointer" onclick="closeAlert('<?php echo $type; ?>')">close</span>
 					<?php endif; ?>
                 </div>
 			<?php endforeach; ?>
         </div>
 	<?php endif; ?>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var messages = document.querySelectorAll('#system-message .alert');
+        setTimeout(() => {
+            messages.forEach(function(message) {
+                message.style.opacity = 1;
+                message.style.bottom = '10px'
+            });
+        },450)
+
+        setTimeout(function() {
+            messages.forEach(function(message) {
+                message.style.opacity = 0;
+                message.style.bottom = '-100px'
+            });
+        }, 5000);
+    });
+
+    closeAlert = function(type) {
+        var messages = document.querySelectorAll('#system-message .alert');
+        messages.forEach(function(message) {
+            if (message.classList.contains('alert-' + type)) {
+                message.style.opacity = 0;
+                message.style.bottom = '-100px'
+                setTimeout(() => {
+                    message.remove();
+                }, 300)
+            }
+        });
+    }
+</script>

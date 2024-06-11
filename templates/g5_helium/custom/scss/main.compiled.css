@@ -1703,6 +1703,7 @@ form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .\!row .
 /** PANEL **/
 form.fabrikForm .plg-panel .fabrikElement .fabrikinput {
     display: flex;
+    align-items: center;
     padding: var(--em-spacing-5);
     border-radius: 0.25rem;
 }
@@ -1865,7 +1866,6 @@ form.fabrikForm .fabrikError.plg-checkbox .fabrikElement .fabrikSubElementContai
 form.fabrikForm .fabrikErrorMessage {
     margin-top: var(--em-spacing-1);
             color: var(--em-form-element-color-error) !important;
-            font-weight: 700;
             padding-left: 0;
 }
 /** REPEAT GROUP **/
@@ -2187,8 +2187,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-right-\[-12px\] {
     right: -12px;
 }
+.tw-right-\[1px\] {
+    right: 1px;
+}
 .tw-top-\[14px\] {
     top: 14px;
+}
+.tw-top-\[3px\] {
+    top: 3px;
 }
 .tw-float-right {
     float: right;
@@ -4842,6 +4848,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     font-size: 3.75rem !important;
     line-height: 1 !important;
 }
+.\!tw-text-base {
+    font-size: 1rem !important;
+    line-height: 1.5rem !important;
+}
+.\!tw-text-lg {
+    font-size: 1.125rem !important;
+    line-height: 1.75rem !important;
+}
 .\!tw-text-xl\/5 {
     font-size: 1.25rem !important;
     line-height: 1.25rem !important;
@@ -4922,6 +4936,11 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-underline {
     text-decoration-line: underline;
+}
+.tw-shadow {
+    --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 .tw-shadow-sm {
     --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -5297,28 +5316,28 @@ button.swal2-cancel.goback-btn:hover,
     line-height: 1.75rem;
     margin-bottom: 0px;
 }
-#system-message .alert .material-icons, .fabrikMainError .material-icons {
-    margin-right: var(--em-spacing-3);
-}
 #system-message .alert p, .fabrikMainError p {
             color: inherit;
             font-family: var(--em-profile-font), Inter, sans-serif;
             line-height: 24px;
+            max-width: 40vw;
         }
 .fabrikMainError, .alert.alert-error {
         border: solid var(--em-alert-error-border-width) var(--em-alert-error-border-color);
         background-color: var(--em-alert-error-bgc);
         color: var(--em-alert-error-color);
+        margin-bottom: var(--em-spacing-2);
     }
-.fabrikMainError .material-icons, .alert.alert-error .material-icons {
+.fabrikMainError .material-icons,.fabrikMainError .material-icons-outlined,.alert.alert-error .material-icons,.alert.alert-error .material-icons-outlined {
             color: var(--em-alert-error-icon-color);
+            margin-right: var(--em-spacing-3);
         }
 .alert.alert-warning, .alert.alert-notice {
         border: solid var(--em-alert-warning-border-width) var(--em-alert-warning-border-color);
         background-color: var(--em-alert-warning-bgc);
         color: var(--em-alert-warning-color);
     }
-.alert.alert-warning .material-icons, .alert.alert-notice .material-icons {
+.alert.alert-warning .material-icons,.alert.alert-warning .material-icons-outlined,.alert.alert-notice .material-icons,.alert.alert-notice .material-icons-outlined {
             color: var(--em-alert-warning-icon-color);
         }
 .alert.alert-info {
@@ -5326,7 +5345,7 @@ button.swal2-cancel.goback-btn:hover,
         background-color: var(--em-alert-info-bgc);
         color: var(--em-alert-info-color);
     }
-.alert.alert-info .material-icons {
+.alert.alert-info .material-icons,.alert.alert-info .material-icons-outlined {
             color: var(--em-alert-info-icon-color);
         }
 .alert.alert-success {
@@ -5334,7 +5353,7 @@ button.swal2-cancel.goback-btn:hover,
         background-color: var(--em-alert-success-bgc);
         color: var(--em-alert-success-color);
     }
-.alert.alert-success .material-icons {
+.alert.alert-success .material-icons,.alert.alert-success .material-icons-outlined {
             color: var(--em-alert-success-icon-color);
         }
 .alert.alert-danger ul, .alert.alert-error ul {

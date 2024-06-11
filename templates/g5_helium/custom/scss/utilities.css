@@ -401,14 +401,11 @@
         @apply tw-text-lg;
         @apply tw-mb-0;
 
-        .material-icons {
-            @apply tw-mr-3;
-        }
-
         p {
             color: inherit;
             font-family: var(--em-profile-font), Inter, sans-serif;
             line-height: 24px;
+            max-width: 40vw;
         }
     }
 
@@ -416,9 +413,11 @@
         border: solid var(--em-alert-error-border-width) var(--em-alert-error-border-color);
         background-color: var(--em-alert-error-bgc);
         color: var(--em-alert-error-color);
+        margin-bottom: var(--em-spacing-2);
 
-        .material-icons {
+        .material-icons,.material-icons-outlined {
             color: var(--em-alert-error-icon-color);
+            margin-right: var(--em-spacing-3);
         }
     }
 
@@ -427,7 +426,7 @@
         background-color: var(--em-alert-warning-bgc);
         color: var(--em-alert-warning-color);
 
-        .material-icons {
+        .material-icons,.material-icons-outlined {
             color: var(--em-alert-warning-icon-color);
         }
     }
@@ -437,7 +436,7 @@
         background-color: var(--em-alert-info-bgc);
         color: var(--em-alert-info-color);
 
-        .material-icons {
+        .material-icons,.material-icons-outlined {
             color: var(--em-alert-info-icon-color);
         }
     }
@@ -447,7 +446,7 @@
         background-color: var(--em-alert-success-bgc);
         color: var(--em-alert-success-color);
 
-        .material-icons {
+        .material-icons,.material-icons-outlined {
             color: var(--em-alert-success-icon-color);
         }
     }

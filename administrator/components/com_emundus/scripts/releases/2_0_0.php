@@ -682,6 +682,16 @@ class Release2_0_0Installer extends ReleaseInstaller
 			$this->db->setQuery($query);
 			$this->db->execute();
 
+			$old_values = [
+				'fr' => 'Cet utilisateur et/ou ce mot de passe est incorrect',
+				'en' => 'This user and/or password is incorrect'
+			];
+			$new_values = [
+				'fr' => 'Cette combinaison adresse email/mot de passe est incorrecte',
+				'en' => 'This email address/password combination is incorrect'
+			];
+			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_INVALID_PASS',$old_values,$new_values);
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

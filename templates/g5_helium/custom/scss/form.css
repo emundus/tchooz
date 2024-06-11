@@ -876,6 +876,7 @@
             .fabrikElement {
                 .fabrikinput {
                     @apply tw-flex;
+                    @apply tw-items-center;
                     @apply tw-p-5;
                     @apply tw-rounded;
 
@@ -1079,7 +1080,6 @@
         .fabrikErrorMessage {
             @apply tw-mt-1;
             color: var(--em-form-element-color-error) !important;
-            font-weight: 700;
             padding-left: 0;
         }
 

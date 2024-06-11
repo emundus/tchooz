@@ -56,7 +56,7 @@
 			<field showon="type:0"
 				   name="panel_background"
 				   type="color"
-				   default="#EBEEFA"
+				   default="#eff8ff"
 				   label="PLG_ELEMENT_PANEL_BACKGROUND">
 			</field>
 
@@ -70,16 +70,30 @@
 			<field showon="type:0"
 				   name="panel_icon_color"
 				   type="color"
-				   default="#525b85"
+				   default="#2e90fa"
 				   label="PLG_ELEMENT_PANEL_ICON_COLOR">
 			</field>
 
 			<field showon="type:0"
 				   name="panel_icon_type"
 				   type="text"
-				   default=""
+				   default="-outlined"
 				   label="PLG_ELEMENT_PANEL_ICON_TYPE"
 				   description="PLG_ELEMENT_PANEL_ICON_TYPE_DESC">
+			</field>
+
+			<field showon="type:0"
+				   name="panel_text_color"
+				   type="color"
+				   default="#727272"
+				   label="PLG_ELEMENT_PANEL_TEXT_COLOR">
+			</field>
+
+			<field showon="type:0"
+				   name="panel_border_color"
+				   type="color"
+				   default="#2e90fa"
+				   label="PLG_ELEMENT_PANEL_BORDER_COLOR">
 			</field>
 
 		</fieldset>

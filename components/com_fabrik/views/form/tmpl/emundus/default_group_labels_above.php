@@ -27,8 +27,11 @@ $element = $this->element;
 	<?php echo $element->element; ?>
 </div>
 
-<div class="<?php echo $this->class ?>">
-	<?php echo $element->error ?>
+<div class="<?php echo $this->class ?> tw-flex tw-items-center">
+    <?php if ($element->error) : ?>
+        <span class="material-icons-outlined tw-mr-1 !tw-text-lg">error</span>
+        <?php echo $element->error ?>
+    <?php endif; ?>
 </div>
 
 <?php if ($this->tipLocation == 'side') : ?>
