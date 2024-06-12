@@ -125,28 +125,39 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 				$attachment_class = 'need_ok';
 			}
 			?>
-            <div class="<?php if ($itemid['id'] == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $attachment_class; ?> mod_emundus_checklist___form_item">
+            <div class="<?php if ($itemid['id'] == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $attachment_class; ?> mod_emundus_checklist___form_item tw-relative">
+	            <?php if ($attachment_class == 'need_ok' && $itemid['id'] != $menuid) : ?>
+                    <span class="material-icons mod_emundus_checklist___check_circle">check_circle</span>
+	            <?php endif; ?>
                 <div class="mod_emundus_checklist___grid">
                     <div class="mod_emundus_checklist___step_count">
 						<?php if ($itemid['id'] == $menuid) {
 							$color = 'var(--blue-900)';
+							$border_color = 'var(--blue-200)';
+							$title_color = 'var(--blue-900)';
 						}
-                        elseif ($class == 'need_missing') {
+                        elseif ($attachment_class == 'need_missing') {
 							$color = 'var(--neutral-900)';
+	                        $border_color = 'var(--neutral-300)';
+	                        $title_color = 'var(--neutral-900)';
 						}
-                        elseif ($class == 'need_ok') {
+                        elseif ($attachment_class == 'need_ok') {
 							$color = 'var(--neutral-0)';
+	                        $border_color = 'var(--main-500)';
+	                        $title_color = 'var(--main-500)';
 						}
 						?>
                         <span style="color: <?= $color ?>">
                             <?php echo sizeof($forms) + 1 ?>
                         </span>
                     </div>
-                    <a href="<?php echo $itemid['link'] . '&Itemid=' . $itemid['id'] ?>"><?php echo JText::_($mandatory_documents_title) ?></a>
+                    <a href="<?php echo $itemid['link'] . '&Itemid=' . $itemid['id'] ?>" style="color: <?php echo $title_color; ?>;" <?php if ($itemid['id'] == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
+                        <?php echo JText::_($mandatory_documents_title) ?>
+                    </a>
                 </div>
                 <div class="em-flex-row" style="align-items: stretch">
 					<?php if (($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>
-                        <div class="mod_emundus_checklist___border_item em-h-auto"></div>
+                        <div class="mod_emundus_checklist___border_item em-h-auto" style="border-color: <?php echo $border_color; ?>"></div>
 					<?php endif ?>
                     <div class="mod_emundus_checklist___attachment"
 					     <?php if (($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>style="margin-left: 24px"<?php endif; ?>
@@ -170,17 +181,26 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 		<?php endif; ?>
 
 		<?php if ($show_optional_documents == 1 && count($optional_documents) > 0) : ?>
-            <div class="<?php if ($itemid['id'] == $menuid) echo 'active' ?> mod_emundus_checklist___form_item">
+            <div class="<?php if ($itemid['id'] == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $attachment_class; ?> mod_emundus_checklist___form_item tw-relative">
+	            <?php if ($attachment_class == 'need_ok' && $itemid['id'] != $menuid) : ?>
+                    <span class="material-icons mod_emundus_checklist___check_circle">check_circle</span>
+	            <?php endif; ?>
                 <div class="mod_emundus_checklist___grid">
                     <div class="mod_emundus_checklist___step_count">
 						<?php if ($itemid['id'] == $menuid) {
 							$color = 'var(--blue-900)';
+							$border_color = 'var(--blue-200)';
+							$title_color = 'var(--blue-900)';
 						}
-                        elseif ($class == 'need_missing') {
-							$color = 'var(--neutral-900)';
+                        elseif ($attachment_class == 'need_missing') {
+	                        $color = 'var(--neutral-900)';
+	                        $border_color = 'var(--neutral-300)';
+	                        $title_color = 'var(--neutral-900)';
 						}
-                        elseif ($class == 'need_ok') {
-							$color = 'var(--neutral-0)';
+                        elseif ($attachment_class == 'need_ok') {
+	                        $color = 'var(--neutral-0)';
+	                        $border_color = 'var(--main-500)';
+	                        $title_color = 'var(--main-500)';
 						}
 						?>
                         <span style="color: <?= $color ?>">
@@ -194,7 +214,9 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                             ?>
                         </span>
                     </div>
-                    <a href="<?php echo $itemid['link'] . '&Itemid=' . $itemid['id'] ?>#attachment_list_opt"><?php echo JText::_($optional_documents_title) ?></a>
+                    <a href="<?php echo $itemid['link'] . '&Itemid=' . $itemid['id'] ?>#attachment_list_opt" style="color: <?php echo $title_color; ?>;" <?php if ($itemid['id'] == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
+                        <?php echo JText::_($optional_documents_title) ?>
+                    </a>
                 </div>
 				<?php if (!empty($checkout_url)) : ?>
                     <div class="mod_emundus_checklist___border_item"></div>
