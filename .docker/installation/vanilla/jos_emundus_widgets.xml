@@ -473,6 +473,11 @@ try {
 		$file = new stdClass;
 		$file-&gt;label = $tag-&gt;label;
 
+        $styles_files = JPATH_SITE . '/templates/g5_helium/custom/config/default/styles.yaml';
+        $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($styles_files));
+
+        $file->color = $yaml['accent'][substr($tag->class, 6, strlen($tag->class))];
+
 		$query-&gt;clear()
 			-&gt;select('COUNT(distinct eta.fnum) as files')
 			-&gt;from($db-&gt;quoteName('jos_emundus_tag_assoc','eta'))

@@ -19,15 +19,6 @@
     margin-top: -4px;
 }
 
-.g-main-nav .g-toplevel > li.g-parent:not(.current) .g-menu-parent-indicator::after,
-.g-main-nav .g-toplevel > li.g-parent:not(.current) .g-menu-parent-indicator {
-    display: block !important;
-}
-
-.g-main-nav .g-toplevel > li.g-parent.current .g-menu-parent-indicator::after {
-    display: none !important;
-}
-
 #g-navigation .g-main-nav .g-sublevel > li > .g-menu-item-container {
     padding: 5px 10px;
 }

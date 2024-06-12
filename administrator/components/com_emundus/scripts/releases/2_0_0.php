@@ -701,6 +701,11 @@ class Release2_0_0Installer extends ReleaseInstaller
 
 			EmundusHelperUpdate::installExtension('Menu Quick Icon','menu',null,'plugin',1,'quickicon','{"context":"mod_quickicon","menutype":"coordinatormenu"}');
 
+			EmundusHelperUpdate::insertTranslationsTag('YOUR_FILE_HAS_BEEN_SENT','Votre candidature a été envoyée');
+			EmundusHelperUpdate::insertTranslationsTag('YOUR_FILE_HAS_BEEN_SENT','Your application has been sent', 'override', 0, null, null, 'en-GB');
+			EmundusHelperUpdate::insertTranslationsTag('CONGRATULATIONS','Félicitations');
+			EmundusHelperUpdate::insertTranslationsTag('CONGRATULATIONS','Congratulations', 'override', 0, null, null, 'en-GB');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -34,6 +35,15 @@ if (!empty($this->campaign)) {
 }
 else {
 	$session->clear('login_campaign_id');
+}
+
+$displayRegistration = true;
+$user_module = ModuleHelper::getModule('mod_emundus_user_dropdown');
+if($user_module->id) {
+    $params = json_decode($user_module->params);
+    if($params->show_registration == 2) {
+        $displayRegistration = false;
+    }
 }
 ?>
 <div class="com-users-login login">
@@ -144,7 +154,7 @@ else {
         </fieldset>
     </form>
 
-	<?php if ($usersConfig->get('allowUserRegistration')) : ?>
+	<?php if ($usersConfig->get('allowUserRegistration') && $displayRegistration) : ?>
         <div>
 			<?php echo JText::_('COM_USERS_LOGIN_NO_ACCOUNT'); ?>
             <a class="em-text-underline" href="<?php echo Route::_($this->registrationLink); ?>">
