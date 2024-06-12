@@ -31,7 +31,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION');?></td>
 		<td>
-			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2405141443]
+			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2406061742]
 		</td>
 	</tr>
 	<tr>

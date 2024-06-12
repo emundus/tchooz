@@ -692,6 +692,15 @@ class Release2_0_0Installer extends ReleaseInstaller
 			];
 			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_INVALID_PASS',$old_values,$new_values);
 
+			EmundusHelperUpdate::installExtension('Overrides Quick Icon','overrides',null,'plugin',1,'quickicon');
+			EmundusHelperUpdate::installExtension('mod_emundus_version','mod_emundus_version',null,'module',1,'','[]',true);
+			EmundusHelperUpdate::installExtension('mod_emundus_notes','mod_emundus_notes',null,'module',1,'','[]',true);
+
+			EmundusHelperUpdate::createModule('Version eMundus','status','mod_emundus_version','{"layout":"_:default","moduleclass_sfx":"","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',1,1,3,0,1);
+			EmundusHelperUpdate::createModule('Ressources et Notes','cpanel','mod_emundus_notes','{"layout":"_:default","moduleclass_sfx":"","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',1,1,1,1,1);
+
+			EmundusHelperUpdate::installExtension('Menu Quick Icon','menu',null,'plugin',1,'quickicon','{"context":"mod_quickicon","menutype":"coordinatormenu"}');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

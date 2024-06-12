@@ -814,9 +814,6 @@ class hikashopFileClass extends hikashopClass {
 		if(!in_array($field->field_type, array('ajaxfile','ajaximage')))
 			return false;
 
-		if(empty($field->field_options['multiple']))
-			return false;
-
 		if(strpos($haystack, '|'.$needle) !== false)
 			return true;
 		if(strpos($haystack, $needle.'|') !== false)

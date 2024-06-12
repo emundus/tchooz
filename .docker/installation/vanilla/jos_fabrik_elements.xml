@@ -183,7 +183,7 @@
     <field name="eval">1</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">dropdown</field>
+    <field name="filter_type">auto-complete</field>
     <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
@@ -214,7 +214,7 @@
     <field name="eval">0</field>
     <field name="ordering">3</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">dropdown</field>
+    <field name="filter_type">auto-complete</field>
     <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
@@ -927,7 +927,7 @@
     <field name="eval">0</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">dropdown</field>
+    <field name="filter_type">auto-complete</field>
     <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
@@ -2601,7 +2601,7 @@
     <field name="eval">0</field>
     <field name="ordering">6</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">field</field>
+    <field name="filter_type">auto-complete</field>
     <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
@@ -3328,8 +3328,8 @@ if($app-&gt;getInput()-&gt;get('cid', '', 'UINT') != ''){
     <field name="eval">0</field>
     <field name="ordering">4</field>
     <field name="show_in_list_summary">0</field>
-    <field name="filter_type">dropdown</field>
-    <field name="filter_exact_match">1</field>
+    <field name="filter_type">auto-complete</field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -6217,8 +6217,8 @@ return $db-&gt;loadResult()+1;</field>
     <field name="eval">0</field>
     <field name="ordering">7</field>
     <field name="show_in_list_summary">0</field>
-    <field name="filter_type">field</field>
-    <field name="filter_exact_match">1</field>
+    <field name="filter_type">auto-complete</field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -6310,8 +6310,8 @@ return $db-&gt;loadResult()+1;</field>
     <field name="eval">0</field>
     <field name="ordering">8</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">field</field>
-    <field name="filter_exact_match">1</field>
+    <field name="filter_type">auto-complete</field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -6341,7 +6341,7 @@ return $db-&gt;loadResult()+1;</field>
     <field name="eval">0</field>
     <field name="ordering">14</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">field</field>
+    <field name="filter_type">auto-complete</field>
     <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
@@ -7537,8 +7537,8 @@ return $db-&gt;loadResult()+1;</field>
     <field name="eval">0</field>
     <field name="ordering">3</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">dropdown</field>
-    <field name="filter_exact_match">1</field>
+    <field name="filter_type">auto-complete</field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -10116,8 +10116,8 @@ return $cid;</field>
     <field name="eval">0</field>
     <field name="ordering">8</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">dropdown</field>
-    <field name="filter_exact_match">1</field>
+    <field name="filter_type">auto-complete</field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -12689,8 +12689,8 @@ return $cid;</field>
     <field name="eval">0</field>
     <field name="ordering">6</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">range</field>
-    <field name="filter_exact_match">1</field>
+    <field name="filter_type">auto-complete</field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -12875,8 +12875,8 @@ return $cid;</field>
     <field name="eval">0</field>
     <field name="ordering">4</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">multiselect</field>
-    <field name="filter_exact_match">1</field>
+    <field name="filter_type">auto-complete</field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -13030,8 +13030,8 @@ return $cid;</field>
     <field name="eval">0</field>
     <field name="ordering">4</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">multiselect</field>
-    <field name="filter_exact_match">1</field>
+    <field name="filter_type">auto-complete</field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -13154,8 +13154,8 @@ return $cid;</field>
     <field name="eval">0</field>
     <field name="ordering">3</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">multiselect</field>
-    <field name="filter_exact_match">1</field>
+    <field name="filter_type">auto-complete</field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -14217,8 +14217,8 @@ return $email_from_sys;</field>
     <field name="eval">0</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">multiselect</field>
-    <field name="filter_exact_match">1</field>
+    <field name="filter_type">auto-complete</field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -14310,8 +14310,8 @@ return $email_from_sys;</field>
     <field name="eval">0</field>
     <field name="ordering">2</field>
     <field name="show_in_list_summary">1</field>
-    <field name="filter_type">multiselect</field>
-    <field name="filter_exact_match">1</field>
+    <field name="filter_type">auto-complete</field>
+    <field name="filter_exact_match">0</field>
     <field name="published">1</field>
     <field name="link_to_detail">0</field>
     <field name="primary_key">0</field>
@@ -19343,6 +19343,37 @@ return $email_from_sys;</field>
     <field name="use_in_page_title">0</field>
     <field name="parent_id">0</field>
     <field name="params">{&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;span12&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[],&quot;database_join_display_type&quot;:&quot;dropdown&quot;,&quot;join_db_name&quot;:&quot;jos_fabrik_lists&quot;,&quot;join_key_column&quot;:&quot;form_id&quot;,&quot;join_val_column&quot;:&quot;label&quot;,&quot;join_conn_id&quot;:&quot;1&quot;,&quot;database_join_where_sql&quot;:&quot;WHERE {thistable}.db_table_name = 'jos_emundus_evaluations'&quot;,&quot;database_join_where_access&quot;:&quot;1&quot;,&quot;database_join_where_when&quot;:&quot;3&quot;,&quot;databasejoin_where_ajax&quot;:&quot;0&quot;,&quot;database_join_filter_where_sql&quot;:&quot;&quot;,&quot;database_join_show_please_select&quot;:&quot;1&quot;,&quot;database_join_noselectionvalue&quot;:&quot;0&quot;,&quot;database_join_noselectionlabel&quot;:&quot;&quot;,&quot;placeholder&quot;:&quot;&quot;,&quot;databasejoin_popupform&quot;:&quot;0&quot;,&quot;fabrikdatabasejoin_frontend_add&quot;:&quot;0&quot;,&quot;join_popupwidth&quot;:&quot;&quot;,&quot;databasejoin_readonly_link&quot;:&quot;0&quot;,&quot;fabrikdatabasejoin_frontend_select&quot;:&quot;0&quot;,&quot;advanced_behavior&quot;:&quot;0&quot;,&quot;dbjoin_options_per_row&quot;:&quot;1&quot;,&quot;dbjoin_multiselect_max&quot;:&quot;0&quot;,&quot;dbjoin_multilist_size&quot;:&quot;6&quot;,&quot;dbjoin_autocomplete_size&quot;:&quot;20&quot;,&quot;dbjoin_autocomplete_rows&quot;:&quot;10&quot;,&quot;dabase_join_label_eval&quot;:&quot;&quot;,&quot;join_desc_column&quot;:&quot;&quot;,&quot;dbjoin_autocomplete_how&quot;:&quot;contains&quot;,&quot;join_val_column_concat&quot;:&quot;{thistable}.label&quot;,&quot;clean_concat&quot;:&quot;0&quot;}</field>
+   </row>
+   <row>
+    <field name="id">7984</field>
+    <field name="name">display_description</field>
+    <field name="group_id">112</field>
+    <field name="plugin">yesno</field>
+    <field name="label">COM_EMUNDUS_SETUP_PROFILE_DISPLAY_DESCRIPTION</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-06-12 12:41:48</field>
+    <field name="created">2024-06-12 12:41:48</field>
+    <field name="created_by">62</field>
+    <field name="created_by_alias">sysadmin</field>
+    <field name="modified">2024-06-12 12:41:48</field>
+    <field name="modified_by">62</field>
+    <field name="width">30</field>
+    <field name="height">6</field>
+    <field name="default"></field>
+    <field name="hidden">0</field>
+    <field name="eval">0</field>
+    <field name="ordering">4</field>
+    <field name="show_in_list_summary">0</field>
+    <field name="filter_type"></field>
+    <field name="filter_exact_match">0</field>
+    <field name="published">1</field>
+    <field name="link_to_detail">0</field>
+    <field name="primary_key">0</field>
+    <field name="auto_increment">0</field>
+    <field name="access">1</field>
+    <field name="use_in_page_title">0</field>
+    <field name="parent_id">0</field>
+    <field name="params">{&quot;show_in_rss_feed&quot;:&quot;0&quot;,&quot;bootstrap_class&quot;:&quot;input-large&quot;,&quot;show_label_in_rss_feed&quot;:&quot;0&quot;,&quot;use_as_rss_enclosure&quot;:&quot;0&quot;,&quot;rollover&quot;:&quot;&quot;,&quot;tipseval&quot;:&quot;0&quot;,&quot;tiplocation&quot;:&quot;top-left&quot;,&quot;labelindetails&quot;:&quot;0&quot;,&quot;labelinlist&quot;:&quot;0&quot;,&quot;comment&quot;:&quot;&quot;,&quot;edit_access&quot;:&quot;1&quot;,&quot;edit_access_user&quot;:&quot;&quot;,&quot;view_access&quot;:&quot;1&quot;,&quot;view_access_user&quot;:&quot;&quot;,&quot;list_view_access&quot;:&quot;1&quot;,&quot;encrypt&quot;:&quot;0&quot;,&quot;store_in_db&quot;:&quot;1&quot;,&quot;default_on_copy&quot;:&quot;0&quot;,&quot;can_order&quot;:&quot;0&quot;,&quot;alt_list_heading&quot;:&quot;&quot;,&quot;custom_link&quot;:&quot;&quot;,&quot;custom_link_target&quot;:&quot;&quot;,&quot;custom_link_indetails&quot;:&quot;1&quot;,&quot;use_as_row_class&quot;:&quot;0&quot;,&quot;include_in_list_query&quot;:&quot;1&quot;,&quot;always_render&quot;:&quot;0&quot;,&quot;icon_folder&quot;:&quot;0&quot;,&quot;icon_hovertext&quot;:&quot;1&quot;,&quot;icon_file&quot;:&quot;&quot;,&quot;icon_subdir&quot;:&quot;&quot;,&quot;filter_length&quot;:&quot;20&quot;,&quot;filter_access&quot;:&quot;1&quot;,&quot;full_words_only&quot;:&quot;0&quot;,&quot;filter_required&quot;:&quot;0&quot;,&quot;filter_build_method&quot;:&quot;0&quot;,&quot;filter_groupby&quot;:&quot;text&quot;,&quot;inc_in_adv_search&quot;:&quot;1&quot;,&quot;filter_class&quot;:&quot;input-medium&quot;,&quot;filter_responsive_class&quot;:&quot;&quot;,&quot;tablecss_header_class&quot;:&quot;&quot;,&quot;tablecss_header&quot;:&quot;&quot;,&quot;tablecss_cell_class&quot;:&quot;&quot;,&quot;tablecss_cell&quot;:&quot;&quot;,&quot;sum_on&quot;:&quot;0&quot;,&quot;sum_label&quot;:&quot;Sum&quot;,&quot;sum_access&quot;:&quot;1&quot;,&quot;sum_split&quot;:&quot;&quot;,&quot;avg_on&quot;:&quot;0&quot;,&quot;avg_label&quot;:&quot;Average&quot;,&quot;avg_access&quot;:&quot;1&quot;,&quot;avg_round&quot;:&quot;0&quot;,&quot;avg_split&quot;:&quot;&quot;,&quot;median_on&quot;:&quot;0&quot;,&quot;median_label&quot;:&quot;Median&quot;,&quot;median_access&quot;:&quot;1&quot;,&quot;median_split&quot;:&quot;&quot;,&quot;count_on&quot;:&quot;0&quot;,&quot;count_label&quot;:&quot;Count&quot;,&quot;count_condition&quot;:&quot;&quot;,&quot;count_access&quot;:&quot;1&quot;,&quot;count_split&quot;:&quot;&quot;,&quot;custom_calc_on&quot;:&quot;0&quot;,&quot;custom_calc_label&quot;:&quot;Custom&quot;,&quot;custom_calc_query&quot;:&quot;&quot;,&quot;custom_calc_access&quot;:&quot;1&quot;,&quot;custom_calc_split&quot;:&quot;&quot;,&quot;custom_calc_php&quot;:&quot;&quot;,&quot;validations&quot;:[],&quot;yesno_default&quot;:&quot;0&quot;,&quot;yesno_icon_yes&quot;:&quot;&quot;,&quot;yesno_icon_no&quot;:&quot;&quot;,&quot;options_per_row&quot;:&quot;4&quot;,&quot;toggle_others&quot;:&quot;0&quot;,&quot;toggle_where&quot;:&quot;&quot;}</field>
    </row>
   </table_data>
  </database>

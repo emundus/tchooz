@@ -2785,9 +2785,11 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 				}
 
 				$value = implode('|', $newvalue);
+				$value = trim($value, '|');
 			}
 		} else {
 			$return = $this->_checkOneFile($value, $oldvalue, $field);
+			$return = trim($return, '|');
 			if(!$return)
 				return $return;
 		}

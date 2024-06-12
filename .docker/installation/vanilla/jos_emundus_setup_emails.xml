@@ -142,11 +142,14 @@
     <field name="lbl">registration_email</field>
     <field name="subject">Activez votre compte / Activate your account</field>
     <field name="emailfrom"></field>
-    <field name="message">&lt;p&gt;[USER_NAME],&lt;/p&gt;&lt;p&gt;Vous venez de créer un compte &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Afin de pouvoir l'activer, veuillez cliquer sur le lien ci-dessous :&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;[ACTIVATION_URL]&quot; target=&quot;_blank&quot; style=&quot;color: rgb(255, 255, 255); background-color: rgb(38, 166, 91);&quot;&gt;ACTIVER MON COMPTE&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;You have just created an account &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;on this platform&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;In order to activate it please click on the link below:&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://vanilla.tchooz.us/emails/[ACTIVATION_URL]&quot; target=&quot;_blank&quot; style=&quot;background-color: rgb(38, 166, 91); color: rgb(255, 255, 255);&quot;&gt;ACTIVATE MY ACCOUNT&lt;/a&gt;&lt;/p&gt;</field>
+    <field name="message">&lt;p&gt;[USER_NAME],&lt;/p&gt;&lt;p&gt;Vous venez de créer un compte &lt;a href=&quot;[SITE_URL]&quot; target=&quot;_blank&quot;&gt;sur cette plateforme&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Pour l'activer veuillez cliquer sur le lien ci-dessous :&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;hr/&gt;&lt;p&gt;[USER_NAME],&lt;/p&gt;&lt;p&gt;You have just created an account &lt;a href=&quot;[SITE_URL]&quot;
+                                                                                                      target=&quot;_blank&quot;&gt;on
+    this platform&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;To activate it, please click on the link below:&amp;nbsp;&lt;/p&gt;</field>
     <field name="name"></field>
     <field name="type">1</field>
     <field name="published">1</field>
-    <field name="email_tmpl">1</field>
+    <field name="email_tmpl">2</field>
     <field name="letter_attachment">0</field>
     <field name="candidate_attachment">0</field>
     <field name="category">Système</field>

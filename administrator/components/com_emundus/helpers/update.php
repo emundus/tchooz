@@ -245,14 +245,14 @@ class EmundusHelperUpdate
         return $updated;
     }
 
-    public static function installExtension($name, $element, $manifest_cache = null, $type = 'plugin', $enabled = 1, $folder = '', $params = '{}'){
+    public static function installExtension($name, $element, $manifest_cache = null, $type = 'plugin', $enabled = 1, $folder = '', $params = '{}',$administrator = false){
         $installed = false;
 
         if (!empty($element)) {
             $db = Factory::getDbo();
             $query = $db->getQuery(true);
 
-			if(empty($manifest_cache) && (!empty($folder) && !empty($type))) {
+			if(empty($manifest_cache) && !empty($type)) {
 				$folder_type = '';
 				switch ($type) {
 					case 'plugin':
@@ -271,7 +271,23 @@ class EmundusHelperUpdate
 
 				if(!empty($folder_type))
 				{
-					$manifest_path = JPATH_BASE . '/' . $folder_type . '/' . $folder . '/' . $element . '/'.$element.'.xml';
+					if(!$administrator)
+					{
+						if(!empty($folder))
+						{
+							$manifest_path = JPATH_BASE . '/' . $folder_type . '/' . $folder . '/' . $element . '/' . $element . '.xml';
+						} else {
+							$manifest_path = JPATH_BASE . '/' . $folder_type . '/' . $element . '/' . $element . '.xml';
+						}
+					} else {
+						if(!empty($folder))
+						{
+							$manifest_path = JPATH_ADMINISTRATOR . '/' . $folder_type . '/' . $folder . '/' . $element . '/' . $element . '.xml';
+						} else {
+							$manifest_path = JPATH_ADMINISTRATOR . '/' . $folder_type . '/' . $element . '/' . $element . '.xml';
+						}
+					}
+
 					if(file_exists($manifest_path))
 					{
 						$xml_string = file_get_contents($manifest_path);
@@ -290,7 +306,8 @@ class EmundusHelperUpdate
 								'authorUrl'    => $array['authorUrl'],
 								'version'      => $array['version'],
 								'description'  => $array['description'],
-								'group'        => $array['@attributes']['group'],
+								'group'        => !empty($array['@attributes']['group']) ? $array['@attributes']['group'] : '',
+								'namespace'    => $array['namespace'],
 								'filename'     => $element,
 							];
 							$manifest_cache = json_encode($manifest_cache);
@@ -315,13 +332,14 @@ class EmundusHelperUpdate
 
 					if (empty($is_existing))
 					{
+						$client_id = $administrator ? 1 : 0;
 						$query->clear()
 							->insert($db->quoteName('#__extensions'))
 							->set($db->quoteName('name') . ' = ' . $db->quote($name))
 							->set($db->quoteName('type') . ' = ' . $db->quote($type))
 							->set($db->quoteName('element') . ' = ' . $db->quote($element))
 							->set($db->quoteName('folder') . ' = ' . $db->quote($folder))
-							->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
+							->set($db->quoteName('client_id') . ' = ' . $db->quote($client_id))
 							->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
 							->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
 							->set($db->quoteName('params') . ' = ' . $db->quote($params))

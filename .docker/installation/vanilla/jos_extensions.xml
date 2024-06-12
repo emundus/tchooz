@@ -7505,7 +7505,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;AcyMailing Tag : HikaShop content&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to insert HikaShop products, coupons inside any e-mail sent by AcyMailing&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;AcyMailing : HikaShop integration&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;AcyMailing : HikaShop integration&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7527,7 +7527,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Product TAG insertion&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop product tag insertion plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopproduct&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop product tag insertion plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop product tag insertion plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopproduct&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7549,7 +7549,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Smart Search - HikaShop Products&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to index HikaShop products information for the Joomla Smart Search system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Smart Search - HikaShop Products&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Smart Search - HikaShop Products&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7571,7 +7571,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop AcyMailing Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to trigger AcyMailing filters&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;acymailing&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop trigger for AcyMailing filters&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop trigger for AcyMailing filters&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;acymailing&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7593,7 +7593,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Cart notification Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 OBSIDEV. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin display notifications when a product is added to the cart&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;cartnotify&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Cart notification Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Cart notification Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;cartnotify&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7615,7 +7615,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Content Parser - Markdown&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 OBSIDEV. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin allow to use Markdown content&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;content_markdown&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Content Markdown Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Content Markdown Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;content_markdown&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7637,7 +7637,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop - Product Cron Update&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;HikaShop Team&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;team@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to update products with a CSV file using a cron&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;datafeed&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Products Cron Update Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Products Cron Update Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;datafeed&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7659,7 +7659,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop: Date Picker Custom Field&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2012-2024 OBSIDEV SARL - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@obsidev.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.obsidev.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop: Date Picker Custom Field&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;datepickerfield&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Date Picker Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Date Picker Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;datepickerfield&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7681,7 +7681,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Email History Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to check your mail's history&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;email_history&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Email History Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Email History Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;email_history&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7703,7 +7703,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Google Products Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to generate a Google Product feed in order to import it manually or automatically to Google Merchant&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;google_products&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Google Products Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Google Products Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;google_products&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7725,7 +7725,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Group Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to change the group of a user after purchasing a product&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;group&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop group plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop group plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;group&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7747,7 +7747,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop History Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to generate a history&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;history&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop order history plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop order history plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;history&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7769,7 +7769,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop - Kashflow invoice synchronization plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;HikaShop Team&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;team@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin synchronizes the invoices of HikaShop to the Kashflow online service&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;kashflow&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop KashFlow plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop KashFlow plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;kashflow&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7791,7 +7791,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Massaction Address Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to make massactions on addresses&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;massaction_address&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Massaction Address Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Massaction Address Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;massaction_address&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7813,7 +7813,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Massaction Category Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to make massactions on categories&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;massaction_category&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Massaction Category Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Massaction Category Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;massaction_category&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7835,7 +7835,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Massaction Order Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to make massactions on orders&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;massaction_order&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Massaction Order Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Massaction Order Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;massaction_order&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7857,7 +7857,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Massaction Product Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to make massactions on products&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;massaction_product&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Massaction Product Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Massaction Product Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;massaction_product&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7879,7 +7879,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Massaction User Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to make massactions on users&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;massaction_user&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Massaction User Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Massaction User Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;massaction_user&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7901,7 +7901,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Orders Automatic Cancel Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to have the orders automatically cancelled after some time&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;order_auto_cancel&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Orders Automatic Cancel Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Orders Automatic Cancel Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;order_auto_cancel&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7923,7 +7923,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop out of order notification Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to be notified when products are out of stock&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;out_of_stock&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Out of stock notification Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Out of stock notification Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;out_of_stock&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7945,7 +7945,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Currency Rates Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to update rates&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;rates&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop rates auto update plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop rates auto update plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;rates&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7967,7 +7967,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Shipping Manual - Price per product plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2012-2024 OBSIDEV SARL - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@obsidev.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.obsidev.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin allow to configure price per product for manual shippings&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;shippingmanual_prices&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Shipping manual - Prices per product plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Shipping manual - Prices per product plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;shippingmanual_prices&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -7989,7 +7989,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Shop Close Hours Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to close your store&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;shopclosehours&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Shop Close Hours plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Shop Close Hours plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;shopclosehours&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8011,7 +8011,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop TaxCloud Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;December 2013&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2012-2022 OBSIDEV SARL - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@obsidev.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.obsidev.com&quot;,&quot;version&quot;:&quot;1.2.3&quot;,&quot;description&quot;:&quot;This plugin enables you to communicate with TaxCloud&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;taxcloud&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop TaxCloud Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop TaxCloud Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;taxcloud&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8033,7 +8033,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop User account Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to add a link to the joomla user profile&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;user_account&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop joomla user account link plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop joomla user account link plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;user_account&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8055,7 +8055,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop UserPoints Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 OBSIDEV. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@obsidev.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to configure a User Points system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;userpoints&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop User Points plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop User Points plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;userpoints&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8077,7 +8077,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Validate free order Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to validate automatically free order&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;validate_free_order&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Free orders validation Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Free orders validation Plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;validate_free_order&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8099,7 +8099,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop WaitList notification Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to notify some customers when produts are not more out of stock.&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;waitlist_notify&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Product Wait List Notification plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Product Wait List Notification plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;waitlist_notify&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8121,7 +8121,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Payza Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Payza payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;alertpay&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Payza payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Payza payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;alertpay&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8143,7 +8143,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Alipay Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Alipay payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;alipay&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop AliPay payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop AliPay payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;alipay&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8165,7 +8165,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop SIPS ATOS Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your SIPS ATOS payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;atos&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Worldline SIPS payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Worldline SIPS payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;atos&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8187,7 +8187,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop ATOS SIPS 2.0 Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your ATOS SIPS 2.0 payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;atossips&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Worldline SIPS V2 payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Worldline SIPS V2 payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;atossips&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8209,7 +8209,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Authorize.net Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your authorize payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;authorize&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Authorize.net payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Authorize.net payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;authorize&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8231,7 +8231,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Bank Transfer Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Bank transfer payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;banktransfer&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop bank transfer payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop bank transfer payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;banktransfer&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8253,7 +8253,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Be2Bill Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Be2Bill payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;be2bill&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Be2Bill payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Be2Bill payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;be2bill&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8275,7 +8275,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Beanstream Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Beanstream payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;beanstream&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Beanstream payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Beanstream payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;beanstream&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8297,7 +8297,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Bluepaid Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Bluepaid payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;bluepaid&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Bluepaid payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Bluepaid payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;bluepaid&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8319,7 +8319,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Borgun payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Borgun payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;borgun&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Borgun payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Borgun payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;borgun&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8341,7 +8341,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop CardSave Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your cardsave payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;cardsave&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop CardSave payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop CardSave payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;cardsave&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8363,7 +8363,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Check Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Check payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;check&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop check payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop check payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;check&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8385,7 +8385,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop CyberMuth CIC Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your cmcic payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;cmcic&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Monetico payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Monetico payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;cmcic&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8407,7 +8407,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Collect On Delivery Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Collect On Delivery payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;collectondelivery&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop collect on delivery payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop collect on delivery payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;collectondelivery&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8429,7 +8429,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Common Joomla Payment API integration&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin allows the ue of Common Joomla Payment API plugins&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;common&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop common payment API plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop common payment API plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;common&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8451,7 +8451,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Credit Card Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Credit card collection payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;creditcard&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop credit card payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop credit card payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;creditcard&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8473,7 +8473,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop ePay Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;ePay - Michael Korsgaard&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;support@epay.dk&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.epay.dk&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your epay payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;epay&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop ePay payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop ePay payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;epay&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8495,7 +8495,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop eSelect Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your eSelect payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;eselect&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop eSelect\/Moneris payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop eSelect\/Moneris payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;eselect&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8517,7 +8517,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop eWAY Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your eWAY payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;eway&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop eWAY payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop eWAY payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;eway&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8539,7 +8539,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop FirstData Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your FirstData payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;firstdata&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop First Data payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop First Data payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;firstdata&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8561,7 +8561,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop HSBC Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your hsbc payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hsbc&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop HSBC payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop HSBC payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hsbc&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8583,7 +8583,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop iPayDNA Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your iPayDNA payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;ipaydna&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop iPayDNA payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop iPayDNA payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;ipaydna&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8605,7 +8605,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop iVeri Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your iVeri payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;iveri&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop iVeri payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop iVeri payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;iveri&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8627,7 +8627,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop MasterCard Internet Gateway System (Australian) Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Australian MIGS (MasterCard, ANZ eGate, ACB - Australian Commonwealth Bank) payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;migsvpc&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop MIGS VPC payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop MIGS VPC payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;migsvpc&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8649,7 +8649,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Monetico Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Monetico payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;monetico&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Monetico payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Monetico payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;monetico&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8671,7 +8671,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Moneybookers Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Moneybookers payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;moneybookers&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Moneybookers payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Moneybookers payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;moneybookers&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8693,7 +8693,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Nets NETAXEPT Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2010-2024 HIKARI SOFTWARE SARL - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Nets NETAXEPT payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;nets&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop NETS payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop NETS payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;nets&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8715,7 +8715,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Ogone Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Ogone payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;ogone&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Ogone payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Ogone payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;ogone&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8737,7 +8737,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Paybox Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2010-2024 OBSIDEV SARL \/ HIKARI SOFTWARE SARL - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Paybox payment gateway&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paybox&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop PayBox payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop PayBox payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paybox&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8759,7 +8759,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Paygate Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Paygate payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paygate&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop PayGate payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop PayGate payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paygate&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8781,7 +8781,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop PayJunction Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your PayJunction payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;payjunction&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop PayJunction payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop PayJunction payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;payjunction&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8803,7 +8803,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Payment Express Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Payment Express payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paymentexpress&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Payment Express PxPost payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Payment Express PxPost payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paymentexpress&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8825,7 +8825,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Paypal (legacy) Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your paypal payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypal&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Paypal (legacy) payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Paypal (legacy) payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypal&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8847,7 +8847,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Paypal Advanced payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2014-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Paypal Advanced payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypaladvanced&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Paypal Advanced payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Paypal Advanced payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypaladvanced&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8869,7 +8869,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Paypal Checkout Payment&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;15 juillet 2022&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;1.0.0&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your PayPal Checkout payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypalcheckout&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Paypal Checkout payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Paypal Checkout payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypalcheckout&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8891,7 +8891,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Paypal Express Checkout Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Paypal Express Checkout payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypalexpress&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Paypal Express Checkout payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Paypal Express Checkout payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypalexpress&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8913,7 +8913,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Paypal Website Payments Pro Hosted Payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your PayPal Website Payments Pro Hosted system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypalintegralevolution&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Paypal Website Payments Pro Hosted Payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Paypal Website Payments Pro Hosted Payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypalintegralevolution&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8935,7 +8935,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Paypal Pro Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Paypal Pro payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypalpro&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop PayPal Pro payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop PayPal Pro payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;paypalpro&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8957,7 +8957,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop PayPlug payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your PayPlug payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;payplug&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop PayPlug payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop PayPlug payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;payplug&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -8979,7 +8979,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop PayPlug v2 payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your PayPlug v2 payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;payplug2&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop PayPlug v2 payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop PayPlug v2 payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;payplug2&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9001,7 +9001,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop PayU India Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your paypal payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;payuindia&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop PayU India payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop PayU India payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;payuindia&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9023,7 +9023,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Postfinance Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your postfinance payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;postfinance&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Post Finance payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Post Finance payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;postfinance&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9045,7 +9045,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Purchase Order Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Purchase Order payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;purchaseorder&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Purchase Order payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Purchase Order payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;purchaseorder&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9067,7 +9067,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop PaymentExpress (PxPay) Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Payment Express (PxPay) system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pxpay&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Payment Express PxPay payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Payment Express PxPay payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;pxpay&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9089,7 +9089,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Servired Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Servired payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;servired&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Servired payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Servired payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;servired&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9111,7 +9111,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop UserPoints Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 OBSIDEV. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@obsidev.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your user points payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;userpoints&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop User Points payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop User Points payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;userpoints&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9133,7 +9133,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Virtual Merchant (Elavon) Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your virtualmerchant payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;virtualmerchant&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop VirtualMerchant payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop VirtualMerchant payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;virtualmerchant&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9155,7 +9155,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Western Union Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your Western Union payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;westernunion&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Western Union payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Western Union payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;westernunion&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9177,7 +9177,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop westpacapi Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;30 01 2015&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2014 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;1.0&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your westpacapi payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;westpacapi&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop WestPac API payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop WestPac API payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;westpacapi&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9199,7 +9199,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop WorldNetTPS Payment Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your worldnettps payment system&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;worldnettps&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop WorldNetTPS payment plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop WorldNetTPS payment plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;worldnettps&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9221,7 +9221,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Australia Post eDeliver Shipping Plugin V2&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup handle Australia Post eDeliver service&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;aupost2&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Australia Post shipping plugin V2&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Australia Post shipping plugin V2&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;aupost2&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9243,7 +9243,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop CANPAR Shipping Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;January 2014&quot;,&quot;author&quot;:&quot;Parameshwar (Ravi) Roy&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2014 Parameshwar (Ravi) Roy - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;imraviroy@yahoo.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.linkedin.com\/in\/raviroy&quot;,&quot;version&quot;:&quot;1.0.0&quot;,&quot;description&quot;:&quot;This Hikashop plugin handle CANPAR Shipping Service&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;canpar&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop CANPAR shipping plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop CANPAR shipping plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;canpar&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9265,7 +9265,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop FedEx Shipping Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Rich S Wyatt - D3 Web Creations \/ OBSIDEV&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2011-2012 D3 Web Creations - All rights reserved. \/ Copyright (C) 2012 OBSIDEV&quot;,&quot;authorEmail&quot;:&quot;info@dcubedweb.com \/ contact@obsidev.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.dcubedweb.com \/ http:\/\/www.obsidev.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup handle FedEx service&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;fedex&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Fedex shipping plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Fedex shipping plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;fedex&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9287,7 +9287,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Manual Shipping Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup your shipping rules manually&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;manual&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop manual shipping plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop manual shipping plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;manual&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9309,7 +9309,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop UPS (legacy) Shipping Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup handle UPS service&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;ups&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop UPS (legacy) shipping plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop UPS (legacy) shipping plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;ups&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9331,7 +9331,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop USPS Shipping Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Jeff Johnson&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2011 Jeff Johnson - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;jeffcj@gmail.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.ututech.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup handle United States Postal Service Rate Quotes&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;usps&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop USPS shipping plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop USPS shipping plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;usps&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9353,7 +9353,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Quick Icon&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;Copyright (c) 2011-2024 Obsidev S.A.R.L. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;jerome@obsidev.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Quick Icon&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Quickicon plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Quickicon plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9375,7 +9375,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Search - Hikashop Categories\/Manufacturers&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;enquiry@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Allows Searching of Products Categories and manufacturers&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop_categories&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop categories search plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop categories search plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop_categories&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9397,7 +9397,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Search - Hikashop Products&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;enquiry@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Allows Searching of Products&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop_products&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop products search plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop products search plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashop_products&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9419,7 +9419,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShopCustom Price plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Donation plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;custom_price&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Donation plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Donation plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;custom_price&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9441,7 +9441,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;System - HikaShop Affiliate&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop System plugin to handle affiliates&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopaffiliate&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop affiliate plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop affiliate plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopaffiliate&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9485,7 +9485,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Geolocation Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to handle geolocation&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopgeolocation&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop geolocation plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop geolocation plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopgeolocation&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9507,7 +9507,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;System - HikaShop Mass Action&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop System plugin to handle mass action triggers&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopmassaction&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop massaction plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop massaction plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopmassaction&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9529,7 +9529,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Payment Notification plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop System Payment plugin to always authorize the payment notifications calls&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashoppayment&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Payment Notification plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Payment Notification plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashoppayment&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9551,7 +9551,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Product TAG translation&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop product tag translation plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopproductinsert&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop product tag translation plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop product tag translation plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopproductinsert&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9573,7 +9573,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Product Tag&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopproducttag&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Microdata on Product Page plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Microdata on Product Page plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopproducttag&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9595,7 +9595,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Registration Redirect Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to redirect the user to the HikaShop registration page&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopregistrationredirect&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Redirect Joomla registration to HikaShop plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Redirect Joomla registration to HikaShop plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopregistrationredirect&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9617,7 +9617,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Google Dynamic Remarketing (conversion tracking)&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Google remarketing (conversion tracking) plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopremarketing&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Google Dynamic Remarketing (conversion tracking) plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Google Dynamic Remarketing (conversion tracking) plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopremarketing&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9639,7 +9639,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;System - Hikashop Social Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to add a Facebook \&quot;like\&quot; button and a Twitter button&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopsocial&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Social Networks plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Hikashop Social Networks plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopsocial&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9661,7 +9661,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;User - HikaShop&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop User plugin to automatically synchronise the Joomla Users and the HikaShop ones&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopuser&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop user synchronization plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop user synchronization plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;hikashopuser&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9683,7 +9683,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop - Mijoshop Fallback Redirect Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to redirect imported data from Mijoshop&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mijo_redirect&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Mijoshop Fallback Redirect plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Mijoshop Fallback Redirect plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mijo_redirect&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9705,7 +9705,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop no SSL outside checkout Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin redirects to HTTP when a page is accessed with SSL and that it's not the checkout of HikaShop&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;nossloutsidecheckout&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop no SSL outside checkout plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop no SSL outside checkout plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;nossloutsidecheckout&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9727,7 +9727,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop - Redshop Fallback Redirect Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to redirect imported data from Redshop&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;reds_redirect&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Redshop Fallback Redirect plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Redshop Fallback Redirect plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;reds_redirect&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9749,7 +9749,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop - VirtueMart Fallback Redirect Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Obsidev&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2011 OBSIDEV SARL - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@obsidev.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.obsidev.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to redirect imported data from virtuemart&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;vm_redirect&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;VirtueMart Fallback Redirect plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;VirtueMart Fallback Redirect plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;vm_redirect&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9771,7 +9771,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Content display for Hikashop&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Content Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Content Module&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9793,7 +9793,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Cart Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Cart display for Hikashop&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop_cart&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Cart Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Cart Module&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop_cart&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9815,7 +9815,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Currency Switcher Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Currency Switcher display for Hikashop&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop_currency&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Currency Switcher Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Currency Switcher Module&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop_currency&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9837,7 +9837,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Dashboard&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software \/ Obsidev&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Dashboard for use in the Joomla! Control Panel page.&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop_dashboard&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Dashboard&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Dashboard&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop_dashboard&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9859,7 +9859,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Filtering Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Content display for Hikashop&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop_filter&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Filter Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Filter Module&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop_filter&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -9881,7 +9881,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop Wishlist Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikari Software&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;Wishlist display for Hikashop&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop_wishlist&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop Wishlist Module&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop Wishlist Module&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;mod_hikashop_wishlist&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -13951,7 +13951,7 @@
     <field name="access">1</field>
     <field name="protected">0</field>
     <field name="locked">0</field>
-    <field name="manifest_cache">{&quot;name&quot;:&quot;Hikashop UPS OAuth Shipping Plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;14 mai 2024&quot;,&quot;author&quot;:&quot;Hikashop&quot;,&quot;copyright&quot;:&quot;(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;This plugin enables you to setup UPS Shipping with your HikaShop&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;ups2&quot;}</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;HikaShop UPS OAuth shipping plugin&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 06 2024&quot;,&quot;author&quot;:&quot;HikaShop&quot;,&quot;copyright&quot;:&quot;(C) 2011-2024 HIKARI SOFTWARE. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;contact@hikashop.com&quot;,&quot;authorUrl&quot;:&quot;https:\/\/www.hikashop.com&quot;,&quot;version&quot;:&quot;5.0.4&quot;,&quot;description&quot;:&quot;HikaShop UPS OAuth shipping plugin&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;ups2&quot;}</field>
     <field name="params"></field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
@@ -14987,6 +14987,160 @@
     <field name="locked">0</field>
     <field name="manifest_cache">{&quot;name&quot;:&quot;Gantry 5 Framework&quot;,&quot;type&quot;:&quot;library&quot;,&quot;creationDate&quot;:&quot;May 24, 2024&quot;,&quot;author&quot;:&quot;RocketTheme, LLC&quot;,&quot;copyright&quot;:&quot;(C) 2005 - 2021 RocketTheme, LLC. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;support@rockettheme.com&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.rockettheme.com&quot;,&quot;version&quot;:&quot;5.5.19&quot;,&quot;description&quot;:&quot;LIB_GANTRY5_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;filename&quot;:&quot;gantry5&quot;}</field>
     <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">740</field>
+    <field name="package_id">0</field>
+    <field name="name">PLG_FABRIK_FORM_EMUNDUSATTACHMENT</field>
+    <field name="type">plugin</field>
+    <field name="element">emundusattachment</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_form</field>
+    <field name="client_id">0</field>
+    <field name="enabled">1</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;PLG_FABRIK_FORM_EMUNDUSATTACHMENT&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;June 2024&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2017-2024 eMundus.fr - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;2.0.0&quot;,&quot;description&quot;:null,&quot;group&quot;:&quot;fabrik_form&quot;,&quot;namespace&quot;:null,&quot;filename&quot;:&quot;emundusattachment&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">741</field>
+    <field name="package_id">0</field>
+    <field name="name">PLG_FABRIK_FORM_EMUNDUSCOPYFILE</field>
+    <field name="type">plugin</field>
+    <field name="element">emunduscopyfile</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">fabrik_form</field>
+    <field name="client_id">0</field>
+    <field name="enabled">1</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;PLG_FABRIK_FORM_EMUNDUSCOPYFILE&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;June 2024&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2017-2024 eMundus.fr - All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;2.0.0&quot;,&quot;description&quot;:null,&quot;group&quot;:&quot;fabrik_form&quot;,&quot;namespace&quot;:null,&quot;filename&quot;:&quot;emunduscopyfile&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">742</field>
+    <field name="package_id">0</field>
+    <field name="name">mod_emundus_back</field>
+    <field name="type">module</field>
+    <field name="element">mod_emundus_back</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder"></field>
+    <field name="client_id">0</field>
+    <field name="enabled">1</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;mod_emundus_back&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;2024-06&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2022 eMundus. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;2.0.0&quot;,&quot;description&quot;:&quot;MOD_EMUNDUS_BACK_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Emundus\Module\BackButton&quot;,&quot;filename&quot;:&quot;mod_emundus_back&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">743</field>
+    <field name="package_id">0</field>
+    <field name="name">Overrides Quick Icon</field>
+    <field name="type">plugin</field>
+    <field name="element">overrides</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">quickicon</field>
+    <field name="client_id">0</field>
+    <field name="enabled">1</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Overrides Quick Icon&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;12 juin 2024&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;(C) 2019 eMundus All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.io&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.emundus.fr&quot;,&quot;version&quot;:&quot;2.0.0&quot;,&quot;description&quot;:&quot;Overrides Quick Icon&quot;,&quot;group&quot;:&quot;quickicon&quot;,&quot;namespace&quot;:null,&quot;filename&quot;:&quot;overrides&quot;}</field>
+    <field name="params">{}</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">744</field>
+    <field name="package_id">0</field>
+    <field name="name">mod_emundus_version</field>
+    <field name="type">module</field>
+    <field name="element">mod_emundus_version</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder"></field>
+    <field name="client_id">1</field>
+    <field name="enabled">1</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;mod_emundus_version&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;2024-06&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2024 eMundus. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;2.0.0&quot;,&quot;description&quot;:&quot;MOD_EMUNDUS_VERSION_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Joomla\\Module\\EmundusVersion&quot;,&quot;filename&quot;:&quot;mod_emundus_version&quot;}</field>
+    <field name="params">[]</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">745</field>
+    <field name="package_id">0</field>
+    <field name="name">mod_emundus_notes</field>
+    <field name="type">module</field>
+    <field name="element">mod_emundus_notes</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder"></field>
+    <field name="client_id">1</field>
+    <field name="enabled">1</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;mod_emundus_notes&quot;,&quot;type&quot;:&quot;module&quot;,&quot;creationDate&quot;:&quot;2024-06&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;Copyright (C) 2024 eMundus. All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.fr&quot;,&quot;authorUrl&quot;:&quot;www.emundus.fr&quot;,&quot;version&quot;:&quot;2.0.0&quot;,&quot;description&quot;:&quot;MOD_EMUNDUS_NOTES_XML_DESCRIPTION&quot;,&quot;group&quot;:&quot;&quot;,&quot;namespace&quot;:&quot;Joomla\\Module\\EmundusNotes&quot;,&quot;filename&quot;:&quot;mod_emundus_notes&quot;}</field>
+    <field name="params">[]</field>
+    <field name="custom_data"></field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="ordering">0</field>
+    <field name="state">0</field>
+    <field name="note" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="extension_id">746</field>
+    <field name="package_id">0</field>
+    <field name="name">Menu Quick Icon</field>
+    <field name="type">plugin</field>
+    <field name="element">menu</field>
+    <field name="changelogurl" value_is_null="true"></field>
+    <field name="folder">quickicon</field>
+    <field name="client_id">0</field>
+    <field name="enabled">1</field>
+    <field name="access">1</field>
+    <field name="protected">0</field>
+    <field name="locked">0</field>
+    <field name="manifest_cache">{&quot;name&quot;:&quot;Menu Quick Icon&quot;,&quot;type&quot;:&quot;plugin&quot;,&quot;creationDate&quot;:&quot;05 octobre 2023&quot;,&quot;author&quot;:&quot;eMundus&quot;,&quot;copyright&quot;:&quot;(C) 2019 eMundus All rights reserved.&quot;,&quot;authorEmail&quot;:&quot;dev@emundus.io&quot;,&quot;authorUrl&quot;:&quot;http:\/\/www.emundus.fr&quot;,&quot;version&quot;:&quot;2.0.0&quot;,&quot;description&quot;:&quot;Menu Quick Icon&quot;,&quot;group&quot;:&quot;quickicon&quot;,&quot;namespace&quot;:&quot;Joomla\\Plugin\\Quickicon\\Menu&quot;,&quot;filename&quot;:&quot;menu&quot;}</field>
+    <field name="params">{&quot;context&quot;:&quot;mod_quickicon&quot;,&quot;menutype&quot;:&quot;coordinatormenu&quot;}</field>
     <field name="custom_data"></field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>

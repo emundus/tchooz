@@ -161,18 +161,6 @@
     <field name="menuid">0</field>
    </row>
    <row>
-    <field name="moduleid">117</field>
-    <field name="menuid">134</field>
-   </row>
-   <row>
-    <field name="moduleid">117</field>
-    <field name="menuid">135</field>
-   </row>
-   <row>
-    <field name="moduleid">117</field>
-    <field name="menuid">137</field>
-   </row>
-   <row>
     <field name="moduleid">118</field>
     <field name="menuid">0</field>
    </row>
@@ -327,6 +315,62 @@
    <row>
     <field name="moduleid">150</field>
     <field name="menuid">142</field>
+   </row>
+   <row>
+    <field name="moduleid">151</field>
+    <field name="menuid">134</field>
+   </row>
+   <row>
+    <field name="moduleid">151</field>
+    <field name="menuid">135</field>
+   </row>
+   <row>
+    <field name="moduleid">151</field>
+    <field name="menuid">137</field>
+   </row>
+   <row>
+    <field name="moduleid">152</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">153</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">154</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">155</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">156</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">157</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">158</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">159</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">160</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">161</field>
+    <field name="menuid">0</field>
+   </row>
+   <row>
+    <field name="moduleid">162</field>
+    <field name="menuid">0</field>
    </row>
   </table_data>
  </database>

@@ -1452,7 +1452,7 @@ if(!function_exists('hikashop_footer')) {
 			$link.='?partner_id='.$aff;
 		}
 		$text = '<!--  HikaShop Component powered by '.$link.' -->
-		<!-- version '.$config->get('level').' : '.$config->get('version').' [2405141443] -->';
+		<!-- version '.$config->get('level').' : '.$config->get('version').' [2406061742] -->';
 		if(!$config->get('show_footer',true)) return $text;
 		$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 		$app= JFactory::getApplication();
@@ -1738,11 +1738,12 @@ if(!function_exists('hikashop_loadJslib')) {
 	function hikashop_loadJslib($name, $data = null) {
 		static $loadLibs = array();
 		static $toLoad = array();
-		$doc = JFactory::getDocument();
 		$name = strtolower($name);
 		$ret = false;
 		if(isset($loadLibs[$name]) && $loadLibs[$name] !== null)
 			return $loadLibs[$name];
+
+		try {
 
 		if(HIKASHOP_J40) {
 			$app = JFactory::getApplication();
@@ -1752,6 +1753,7 @@ if(!function_exists('hikashop_loadJslib')) {
 			}
 
 			$document = $app->getDocument();
+
 			if(empty($document)) {
 				$toLoad[$name] = $name;
 				return;
@@ -1763,6 +1765,8 @@ if(!function_exists('hikashop_loadJslib')) {
 				}
 			}
 		}
+
+			$doc = JFactory::getDocument();
 
 		$js = 0;
 		$css = 0;
@@ -1970,6 +1974,11 @@ if(!function_exists('hikashop_loadJslib')) {
 		}
 
 		$loadLibs[$name] = $ret;
+		} catch(Exception $e) {
+			hikashop_writeToLog($e->getMessage());
+			$toLoad[$name] = $name;
+			return;
+		}
 		return $ret;
 	}
 }

@@ -189,6 +189,7 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ] || [ "$CI_PROJECT_DIR" ]; then
     fi
     
     php cli/joomla.php tchooz:update -n --component=com_emundus
+    php cli/joomla.php tchooz:update -n --component=com_hikashop
     php cli/joomla.php maintenance:database --fix
     
     chown www-data: configuration.php
