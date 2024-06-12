@@ -136,7 +136,8 @@ export default {
     deleteComment(cid) {
       let deleted = false;
 
-      if ((this.access.d || (this.access.c && comment.user_id == this.user)) && cid !== null && cid > 0) {
+      const commentToDelete = this.comments.find(v => v.id === cid);
+      if ((this.access.d || (this.access.c && commentToDelete.user_id == this.user)) && cid !== null && cid > 0) {
         this.loading = true;
         filesService.deleteComment(cid).then((response) => {
           if (response.status == 1) {
@@ -151,12 +152,19 @@ export default {
             this.loading = false;
           }
         });
+      } else {
+        console.log('Cannot delete comment');
+        this.displayError('COM_EMUNDUS_FILES_CANNOT_DELETE_COMMENT', '');
       }
 
       return deleted;
     },
 
-    hideOptions() {
+    hideOptions(e = null) {
+      if (e !== null && e.target.classList.contains('comment-delete')) {
+        return;
+      }
+
       this.show_options = false;
     }
   }
