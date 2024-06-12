@@ -35,7 +35,7 @@ if (!empty($checkout_url)) {
 }
 
 if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
-    <div class="mod_emundus_checklist em-mb-24">
+    <div class="mod_emundus_checklist em-mb-24 ">
         <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">
             <div class="em-flex-row">
                 <h4><?php echo JText::_($preliminary_documents_title) ?></h4>
@@ -63,7 +63,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
         <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined">expand_more</span>
     </div>
 
-    <div id="mod_emundus_checklist___content" class="em-mt-24">
+    <div id="mod_emundus_checklist___content" class="em-mt-24 tw-pt-1 tw-pl-1">
 		<?php if ($show_forms == 1 && count($forms) > 0) : ?>
 			<?php
 			$index_doc     = !empty($mandatory_documents) && $show_mandatory_documents ? count($forms) + 1 : count($forms);
@@ -78,27 +78,38 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 					$form_title = explode(' - ', $form->title)[1] ?: $form->title;
 					?>
                     <div id="mlf<?php echo $form->id; ?>"
-                         class="<?php if ($form->id == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">
+                         class="<?php if ($form->id == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item tw-relative">
+	                    <?php if ($class == 'need_ok' && $form->id != $menuid) : ?>
+                            <span class="material-icons mod_emundus_checklist___check_circle">check_circle</span>
+	                    <?php endif; ?>
                         <div class="mod_emundus_checklist___grid">
                             <div class="mod_emundus_checklist___step_count">
 								<?php if ($form->id == $menuid) {
 									$color = 'var(--blue-900)';
+									$border_color = 'var(--blue-200)';
+                                    $title_color = 'var(--blue-900)';
 								}
                                 elseif ($class == 'need_missing') {
 									$color = 'var(--neutral-900)';
+	                                $border_color = 'var(--neutral-300)';
+	                                $title_color = 'var(--neutral-900)';
 								}
                                 elseif ($class == 'need_ok') {
-									$color = 'var(--main-900)';
+									$color = 'var(--neutral-0)';
+	                                $border_color = 'var(--main-500)';
+	                                $title_color = 'var(--main-500)';
 								}
 								?>
                                 <span style="color: <?= $color ?>">
                                     <?php echo $index + 1 ?>
                                 </span>
                             </div>
-                            <a href="<?php echo $form->link ?>"><?php echo JText::_($form_title); ?></a>
+                            <a href="<?php echo $form->link ?>" style="color: <?php echo $title_color; ?>;" <?php if ($form->id == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
+                                <?php echo JText::_($form_title); ?>
+                            </a>
                         </div>
 						<?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && !empty($mandatory_documents)) || ($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>
-                            <div class="mod_emundus_checklist___border_item"></div>
+                            <div class="mod_emundus_checklist___border_item" style="border-color: <?php echo $border_color; ?>"></div>
 						<?php endif ?>
                     </div>
 				<?php endforeach; ?>
@@ -124,7 +135,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 							$color = 'var(--neutral-900)';
 						}
                         elseif ($class == 'need_ok') {
-							$color = 'var(--main-900)';
+							$color = 'var(--neutral-0)';
 						}
 						?>
                         <span style="color: <?= $color ?>">
@@ -169,7 +180,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 							$color = 'var(--neutral-900)';
 						}
                         elseif ($class == 'need_ok') {
-							$color = 'var(--main-900)';
+							$color = 'var(--neutral-0)';
 						}
 						?>
                         <span style="color: <?= $color ?>">
