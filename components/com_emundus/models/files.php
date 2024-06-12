@@ -3761,7 +3761,7 @@ class EmundusModelFiles extends JModelLegacy
 			->from($this->_db->quoteName('#__emundus_tag_assoc', 'eta'))
 			->leftJoin($this->_db->quoteName('#__emundus_setup_action_tag', 'esat') . ' ON ' . $this->_db->quoteName('esat.id') . ' = ' . $this->_db->quoteName('eta.id_tag'))
 			->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.id') . ' = ' . $this->_db->quoteName('eta.user_id'))
-			->where($this->_db->quoteName('eta.fnum') . ' IN (' . implode(',', $fnums) . ')')
+			->where($this->_db->quoteName('eta.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')')
 			->order($this->_db->quoteName('esat.label'));
 
 		try {
