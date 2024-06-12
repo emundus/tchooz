@@ -2190,6 +2190,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-right-\[1px\] {
     right: 1px;
 }
+.tw-right-\[5px\] {
+    right: 5px;
+}
 .tw-top-\[14px\] {
     top: 14px;
 }

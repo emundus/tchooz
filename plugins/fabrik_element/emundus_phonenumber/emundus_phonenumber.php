@@ -77,13 +77,14 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 		$bits = $this->inputProperties($repeatCounter);
 
 		$value = $this->getValue($data, $repeatCounter);
-        $bits['inputValue'] = $this->DBFormatToE164Format($value);
-        $bits['selectValue'] = substr($value, 0, 2);
 
         if (is_array($value)) // validation error
         {
             $bits['inputValue'] = $value['country_code'].$value['num_tel'];
             $bits['selectValue'] = $value['country'];
+        } else {
+	        $bits['inputValue'] = $this->DBFormatToE164Format($value);
+	        $bits['selectValue'] = substr($value, 0, 2);
         }
 
         $bits['mustValidate'] = $this->validator->hasValidations(); // is the element mandatory ?
@@ -287,6 +288,10 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
      */
     public function DBFormatToE164Format($number)
     {
+		if(is_array($number)) {
+			$number = $number['country_code'].$number['num_tel'];
+		}
+
         return substr($number, 2, strlen($number));
     }
 

@@ -50,7 +50,7 @@ $msgList = $displayData['msgList'];
                                 <p id="alert-message-text"><?php echo $msg; ?></p>
 							<?php endforeach; ?>
                         </div>
-                        <span class="material-icons-outlined tw-absolute tw-top-[3px] tw-right-[1px] !tw-text-base tw-cursor-pointer" onclick="closeAlert('<?php echo $type; ?>')">close</span>
+                        <span class="material-icons-outlined tw-absolute tw-top-[3px] tw-right-[5px] !tw-text-base tw-cursor-pointer" onclick="closeAlert('<?php echo $type; ?>')">close</span>
 					<?php endif; ?>
                 </div>
 			<?php endforeach; ?>
