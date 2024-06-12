@@ -191,6 +191,32 @@ class EmundusHelperEvents
 
 					EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_COORDINATOR');
 					$this->applicationUpdating($fnum);
+
+					echo '<script src="' . Uri::base() . 'media/com_emundus/js/lib/sweetalert/sweetalert.min.js"></script>';
+
+					echo '<style>
+.em-swal-title{
+  margin: 8px 8px 32px 8px !important;
+  font-family: "Maven Pro", sans-serif;
+}
+</style>';
+
+					die("<script>
+     document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+          position: 'top',
+          icon: 'success',
+          title: '" . Text::_('SAVED') . "',
+          showConfirmButton: false,
+          timer: 2000,
+          customClass: {
+            title: 'em-swal-title',
+          }
+        }).then((result) => {
+		  window.close();
+		});
+      });
+      </script>");
 				}
 			}
 
@@ -542,7 +568,7 @@ class EmundusHelperEvents
 					$elements = array();
 					foreach ($table_elements as $element)
 					{
-						if($element->value !== $table->db_table_name.'.parent_id')
+						if ($element->value !== $table->db_table_name . '.parent_id')
 						{
 							$elements[] = $element->value;
 						}
@@ -1481,7 +1507,7 @@ class EmundusHelperEvents
 		jimport('joomla.log.log');
 		Log::addLogger(array('text_file' => 'com_emundus.helper_events.php'), Log::ALL, array('com_emundus.helper_events'));
 
-		if(!empty($params['data']))
+		if (!empty($params['data']))
 		{
 			try
 			{
