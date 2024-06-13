@@ -706,6 +706,40 @@ class Release2_0_0Installer extends ReleaseInstaller
 			EmundusHelperUpdate::insertTranslationsTag('CONGRATULATIONS','Félicitations');
 			EmundusHelperUpdate::insertTranslationsTag('CONGRATULATIONS','Congratulations', 'override', 0, null, null, 'en-GB');
 
+			// Use new emundusimportcsv plugin
+			$query->clear()
+				->select('ff.id,ff.params')
+				->from($this->db->quoteName('#__fabrik_lists','fl'))
+				->leftJoin($this->db->quoteName('#__fabrik_forms','ff').' ON '.$this->db->quoteName('ff.id').' = '.$this->db->quoteName('fl.form_id'))
+				->where($this->db->quoteName('fl.db_table_name') . ' = ' . $this->db->quote('jos_emundus_setup_csv_import'));
+			$this->db->setQuery($query);
+			$import_csv_form = $this->db->loadObject();
+
+			if(!empty($import_csv_form->id)) {
+				$params = json_decode($import_csv_form->params, true);
+				$params['plugins'] = ['emundusimportcsv'];
+				$params['plugin_locations'] = ['both'];
+				$params['plugin_events'] = ['both'];
+				$params['plugin_description'] = ['Import'];
+				$import_csv_form->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_forms', $import_csv_form, 'id');
+			}
+
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_elements'))
+				->where($this->db->quoteName('name') . ' LIKE ' . $this->db->quote('import_file_model'));
+			$this->db->setQuery($query);
+			$import_file_model_elt = $this->db->loadObject();
+
+			if(!empty($import_file_model_elt->id)) {
+				$params = json_decode($import_file_model_elt->params, true);
+				$params['calc_calculation'] = str_replace(['jos_emundus_users___email','jos_emundus_users___firstname','jos_emundus_users___lastname'], ['email','firstname','lastname'], $params['calc_calculation']);
+				$import_file_model_elt->params = json_encode($params);
+				$this->db->updateObject('#__fabrik_elements', $import_file_model_elt, 'id');
+			}
+			//
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
