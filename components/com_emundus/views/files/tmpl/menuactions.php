@@ -14,6 +14,11 @@ defined('_JEXEC') or die;
 if (!empty($this->items)) :
 	?>
 
+    <style>
+        li.dropdown:has(.dropdown-menu:empty) {
+            display: none;
+        }
+    </style>
     <div class="container-nav em-container-menuaction">
 
         <span class="navbar-brand" href="#"><?php echo JText::_('COM_EMUNDUS_ACTIONS'); ?></span>
@@ -26,14 +31,18 @@ if (!empty($this->items)) :
 
 				foreach ($this->items as $i => $item) :
 
-					if ($item->level == 1) {
+					if ($item->level == 1)
+					{
 
 						echo '<li class="dropdown" style="background-color:transparent"><a class="em-dropdown" id="em-menu-' . $i . '" href="#">' . @$item->title . '<b class="caret"></b></a>';
 					}
-					else {
-						switch ($multiple) {
+					else
+					{
+						switch ($multiple)
+						{
 							case 0 :
-								if ($item->action['multi'] == -1) {
+								if ($item->action['multi'] == -1)
+								{
 									echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
 								}
 								break;
@@ -43,20 +52,24 @@ if (!empty($this->items)) :
 								break;
 
 							default:
-								if ($item->action['multi'] == -1 || $item->action['multi'] == 1) {
+								if ($item->action['multi'] == -1 || $item->action['multi'] == 1)
+								{
 									echo '<li class="em-actions" id="' . $item->note . '" multi="' . $item->action['multi'] . '"><a id="l_' . $item->note . '" multi="' . $item->action['multi'] . '" href="' . $item->link . '">' . $item->title . '</a>';
 								}
 						}
 					}
 					// The next item is deeper.
-					if ($item->deeper) {
+					if ($item->deeper)
+					{
 						echo '<ul class="dropdown-menu" id="em-dp-' . $i . '" role="menu" aria-labelledby="em-menu-' . $i . '">';
 					} // The next item is shallower.
-                    elseif ($item->shallower) {
+                    elseif ($item->shallower)
+					{
 						echo '</li>';
 						echo str_repeat('</ul></li>', @$item->level_diff);
 					} // The next item is on the same level.
-					else {
+					else
+					{
 						echo '</li>';
 					};
 				endforeach;
