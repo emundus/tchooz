@@ -1193,7 +1193,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             let formData = new FormData();
             formData.append('name', tabName);
 
-            fetch('index.php?option=com_emundus&controller=application&task=createtab', {
+            fetch('/index.php?option=com_emundus&controller=application&task=createtab', {
                 body: formData,
                 method: 'post',
             }).then((response) => {
@@ -1225,7 +1225,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         if (document.getElementById('add_link_manage') != null) {
             document.getElementById('add_link_manage').remove();
         }
-        fetch('index.php?option=com_emundus&controller=application&task=gettabs', {
+        fetch('/index.php?option=com_emundus&controller=application&task=gettabs', {
             method: 'get',
         }).then((response) => {
             if (response.ok) {
@@ -1281,7 +1281,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     let formData = new FormData();
                     formData.append('tabs', JSON.stringify(tabs_to_post));
 
-                    fetch('index.php?option=com_emundus&controller=application&task=updatetabs', {
+                    fetch('/index.php?option=com_emundus&controller=application&task=updatetabs', {
                         body: formData,
                         method: 'post',
                     }).then((updating_response) => {
@@ -1326,7 +1326,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             }
         }).then((confirm) => {
             if (confirm.value) {
-                fetch('index.php?option=com_emundus&controller=application&task=deletetab&tab=' + tab, {
+                fetch('/index.php?option=com_emundus&controller=application&task=deletetab&tab=' + tab, {
                     method: 'get'
                 }).then((response) => {
                     if (response.ok) {
@@ -1340,6 +1340,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                             sessionStorage.removeItem('mod_emundus_applications___selected_tab');
                             this.updateTab(0);
                         }
+
+                        let tabs =  document.querySelectorAll('div[id^="tab_link_"]');
+                        if(tabs.length <= 1) {
+                            document.getElementById('tab_manage_links').style.display = 'none';
+                            document.getElementById('tab_adding_link').style.display = 'flex';
+                        }
                     }
                 });
             }
@@ -1349,7 +1355,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
     async function moveToTab(fnum, tab, view) {
         let tabs = {};
 
-        fetch('index.php?option=com_emundus&controller=application&task=gettabs', {
+        fetch('/index.php?option=com_emundus&controller=application&task=gettabs', {
             method: 'get',
         }).then((response) => {
             if (response.ok) {
@@ -1395,7 +1401,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     formData.append('fnum', fnum);
                     formData.append('tab', tab);
 
-                    fetch('index.php?option=com_emundus&controller=application&task=movetotab', {
+                    fetch('/index.php?option=com_emundus&controller=application&task=movetotab', {
                         body: formData,
                         method: 'post',
                     }).then((response) => {
@@ -1424,7 +1430,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
     /** END **/
 
     async function copyApplication(fnum) {
-        fetch('index.php?option=com_emundus&controller=application&task=getcampaignsavailableforcopy&' + new URLSearchParams({
+        fetch('/index.php?option=com_emundus&controller=application&task=getcampaignsavailableforcopy&' + new URLSearchParams({
             fnum: fnum,
         }), {
             method: 'get',
@@ -1465,7 +1471,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 formData.append('fnum', fnum);
                 formData.append('campaign', campaign);
 
-                fetch('index.php?option=com_emundus&controller=application&task=copyfile', {
+                fetch('/index.php?option=com_emundus&controller=application&task=copyfile', {
                     body: formData,
                     method: 'post',
                 }).then((response) => {
@@ -1521,7 +1527,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 formData.append('fnum', fnum);
                 formData.append('new_name', result.value);
 
-                fetch('index.php?option=com_emundus&controller=application&task=renamefile', {
+                fetch('/index.php?option=com_emundus&controller=application&task=renamefile', {
                     body: formData,
                     method: 'post',
                 }).then((response) => {
@@ -1560,7 +1566,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         formData.append('type', type);
         formData.append('value', value);
 
-        fetch('index.php?option=com_emundus&controller=application&task=filterapplications', {
+        fetch('/index.php?option=com_emundus&controller=application&task=filterapplications', {
             body: formData,
             method: 'post',
         }).then((response) => {
@@ -1608,7 +1614,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                         const module_id = actions.dataset.mid;
                         const fnum = customAction.dataset.fnum;
 
-                        fetch('index.php?option=com_emundus&controller=application&task=applicantcustomaction&action=' + action + '&fnum=' + fnum + '&module_id=' + module_id)
+                        fetch('/index.php?option=com_emundus&controller=application&task=applicantcustomaction&action=' + action + '&fnum=' + fnum + '&module_id=' + module_id)
                             .then((response) => {
                                 if (response.ok) {
                                     return response.json();
