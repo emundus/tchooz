@@ -91,7 +91,7 @@ if(!empty($user_module->id)) {
 
         <div class="com-users-profile__edit-submit control-group">
             <div class="controls tw-flex tw-justify-content-between">
-                <a class="btn" href="<?php echo Route::_('/mon-profil') ?>" title="<?php echo JText::_('JCANCEL'); ?>">
+                <a class="btn" href="#" onclick="history.go(-1);" title="<?php echo JText::_('JCANCEL'); ?>">
 					<?php echo JText::_('JCANCEL'); ?>
                 </a>
                 <button type="submit" class="btn btn-primary validate" name="task" value="profile.save">
