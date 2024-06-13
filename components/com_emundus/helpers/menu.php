@@ -36,7 +36,7 @@ class EmundusHelperMenu
 
 		if (empty($list) || !empty($formids) || !$checklevel) {
 			$app  = Factory::getApplication();
-			$db   = Factory::getDBO();
+			$db   = Factory::getContainer()->get('DatabaseDriver');
 			$user = $app->getIdentity();
 
 			$query = $db->getQuery(true);
@@ -197,10 +197,11 @@ class EmundusHelperMenu
 	{
 		$menu = 'index.php';
 
-		$activeLanguage = Factory::getLanguage()->getTag();
+		$activeLanguage = Factory::getApplication()->getLanguage()->getTag();
 		$languages = LanguageHelper::getLanguages('lang_code');
+		$defaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'fr-FR');
 		$sef = '';
-		if (isset($languages[$activeLanguage]))
+		if (isset($languages[$activeLanguage]) && $activeLanguage !== $defaultLanguage)
 		{
 			$sef = $languages[$activeLanguage]->sef;
 		}
@@ -217,7 +218,7 @@ class EmundusHelperMenu
 		if(!in_array($default_link, ['/','index.php','']) && $default_link !== $menu) {
 			$menu = $default_link;
 		} else {
-			$menu = $sef.'/'.$menu;
+			$menu = !empty($sef) ? '/'.$sef.'/'.$menu : '/'.$menu;
 		}
 
 		return $menu;
@@ -226,7 +227,7 @@ class EmundusHelperMenu
 	static function getSefAliasByLink($link) {
 		$alias = '';
 
-		$activeLanguage = Factory::getLanguage()->getTag();
+		$activeLanguage = Factory::getApplication()->getLanguage()->getTag();
 		$languages = LanguageHelper::getLanguages('lang_code');
 		$sef = '';
 		if (isset($languages[$activeLanguage]))

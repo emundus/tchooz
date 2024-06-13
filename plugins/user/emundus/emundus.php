@@ -707,21 +707,13 @@ class plgUserEmundus extends CMSPlugin
 	 */
 	public function onUserLogout($user, $options = array())
 	{
-		$my        = JFactory::getUser();
-		$session   = JFactory::getSession();
+		$my        = $this->app->getIdentity();
+		$session   = $this->app->getSession();
 
 		$userid = (int) $user['id'];
 
-		// Get by position instead of id and type (2 mod_emundus_user_dropdown are present)
-		$modules = JModuleHelper::getModules('header-c');
-		foreach ($modules as $module) {
-			$params = new JRegistry($module->params);
-			$url    = $params->get('url_logout', 'index.php');
-		}
-
-		if ($url == '') {
-			$url = 'index.php';
-		}
+		include_once(JPATH_SITE.'/components/com_emundus/helpers/menu.php');
+		$url = EmundusHelperMenu::getHomepageLink();
 
 		// Make sure we're a valid user first
 		if ($user['id'] == 0 && !$my->get('tmp_user')) {
