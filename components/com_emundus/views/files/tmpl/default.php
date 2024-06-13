@@ -14,8 +14,8 @@
 defined('_JEXEC') or die('Restricted access');
 ?>
 
-<div>
-    <div>
+<div class="tw-h-full">
+    <div class="tw-h-full">
         <div class="col-md-3 side-panel" style="height: calc(100vh - 72px);overflow-y: auto;">
             <div class="panel panel-info em-containerFilter" id="em-files-filters">
                 <div class="panel-heading em-containerFilter-heading">
