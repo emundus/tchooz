@@ -7,6 +7,7 @@
  */
 
 // No direct access.
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die;
@@ -23,7 +24,7 @@ Text::script('COM_EMUNDUS_SWITCH_PROFILE_ERROR');
       type="text/css"/>
 
 <?php
-$guest = JFactory::getUser()->guest;
+$guest = Factory::getApplication()->getIdentity()->guest;
 
 if ($user != null)
 {
@@ -37,7 +38,7 @@ if ($user != null)
 		$user_profile = $m_profiles->getProfileById($user->profile);
 	}
 
-	$user = JFactory::getSession()->get('emundusUser');
+	$user = Factory::getApplication()->getSession()->get('emundusUser');
 
 	if (in_array($user->profile, $app_prof))
 	{
@@ -283,7 +284,7 @@ if ($user != null)
                     </div>
                     <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
                         <span class="em-user-dropdown-icon"
-                              data-initials="<?php echo substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1); ?>"
+                              data-initials="<?php echo strtoupper(substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1)); ?>"
                               alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
                     </div>
 

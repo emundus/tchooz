@@ -37,6 +37,23 @@ class PlgFabrik_FormEmundusupdateprofile extends plgFabrik_Form {
 		parent::__construct($subject, $config);
 	}
 
+	public function onBeforeProcess() : void {
+		$formModel = $this->getModel();
+
+		$lastname = $formModel->formData['jos_emundus_users___lastname_raw'];
+		$firstname = $formModel->formData['jos_emundus_users___firstname_raw'];
+
+		if(!empty($lastname)) {
+			$formModel->updateFormData('jos_emundus_users___lastname', strtoupper($lastname), true);
+			$formModel->updateFormData('jos_emundus_users___lastname_raw', strtoupper($lastname), true);
+		}
+
+		if(!empty($firstname)) {
+			$formModel->updateFormData('jos_emundus_users___firstname', ucfirst($firstname), true);
+			$formModel->updateFormData('jos_emundus_users___firstname_raw', ucfirst($firstname), true);
+		}
+	}
+
 	/**
 	 * Main script.
 	 *
