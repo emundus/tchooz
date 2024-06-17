@@ -308,7 +308,7 @@ if ($user != null)
                         </div>
 					<?php else : ?>
                         <span class="em-user-dropdown-icon em-user-dropdown-icon-big"
-                              data-initials="<?php echo substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1); ?>"
+                              data-initials="<?php echo strtoupper(substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1)); ?>"
                               alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
 					<?php endif; ?>
                     <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
