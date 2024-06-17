@@ -254,16 +254,35 @@ class PlgFabrik_ElementCurrency extends PlgFabrik_Element
         return $db->loadObjectList();
     }
 
-    private function getSelectedCurrencies()
-    {
-        $listCurrency = [];
-        foreach ($this->getParams()->get('all_currencies_options') as $element)
-        {
-            $listCurrency[] = $element;
+	private function getSelectedCurrencies()
+	{
+		$listCurrency = [];
+		foreach ($this->getParams()->get('all_currencies_options') as $element)
+		{
+			if(!empty($element->iso3))
+			{
+				if (empty($element->minimal_value)) {
+					$element->minimal_value = '0.00';
+				}
+				if (empty($element->maximal_value)) {
+					$element->maximal_value = '999999999.00';
+				}
+				if (empty($element->thousand_separator)) {
+					$element->thousand_separator = ' ';
+				}
+				if (empty($element->decimal_separator)) {
+					$element->decimal_separator = ',';
+				}
+				if (empty($element->decimal_numbers)) {
+					$element->decimal_numbers = '2';
+				}
 
-        }
-        return $listCurrency;
-    }
+				$listCurrency[] = $element;
+			}
+		}
+
+		return $listCurrency;
+	}
 
     private function getCurrencyObject($listCurrency, $iso3)
     {
