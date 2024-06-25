@@ -740,6 +740,26 @@ class Release2_0_0Installer extends ReleaseInstaller
 			}
 			//
 
+			$query->clear()
+				->select('ff.id,ff.params')
+				->from($this->db->quoteName('#__fabrik_forms','ff'))
+				->leftJoin($this->db->quoteName('#__fabrik_lists','fl').' ON '.$this->db->quoteName('fl.form_id').' = '.$this->db->quoteName('ff.id'))
+				->where($this->db->quoteName('fl.db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_setup_letters'));
+			$this->db->setQuery($query);
+			$form_letters = $this->db->loadObject();
+
+			if(!empty($form_letters->id)) {
+				$params = json_decode($form_letters->params, true);
+				$params['plugin_events'] = ['both'];
+				$query->clear()
+					->update($this->db->quoteName('#__fabrik_forms'))
+					->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($form_letters->id));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

@@ -1166,7 +1166,7 @@ $(document).ready(function () {
 
 						Swal.fire({
 							position: 'center',
-							type: 'success',
+							icon: 'success',
 							title: Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY'),
 							showCancelButton: true,
 							showConfirmButton: true,
