@@ -3118,6 +3118,15 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
+#g-main-mainbody #application-modal #modal-applicationform .scrollable div:first-child {
+  z-index: 10;
+}
+
+#g-main-mainbody #application-modal #modal-applicationform .scrollable div:nth-child(2) {
+  position: relative;
+  z-index: 7;
+}
+
 .files-board.com_emundus, .view-list.com_fabrik {
   *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico):not(.fa):not([class^=icon-]) {
     font-family: var(--em-profile-font), Inter, sans-serif;
