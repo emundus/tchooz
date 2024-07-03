@@ -691,6 +691,7 @@ class Release2_0_0Installer extends ReleaseInstaller
 				'en-GB' => 'This email address/password combination is incorrect'
 			];
 			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_INVALID_PASS',$old_values,$new_values);
+			EmundusHelperUpdate::updateOverrideTag('JGLOBAL_AUTH_NO_USER', $old_values, $new_values);
 
 			EmundusHelperUpdate::installExtension('Overrides Quick Icon','overrides',null,'plugin',1,'quickicon');
 			EmundusHelperUpdate::installExtension('mod_emundus_version','mod_emundus_version',null,'module',1,'','[]',true);
