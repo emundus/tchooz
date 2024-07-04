@@ -17,7 +17,6 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Uri\Uri;
 
 defined('_JEXEC') or die('Restricted access');
@@ -181,7 +180,7 @@ class PlgFabrik_FormEmundusReferentForm extends plgFabrik_Form
 		$user_id = $app->input->getInt('jos_emundus_reference_letter___user');
 		$fnum    = $app->input->getString('jos_emundus_reference_letter___fnum');
 
-		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$db      = Factory::getDBO();
 		$query   = $db->getQuery(true);
 		$baseurl = Uri::base();
 
@@ -228,15 +227,15 @@ class PlgFabrik_FormEmundusReferentForm extends plgFabrik_Form
 				$fromname  = $obj->name;
 				$recipient = array($student->email);
 
-				$mail_from_address = Factory::getApplication()->getConfig()->get('mailfrom');
-				$mail_from_name    = Factory::getApplication()->getConfig()->get('fromname');
+				$mail_from_address = Factory::getConfig()->get('mailfrom');
+				$mail_from_name    = Factory::getConfig()->get('fromname');
 
 				$sender = array(
 					$mail_from_address,
 					$mail_from_name
 				);
 
-				$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
+				$mailer = Factory::getMailer();
 				$mailer->setSender($sender);
 				$mailer->addReplyTo($from, $fromname);
 				$mailer->addRecipient($recipient);
@@ -317,7 +316,7 @@ class PlgFabrik_FormEmundusReferentForm extends plgFabrik_Form
 					$fromname
 				);
 
-				$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
+				$mailer = Factory::getMailer();
 				$mailer->setSender($sender);
 				$mailer->addReplyTo($from, $fromname);
 				$mailer->addRecipient(array($recipient));

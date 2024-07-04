@@ -125,12 +125,12 @@ export default {
 		this.getRegisteredFilters();
 		this.selectedRegisteredFilter = sessionStorage.getItem('emundus-current-filter') || 0;
 		this.appliedFilters = this.defaultAppliedFilters.map((filter) => {
-      if (!filter.operator) {
-        filter.operator = '=';
-      }
-      if (!filter.andorOperator) {
-        filter.andorOperator = 'OR';
-      }
+			if (!filter.hasOwnProperty('operator')) {
+				filter.operator = '=';
+			}
+			if (!filter.hasOwnProperty('andorOperator')) {
+				filter.andorOperator = 'OR';
+			}
 
 			return filter;
 		});
@@ -200,7 +200,7 @@ export default {
 
 				newFilter.uid = new Date().getTime();
 				newFilter.default = false;
-				newFilter.operator = '=';
+				newFilter.operator = newFilter.hasOwnProperty('operator') && newFilter.operator != '' ? newFilter.operator : '=';
 				newFilter.andorOperator = 'OR';
 
 				switch (newFilter.type) {
@@ -262,9 +262,11 @@ export default {
 			this.globalSearch = [];
 			// reset applied filters values
 			this.appliedFilters = this.appliedFilters.map((filter) => {
-        filter.operator = '=';
-				if (filter.type === 'select') {
+				filter.operator = '=';
+
+        if (filter.type === 'select') {
           filter.operator = 'IN';
+
 					// TODO: too specific to the published filter, should create a default_value field.
 					if (filter.uid === 'published') {
 						filter.value = [1];
@@ -369,17 +371,31 @@ export default {
 			this.applyFilters();
 		},
 		onGlobalSearchChange(event, scope = 'everywhere') {
-      event.stopPropagation();
+			event.stopPropagation();
 			event.preventDefault();
 
 			if (this.currentGlobalSearch.length > 0) {
-				// if the current search is already in the list, no need to add it again
-				const foundSearch = this.globalSearch.find((search) => search.value === this.currentGlobalSearch && search.scope === scope);
+        // if currentGlobalSearch contains ; then split it and add each value as a new search
+        if (this.currentGlobalSearch.includes(';')) {
+          const searches = this.currentGlobalSearch.split(';');
+          searches.forEach((search) => {
+            const foundSearch = this.globalSearch.find((existingSearch) => existingSearch.value === search && existingSearch.scope === scope);
 
-				if (!foundSearch) {
-					this.globalSearch.push({value: this.currentGlobalSearch, scope: scope});
-					this.applyFilters();
-				}
+            if (!foundSearch) {
+              this.globalSearch.push({value: search, scope: scope});
+            }
+          });
+
+          this.applyFilters();
+        } else {
+          // if the current search is already in the list, no need to add it again
+          const foundSearch = this.globalSearch.find((search) => search.value === this.currentGlobalSearch && search.scope === scope);
+
+          if (!foundSearch) {
+            this.globalSearch.push({value: this.currentGlobalSearch, scope: scope});
+            this.applyFilters();
+          }
+        }
 			}
 
 			this.currentGlobalSearch = '';
@@ -452,7 +468,7 @@ export default {
 
 #select-scopes:not(.hidden) {
 	position: absolute;
-	top: 83px;
+	top: 42px;
 	z-index:2;
 	list-style-type: none;
 	margin: 0;
@@ -466,20 +482,11 @@ export default {
 #global-search-values {
 	height: 42px;
 	overflow-y: auto;
-  align-items: flex-start;
-}
-
-.global-search-values-wide {
-  height: 84px !important;
-}
-
-#em-files-filters input[type="text"]:focus, #em-user-filters input[type="text"]:focus {
-  box-shadow: none;
 }
 
 .global-search-scope button {
-  white-space: break-spaces;
-  text-align: left;
+	white-space: break-spaces;
+	text-align: left;
 }
 
 #current-global-search {

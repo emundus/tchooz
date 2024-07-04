@@ -160,21 +160,17 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function updatestatus()
 	{
+		$changeresponse = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
 		$user = JFactory::getUser();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
-
-
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$status = $this->input->getInt('status');
 			$label  = $this->input->getString('label');
 			$color  = $this->input->getString('color');
 
 			$changeresponse = $this->m_settings->updateStatus($status, $label, $color);
 		}
+
 		echo json_encode((object) $changeresponse);
 		exit;
 	}

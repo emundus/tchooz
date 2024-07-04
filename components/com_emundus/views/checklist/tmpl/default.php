@@ -826,7 +826,6 @@ if (!empty($this->custom_title)) :?>
 			}
 			?>
             var attachments = "<?php echo $attachments_label; ?>";
-            console.log(attachments);
             Swal.fire({
                 position: 'top',
                 type: 'info',

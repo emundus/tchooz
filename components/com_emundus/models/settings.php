@@ -330,7 +330,7 @@ class EmundusModelsettings extends JModelList
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'translations.php');
 		$m_translations = new EmundusModelTranslations;
 
-		$lang_to = $m_translations->getDefaultLanguage()->lang_code;
+		$lang_to = Factory::getApplication()->getLanguage()->getTag();
 
 		$results = [];
 

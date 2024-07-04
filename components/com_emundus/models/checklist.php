@@ -28,7 +28,7 @@ class EmundusModelChecklist extends JModelList
 	protected $_forms = 0;
 	private $_attachments = 0;
 
-	function __construct()
+	function __construct($student_id = null)
 	{
 		parent::__construct();
 		jimport('joomla.log.log');
@@ -37,7 +37,7 @@ class EmundusModelChecklist extends JModelList
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
 
 		$this->app  = Factory::getApplication();
-		$student_id = $this->app->input->getInt('sid');
+		$student_id = !empty($student_id) ?? $this->app->input->getInt('sid', 0);
 
 		if (version_compare(JVERSION, '4.0', '>')) {
 			$this->_db    = Factory::getContainer()->get('DatabaseDriver');
@@ -152,54 +152,32 @@ class EmundusModelChecklist extends JModelList
 	{
 		$attachments = [];
 
-		$query = $this->_db->getQuery(true);
-
 		if (!empty($this->_user->profile)) {
-			if (!empty($this->_user->campaign_id)) {
+			$attachments = $this->getAttachmentsForProfile($this->_user->profile, $this->_user->campaign_id);
 
-				$query->select('attachments.*, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, profiles.mandatory as mandatory, profiles.duplicate as duplicate, profiles.has_sample, profiles.sample_filepath')
-					->from($this->_db->quoteName('#__emundus_setup_attachments', 'attachments'))
-					->innerJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles') . ' ON ' . $this->_db->quoteName('attachments.id') . ' = ' . $this->_db->quoteName('profiles.attachment_id'))
-					->leftJoin($this->_db->quoteName('#__emundus_uploads', 'uploads') . ' ON ' . $this->_db->quoteName('uploads.attachment_id') . ' = ' . $this->_db->quoteName('profiles.attachment_id') . ' AND ' . $this->_db->quoteName('uploads.user_id') . ' = ' . $this->_db->quote($this->_user->id) . ' AND ' . $this->_db->quoteName('uploads.fnum') . ' like ' . $this->_db->quote($this->_user->fnum))
-					->where('(' . $this->_db->quoteName('profiles.campaign_id') . ' = ' . $this->_db->quote($this->_user->campaign_id) . ' OR ' . $this->_db->quoteName('profiles.profile_id') . ' = ' . $this->_db->quote($this->_user->profile) . ')')
-					->andWhere($this->_db->quoteName('profiles.displayed') . ' = 1')
-					->group($this->_db->quoteName('attachments.id'))
-					->order($this->_db->quoteName('profiles.mandatory') . ' DESC, ' . $this->_db->quoteName('profiles.ordering') . ' ASC');
-				$this->_db->setQuery($query);
-				$attachments = $this->_db->loadObjectList();
-			}
+			foreach ($attachments as $attachment) {
+				$query = $this->_db->getQuery(true);
 
-			if (empty($attachments)) {
-				$query->clear()
-					->select('attachments.id, COUNT(uploads.attachment_id) AS nb, uploads.id as uid, attachments.nbmax, attachments.value, attachments.lbl, attachments.description, attachments.allowed_types, profiles.mandatory, profiles.duplicate,  profiles.has_sample, profiles.sample_filepath')
-					->from($this->_db->quoteName('#__emundus_setup_attachments', 'attachments'))
-					->innerJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'profiles') . ' ON ' . $this->_db->quoteName('attachments.id') . ' = ' . $this->_db->quoteName('profiles.attachment_id'))
-					->leftJoin($this->_db->quoteName('#__emundus_uploads', 'uploads') . ' ON ' . $this->_db->quoteName('uploads.attachment_id') . ' = ' . $this->_db->quoteName('profiles.attachment_id') . ' AND ' . $this->_db->quoteName('uploads.user_id') . ' = ' . $this->_db->quote($this->_user->id) . ' AND ' . $this->_db->quoteName('uploads.fnum') . ' like ' . $this->_db->quote($this->_user->fnum))
-					->where($this->_db->quoteName('profiles.profile_id') . ' = ' . $this->_db->quote($this->_user->profile))
-					->andWhere($this->_db->quoteName('profiles.displayed') . ' = 1')
-					->andWhere($this->_db->quoteName('profiles.campaign_id') . ' IS NULL')
-					->group($this->_db->quoteName('attachments.id'))
-					->order($this->_db->quoteName('profiles.mandatory') . ' DESC, ' . $this->_db->quoteName('profiles.ordering') . ' ASC');
+				$query->select('COUNT(*)')
+					->from('#__emundus_uploads')
+					->where('user_id = ' . $this->_user->id)
+					->where('attachment_id = ' . $attachment->id)
+					->where('fnum like ' . $this->_db->quote($this->_user->fnum));
+
 				$this->_db->setQuery($query);
-				$attachments = $this->_db->loadObjectList();
+				$attachment->nb = $this->_db->loadResult();
 			}
 
 			foreach ($attachments as $attachment) {
 				if ($attachment->nb > 0) {
 
-					$query->clear()
-						->select('*')
-						->from($this->_db->quoteName('#__emundus_uploads'))
-						->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($this->_user->id))
-						->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($attachment->id))
-						->andWhere($this->_db->quoteName('fnum') . ' like ' . $this->_db->quote($this->_user->fnum));
+					$query = 'SELECT * FROM #__emundus_uploads WHERE user_id = ' . $this->_user->id . ' AND attachment_id = ' . $attachment->id . ' AND fnum like ' . $this->_db->Quote($this->_user->fnum);
 					$this->_db->setQuery($query);
 					$attachment->liste = $this->_db->loadObjectList();
 
-				}
-				elseif ($attachment->mandatory == 1) {
+				} elseif ($attachment->mandatory == 1) {
 					$this->_attachments = 1;
-					$this->_need        = $this->_forms = 1 ?: 0;
+					$this->_need = $this->_forms = 1 ?? 0;
 				}
 			}
 		}

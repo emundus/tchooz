@@ -1219,18 +1219,12 @@ class EmundusModelUsers extends JModelList
 		return $this->db->loadColumn();
 	}
 
-	public function login($uid)
-	{
-		$app = $this->app;
+	public function login($uid) {
+		$app     = Factory::getApplication();
+		$db      = Factory::getDBO();
+		$session = Factory::getSession();
 
-		$session = JFactory::getSession();
-
-		$instance = JFactory::getUser($uid);
-
-		// $userarray = array();
-		//$userarray['username'] = $instance->username;
-		//$userarray['password'] = $instance->password;
-		//$app->login($userarray);
+		$instance   = Factory::getUser($uid);
 
 		$instance->set('guest', 0);
 
@@ -1242,12 +1236,12 @@ class EmundusModelUsers extends JModelList
 
 		// Update the user related fields for the Joomla sessions table.
 		$query = 'UPDATE #__session
-                    SET guest=' . $this->db->quote($instance->get('guest')) . ',
-                        username = ' . $this->db->quote($instance->get('username')) . ',
-                        userid = ' . (int) $instance->get('id') . '
-                        WHERE session_id like ' . $this->db->quote($session->getId());
-		$this->db->setQuery($query);
-		$this->db->execute();
+                    SET guest='.$db->quote($instance->get('guest')).',
+                        username = '.$db->quote($instance->get('username')).',
+                        userid = '.(int) $instance->get('id').'
+                        WHERE session_id like '.$db->quote($session->getId());
+		$db->setQuery($query);
+		$db->execute();
 
 		// Hit the user last visit field
 		$instance->setLastVisit();
@@ -1264,7 +1258,6 @@ class EmundusModelUsers extends JModelList
 		$app->triggerEvent('callEventHandler', ['onUserLogin', ['user_id' => $uid]]);
 
 		return $instance;
-
 	}
 
 

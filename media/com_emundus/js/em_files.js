@@ -1491,7 +1491,8 @@ function setProgram(progCode) {
  */
 async function countFilesBeforeAction(fnums, action, verb) {
     if (fnums !== 'all') {
-        return Object.keys(JSON.parse(fnums)).length;
+        let filterFnums = Object.values(JSON.parse(fnums)).filter(fnum => fnum !== "em-check-all");
+        return filterFnums.length;
     } else {
         let form = new FormData();
         form.append('fnums', fnums);
@@ -2811,7 +2812,14 @@ $(document).ready(function() {
                         '</select>'+
                         '</div></div>');
 
-                    checkInput = getUserCheck();
+                        // add an input checkbox concat_attachments_with_form
+                        $('#data').append('<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16" id="params">' +
+                            '<div class="flex flex-row">' +
+                            '<input class="em-ex-check" type="checkbox"  value="concat_attachments_with_form" name="concat_attachments_with_form" id="concat_attachments_with_form" />&ensp;' +
+                            '<label for="concat_attachments_with_form">' + Joomla.JText._('COM_EMUNDUS_EXPORTS_CONCAT_ATTACHMENTS_WITH_FORMS') + '</label>' +
+                            '</div>');
+
+                        checkInput = getUserCheck();
 
                     prghtml = '';
                     atthtml = '';
@@ -6356,10 +6364,17 @@ function sendMail(data)
 
             if (result.status) {
                 if (result.sent.length > 0) {
-                    var sent_to = '<p>' + Joomla.Text._('COM_EMUNDUS_MAILS_SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
-                    result.sent.forEach(function (element) {
-                        sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
-                    });
+                    if(result.sent.length < 3) {
+                        var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                        result.sent.forEach(function (element) {
+                            sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
+                        });
+                    } else {
+                        var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                        sent_to += '<li class="list-group-item alert-success">' + result.sent[0] + '</li>';
+                        result.sent.shift();
+                        sent_to += '<li class="list-group-item alert-success" sended="'+result.sent.join(', ')+'">+' + (result.sent.length) + '</li>';
+                    }
 
                     addLoader();
 

@@ -301,6 +301,7 @@ function export_pdf(fnums, ids, default_export = false) {
     var form_checked = [];
     var attach_checked = [];
     var options = [];
+    var params = {};
 
     var elements = null;
 
@@ -371,6 +372,12 @@ function export_pdf(fnums, ids, default_export = false) {
             });
         } else {
             options.push("0");
+        }
+
+        if ($('#concat_attachments_with_form').is(":checked")) {
+            params.concat_attachments_with_form = 1;
+        } else {
+            params.concat_attachments_with_form = 0;
         }
 
         $('#data').hide();
@@ -680,7 +687,8 @@ function export_zip(fnums){
             admission: admission,
             formids: form_checked,
             attachids:attach_checked,
-            options:options
+            options:options,
+            params: JSON.stringify(params)
         },
         dataType:'json',
         success: function(result) {

@@ -15,6 +15,10 @@
           position="bottom left"
           :classes="'vue-notification-custom'"
       />
+      <div v-if="$store.state.global.currentLanguage !== $store.state.global.defaultLang" class="justify-center bg-[#FEF6EE] flex items-center gap-3 p-2">
+        <span class="material-icons-outlined text-[#EF681F]">warning_amber</span>
+        <span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
+      </div>
       <header class="tw-flex tw-items-center tw-justify-between">
         <div class="right-actions tw-px-3 tw-py-4 tw-flex tw-items-center tw-cursor-pointer"
              @click="clickGoBack">
@@ -522,6 +526,19 @@ export default {
       return this.leftPanel.tabs.filter((tab) => {
         return tab.displayed;
       });
+    },
+    defaultLangLabel() {
+      let label = 'Français';
+
+      switch (this.$store.state.global.defaultLang) {
+        case 'en-GB':
+          label = 'English';
+          break;
+        case 'pt-PT':
+          label = 'Português';
+      }
+
+      return label;
     }
   },
   watch: {

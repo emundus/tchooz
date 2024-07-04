@@ -1926,6 +1926,11 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
                     border: none;
                     background-color: transparent;
                 }
+.pull-right.em-repeat-table {
+        float: inherit;
+        display: flex;
+        justify-content: flex-end;
+    }
 /** BACKEND/VUE FORMS **/
 /** INPUT **/
 .com_emundus input:not([type='radio']):not([type='checkbox']):not([type='file']), .com_emundus select {
@@ -2777,6 +2782,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .\!tw-mb-0 {
     margin-bottom: 0px !important;
+}
+.\!tw-mb-1 {
+    margin-bottom: var(--em-spacing-1) !important;
 }
 .\!tw-ml-0 {
     margin-left: 0px !important;
@@ -5905,7 +5913,7 @@ body {
 
     /* Accueil */
     .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
-      background-position: top 50% right -40px;
+        background-position: top 50% right -40px;
     }
 
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */

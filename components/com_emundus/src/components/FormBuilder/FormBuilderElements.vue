@@ -45,10 +45,10 @@
           @click="addGroup(group)"
       >
         <div
-            class="form-builder-element tw-flex tw-items-center tw-px-3 tw-justify-between tw-cursor-pointer"
+            class="form-builder-element tw-flex tw-items-center tw-justify-between tw-cursor-pointer tw-gap-3 tw-p-3"
         >
           <span class="material-icons-outlined">{{ group.icon }}</span>
-          <span class="tw-w-full tw-p-4">{{ translate(group.name) }}</span>
+          <p class="tw-w-full tw-flex tw-flex-col">{{ translate(group.name) }}</p>
           <span class="material-icons-outlined">add_circle_outline</span>
         </div>
       </div>

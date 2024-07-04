@@ -1200,6 +1200,8 @@ class EmundusControllerFiles extends JControllerLegacy
 			$formids    = $this->input->getVar('formids', null);
 			$attachids  = $this->input->getVar('attachids', null);
 			$options    = $this->input->getVar('options', null);
+			$params = $jinput->getString('params', null);
+			$params = !empty($params) ? json_decode($params, true) : [];
 
 			$m_files = $this->getModel('Files');
 
@@ -1225,7 +1227,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
 			if (extension_loaded('zip')) {
-				$name = $m_files->exportZip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options, false, $current_user);
+				$name = $m_files->exportZip($validFnums, $forms, $attachment, $assessment, $decision, $admission, $formids, $attachids, $options, false, $current_user, $params);
 			}
 			else {
 				$name = $this->export_zip_pcl($validFnums);
@@ -1627,6 +1629,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 				$nbcol         = 6;
 				$date_elements = [];
+				$iban_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
 						if (count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted") {
@@ -1657,6 +1660,15 @@ class EmundusControllerFiles extends JControllerLegacy
 								$textarea_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->use_wysiwyg;
 							}
 
+							if ($fLine->element_plugin == 'iban') {
+								$params = json_decode($fLine->element_attribs);
+								$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
+								if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
+									$elt_name = $fLine->table_join.'___'.$fLine->element_name;
+								}
+								$iban_elements[$elt_name] = $params->encrypt_datas;
+							}
+
 							$line .= preg_replace('#<[^>]+>#', ' ', JText::_($fLine->element_label)) . "\t";
 							$nbcol++;
 						}
@@ -1665,7 +1677,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 				foreach ($colsup as $kOpt => $vOpt) {
 					if ($vOpt == "forms" || $vOpt == "attachment") {
-						$line .= $vOpt . "(%)\t";
+						$line .= Text::_('COM_EMUNDUS_'.strtoupper($vOpt))." (%)\t";
 					}
 					elseif ($vOpt == "overall") {
 						$line .= JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL') . "\t";
@@ -1809,6 +1821,24 @@ class EmundusControllerFiles extends JControllerLegacy
 												$v = strip_tags($v);
 											}
 											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
+										}
+										elseif(!empty($iban_elements[$k])){
+											if($iban_elements[$k] == 1){
+												if(strpos($k,'repeat')) {
+													$v = explode(',', $v);
+
+													$repeat_values_decrypted = [];
+													foreach ($v as $repeat_value) {
+														$repeat_values_decrypted[] = EmundusHelperFabrik::decryptDatas($repeat_value);
+													}
+
+													$v = implode(',', $repeat_values_decrypted);
+												}
+												else {
+													$v = EmundusHelperFabrik::decryptDatas($v);
+												}
+											}
+											$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
 										}
 										elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
 											$line .= JText::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v))) . "\t";
@@ -2640,7 +2670,7 @@ class EmundusControllerFiles extends JControllerLegacy
 		for ($i; $i < $nbcol; $i++) {
 			$value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
 
-			if ($value == "forms(%)" || $value == "attachment(%)") {
+			if (strpos($value,'(%)')) {
 				$conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->getConditionalStyles();
 				array_push($conditionalStyles, $objConditional1);
 				array_push($conditionalStyles, $objConditional2);

@@ -319,6 +319,7 @@ a.em-blue-400-color:hover {
     line-height: 140%;
     min-height: 46px;
     font-family: var(--em-profile-font-title), Inter, sans-serif !important;
+    font-size: 18px;
 }
 
 /*
@@ -339,6 +340,7 @@ a.em-blue-400-color:hover {
 .mod_emundus_campaign__programme_cat_title {
     font-family: var(--em-profile-font-title), Inter, sans-serif;
     font-style: normal;
+    font-size: 20px;
     line-height: 25px;
     color: var(--em-default-title-color-1);
 }

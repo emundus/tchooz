@@ -23,7 +23,6 @@ use Joomla\CMS\Factory;
 class EmundusControllerApplication extends JControllerLegacy
 {
 	protected $app;
-
 	private $_user;
 
 	public function __construct($config = array())

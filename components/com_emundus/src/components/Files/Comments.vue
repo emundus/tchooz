@@ -106,10 +106,7 @@ export default {
           this.comments = response.data;
           this.loading = false;
         } else {
-          this.displayError(
-              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS',
-              'COM_EMUNDUS_FILES_CANNOT_GET_COMMENTS_DESC'
-          );
+          this.displayError('COM_EMUNDUS_FILES_CANNOT_SAVE_COMMENT', response.msg);
           this.loading = false;
         }
       });

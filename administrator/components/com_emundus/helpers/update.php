@@ -728,7 +728,8 @@ class EmundusHelperUpdate
 				->from($db->quoteName('#__falang_content'))
 				->where($db->quoteName('reference_id') . ' = ' . $db->quote($reference_id))
 				->andWhere($db->quoteName('reference_table') . ' = ' . $db->quote($reference_table))
-				->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field));
+				->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote($reference_field))
+				->andWhere($db->quoteName('language_id') . ' = ' . $db->quote($lang_id));
 			$db->setQuery($query);
 			$translation_id = $db->loadResult();
 
@@ -3495,36 +3496,6 @@ class EmundusHelperUpdate
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
-		// Check back button
-		$query->select('id,content')
-			->from($db->quoteName('#__modules'))
-			->where($db->quoteName('title') . ' LIKE ' . $db->quote('[GUEST] Back button'))
-			->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_custom'));
-		$db->setQuery($query);
-		$back_button = $db->loadObject();
-
-		if($back_button) {
-			$back_button->content = str_replace(['https://vanilla.tchooz.io/', 'http://localhost:8383/'], '/', $back_button->content);
-			$back_button->content = str_replace(Uri::base() . '/', '/', $back_button->content);
-
-			$query->clear()
-				->update($db->quoteName('#__modules'))
-				->set($db->quoteName('content') . ' = ' . $db->quote($back_button->content))
-				->where($db->quoteName('id') . ' = ' . $db->quote($back_button->id));
-			$db->setQuery($query);
-			$db->execute();
-
-			$query->clear()
-				->update($db->quoteName('#__falang_content'))
-				->set($db->quoteName('value') . ' = ' . $db->quote($back_button->content))
-				->where($db->quoteName('reference_id') . ' = ' . $db->quote($back_button->id))
-				->where($db->quoteName('reference_table') . ' = ' . $db->quote('modules'))
-				->where($db->quoteName('reference_field') . ' = ' . $db->quote('content'));
-			$db->setQuery($query);
-			$db->execute();
-		}
-		//
-
 		// Remove appli emundus yaml assets
 		$file = JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml';
 		unlink($file);
@@ -3772,6 +3743,38 @@ class EmundusHelperUpdate
 				->update($db->quoteName('#__securitycheckpro_storage'))
 				->set($db->quoteName('storage_value') . ' = ' . $db->quote(json_encode($storage_value)))
 				->where($db->quoteName('storage_key') . ' = ' . $db->quote('pro_plugin'));
+			$db->setQuery($query);
+			$db->execute();
+		}
+		//
+
+		// Check if we have a favicon
+		$current_favicon = EmundusHelperUpdate::getYamlVariable('favicon', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+		$current_favicon = str_replace('gantry-media:/', 'images', $current_favicon);
+
+		if (!file_exists($current_favicon)) {
+			$current_favicon = 'gantry-media://custom/default_favicon.ico';
+
+			EmundusHelperUpdate::updateYamlVariable('favicon', $current_favicon, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+		}
+		//
+
+		// Check that registration form is on auto-login
+		$query->clear()
+			->select('id,params')
+			->from($db->quoteName('#__fabrik_forms'))
+			->where($db->quoteName('label') . ' LIKE ' . $db->quote('FORM_REGISTRATION'));
+		$db->setQuery($query);
+		$registration_form = $db->loadObject();
+
+		if (!empty($registration_form)) {
+			$params                     = json_decode($registration_form->params, true);
+			$params['juser_auto_login'] = ["1"];
+
+			$query->clear()
+				->update($db->quoteName('#__fabrik_forms'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
 			$db->setQuery($query);
 			$db->execute();
 		}
