@@ -2,7 +2,7 @@
 defined('_JEXEC') or die('Restricted access');
 JFactory::getSession()->set('application_layout', 'mail');
 
-require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
+require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
 
 $fnum = JFactory::getApplication()->input->getString('fnum', 0);
 
@@ -26,16 +26,20 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
         border-radius: var(--em-coordinator-br);
     }
 
+    .em-container-mail-content-body img {
+        display: initial;
+    }
+
     div.em-container-mail-content-heading.panel-heading small {
         font-size: 12px;
         color: var(--neutral-800);
-}
+    }
 
     div.em-container-mail-content-heading.panel-heading small a {
         font-size: 12px;
         color: var(--main-500);
         text-decoration: underline;
-}
+    }
 
     div#em-appli-block .em-container-mail-content-heading h3 {
         color: var(--neutral-900) !important;
@@ -68,37 +72,53 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
                     <h3> <?= JText::_('COM_EMUNDUS_EMAILS_NO_MESSAGES_FOUND'); ?> </h3>
 				<?php else : ?>
 
-                <div class="em-flex-row em-border-bottom-neutral-300 mb-3" style="overflow:hidden; overflow-x: auto;">
-                    <div id="tab_link_file" onclick="filterMessages('file')" class="em-mr-16 em-flex-row em-light-tabs profile_tab em-pointer em-light-selected-tab mb-2">
-                        <p class="em-font-size-14 em-neutral-900-color" title="<?= JText::_('COM_EMUNDUS_EMAIL_CURRENT_FILE') ?>" style="white-space: nowrap"><?= JText::_('COM_EMUNDUS_EMAIL_CURRENT_FILE') ?></p>
+                    <div class="em-flex-row em-border-bottom-neutral-300 mb-3"
+                         style="overflow:hidden; overflow-x: auto;">
+                        <div id="tab_link_file" onclick="filterMessages('file')"
+                             class="em-mr-16 em-flex-row em-light-tabs profile_tab em-pointer em-light-selected-tab mb-2">
+                            <p class="em-font-size-14 em-neutral-900-color"
+                               title="<?= JText::_('COM_EMUNDUS_EMAIL_CURRENT_FILE') ?>"
+                               style="white-space: nowrap"><?= JText::_('COM_EMUNDUS_EMAIL_CURRENT_FILE') ?></p>
+                        </div>
+                        <div id="tab_link_all" onclick="filterMessages('all')"
+                             class="em-mr-16 em-flex-row em-light-tabs profile_tab em-pointer mb-2">
+                            <p class="em-font-size-14 em-neutral-900-color"
+                               title="<?= JText::_('COM_EMUNDUS_EMAIL_ALL_FILES') ?>"
+                               style="white-space: nowrap"><?= JText::_('COM_EMUNDUS_EMAIL_ALL_FILES') ?></p>
+                        </div>
                     </div>
-                    <div id="tab_link_all" onclick="filterMessages('all')" class="em-mr-16 em-flex-row em-light-tabs profile_tab em-pointer mb-2">
-                        <p class="em-font-size-14 em-neutral-900-color" title="<?= JText::_('COM_EMUNDUS_EMAIL_ALL_FILES') ?>" style="white-space: nowrap"><?= JText::_('COM_EMUNDUS_EMAIL_ALL_FILES') ?></p>
-                    </div>
-                </div>
 
 					<?php foreach ($this->messages as $message) : ?>
-                            <div class='message_<?php echo $message->fnum_to ?> panel panel-default em-container-mail-content' <?php if($message->fnum_to != $fnum) : ?>style="display: none"<?php endif; ?>>
-                                <div class="panel-heading em-container-mail-content-heading tw-flex tw-flex-col"><h3
-                                            class="tw-w-full"><?= $message->subject; ?></h3>
-                                    <small class="tw-mb-1"> <?= JText::_('COM_EMUNDUS_EMAILS_MESSAGE_FROM') . ': ' . JFactory::getUser($message->user_id_from)->name . ' ' . EmundusHelperDate::displayDate($message->date_time,'DATE_FORMAT_LC2',0); ?> </small>
-                                    <?php if(!empty($message->fnum_to) && $message->fnum_to != $fnum) : ?>
-                                    <small><?= JText::_('COM_EMUNDUS_EMAIL_ON_FILE') ?> <a href="#<?php echo $message->fnum_to ?>" target="_blank"><?php echo $message->fnum_to ?></a> </small>
-                                    <?php endif; ?>
+                        <div class='message_<?php echo $message->fnum_to ?> panel panel-default em-container-mail-content'
+						     <?php if ($message->fnum_to != $fnum) : ?>style="display: none"<?php endif; ?>>
+                            <div class="panel-heading em-container-mail-content-heading tw-flex tw-flex-col"><h3
+                                        class="tw-w-full"><?= $message->subject; ?></h3>
+                                <small class="tw-mb-1"> <?= JText::_('COM_EMUNDUS_EMAILS_MESSAGE_FROM') . ': ' . JFactory::getUser($message->user_id_from)->name . ' ' . EmundusHelperDate::displayDate($message->date_time, 'DATE_FORMAT_LC2', 0); ?> </small>
+								<?php if (!empty($message->fnum_to) && $message->fnum_to != $fnum) : ?>
+                                    <small><?= JText::_('COM_EMUNDUS_EMAIL_ON_FILE') ?> <a
+                                                href="#<?php echo $message->fnum_to ?>"
+                                                target="_blank"><?php echo $message->fnum_to ?></a> </small>
+								<?php endif; ?>
+                            </div>
+							<?php if (!empty($message->email_to)): ?>
+                                <div class="panel-body em-container-mail-content-body">
+                                    <i><?= JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO') . ' ' . $message->email_to; ?></i>
                                 </div>
+							<?php endif; ?>
 							<?php if (!empty($message->email_cc)): ?>
                                 <div class="panel-body em-container-mail-content-body">
                                 <i><?= JText::_('COM_EMUNDUS_EMAIL_PEOPLE_CC') . ' ' . $message->email_cc; ?></i>
                                 </div><?php endif; ?>
                             <div class="panel-body em-container-mail-content-body">
-                                    <?php
-                                        $length = strlen($message->message);
-                                        if ($length > 1000000) {
-                                            echo '<strong>' . JText::sprintf('COM_EMUNDUS_ERROR_TOO_LARGE_EMAIL', $length). '</strong>';
-                                        } else {
-                                            echo $message->message;
-                                        }
-                                    ?>
+								<?php
+								$length = strlen($message->message);
+								if ($length > 1000000) {
+									echo '<strong>' . JText::sprintf('COM_EMUNDUS_ERROR_TOO_LARGE_EMAIL', $length) . '</strong>';
+								}
+								else {
+									echo $message->message;
+								}
+								?>
                             </div>
                         </div>
 					<?php endforeach; ?>
@@ -109,20 +129,19 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
 </div>
 
 <script>
-    function filterMessages(type)
-    {
+    function filterMessages(type) {
         var tabs = document.querySelectorAll(".profile_tab");
         for (var i = 0; i < tabs.length; i++) {
             tabs[i].classList.remove("em-light-selected-tab");
         }
-        var selected_tab = document.getElementById("tab_link_"+type);
+        var selected_tab = document.getElementById("tab_link_" + type);
         selected_tab.classList.add("em-light-selected-tab");
         var fnum = "<?php echo $fnum; ?>";
         var messages_to_display = document.querySelectorAll(".em-container-mail-content");
 
-        if(type === 'file') {
+        if (type === 'file') {
             var messages_to_hide = document.querySelectorAll(".em-container-mail-content");
-            messages_to_display = document.querySelectorAll('.message_'+fnum)
+            messages_to_display = document.querySelectorAll('.message_' + fnum)
 
             for (var i = 0; i < messages_to_hide.length; i++) {
                 messages_to_hide[i].style.display = "none";

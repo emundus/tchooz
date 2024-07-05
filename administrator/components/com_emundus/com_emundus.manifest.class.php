@@ -194,6 +194,10 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du fichier .htaccess.', 'error');
 		}
 
+	    if(!$this->checkPasswordFields()) {
+		    EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du stockage des champs mot de passe.', 'error');
+	    }
+
 		return true;
     }
 
@@ -369,6 +373,40 @@ class Com_EmundusInstallerScript
 
 			// Save file
 			$checked = file_put_contents(JPATH_ROOT . '/.htaccess', $current_htaccess);
+		}
+
+		return $checked;
+	}
+
+	private function checkPasswordFields()
+	{
+		$checked = true;
+
+		$query = $this->db->getQuery(true);
+
+		try {
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_elements'))
+				->where('json_valid(`params`)')
+				->where('json_extract(`params`, "$.password") = "1"');
+			$this->db->setQuery($query);
+			$password_elements = $this->db->loadObjectList();
+
+			foreach ($password_elements as $password_element) {
+				$params = json_decode($password_element->params, true);
+				$params['store_in_db'] = "0";
+
+				$query->clear()
+					->update($this->db->quoteName('#__fabrik_elements'))
+					->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($password_element->id));
+				$this->db->setQuery($query);
+				$checked = $this->db->execute();
+			}
+		}
+		catch (Exception $e) {
+			$checked = false;
 		}
 
 		return $checked;

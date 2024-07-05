@@ -23,11 +23,14 @@ class modEmundusCampaignHelper
 		catch (Exception $e) {
 			echo $e->getMessage() . '<br />';
 		}
+
+		JLog::addLogger(array('text_file' => 'mod_emundus_campaign.php'), JLog::ALL, array('mod_emundus_campaign'));
 	}
 
 	/* **** CURRENT **** */
 	public function getCurrent($condition, $teachingUnityDates = null, $order = 'start_date')
 	{
+		$current_campaigns = [];
 
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -45,11 +48,17 @@ class modEmundusCampaignHelper
 			$query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
 			$query->where('ca.training = pr.code AND ca.published=1 AND "' . $this->now . '" <= ca.end_date and "' . $this->now . '">= ca.start_date ' . $condition);
 		}
-		$db->setQuery($query);
-		$list               = (array) $db->loadObjectList();
-		$this->totalCurrent = count($list);
 
-		return $list;
+		 try {
+            $db->setQuery($query);
+            $current_campaigns = (array) $db->loadObjectList();
+            $this->totalCurrent = count($current_campaigns);
+        } catch (Exception $e) {
+            $app  = JFactory::getApplication();
+            $app->enqueueMessage(JText::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_CURRENT_CAMPAIGNS'), 'error');
+        }
+
+		return $current_campaigns;
 	}
 
 	public function getPaginationCurrent($condition)
@@ -66,6 +75,8 @@ class modEmundusCampaignHelper
 	/* **** PAST **** */
 	public function getPast($condition, $teachingUnityDates = null, $order = 'start_date')
 	{
+		$list = [];
+
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 		if ($teachingUnityDates) {
@@ -83,9 +94,15 @@ class modEmundusCampaignHelper
 				->where('ca.training = pr.code AND ca.published=1 AND "' . $this->now . '" >= ca.end_date ' . $condition);
 		}
 
-		$db->setQuery($query);
-		$list            = (array) $db->loadObjectList();
-		$this->totalPast = count($list);
+		try {
+            $db->setQuery($query);
+            $list = (array) $db->loadObjectList();
+            $this->totalPast = count($list);
+        } catch (Exception $e) {
+            $app  = JFactory::getApplication();
+            $app->enqueueMessage(JText::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_PAST_CAMPAIGNS'), 'error');
+            JLog::add($e->getMessage(), JLog::ERROR, 'mod_emundus_campaign');
+        }
 
 		return $list;
 	}
@@ -94,6 +111,8 @@ class modEmundusCampaignHelper
 	/* **** FUTUR **** */
 	public function getFutur($condition, $teachingUnityDates = null, $order = 'start_date')
 	{
+		$list = [];
+
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -112,9 +131,15 @@ class modEmundusCampaignHelper
 				->where('ca.training = pr.code AND ca.published=1 AND "' . $this->now . '" <= ca.start_date ' . $condition);
 		}
 
-		$db->setQuery($query);
-		$list             = (array) $db->loadObjectList();
-		$this->totalFutur = count($list);
+		try {
+            $db->setQuery($query);
+            $list = (array) $db->loadObjectList();
+            $this->totalFutur = count($list);
+        } catch (Exception $e) {
+            $app  = JFactory::getApplication();
+            $app->enqueueMessage(JText::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_FUTUR_CAMPAIGNS'), 'error');
+            JLog::add($e->getMessage(), JLog::ERROR, 'mod_emundus_campaign');
+        }
 
 		return $list;
 	}
@@ -123,6 +148,7 @@ class modEmundusCampaignHelper
 	/* **** ALL **** */
 	public function getProgram($condition, $teachingUnityDates = null)
 	{
+		$list = [];
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -141,9 +167,15 @@ class modEmundusCampaignHelper
 				->where('ca.training = pr.code AND ca.published=1 ' . $condition);
 		}
 
-		$db->setQuery($query);
-		$list        = (array) $db->loadObjectList();
-		$this->total = count($list);
+		try {
+            $db->setQuery($query);
+            $list = (array) $db->loadObjectList();
+            $this->total = count($list);
+        } catch (Exception $e) {
+            $app  = JFactory::getApplication();
+            $app->enqueueMessage(JText::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_PAST_CAMPAIGNS'), 'error');
+            JLog::add($e->getMessage(), JLog::ERROR, 'mod_emundus_campaign');
+        }
 
 		return $list;
 	}

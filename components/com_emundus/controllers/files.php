@@ -1030,15 +1030,15 @@ class EmundusControllerFiles extends JControllerLegacy
 		}
 		else {
 			$fnums = array();
-			foreach ($fnums_array as $key => $value) {
+			foreach ($fnums_array as $value) {
 				$fnums[] = $value;
 			}
 		}
 
-		$validFnums = array();
+		$validFnums = [];
 
 		foreach ($fnums as $fnum) {
-			if (EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
+			if (is_numeric($fnum) && EmundusHelperAccess::asAccessAction(13, 'u', $this->_user->id, $fnum))
 				$validFnums[] = $fnum;
 		}
 		$res = $m_files->updatePublish($validFnums, $publish);

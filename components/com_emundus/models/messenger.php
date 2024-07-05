@@ -469,6 +469,7 @@ class EmundusModelMessenger extends JModelList
 		$notify_groups            = $eMConfig->get('messenger_notify_groups', '');
 		$notify_users             = explode(',', $eMConfig->get('messenger_notify_users', ''));
 		$notify_to_users_programs = $eMConfig->get('messenger_notify_users_programs', 0);
+		$add_message_notif = $eMConfig->get('messenger_add_message_notif', 0);
 		$fnumTagsInfos            = $m_files->getFnumTagsInfos($applicant_fnum);
 
 		if ($notify_applicant) {
@@ -512,7 +513,7 @@ class EmundusModelMessenger extends JModelList
 				->from($db->quoteName('#__emundus_groups', 'g'))
 				->leftJoin($db->quoteName('#__emundus_group_assoc', 'ga') . ' ON ' . $db->quoteName('ga.group_id') . ' = ' . $db->quoteName('g.group_id'))
 				->innerJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('g.user_id'))
-				->where($db->quoteName('cc.fnum').' LIKE '.$db->quote($applicant_fnum));
+				->where($db->quoteName('ga.fnum').' LIKE '.$db->quote($applicant_fnum));
 			$db->setQuery($query);
 			$groups_associated = $db->loadColumn();
 
@@ -526,7 +527,7 @@ class EmundusModelMessenger extends JModelList
 				->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
 				->leftJoin($db->quoteName('#__emundus_users_assoc', 'eua') . ' ON ' . $db->quoteName('eua.fnum') . ' LIKE ' . $db->quoteName('cc.fnum'))
 				->innerJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('u.id') . ' = ' . $db->quoteName('eua.user_id'))
-				->where($db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($chatroom->fnum))
+				->where($db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($$applicant_fnum))
 				->group($db->quoteName('cc.fnum'));
 			$db->setQuery($query);
 			$users_associated = $db->loadColumn();
@@ -562,6 +563,18 @@ class EmundusModelMessenger extends JModelList
 			}
 
 			if (!empty($users_to_send)) {
+				$message = '';
+				if ($add_message_notif) {
+					$query->clear()
+						->select($db->quoteName('m.message'))
+						->from($db->quoteName('#__messages','m'))
+						->leftJoin($db->quoteName('#__emundus_chatroom','ec').' ON '.$db->quoteName('ec.id').' = '.$db->quoteName('m.page'))
+						->where($db->quoteName('ec.fnum').' LIKE '.$db->quote($applicant_fnum))
+						->order($db->quoteName('m.message_id').' DESC');
+					$db->setQuery($query);
+					$message = $db->loadResult();
+				}
+
 				foreach ($users_to_send as $user_to_send) {
 					$query->clear()
 						->select($db->quoteName(array('id', 'email', 'name')))
@@ -656,6 +669,11 @@ class EmundusModelMessenger extends JModelList
 						$fnumListCampaign  .= '<li>' . $applicant_fnum . ' (' . $fnumTagsInfos['campaign_label'] . ')</li>';
 						$fnumListProgramme .= '<li>' . $applicant_fnum . ' (' . $fnumTagsInfos['training_programme'] . ')</li>';
 					}
+					if (!empty($message)) {
+                        $fnumList .= '<br />"'.$message.'"';
+                        $fnumListCampaign .= '<br />"'.$message.'"';
+                        $fnumListProgramme .= '<br />"'.$message.'"';
+                    }
 					$fnumList          .= '</ul>';
 					$fnumListCampaign  .= '</ul>';
 					$fnumListProgramme .= '</ul>';
@@ -666,6 +684,7 @@ class EmundusModelMessenger extends JModelList
 						'FNUMS_TRAININGS' => $fnumListProgramme,
 						'APPLICANT_NAME'  => $fnumTagsInfos['applicant_name'],
 						'NAME'            => $user_info->name,
+						'USER_NAME' => $user_info->name,
 						'SITE_URL'        => JURI::root(),
 					);
 

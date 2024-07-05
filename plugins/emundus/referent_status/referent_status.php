@@ -188,7 +188,8 @@ class PlgEmundusReferent_status extends \Joomla\CMS\Plugin\CMSPlugin
 								'user_id_from' => $from_id,
 								'user_id_to'   => $to_id,
 								'subject'      => $subject,
-								'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('SENT') . ' ' . Text::_('TO') . ' ' . $to . '</i><br>' . $body
+								'message' => $body,
+								'email_to' => $to
 							);
 							$m_emails->logEmail($message);
 							$this->log .= '\n' . Text::_('MESSAGE') . ' ' . Text::_('SENT') . ' ' . Text::_('TO') . ' ' . $to . ' :: ' . $body;

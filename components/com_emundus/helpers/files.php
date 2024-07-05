@@ -5880,11 +5880,11 @@ class EmundusHelperFiles
 									{
 										if (!isset($available_values[$row_value]))
 										{
-											$available_values[$row_value] = 1;
+											$available_values[$row_value] = ['count' => 1];
 										}
 										else
 										{
-											$available_values[$row_value]++;
+											$available_values[$row_value]['count']++;
 										}
 									}
 								}
