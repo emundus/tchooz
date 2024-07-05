@@ -23,6 +23,7 @@
     "tailwindcss": "^3.3.2"
   },
   "dependencies": {
-    "@lottiefiles/lottie-player": "^2.0.4"
+    "@lottiefiles/lottie-player": "^2.0.4",
+    "sweetalert2": "^11.11.1"
   }
 }

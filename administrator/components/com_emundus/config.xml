@@ -534,12 +534,73 @@
                label="COM_EMUNDUS_CANDIDACY_ADMISSION_NAME" description="COM_EMUNDUS_CANDIDACY_ADMISSION_NAME_DESC"/>
     </fieldset>
     <fieldset label="COM_EMUNDUS_EMAIL_REMINDER" name="email" description="COM_EMUNDUS_EMAIL_REMINDER_DESC">
+        <field
+                name="spacer2"
+                type="spacer"
+                hr="true"
+        />
+
+        <field name="default_mail_conf_note" label="COM_EMUNDUS_EMAILS_DEFAULT_CONFIG" type="note" description="" />
+
+        <field name="default_email_mailfrom" label="COM_EMUNDUS_EMAILS_FROM_ADDRESS" type="email" default="" description="" />
+        <field name="default_email_fromname" label="COM_EMUNDUS_EMAILS_FROM_NAME" type="text" default="" description="" />
+        <field name="default_email_smtphost" label="COM_EMUNDUS_EMAILS_HOSTNAME" type="text" default="" description="" />
+        <field name="default_email_smtpport" label="COM_EMUNDUS_EMAILS_PORT" type="number" default="465" description="" />
+        <field name="default_email_smtpsecure" label="COM_EMUNDUS_EMAILS_SECURE" type="list" default="none" description="">
+            <option value="none">None</option>
+            <option value="ssl">SSL</option>
+            <option value="tls">TLS</option>
+        </field>
+        <field name="default_email_smtpauth" label="COM_EMUNDUS_EMAILS_AUTH" type="list" default="0" description="">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="default_email_smtpuser" label="COM_EMUNDUS_EMAILS_USERNAME" type="text" default="" description="" />
+        <field name="default_email_smtppass" label="COM_EMUNDUS_EMAILS_PASSWORD" type="password" default="" description="" />
+
+        <field
+                name="spacer3"
+                type="spacer"
+                hr="true"
+        />
+        <field name="custom_email_conf" label="COM_EMUNDUS_EMAILS_CUSTOM_DEFAULT_TOGGLE" type="list" default="1" description="">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
+        <field showon="custom_email_conf:1" name="custom_mail_conf_note" label="COM_EMUNDUS_EMAILS_CUSTOM_CONFIG" type="note" description="" />
+
+        <field showon="custom_email_conf:1" name="custom_email_mailfrom" label="COM_EMUNDUS_EMAILS_FROM_ADDRESS" type="email" default="jojo@gmail.com" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_fromname" label="COM_EMUNDUS_EMAILS_FROM_NAME" type="text" default="Jojo" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_replyto" label="COM_EMUNDUS_EMAILS_REPLY_TO" type="email" default="" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_replytoname" label="COM_EMUNDUS_EMAILS_REPLY_TO_NAME" type="text" default="" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_smtphost" label="COM_EMUNDUS_EMAILS_HOSTNAME" type="text" default="localhost" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_smtpport" label="COM_EMUNDUS_EMAILS_PORT" type="number" default="25" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_smtpsecure" label="COM_EMUNDUS_EMAILS_SECURE" type="list" default="none" description="">
+            <option value="none">None</option>
+            <option value="ssl">SSL</option>
+            <option value="tls">TLS</option>
+        </field>
+        <field showon="custom_email_conf:1" name="custom_email_smtpauth" label="COM_EMUNDUS_EMAILS_AUTH" type="list" default="0" description="">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field showon="custom_email_conf:1" name="custom_email_smtpuser" label="COM_EMUNDUS_EMAILS_USERNAME" type="text" default="customadmin" description="" />
+        <field showon="custom_email_conf:1" name="custom_email_smtppass" label="COM_EMUNDUS_EMAILS_PASSWORD" type="password" default="" description="" />
+
+        <field
+                name="spacer_conf"
+                type="spacer"
+                hr="true"
+        />
+
         <field name="nb_email_per_batch" type="text" size="3" default="50" label="NB_EMAIL_PER_BATCH"
                description="NB_EMAIL_PER_BATCH_DESC"/>
         <field name="time_sleep_per_batch" type="text" size="6" default="1000" label="TIME_SLEEP_PER_BATCH"
                description="TIME_SLEEP_PER_BATCH_DESC"/>
         <field name="email_custom_tag" type="text" default="" label="COM_EMUNDUS_EMAIL_CUSTOM_TAG"
                description="COM_EMUNDUS_EMAIL_CUSTOM_TAG_DESC"/>
+
         <field
                 name="spacer1"
                 type="spacer"

@@ -50,18 +50,18 @@
                  :class="{ active: tab.active }">
               <span
                   class="material-icons-outlined tw-p-4"
-                  @click="tab.url ? goTo(tab.url, 'blank') : selectTab(tab.title)"
+                  @click="clickTab(tab)"
               >
                 {{ tab.icon }}
               </span>
             </div>
           </div>
-          <div class="tab-content tw-justify-start tw-transition-all tw-duration-300" :class="minimizedLeft === true ? 'tw-max-w-0' : 'tw-max-w-md'"
-
+          <div v-if="activeTab==='' || activeTab==='Elements'"
+               class="tab-content tw-justify-start tw-transition-all tw-duration-300" :class="minimizedLeft === true ? 'tw-max-w-0' : 'tw-max-w-md'"
                @mouseover="showMinimizedLeft = true"
                @mouseleave="showMinimizedLeft = false"
           >
-            <div class="">
+            <div >
               <form-builder-elements v-if="leftPanelActiveTab === 'Elements'" @element-created="onElementCreated" :form="currentPage" @create-element-lastgroup="createElementLastGroup">
               </form-builder-elements>
               <form-builder-document-formats
@@ -72,7 +72,7 @@
               </form-builder-document-formats>
             </div>
           </div>
-          <div class="tw-w-[16px]"
+          <div v-if="activeTab==='' || activeTab==='Elements'" class="tw-w-[16px]"
                @mouseover="showMinimizedLeft = true"
                @mouseleave="showMinimizedLeft = false">
             <span class="material-icons-outlined tw-absolute tw-right-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
@@ -82,7 +82,7 @@
           </div>
 
         </aside>
-        <section class="tw-flex tw-flex-col tw-w-full tw-h-full" id="center_content">
+        <section v-if="activeTab==='' || activeTab==='Elements'" class="tw-flex tw-flex-col tw-w-full tw-h-full" id="center_content">
           <transition name="fade" mode="out-in">
             <form-builder-page
                 ref="formBuilderPage"
@@ -107,9 +107,12 @@
             ></form-builder-document-list>
           </transition>
         </section>
+        <section v-else-if="activeTab==='Translations'" class="tw-flex tw-flex-col tw-w-full tw-h-full" id="center_content">
+          <Translations :label="'COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_TRANSLATIONS'" :name="'translations'" :objectValue="'Formulaires'" :titleValue="this.title"></Translations>
+        </section>
 
         <transition name="slide-fade" mode="out-in">
-          <aside v-if="rightPanel.tabs.includes(showInRightPanel)" class="right-panel tw-h-full tw-flex tw-flex-col tw-relative"
+          <aside v-if="rightPanel.tabs.includes(showInRightPanel) && activeTab==='' || activeTab==='Elements'" class="right-panel tw-h-full tw-flex tw-flex-col tw-relative"
                  @mouseover="showMinimizedRight = true"
                  @mouseleave="showMinimizedRight = false"
           >
@@ -205,10 +208,12 @@ import formBuilderService from "@/services/formbuilder";
 
 // mixins
 import formBuilderMixin from '../mixins/formbuilder';
+import Translations from "@/components/Settings/TranslationTool/Translations.vue";
 
 export default {
   name: 'FormBuilder',
   components: {
+    Translations,
     FormBuilderCreateModel,
     FormBuilderSectionProperties,
     FormBuilderCreatePage,
@@ -274,7 +279,7 @@ export default {
       },
       formBuilderCreateDocumentKey: 0,
       createDocumentMode: 'create',
-
+      activeTab:'',
       minimizedLeft: false,
       showMinimizedLeft: false,
       minimizedRight: false,
@@ -290,7 +295,7 @@ export default {
     this.campaign_id = data.cid.value;
 
     if (data && data.settingsmenualias && data.settingsmenualias.value) {
-      this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value + '?layout=translation&default_menu=2&object=emundus_setup_profiles';
+      this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value;
     }
 
     if (data && data.mode && data.mode.value) {
@@ -302,10 +307,6 @@ export default {
         this.form_id = this.profile_id;
         this.profile_id = 0;
       }
-    }
-
-    if (this.profile_id > 0) {
-      this.leftPanel.tabs[2].url += '&data=' + this.profile_id;
     }
 
     this.getFormTitle();
@@ -506,6 +507,12 @@ export default {
       } else {
         window.history.go(-1);
       }
+    },
+    clickTab(tab) {
+      //todo display the composant translation
+      console.log(tab.title);
+      this.activeTab = tab.title;
+
     },
     handleSidebarSize(position = 'left') {
       if (position === 'left') {

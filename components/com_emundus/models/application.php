@@ -6318,9 +6318,13 @@ class EmundusModelApplication extends JModelList
 	 *
 	 * @return bool true if the action was done successfully
 	 */
-	public function applicantCustomAction($action, $fnum, $module_id = 0, $redirect = false)
+	public function applicantCustomAction($action, $fnum, $module_id = 0, $redirect = false, $user_id = null)
 	{
 		$done = false;
+
+		if(empty($user_id)) {
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
 
 		if (!empty($action) && !empty($fnum)) {
 			$query = $this->_db->getQuery(true);
@@ -6355,7 +6359,7 @@ class EmundusModelApplication extends JModelList
 						if (in_array($status, $current_action['mod_em_application_custom_action_status']) && $status != $current_action['mod_em_application_custom_action_new_status']) {
 							require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 							$m_files = new EmundusModelFiles();
-							$updated = $m_files->updateState($fnum, $current_action['mod_em_application_custom_action_new_status']);
+							$updated = $m_files->updateState($fnum, $current_action['mod_em_application_custom_action_new_status'],$user_id);
 
 							if ($updated) {
 								$done = true;

@@ -1716,7 +1716,7 @@ class EmundusModelFiles extends JModelLegacy
 						}
 					}
 
-					$all_status = $this->getStatus();
+					$all_status = $this->getStatus($user_id);
 
 					if (empty($user_id)) {
 						$user = $this->app->getIdentity();
@@ -1780,7 +1780,7 @@ class EmundusModelFiles extends JModelLegacy
 							$query->clear()
 								->update($this->_db->quoteName('#__emundus_users'))
 								->set($this->_db->quoteName('profile') . ' = ' . $profile)
-								->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($applicant_id));
+								->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($applicant_id));
 							$this->_db->setQuery($query);
 							$this->_db->execute();
 						}
@@ -1790,7 +1790,7 @@ class EmundusModelFiles extends JModelLegacy
 				}
 				catch (Exception $e) {
 					echo $e->getMessage();
-					Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+					Log::add('USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 				}
 
 				if ($res) {

@@ -1,47 +1,52 @@
 <template>
   <div class="em-settings-menu">
-    <div class="em-w-80">
-
-      <div class="tw-grid tw-grid-cols-3 tw-gap-6 tw-mb-4">
-        <multiselect
-            v-model="lang"
-            label="title_native"
-            track-by="lang_code"
-            :options="availableLanguages"
-            :multiple="false"
-            :taggable="false"
-            select-label=""
-            selected-label=""
-            deselect-label=""
-            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_LANGUAGE')"
-            :close-on-select="true"
-            :clear-on-select="false"
-            :searchable="false"
-            :allow-empty="false"
-        ></multiselect>
-      </div>
-
-      <div class="tw-mb-4 tw-flex tw-items-center" v-if="category === 'rgpd'">
-        <div class="em-toggle">
-          <input type="checkbox"
-                 true-value="1"
-                 false-value="0"
-                 class="em-toggle-check"
-                 id="published"
-                 name="published"
-                 v-model="form.published"
-                 @change="publishArticle()"
-          />
-          <strong class="b em-toggle-switch"></strong>
-          <strong class="b em-toggle-track"></strong>
+    <div class="tw-w-full">
+      <div class="tw-w-5/6">
+        <div class="tw-grid tw-grid-cols-3 tw-gap-6 tw-mb-4">
+          <multiselect
+              v-model="lang"
+              label="title_native"
+              track-by="lang_code"
+              :options="availableLanguages"
+              :multiple="false"
+              :taggable="false"
+              select-label=""
+              selected-label=""
+              deselect-label=""
+              :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_LANGUAGE')"
+              :close-on-select="true"
+              :clear-on-select="false"
+              :searchable="false"
+              :allow-empty="false"
+          ></multiselect>
         </div>
-        <span for="published" class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_CONTENT_PUBLISH') }}</span>
+
+        <div class="tw-mb-4 tw-flex tw-items-center" v-if="category === 'rgpd'">
+          <div class="em-toggle">
+            <input type="checkbox"
+                   true-value="1"
+                   false-value="0"
+                   class="em-toggle-check"
+                   id="published"
+                   name="published"
+                   v-model="form.published"
+                   @change="publishArticle()"
+            />
+            <strong class="b em-toggle-switch"></strong>
+            <strong class="b em-toggle-track"></strong>
+          </div>
+          <span for="published" class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_CONTENT_PUBLISH') }}</span>
+        </div>
+
+        <div class="form-group controls">
+          <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor_'+this.name"
+                        :key="dynamicComponent" v-model="form.content" @input="updated = true"></editor-quill>
+        </div>
       </div>
 
-      <div class="form-group controls">
-        <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor'"
-                      :key="dynamicComponent" v-model="form.content" @focusout="saveContent"></editor-quill>
-      </div>
+      <button class="btn btn-primary tw-float-right tw-mt-3" v-if="updated" @click="saveContent">
+        {{ translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE") }}
+      </button>
     </div>
 
     <div class="em-page-loader" v-if="loading"></div>
@@ -50,7 +55,6 @@
 
 <script>
 /* COMPONENTS */
-import Editor from "@/components/editor";
 import Multiselect from 'vue-multiselect';
 
 /* SERVICES */
@@ -58,13 +62,14 @@ import client from "com_emundus/src/services/axiosClient";
 import translationsService from "com_emundus/src/services/translations";
 import mixin from "com_emundus/src/mixins/mixin";
 import EditorQuill from "@/components/editorQuill.vue";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 export default {
   name: "editArticle",
 
   components: {
     EditorQuill,
-    Editor,
     Multiselect
   },
 
@@ -88,6 +93,9 @@ export default {
     published: {
       type: Number,
       default: 1
+    },
+    name: {
+      default: null
     }
   },
 
@@ -100,11 +108,16 @@ export default {
       lang: null,
       loading: false,
       dynamicComponent: 0,
+      updated: false,
 
       form: {
         published: this.$props.published,
-        content: ''
+        content: '',
+        need_notify: false,
       },
+      previousContent: '',
+      initContent:'',
+      clearNotif: false,
     };
   },
 
@@ -141,9 +154,8 @@ export default {
     },
 
     async saveContent() {
-      this.$emit('updateSaving', true);
-
       const formData = new FormData();
+
       formData.append('content', this.form.content);
       formData.append('lang', this.lang.lang_code);
       if (this.$props.article_alias !== null) {
@@ -152,17 +164,34 @@ export default {
         formData.append('article_id', this.$props.article_id);
       }
       formData.append('field', 'introtext');
-
+      if (this.clearNotif) {
+        formData.append('note', '');
+        this.$emit('needNotify',false);
+      }
       await client().post(`index.php?option=com_emundus&controller=settings&task=updatearticle`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
           }
-      ).then(() => {
+        }
+      ).then(async () => {
         this.$emit('updateSaving', false);
         this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
+        this.updated = false;
+        Swal.fire({
+          title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
+          text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_SUCCESS"),
+          showCancelButton: false,
+          showConfirmButton: false,
+          customClass: {
+            title: 'em-swal-title'
+          },
+          timer: 1500,
+        });
+        setTimeout(() => {
+          if (this.clearNotif){ this.$emit('needNotify', false);}else{this.$emit('needNotify', true);}
+        }, 500);
       });
     },
 
@@ -185,19 +214,35 @@ export default {
       }
 
       await client().post(`index.php?option=com_emundus&controller=settings&task=publisharticle`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
           }
+        }
       ).then(() => {
         this.$emit('updateSaving', false);
         this.$emit('updateLastSaving', this.formattedDate('', 'LT'));
         this.$emit('updatePublished', this.form.published);
       });
     },
+
+    async saveMethod() {
+      await this.saveContent();
+      return true;
+    },
+
+    async updateArticleNotif(){
+      const response = await axios.get('index.php?option=com_emundus&controller=settings&task=updateArticleNeedToModify', {
+        params: {
+          article_alias: this.$props.article_alias,
+        }
+      });
+      delete response.data.msg;
+      return response.data;
+    }
   },
+
 
   watch: {
     lang: function () {
@@ -207,6 +252,28 @@ export default {
         this.form.content = '';
         this.dynamicComponent++;
       }
+    },
+    updated: function (val) {
+      this.$emit('needSaving', val , this.$props.article_alias);
+    },
+    'form.content': {
+      handler: function (newVal) {
+        if(this.initContent === ''){
+          this.initContent = newVal;
+        }
+        if (  this.previousContent !== newVal) {
+          if (this.initContent !== newVal) {
+            this.clearNotif = true;
+            this.previousContent = newVal;
+            this.$store.commit("settings/setNeedSaving", 1);
+          } else {
+            this.$store.commit("settings/setNeedSaving", 0);
+            this.clearNotif = false;
+            this.updated = false;
+          }
+        }
+      },
+      immediate: true,
     },
   }
 };
