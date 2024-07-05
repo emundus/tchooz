@@ -366,12 +366,11 @@ class EmundusControllerTranslations extends JControllerLegacy
 
 	public function export()
 	{
-		$user = JFactory::getApplication()->getIdentity();
+		$user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			die(Text::_('ACCESS_DENIED'));
 		}
-
 
 		$profile = $this->input->getString('profile', null);
 

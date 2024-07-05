@@ -15,6 +15,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
 
 /**
  * Campaign Controller
@@ -540,11 +541,19 @@ class EmundusControllerCampaign extends JControllerLegacy
 
 			if ($result)
 			{
-				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_ADDED'), 'data' => $result);
+				$redirect = 'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid='.$result.'&index=0';
+
+				PluginHelper::importPlugin('emundus', 'custom_event_handler');
+				$redirect_dispatcher = $this->app->triggerEvent('onCallEventHandler', ['onCampaignCreateRedirect', ['campaign' => $result]]);
+				if(!empty($redirect_dispatcher[0] && !empty($redirect_dispatcher[0]['onCampaignCreateRedirect']))) {
+					$redirect = $redirect_dispatcher[0]['onCampaignCreateRedirect'];
+				}
+
+				$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_ADDED'), 'data' => $result, 'redirect' => $redirect);
 			}
 			else
 			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_ADD_CAMPAIGN'), 'data' => $result);
+				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_ADD_CAMPAIGN'), 'data' => $result, 'redirect' => '');
 			}
 		}
 		echo json_encode((object) $tab);
@@ -1191,6 +1200,24 @@ class EmundusControllerCampaign extends JControllerLegacy
 		}
 
 		echo json_encode((object) $tab);
+		exit;
+	}
+
+	public function getallitemsalias()
+	{
+		$tab = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
+
+		$cid = $this->input->getInt('campaign_id', 0);
+
+		$result = $this->m_campaign->getAllItemsAlias($cid);
+
+		if ($result) {
+			$tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_UNPINNED'), 'data' => $result);
+		} else {
+			$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UNPIN_CAMPAIGN'), 'data' => $result);
+		}
+
+		echo json_encode((object)$tab);
 		exit;
 	}
 

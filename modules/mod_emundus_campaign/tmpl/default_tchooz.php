@@ -1,8 +1,12 @@
 <?php
+
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die;
 
 header('Content-Type: text/html; charset=utf-8');
 
+$menu      = Factory::getApplication()->getMenu();
 $user      = JFactory::getUser();
 $lang      = JFactory::getLanguage();
 $locallang = $lang->getTag();
@@ -40,6 +44,12 @@ if (sizeof($tmp_campaigns) > 0)
 {
 	foreach ($tmp_campaigns as $key => $campaign)
 	{
+        $item = $menu->getItems('alias', $campaign->alias, true);
+        if(!empty($item))
+        {
+            $campaign->link = $campaign->alias;
+        }
+
 		if ($campaign->pinned == 1)
 		{
 			$campaigns_pinned[] = $campaign;
