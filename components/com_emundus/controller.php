@@ -1489,7 +1489,7 @@ class EmundusController extends JControllerLegacy
 	 ***********************************/
 	function updateprofile()
 	{
-		$user = JFactory::getSession()->get('emundusUser');
+		$user = $this->app->getSession()->get('emundusUser');
 		if (!EmundusHelperAccess::isAdministrator($user->id) && !EmundusHelperAccess::isCoordinator($user->id)) {
 			$this->setRedirect(JRoute::_('index.php'), JText::_('Only administrator can access this function.'), 'error');
 
@@ -1524,22 +1524,26 @@ class EmundusController extends JControllerLegacy
 
 
 		// ATTACHMENTS
-		$this->_db->setQuery('DELETE FROM #__emundus_setup_attachment_profiles WHERE profile_id = ' . $profile_id);
+		$query = $this->_db->getQuery(true);
+		$query->delete($this->_db->quoteName('#__emundus_setup_attachment_profiles'))->where($this->_db->quoteName('profile_id') . ' = ' . $profile_id);
+		$this->_db->setQuery($query);
 		$this->_db->execute();
+
 		if (isset($attachments)) {
-			$query = 'INSERT INTO #__emundus_setup_attachment_profiles (`profile_id`, `attachment_id`, `displayed`, `mandatory`, `bank_needed`) VALUES';
 			foreach ($attachments as $id => $attachment) {
-				if (!$attachment->selected) continue;
-				$query .= '(' . $profile_id . ', ' . $id . ', ';
-				$query .= $attachment->displayed ? '1' : '0';
-				$query .= ', ';
-				$query .= $attachment->required ? '1' : '0';
-				$query .= ', ';
-				$query .= $attachment->bank_needed ? '1' : '0';
-				$query .= '),';
+				if($attachment->selected) {
+					$inserted = [
+						'profile_id'    => $profile_id,
+						'attachment_id' => $id,
+						'displayed'     => $attachment->displayed ? 1 : 0,
+						'mandatory'     => $attachment->required ? 1 : 0,
+						'bank_needed'   => $attachment->bank_needed ? 1 : 0,
+						'ordering'      => 0,
+					];
+					$inserted = (object) $inserted;
+					$this->_db->insertObject('#__emundus_setup_attachment_profiles', $inserted);
+				}
 			}
-			$this->_db->setQuery(substr($query, 0, -1));
-			$this->_db->execute();
 		}
 // FORMS
 		$Itemid = $this->input->get('Itemid', null, 'POST', 'none', 0);
