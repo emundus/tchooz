@@ -51,9 +51,14 @@ class PlgFabrik_FormEmundusisevaluatedbyme extends plgFabrik_Form
 		$r          = $this->app->input->get('r', 0);
 		$formid     = $this->app->input->get('formid', '256');
 		$rowid      = $this->app->input->get('rowid');
+		$preview      = $this->app->input->get('preview',0);
 		$student_id = $this->app->input->get('jos_emundus_evaluations___student_id') ?: '';
 		$fnum       = $this->app->input->get('jos_emundus_evaluations___fnum') ?: '';
 		$view       = strpos(Uri::getInstance()->getPath(), '/details/') !== false ? 'details' : 'form';
+
+		if($preview && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			return true;
+		}
 
 		if (empty($fnum) || empty($student_id))
 		{
