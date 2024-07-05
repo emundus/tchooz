@@ -3,7 +3,6 @@
     /* COORDINATOR FORMS*/
     .emundus-form.tw-p-6.homepage {
           background: var(--neutral-0);
-          padding: 0 24px 0 0;
           overflow: auto;
 
         .tw-mb-8 {
@@ -1385,10 +1384,19 @@
             }
 
             li.search-choice {
-                padding: var(--p-4) var(--p-24) var(--p-4) var(--p-12) !important;
+                padding: 4px 6px !important;
                 background: var(--neutral-300);
                 border-radius: var(--em-form-br);
-                border: none;
+                border: 1px solid var(--neutral-400);
+                box-shadow: unset;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            li.search-choice .search-choice-close {
+                position: static;
+                transform: scale(0.8);
             }
 
             li.search-field {

@@ -230,6 +230,8 @@ Text::script('COM_EMUNDUS_FORM_ATTACHMENTS_PREVIEW');
 Text::script('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM');
 Text::script('COM_EMUNDUS_ONBOARD_EDIT_FORM');
 Text::script('COM_EMUNDUS_CAMPAIGNS_PIN');
+JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS');
+JText::script('COM_EMUNDUS_ONBOARD_ALIAS_COPIED');
 
 $app = Factory::getApplication();
 if (version_compare(JVERSION, '4.0', '>')) {

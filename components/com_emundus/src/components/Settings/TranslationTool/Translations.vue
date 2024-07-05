@@ -129,7 +129,11 @@ export default {
       type: String,
       required: false,
     },
-    titleValue: {
+    dataValue: {
+      type: String,
+      required: false,
+    },
+    childrenValue: {
       type: String,
       required: false,
     }
@@ -320,7 +324,7 @@ export default {
     },
 
     async exportToCsv() {
-      window.open('index.php?option=com_emundus&controller=translations&task=export&profile='+this.data.id, '_blank');
+      window.open('/index.php?option=com_emundus&controller=translations&task=export&profile='+this.data.id, '_blank');
     },
     translate(key) {
       if (typeof key != undefined && key != null && Joomla !== null && typeof Joomla !== 'undefined') {
@@ -336,7 +340,7 @@ export default {
     objects: function(value){
       if(value.length > 0 ) {
         if (this.objectValue) {
-          this.object = this.objects.find(obj => obj.name === this.objectValue);
+          this.object = this.objects.find(obj => obj.table.name === this.objectValue);
         }
       }
     },
@@ -355,10 +359,8 @@ export default {
     },
     datas: function(value){
       if(value.length > 0) {
-        if (this.titleValue){
-          console.log(this.titleValue)
-          console.log(this.datas)
-          this.data = this.datas.find(d => d.label === this.titleValue);
+        if (this.dataValue){
+          this.data = this.datas.find(d => d.id == this.dataValue);
         }
       }
     },
@@ -395,7 +397,13 @@ export default {
         this.getDatas(this.object);
       }
     },
-
+    childrens: function(value){
+      if(value.length > 0) {
+        if (this.childrenValue){
+          this.children = this.childrens.find(c => c.id == this.childrenValue);
+        }
+      }
+    },
     children: function(value){
       this.loading = true;
       this.init_translations = false;

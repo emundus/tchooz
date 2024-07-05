@@ -306,7 +306,12 @@ class EmundusHelperEvents
 			$rowid  = $jinput->getInt('rowid', 0);
 			$itemid = $jinput->get('Itemid');
 			$reload = $jinput->get('r', 0);
+			$preview = $jinput->getInt('preview', 0);
 			$reload++;
+
+			if($preview == 1 && EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+				return true;
+			}
 
 			if (empty($fnum))
 			{

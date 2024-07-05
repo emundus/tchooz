@@ -198,6 +198,8 @@ class Com_EmundusInstallerScript
 		    EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du stockage des champs mot de passe.', 'error');
 	    }
 
+	    EmundusHelperUpdate::generateCampaignsAlias();
+
 		return true;
     }
 

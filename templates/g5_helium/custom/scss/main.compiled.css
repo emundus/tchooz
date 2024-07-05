@@ -909,7 +909,6 @@ video {
 /* COORDINATOR FORMS*/
 .emundus-form.tw-p-6.homepage {
           background: var(--neutral-0);
-          padding: 0 24px 0 0;
           overflow: auto;
     }
 .emundus-form.tw-p-6.homepage .tw-mb-8 {
@@ -2118,10 +2117,18 @@ input[type="text"],
                 display: none;
             }
 .chzn-container .chzn-single li.search-choice, .chzn-container .chzn-choices li.search-choice, .chzn-container .chosen-single li.search-choice, .chzn-container .chosen-choices li.search-choice, .chzn-container.chzn-container-multi .chzn-single li.search-choice, .chzn-container.chzn-container-multi .chzn-choices li.search-choice, .chzn-container.chzn-container-multi .chosen-single li.search-choice, .chzn-container.chzn-container-multi .chosen-choices li.search-choice, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-choice, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-choice, .chzn-container.chzn-container-multi.chzn-container-active .chosen-single li.search-choice, .chzn-container.chzn-container-multi.chzn-container-active .chosen-choices li.search-choice, .chosen-container .chzn-single li.search-choice, .chosen-container .chzn-choices li.search-choice, .chosen-container .chosen-single li.search-choice, .chosen-container .chosen-choices li.search-choice, .chosen-container.chosen-container-multi .chzn-single li.search-choice, .chosen-container.chosen-container-multi .chzn-choices li.search-choice, .chosen-container.chosen-container-multi .chosen-single li.search-choice, .chosen-container.chosen-container-multi .chosen-choices li.search-choice, .chosen-container.chosen-container-multi.chosen-container-active .chzn-single li.search-choice, .chosen-container.chosen-container-multi.chosen-container-active .chzn-choices li.search-choice, .chosen-container.chosen-container-multi.chosen-container-active .chosen-single li.search-choice, .chosen-container.chosen-container-multi.chosen-container-active .chosen-choices li.search-choice {
-                padding: var(--p-4) var(--p-24) var(--p-4) var(--p-12) !important;
+                padding: 4px 6px !important;
                 background: var(--neutral-300);
                 border-radius: var(--em-form-br);
-                border: none;
+                border: 1px solid var(--neutral-400);
+                box-shadow: unset;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+.chzn-container .chzn-single li.search-choice .search-choice-close, .chzn-container .chzn-choices li.search-choice .search-choice-close, .chzn-container .chosen-single li.search-choice .search-choice-close, .chzn-container .chosen-choices li.search-choice .search-choice-close, .chzn-container.chzn-container-multi .chzn-single li.search-choice .search-choice-close, .chzn-container.chzn-container-multi .chzn-choices li.search-choice .search-choice-close, .chzn-container.chzn-container-multi .chosen-single li.search-choice .search-choice-close, .chzn-container.chzn-container-multi .chosen-choices li.search-choice .search-choice-close, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-choice .search-choice-close, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-choice .search-choice-close, .chzn-container.chzn-container-multi.chzn-container-active .chosen-single li.search-choice .search-choice-close, .chzn-container.chzn-container-multi.chzn-container-active .chosen-choices li.search-choice .search-choice-close, .chosen-container .chzn-single li.search-choice .search-choice-close, .chosen-container .chzn-choices li.search-choice .search-choice-close, .chosen-container .chosen-single li.search-choice .search-choice-close, .chosen-container .chosen-choices li.search-choice .search-choice-close, .chosen-container.chosen-container-multi .chzn-single li.search-choice .search-choice-close, .chosen-container.chosen-container-multi .chzn-choices li.search-choice .search-choice-close, .chosen-container.chosen-container-multi .chosen-single li.search-choice .search-choice-close, .chosen-container.chosen-container-multi .chosen-choices li.search-choice .search-choice-close, .chosen-container.chosen-container-multi.chosen-container-active .chzn-single li.search-choice .search-choice-close, .chosen-container.chosen-container-multi.chosen-container-active .chzn-choices li.search-choice .search-choice-close, .chosen-container.chosen-container-multi.chosen-container-active .chosen-single li.search-choice .search-choice-close, .chosen-container.chosen-container-multi.chosen-container-active .chosen-choices li.search-choice .search-choice-close {
+                position: static;
+                transform: scale(0.8);
             }
 .chzn-container .chzn-single li.search-field, .chzn-container .chzn-choices li.search-field, .chzn-container .chosen-single li.search-field, .chzn-container .chosen-choices li.search-field, .chzn-container.chzn-container-multi .chzn-single li.search-field, .chzn-container.chzn-container-multi .chzn-choices li.search-field, .chzn-container.chzn-container-multi .chosen-single li.search-field, .chzn-container.chzn-container-multi .chosen-choices li.search-field, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-field, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-field, .chzn-container.chzn-container-multi.chzn-container-active .chosen-single li.search-field, .chzn-container.chzn-container-multi.chzn-container-active .chosen-choices li.search-field, .chosen-container .chzn-single li.search-field, .chosen-container .chzn-choices li.search-field, .chosen-container .chosen-single li.search-field, .chosen-container .chosen-choices li.search-field, .chosen-container.chosen-container-multi .chzn-single li.search-field, .chosen-container.chosen-container-multi .chzn-choices li.search-field, .chosen-container.chosen-container-multi .chosen-single li.search-field, .chosen-container.chosen-container-multi .chosen-choices li.search-field, .chosen-container.chosen-container-multi.chosen-container-active .chzn-single li.search-field, .chosen-container.chosen-container-multi.chosen-container-active .chzn-choices li.search-field, .chosen-container.chosen-container-multi.chosen-container-active .chosen-single li.search-field, .chosen-container.chosen-container-multi.chosen-container-active .chosen-choices li.search-field {
                 height: auto;
@@ -2206,6 +2213,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-left-\[-12px\] {
     left: -12px;
+}
+.tw-right-3 {
+    right: var(--em-spacing-3);
 }
 .tw-right-\[-12px\] {
     right: -12px;
@@ -3718,6 +3728,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-h-64 {
     height: 16rem;
 }
+.tw-h-\[16px\] {
+    height: 16px;
+}
 .tw-h-form {
     height: var(--em-form-height);
 }
@@ -3922,6 +3935,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-w-\[200px\] {
     width: 200px;
+}
+.tw-w-\[50px\] {
+    width: 50px;
 }
 .tw-w-\[64px\] {
     width: 64px;
@@ -4130,6 +4146,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     margin-top: calc(var(--em-spacing-2) * calc(1 - var(--tw-space-y-reverse)));
     margin-bottom: calc(var(--em-spacing-2) * var(--tw-space-y-reverse));
 }
+.tw-self-start {
+    align-self: flex-start;
+}
+.tw-self-end {
+    align-self: flex-end;
+}
 .tw-self-stretch {
     align-self: stretch;
 }
@@ -4204,6 +4226,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-border-neutral-400 {
     border-color: var(--neutral-400);
 }
+.tw-border-neutral-500 {
+    border-color: var(--neutral-500);
+}
+.tw-border-neutral-600 {
+    border-color: var(--neutral-600);
+}
 .tw-border-transparent {
     border-color: transparent;
 }
@@ -4274,6 +4302,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-p-0 {
     padding: 0px;
 }
+.tw-p-1 {
+    padding: var(--em-spacing-1);
+}
 .tw-p-2 {
     padding: var(--em-spacing-2);
 }
@@ -4291,6 +4322,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-p-6 {
     padding: var(--em-spacing-6);
+}
+.tw-p-8 {
+    padding: var(--em-spacing-8);
 }
 .tw-px-0 {
     padding-left: 0px;
@@ -5010,6 +5044,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-align-middle {
     vertical-align: middle;
 }
+.\!tw-text-2xl {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+}
 .\!tw-text-6xl {
     font-size: 3.75rem !important;
     line-height: 1 !important;
@@ -5053,6 +5091,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-text-xxs {
     font-size: 8px;
 }
+.\!tw-font-bold {
+    font-weight: 700 !important;
+}
+.\!tw-font-medium {
+    font-weight: 500 !important;
+}
 .tw-font-bold {
     font-weight: 700;
 }
@@ -5073,6 +5117,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-leading-6 {
     line-height: 1.5rem;
+}
+.tw-leading-8 {
+    line-height: 2rem;
 }
 .\!tw-text-neutral-600 {
     color: var(--neutral-600) !important;
