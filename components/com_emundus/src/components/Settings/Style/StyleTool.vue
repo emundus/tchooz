@@ -10,7 +10,7 @@
         @closed="beforeClose"
     >
 
-      <div class="em-modal-header tw-flew tw-items-center">
+      <div class="em-modal-header tw-flex tw-items-center">
         <div class="tw-justify-between tw-flex tw-items-center tw-cursor-pointer" @click.prevent="$modal.hide('styleTool')">
           <div class="tw-w-max tw-flex tw-items-center">
             <span class="material-icons-outlined">navigate_before</span>

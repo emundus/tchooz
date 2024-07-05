@@ -14,9 +14,12 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
-use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Component\Config\Controller\ApplicationController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Response\JsonResponse;
+use Joomla\CMS\Session\Session;
+
 
 /**
  * Settings Controller
@@ -253,17 +256,22 @@ class EmundusControllersettings extends JControllerLegacy
 			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
 		}
 		else {
-
-
 			$content       = $this->input->getRaw('content');
 			$article_id    = $this->input->getString('article_id', 0);
 			$article_alias = $this->input->getString('article_alias', '');
 			$lang          = $this->input->getString('lang');
 			$field         = $this->input->getString('field');
+			$note		   = $this->input->getString('note');
 
-			$changeresponse = $this->m_settings->updateArticle($content, $lang, $article_id, $article_alias, $field);
+			$changeresponse = $this->m_settings->updateArticle($content, $lang, $article_id, $article_alias, $field, $note);
 		}
 		echo json_encode((object) $changeresponse);
+		exit;
+	}
+	public function getAllArticleNeedToModify() {
+		$params = $this->m_settings->getArticleNeedToBeModify();
+		$params['msg'] = JText::_('SUCCESS');
+		echo json_encode($params);
 		exit;
 	}
 
@@ -963,6 +971,14 @@ class EmundusControllersettings extends JControllerLegacy
 		exit;
 	}
 
+	public function updateArticleNeedToModify() {
+		$article_alias = $this->input->getString('article_alias');
+		$state = $this->m_settings->updateArticleNeedToBeModify($article_alias);
+		$response = array('status' => $state, 'msg' => 'SUCCESS');
+		echo json_encode($response);
+		exit;
+	}
+
 	public function updateemundusparam()
 	{
 		$user     = Factory::getApplication()->getIdentity();
@@ -976,12 +992,13 @@ class EmundusControllersettings extends JControllerLegacy
 			$value           = $jinput->getString('value', null);
 
 			if (!empty($param) && isset($value)) {
-				if ($this->m_settings->updateEmundusParam($component, $param, $value)) {
-					$response['msg']    = JText::_('SUCCESS');
+				$config = new JConfig();
+				if ($this->m_settings->updateEmundusParam($component, $param, $value, $config)) {
+					$response['msg']    = Text::_('SUCCESS');
 					$response['status'] = true;
 
 					if ($param === 'list_limit') {
-						JFactory::getSession()->set('limit', $value);
+						$this->app->getSession()->set('limit', $value);
 					}
 				}
 				else {
@@ -993,6 +1010,73 @@ class EmundusControllersettings extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+	public function updateemundusparams()
+{
+    $user = Factory::getApplication()->getIdentity();
+    $response = ['status' => true, 'msg' => ''];
+
+    if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+        $params = $this->input->getRaw('params');
+        if (!empty($params)) {
+	        $config = new JConfig();
+            foreach ($params as $param) {
+                $param = json_decode($param);
+                if ($this->m_settings->updateEmundusParam($param->component, $param->param, $param->value ,$config )) {
+                    $response['msg'] .= JText::_('SUCCESS') . ' for ' . $param->param . $param->value.'. ';
+
+
+	                if ($param === 'list_limit') {
+                        $this->app->getSession()->set('limit', $param->value);
+                    }
+
+                } else {
+                    $response['msg'] .= JText::_('PARAM_NOT_UPDATED') . ' for ' . $param->param . '. ';
+                    $response['status'] = false;
+                }
+            }
+        }
+    } else {
+        $response['status'] = false;
+        $response['msg'] = JText::_('ACCESS_DENIED');
+    }
+
+    echo json_encode($response);
+    exit;
+}
+
+public function sendTestMail()
+{
+	$input = file_get_contents('php://input');
+
+	// Decode the JSON payload
+	$data = json_decode($input, true);
+
+	$customInformations = $data;
+
+	// Get the model
+	$model = $this->getModel('settings', 'EmundusModel');
+
+	// Call the sendTestMail function from the model
+	$result = $model->sendTestMailSettings($customInformations);
+	if ($result === true) {
+		$values['mailfrom'] = 'empty/vide';
+		for ($i = 0; $i < count($customInformations); $i++){
+			if($customInformations[$i]["param"] == 'mailfrom'){
+				$values['mailfrom'] = $customInformations[$i]["value"];
+			}
+		}
+		$ValueOfReturn = ['COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS','COM_CONFIG_SENDMAIL_SUCCESS',$values['mailfrom'], 'success',''];
+	}else if ($result === null)
+	{
+		$ValueOfReturn = ['a verifier','COM_CONFIG_SENDMAIL_SUCCESS_FALLBACK','warning'];
+	}else{
+		$ValueOfReturn = $result;
+	}
+    echo new JsonResponse($ValueOfReturn);
+
+    $this->app->close();
+}
 
 	/// get all users
 	public function getallusers()
@@ -1212,5 +1296,42 @@ class EmundusControllersettings extends JControllerLegacy
 		echo json_encode((object) $results);
 		exit;
 	}
+
+	public function gettimezonelist()
+    {
+        $results['status'] = true;
+        $results['msg'] = 'Timezones retrieved';
+		$results['data'] = [];
+        $timezone_groups = DateTimeZone::listAbbreviations();
+
+        foreach ($timezone_groups as $timezone_group) {
+            foreach ($timezone_group as $timezone) {
+                if (!empty($timezone['timezone_id']) && $timezone['timezone_id'] != 'UTC' && !in_array($timezone['timezone_id'], array_keys($results['data']))) {
+                    $value = $timezone['timezone_id'];
+                    $label = $value . ' : +' . date('H:i', $timezone['offset']) . 'h UTC';
+
+                    $results['data'][$timezone['timezone_id']] = [
+                        "label" => $label,
+                        "value" => $value
+                    ];
+                }
+            }
+        }
+
+        $results['data'] = array_values($results['data']);
+
+        // Filter out cities that are all in uppercase
+        $results['data'] = array_filter($results['data'], function ($data) {
+            return $data['label'] !== strtoupper($data['label']);
+        });
+
+        if (empty($results['data'])) {
+            $results['status'] = false;
+            $results['msg'] = 'No timezones found';
+        }
+
+        echo json_encode((object)$results);
+        exit;
+    }
 }
 

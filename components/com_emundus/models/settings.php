@@ -17,8 +17,16 @@ jimport('joomla.application.component.model');
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Registry\Registry;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Mail\Exception\MailDisabledException;
+use Joomla\CMS\Mail\MailTemplate;
+use PHPMailer\PHPMailer\Exception as phpMailerException;
 use Symfony\Component\Yaml\Yaml;
+use function PHPUnit\Framework\isNan;
 
 class EmundusModelsettings extends JModelList
 {
@@ -43,6 +51,7 @@ class EmundusModelsettings extends JModelList
 		}
 
 		Log::addLogger(['text_file' => 'com_emundus.error.php'], Log::ERROR, array('com_emundus'));
+		Log::addLogger(['text_file' => 'com_emundus.updated_settings.php'], Log::ALL, array('com_emundus.settings'));
 	}
 
 	/**
@@ -185,7 +194,7 @@ class EmundusModelsettings extends JModelList
 		$deleted = false;
 
 		if (!empty($id)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			$query->delete($this->db->quoteName('#__emundus_setup_action_tag'))
@@ -626,7 +635,7 @@ class EmundusModelsettings extends JModelList
 	 *
 	 * @since 1.29.0
 	 */
-	function updateArticle($content, $lang_code, $article_id = 0, $article_alias = '', $reference_field = 'introtext')
+	function updateArticle($content, $lang_code, $article_id = 0, $article_alias = '', $reference_field = 'introtext', $note)
 	{
 		$query = $this->db->getQuery(true);
 
@@ -669,6 +678,11 @@ class EmundusModelsettings extends JModelList
 					->update($this->db->quoteName('#__content'))
 					->set($this->db->quoteName('introtext') . ' = ' . $this->db->quote($content))
 					->where($this->db->quoteName('id') . ' = ' . $article->id);
+
+				if ($note !== null) {
+					$query->set($this->db->quoteName('note') . ' = ' . $this->db->quote($note));
+				}
+
 				$this->db->setQuery($query);
 
 				return $this->db->execute();
@@ -830,10 +844,10 @@ class EmundusModelsettings extends JModelList
 	 *
 	 * @since 1.0
 	 */
-	function updateLogo($target_file,$new_logo,$ext)
+	function updateLogo($target_file, $new_logo, $ext)
 	{
 		$updated = false;
-		$query = $this->db->getQuery(true);
+		$query   = $this->db->getQuery(true);
 
 		try {
 			$query->select('id,content')
@@ -843,8 +857,7 @@ class EmundusModelsettings extends JModelList
 			$this->db->setQuery($query);
 			$logo_module = $this->db->loadObject();
 
-			if (move_uploaded_file($new_logo, $target_file))
-			{
+			if (move_uploaded_file($new_logo, $target_file)) {
 				$regex = '/(logo.(png+|jpeg+|jpg+|svg+|gif+|webp+))|(logo_custom.(png+|jpeg+|jpg+|svg+|gif+|webp+))/m';
 
 				$new_content = preg_replace($regex, 'logo_custom.' . $ext, $logo_module->content);
@@ -856,12 +869,10 @@ class EmundusModelsettings extends JModelList
 				$this->db->setQuery($query);
 				$updated = $this->db->execute();
 
-				if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml'))
-				{
+				if (file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml')) {
 					$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml'));
 
-					if (!empty($yaml))
-					{
+					if (!empty($yaml)) {
 						$yaml['image'] = 'gantry-media://custom/logo_custom.' . $ext;
 
 						file_put_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml', Yaml::dump($yaml));
@@ -883,18 +894,20 @@ class EmundusModelsettings extends JModelList
 		if (empty($user_id)) {
 			if (!empty($this->_user->id)) {
 				$user_id = $this->_user->id;
-			} else {
+			}
+			else {
 				$user = Factory::getApplication()->getIdentity();
 
 				if (!empty($user->id)) {
 					$user_id = $user->id;
-				} else {
+				}
+				else {
 					return false;
 				}
 			}
 		}
 
-		
+
 		$query = $this->db->getQuery(true);
 		$query->select('count(id)')
 			->from($this->db->quoteName('#__emundus_setup_campaigns'));
@@ -906,7 +919,8 @@ class EmundusModelsettings extends JModelList
 				$this->removeParam('first_login', $user_id);
 
 				$event_runned = $this->createParam('first_form', $user_id);
-			} else {
+			}
+			else {
 				$event_runned = true;
 			}
 		}
@@ -1323,8 +1337,8 @@ class EmundusModelsettings extends JModelList
 		}
 
 		if (empty($cache_data)) {
-			$this->db    = JFactory::getDbo();
-			$query = $this->db->getQuery(true);
+			$this->db = JFactory::getDbo();
+			$query    = $this->db->getQuery(true);
 			$query->select('`default`, value')
 				->from($this->db->quoteName('#__emundus_setup_config'))
 				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('onboarding_lists'));
@@ -1659,35 +1673,66 @@ class EmundusModelsettings extends JModelList
 	 */
 	public function getEmundusParams()
 	{
-		$params = ['emundus' => [], 'joomla' => [], 'config' => []];
+		$params = ['emundus' => [], 'joomla' => []];
 
-		$settings_applicants = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-applicants.json');
-		$settings_general = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings-general.json');
 
-		$settings_applicants = json_decode($settings_applicants, true);
-		$settings_general = json_decode($settings_general, true);
+		$settings_general            = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/sections/site-settings.json');
+		$settings_applicants         = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/sections/file-settings.json');
+		$settings_mail_server_custom = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/emails/custom.json');
+		$settings_mail_base          = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/emails/global.json');
+		$settings_mail_value         = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/emails/values.json');
 
-		$emundus_parameters = JComponentHelper::getParams('com_emundus');
+		$settings_applicants         = json_decode($settings_applicants, true);
+		$settings_general            = json_decode($settings_general, true);
+		$settings_mail_base          = json_decode($settings_mail_base, true);
+		$settings_mail_server_custom = json_decode($settings_mail_server_custom, true);
+		$settings_mail_value         = json_decode($settings_mail_value, true);
 
-		foreach($settings_applicants as $settings_applicant) {
+		$emundus_parameters = ComponentHelper::getParams('com_emundus');
+
+		foreach ($settings_applicants as $settings_applicant) {
 			if ($settings_applicant['component'] === 'emundus') {
 				$params['emundus'][$settings_applicant['param']] = $emundus_parameters->get($settings_applicant['param']);
-			} else {
+			}
+			else {
 				$params['joomla']->$settings_applicant['param'] = $this->app->getConfig()->get($settings_applicant['param']);
 			}
 		}
 
-		foreach($settings_general as $setting_general) {
+		foreach ($settings_general as $setting_general) {
 			if ($setting_general['component'] === 'emundus') {
 				$params['emundus'][$setting_general['param']] = $emundus_parameters->get($setting_general['param']);
-			} else {
+			}
+			else {
 				$params['joomla'][$setting_general['param']] = $this->app->getConfig()->get($setting_general['param']);
 			}
 		}
 
-		$other_allowed_parameters = ['style', 'content', 'attachment_storage', 'translations'];
-		foreach($other_allowed_parameters as $other_allowed_parameter) {
-			$params['config'][$other_allowed_parameter] = $emundus_parameters->get($other_allowed_parameter);
+		foreach ($settings_mail_base as $setting_mail_base) {
+			if ($setting_mail_base['component'] === 'emundus') {
+				$params['emundus'][$setting_mail_base['param']] = $emundus_parameters->get($setting_mail_base['param']);
+			}
+			else {
+				$params['joomla'][$setting_mail_base['param']] = $this->app->getConfig()->get($setting_mail_base['param']);
+			}
+		}
+
+		foreach ($settings_mail_server_custom as $setting_mail_server_custom) {
+			if ($setting_mail_server_custom['component'] === 'emundus') {
+				$params['emundus'][$setting_mail_server_custom['param']] = $emundus_parameters->get($setting_mail_server_custom['param']);
+			}
+			else {
+				$params['joomla'][$setting_mail_server_custom['param']] = $this->app->getConfig()->get($setting_mail_server_custom['param']);
+			}
+		}
+
+		foreach ($settings_mail_value as $setting_mail_value) {
+			if ($setting_mail_value['component'] === 'emundus') {
+				$params['emundus'][$setting_mail_value['param']] = $emundus_parameters->get($setting_mail_value['param']);
+			}
+			else {
+				$params['joomla'][$setting_mail_value['param']] = $this->app->getConfig()->get($setting_mail_value['param']);
+			}
 		}
 
 		return $params;
@@ -1697,21 +1742,22 @@ class EmundusModelsettings extends JModelList
 	 * @param $component
 	 * @param $param
 	 * @param $value
+	 *
 	 * @return bool
 	 */
-	public function updateEmundusParam($component, $param, $value) {
+	public function updateEmundusParam($component, $param, $value, $config)
+	{
 		$updated = false;
 
 		if (!empty($param)) {
 			$params = $this->getEmundusParams();
-			switch($component) {
+			switch ($component) {
 				case 'emundus':
 					if (array_key_exists($param, $params['emundus'])) {
 						$eMConfig = ComponentHelper::getParams('com_emundus');
 						$eMConfig->set($param, $value);
-
 						$componentid = ComponentHelper::getComponent('com_emundus')->id;
-						$query = $this->db->getQuery(true);
+						$query       = $this->db->getQuery(true);
 
 						$query->update($this->db->quoteName('#__extensions'))
 							->set($this->db->quoteName('params') . ' = ' . $this->db->quote($eMConfig->toString()))
@@ -1720,42 +1766,85 @@ class EmundusModelsettings extends JModelList
 						try {
 							$this->db->setQuery($query);
 							$updated = $this->db->execute();
-						} catch (Exception $e) {
-							Log::add('Error set param '.$param . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
 						}
-					} else {
-						Log::add('Error : unable to detect if param is writable or not : ' . $param , Log::WARNING, 'com_emundus.error');
+						catch (Exception $e) {
+							Log::add('Error set param ' . $param . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+						}
+					}
+					else {
+						Log::add('Error : unable to detect if param is writable or not : ' . $param, Log::WARNING, 'com_emundus.error');
 					}
 
 					break;
 				case 'joomla':
 				default:
 					if (array_key_exists($param, $params['joomla'])) {
-						if(!class_exists('EmundusHelperUpdate')) {
-							require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+						if (!class_exists('EmundusHelperUpdate')) {
+							require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
 						}
-						$updated = EmundusHelperUpdate::updateConfigurationFile($param, $value);
 
-						if ($updated) {
-							$configuration = $this->app->getConfig();
-							$configuration->set($param, $value);
-						}
-					} else {
-						Log::add('Error : unable to detect if param is writable or not : ' . $param , Log::WARNING, 'com_emundus.error');
+						$updated = EmundusHelperUpdate::updateConfigurationFile($config, $param, $value);
+
 					}
-				break;
+					else {
+						Log::add('Error : unable to detect if param is writable or not : ' . $param, Log::WARNING, 'com_emundus.error');
+					}
+					break;
+			}
+		}
+
+		if ($updated) {
+			$this->userID   = Factory::getUser()->id;
+			$this->userName = Factory::getUser()->name;
+			if ($value !== "") {
+				if ($param == 'smtppass' || $param == 'custom_email_smtppass') {
+					$value = '************';
+				}
+				Log::add("User, $this->userName  id: $this->userID, change $param to, new value $value", Jlog::INFO, 'com_emundus.settings');
+			}
+			else {
+				Log::add("User, , $this->userName id: $this->userID, change $param to, to an emphy value", Jlog::INFO, 'com_emundus.settings');
 			}
 		}
 
 		return $updated;
+
 	}
 
-	public function getFavicon() {
+	public function setArticleNeedToBeModify()
+	{
+
+		$componentid = ComponentHelper::getComponent('com_emundus')->id;
+		$query       = $this->db->getQuery(true);
+
+		$query->update($this->db->quoteName('#__content'))
+			->set($this->db->quoteName('attribs') . ' = ' . $this->db->quote('{"note":"need to modify"}'))
+			->where($this->db->quoteName('attribs') . ' = ' . $this->db->quote('{"asset_id":"106"}'));
+		$this->db->setQuery($query);
+		$updated = $this->db->execute();
+	}
+
+	public function getArticleNeedToBeModify()
+	{
+		$query = $this->db->getQuery(true);
+		$query->select('*')
+			->from($this->db->quoteName('#__content'))
+			->where($this->db->quoteName('note') . ' = ' . $this->db->quote("need to modify"));
+		$this->db->setQuery($query);
+		$result = $this->db->loadObjectList();
+
+		return $result;
+	}
+
+
+	public function getFavicon()
+	{
 		$favicon = 'images/custom/default_favicon.ico';
 
 		$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml'));
 
-		if(!empty($yaml)) {
+		if (!empty($yaml)) {
 			$favicon_gantry = $yaml['favicon'];
 
 			if (!empty($favicon_gantry)) {
@@ -1769,4 +1858,177 @@ class EmundusModelsettings extends JModelList
 
 		return $favicon;
 	}
+
+	public function getEmailTemplate($subject)
+	{
+		$query = $this->db->getQuery(true);
+		$query->select('id')
+			->from($this->db->quoteName('#__emundus_setup_emails'))
+			->where($this->db->quoteName('subject') . ' = ' . $this->db->quote($subject));
+		$this->db->setQuery($query);
+		$this->db->execute();
+		$result = $this->db->loadResult();
+
+		return $result;
+	}
+
+	public function sendTestMailSettings($params)
+	{
+
+		// Set the new values to test with the current settings
+		$app      = Factory::getApplication();
+		$config   = $app->getConfig();
+		$user     = $app->getIdentity();
+		$input    = $app->getInput()->json;
+		$smtppass = $input->get('smtppass', null, 'RAW');
+
+		$logo = EmundusHelperEmails::getLogo(true);
+
+		$post = [
+			'SITE_URL'  => Uri::base(),
+			'SITE_NAME' => $config->get('sitename'),
+			'LOGO'      => Uri::base() . 'images/custom/' . $logo,
+		];
+		$keys = [];
+		foreach (array_keys($post) as $key) {
+			$keys[] = '/\[' . $key . '\]/';
+		}
+
+		require_once(JPATH_ROOT . '/components/com_emundus/models/messages.php');
+		$m_messages = new EmundusModelMessages();
+		$template   = $m_messages->getEmail('mail_tester');
+		$body       = $template->message;
+		$subject    = $template->subject;
+
+		$subject = preg_replace($keys, $post, $subject);
+
+		$body_raw = strip_tags($body);
+
+		if (isset($template->Template)) {
+			$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
+			$body = preg_replace($keys, $post, $body);
+		}
+		else {
+			$body = preg_replace($keys, $post, $body);
+		}
+
+		// Create a new mailer instance
+		$values = [];
+		for ($i = 0; $i < count($params); $i++) {
+			switch ($params[$i]["param"]) {
+				case 'mailonline':
+					$values['mailonline'] = $params[$i]["value"];
+					break;
+				case 'smtpauth':
+					$values['smtpauth'] = $params[$i]["value"];
+					break;
+				case 'smtpuser':
+					$values['smtpuser'] = $params[$i]["value"];
+					break;
+				case 'smtphost':
+					$values['smtphost'] = $params[$i]["value"];
+					break;
+				case 'smtpsecure':
+					$values['smtpsecure'] = $params[$i]["value"];
+					break;
+				case 'smtpport':
+					$values['smtpport'] = $params[$i]["value"];
+					break;
+				case 'mailfrom':
+					$values['mailfrom'] = $params[$i]["value"];
+					break;
+				case 'fromname':
+					$values['fromname'] = $params[$i]["value"];
+					break;
+				case 'replyto':
+					$values['replyto'] = $params[$i]["value"];
+					break;
+				case 'replytoname':
+					$values['replytoname'] = $params[$i]["value"];
+					break;
+				case 'smtppass':
+					$values['smtppass'] = $params[$i]["value"];
+					break;
+			}
+		}
+		$config = new Registry();
+		$config->set('smtpauth', $values['smtpauth']);
+		$config->set('smtpuser', $values['smtpuser']);
+		$config->set('smtppass', $values['smtppass']);
+		$config->set('smtphost', $values['smtphost']);
+		$config->set('smtpsecure', $values['smtpsecure']);
+		$config->set('smtpport', $values['smtpport']);
+		$config->set('mailfrom', $values['mailfrom']);
+		$config->set('fromname', $values['fromname']);
+		$config->set('mailer', $input->get('mailer'));
+		$config->set('mailonline', $values['mailonline']);
+		if (!empty($values['replyto'])) {
+			$config->set('replyto', $values['replyto']);
+		}
+		if (!empty($values['replytoname'])) {
+			$config->set('replytoname', $values['replytoname']);
+		}
+
+		$app->set('smtpport', $values['smtpport']);
+		$app->set('mailonline', $values['mailonline']);
+
+		$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer($config);
+		$mailer->setSender($values['mailfrom'], $values['fromname']);
+		$mailer->addRecipient($values['mailfrom'], $values['fromname']);
+		$mailer->setSubject($subject);
+		$mailer->isHTML(true);
+		$mailer->Encoding = 'base64';
+		$mailer->setBody($body);
+		$mailer->AltBody = $body_raw;
+
+		try {
+			$result   = null;
+			$mailSent = $mailer->send();
+			//TODO : sendEmailNoFnum BRICE -> la fonction sendEmailNoFnum ne retourne que du true false donc je n'arrive pas a récupérer le message d'erreur
+			//$IdTemplateEmail = $this->getEmailTemplate("Test de configuration mail");
+			//$result = $c_messages->sendEmailNoFnum($config->get('mailfrom'),$IdTemplateEmail,['LOGO'=>$logo],null,[],null, false);
+		}
+		catch (MailDisabledException|phpMailerException $e) {
+			$outcome = ['COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR', 'COM_CONFIG_SENDMAIL_ERROR', $values['mailfrom'], 'error', $this->convertTextException($e->getMessage()),];
+		}
+
+		if ($mailSent === true) {
+			$methodName = Text::_('COM_CONFIG_SENDMAIL_METHOD_' . strtoupper($mailer->Mailer));
+
+			// If JMail send the mail using PHP Mail as fallback.
+			if ($mailer->Mailer !== $app->get('mailer')) {
+				$outcome = null;
+			}
+			else {
+				$outcome = true;
+			}
+		}
+		else {
+			if ($outcome === null) {
+				$outcome = ['envoi non fonctionnel', 'COM_CONFIG_SENDMAIL_ERROR', 'error'];
+			}
+		}
+
+		return $outcome;
+
+	}
+
+	public function convertTextException($textException)
+	{
+		if ($textException === 'SMTP Error: Could not connect to SMTP host. Failed to connect to server') {
+			$textException = 'COM_EMUNDUS_ERROR_SMTP_HOST';
+		}
+		elseif ($textException === 'SMTP Error: Could not authenticate.') {
+			$textException = 'COM_EMUNDUS_ERROR_SMTP_AUTH';
+		}
+		elseif (strpos($textException, 'Authentication required') !== false) {
+			$textException = 'COM_EMUNDUS_ERROR_SMTP_TOGGLE_AUTH';
+		}
+		elseif ($textException === 'Could not instantiate mail function.') {
+			$textException = 'COM_EMUNDUS_ERROR_MAIL_FUNCTION';
+		}
+
+		return $textException;
+	}
+
 }

@@ -1218,7 +1218,7 @@ class ApplicationModel extends FormModel implements MailerFactoryAwareInterface
         $mailer->addRecipient($app->get('mailfrom'), $app->get('fromname'));
 
         try {
-            $mailSent = $mailer->send();
+	        $mailSent = $mailer->send();
         } catch (MailDisabledException | phpMailerException $e) {
             $app->enqueueMessage($e->getMessage(), 'error');
 

@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h1 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h1>
-    <p class="tw-text-base tw-text-neutral-700 tw-mb-6 em-h-25">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
+    <h1 class="tw-mb-2">{{  this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h1>
+    <p class="tw-text-base tw-text-neutral-700 tw-mb-6 em-h-25">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
 
-    <p class="tw-text-base tw-mb-6 em-h-25" v-if="availableLanguages.length === 0 && !loading">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_NO_LANGUAGES_AVAILABLE') }}</p>
+    <p class="tw-text-base tw-mb-6 em-h-25" v-if="availableLanguages.length === 0 && !loading">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_NO_LANGUAGES_AVAILABLE') }}</p>
 
     <div class="em-grid-4" v-else>
       <!-- Languages -->
@@ -18,7 +18,7 @@
             select-label=""
             selected-label=""
             deselect-label=""
-            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_LANGUAGE')"
+            :placeholder="this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_LANGUAGE')"
             :close-on-select="true"
             :clear-on-select="false"
             :searchable="false"
@@ -39,7 +39,7 @@
             select-label=""
             selected-label=""
             deselect-label=""
-            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_OBJECT')"
+            :placeholder="this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_OBJECT')"
             :close-on-select="true"
             :clear-on-select="false"
             :searchable="false"
@@ -59,7 +59,7 @@
             select-label=""
             selected-label=""
             deselect-label=""
-            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT')"
+            :placeholder="this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT')"
             :close-on-select="true"
             :clear-on-select="false"
             :searchable="true"
@@ -79,7 +79,7 @@
             select-label=""
             selected-label=""
             deselect-label=""
-            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT')"
+            :placeholder="this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT')"
             :close-on-select="true"
             :clear-on-select="false"
             :searchable="true"
@@ -92,12 +92,12 @@
 
     <div class="col-md-12">
       <div v-if="lang === '' || lang == null || object === '' || object == null || init_translations === false" class="text-center tw-mt-20">
-        <h5 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</h5>
-        <p class="tw-text-base em-text-neutral-600">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}</p>
+        <h5 class="tw-mb-2">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</h5>
+        <p class="tw-text-base em-text-neutral-600">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}</p>
       </div>
 
       <div v-else>
-        <button v-if="object.table.name === 'emundus_setup_profiles'" class="float-right em-profile-color em-text-underline" @click="exportToCsv">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_EXPORT') }}</button>
+        <button v-if="object.table.name === 'emundus_setup_profiles'" class="float-right em-profile-color em-text-underline" @click="exportToCsv">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_EXPORT') }}</button>
 
         <div v-for="section in object.fields.Sections" :key="section.Table" class="tw-mb-8">
           <h4 class="mb-2">{{section.Label}}</h4>
@@ -123,6 +123,16 @@ export default {
   components: {
     TranslationRow,
     Multiselect
+  },
+  props: {
+    objectValue: {
+      type: String,
+      required: false,
+    },
+    titleValue: {
+      type: String,
+      required: false,
+    }
   },
   mixins: [mixin],
   data() {
@@ -181,6 +191,7 @@ export default {
         this.loading = false;
         return false;
       }
+
     },
 
     async getObjects(){
@@ -310,10 +321,25 @@ export default {
 
     async exportToCsv() {
       window.open('index.php?option=com_emundus&controller=translations&task=export&profile='+this.data.id, '_blank');
-    }
+    },
+    translate(key) {
+      if (typeof key != undefined && key != null && Joomla !== null && typeof Joomla !== 'undefined') {
+        return Joomla.JText._(key) ? Joomla.JText._(key) : key;
+      } else {
+        return '';
+      }
+    },
   },
 
+
   watch: {
+    objects: function(value){
+      if(value.length > 0 ) {
+        if (this.objectValue) {
+          this.object = this.objects.find(obj => obj.name === this.objectValue);
+        }
+      }
+    },
     object: function(value){
       this.init_translations = false;
       this.translations = {};
@@ -324,9 +350,18 @@ export default {
 
       if(value != null) {
         this.getDatas(value);
+
       }
     },
-
+    datas: function(value){
+      if(value.length > 0) {
+        if (this.titleValue){
+          console.log(this.titleValue)
+          console.log(this.datas)
+          this.data = this.datas.find(d => d.label === this.titleValue);
+        }
+      }
+    },
     data: function(value){
       this.loading = true;
       this.init_translations = false;

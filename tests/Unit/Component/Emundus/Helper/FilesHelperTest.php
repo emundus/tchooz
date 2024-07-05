@@ -117,7 +117,31 @@ class FilesHelperTest extends UnitTestCase
 		$this->assertSame('ecc.fnum IN (\'24343432323\',\'24334234234234\')', $query_condition, 'Write query with = operator and array of values returns correct string with IN');
 
 		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'superior');
-		$this->assertSame('1=1', $query_condition, 'Write query with > operator and array of values returns 1=1 string, because > operator is not supported with type select');
+		$this->assertSame('(ecc.fnum > \'24343432323\' AND ecc.fnum > \'24334234234234\')', $query_condition, 'Write query with superior operator and multiple values for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', '24343432323', 'superior');
+		$this->assertSame('ecc.fnum > \'24343432323\'', $query_condition, 'Write query with superior operator and single for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'inferior');
+		$this->assertSame('(ecc.fnum < \'24343432323\' AND ecc.fnum < \'24334234234234\')', $query_condition, 'Write query with inferior operator and multiple values for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', '24343432323', 'inferior');
+		$this->assertSame('ecc.fnum < \'24343432323\'', $query_condition, 'Write query with inferior operator and single for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'superior_or_equal');
+		$this->assertSame('(ecc.fnum >= \'24343432323\' AND ecc.fnum >= \'24334234234234\')', $query_condition, 'Write query with superior_or_equal operator and multiple values for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', '24343432323', 'superior_or_equal');
+		$this->assertSame('ecc.fnum >= \'24343432323\'', $query_condition, 'Write query with superior_or_equal operator and single for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', ['24343432323', '24334234234234'], 'inferior_or_equal');
+		$this->assertSame('(ecc.fnum <= \'24343432323\' AND ecc.fnum <= \'24334234234234\')', $query_condition, 'Write query with inferior_or_equal operator and multiple values for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.fnum', '24343432323', 'inferior_or_equal');
+		$this->assertSame('ecc.fnum <= \'24343432323\'', $query_condition, 'Write query with inferior_or_equal operator and single for default filter type works');
+
+		$query_condition = $this->helper->writeQueryWithOperator('ecc.id', '1', 'superior');
+		$this->assertSame('ecc.id > \'1\'', $query_condition, 'Write query with superior operator and single for default filter type works');
 
 		$query_condition = $this->helper->writeQueryWithOperator('ecc.created', ['2023-02-01', ''], 'superior', 'date');
 		$this->assertSame('ecc.created > \'2023-02-01\'', $query_condition, 'Write query with superior operator for date filter type works');
@@ -175,7 +199,7 @@ class FilesHelperTest extends UnitTestCase
 
 		$where = $this->helper->_moduleBuildWhere([], 'files', [], [], $menu_item);
 		$this->assertNotEmpty($where['q'], 'Build where with filters returns not empty string');
-		$this->assertSame(' AND esc.published > 0 AND (jecc.applicant_id LIKE \'%test%\' OR jecc.fnum LIKE \'%test%\' OR u.username LIKE \'%test%\' OR eu.firstname LIKE \'%test%\' OR eu.lastname LIKE \'%test%\' OR u.email LIKE \'%test%\') AND jecc.published = \'1\'', $where['q'], 'Build where with filters returns correct string');
+		$this->assertSame(' AND esc.published = \'1\' AND (jecc.applicant_id LIKE \'%test%\' OR jecc.fnum LIKE \'%test%\' OR u.username LIKE \'%test%\' OR eu.firstname LIKE \'%test%\' OR eu.lastname LIKE \'%test%\' OR u.email LIKE \'%test%\') AND jecc.published = \'1\'', $where['q'], 'Build where with filters returns correct string');
 
 		$session->set('em-quick-search-filters', [
 			[
@@ -184,7 +208,7 @@ class FilesHelperTest extends UnitTestCase
 			]
 		]);
 		$where = $this->helper->_moduleBuildWhere([], 'files', [], [], $menu_item);
-		$this->assertSame(' AND esc.published > 0 AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with no scope returns only default filter on published');
+		$this->assertSame(' AND esc.published = \'1\' AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with no scope returns only default filter on published');
 
 		$session->set('em-quick-search-filters', [
 			[
@@ -193,7 +217,7 @@ class FilesHelperTest extends UnitTestCase
 			]
 		]);
 		$where = $this->helper->_moduleBuildWhere([], 'files', [], [], $menu_item);
-		$this->assertSame(' AND esc.published > 0 AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with unhandled scope returns only default filter on published');
+		$this->assertSame(' AND esc.published = \'1\' AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with unhandled scope returns only default filter on published');
 
 		$session->clear('em-quick-search-filters');
 		$session->clear('em-applied-filters');
