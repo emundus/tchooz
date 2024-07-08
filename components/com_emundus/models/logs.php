@@ -282,7 +282,11 @@ class EmundusModelLogs extends JModelList
 
 		$user_from = is_array($user_from) ? implode(',', $user_from) : $user_from;
 		$action    = is_array($action) ? implode(',', $action) : $action;
-		$crud      = is_array($crud) ? implode(',', $this->db->quote($crud)) : $crud;
+		if (is_array($crud)) {
+			$crud =  implode(',', $this->db->quote($crud));
+		} else if (!empty($crud)) {
+			$crud = $this->db->quote($crud);
+		}
 
 		$eMConfig       = ComponentHelper::getParams('com_emundus');
 		$showTimeFormat = $eMConfig->get('log_show_timeformat', 0);

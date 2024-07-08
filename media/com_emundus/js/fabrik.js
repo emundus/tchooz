@@ -461,3 +461,24 @@ function cleanNumberInput(element, maxDecimals = 0,noGreaterThan = null,authoriz
 
     return value;
 }
+
+function prefillBic(element, bic_element) {
+    let table_name = element.form.options.primaryKey.split('___')[0];
+    var fab = element.form.elements;
+    if(element.options.inRepeatGroup) {
+        var bic = fab.get(table_name+'_'+element.groupid+'_repeat___'+bic_element+'_'+element.getRepeatNum());
+    } else {
+        var bic = fab.get(table_name + '___' + bic_element);
+    }
+
+    var value = element.get('value')
+
+    if (bic && value != '') {
+        value = value.replace(/\s/g, "");
+        var bank_code = value.substring(4, 9);
+
+        if(element.options.bicMapping[bank_code]) {
+            bic.set(element.options.bicMapping[bank_code]);
+        }
+    }
+}

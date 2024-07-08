@@ -1,11 +1,22 @@
-favicon: 'gantry-media://custom/favicon.png'
 css:
   -
-    location: 'gantry-assets://custom/scss/custom.scss'
+    location: 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined'
     inline: ''
-    extra: {  }
+    extra: '{  }'
     priority: '0'
-    name: 'CUSTOM SCSS'
+    name: 'Material Icons'
+  -
+    location: 'gantry-assets://custom/scss/quill.scss'
+    inline: ''
+    extra: '{  }'
+    priority: '0'
+    name: Quill
+  -
+    location: 'gantry-assets://custom/scss/main.compiled.css'
+    inline: ''
+    extra: '{  }'
+    priority: '0'
+    name: Main
   -
     location: 'gantry-assets://custom/scss/global.scss'
     inline: ''
@@ -13,20 +24,26 @@ css:
     priority: '0'
     name: Global
   -
-    location: /modules/mod_falang/style/mod_falang_emundus.css
+    location: 'gantry-assets://custom/scss/custom.scss'
     inline: ''
-    extra: {  }
+    extra: '{  }'
+    priority: '0'
+    name: Custom
+  -
+    location: modules/mod_falang/style/mod_falang_emundus.css
+    inline: ''
+    extra: '{  }'
     priority: '0'
     name: Falang
   -
     location: modules/mod_emundus_footer/css/mod_emundus_footer.css
     inline: ''
-    extra: {  }
+    extra: '{  }'
     priority: '0'
     name: Footer
   -
-    location: 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined'
+    location: modules/mod_emundusmenu/style/mod_emundusmenu.css
     inline: ''
     extra: '{  }'
     priority: '0'
-    name: 'Material Icons'
+    name: Menu

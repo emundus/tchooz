@@ -1101,6 +1101,7 @@ class EmundusControllerUsers extends JControllerLegacy
 
 		$fnum = $this->input->getString('fnum', null);
 
+		$rights['canCreate'] = EmundusHelperAccess::asAccessAction(4, 'c', $this->_user->id, $fnum);
 		$rights['canDelete'] = EmundusHelperAccess::asAccessAction(4, 'd', $this->user->id, $fnum);
 		$rights['canUpdate'] = EmundusHelperAccess::asAccessAction(4, 'u', $this->user->id, $fnum);
 		$rights['canExport'] = EmundusHelperAccess::asAccessAction(8, 'c', $this->user->id, $fnum);
@@ -1602,7 +1603,7 @@ class EmundusControllerUsers extends JControllerLegacy
 				}
 			}
 		}
-		fputcsv($csv_file, $headers, ';');
+		fputcsv($csv_file, $headers,';');
 		//
 
 		// Retrieve all the value of users' data necessary
@@ -1622,7 +1623,7 @@ class EmundusControllerUsers extends JControllerLegacy
 				}
 			}
 			if (!empty(array_filter($userData))) {
-				fputcsv($csv_file, $userData, ';');
+				fputcsv($csv_file, $userData,';');
 			}
 		}
 		fclose($csv_file);
@@ -1653,5 +1654,4 @@ class EmundusControllerUsers extends JControllerLegacy
 		echo json_encode(['csvFilePath' => $path, 'fileName' => $export_filename]);
 		exit;
 	}
-
 }

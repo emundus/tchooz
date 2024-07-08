@@ -2113,6 +2113,15 @@ class EmundusModelApplication extends JModelList
 													elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
 														$elt = substr($r_elt, 2, strlen($r_elt));
 													}
+													elseif ($elements[$j]->plugin == 'iban') {
+														$elt = $r_elt;
+
+														if($params->encrypt_datas == 1) {
+															$elt = EmundusHelperFabrik::decryptDatas($r_elt);
+														}
+
+														$elt = chunk_split($elt, 4, ' ');
+													}
 													else {
 														$elt = $r_elt;
 													}
@@ -2186,26 +2195,7 @@ class EmundusModelApplication extends JModelList
 
 											// Decrypt datas encoded
 											if ($form_params->note == 'encrypted') {
-												$cipher = "aes-128-cbc";
-
-												$encryption_key = JFactory::getConfig()->get('secret');
-
-												if ($element->plugin == 'checkbox') {
-													$contents = json_decode($element->content);
-													foreach ($contents as $key => $content) {
-														$decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
-														if ($decrypted_data !== false) {
-															$contents[$key] = $decrypted_data;
-														}
-													}
-													$element->content = json_encode($contents);
-												}
-												else {
-													$decrypted_data = openssl_decrypt($element->content, $cipher, $encryption_key, 0);
-													if ($decrypted_data !== false) {
-														$element->content = $decrypted_data;
-													}
-												}
+												$element->content = EmundusHelperFabrik::decryptDatas($element->content);
 											}
 											//
 
@@ -2403,6 +2393,16 @@ class EmundusModelApplication extends JModelList
 												else {
 													$elt = nl2br($element->content);
 												}
+											}
+											elseif ($element->plugin == 'iban') {
+												$elt    = $element->content;
+												$params = json_decode($element->params);
+
+												if ($params->encrypt_datas == 1) {
+													$elt = EmundusHelperFabrik::decryptDatas($element->content);
+												}
+
+												$elt = chunk_split($elt, 4, ' ');
 											}
 											else {
 												$elt = $element->content;
@@ -2764,6 +2764,15 @@ class EmundusModelApplication extends JModelList
 												elseif ($elements[$j]->plugin == 'emundus_phonenumber') {
 													$elt = substr($r_elt, 2, strlen($r_elt));
 												}
+												elseif ($elements[$j]->plugin == 'iban') {
+													$elt = $r_elt;
+
+													if($params->encrypt_datas == 1) {
+														$elt = EmundusHelperFabrik::decryptDatas($r_elt);
+													}
+
+													$elt = chunk_split($elt, 4, ' ');
+												}
 												else {
 													$elt = JText::_($r_elt);
 												}
@@ -3050,26 +3059,7 @@ class EmundusModelApplication extends JModelList
 
 									// Decrypt datas encoded
 									if ($form_params->note == 'encrypted') {
-										$cipher = "aes-128-cbc";
-
-										$encryption_key = JFactory::getConfig()->get('secret');
-
-										if ($element->plugin == 'checkbox') {
-											$contents = json_decode($element->content);
-											foreach ($contents as $key => $content) {
-												$decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
-												if ($decrypted_data !== false) {
-													$contents[$key] = $decrypted_data;
-												}
-											}
-											$element->content = json_encode($contents);
-										}
-										else {
-											$decrypted_data = openssl_decrypt($element->content, $cipher, $encryption_key, 0);
-											if ($decrypted_data !== false) {
-												$element->content = $decrypted_data;
-											}
-										}
+										$element->content = EmundusHelperFabrik::decryptDatas($element->content);
 									}
 									//
 
@@ -3221,6 +3211,16 @@ class EmundusModelApplication extends JModelList
 												if ($stripped != $elt) {
 													$elt = strip_tags($elt, ['p', 'a', 'div', 'ul', 'li', 'br']);
 												}
+											}
+											elseif ($element->plugin == 'iban') {
+												$params = json_decode($element->params);
+												$elt = $element->content;
+
+												if($params->encrypt_datas == 1) {
+													$elt = EmundusHelperFabrik::decryptDatas($element->content);
+												}
+
+												$elt = chunk_split($elt, 4, ' ');
 											}
 											else {
 												$elt = JText::_($element->content);
@@ -5821,7 +5821,7 @@ class EmundusModelApplication extends JModelList
 		return $content;
 	}
 
-	public function getValuesByElementAndFnum($fnum, $eid, $fid, $raw = 1, $wheres = [], $uid = null)
+	public function getValuesByElementAndFnum($fnum, $eid, $fid, $raw = 1, $wheres = [], $uid = null,$format = true,$repeate_sperator = ",")
 	{
 
 		$query = $this->_db->getQuery(true);
@@ -5896,16 +5896,21 @@ class EmundusModelApplication extends JModelList
 			}
 
 			$elt = [];
-			if (!is_array($values)) {
-				$values = [$values];
-			}
-			if (!empty($values) || $element->plugin == 'yesno') {
-				foreach ($values as $value) {
-					$elt[] = EmundusHelperFabrik::formatElementValue($element->name, $value, $element->group_id, $aid, true);
+			if ($format) {
+				if (!is_array($values)) {
+					$values = [$values];
 				}
-			}
 
-			$result = implode(',', $elt);
+				if (!empty($values) || $element->plugin == 'yesno') {
+					foreach ($values as $value) {
+						$elt[] = EmundusHelperFabrik::formatElementValue($element->name, $value, $element->group_id, $aid, true);
+					}
+				}
+
+				$result = implode($repeate_sperator, $elt);
+			} else {
+				$result = $values;
+			}
 		}
 		catch (Exception $e) {
 			Log::add('Problem when get values of element ' . $eid . ' with fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
@@ -6313,9 +6318,13 @@ class EmundusModelApplication extends JModelList
 	 *
 	 * @return bool true if the action was done successfully
 	 */
-	public function applicantCustomAction($action, $fnum, $module_id = 0, $redirect = false)
+	public function applicantCustomAction($action, $fnum, $module_id = 0, $redirect = false, $user_id = null)
 	{
 		$done = false;
+
+		if(empty($user_id)) {
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
 
 		if (!empty($action) && !empty($fnum)) {
 			$query = $this->_db->getQuery(true);
@@ -6350,7 +6359,7 @@ class EmundusModelApplication extends JModelList
 						if (in_array($status, $current_action['mod_em_application_custom_action_status']) && $status != $current_action['mod_em_application_custom_action_new_status']) {
 							require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 							$m_files = new EmundusModelFiles();
-							$updated = $m_files->updateState($fnum, $current_action['mod_em_application_custom_action_new_status']);
+							$updated = $m_files->updateState($fnum, $current_action['mod_em_application_custom_action_new_status'],$user_id);
 
 							if ($updated) {
 								$done = true;

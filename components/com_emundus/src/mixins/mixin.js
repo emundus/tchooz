@@ -5,6 +5,11 @@ import attachmentService from '../services/attachment.js';
 import mimeTypes from '../data/mimeTypes';
 
 var mixin = {
+    data: function () {
+        return {
+            timer: null,
+        };
+    },
     methods: {
         /**
          * Format date
@@ -140,6 +145,17 @@ var mixin = {
                 text: text,
                 duration: 3000
             });
+        },
+        debounce(fn, wait){
+            return (...args) => {
+                if(this.timer) {
+                    clearTimeout(this.timer); // clear any pre-existing timer
+                }
+                const context = this; // get the current context
+                this.timer = setTimeout(()=>{
+                    fn.apply(context, args); // call the function if time expires
+                }, wait);
+            };
         }
     }
 };

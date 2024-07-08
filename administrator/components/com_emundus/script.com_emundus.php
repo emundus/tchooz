@@ -95,8 +95,8 @@ class com_emundusInstallerScript
 
 				EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_emundusflow', array('show_programme'), array('0'));
 				EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log', 'log_email', 'cron_rungate'), array('0', 'mail@emundus.fr', '1'));
-
-				EmundusHelperUpdate::updateConfigurationFile('lifetime', '45');
+				$config = new JConfig();
+				EmundusHelperUpdate::updateConfigurationFile($config,'lifetime', '45');
 
 				# Insert translations in override file
 				EmundusHelperUpdate::insertTranslationsTag('CREATE_A_NEW_FILE', 'Créer un nouveau dossier pour un utilisateur existant', 'override', null, 'fabrik_elements', 'label');
@@ -768,8 +768,8 @@ if (password_value.match(regex) != null) {
 				}
 
 				EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log_email'), array(''));
-
-				EmundusHelperUpdate::updateConfigurationFile('caching', '1');
+				$config = new JConfig();
+				EmundusHelperUpdate::updateConfigurationFile($config,'caching', '1');
 				EmundusHelperUpdate::updateModulesParams('mod_emundusmenu', 'cache', 0);
 
 				$query->clear()

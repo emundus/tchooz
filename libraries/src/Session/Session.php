@@ -64,7 +64,7 @@ class Session extends BaseSession
     public static function checkToken($method = 'post')
     {
         $app   = Factory::getApplication();
-        $token = static::getFormToken();
+	    $token = static::getFormToken();
 
         // Check from header first
         if ($token === $app->getInput()->server->get('HTTP_X_CSRF_TOKEN', '', 'alnum')) {

@@ -1,16 +1,16 @@
 <template>
   <div>
-    <a class="tw-cursor-pointer em-profile-color em-text-underline" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
-
     <div class="tw-mb-1 tw-mt-4 em-text-color">{{ ChooseForm }} :</div>
-    <div class="tw-mb-1">
-      <select id="select_profile" v-model="$props.profileId" @change="updateProfileCampaign">
+    <div class="tw-mb-6 tw-flex tw-flex-col tw-items-start">
+      <select id="select_profile" class="!tw-mb-1" v-model="$props.profileId" @change="updateProfileCampaign">
         <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
           {{ profile.form_label }}
         </option>
       </select>
+      <a class="tw-cursor-pointer em-profile-color em-text-underline" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
     </div>
-    <a class="tw-cursor-pointer em-profile-color em-text-underline" @click="formbuilder">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_FORM') }}</a>
+
+    <a class="tw-cursor-pointer em-profile-color tw-underline" @click="addNewForm">{{ translate('COM_EMUNDUS_ONBOARD_NO_FORM_FOUND_ADD_FORM') }}</a>
 
     <hr/>
     <h5>{{ translate('COM_EMUNDUS_FORM_PAGES_PREVIEW') }}</h5>

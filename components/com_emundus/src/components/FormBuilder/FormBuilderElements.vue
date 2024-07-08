@@ -1,5 +1,5 @@
 <template>
-  <div id="form-builder-elements">
+  <div id="form-builder-elements" style="min-width: 260px">
     <div class="tw-flex tw-items-center tw-justify-around">
       <div v-for="menu in menus" :key="menu.id" id="form-builder-elements-title" class="em-light-tabs tw-cursor-pointer"
            @click="selected = menu.id" :class="selected === menu.id ? 'em-light-selected-tab' : ''">
@@ -7,7 +7,13 @@
       </div>
     </div>
 
-    <div v-if="selected === 1">
+    <div v-if="selected === 1" class="tw-mt-2">
+      <input
+          v-model="keywords"
+          type="text"
+          class="formbuilder-searchbar"
+          :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_SEARCH_ELEMENT')"
+      />
       <draggable
           v-model="publishedElements"
           class="draggables-list"
@@ -37,7 +43,13 @@
       </draggable>
     </div>
 
-    <div v-if="selected === 2">
+    <div v-if="selected === 2" class="tw-mt-2">
+      <input
+          v-model="keywords"
+          type="text"
+          class="formbuilder-searchbar"
+          :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_SEARCH_SECTION')"
+      />
       <div
           v-for="group in publishedGroups"
           :key="group.id"
@@ -45,10 +57,10 @@
           @click="addGroup(group)"
       >
         <div
-            class="form-builder-element tw-flex tw-items-center tw-px-3 tw-justify-between tw-cursor-pointer"
+            class="form-builder-element tw-flex tw-items-center tw-justify-between tw-cursor-pointer tw-gap-3 tw-p-3"
         >
           <span class="material-icons-outlined">{{ group.icon }}</span>
-          <span class="tw-w-full tw-p-4">{{ translate(group.name) }}</span>
+          <p class="tw-w-full tw-flex tw-flex-col">{{ translate(group.name) }}</p>
           <span class="material-icons-outlined">add_circle_outline</span>
         </div>
       </div>
@@ -95,6 +107,7 @@ export default {
       cloneElement: {},
       loading: false,
       elementHovered: 0,
+      keywords: ''
     }
   },
   created() {
@@ -103,10 +116,10 @@ export default {
   },
   methods: {
     getElements() {
-      return require('../../../data/form-builder-elements.json');
+      return require('../../../data/form-builder/form-builder-elements.json');
     },
     getSections() {
-      return require('../../../data/form-builder-sections.json');
+      return require('../../../data/form-builder/form-builder-sections.json');
     },
     setCloneElement(element) {
       this.cloneElement = element;
@@ -176,10 +189,19 @@ export default {
   },
   computed: {
     publishedElements() {
-      return this.elements.filter(element => element.published);
+      // Filter this.elements with keywords
+      if (this.keywords) {
+        return this.elements.filter(element => element.published && this.translate(element.name).toLowerCase().includes(this.keywords.toLowerCase()));
+      } else {
+        return this.elements.filter(element => element.published);
+      }
     },
     publishedGroups() {
-      return this.groups.filter(group => group.published);
+      if (this.keywords) {
+        return this.groups.filter(group => group.published && this.translate(group.name).toLowerCase().includes(this.keywords.toLowerCase()));
+      } else {
+        return this.groups.filter(group => group.published);
+      }
     }
   }
 }
@@ -197,6 +219,18 @@ export default {
 
   &:hover {
     background-color: var(--neutral-200);
+  }
+}
+
+#form-builder-elements input.formbuilder-searchbar,
+#form-builder-document-formats input.formbuilder-searchbar,
+#form-builder-rules-list input.formbuilder-searchbar {
+  border-width: 0 0 1px 0;
+  border-radius: 0;
+  border-color: var(--neutral-400);
+  &:focus {
+    outline: unset;
+    border-bottom-color: var(--em-form-outline-color-focus);
   }
 }
 

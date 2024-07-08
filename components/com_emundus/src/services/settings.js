@@ -2,83 +2,132 @@
 import client from './axiosClient';
 
 export default {
-    async getActiveLanguages() {
-        try {
-            return await client().get('index.php?option=com_emundus&controller=settings&task=getactivelanguages');
-        } catch (e) {
-            return {
-                status: false,
-                error: e
-            };
-        }
-    },
-    async removeParameter(param) {
-        try {
-            const response = await client().post(
-                'index.php?option=com_emundus&controller=settings&task=removeparam',
-                {
-                    param: param
-                });
-
-            return response;
-        } catch (e) {
-            return {
-                status: false,
-                error: e
-            };
-        }
-    },
-    async checkFirstDatabaseJoin() {
-        try {
-            const response = await client().get('index.php?option=com_emundus&controller=settings&task=checkfirstdatabasejoin');
-
-            return response;
-        } catch (e) {
-            return {
-                status: false,
-                message: e.message
-            };
-        }
-    },
-    async getEmundusParams() {
-        try {
-            return await client().get('index.php?option=com_emundus&controller=settings&task=getemundusparams');
-        } catch (e) {
-            return false;
-        }
-    },
-    async getOnboardingLists() {
-        try {
-            return await client().get('index.php?option=com_emundus&controller=settings&task=getonboardinglists');
-        } catch (e) {
-            return false;
-        }
-    },
-
-    async getOffset() {
-        try {
-            return await client().get('index.php?option=com_emundus&controller=settings&task=getOffset');
-        } catch (e) {
-            return false;
-        }
-    },
-
-    async redirectJRoute(link) {
-        let formDatas = new FormData();
-        formDatas.append('link', link);
-
-        fetch(window.location.origin + '/index.php?option=com_emundus&controller=settings&task=redirectjroute', {
-            method: 'POST',
-            body: formDatas,
-        }).then((response) => {
-            if (response.ok) {
-                return response.json();
-            }
-            throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
-        }).then((result) => {
-            if (result.status) {
-                window.location.href = window.location.origin + '/' + result.data;
-            }
-        });
+  async getActiveLanguages() {
+    try {
+      return await client().get('index.php?option=com_emundus&controller=settings&task=getactivelanguages');
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
     }
+  },
+  async removeParameter(param) {
+    try {
+      const response = await client().post(
+        'index.php?option=com_emundus&controller=settings&task=removeparam',
+        {
+          param: param
+        });
+
+      return response;
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
+  },
+  async checkFirstDatabaseJoin() {
+    try {
+      const response = await client().get('index.php?option=com_emundus&controller=settings&task=checkfirstdatabasejoin');
+
+      return response;
+    } catch (e) {
+      return {
+        status: false,
+        message: e.message
+      };
+    }
+  },
+  async getEmundusParams() {
+    try {
+      return await client().get('index.php?option=com_emundus&controller=settings&task=getemundusparams');
+    } catch (e) {
+      return false;
+    }
+  },
+  async getOnboardingLists() {
+    try {
+      return await client().get('index.php?option=com_emundus&controller=settings&task=getonboardinglists');
+    } catch (e) {
+      return false;
+    }
+  },
+
+  async getOffset() {
+    try {
+      return await client().get('index.php?option=com_emundus&controller=settings&task=getOffset');
+    } catch (e) {
+      return false;
+    }
+  },
+
+  async redirectJRoute(link) {
+    let formDatas = new FormData();
+    formDatas.append('link', link);
+
+    fetch(window.location.origin + '/index.php?option=com_emundus&controller=settings&task=redirectjroute', {
+      method: 'POST',
+      body: formDatas,
+    }).then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+    }).then((result) => {
+      if (result.status) {
+        window.location.href = window.location.origin + '/' + result.data;
+      }
+    });
+  },
+
+  async getTimezoneList() {
+    try {
+      return await client().get('index.php?option=com_emundus&controller=settings&task=gettimezonelist');
+    } catch (e) {
+      return false;
+    }
+  },
+
+  async saveParams(params) {
+    const formData = new FormData();
+    Object.keys(params).forEach(key => {
+      formData.append('params[]', JSON.stringify(params[key]));
+    });
+
+    try {
+      const response = await client().post(
+        'index.php?option=com_emundus&controller=settings&task=updateemundusparams',
+        formData
+      );
+
+      return response.data;
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+
+  async saveColors(preset) {
+    const formData = new FormData();
+    formData.append('preset', JSON.stringify(preset));
+
+    try {
+      const response = await client().post(
+        'index.php?option=com_emundus&controller=settings&task=updatecolor',
+        formData
+      );
+
+      return response.data;
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
 };

@@ -1,79 +1,59 @@
 <template>
-  <div class="tw-w-full">
-    <div>
+  <div class="tw-w-full tw-flex tw-gap-8">
+    <SidebarMenu :key="keyMenu" json_source="settings/menus.json" @listMenus="GetList" @menuSelected="handleMenu"/>
 
-      <!--- MENU --->
-      <transition name="slide-right">
-        <div class="tw-grid tw-grid-cols-3 tw-gap-6" v-if="menuHighlight === 0">
-          <div style="background: var(--neutral-0);" v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index"
-               class="em-shadow-cards em-hover-s-scale" v-wave @click="changeMenu(menu)">
-            <span class="material-icons-outlined em-main-500-color tw-mb-4">{{ menu.icon }}</span>
-            <h3 class="tw-mb-2">{{ translate(menu.title) }}</h3>
-            <p class="tw-text-base tw-text-neutral-700">{{ translate(menu.description) }}</p>
-          </div>
+    <div class="tw-w-full tw-pt-6 tw-pr-8 tw-pb-3 tw-pl-0" v-if="activeMenuItem">
+      <h1 class="tw-text-2xl tw-pl-1 tw-font-semibold tw-text-green-700 tw-mb-3">
+        <span class="material-icons-outlined tw-scale-150 tw-text-green-700 tw-me-2">
+          {{ activeMenuItem.icon }}
+        </span>
+        {{ translate(activeMenuItem.label) }}
+      </h1>
+
+      <div>
+        <Content :ref="'content_'+activeMenuItem.name" :key="'json_'+activeMenuItem.name+clicker"
+                 v-if="activeMenuItem.type === 'JSON'" :json_source="'settings/sections/'+activeMenuItem.source"
+                 @needSaving="handleNeedSaving" @listSections="GetList" :class="activeMenuItem.format === 'Tile' ? 'tw-flex tw-flex-wrap tw-justify-between' : ''"/>
+
+        <div id="accordion-collapse" v-else-if="activeMenuItem.type === 'sectionComponent'">
+          <SectionComponent :activeMenuItem="activeMenuItem" :activeSectionComponent="activeSectionComponent" @handleSectionComponent="handleSectionComponent" @needSaving="handleNeedSaving"></SectionComponent>
         </div>
-      </transition>
+        <div v-else >
+          <component :ref="'content_'+activeMenuItem.name" :is="activeMenuItem.component"
+                     :key="'component_'+activeMenuItem.name" v-bind="activeMenuItem.props"
+                     @needSaving="handleNeedSaving"/>
+        </div>
 
-      <!-- COMPONENTS -->
-      <transition name="fade">
-        <StyleTool
-            v-if="menuHighlight === 1"
-            v-show="modal_ready"
-            @resetMenuIndex="menuHighlight = 0"
-        ></StyleTool>
-
-        <ContentTool
-            v-else-if="menuHighlight === 2"
-            v-show="modal_ready"
-            @resetMenuIndex="menuHighlight = 0"
-        />
-
-        <FilesTool
-            v-else-if="menuHighlight === 3"
-            v-show="modal_ready"
-            @resetMenuIndex="menuHighlight = 0"
-        />
-
-        <TranslationTool
-            v-else-if="menuHighlight === 9"
-            v-show="modal_ready"
-            @resetMenuIndex="menuHighlight = 0"
-            ref="translations"
-        />
-
-        <AttachmentStorage
-            v-else-if="menuHighlight === 5"
-            v-show="modal_ready"
-            @resetMenuIndex="menuHighlight = 0"
-        />
-      </transition>
+      </div>
     </div>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
+
 </template>
 
 <script>
-import EditStatus from '../components/Settings/FilesTool/EditStatus';
-import EditTags from '../components/Settings/FilesTool/EditTags';
-import TranslationTool from '../components/Settings/TranslationTool/TranslationTool';
-import ContentTool from '../components/Settings/Content/ContentTool';
-import FilesTool from '../components/Settings/FilesTool/FilesTool';
-import StyleTool from '../components/Settings/Style/StyleTool';
-import AttachmentStorage from '../components/Settings/AttachmentStorage/AttachmentStorage';
+import EditEmailJoomla from "@/components/Settings/EditEmailJoomla.vue";
 
-import settingsService from '../services/settings';
+import Multiselect from 'vue-multiselect';
+import SidebarMenu from "@/components/Menus/SidebarMenu.vue";
+import Content from "@/components/Settings/Content.vue";
+import Addons from "@/components/Settings/Addons.vue";
+import Info from "@/components/info.vue";
+import Swal from "sweetalert2";
+import SectionComponent from "@/components/Settings/SectionComposant.vue";
+
 
 export default {
   name: "globalSettings",
   components: {
-    StyleTool,
-    AttachmentStorage,
-    FilesTool,
-    ContentTool,
-    TranslationTool,
-    EditStatus,
-    EditTags
+    SectionComponent,
+    Content,
+    SidebarMenu,
+    EditEmailJoomla,
+    Multiselect,
+    Addons,
+    Info,
   },
   props: {
     actualLanguage: {
@@ -87,166 +67,143 @@ export default {
     manyLanguages: {
       type: Number,
       default: 1
-    }
+    },
+    helptext: {
+      type: String,
+      default: ''
+    },
   },
 
   data: () => ({
-    menuHighlight: 0,
-    currentTitle: '',
-    langue: 0,
     saving: false,
     endSaving: false,
-    loading: false,
+    loading: null,
+    needSaving: false,
 
-    em_params: {},
-    menus: [
-      {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE_DESC",
-        icon: 'style',
-        index: 1,
-        access: 1,
-      },
-      {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT_DESC",
-        icon: 'notes',
-        index: 2,
-        access: 1,
-      },
-      {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL_DESC",
-        icon: 'source',
-        index: 3,
-        access: 1,
-      },
-      {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS_DESC",
-        icon: 'language',
-        index: 9,
-        access: 1,
-      },
-      {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_ATTACHMENT_STORAGE",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_ATTACHMENT_STORAGE_DESC",
-        icon: 'inventory_2',
-        index: 5,
-        access: 0,
-      },
-    ],
-    modal_ready: false
+    activeMenuItem: null,
+    activeMenu: null,
+    keyMenu: 0,
+    clicker: 0,
+    activeSection: null,
+    urlRedirectMenu: false,
+    urlRedirectSection: false,
+    Menus: [],
+    Sections: [],
   }),
 
   created() {
-    this.loading = true;
-    settingsService.getEmundusParams().then((params) => {
-      this.em_params = params.data.emundus;
-
-      // Give access to modules
-      this.menus[0].access = this.em_params.style != undefined ? parseInt(this.em_params.style) : 1;
-      this.menus[1].access = this.em_params.content != undefined ? parseInt(this.em_params.content) : 1;
-      this.menus[2].access = 1;
-      this.menus[3].access = this.em_params.translations != undefined ? parseInt(this.em_params.translations) : 1;
-      this.menus[4].access = this.em_params.attachment_storage != undefined ? parseInt(this.em_params.attachment_storage) : 0;
-      //
-
-      this.loading = false;
-    });
-
-    let conteneur = document.querySelector(".view-settings #g-page-surround");
-    if(conteneur) {
-      let containerDivShapes = document.createElement("div");
-      let divShapes = document.createElement("div");
-      containerDivShapes.id = "container-parameters-background-shapes";
-      divShapes.id = "parameters-background-shapes";
-
-      let firstDiv = conteneur.firstChild;
-
-      conteneur.insertBefore(containerDivShapes, firstDiv);
-      conteneur.insertBefore(divShapes, firstDiv);
+  },
+  mounted() {
+    if(sessionStorage.getItem('goToMenu')) {
+      this.findMenu(sessionStorage.getItem('goToMenu'));
+      this.urlRedirectMenu = true;
+      sessionStorage.removeItem('goToMenu');
+    }
+    if(sessionStorage.getItem('goToSection')) {
+      this.urlRedirectSection = true;
     }
   },
 
   methods: {
-    changeMenu(menu) {
-      setTimeout(() => {
-        this.menuHighlight = menu.index;
-        this.currentTitle = menu.title;
-      }, 200);
-    }
-  },
+    handleNeedSaving(needSaving) {
+      this.$store.commit("settings/setNeedSaving", needSaving);
+    },
+    GetList(list , type) {
+      if(type === 'menus') {
+        this.Menus = list;
+      }else if (type === 'sections') {
+        this.Sections = list;
+      }
+    },
 
-  computed: {
-    displayedMenus() {
-      return this.menus.filter((menu) => {
-        return menu.access === 1;
-      })
-    }
-  },
+    handleMenu(item) {
+      if (this.$store.state.settings.needSaving) {
+        Swal.fire({
+          title: this.translate('COM_EMUNDUS_ONBOARD_WARNING'),
+          text: this.activeMenuItem.component==="EditEmailJoomla" ? this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_UNSAVED_MUST_TEST_MAIL') : this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_UNSAVED'),
+          showCancelButton: true,
+          confirmButtonText: this.activeMenuItem.component==="EditEmailJoomla" ? this.translate('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_BT') : this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE'),
+          cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL_UPDATES'),
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+          }
+        }).then((result) => {
+          this.handleNeedSaving(false);
 
-  watch: {
-    menuHighlight: function (value) {
-      this.modal_ready = false;
-      setTimeout(() => {
-        switch (value) {
-          case 1:
-            this.$modal.show('styleTool');
-            this.modal_ready = true;
-            break;
-          case 2:
-            this.$modal.show('contentTool');
-            this.modal_ready = true;
-            break;
-          case 3:
-            this.$modal.show('filesTool');
-            this.modal_ready = true;
-            break;
-          case 9:
-            this.$modal.show('translationTool');
-            this.modal_ready = true;
-            break;
-          case 5:
-            this.$modal.show('attachmentStorage');
-            this.modal_ready = true;
-            break;
-          default:
-            break;
+          if (result.value) {
+            this.saveSection(this.activeMenuItem, item);
+          } else {
+            this.activeMenuItem = item;
+          }
+        });
+      } else {
+        this.activeMenuItem = item;
+      }
+    },
+    saveSection(menu, item = null) {
+      let vue_component = this.$refs['content_' + menu.name];
+      if (Array.isArray(vue_component)) {
+        vue_component = vue_component[0];
+      }
+
+      if (typeof vue_component.saveMethod !== 'function') {
+        console.error('The component ' + menu.name + ' does not have a saveMethod function')
+        return
+      }
+
+      vue_component.saveMethod().then((response) => {
+        if (response === true) {
+          if (item !== null) {
+            this.activeMenuItem = item;
+          }
         }
-      }, 500)
+      });
+    },
+    handleSectionComponent(element) {
+      this.activeSectionComponent = this.activeSectionComponent === element.sectionTitle ? null : element.sectionTitle;
+    },
+    findMenu(menu) {
+      for( let index in this.Menus) {
+        if (this.Menus[index].name === menu) {
+          this.activeMenu = index
+          break;
+        }
+      }
+    },
+    findSection(section) {
+      for( let index in this.Sections) {
+        if (this.Sections[index].name === section) {
+          this.activeSection = index;
+          break;
+        }
+      }
+    },
+  },
+  watch: {
+    activeMenuItem: function (val, oldVal)
+    {
+      if (oldVal !== null ) {
+        sessionStorage.setItem('tchooz_settings_selected_section/' + document.location.hostname, null);
+      }
+    },
+    activeMenu: function (val) {
+      sessionStorage.setItem('tchooz_selected_menu/'+'settings/menus.json'.replace('.json','')+ '/' + document.location.hostname, val);
+      this.keyMenu++;
+    },
+    activeSection: function (val) {
+      sessionStorage.setItem('tchooz_settings_selected_section/' + document.location.hostname, val);
+      this.clicker++;
+    },
+    Sections: function () {
+      if(this.urlRedirectSection) {
+        this.findSection(sessionStorage.getItem('goToSection'));
+        this.urlRedirectSection = false;
+      }
     }
   }
 };
+
 </script>
-
-<style scoped>
-.em-hover-s-scale {
-  transition: transform 0.2s ease-in-out;
-}
-
-.em-hover-s-scale:hover {
-  transform: scale(1.03);
-}
-
-.em-shadow-cards {
-  margin: unset;
-}
-
-@media all and (max-width: 767px) {
-  .view-settings  .tw-grid.tw-grid-cols-3 {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  .view-settings .tw-grid.tw-grid-cols-3 .em-shadow-cards {
-    width: 100%;
-  }
-}
-
-@media all and (max-width: 1024px) {
- .view-settings .em-shadow-cards {
-    height: auto;
-  }
-}
-</style>

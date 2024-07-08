@@ -1471,19 +1471,41 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getAllStatus()
+	public function getAllStatus($uid = null, $result_index = null)
 	{
-		$query = 'select * from #__emundus_setup_status order by ordering';
+		$all_status = [];
 
+		if (empty($uid)) {
+			$uid = Factory::getApplication()->getIdentity()->id;
+		}
 
-		try {
+		$query = $this->_db->getQuery(true);
+
+		$status_by_groups = $this->getStatusByGroup($uid);
+
+		try
+		{
+			$query->select('*')
+				->from($this->_db->quoteName('#__emundus_setup_status'))
+				->order('ordering');
+
+			if (!empty($status_by_groups)) {
+				$query->where($this->_db->quoteName('step'). ' IN ('.implode(',', $this->_db->quote($status_by_groups)).')');
+			}
 			$this->_db->setQuery($query);
 
-			return $this->_db->loadAssocList();
+			if (!empty($result_index) && in_array($result_index, ['id', 'step', 'value'])) {
+				$all_status = $this->_db->loadAssocList($result_index);
+			} else {
+				$all_status = $this->_db->loadAssocList();
+			}
 		}
-		catch (Exception $e) {
-			throw $e;
+		catch(Exception $e)
+		{
+			Log::add('Failed to get all status with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
+
+		return $all_status;
 	}
 
 	/**
@@ -1666,50 +1688,26 @@ class EmundusModelFiles extends JModelLegacy
 		$res = false;
 
 		if (!empty($fnums) && isset($state)) {
+			if (empty($user_id)) {
+				$user    = Factory::getApplication()->getIdentity();
+				$user_id = !empty($user->id) ? $user->id : 62;
+			}
+			$all_status = $this->getAllStatus(-1, 'step');
 
-			$query = $this->_db->getQuery(true);
-			$fnums = is_array($fnums) ? $fnums : [$fnums];
+			if (isset($all_status[$state])) {
+				$query = $this->_db->getQuery(true);
+				$fnums = is_array($fnums) ? $fnums : [$fnums];
 
-			try {
-				$query->select($this->_db->quoteName('profile'))
-					->from($this->_db->quoteName('#__emundus_setup_status'))
-					->where($this->_db->quoteName('step') . ' = ' . $state);
-				$this->_db->setQuery($query);
-				$profile = $this->_db->loadResult();
-
-
-				$this->app->triggerEvent('onBeforeMultipleStatusChange', [$fnums, $state]);
-				$trigger = $this->app->triggerEvent('onCallEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
-				foreach ($trigger as $responses) {
-					foreach ($responses as $response) {
-						if (!empty($response) && isset($response['status']) && $response['status'] === false) {
-							return $response;
-						}
-					}
-				}
-
-				$all_status = $this->getStatus();
-
-				if (empty($user_id)) {
-					$user = $this->app->getIdentity();
-					if (empty($user->id)) {
-						$eMConfig = ComponentHelper::getParams('com_emundus');
-						$automated_task_user = $eMConfig->get('automated_task_user', 62);
-						$user_id = $automated_task_user;
-					}
-				}
-
-				foreach ($fnums as $fnum) {
-					$query->clear()
-						->select('status')
-						->from('#__emundus_campaign_candidature')
-						->where('fnum LIKE ' . $this->_db->quote($fnum));
-
+				try {
+					$query->select($this->_db->quoteName('profile'))
+						->from($this->_db->quoteName('#__emundus_setup_status'))
+						->where($this->_db->quoteName('step') . ' = ' . $state);
 					$this->_db->setQuery($query);
-					$old_status_step = $this->_db->loadResult();
+					$profile = $this->_db->loadResult();
 
-					$this->app->triggerEvent('onBeforeStatusChange', [$fnum, $state]);
-					$trigger = $this->app->triggerEvent('onCallEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+
+					$this->app->triggerEvent('onBeforeMultipleStatusChange', [$fnums, $state]);
+					$trigger = $this->app->triggerEvent('onCallEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
 					foreach ($trigger as $responses) {
 						foreach ($responses as $response) {
 							if (!empty($response) && isset($response['status']) && $response['status'] === false) {
@@ -1718,58 +1716,89 @@ class EmundusModelFiles extends JModelLegacy
 						}
 					}
 
-					$query->clear()
-						->update($this->_db->quoteName('#__emundus_campaign_candidature'))
-						->set($this->_db->quoteName('status') . ' = ' . $state)
-						->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->Quote($fnum));
+					$all_status = $this->getStatus($user_id);
 
-					$this->_db->setQuery($query);
-					$res = $this->_db->execute();
-
-					$old_status_lbl = $all_status[$old_status_step]['value'];
-
-					// get the applicant id
-					$query->clear()
-						->select($this->_db->quoteName('applicant_id'))
-						->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-						->where($this->_db->quoteName('fnum').' LIKE '.$this->_db->quote($fnum));
-					$this->_db->setQuery($query);
-					$applicant_id = $this->_db->loadResult();
-
-					if ($res) {
-						$logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-						EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
-					}
-					else {
-						$logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
-						EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+					if (empty($user_id)) {
+						$user = $this->app->getIdentity();
+						if (empty($user->id)) {
+							$eMConfig            = ComponentHelper::getParams('com_emundus');
+							$automated_task_user = $eMConfig->get('automated_task_user', 62);
+							$user_id             = $automated_task_user;
+						}
 					}
 
-					$this->app->triggerEvent('onAfterStatusChange', [$fnum, $state]);
-					$this->app->triggerEvent('onCallEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
-
-					if (!empty($profile)) {
+					foreach ($fnums as $fnum) {
 						$query->clear()
-							->update($this->_db->quoteName('#__emundus_users'))
-							->set($this->_db->quoteName('profile') . ' = ' . $profile)
-							->where($this->db->quoteName('user_id').' = '.$this->db->quote($applicant_id));
+							->select('status')
+							->from('#__emundus_campaign_candidature')
+							->where('fnum LIKE ' . $this->_db->quote($fnum));
+
 						$this->_db->setQuery($query);
-						$this->_db->execute();
+						$old_status_step = $this->_db->loadResult();
+
+						$this->app->triggerEvent('onBeforeStatusChange', [$fnum, $state]);
+						$trigger = $this->app->triggerEvent('onCallEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+						foreach ($trigger as $responses) {
+							foreach ($responses as $response) {
+								if (!empty($response) && isset($response['status']) && $response['status'] === false) {
+									return $response;
+								}
+							}
+						}
+
+						$query->clear()
+							->update($this->_db->quoteName('#__emundus_campaign_candidature'))
+							->set($this->_db->quoteName('status') . ' = ' . $state)
+							->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->Quote($fnum));
+
+						$this->_db->setQuery($query);
+						$res = $this->_db->execute();
+
+						$old_status_lbl = $all_status[$old_status_step]['value'];
+
+						// get the applicant id
+						$query->clear()
+							->select($this->_db->quoteName('applicant_id'))
+							->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+							->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+						$this->_db->setQuery($query);
+						$applicant_id = $this->_db->loadResult();
+
+						if ($res) {
+							$logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
+							EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+						}
+						else {
+							$logs_params = ['updated' => [['old' => $old_status_lbl, 'new' => $all_status[$state]['value'], 'old_id' => $old_status_step, 'new_id' => $state]]];
+							EmundusModelLogs::log($user_id, $applicant_id, $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE_FAILED', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+						}
+
+						$this->app->triggerEvent('onAfterStatusChange', [$fnum, $state]);
+						$this->app->triggerEvent('onCallEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]]);
+
+						if (!empty($profile)) {
+							$query->clear()
+								->update($this->_db->quoteName('#__emundus_users'))
+								->set($this->_db->quoteName('profile') . ' = ' . $profile)
+								->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($applicant_id));
+							$this->_db->setQuery($query);
+							$this->_db->execute();
+						}
 					}
+
+					$this->makeAttachmentsEditableByApplicant($fnums, $state);
+				}
+				catch (Exception $e) {
+					echo $e->getMessage();
+					Log::add('USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 				}
 
-				$this->makeAttachmentsEditableByApplicant($fnums, $state);
-			}
-			catch (Exception $e) {
-				echo $e->getMessage();
-				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-			}
-
-			if ($res) {
-				$res = [
-					'status' => true,
-					'msg'    => $this->sendEmailAfterUpdateState($fnums, $state)
-				];
+				if ($res) {
+					$res = [
+						'status' => true,
+						'msg'    => $this->sendEmailAfterUpdateState($fnums, $state)
+					];
+				}
 			}
 		}
 
@@ -3275,23 +3304,33 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return bool|mixed
 	 */
-	public function getFilesByFnums($fnums, $attachment_ids = null)
+	public function getFilesByFnums($fnums, $attachment_ids = null, $return_as_object = false)
 	{
 		$files = false;
 
 		if (!empty($fnums)) {
+			$query = $this->_db->getQuery(true);
+
+			$query->select('fu.*')
+				->from($this->_db->quoteName('#__emundus_uploads', 'fu'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('fu.attachment_id'))
+				->where($this->_db->quoteName('fu.fnum') . ' IN (' . implode(',', $fnums) . ')');
+
 			if (!empty($attachment_ids)) {
-				$query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("' . implode('","', $fnums) . '") and fu.attachment_id in ("' . implode('","', $attachment_ids) . '") order by fu.fnum';
+				$query->andWhere($this->_db->quoteName('fu.attachment_id') . ' IN (' . implode(',', $attachment_ids) . ')');
 			}
-			else {
-				$query = 'select fu.* from #__emundus_uploads as fu where fu.fnum in ("' . implode('","', $fnums) . '") order by fu.fnum';
-			}
+
+			$query->order('fu.fnum, esa.ordering ASC');
 
 			try {
 				$this->_db->setQuery($query);
-				$files = $this->_db->loadAssocList();
-			}
-			catch (Exception $e) {
+
+				if ($return_as_object) {
+					$files = $this->_db->loadObjectList();
+				} else {
+					$files = $this->_db->loadAssocList();
+				}
+			} catch(Exception $e) {
 				echo $e;
 				Log::add('Failed to get files by fnum ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
@@ -4200,25 +4239,16 @@ class EmundusModelFiles extends JModelLegacy
 		}
 	}
 
-	public function getStatus()
-	{
-		$all_status = [];
-
-		
-		$query     = $this->_db->getQuery(true);
-		$query->select('*')
-			->from('#__emundus_setup_status')
-			->order('ordering ASC');
-
-		try {
-			$this->_db->setQuery($query);
-			$all_status = $this->_db->loadAssocList('step');
-		}
-		catch (Exception $e) {
-			Log::add('Failed to get all status ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+	/**
+	 * @deprecated use getAllStatus instead
+	 * @return array|mixed
+	 */
+	public function getStatus($user_id = null) {
+		if (empty($user_id)) {
+			$user_id = Factory::getApplication()->getIdentity()->id;
 		}
 
-		return $all_status;
+		return $this->getAllStatus($user_id, 'step');
 	}
 
 	/**
@@ -4865,7 +4895,6 @@ class EmundusModelFiles extends JModelLegacy
 
 		$email_from_sys = $this->app->get('mailfrom');
 		$fnumsInfos     = $this->getFnumsInfos($fnums);
-		$status         = $this->getStatus();
 
 		$current_user = $this->app->getIdentity();
 
@@ -5064,8 +5093,9 @@ class EmundusModelFiles extends JModelLegacy
 									'user_id_from' => $from_id,
 									'user_id_to'   => $file['applicant_id'],
 									'subject'      => $subject,
-									'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . $to . '</i><br>' . $body,
+									'message' => $body,
 									'email_id'     => $trigger_email_id,
+									'email_to' => $to
 								);
 								$logged  = $m_email->logEmail($message, $file['fnum']);
 								$msg     .= Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $to . '<br>';
@@ -5136,8 +5166,9 @@ class EmundusModelFiles extends JModelLegacy
 								'user_id_from' => $from_id,
 								'user_id_to'   => $recipient['id'],
 								'subject'      => $subject,
-								'message'      => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . $to . '</i><br>' . $body,
+								'message' => $body,
 								'email_id'     => $trigger_email_id,
+								'email_to' => $to
 							);
 							$m_email->logEmail($message, $file['fnum']);
 							$msg .= Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $to . '<br>';
@@ -5224,7 +5255,51 @@ class EmundusModelFiles extends JModelLegacy
 		return $updated;
 	}
 
-	public function exportZip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null) {
+	public function getStatusByGroup($uid = null)
+	{
+		$status = array();
+
+		if(empty($uid)) {
+			$uid = Factory::getApplication()->getIdentity()->id;
+		}
+
+		try
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/models/users.php';
+			$m_users = new EmundusModelUsers();
+			$groups = $m_users->getUserGroups($uid, 'Column');
+
+			if(!empty($groups)) {
+				$query = $this->_db->getQuery(true);
+
+				$query->clear()
+					->select('COUNT(id)')
+					->from($this->_db->quoteName('#__emundus_setup_groups'))
+					->where($this->_db->quoteName('id') . ' IN (' . implode(',',$this->_db->quote($groups)) . ')')
+					->where($this->_db->quoteName('filter_status') . ' = 0');
+				$this->_db->setQuery($query);
+				$is_filter = $this->_db->loadResult();
+
+				if ($is_filter == 0)
+				{
+					$query->clear()
+						->select('DISTINCT status')
+						->from($this->_db->quoteName('#__emundus_setup_groups_repeat_status'))
+						->where($this->_db->quoteName('parent_id') . ' IN (' . implode(',', $this->_db->quote($groups)) . ')');
+					$this->_db->setQuery($query);
+					$status = $this->_db->loadColumn();
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error when get status by group ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $status;
+	}
+
+	public function exportZip($fnums, $form_post = 1, $attachment = 1, $assessment = 1, $decision = 1, $admission = 1, $form_ids = null, $attachids = null, $options = null, $acl_override = false, $current_user = null, $params = []) {
 		$eMConfig = ComponentHelper::getParams('com_emundus');
 
 		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
@@ -5243,6 +5318,8 @@ class EmundusModelFiles extends JModelLegacy
 		if (file_exists($path)) {
 			unlink($path);
 		}
+
+		$concat_attachments_with_form = $params['concat_attachments_with_form'] ?? false;
 
 		foreach ($fnums as $fnum) {
 
@@ -5286,7 +5363,11 @@ class EmundusModelFiles extends JModelLegacy
 					}
 
 					if ($form_post || !empty($forms_to_export)) {
-						$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum],$fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options);
+						if ($concat_attachments_with_form) {
+							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum],$fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options, null, null, false);
+						} else {
+							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $form_post, $forms_to_export, $options);
+						}
 					}
 				}
 
@@ -5304,7 +5385,28 @@ class EmundusModelFiles extends JModelLegacy
 					$admission_file = EmundusHelperExport::getAdmissionPDF($fnum, $options);
 				}
 
-				if (count($files_list) > 0) {
+				if ($concat_attachments_with_form) {
+					if ($attachment || !empty($attachids)) {
+						$attachment_to_export = array();
+						if (!empty($attachids)) {
+							foreach ($attachids as $aids) {
+								$detail = explode("|", $aids);
+								if ($detail[1] == $fnumsInfo[$fnum]['training'] && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
+									$attachment_to_export[] = $detail[0];
+								}
+							}
+						}
+
+						if ($attachment || !empty($attachment_to_export)) {
+							$files = $this->getFilesByFnums([$fnum], $attachment_to_export, true);
+						}
+
+						$tmpArray = [];
+						EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
+					}
+				}
+
+				if (!empty($files_list)) {
 					foreach ($files_list as $key => $file_list){
 						if(empty($file_list)){
 							unset($files_list[$key]);
@@ -5375,7 +5477,7 @@ class EmundusModelFiles extends JModelLegacy
 					$zip->addFile($admission_file, $filename);
 				}
 
-				if ($attachment || !empty($attachids)) {
+				if (($attachment || !empty($attachids)) && !$concat_attachments_with_form) {
 					$attachment_to_export = array();
 					if (!empty($attachids)) {
 						foreach($attachids as $aids){

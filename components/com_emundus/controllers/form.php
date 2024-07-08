@@ -63,14 +63,14 @@ class EmundusControllerForm extends JControllerLegacy
 
 				if (!empty($campaigns)) {
 					if (count($campaigns) < 2) {
-						$short_tags = '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaigns[0]->id . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator"> ' . $campaigns[0]->label . '</a>';
+						$short_tags = '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaigns[0]->id . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaigns[0]->label . '</a>';
 					} else {
 						$tags = '<div>';
 						$short_tags = $tags;
 						$tags .= '<h2 class="tw-mb-2">'.Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE').'</h2>';
 						$tags .= '<div class="tw-flex tw-flex-wrap">';
 						foreach ($campaigns as $campaign) {
-							$tags .= '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaign->id . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator"> ' . $campaign->label . '</a>';
+							$tags .= '<a href="/index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' . $campaign->id . '" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaign->label . '</a>';
 						}
 						$tags .= '</div>';
 
@@ -1007,6 +1007,137 @@ class EmundusControllerForm extends JControllerLegacy
 		}
 
 		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getjsconditions()
+	{
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []);
+
+		$formId = $this->input->getInt('form_id');
+		$format = $this->input->getString('format', 'raw');
+
+		if (!empty($formId)) {
+			$conditions = $this->m_form->getJSConditionsByForm($formId, $format);
+
+			$response['msg'] = Text::_('SUCCESS');
+			$response['status'] = true;
+			$response['data'] = ['conditions' => $conditions];
+		} else {
+			$response['msg'] = Text::_('MISSING_PARAMS');
+		}
+
+		echo json_encode((object)$response);
+		exit;
+
+	}
+
+	public function addRule()
+	{
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$form_id = $this->input->getInt('form_id');
+			$conditions = $this->input->getString('conditions');
+			$actions = $this->input->getString('actions');
+			$group = $this->input->getString('group');
+			$label = $this->input->getString('label');
+
+			if (!empty($form_id) && !empty($conditions) && !empty($actions)) {
+				$rule_added = $this->m_form->addRule($form_id,$conditions,$actions,'js',$group,$label);
+
+				if ($rule_added !== false) {
+					$response['msg'] = Text::_('SUCCESS');
+					$response['status'] = true;
+				} else {
+					$response['msg'] = Text::_('FAILED');
+				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function editRule()
+	{
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$rule_id = $this->input->getInt('rule_id');
+			$conditions = $this->input->getString('conditions');
+			$actions = $this->input->getString('actions');
+			$group = $this->input->getString('group');
+			$label = $this->input->getString('label');
+
+			if (!empty($rule_id) && !empty($conditions) && !empty($actions)) {
+				$rule_edited = $this->m_form->editRule($rule_id,$conditions,$actions,$group,$label);
+
+				if ($rule_edited !== false) {
+					$response['msg'] = Text::_('SUCCESS');
+					$response['status'] = true;
+				} else {
+					$response['msg'] = Text::_('FAILED');
+				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function deleteRule()
+	{
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$rule_id = $this->input->getInt('rule_id');
+
+			if (!empty($rule_id)) {
+				$rule_deleted = $this->m_form->deleteRule($rule_id);
+
+				if ($rule_deleted !== false) {
+					$response['msg'] = Text::_('SUCCESS');
+					$response['status'] = true;
+				} else {
+					$response['msg'] = Text::_('FAILED');
+				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function publishRule()
+	{
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$rule_id = $this->input->getInt('rule_id');
+			$state = $this->input->getInt('state');
+
+			if (!empty($rule_id)) {
+				$rule_published = $this->m_form->publishRule($rule_id, $state);
+
+				if ($rule_published !== false) {
+					$response['msg'] = Text::_('SUCCESS');
+					$response['status'] = true;
+				} else {
+					$response['msg'] = Text::_('FAILED');
+				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object)$response);
 		exit;
 	}
 }

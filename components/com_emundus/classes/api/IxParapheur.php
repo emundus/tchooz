@@ -11,7 +11,8 @@ namespace classes\api;
 
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Utils;
-use Joomla\CMS\Component\ComponentHelper;
+use JComponentHelper;
+use JFactory;
 use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
@@ -51,7 +52,7 @@ class IxParapheur extends Api
 
 	public function setBaseUrl(): void
 	{
-		$config = ComponentHelper::getParams('com_emundus');
+		$config = JComponentHelper::getParams('com_emundus');
 		$this->baseUrl = $config->get('ixparapheur_api_base_url', '');
 	}
 
@@ -66,7 +67,7 @@ class IxParapheur extends Api
 
 	public function setAuth(): void
 	{
-		$config = ComponentHelper::getParams('com_emundus');
+		$config = JComponentHelper::getParams('com_emundus');
 
 		$this->auth['app_token'] = $config->get('ixparapheur_api_app_token', '');
 	}
@@ -233,7 +234,7 @@ class IxParapheur extends Api
 		{
 			return array();
 		}
-		
+
 		$datas = array_merge($this->default_values_dossier, $dossier);
 
 		return $this->post('dossier?transmettre='.$transmettre, json_encode($datas));
@@ -344,7 +345,7 @@ class IxParapheur extends Api
 	private function postFormData($url, $params = array())
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
-		
+
 		try {
 			$request = new Request('POST', $this->baseUrl.'/'.$url, $this->getHeaders());
 			$res = $this->client->sendAsync($request, $params)->wait();

@@ -214,10 +214,10 @@ class ApplicationModelTest extends UnitTestCase
 	 */
 	public function testapplicantCustomAction()
 	{
-		$done = $this->model->applicantCustomAction(0, '');
+		$done = $this->model->applicantCustomAction(0, '', 0, false, $this->dataset['applicant']);
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action and fnum are empty');
 
-		$done = $this->model->applicantCustomAction(0, $this->dataset['fnum']);
+		$done = $this->model->applicantCustomAction(0, $this->dataset['fnum'], 0, false,  $this->dataset['applicant']);
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action is empty');
 
 		// get module params
@@ -247,13 +247,13 @@ class ApplicationModelTest extends UnitTestCase
 		$this->db->setQuery($query);
 		$this->db->execute();
 
-		$done = $this->model->applicantCustomAction(0, $this->dataset['fnum']);
+		$done = $this->model->applicantCustomAction(0, $this->dataset['fnum'], 0, false,  $this->dataset['applicant']);
 		$this->assertSame($done, false, 'applicantCustomAction should return false if action is not found in module params');
 
-		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $this->dataset['fnum']);
+		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $this->dataset['fnum'], 0, false,  $this->dataset['applicant']);
 		$this->assertTrue($done, 'Custom action should be done because file is in correct status');
 
-		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $this->dataset['fnum']);
+		$done = $this->model->applicantCustomAction('mod_em_application_custom_actions1', $this->dataset['fnum'], 0, false,  $this->dataset['applicant']);
 		$this->assertFalse($done, 'Action should no longer work because file status has changed');
 
 		// Clear datasets

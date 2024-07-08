@@ -35,6 +35,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 		parent::__construct($config);
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'formbuilder.php');
 
 		$this->app           = Factory::getApplication();
@@ -660,6 +661,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 					$group = $this->m_formbuilder->createGroup($section_to_insert['labels'], $fid);
 
 					if(!empty($group['group_id'])) {
+						$elements_created = [];
 						foreach ($elements as $element) {
 							$labels = !empty($element['labels']) ? $element['labels'] : null;
 							$elementId = $this->m_formbuilder->createSimpleElement($group['group_id'], $element['value'], 0, $evaluation, $labels);
@@ -686,6 +688,26 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 										}
 									}
 								}
+
+
+								$elements_created[] = $new_element;
+							}
+						}
+
+						foreach ($elements as $key => $element) {
+							if(!empty($element['jsactions'])) {
+								$re = '/\$\d/m';
+
+								preg_match_all($re, $element['jsactions']['code'], $matches, PREG_SET_ORDER, 0);
+
+								if(!empty($matches[0])) {
+									foreach ($matches[0] as $match) {
+										$index = str_replace('$','',$match);
+										$element['jsactions']['code'] = str_replace($match,$elements_created[(int)$index]['name'],$element['jsactions']['code']);
+									}
+								}
+
+								EmundusHelperFabrik::addJsAction($elements_created[$key]['id'], $element['jsactions']);
 							}
 						}
 					} else {
@@ -1436,8 +1458,8 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 			$table = $jinput->getString('table', '');
 			$key  = $jinput->getString('key', '');
 			$value  = $jinput->getString('value', '');
-			$translate  = $jinput->getBool('translate', false);
-
+			$translate  = $jinput->getString('translate', false);
+			$translate = filter_var($translate, FILTER_VALIDATE_BOOLEAN);
 
 			if(!empty($table) && !empty($key) && !empty($value)) {
 				$options = $this->m_formbuilder->getSqlDropdownOptions($table, $key, $value, $translate);

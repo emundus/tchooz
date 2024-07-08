@@ -411,8 +411,9 @@ class plgAuthenticationEmundus_Oauth2 extends CMSPlugin
                     $log = [
                         'user_id_to' => $user_id,
                         'subject' => $subject,
-                        'message' => '<i>' . Text::_('MESSAGE') . ' ' . Text::_('SENT') . ' ' . Text::_('TO') . ' ' . $user['email'] . '</i><br>' . $body,
-                        'type' => $template->type
+                        'message' => $body,
+                        'type' => $template->type,
+                        'email_to' => $user['email']
                     ];
                     $m_emails->logEmail($log);
 

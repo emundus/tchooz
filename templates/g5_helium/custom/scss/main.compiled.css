@@ -359,6 +359,16 @@
   background : gray;
   border: 3px solid yellow;
 }*/
+.tchoozy-corner-bottom-left-bakground-mask-image {
+  mask-image: url(../../../../media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg);
+  -webkit-mask-image: url(../../../../media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: bottom left;
+  mask-size: contain;
+  -webkit-mask-size: cover;
+}
 /* ! tailwindcss v3.3.2 | MIT License | https://tailwindcss.com */
 /*
 1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
@@ -899,7 +909,6 @@ video {
 /* COORDINATOR FORMS*/
 .emundus-form.tw-p-6.homepage {
           background: var(--neutral-0);
-          padding: 0 24px 0 0;
           overflow: auto;
     }
 .emundus-form.tw-p-6.homepage .tw-mb-8 {
@@ -1926,6 +1935,11 @@ form.fabrikForm .fabrikGroupRepeater.pull-right.btn-group .deleteGroup.btn.btn-s
                     border: none;
                     background-color: transparent;
                 }
+.pull-right.em-repeat-table {
+        float: inherit;
+        display: flex;
+        justify-content: flex-end;
+    }
 /** BACKEND/VUE FORMS **/
 /** INPUT **/
 .com_emundus input:not([type='radio']):not([type='checkbox']):not([type='file']), .com_emundus select {
@@ -2103,10 +2117,18 @@ input[type="text"],
                 display: none;
             }
 .chzn-container .chzn-single li.search-choice, .chzn-container .chzn-choices li.search-choice, .chzn-container .chosen-single li.search-choice, .chzn-container .chosen-choices li.search-choice, .chzn-container.chzn-container-multi .chzn-single li.search-choice, .chzn-container.chzn-container-multi .chzn-choices li.search-choice, .chzn-container.chzn-container-multi .chosen-single li.search-choice, .chzn-container.chzn-container-multi .chosen-choices li.search-choice, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-choice, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-choice, .chzn-container.chzn-container-multi.chzn-container-active .chosen-single li.search-choice, .chzn-container.chzn-container-multi.chzn-container-active .chosen-choices li.search-choice, .chosen-container .chzn-single li.search-choice, .chosen-container .chzn-choices li.search-choice, .chosen-container .chosen-single li.search-choice, .chosen-container .chosen-choices li.search-choice, .chosen-container.chosen-container-multi .chzn-single li.search-choice, .chosen-container.chosen-container-multi .chzn-choices li.search-choice, .chosen-container.chosen-container-multi .chosen-single li.search-choice, .chosen-container.chosen-container-multi .chosen-choices li.search-choice, .chosen-container.chosen-container-multi.chosen-container-active .chzn-single li.search-choice, .chosen-container.chosen-container-multi.chosen-container-active .chzn-choices li.search-choice, .chosen-container.chosen-container-multi.chosen-container-active .chosen-single li.search-choice, .chosen-container.chosen-container-multi.chosen-container-active .chosen-choices li.search-choice {
-                padding: var(--p-4) var(--p-24) var(--p-4) var(--p-12) !important;
+                padding: 4px 6px !important;
                 background: var(--neutral-300);
                 border-radius: var(--em-form-br);
-                border: none;
+                border: 1px solid var(--neutral-400);
+                box-shadow: unset;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+.chzn-container .chzn-single li.search-choice .search-choice-close, .chzn-container .chzn-choices li.search-choice .search-choice-close, .chzn-container .chosen-single li.search-choice .search-choice-close, .chzn-container .chosen-choices li.search-choice .search-choice-close, .chzn-container.chzn-container-multi .chzn-single li.search-choice .search-choice-close, .chzn-container.chzn-container-multi .chzn-choices li.search-choice .search-choice-close, .chzn-container.chzn-container-multi .chosen-single li.search-choice .search-choice-close, .chzn-container.chzn-container-multi .chosen-choices li.search-choice .search-choice-close, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-choice .search-choice-close, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-choice .search-choice-close, .chzn-container.chzn-container-multi.chzn-container-active .chosen-single li.search-choice .search-choice-close, .chzn-container.chzn-container-multi.chzn-container-active .chosen-choices li.search-choice .search-choice-close, .chosen-container .chzn-single li.search-choice .search-choice-close, .chosen-container .chzn-choices li.search-choice .search-choice-close, .chosen-container .chosen-single li.search-choice .search-choice-close, .chosen-container .chosen-choices li.search-choice .search-choice-close, .chosen-container.chosen-container-multi .chzn-single li.search-choice .search-choice-close, .chosen-container.chosen-container-multi .chzn-choices li.search-choice .search-choice-close, .chosen-container.chosen-container-multi .chosen-single li.search-choice .search-choice-close, .chosen-container.chosen-container-multi .chosen-choices li.search-choice .search-choice-close, .chosen-container.chosen-container-multi.chosen-container-active .chzn-single li.search-choice .search-choice-close, .chosen-container.chosen-container-multi.chosen-container-active .chzn-choices li.search-choice .search-choice-close, .chosen-container.chosen-container-multi.chosen-container-active .chosen-single li.search-choice .search-choice-close, .chosen-container.chosen-container-multi.chosen-container-active .chosen-choices li.search-choice .search-choice-close {
+                position: static;
+                transform: scale(0.8);
             }
 .chzn-container .chzn-single li.search-field, .chzn-container .chzn-choices li.search-field, .chzn-container .chosen-single li.search-field, .chzn-container .chosen-choices li.search-field, .chzn-container.chzn-container-multi .chzn-single li.search-field, .chzn-container.chzn-container-multi .chzn-choices li.search-field, .chzn-container.chzn-container-multi .chosen-single li.search-field, .chzn-container.chzn-container-multi .chosen-choices li.search-field, .chzn-container.chzn-container-multi.chzn-container-active .chzn-single li.search-field, .chzn-container.chzn-container-multi.chzn-container-active .chzn-choices li.search-field, .chzn-container.chzn-container-multi.chzn-container-active .chosen-single li.search-field, .chzn-container.chzn-container-multi.chzn-container-active .chosen-choices li.search-field, .chosen-container .chzn-single li.search-field, .chosen-container .chzn-choices li.search-field, .chosen-container .chosen-single li.search-field, .chosen-container .chosen-choices li.search-field, .chosen-container.chosen-container-multi .chzn-single li.search-field, .chosen-container.chosen-container-multi .chzn-choices li.search-field, .chosen-container.chosen-container-multi .chosen-single li.search-field, .chosen-container.chosen-container-multi .chosen-choices li.search-field, .chosen-container.chosen-container-multi.chosen-container-active .chzn-single li.search-field, .chosen-container.chosen-container-multi.chosen-container-active .chzn-choices li.search-field, .chosen-container.chosen-container-multi.chosen-container-active .chosen-single li.search-field, .chosen-container.chosen-container-multi.chosen-container-active .chosen-choices li.search-field {
                 height: auto;
@@ -2180,8 +2202,20 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-sticky {
     position: sticky;
 }
+.tw-bottom-0 {
+    bottom: 0px;
+}
+.tw-left-0 {
+    left: 0px;
+}
+.tw-left-1\/2 {
+    left: 50%;
+}
 .tw-left-\[-12px\] {
     left: -12px;
+}
+.tw-right-3 {
+    right: var(--em-spacing-3);
 }
 .tw-right-\[-12px\] {
     right: -12px;
@@ -2192,11 +2226,20 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-right-\[5px\] {
     right: 5px;
 }
+.tw-top-0 {
+    top: 0px;
+}
+.tw-top-1\/2 {
+    top: 50%;
+}
 .tw-top-\[14px\] {
     top: 14px;
 }
 .tw-top-\[3px\] {
     top: 3px;
+}
+.tw-col-span-full {
+    grid-column: 1 / -1;
 }
 .tw-float-right {
     float: right;
@@ -2778,6 +2821,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .\!tw-mb-0 {
     margin-bottom: 0px !important;
 }
+.\!tw-mb-1 {
+    margin-bottom: var(--em-spacing-1) !important;
+}
 .\!tw-ml-0 {
     margin-left: 0px !important;
 }
@@ -3312,6 +3358,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-mb-px {
     margin-bottom: 1px;
 }
+.tw-me-2 {
+    -webkit-margin-end: var(--em-spacing-2);
+            margin-inline-end: var(--em-spacing-2);
+}
 .tw-ml-0 {
     margin-left: 0px;
 }
@@ -3645,6 +3695,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-flex {
     display: flex;
 }
+.tw-inline-flex {
+    display: inline-flex;
+}
 .tw-grid {
     display: grid;
 }
@@ -3657,14 +3710,26 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .\!tw-h-0 {
     height: 0px !important;
 }
+.tw-h-1\/3 {
+    height: 33.333333%;
+}
 .tw-h-10 {
     height: var(--em-spacing-10);
 }
 .tw-h-2\/4 {
     height: 50%;
 }
+.tw-h-56 {
+    height: 14rem;
+}
+.tw-h-6 {
+    height: var(--em-spacing-6);
+}
 .tw-h-64 {
     height: 16rem;
+}
+.tw-h-\[16px\] {
+    height: 16px;
 }
 .tw-h-form {
     height: var(--em-form-height);
@@ -3675,6 +3740,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-h-max {
     height: -moz-max-content;
     height: max-content;
+}
+.tw-h-screen {
+    height: 100vh;
 }
 .\!tw-w-auto {
     width: auto !important;
@@ -3868,6 +3936,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-w-\[200px\] {
     width: 200px;
 }
+.tw-w-\[50px\] {
+    width: 50px;
+}
+.tw-w-\[64px\] {
+    width: 64px;
+}
 .tw-w-auto {
     width: auto;
 }
@@ -3928,8 +4002,34 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-flex-grow-0 {
     flex-grow: 0;
 }
+.tw--translate-x-1\/2 {
+    --tw-translate-x: -50%;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.tw--translate-y-1\/2 {
+    --tw-translate-y: -50%;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
 .tw-rotate-180 {
     --tw-rotate: 180deg;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.tw-scale-150 {
+    --tw-scale-x: 1.5;
+    --tw-scale-y: 1.5;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.tw-scale-75 {
+    --tw-scale-x: .75;
+    --tw-scale-y: .75;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.tw-scale-\[4\] {
+    --tw-scale-x: 4;
+    --tw-scale-y: 4;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.tw-transform {
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 .tw-cursor-copy {
@@ -3938,8 +4038,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-cursor-grab {
     cursor: grab;
 }
+.tw-cursor-help {
+    cursor: help;
+}
 .tw-cursor-move {
     cursor: move;
+}
+.tw-cursor-not-allowed {
+    cursor: not-allowed;
 }
 .tw-cursor-pointer {
     cursor: pointer;
@@ -4013,6 +4119,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-gap-2 {
     gap: var(--em-spacing-2);
 }
+.tw-gap-2\.5 {
+    gap: 0.625rem;
+}
 .tw-gap-3 {
     gap: var(--em-spacing-3);
 }
@@ -4022,6 +4131,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-gap-6 {
     gap: var(--em-spacing-6);
 }
+.tw-gap-8 {
+    gap: var(--em-spacing-8);
+}
 .tw-gap-x-6 {
     -moz-column-gap: var(--em-spacing-6);
          column-gap: var(--em-spacing-6);
@@ -4029,8 +4141,25 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-gap-y-0 {
     row-gap: 0px;
 }
+.tw-space-y-2 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(var(--em-spacing-2) * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(var(--em-spacing-2) * var(--tw-space-y-reverse));
+}
+.tw-self-start {
+    align-self: flex-start;
+}
+.tw-self-end {
+    align-self: flex-end;
+}
+.tw-self-stretch {
+    align-self: stretch;
+}
 .tw-overflow-hidden {
     overflow: hidden;
+}
+.tw-overflow-y-auto {
+    overflow-y: auto;
 }
 .tw-truncate {
     overflow: hidden;
@@ -4043,6 +4172,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-whitespace-pre-line {
     white-space: pre-line;
 }
+.tw-rounded {
+    border-radius: 0.25rem;
+}
+.tw-rounded-\[15px\] {
+    border-radius: 15px;
+}
 .tw-rounded-coordinator {
     border-radius: var(--em-coordinator-br);
 }
@@ -4051,6 +4186,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-rounded-lg {
     border-radius: 0.5rem;
+}
+.tw-rounded-md {
+    border-radius: 0.375rem;
 }
 .tw-rounded-t-lg {
     border-top-left-radius: 0.5rem;
@@ -4062,12 +4200,25 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-border-b {
     border-bottom-width: 1px;
 }
+.tw-border-r {
+    border-right-width: 1px;
+}
 .tw-border-t {
     border-top-width: 1px;
+}
+.\!tw-border-red-500 {
+    border-color: var(--red-500) !important;
+}
+.tw-border-gray-200 {
+    --tw-border-opacity: 1;
+    border-color: rgb(229 231 235 / var(--tw-border-opacity));
 }
 .tw-border-gray-300 {
     --tw-border-opacity: 1;
     border-color: rgb(209 213 219 / var(--tw-border-opacity));
+}
+.tw-border-green-500 {
+    border-color: var(--green-500);
 }
 .tw-border-neutral-300 {
     border-color: var(--neutral-300);
@@ -4075,15 +4226,41 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-border-neutral-400 {
     border-color: var(--neutral-400);
 }
+.tw-border-neutral-500 {
+    border-color: var(--neutral-500);
+}
+.tw-border-neutral-600 {
+    border-color: var(--neutral-600);
+}
 .tw-border-transparent {
     border-color: transparent;
+}
+.tw-border-white {
+    --tw-border-opacity: 1;
+    border-color: rgb(255 255 255 / var(--tw-border-opacity));
+}
+.tw-bg-\[\#008A351A\] {
+    background-color: #008A351A;
+}
+.tw-bg-blue-100 {
+    background-color: var(--blue-100);
+}
+.tw-bg-gray-200 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 .tw-bg-gray-500 {
     --tw-bg-opacity: 1;
     background-color: rgb(107 114 128 / var(--tw-bg-opacity));
 }
+.tw-bg-green-700 {
+    background-color: var(--green-700);
+}
 .tw-bg-main-100 {
     background-color: var(--main-100);
+}
+.tw-bg-main-50 {
+    background-color: var(--main-50);
 }
 .tw-bg-main-500 {
     background-color: var(--em-profile-color);
@@ -4100,8 +4277,17 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-bg-neutral-400 {
     background-color: var(--neutral-400);
 }
+.tw-bg-orange-100 {
+    background-color: var(--orange-100);
+}
+.tw-bg-red-50 {
+    background-color: var(--red-50);
+}
 .tw-bg-red-500 {
     background-color: var(--red-500);
+}
+.tw-bg-red-700 {
+    background-color: var(--red-700);
 }
 .tw-bg-transparent {
     background-color: transparent;
@@ -4116,8 +4302,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-p-0 {
     padding: 0px;
 }
+.tw-p-1 {
+    padding: var(--em-spacing-1);
+}
 .tw-p-2 {
     padding: var(--em-spacing-2);
+}
+.tw-p-2\.5 {
+    padding: 0.625rem;
 }
 .tw-p-3 {
     padding: var(--em-spacing-3);
@@ -4125,8 +4317,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-p-4 {
     padding: var(--em-spacing-4);
 }
+.tw-p-5 {
+    padding: var(--em-spacing-5);
+}
 .tw-p-6 {
     padding: var(--em-spacing-6);
+}
+.tw-p-8 {
+    padding: var(--em-spacing-8);
 }
 .tw-px-0 {
     padding-left: 0px;
@@ -4846,6 +5044,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-align-middle {
     vertical-align: middle;
 }
+.\!tw-text-2xl {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+}
 .\!tw-text-6xl {
     font-size: 3.75rem !important;
     line-height: 1 !important;
@@ -4853,6 +5055,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .\!tw-text-base {
     font-size: 1rem !important;
     line-height: 1.5rem !important;
+}
+.\!tw-text-sm {
+    font-size: 0.875rem !important;
+    line-height: 1.25rem !important;
 }
 .\!tw-text-xl\/5 {
     font-size: 1.25rem !important;
@@ -4874,12 +5080,22 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     font-size: 0.875rem;
     line-height: 1.25rem;
 }
+.tw-text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+}
 .tw-text-xs {
     font-size: 0.75rem;
     line-height: 1rem;
 }
 .tw-text-xxs {
     font-size: 8px;
+}
+.\!tw-font-bold {
+    font-weight: 700 !important;
+}
+.\!tw-font-medium {
+    font-weight: 500 !important;
 }
 .tw-font-bold {
     font-weight: 700;
@@ -4896,12 +5112,42 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-normal-case {
     text-transform: none;
 }
+.tw-italic {
+    font-style: italic;
+}
+.tw-leading-6 {
+    line-height: 1.5rem;
+}
+.tw-leading-8 {
+    line-height: 2rem;
+}
 .\!tw-text-neutral-600 {
     color: var(--neutral-600) !important;
+}
+.\!tw-text-white {
+    --tw-text-opacity: 1 !important;
+    color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
+}
+.tw-text-\[\#727272\] {
+    --tw-text-opacity: 1;
+    color: rgb(114 114 114 / var(--tw-text-opacity));
 }
 .tw-text-black {
     --tw-text-opacity: 1;
     color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+.tw-text-blue-500 {
+    color: var(--blue-500);
+}
+.tw-text-gray-400 {
+    --tw-text-opacity: 1;
+    color: rgb(156 163 175 / var(--tw-text-opacity));
+}
+.tw-text-green-500 {
+    color: var(--green-500);
+}
+.tw-text-green-700 {
+    color: var(--green-700);
 }
 .tw-text-main-400 {
     color: var(--main-400);
@@ -4920,6 +5166,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-text-neutral-900 {
     color: var(--neutral-900);
+}
+.tw-text-orange-400 {
+    color: var(--orange-400);
+}
+.tw-text-orange-600 {
+    color: var(--orange-600);
 }
 .tw-text-red-500 {
     color: var(--red-500);
@@ -4940,13 +5192,18 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
+.tw-shadow-md {
+    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
 .tw-shadow-sm {
     --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 .tw-outline-green-500 {
-    outline-color: #22c55e;
+    outline-color: var(--green-500);
 }
 .tw-transition-all {
     transition-property: all;
@@ -5262,12 +5519,27 @@ div:where(.swal2-container) div:where(.swal2-popup) .swal2-validation-message {
     }*/
 .swal2-popup {
         border-radius: var(--em-default-br) !important;
+        width: 38em !important;
     }
 button.swal2-styled.swal2-confirm {
-        background: var(--blue-500);
+       /* background: var(--blue-500);*/
         border-radius: var(--em-coordinator-br);
         padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
         color: var(--neutral-0);
+    }
+button.swal2-styled.swal2-cancel {
+        background: #FFFFFF;
+       /* border: 1px solid var(--blue-500);*/
+        border-radius: var(--em-coordinator-br);
+       /* color: var(--blue-500); */
+        padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+    }
+button.swal2-styled.swal2-cancel:hover,
+    button.swal2-styled.swal2-cancel:active,
+    button.swal2-styled.swal2-cancel:focus {
+      /*  background: var(--blue-500);*/
+        color: #FFFFFF;
+        background-image: none !important;
     }
 button.swal2-confirm.save-btn.sauvegarder.save_continue {
         font-family: var(--em-profile-font), Inter, sans-serif;
@@ -5803,7 +6075,7 @@ body {
     background-image: var(--display-demonstration);
     background-size: 250px;
     background-repeat: no-repeat;
-    background-position: top -6px right 30px;
+    background-position: top 50% right 30px;
     width: 100%;
     padding-right: 28%;
     min-height: 150px;
@@ -5904,8 +6176,8 @@ body {
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
     /* Accueil */
-    .homepage #g-container-main .g-container {
-        background-image : none;
+    .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
+        background-position: top 50% right -40px;
     }
 
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
@@ -5937,7 +6209,6 @@ body {
     }
 
     .homepage #g-container-main .g-container .mod_emundus_campaign__intro {
-        background-position: top -6px right -75px;
         background-image: none;
         padding-right: 0;
     }
@@ -6020,8 +6291,26 @@ small {
 .hover\:tw-border-neutral-300:hover {
     border-color: var(--neutral-300);
 }
+.hover\:tw-border-transparent:hover {
+    border-color: transparent;
+}
+.hover\:tw-bg-\[\#008A35\]:hover {
+    --tw-bg-opacity: 1;
+    background-color: rgb(0 138 53 / var(--tw-bg-opacity));
+}
+.hover\:tw-bg-gray-200:hover {
+    --tw-bg-opacity: 1;
+    background-color: rgb(229 231 235 / var(--tw-bg-opacity));
+}
 .hover\:tw-bg-neutral-300:hover {
     background-color: var(--neutral-300);
+}
+.hover\:tw-text-white:hover {
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+:is([dir="rtl"] .rtl\:tw-text-right) {
+    text-align: right;
 }
 @media (min-width: 768px) {
     .md\:tw-justify-center {

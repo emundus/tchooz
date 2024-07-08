@@ -17,7 +17,7 @@ use Joomla\CMS\Mail\Exception\MailDisabledException;
 use Joomla\Database\ParameterType;
 use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
-use PHPMailer\PHPMailer\Exception as phpmailerException;
+use PHPMailer\PHPMailer\Exception;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -196,7 +196,7 @@ class MailTemplate
      * @throws  MailDisabledException
      * @throws  phpmailerException
      */
-    public function send()
+    public function send( )
     {
         $config = ComponentHelper::getParams('com_mails');
 
@@ -252,8 +252,8 @@ class MailTemplate
 
         if ($mailStyle === 'plaintext' || $mailStyle === 'both') {
             // If the Plain template is empty try to convert the HTML template to a Plain text
-            if (!$plainBody) {
-                $plainBody = strip_tags(str_replace(['<br>', '<br />', '<br/>'], "\n", $htmlBody));
+	        if (!$plainBody) {
+		        $plainBody = strip_tags(str_replace(['<br>', '<br />', '<br/>'], "\n", $htmlBody));
             }
 
             $this->mailer->setBody($plainBody);
@@ -322,8 +322,7 @@ class MailTemplate
                 $this->mailer->addStringAttachment($attachment->file, $attachment->name);
             }
         }
-
-        return $this->mailer->Send();
+	    return $this->mailer->Send();
     }
 
     /**
