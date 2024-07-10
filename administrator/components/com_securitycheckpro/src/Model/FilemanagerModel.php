@@ -374,7 +374,12 @@ class FileManagerModel extends BaseModel
         $mainframe = Factory::getApplication();
  
         // Obtenemos las variables de paginación de la petición
-        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		// This is needed to avoid errors getting the file from cli
+		if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {
+			$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		} else {
+			$limit = 0;
+		}
         $jinput = Factory::getApplication()->input;
         $limitstart = $jinput->get('limitstart', 0, 'int');
 
@@ -788,7 +793,10 @@ class FileManagerModel extends BaseModel
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 		
 		$mainframe = Factory::getApplication();
-		$mainframe->setUserState("time_taken_set", "");
+		// This is needed to avoid errors getting the file from cli
+		if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {
+			$mainframe->setUserState("time_taken_set", "");
+		}
         
         if(empty($root)) { $root = JPATH_ROOT; }
 
@@ -824,9 +832,11 @@ class FileManagerModel extends BaseModel
                 }                 
             }
 			
-			$mainframe = Factory::getApplication();
-			$mainframe->setUserState("executable_files", 0);
-			$mainframe->setUserState("non_executable_files", 0);			
+			// This is needed to avoid errors getting the file from cli
+			if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {
+				$mainframe->setUserState("executable_files", 0);
+				$mainframe->setUserState("non_executable_files", 0);
+			}
         
             /* Comprobamos si tenemos que escanear todos los archivos o sólo los ejecutables */
             if ($scan_executables_only) {
@@ -1509,7 +1519,8 @@ class FileManagerModel extends BaseModel
             $filename = $this->generateKey();
             try
             {
-				$content_permissions = json_encode(array('files_folders'    => $this->Stack));
+				
+                $content_permissions = json_encode(array('files_folders'    => $this->Stack));
 				if (json_last_error() != JSON_ERROR_NONE) {
 					$this->set_campo_filemanager('estado', 'DATABASE_ERROR');
 					$result_permissions = false;
@@ -1520,10 +1531,10 @@ class FileManagerModel extends BaseModel
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
                 chmod($this->folder_path, 0755);            
             } catch (\Throwable $e)
-            {    					
-				$this->set_campo_filemanager('estado', 'DATABASE_ERROR');
-				$result_permissions = false;
-                File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_permissions_scan.php', $e->getMessage());
+            {    
+                $this->set_campo_filemanager('estado', 'DATABASE_ERROR');
+                $result_permissions = false;
+				File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_permissions_scan.php', $e->getMessage());
             }
         
             // Vamos a limpiar las variables que no necesitamos. No uso unset() porque así no necesitamos esperar al garbage collector
@@ -1567,7 +1578,7 @@ class FileManagerModel extends BaseModel
             // Borramos el fichero del escaneo anterior...
 			if ((!empty($this->fileintegrity_name)) && (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name))) {           
 				try{		
-					  $delete_integrity_file = File::delete($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
+					$delete_integrity_file = File::delete($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
 				} catch (Exception $e)
 				{
 				}     
@@ -1579,21 +1590,22 @@ class FileManagerModel extends BaseModel
         
             try
             {
-				$content_integrity = json_encode(array('files_folders'    => $this->Stack_Integrity));
+				
+                $content_integrity = json_encode(array('files_folders'    => $this->Stack_Integrity));
 				if (json_last_error() != JSON_ERROR_NONE) {
-					$this->set_campo_filemanager('estado_integrity', 'DATABASE_ERROR');
+					 $this->set_campo_filemanager('estado_integrity', 'DATABASE_ERROR');
 					$result_integrity = false;
-					File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_integrity_scan.php', json_last_error_msg());
+					$result_permissions = File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_integrity_scan.php', json_last_error_msg());
 				}                           
                 $content_integrity = "#<?php die('Forbidden.'); ?>" . PHP_EOL . $content_integrity;
-                $result_integrity = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_integrity);    
+                $result_integrity = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_integrity); 			
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
                 chmod($this->folder_path, 0755);
             } catch (\Throwable $e)
             {    
                 $this->set_campo_filemanager('estado_integrity', 'DATABASE_ERROR');
                 $result_integrity = false;
-				File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_integrity_scan.php', $e->getMessage());
+				File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_integrity_scan.php', $e->getMessage());		 
             }
             // Vamos a limpiar las variables que no necesitamos. No uso unset() porque así no necesitamos esperar al garbage collector
             $content_integrity = null;
@@ -1661,12 +1673,12 @@ class FileManagerModel extends BaseModel
                 $result_malwarescan = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $content_malwarescan);
                 // Nos aseguramos que los permisos de la carpeta 'scans' son los correctos
                 chmod($this->folder_path, 0755);
-            } catch (\Throwable $e)
+            } catch (Throwable $e)
             {    
                 $this->set_campo_filemanager('estado_malwarescan', 'DATABASE_ERROR');
                 $result_malwarescan_resume = false;
 				File::write($this->folder_path.DIRECTORY_SEPARATOR.'error_malware_scan.php', $e->getMessage());
-            }
+			}
         
             // Vamos a limpiar las variables que no necesitamos. No uso unset() porque así no necesitamos esperar al garbage collector
             $content_malwarescan = null;
@@ -2060,8 +2072,11 @@ class FileManagerModel extends BaseModel
         $this->write_log("------- Begin scan: " . strtoupper($opcion) . " --------");
 		
 		$mainframe = Factory::getApplication();
-		$now = $this->global_model->get_Joomla_timestamp();        
-        $mainframe->setUserState("scan_start_time", $now );
+		$now = $this->global_model->get_Joomla_timestamp();  
+		// This is needed to avoid errors getting the file from cli
+		if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {		
+			$mainframe->setUserState("scan_start_time", $now );
+		}
     
         $this->getDirectories($file_check_path, $include_exceptions, $opcion);
         $this->getFiles($file_check_path, $include_exceptions, $opcion);
@@ -2321,12 +2336,19 @@ class FileManagerModel extends BaseModel
     /* Función que chequea si estamos en IIS */
     function on_iis()
     {
-        $sSoftware = strtolower($_SERVER["SERVER_SOFTWARE"]);
-        if (strpos($sSoftware, "microsoft-iis") !== false ) {
-            return true;
-        } else {
-            return false;
-        }
+		$mainframe = Factory::getApplication();
+		
+		// This is needed to avoid errors getting the file from cli
+		if ( !($mainframe instanceof \Joomla\CMS\Application\ConsoleApplication) ) {
+			$sSoftware = strtolower($_SERVER["SERVER_SOFTWARE"]);
+			if (strpos($sSoftware, "microsoft-iis") !== false ) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
     }
 
     /* Función que chequea si hay código inyectado al principio de un archivo */
@@ -3658,7 +3680,7 @@ class FileManagerModel extends BaseModel
         try
         {
             $file_result = File::write($this->folder_path.DIRECTORY_SEPARATOR.$filename, $file_analysis_result);
-        } catch (Exception $e) {
+		} catch (Exception $e) {
                 
         }
     
@@ -4015,7 +4037,7 @@ class FileManagerModel extends BaseModel
 		
 			// Open the log file
 			$this->fp = @fopen($this->folder_path.DIRECTORY_SEPARATOR.$filename_log, 'ab');
-			
+						
 			// If we couldn't open the file set the file pointer to null
 			if ($this->fp === false) {            
 				$this->fp = null;

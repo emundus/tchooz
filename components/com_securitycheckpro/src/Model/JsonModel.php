@@ -30,6 +30,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Helper\AuthenticationHelper;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Event\AbstractEvent;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\CpanelModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FilemanagerModel;
@@ -92,11 +93,11 @@ class JsonModel extends BaseModel
 	
 	public function register_task($json)
 	{
-		$cron_enabled = $this->PluginStatus(2);
+		$cron_enabled = $this->PluginStatus(9);
 		
 		if ($cron_enabled == 0)
 		{
-			return "Error: Cron task is disabled"; 
+			return "Error: task checker plugin is disabled"; 
 		} else
 		{
 		
@@ -110,10 +111,23 @@ class JsonModel extends BaseModel
 			try 
 			{
 				$result = $db->insertObject('#__securitycheckpro_storage', $object);            
-			} catch (Exception $e)
+			} catch (\Throwable $e)
 			{    			
-				return "Error:" . $e->getMessage(); 
+				$this->log_filename = "error.php";
+				$message = $e->getMessage();
+				$this->write_log($message,"ERROR");
+				return "Error:" . $message; 
 			}
+			
+			// Launch the 'onSCPTaskAdded', observed by the Securitycheckpro_task_checker plugin
+            $event = AbstractEvent::create(
+                'onSCPTaskAdded',
+                [
+					'subject'   => $this,
+                ]
+            );
+
+            Factory::getApplication()->getDispatcher()->dispatch('onSCPTaskAdded', $event);
 			
 			return "Task added";
 		}
@@ -1046,7 +1060,7 @@ class JsonModel extends BaseModel
 		$result = $update_model->tarea_comprobacion();
 
 		// Comprobamos el estado del plugin Update Database
-		$update_database_plugin_installed = $update_model-> PluginStatus(4);
+		$update_database_plugin_installed = $update_model->PluginStatus(4);
 		$update_database_plugin_version = $update_model->get_database_version();
 		$update_database_plugin_last_check = $update_model->last_check();
 		
@@ -2544,8 +2558,11 @@ class JsonModel extends BaseModel
 			return false;
 		}
 
-		// Write the file to disk
-		File::write($target, $result->body);
+		// Fix Indirect Modification of Overloaded Property
+        $body = $result->body;
+
+        // Write the file to disk
+        File::write($target, $body);
 
 		return basename($target);
 	}		

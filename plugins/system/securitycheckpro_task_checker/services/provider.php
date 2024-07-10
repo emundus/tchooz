@@ -1,6 +1,6 @@
 <?php
 /**
- * @Securitycheckpro_cron plugin
+ * @Securitycheckpro_task_checker plugin
  * @copyright Copyright (c) 2011 - Jose A. Luque / Securitycheck Extensions
  * @license   GNU General Public License version 3, or later
  */
@@ -14,7 +14,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Joomla\Plugin\System\Securitycheckpro_cron\Extension\Securitycheckpro_cron;
+use Joomla\Plugin\System\Securitycheckpro_task_checker\Extension\Securitycheckpro_task_checker;
 
 return new class implements ServiceProviderInterface {
 	/**
@@ -31,17 +31,16 @@ return new class implements ServiceProviderInterface {
 		$container->set(
 			PluginInterface::class,
 			function (Container $container) {
-				$config     = (array) PluginHelper::getPlugin('system', 'securitycheckpro_cron');
+				$config     = (array) PluginHelper::getPlugin('system', 'securitycheckpro_task_checker');
 				$dispatcher = $container->get(DispatcherInterface::class);
 
-				$plugin = new Securitycheckpro_cron(
+				$plugin = new Securitycheckpro_task_checker(
 					$dispatcher,
 					$config
 				);
 
 				$plugin->setApplication(Factory::getApplication());
-				//$plugin->setDatabase($container->get('DatabaseDriver'));
-
+				
 				return $plugin;
 			}
 		);

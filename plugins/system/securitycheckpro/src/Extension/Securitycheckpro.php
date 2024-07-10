@@ -1270,6 +1270,11 @@ class Securitycheckpro extends CMSPlugin
     /* Opciones de redirección: página de error (de Joomla o personalizada) o rechazar la conexión. El parámetro blacklist indica si venimos de una lista negra; en ese caso, no podemos hacer la redirección ya que entraríamos en un bucle infinito. Lo que hacemos es mostrar el código que haya establecido el administrador */
     function redirection($code,$message,$blacklist=false,$ip=null,$time=null)
     {
+		// Si la variable "pro_plugin" está vacía la instanciamos
+		if (empty($this->pro_plugin)) {
+			$this->pro_plugin = new BaseModel();
+		}
+		
         $redirect_after_attack = $this->pro_plugin->getValue('redirect_after_attack', 1, 'pro_plugin');
         $redirect_options = $this->pro_plugin->getValue('redirect_options', 1, 'pro_plugin');
         $redirect_url = $this->pro_plugin->getValue('redirect_url', '', 'pro_plugin');
@@ -1329,6 +1334,11 @@ class Securitycheckpro extends CMSPlugin
         /* Cargamos el lenguaje del sitio */
         $lang = Factory::getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
+		
+		// Si la variable "pro_plugin" está vacía la instanciamos
+		if (empty($this->pro_plugin)) {
+			$this->pro_plugin = new BaseModel();
+		}
         
         // Obtenemos los valores del plugin para la protección de sesión del usuario
         $session_hijack_protection = $this->pro_plugin->getValue('session_hijack_protection', 1, 'pro_plugin');
@@ -1404,6 +1414,11 @@ class Securitycheckpro extends CMSPlugin
     /*  Función para mandar correos electrónicos */
     function mandar_correo($alerta)
     {
+		// Si la variable "pro_plugin" está vacía la instanciamos
+		if (empty($this->pro_plugin)) {
+			$this->pro_plugin = new BaseModel();
+		}
+		
         // Variables del correo electrónico  y límite de correos a enviar cada día
         $subject = $this->pro_plugin->getValue('email_subject', '', 'pro_plugin');
         $body = $this->pro_plugin->getValue('email_body', '', 'pro_plugin');
@@ -1519,6 +1534,11 @@ class Securitycheckpro extends CMSPlugin
         /* Cargamos el lenguaje del sitio */
         $lang = Factory::getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
+		
+		// Si la variable "pro_plugin" está vacía la instanciamos
+		if (empty($this->pro_plugin)) {
+			$this->pro_plugin = new BaseModel();
+		}
         
         // Chequeamos si la opción de compartir sesiones está activa; en este caso no aplicaremos esta opción para evitar una denegación de entrada
         $params = Factory::getConfig();        
@@ -2158,6 +2178,11 @@ class Securitycheckpro extends CMSPlugin
     /* Función que chequea si un fichero tiene múltiples extensiones o pertenece a una lista de extensiones prohibidas. Según el valor de la variable $delete_files, el fichero será borrado */
     protected function check_file($check_multiple_extensions,$extensions_blacklist,$delete_files,$file,$actions_upload_scanner)
     {
+		// Si la variable "pro_plugin" está vacía la instanciamos
+		if (empty($this->pro_plugin)) {
+			$this->pro_plugin = new BaseModel();
+		}
+		
         // Inicializamos variables
         $safe = true;
         $malware_type = '';

@@ -222,7 +222,7 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
 					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=firewallconfig&view=firewallconfig&'. Session::getFormToken() .'=1');?>"><span class="fa fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_WAF_CONFIG'); ?></a>
 				</li>
 				<li>
-					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=cron&view=cron&'. Session::getFormToken() .'=1');?>"><span class="fa fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_CRON_CONFIGURATION'); ?></a>
+					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_scheduler&view=tasks');?>"><span class="fa fa-wrench"></span><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_CRON_CONFIGURATION'); ?></a>
 				</li>
 				<li>
 					<a class="dropdown-item" href="<?php echo Route::_('index.php?option=com_securitycheckpro&controller=rules&view=rules&'. Session::getFormToken() .'=1');

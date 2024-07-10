@@ -130,7 +130,7 @@ class FirewallconfigController extends SecuritycheckproBaseController
 			$data['include_urls_spam_protection'] = $model->clearstring($data['include_urls_spam_protection'], 1);
 		} else {
 			$data['include_urls_spam_protection'] = "";
-		}				
+		}		
     
         if (!array_key_exists('loggable_extensions', $data)) {
             $data['loggable_extensions'] = explode(',', "com_banners,com_cache,com_categories,com_config,com_contact,com_content,com_installer,com_media,com_menus,com_messages,com_modules,com_newsfeeds,com_plugins,com_redirect,com_tags,com_templates,com_users");

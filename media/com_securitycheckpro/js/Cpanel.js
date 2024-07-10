@@ -114,10 +114,10 @@
     function Set_Default_Config() {
 		var message = Joomla.getOptions("securitycheckpro.Cpanel.setdefaultconfigconfirmText");
 		var answer = confirm(message);
+		var url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Default_Config';
         if (!answer) {
             e.preventDefault();
-        }
-        var url = 'index.php?option=com_securitycheckpro&controller=cpanel&format=raw&task=Set_Default_Config';
+        }       
         jQuery.ajax({
             url: url,                            
             method: 'GET',

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<extension type="plugin" group="task" method="upgrade">
+	<name>plg_task_securitycheckprocron</name>
+	<author>José A. Luque</author>
+	<creationDate>17-06-2024</creationDate>
+	<copyright>Copyright www.protegetuordenador.com</copyright>
+	<license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
+	<authorEmail>contacto@protegetuordenador.com</authorEmail>
+	<authorUrl>www.protegetuordenador.com</authorUrl>
+	<version>4.2</version>
+	<description>PLG_SECURITYCHECKPRO_CRON_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\Task\Securitycheckprocron</namespace>
+	<files>
+		<folder plugin="securitycheckprocron">services</folder>
+		<folder>src</folder>
+		<folder>forms</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_task_securitycheckprocron.ini</language>
+		<language tag="en-GB">language/en-GB/plg_task_securitycheckprocron.sys.ini</language>
+	</languages>
+</extension>

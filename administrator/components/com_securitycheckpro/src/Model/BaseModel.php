@@ -450,7 +450,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         return $valor;
     }
 	
-	/* Función para determinar si el plugin pasado como argumento ('1' -> Securitycheck Pro, '2' -> Securitycheck Pro Cron, '3' -> Securitycheck Pro Update Database) está habilitado o deshabilitado. También determina si el plugin Securitycheck Pro Update Database (opción 4)  está instalado */
+	/* Función para determinar si el plugin pasado como argumento ('1' -> Securitycheck Pro, '2' -> Securitycheck Pro Task Checker, '3' -> Securitycheck Pro Update Database) está habilitado o deshabilitado. También determina si el plugin Securitycheck Pro Update Database (opción 4)  está instalado */
     function PluginStatus($opcion)
     {
         
@@ -458,7 +458,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         if ($opcion == 1) {
             $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro'";
         } else if ($opcion == 2) {
-            $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro Cron'";
+            $query = "SELECT COUNT(*) FROM #__scheduler_tasks WHERE type='securitycheckpro.cron' AND state='1'";
         } else if ($opcion == 3) {
             $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro Update Database'";
         } else if ($opcion == 4) {
@@ -471,6 +471,8 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
             $query = "SELECT enabled FROM #__extensions WHERE name='System - url Inspector'";
         } else if ($opcion == 8) {
             $query = "SELECT COUNT(*) FROM #__extensions WHERE name='System - Track Actions'";
+        } else if ($opcion == 9) {
+            $query = "SELECT enabled FROM #__extensions WHERE element='securitycheckpro_task_checker'";
         }
 		try {
 			$db->setQuery($query);
@@ -604,7 +606,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 				Factory::getApplication()->enqueueMessage("Unable to retrieve " . $product_name . " subscription's status. Message: " . $message, 'error');
 			}			
             return;
-		}                           
+        }                           
 
         // Si el resultado de la petición es 'false' no podemos hacer nada
         if ($response === false) {  

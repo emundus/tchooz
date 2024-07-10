@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<form>
+	<fields name="params">
+		<fieldset name="task_params">			
+			<field
+				name="task_to_be_launched"
+				type="list"
+				label="PLG_TASK_SECURITYCHECKPROCRON_LABEL_TASK_TO_BE_LAUNCHED"
+				required="true"
+				default="integrity"
+				>
+				<option value="permissions">PLG_SECURITYCHECKPRO_CRON_ONLY_PERMISSIONS</option>
+				<option value="integrity">PLG_SECURITYCHECKPRO_CRON_ONLY_INTEGRITY</option>
+				<option value="alternate">PLG_SECURITYCHECKPRO_CRON_ALTERNATE_TASKS</option>
+				<option value="both">PLG_SECURITYCHECKPRO_CRON_BOTH_TASKS</option>
+			</field>			
+		</fieldset>
+	</fields>
+</form>
