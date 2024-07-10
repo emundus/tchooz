@@ -337,12 +337,13 @@ class FormbuilderModelTest extends UnitTestCase
 	 */
 	public function testcreateSimpleElement()
 	{
+		$applicant_user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['applicant']);
 		$this->assertFalse($this->model->createSimpleElement(0, ''), 'createSimpleElement returns false if no group id nor plugin given');
 		$this->assertFalse($this->model->createSimpleElement(1, ''), 'createSimpleElement returns false if no plugin given');
 		$this->assertFalse($this->model->createSimpleElement(0, 'field'), 'createSimpleElement returns false if no group id given');
 
 		$group_eval_id  = 551;
-		$new_element_id = $this->model->createSimpleElement($group_eval_id, 'field');
+		$new_element_id = $this->model->createSimpleElement($group_eval_id, 'field',null,0,null,$applicant_user);
 		$this->assertGreaterThan(0, $new_element_id, 'createSimpleElement returns the id of the created element');
 
 		
@@ -356,7 +357,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$plugin = $this->db->loadResult();
 		$this->assertSame('field', $plugin, 'createSimpleElement creates the element with the correct plugin');
 
-		$new_email_element = $this->model->createSimpleElement($group_eval_id, 'email', 0, 1);
+		$new_email_element = $this->model->createSimpleElement($group_eval_id, 'email', 0, 1, null, $applicant_user);
 		$query->clear()
 			->select('name, plugin')
 			->from('#__fabrik_elements')

@@ -1487,13 +1487,15 @@ class EmundusModelFormbuilder extends JModelList
 	 *
 	 * @return false|mixed
 	 */
-	function createSimpleElement($gid, $plugin, $attachementId = null, $evaluation = 0, $labels = null)
+	function createSimpleElement($gid, $plugin, $attachementId = null, $evaluation = 0, $labels = null, $user = null)
 	{
 		$elementId = false;
 
 		if (!empty($gid) && !empty($plugin)) {
-			$user  = JFactory::getUser();
-			
+			if(empty($user)) {
+				$user = Factory::getApplication()->getIdentity();
+			}
+
 			$query = $this->db->getQuery(true);
 
 			try {
