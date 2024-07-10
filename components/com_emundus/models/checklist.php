@@ -46,7 +46,7 @@ class EmundusModelChecklist extends JModelList
 				$current_user = $this->app->getIdentity()->id;
 			}
 
-			if (!empty($student_id)) {
+			if (!empty($student_id) && is_numeric($student_id)) {
 				$this->_user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($student_id);
 			}
 			else {
@@ -57,7 +57,7 @@ class EmundusModelChecklist extends JModelList
 			$this->_db    = Factory::getDBO();
 			$current_user = Factory::getUser()->id;
 
-			if (!empty($student_id)) {
+			if (!empty($student_id) && is_numeric($student_id)) {
 				$this->_user = Factory::getUser($student_id);
 			}
 			else {
@@ -66,7 +66,7 @@ class EmundusModelChecklist extends JModelList
 		}
 
 
-		if (!empty($student_id)) {
+		if (!empty($student_id) && is_numeric($student_id)) {
 			if (EmundusHelperAccess::asPartnerAccessLevel($current_user)) {
 
 				if (!empty($this->_user->id)) {

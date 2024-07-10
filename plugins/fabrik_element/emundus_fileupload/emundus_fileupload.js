@@ -38,13 +38,13 @@ function watch(elementId, attachId) {
 
                 if (result != null) {
                     if (result.limitObtained) {
-                        div.querySelector('div .btn-upload').hide();
-                        div.querySelector('input#'+elementId).hide();
-                        divCtrlGroup.querySelector('.control-label').style.cursor = 'default';
+                        div.querySelector('div.btn-upload').style.display = 'none';
+                        div.querySelector('input#'+elementId).style.display = 'none';
+                        divCtrlGroup.querySelector('.fabrikLabel').style.cursor = 'default';
                     } else {
-                        div.querySelector('div .btn-upload').show();
-                        div.querySelector('input#'+elementId).show();
-                        divCtrlGroup.querySelector('.control-label').style.cursor = 'pointer';
+                        div.querySelector('div .btn-upload').style.display = 'flex';
+                        div.querySelector('input#'+elementId).style.display = 'block';
+                        divCtrlGroup.querySelector('.fabrikLabel').style.cursor = 'pointer';
                     }
 
                     if (result.files) {
@@ -265,7 +265,7 @@ var FbFileUpload = {
 
                 if(result.status == false){
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
                         text: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR_TEXT'),
                         customClass: {
@@ -287,7 +287,6 @@ var FbFileUpload = {
                         Swal.fire({
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_SUCCESS'),
                             text: Joomla.JText._('PLG_ELEMENT_FIELD_UPLOAD'),
-                            type: 'success',
                             showConfirmButton: false,
                             timer: 1500,
                             customClass: {
@@ -298,7 +297,7 @@ var FbFileUpload = {
 
                     if (result[j].ext == false) {
                         Swal.fire({
-                            type: 'error',
+                            icon: 'error',
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
                             text: Joomla.JText._('PLG_ELEMENT_FIELD_EXTENSION'),
                             customClass: {
@@ -316,7 +315,7 @@ var FbFileUpload = {
 
                     if (result[j].encrypt == false){
                         Swal.fire({
-                            type: 'error',
+                            icon: 'error',
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
                             text: Joomla.JText._('PLG_ELEMENT_FIELD_ENCRYPT'),
                             customClass: {
@@ -330,7 +329,7 @@ var FbFileUpload = {
 
                     if (result[j].size == false) {
                         Swal.fire({
-                            type: 'error',
+                            icon: 'error',
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
                             text: Joomla.JText._('PLG_ELEMENT_FIELD_SIZE')+result[j].maxSize,
                             customClass: {
@@ -345,7 +344,7 @@ var FbFileUpload = {
 
                     if (result[j].nbMax == true) {
                         Swal.fire({
-                            type: 'error',
+                            icon: 'error',
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
                             text: Joomla.JText._('PLG_ELEMENT_FIELD_LIMIT'),
                             customClass: {
@@ -361,7 +360,7 @@ var FbFileUpload = {
                 watch(elementId, attachId);
             } else if(xhr.status == 500){
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR'),
                     text: Joomla.JText._('PLG_ELEMENT_FIELD_ERROR_TEXT'),
                     customClass: {
@@ -388,7 +387,6 @@ var FbFileUpload = {
         Swal.fire({
             title: Joomla.JText._('PLG_ELEMENT_FIELD_SURE'),
             html: Joomla.JText._('PLG_ELEMENT_FIELD_SURE_TEXT') + '<strong>'+ local_filename + '</strong> ?',
-            type: 'warning',
             showCancelButton: true,
             reverseButtons: true,
             confirmButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CONFIRM'),
@@ -417,8 +415,8 @@ var FbFileUpload = {
                     }
                 }).then((res) => {
                     if (res.status) {
-                        div_parent.querySelector('div.btn-upload').show();
-                        div_parent.querySelector('input#'+elementId).show();
+                        div_parent.querySelector('div.btn-upload').style.display = 'flex';
+                        div_parent.querySelector('input#'+elementId).style.display = 'block';
 
                         file.parentElement.parentElement.remove();
 
@@ -431,7 +429,6 @@ var FbFileUpload = {
                         Swal.fire({
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE'),
                             text: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT'),
-                            type: 'success',
                             customClass: {
                                 title: 'em-swal-title',
                                 confirmButton: 'em-swal-confirm-button',
@@ -442,7 +439,7 @@ var FbFileUpload = {
                         Swal.fire({
                             title: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_FAILED'),
                             text: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT_FAILED'),
-                            type: 'error',
+                            icon: 'error',
                             customClass: {
                                 title: 'em-swal-title',
                                 confirmButton: 'em-swal-confirm-button',
