@@ -130,7 +130,7 @@ class CPanelViewCpanel extends FalangViewDefault
 		    'smartsearchcontent'     => array(
 			    'name' => 'falangcontent',
 			    'folder' => 'finder',
-			    'title'  => 'Smart Search - Joomla Content',
+			    'title'  => 'Smart Search - Falang Content',
 			    'ars_id' => 109,
 			    'type'   => 'paid',
 		    ),

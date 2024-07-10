@@ -18,6 +18,7 @@ use Joomla\CMS\MVC\Controller\AdminController;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\LanguageHelper;
 
 
 /**
@@ -639,20 +640,57 @@ class TranslateController extends AdminController   {
 		$this->showOrphanOverview();
 	}
 
+    /*
+     * 5.9 add the update of the status published/unpublished for a translation
+     * */
 	function modalClose($linktype){
 
         @ob_end_clean();
 
         $input = Factory::getApplication()->input;
         $language_id = $input->get('select_language_id',0,'int');
+        $reference_id = $input->get('reference_id',0,'int');
+        $task =  $input->get('task','','string');
+        $published =  $input->get('published','off','string');//not published on form the published is not set
+
+        $jfManager = FalangManager::getInstance();
+        $language = $jfManager->getLanguageByID($language_id);
+
+        $key = $reference_id.'-'.$language->sef;
 
         die("
 				<script>
+               let published = '{$published}';
+               let task = '{$task}';
 				try {
+                    var btnqj= window.parent.jQuery('[data-id=\'{$key}\']');
+                    if (task === 'translate.save'){
+                        window.parent.jQuery(btnqj.find('span.lang-unpublished').remove());
+                        window.parent.jQuery(btnqj.find('span.lang-published').remove());
+                        if (published === 'on'){
+                            window.parent.jQuery(btnqj.append('<span class=\"lang-published\"></span>'))
+                        } else {
+                            window.parent.jQuery(btnqj.append('<span class=\"lang-unpublished\"></span>'))
+                        }
+                    } else {
+                        //console.log('cancel');
+                    }
 					window.parent.jQuery('#quickModal').modal('hide');
 					}
 				catch(err) {}
 				try {
+                     var btnqj= window.parent.jQuery('#modal-falang-quicktranslate-{$language_id}-btn');
+                     if (task === 'translate.save'){
+                        window.parent.jQuery(btnqj.find('span.icon-unpublish').remove());
+                        window.parent.jQuery(btnqj.find('span.icon-publish').remove());
+                        if (published === 'on'){
+                            window.parent.jQuery(btnqj.prepend('<span class=\" icon-publish falang-status\"></span>'));
+                        } else {
+                            window.parent.jQuery(btnqj.prepend('<span class=\" icon-unpublish falang-status\"></span>'));
+                        }
+                     } else {
+                           //console.log('cancel');                         
+                     }
 				    //use for itrpopup
 				    window.parent.jQuery('#modal-falang-quicktranslate-'+$language_id.).modal('hide');
 				}

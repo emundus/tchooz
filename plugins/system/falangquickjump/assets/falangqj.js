@@ -122,8 +122,10 @@ jQuery( document ).ready(function() {
           var height = jQuery(window).height() - 50;
           var width = jQuery(window).width() - 50;
 
+          var id_row = row['id']+'-'+lang;
+
           //var x = jQuery('<a rel="{size: {x: '+width+', y: '+height+'},handler:\'iframe\' ,closable: true}" href="'+row['link-'+lang]+'" data-toggle="modal" class="label quickjump quickmodal '+stateCss+'"><span rel="tooltip" data-original-title="'+lang+'">'+lang+'</span><span class="'+statePublish+'"></span></a>');
-          var x = jQuery('<a data-bs-target="#quickModal" data-url="'+row['link-'+lang]+'" href="'+row['link-'+lang]+'" data-bs-toggle="modal" role="button" class="label quickjump quickmodal '+stateCss+'"><span rel="tooltip" data-original-title="'+lang+'">'+lang+'</span><span class="'+statePublish+'"></span></a>');
+          var x = jQuery('<a data-bs-target="#quickModal" data-id="'+id_row+'" data-url="'+row['link-'+lang]+'" href="'+row['link-'+lang]+'" data-bs-toggle="modal" role="button" class="label quickjump quickmodal '+stateCss+'"><span rel="tooltip" data-original-title="'+lang+'">'+lang+'</span><span class="'+statePublish+'"></span></a>');
 
         x.appendTo(btngroup);
       });

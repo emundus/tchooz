@@ -222,6 +222,9 @@ class plgSystemFalangquickjump extends CMSPlugin
 
     }
 
+    /*
+     * @update 5.9 add id to result / use to select the falang flag to update
+     * */
     public function gridIdHook() {
         $row = func_get_arg(0);
         $id = func_get_arg(1);
@@ -258,6 +261,8 @@ class plgSystemFalangquickjump extends CMSPlugin
 
         }
 
+        //add id / use to update row status
+        $result['id'] = $id;
 
         // create array
         if ($row == 0) {
@@ -478,17 +483,20 @@ class plgSystemFalangquickjump extends CMSPlugin
     }
 
 
+    /*
+     * Get language list use for quickjump
+     *
+     * @update 5.9 fix display content language (published or not)
+     * */
     public function getLanguages(){
-        $languages	= LanguageHelper::getLanguages();
+        $languages = LanguageHelper::getContentLanguages([0,1]);
         $default_site_language = ComponentHelper::getParams('com_languages')->get("site","en-GB");
         //remove default language based on falang params
         $params = ComponentHelper::getParams('com_falang');
         $showDefaultLanguageAdmin = $params->get("showDefaultLanguageAdmin", false);
         if (!$showDefaultLanguageAdmin){
-            foreach ($languages as $key=>$language) {
-                if ($language->lang_code == $default_site_language){
-                    unset($languages[$key]);
-                }
+            if (isset($languages[$default_site_language])){
+                unset($languages[$default_site_language]);
             }
         }
         return $languages;
