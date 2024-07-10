@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -70,13 +70,12 @@ class plgSystemHikashopproductInsert extends hikashopJoomlaPlugin {
 			$task = JRequest::getString('task');
 			$function = JRequest::getString('function');
 		}
-		if(version_compare(JVERSION,'4.0','>=')) {
-			$admin = $app->isClient('administrator');
-		} else {
-			$admin = $app->isAdmin();
-		}
-
-		if($admin)
+		$site = false;
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('site'))
+			$site = true;
+		if(version_compare(JVERSION,'4.0','<') && $app->isSite())
+			$site = true;
+		if(!$site)
 			return true;
 
 		if($layout == 'edit' || $ctrl == 'plugins' && $task == 'trigger' && $function == 'productDisplay')
@@ -107,13 +106,12 @@ class plgSystemHikashopproductInsert extends hikashopJoomlaPlugin {
 			$task = JRequest::getString('task');
 			$function = JRequest::getString('function');
 		}
-		if(version_compare(JVERSION,'4.0','>=')) {
-			$admin = $app->isClient('administrator');
-		} else {
-			$admin = $app->isAdmin();
-		}
-
-		if($admin)
+		$site = false;
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('site'))
+			$site = true;
+		if(version_compare(JVERSION,'4.0','<') && $app->isSite())
+			$site = true;
+		if(!$site)
 			return true;
 
 		if($layout == 'edit' || $ctrl == 'plugins' && $task == 'trigger' && $function == 'productDisplay')

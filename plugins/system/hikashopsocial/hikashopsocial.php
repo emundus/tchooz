@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -179,6 +179,7 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 			return '';
 
 		$current_url = urlencode(hikashop_currentURL());
+		$current_url = $this->_handleAffiliateParameter($current_url);
 		$btn_mode = $this->rs_mode($params['redirect'], 'https://www.linkedin.com/sharing/share-offsite/?url='. $current_url, '');
 
 		$array_elem = array(
@@ -199,7 +200,7 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 			$url = hikashop_cleanURL($element->url_canonical);
 		else
 			$url = hikashop_currentURL('',false);
-
+		$url = $this->_handleAffiliateParameter($url);
 		$element = $this->_getElementInfo();
 		$imageUrl = $this->_getImageURL($element);
 		$description = $this->_cleanDescription($element->description, 500);
@@ -281,7 +282,7 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 					$url = hikashop_cleanURL($element->url_canonical);
 				else
 					$url = hikashop_currentURL('',false);
-
+				$url = $this->_handleAffiliateParameter($url);
 				return '<span class="hikashop_social_tw'.$c.'"><a href="javascript:twitterPop(\''.$url.'\')"><img src="'.HIKASHOP_IMAGES.'icons/tweet_button.jpg"></a></span>';
 			}
 			$return = '<span class="hikashop_social_tw'.$c.'"><a href="//twitter.com/share" class="twitter-share-button"'.$message.' data-count="'.$count.'"'.$mention.$lang.'>Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script></span>';
@@ -291,7 +292,7 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 			if ($plugin->params['hashtag_twitter'] != "")
 				$hashtag = '&hashtags=' . $plugin->params['hashtag_twitter'];
 
-			$current_url = urlencode(hikashop_currentURL());
+			$current_url = urlencode($this->_handleAffiliateParameter(hikashop_currentURL()));
 			$btn_mode = $this->rs_mode($params['redirect'], 'https://twitter.com/intent/tweet?url='.$current_url, $hashtag);
 
 			$array_elem = array(
@@ -307,6 +308,28 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 		return $return;
 	}
 
+	function _handleAffiliateParameter($url) {
+		$user = hikashop_loadUser(true);
+		if(empty($user->user_partner_activated))
+			return $url;
+
+		$separator = '?';
+		if(strpos($url, '?')) {
+			$separator = '&';
+		}
+
+		$plugin = JPluginHelper::getPlugin('system', 'hikashopaffiliate');
+		if(empty($plugin))
+			return $url;
+		$params = new JRegistry(@$plugin->params);
+		if(empty($params))
+			return $url;
+		$key_name = $params->get('partner_key_name', 'partner_id');
+
+		$url .= $separator.$key_name.'='.$user->user_id;
+		return $url;
+	}
+
 	function _addFacebookButton(&$plugin, $params) {
 		if(empty($plugin->params['display_fb']))
 			return '';
@@ -319,7 +342,7 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 			$url = hikashop_cleanURL($element->url_canonical);
 		else
 			$url = hikashop_currentURL('', false);
-
+		$url = $this->_handleAffiliateParameter($url);
 		$this->_addOpenGraph($element, $plugin, $url);
 
 		$html = '';
@@ -427,6 +450,7 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 				$display = 'page';
 			}
 			$current_url = urlencode(hikashop_currentURL());
+			$current_url = $this->_handleAffiliateParameter($current_url);
 			$share_url ='https://www.facebook.com/sharer/sharer.php?u='.$current_url.'&display='.$display;
 			$btn_mode = $this->rs_mode($params['redirect'], $share_url, '');
 

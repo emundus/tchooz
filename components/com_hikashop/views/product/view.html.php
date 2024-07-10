@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1158,6 +1158,7 @@ class ProductViewProduct extends HikaShopView {
 
 		$pagination = hikashop_get('helper.pagination', $pageInfo->elements->total, $pageInfo->limit->start, $pageInfo->limit->value);
 		$pagination->hikaSuffix = '';
+		$category_pathway = '';
 		$this->assignRef('pagination', $pagination);
 
 		if(empty($this->module)) {
@@ -1259,6 +1260,7 @@ class ProductViewProduct extends HikaShopView {
 
 		if($config->get('simplified_breadcrumbs', 1))
 			$category_pathway = '';
+		$this->assignRef('pathway_sef_name', $pathway_sef_name);
 		$this->assignRef('category_pathway', $category_pathway);
 
 		$url = $this->init(true);
@@ -1544,6 +1546,9 @@ class ProductViewProduct extends HikaShopView {
 
 		$productClass->addAlias($element);
 		if(!$element->product_published)
+			return;
+
+		if($element->product_type=='trash')
 			return;
 
 		if($productClass->hit($product_id))
@@ -3176,6 +3181,9 @@ window.hikashop.ready( function() {
 
 		if (isset($element->variants)) {
 			foreach ($element->variants as $key => $variant) {
+				if(empty($variant->prices))
+					continue;
+
 				foreach ($variant->prices as $k => $price) {
 					$price_value = ($taxedPrice == '0') ? $price->price_value : $price->price_value_with_tax;
 
@@ -3196,6 +3204,9 @@ window.hikashop.ready( function() {
 				}
 			}
 		} else {
+			if(empty($element->prices)) {
+				return 0;
+			} else {
 			foreach ($element->prices as $k => $price) {
 				$price_value = ($taxedPrice == '0') ? $price->price_value : $price->price_value_with_tax;
 
@@ -3211,6 +3222,7 @@ window.hikashop.ready( function() {
 				else
 					$prices_array['main_'.$element->product_id] = $price_value;
 			}
+		}
 		}
 		foreach($prices_array as $k => $price) {
 			if ($priceDisplayed == 'expensive') {

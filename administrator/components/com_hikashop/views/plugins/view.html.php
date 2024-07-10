@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -635,6 +635,14 @@ class PluginsViewPlugins extends hikashopView{
 					hikashop_loadJslib('tooltip');
 					$label = hikashop_hktooltip(JText::_($value['tooltip']), '', $label, '');
 				}
+
+				$id = 'data_'.$type.'_'.$paramsType.'_'.$key;
+				$lineAttribs = 'id="'.$id.'_line"';
+
+				if(!empty($value['showon'])) {
+					hikashop_loadJslib('showon');
+					$lineAttribs .= ' hk-showon="data_'.$type.'_'.$paramsType.'_'.$value['showon'].'"';
+				}
 				if(isset($value[3]))
 					$options = $value[3];
 				else
@@ -642,20 +650,20 @@ class PluginsViewPlugins extends hikashopView{
 
 				switch ($value[1]) {
 					case 'input':
-						$html .= '<tr><td class="key"><label for="data_'.$type.'_'.$paramsType.'_'.$key.'">'.$label.'</label></td><td>';
-						$html .= '<input type="text" id="data_'.$type.'_'.$paramsType.'_'.$key.'" name="data['.$type.']['.$paramsType.']['.$key.']" value="'.htmlentities((string)@$this->element->$paramsType->$key, ENT_COMPAT, 'UTF-8').'"/>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label for="data_'.$type.'_'.$paramsType.'_'.$key.'">'.$label.'</label></td><td>';
+						$html .= '<input type="text" id="'.$id.'" name="data['.$type.']['.$paramsType.']['.$key.']" value="'.htmlentities((string)@$this->element->$paramsType->$key, ENT_COMPAT, 'UTF-8').'"/>';
 						break;
 
 					case 'textarea':
-						$html .= '<tr><td class="key"><label for="data_'.$type.'_'.$paramsType.'_'.$key.'">'.$label.'</label></td><td>';
-						$html .= '<textarea id="data_'.$type.'_'.$paramsType.'_'.$key.'" name="data['.$type.']['.$paramsType.']['.$key.']" rows="3">'.@$this->element->$paramsType->$key.'</textarea>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label for="data_'.$type.'_'.$paramsType.'_'.$key.'">'.$label.'</label></td><td>';
+						$html .= '<textarea id="'.$id.'" name="data['.$type.']['.$paramsType.']['.$key.']" rows="3">'.@$this->element->$paramsType->$key.'</textarea>';
 						break;
 					case 'big-textarea':
-						$html .= '<tr><td class="key"><label for="data_'.$type.'_'.$paramsType.'_'.$key.'">'.$label.'</label></td><td>';
-						$html .= '<textarea id="data_'.$type.'_'.$paramsType.'_'.$key.'" name="data['.$type.']['.$paramsType.']['.$key.']" rows="9" width="100%" style="width:100%;">'.@$this->element->$paramsType->$key.'</textarea>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label for="data_'.$type.'_'.$paramsType.'_'.$key.'">'.$label.'</label></td><td>';
+						$html .= '<textarea id="'.$id.'" name="data['.$type.']['.$paramsType.']['.$key.']" rows="9" width="100%" style="width:100%;">'.@$this->element->$paramsType->$key.'</textarea>';
 						break;
 					case 'wysiwyg':
-						$html .= '<tr><td class="key"><label>'.$label.'</label></td><td>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label>'.$label.'</label></td><td>';
 						if(empty($this->editorHelper)) {
 							$this->editorHelper = hikashop_get('helper.editor');
 							$config = hikashop_config();
@@ -668,7 +676,7 @@ class PluginsViewPlugins extends hikashopView{
 						$html .= $this->editorHelper->display() . '<div style="clear:both"></div>';
 						break;
 					case 'boolean':
-						$html .= '<tr><td class="key"><label>'.$label.'</label></td><td>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label>'.$label.'</label></td><td>';
 						if(!isset($this->element->$paramsType))
 							$this->element->$paramsType = new stdClass();
 						if(!isset($this->element->$paramsType->$key) && isset($value[2]))
@@ -679,7 +687,7 @@ class PluginsViewPlugins extends hikashopView{
 						break;
 
 					case 'checkbox':
-						$html .= '<tr><td class="key"><label>'.$label.'</label></td><td>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label>'.$label.'</label></td><td>';
 						$i = 0;
 						foreach($value[2] as $listKey => $listData){
 							$checked = '';
@@ -689,13 +697,13 @@ class PluginsViewPlugins extends hikashopView{
 								if(in_array($listKey, $this->element->$paramsType->$key))
 									$checked = 'checked="checked"';
 							}
-							$html .= '<input id="data_'.$type.'_'.$paramsType.'_'.$key.'_'.$i.'" name="data['.$type.']['.$paramsType.']['.$key.'][]" class="hikashop_plg_checkbox" type="checkbox" value="'.$listKey.'" '.$checked.' /><label for="data_'.$type.'_'.$paramsType.'_'.$key.'_'.$i.'">'.$listData.'</label><br/>';
+							$html .= '<input id="'.$id.'_'.$i.'" name="data['.$type.']['.$paramsType.']['.$key.'][]" class="hikashop_plg_checkbox" type="checkbox" value="'.$listKey.'" '.$checked.' /><label for="data_'.$type.'_'.$paramsType.'_'.$key.'_'.$i.'">'.$listData.'</label><br/>';
 							$i++;
 						}
 						break;
 
 					case 'radio':
-						$html .= '<tr><td class="key"><label>'.$label.'</label></td><td>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label>'.$label.'</label></td><td>';
 						$values = array();
 						foreach($value[2] as $listKey => $listData){
 							$values[] = JHTML::_('select.option', $listKey, JText::_($listData));
@@ -704,7 +712,7 @@ class PluginsViewPlugins extends hikashopView{
 						break;
 
 					case 'list':
-						$html .= '<tr><td class="key"><label for="data'.$type.$paramsType.$key.'">'.$label.'</label></td><td>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label for="data'.$type.$paramsType.$key.'">'.$label.'</label></td><td>';
 						$values = array();
 						foreach($value[2] as $listKey => $listData){
 							$values[] = JHTML::_('select.option', $listKey,JText::_($listData));
@@ -713,22 +721,27 @@ class PluginsViewPlugins extends hikashopView{
 						break;
 
 					case 'orderstatus':
-						$html .= '<tr><td class="key"><label for="data'.$type.$paramsType.$key.'">'.$label.'</label></td><td>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label for="data'.$type.$paramsType.$key.'">'.$label.'</label></td><td>';
 						$html .= $this->data['order_statuses']->display('data['.$type.']['.$paramsType.']['.$key.']',@$this->element->$paramsType->$key);
 						break;
 
 					case 'address':
-						$html .= '<tr><td class="key"><label for="data'.$type.$paramsType.$key.'">'.$label.'</label></td><td>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label for="data'.$type.$paramsType.$key.'">'.$label.'</label></td><td>';
 						$addressType = hikashop_get('type.address');
 						$html .= $addressType->display('data['.$type.']['.$paramsType.']['.$key.']',@$this->element->$paramsType->$key);
 						break;
-
 					case 'html':
-						$html .= '<tr><td class="key"><label>'.$label.'</label></td><td>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label>'.$label.'</label></td><td>';
 						$html .= $value[2];
 						break;
+					case 'title':
+						$html .= '<tr '.$lineAttribs.'><td colspan="2"><label><b>'.$label.'</b></label>';
+						break;
+					case 'content':
+						$html .= '<tr '.$lineAttribs.'><td colspan="2">'.$label;
+						break;
 					case 'category':
-						$html .= '<tr><td class="key"><label for="data_'.$type.'_'.$paramsType.'_'.$key.'_text">'.$label.'</label></td><td>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label for="data_'.$type.'_'.$paramsType.'_'.$key.'_text">'.$label.'</label></td><td>';
 						if(!empty($this->element->$paramsType->$key)) {
 							if(!is_array($this->element->$paramsType->$key)) {
 								$this->element->$paramsType->$key = explode(',', trim(@$this->element->$paramsType->$key, ','));
@@ -747,7 +760,7 @@ class PluginsViewPlugins extends hikashopView{
 						);
 						break;
 					default:
-						$html .= '<tr><td class="key"><label>'.$label.'</label></td><td>';
+						$html .= '<tr '.$lineAttribs.'><td class="key"><label>'.$label.'</label></td><td>';
 						if(method_exists($this->plugin, 'pluginConfigDisplay')) {
 							$html .= $this->plugin->pluginConfigDisplay($value[1], @$value[2], $type, $paramsType, $key, $this->element, $options);
 						}

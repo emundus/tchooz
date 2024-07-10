@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -148,7 +148,8 @@ class hikashopUpdateHelper{
 			,'plg_hikashopshipping_aupost2' => array('HikaShop Australia Post shipping plugin V2',0,0)
 			,'plg_hikashopshipping_canadapost' => array('HikaShop Canada Post shipping plugin',0,0)
 			,'plg_hikashopshipping_canpar' => array('HikaShop CANPAR shipping plugin',0,0)
-			,'plg_hikashopshipping_fedex' => array('HikaShop Fedex shipping plugin',0,0)
+			,'plg_hikashopshipping_fedex' => array('HikaShop Fedex (legacy) shipping plugin',0,0)
+			,'plg_hikashopshipping_fedex2' => array('HikaShop Fedex shipping plugin',0,0)
 			,'plg_hikashopshipping_manual' => array('HikaShop manual shipping plugin',0,0)
 			,'plg_hikashopshipping_ups' => array('HikaShop UPS (legacy) shipping plugin',0,0)
 			,'plg_hikashopshipping_ups2' => array('HikaShop UPS OAuth shipping plugin',0,0)
@@ -194,7 +195,7 @@ class hikashopUpdateHelper{
 				$extensionData->copyright = '(C) 2011-'.date('Y').' HIKARI SOFTWARE. All rights reserved.';
 				$extensionData->authorEmail = 'contact@hikashop.com';
 				$extensionData->authorUrl = 'https://www.hikashop.com';
-				$extensionData->version = '5.0.4';
+				$extensionData->version = '5.1.0';
 				$extensionData->description = $data[0];
 				$extensionData->group = '';
 				$extensionData->filename = $element;
@@ -252,7 +253,7 @@ class hikashopUpdateHelper{
 				$extensionData->copyright = '(C) 2011-'.date('Y').' HIKARI SOFTWARE. All rights reserved.';
 				$extensionData->authorEmail = 'contact@hikashop.com';
 				$extensionData->authorUrl = 'https://www.hikashop.com';
-				$extensionData->version = '5.0.4';
+				$extensionData->version = '5.1.0';
 				$extensionData->description = $oneExt->name;
 				$extensionData->group = '';
 				$extensionData->filename = $oneExt->element;

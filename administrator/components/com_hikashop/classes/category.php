@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -636,6 +636,9 @@ class hikashopCategoryClass extends hikashopClass {
 					foreach($images as $img){
 						if($img->file_ref_id==$cat->category_id){
 							foreach(get_object_vars($img) as $key => $val){
+								if(!empty($val) && in_array($key, array('file_name', 'file_description'))) {
+									$val = hikashop_translate($val);
+								}
 								$rows[$k]->$key = $val;
 							}
 							break;

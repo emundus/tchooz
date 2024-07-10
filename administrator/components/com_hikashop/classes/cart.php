@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -3348,7 +3348,7 @@ class hikashopCartClass extends hikashopClass {
 				$ret = false;
 				$product['qty'] = 0;
 				unset($product['data']);
-				$this->addMessage($cart, array('msg' => $msg, 'product_id' => $id, 'type' => 'error'));
+				$this->addMessage($cart, array('msg' => $msg, 'product_id' => $id, 'type' => 'warning'));
 
 				continue;
 			}
@@ -3413,7 +3413,7 @@ class hikashopCartClass extends hikashopClass {
 					$ret = false;
 					$product['qty'] = 0;
 					unset($product['data']);
-					$this->addMessage($cart, array('msg' => $msg, 'product_id' => $id, 'type' => 'error'));
+					$this->addMessage($cart, array('msg' => $msg, 'product_id' => $id, 'type' => 'warning'));
 					continue;
 				}
 
@@ -3510,7 +3510,7 @@ class hikashopCartClass extends hikashopClass {
 					$this->addMessage($cart, array(
 						'msg' => JText::sprintf($msg, $product['data']->product_name),
 						'product_id' => $id,
-						'type' => 'error'
+						'type' => 'warning'
 					));
 					continue;
 				}

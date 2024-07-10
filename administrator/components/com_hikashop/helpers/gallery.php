@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -10,7 +10,7 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 class hikashopGalleryHelper {
 
-	var $extensions = array('jpg', 'jpeg', 'png', 'gif', 'svg');
+	var $extensions = array('jpg', 'jpeg', 'png', 'gif', 'svg', 'webp');
 	var $root = '';
 	var $urlRoot = '';
 	var $dirs = array();

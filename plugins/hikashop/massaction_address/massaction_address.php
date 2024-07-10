@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,6 +13,7 @@ class plgHikashopMassaction_address extends JPlugin
 	var $message = '';
 	var $massaction = null;
 	var $addressClass = null;
+	var $deletedAddress = null;
 
 	function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
@@ -86,7 +87,7 @@ class plgHikashopMassaction_address extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				if($filter['type'] == 'address_state' || $filter['type'] == 'address_country'){
 					$type = str_replace('address_','',$filter['type']);
 					$nquery = 'SELECT zone_namekey FROM '.hikashop_table('zone').' WHERE ';
@@ -133,7 +134,7 @@ class plgHikashopMassaction_address extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				$query->leftjoin['user'] = hikashop_table('user').' as hk_user ON hk_address.address_user_id = hk_user.user_id';
 				$query->leftjoin['joomla_user'] = hikashop_table('users',false).' as joomla_user ON joomla_user.id = hk_user.user_cms_id';
 				$query->where[] = $this->massaction->getRequest($filter);
@@ -328,7 +329,7 @@ class plgHikashopMassaction_address extends JPlugin
 
 	function onAfterAddressDelete(&$ids){
 		$this->init();
-		$this->massaction->trigger('onAfterAddressDelete',$this->deletedAdress);
+		$this->massaction->trigger('onAfterAddressDelete',$this->deletedAddress);
 	}
 
 	function onBeforeAddressDelete($elements,$do){
@@ -339,7 +340,7 @@ class plgHikashopMassaction_address extends JPlugin
 		foreach($clone as $id){
 			$addresses[] = $this->addressClass->get($id);
 		}
-		$this->deletedAdress = $addresses;
+		$this->deletedAddress = $addresses;
 		$this->massaction->trigger('onBeforeAddressDelete',$addresses);
 	}
 }

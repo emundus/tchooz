@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1746,14 +1746,14 @@ class hikashopProductClass extends hikashopClass{
 		if(!isset($variant->product_published))
 			return false;
 
+		$variantObj = new stdClass();
+		$variantObj->product_id = (int)$variant_id;
 		if($variant->product_published){
-			$query = 'UPDATE '.hikashop_table('product').' SET product_published = 0 WHERE product_id = '.(int)$variant_id;
+			$variantObj->product_published = 0;
 		}else{
-			$query = 'UPDATE '.hikashop_table('product').' SET product_published = 1 WHERE product_id = '.(int)$variant_id;
+			$variantObj->product_published = 1;
 		}
-		$this->db->setQuery($query);
-		$success = $this->db->execute();
-		return $success;
+		return $this->saveRaw($variantObj);
 	}
 
 	function toFloatArray(&$array, $default = null) {
@@ -2442,9 +2442,13 @@ class hikashopProductClass extends hikashopClass{
 				}
 				if(empty($rows[$k]->file_name)) {
 					$rows[$k]->file_name = $rows[$k]->product_name;
+				} else {
+					$rows[$k]->file_name = hikashop_translate($rows[$k]->file_name);
 				}
 				if(empty($rows[$k]->file_description)) {
 					$rows[$k]->file_description = $rows[$k]->product_name;
+				} else {
+					$rows[$k]->file_description = hikashop_translate($rows[$k]->file_description);
 				}
 			}
 		}
@@ -4012,9 +4016,13 @@ class hikashopProductClass extends hikashopClass{
 					$element->images = array();
 				if(empty($file->file_name)) {
 					$file->file_name = $element->product_name;
+				} else {
+					$file->file_name = hikashop_translate($file->file_name);
 				}
 				if(empty($file->file_description)) {
 					$file->file_description = $element->product_name;
+				} else {
+					$file->file_description = hikashop_translate($file->file_description);
 				}
 				$element->images[] = $file;
 			}

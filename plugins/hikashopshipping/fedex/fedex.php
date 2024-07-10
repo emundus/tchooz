@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -218,7 +218,7 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 		}
 	}
 	function getShippingDefaultValues(&$element) {
-		$element->shipping_name = 'FedEx';
+		$element->shipping_name = 'FedEx (legacy)';
 		$element->shipping_description = '';
 		$element->group_package = 0;
 		$element->debug = 0;
@@ -244,6 +244,9 @@ class plgHikashopshippingFedEx extends hikashopShippingPlugin {
 		$this->categoryType->type = 'tax';
 		$this->categoryType->field = 'category_id';
 		$this->nameboxType = hikashop_get('type.namebox');
+
+		$app = JFactory::getApplication();
+		$app->enqueueMessage(JText::sprintf('FEDEX_LEGACY_MSG', 'Fedex'));
 
 		parent::onShippingConfiguration($element);
 

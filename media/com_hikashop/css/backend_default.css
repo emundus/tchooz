@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.0.4
+ * @version    5.1.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -3876,6 +3876,11 @@ label.btn-default.btn-success {
 	width: 260px;
 	min-height: 40px;
 }
+
+div#hikashop_main_content_category dd.hikashop_option_value option[value="hover_x_img_title"] {
+    display: none;
+}
+
 div#hikashop_main_content.hika_j4 textarea,
 div#hikashop_main_content.hika_j4 textarea.inputbox,
 div#hikashop_main_content.hika_j4 textarea#address_format_textarea {
@@ -5019,7 +5024,7 @@ div#hikashop_main_content joomla-field-fancy-select .choices {
 }
 div#hikashop_main_content joomla-field-fancy-select .choices__inner {
 	padding-left: 0px;
-	height: 86px;
+	min-height: 86px;
 }
 div#hikashop_main_content joomla-field-fancy-select .choices__inner input {
 	margin-top: -1px;

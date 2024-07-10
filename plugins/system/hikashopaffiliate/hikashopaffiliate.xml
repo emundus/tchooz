@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="system" method="upgrade">
 	<name>System - HikaShop Affiliate</name>
-	<creationDate>06 juin 2024</creationDate>
-	<version>5.0.4</version>
+	<creationDate>08 juillet 2024</creationDate>
+	<version>5.1.0</version>
 	<author>HikaShop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -26,6 +26,7 @@
 			description="BUTTON_ON_CONTROL_PANEL" >
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
+			<option value="2">ONLY_FOR_PARTNERS</option>
 		</param>
 	</params>
 	<config>
@@ -54,6 +55,7 @@
 					description="BUTTON_ON_CONTROL_PANEL" >
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
+					<option value="2">ONLY_FOR_PARTNERS</option>
 				</field>
 			</fieldset>
 		</fields>

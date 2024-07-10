@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -274,12 +274,14 @@ class CategoryViewCategory extends hikashopView
 		}
 		if(!empty($element->category_parent_id)){
 			$parentData = $class->get($element->category_parent_id);
-			$element->category_parent_name = $parentData->category_name;
-			if(empty($element->category_type)&&$parentData->category_type!='root'){
-				$element->category_type=$parentData->category_type;
+			if((!empty($parentData))) {
+				$element->category_parent_name = $parentData->category_name;
+				if(empty($element->category_type) && $parentData->category_type != 'root'){
+					$element->category_type = $parentData->category_type;
+				}
 			}
 		}
-		if($element->category_type == 'manufacturer') {
+		if(!empty($element->category_type) && $element->category_type == 'manufacturer') {
 			$this->icon = 'tag';
 			$this->nameForm = 'MANUFACTURERS';
 		}

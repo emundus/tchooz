@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.0.4
+ * @version    5.1.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -182,11 +182,14 @@ div#hikashop_main_content.hika_j5 #hikashop_product_variant_list_table tr.select
 	background-color: #40546b;
 }
 div#hikashop_main_content.hika_j5 div#hika_code_editor,
-div#hikashop_main_content.hika_j5 div#hikashop_html_version_main_div, 
-div#hikashop_main_content.hika_j5 .hikashop_tile_block.hikashop_mail_edit_text textarea#altbody,
+div#hikashop_main_content.hika_j5 div#hikashop_html_version_main_div,
 div#hikashop_main_content.hika_j5 .hikashop_mail_edit_preload joomla-editor-codemirror {
 	background-color: #fff;
 	color: #000;
+}
+div#hikashop_main_content.hika_j5 .hikashop_tile_block.hikashop_mail_edit_text textarea#altbody {
+	background-color: #000;
+    color: #abb2bf;
 }
 div#hikashop_main_content.hika_j5 table#hikashop_edit_view joomla-editor-codemirror {
 	color: #6b6b6b;

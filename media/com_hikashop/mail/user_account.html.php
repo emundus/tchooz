@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -13,7 +13,9 @@ defined('_JEXEC') or die('Restricted access');
 <?php if($data->active){
 	echo JText::sprintf('ACCOUNT_MUST_BE_ACTIVATED'); ?>
 	<br/><br/>
-	<a href="<?php echo $data->activation_url;?>"><?php echo $data->activation_url;?></a>
+	<div style="text-align:center">
+		<a class="cart_button hika_template_color" href="<?php echo $data->activation_url;?>"><?php echo JText::_('ACTIVATE_MY_ACCOUNT');?></a>
+	</div>
 <?php } ?>
 <br/><br/>
 <?php

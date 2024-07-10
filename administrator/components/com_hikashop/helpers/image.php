@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -763,6 +763,10 @@ class hikashopImageHelper {
 		$jconf = JFactory::getConfig();
 		$jdebug = $jconf->get('debug');
 
+		if(!empty($filename)) {
+			$filename = hikashop_translate($filename);
+		}
+
 		$ret = new stdClass();
 		$ret->success = false;
 		$ret->external = false;
@@ -1274,6 +1278,10 @@ window.hikashop.ready( function() {
 
 		if(!$reduceSize && !$module) {
 			$options .= ' height="'.$this->thumbnail_y.'" width="'.$this->thumbnail_x.'" ';
+		}
+
+		if(!empty($path)) {
+			$path = hikashop_translate($path);
 		}
 
 		if($this->thumbnail){

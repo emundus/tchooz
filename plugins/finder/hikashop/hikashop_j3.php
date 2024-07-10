@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -70,8 +70,8 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter {
 		if(!empty($itemid))
 			$extra = '&Itemid='.$itemid;
 
-		$item->url   = "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias.$extra;
-		$item->route = "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias.$extra;
+		$item->url   = $this->getUrl($item->id, 'com_hikashop','product'); // "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias.$extra;
+		$item->route = $this->getUrl($item->id, 'com_hikashop','product'); // "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias.$extra;
 		$item->path  = FinderIndexerHelper::getContentPath($item->route);
 
 		$title = $this->getItemMenuTitle($item->url);

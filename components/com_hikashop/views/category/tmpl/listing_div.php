@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,6 +32,11 @@ if(empty($width) && empty($height)){
  	$width = $this->image->main_thumbnail_x;
 	$height = $this->image->main_thumbnail_y;
 }
+$zoomHover = $this->params->get('zoom_on_hover', 0);
+$classZoom = '';
+if ($zoomHover)
+	$classZoom = 'hikashop_zoom_hover';
+
 $exists = false;
 if(!empty($this->rows)) {
 	$row=reset($this->rows);
@@ -196,7 +201,7 @@ if(!empty($this->rows)) {
 			$class = ($current_parent_category == $row->category_id) ? ' hikashop_current_parent_category' : '';
 ?>
 			<div class="hkc-md-<?php echo (int)$span; ?> hikashop_category hikashop_category_column_<?php echo $current_column; ?> hikashop_category_row_<?php echo $current_row.$class; ?>">
-				<div class="hikashop_container">
+				<div class="hikashop_container  <?php echo $classZoom; ?>">
 					<div class="hikashop_subcontainer <?php echo $borderClass; ?>">
 <?php
 			$this->row =& $row;

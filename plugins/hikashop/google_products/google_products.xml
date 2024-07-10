@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="hikashop">
 	<name>Hikashop Google Products Plugin</name>
-	<creationDate>06 juin 2024</creationDate>
-	<version>5.0.4</version>
+	<creationDate>08 juillet 2024</creationDate>
+	<version>5.1.0</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -38,6 +38,7 @@
 		<param name="brand" type="text" size="50" default="" label="HIKA_BRAND_OVERRIDE" description="BRAND_OVERRIDE" />
 		<param name="categories" multiple="true" namebox_type="category" type="hikanamebox" default="" label="PRODUCT_CATEGORIES" description="GOOGLE_PRODUCTS_CATEGORIES" />
 		<param name="category" type="text" size="50" default="" label="CATEGORY" description="GOOGLE_PRODUCTS_CATEGORY" />
+		<param name="skip_field" type="text" size="50" default="" label="SKIP_FIELD" description="SKIP_FIELD_DESCRIPTION" />
 		<param name="price_displayed" type="list" default="0" label="HIKA_PRICE_DISPLAYED" description="PRICE_DISPLAYED">
 			<option value="cheapest">CHEAPEST_PRICE_DISPLAYED</option>
 			<option value="average">AVERAGE_PRICE_DISPLAYED</option>
@@ -157,6 +158,7 @@
 				<field name="brand" type="text" size="50" default="" label="HIKA_BRAND_OVERRIDE" description="BRAND_OVERRIDE" />
 				<field name="categories" multiple="true" namebox_type="category" type="hikanamebox" default="" label="PRODUCT_CATEGORIES" description="GOOGLE_PRODUCTS_CATEGORIES" />
 				<field name="category" type="text" size="50" default="" label="GOOGLE_PRODUCT_CATEGORY" description="GOOGLE_PRODUCTS_CATEGORY" />
+				<field name="skip_field" type="text" size="50" default="" label="SKIP_FIELD" description="SKIP_FIELD_DESCRIPTION" />
 				<field name="price_displayed" type="list" default="0" label="HIKA_PRICE_DISPLAYED" description="PRICE_DISPLAYED">
 					<option value="cheapest">CHEAPEST_PRICE_DISPLAYED</option>
 					<option value="average">AVERAGE_PRICE_DISPLAYED</option>

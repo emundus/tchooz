@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -592,6 +592,7 @@ class hikashopCurrencyClass extends hikashopClass{
 		$app->triggerEvent('onAfterLoadProductPrice', array( &$prices, &$rows, $filters, $options ));
 
 		$variantSearch = array();
+		$productsWithoutPrice = array();
 		$main_currency = (int)$config->get('main_currency', 1);
 		$discount_before_tax = (int)$config->get('discount_before_tax', 0);
 		foreach($rows as $k => $element) {
@@ -751,6 +752,7 @@ class hikashopCurrencyClass extends hikashopClass{
 			}
 			if(!$pricefound && !empty($element->variant_ids)) {
 				$variantSearch = array_merge($variantSearch, $element->variant_ids);
+				$productsWithoutPrice[] = $element->product_id;
 			}
 		}
 
@@ -784,6 +786,57 @@ class hikashopCurrencyClass extends hikashopClass{
 				}
 			}
 			if(!empty($prices)) {
+				if($price_display_type == 'default') {
+
+					$query = 'SELECT v.variant_characteristic_id, v.variant_product_id FROM #__hikashop_variant AS v LEFT JOIN #__hikashop_characteristic AS c ON v.variant_characteristic_id = c.characteristic_id WHERE c.characteristic_parent_id AND v.variant_product_id IN ('.implode(', ',$productsWithoutPrice).')';
+					$this->database->setQuery($query);
+					$default_values = $this->database->loadObjectList();
+					$query = 'SELECT variant_characteristic_id, variant_product_id FROM #__hikashop_variant WHERE variant_product_id IN ('.implode(', ', $variantSearch).')';
+					$this->database->setQuery($query);
+					$values_from_variants = $this->database->loadObjectList();
+
+					$main_products = array();
+					foreach($default_values as $default_value) {
+						if(!isset($main_products[$default_value->variant_product_id])) {
+							$main_products[$default_value->variant_product_id] = new stdClass();
+							$main_products[$default_value->variant_product_id]->values = array();
+						}
+						$main_products[$default_value->variant_product_id]->values[] = $default_value->variant_characteristic_id;
+					}
+					$variants = array();
+					foreach($values_from_variants as $values_from_variant) {
+						if(!isset($variants[$values_from_variant->variant_product_id])) {
+							$variants[$values_from_variant->variant_product_id] = new stdClass();
+							$variants[$values_from_variant->variant_product_id]->values = array();
+							$variants[$values_from_variant->variant_product_id]->parent = $this->_loadedVariants[$values_from_variant->variant_product_id]->product_parent_id;
+						}
+						$variants[$values_from_variant->variant_product_id]->values[] = $values_from_variant->variant_characteristic_id;
+					}
+					foreach($main_products as $main => $main_product) {
+						foreach($variants as $v => $variant) {
+							if($variant->parent != $main) continue;
+							$match = true;
+							foreach($main_product->values as $v1) {
+								$found = false;
+								foreach($variant->values as $v2) {
+									if($v1 == $v2) {
+										$found = true;
+										break;
+									}
+								}
+								if(!$found) {
+									$match = false;
+									break;
+								}
+							}
+							if($match) {
+								$main_products[$main]->default_variant = $v;
+								break;
+							}
+						}
+					}
+				}
+
 				foreach($rows as $k => $element) {
 					if(!empty($element->prices))
 						continue;
@@ -835,6 +888,22 @@ class hikashopCurrencyClass extends hikashopClass{
 								}
 								$rows[$k]->prices = array_values($found);
 								break;
+							case 'default':
+								if(!empty($main_products[$element->product_id])) {
+									foreach($matches as $j => $match) {
+										if(empty($match->price_min_quantity) && $main_products[$element->product_id]->default_variant == $match->price_product_id) {
+											$round = $this->getRounding($match->price_currency_id,true);
+											if(empty($this->_loadedVariants[$match->price_product_id]->product_tax_id))
+												$this->_loadedVariants[$match->price_product_id]->product_tax_id = $element->product_tax_id;
+											$match->price_value_with_tax = $this->getTaxedPrice($match->price_value, $zone_id, $this->_loadedVariants[$match->price_product_id]->product_tax_id, $round);
+											$match->taxes = $this->taxRates;
+											$rows[$k]->prices = array($match);
+										}
+									}
+									if(!empty($rows[$k]->prices) && count($rows[$k]->prices)) {
+										break;
+									}
+								}
 							case 'cheapest':
 								$min=0;
 								$minVal=0;
@@ -2151,16 +2220,16 @@ class hikashopCurrencyClass extends hikashopClass{
 		foreach($keys as $key) {
 			if(!isset($price->$key))
 				continue;
-			$price->unit_price->$key = $this->round($price->$key, $rounding);
-			$price->$key = $this->round($price->unit_price->$key * $quantity, $rounding);
+			$price->unit_price->$key = (float)$this->round($price->$key, $rounding);
+			$price->$key = $this->round($price->unit_price->$key * (int)$quantity, $rounding);
 		}
 
 		if(isset($price->taxes)) {
 			$price->unit_price->taxes = array();
 			foreach($price->taxes as $k => $tax) {
 				$price->unit_price->taxes[$k] = clone($tax);
-				$price->taxes[$k]->tax_amount = $this->round(@$tax->tax_amount * $quantity,$rounding);
-				$price->taxes[$k]->amount = $this->round(@$tax->amount * $quantity,$rounding);
+				$price->taxes[$k]->tax_amount = $this->round(@$tax->tax_amount * (int)$quantity,$rounding);
+				$price->taxes[$k]->amount = $this->round(@$tax->amount * (int)$quantity,$rounding);
 			}
 		}
 
@@ -2168,8 +2237,8 @@ class hikashopCurrencyClass extends hikashopClass{
 			$price->unit_price->taxes_without_discount = array();
 			foreach($price->taxes_without_discount as $k => $tax) {
 				$price->unit_price->taxes_without_discount[$k] = clone($tax);
-				$price->taxes_without_discount[$k]->tax_amount = $this->round(@$tax->tax_amount * $quantity,$rounding);
-				$price->taxes_without_discount[$k]->amount = $this->round(@$tax->amount * $quantity,$rounding);
+				$price->taxes_without_discount[$k]->tax_amount = $this->round(@$tax->tax_amount * (int)$quantity,$rounding);
+				$price->taxes_without_discount[$k]->amount = $this->round(@$tax->amount * (int)$quantity,$rounding);
 
 			}
 		}
@@ -2231,6 +2300,12 @@ class hikashopCurrencyClass extends hikashopClass{
 
 				foreach($row->prices as $k2 => $price) {
 					$this->addDiscount($element->variants[$k]->prices[$k2], $element->variants[$k]->discount, $discount_before_tax, $zone_id, $element->variants[$k]->product_tax_id);
+
+					foreach($element->prices as $k3 => $price3) {
+						if($price3->price_id == $price->price_id) {
+							$element->prices[$k3] = hikashop_copy($price);
+						}
+					}
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -15,6 +15,7 @@ class hikashopGeolocationInc{
 	var $version = 'v3';
 	var $apiKey = '';
 	var $timeout = 10;
+	var $curl = null;
 
 	function setKey($key){
 		if(!empty($key)) $this->apiKey = $key;
@@ -56,7 +57,7 @@ class hikashopGeolocationInc{
 			$app->enqueueMessage('The HikaShop Geolocation plugin can only work with PHP 5.2 at least. Please ask your web hosting to update your PHP version','error');
 			return false;
 		}
-		if (!isset($this->curl)) {
+		if (empty($this->curl)) {
 			$this->curl = curl_init();
 			curl_setopt ($this->curl, CURLOPT_FAILONERROR, TRUE);
 			if (@ini_get('open_basedir') == '' && @ini_get('safe_mode' == 'Off')) {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -25,7 +25,6 @@ class hikashopCheckoutPaymentHelper extends hikashopCheckoutHelperInterface {
 		'payment_selector' => array(
 			'name' => 'HIKASHOP_CHECKOUT_DISPLAY_SELECTOR',
 			'type' => 'radio',
-			'tooltip' => 'checkout_payment_selector',
 			'default' => 1,
 			'showon' => array(
 				'key' => 'read_only',

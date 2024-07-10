@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -413,6 +413,20 @@ else {
 		?></label></dt>
 		<dd data-hk-display="display_format" class="input_large">
 			<input type="text" id="display_format" placeholder="{value}" name="field_options[display_format]" value="<?php echo $this->escape(@$this->field->field_options['display_format']); ?>"/>
+		</dd>
+
+
+		<dt data-hk-display="display_format_file"><label for="display_format_file"><?php
+			echo JText::_('FORMAT_FOR_EACH_FILE');
+		?></label></dt>
+		<dd data-hk-display="display_format_file" class="input_large">
+			<textarea id="display_format_file" placeholder="<?php echo $this->escape('<p class="hikashop_custom_file_area"><a target="_blank" class="{class}" href="{url}">{name}</a>{description}</p>'); ?>" name="field_options[display_format_file]"><?php echo $this->escape(@$this->field->field_options['display_format_file']); ?></textarea>
+		</dd>
+		<dt data-hk-display="display_format_image"><label for="display_format_image"><?php
+			echo JText::_('FORMAT_FOR_EACH_IMAGE');
+		?></label></dt>
+		<dd data-hk-display="display_format_image" class="input_large">
+			<textarea id="display_format_image" placeholder="<?php echo $this->escape('<p class="hikashop_custom_file_area"><a target="_blank" class="{class}" href="{url}"><img class="{class}" src="{src}" alt="{name}" /></a>{description}</p>'); ?>" name="field_options[display_format_image]"><?php echo $this->escape(@$this->field->field_options['display_format_image']); ?></textarea>
 		</dd>
 
 		<dt data-hk-display="format"><label for="field_format"><?php

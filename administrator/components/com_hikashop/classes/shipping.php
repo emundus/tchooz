@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -880,7 +880,7 @@ class hikashopShippingClass extends hikashopClass {
 				$shipping->shipping_params = hikashop_unserialize($shipping->shipping_params);
 			$shippingMethod = hikashop_import('hikashopshipping', $shipping_method);
 			$methods = array();
-			if(method_exists($shippingMethod, 'shippingMethods'))
+			if(!empty($shippingMethod) && method_exists($shippingMethod, 'shippingMethods'))
 				$methods = $shippingMethod->shippingMethods($shipping);
 			unset($shippingMethod);
 

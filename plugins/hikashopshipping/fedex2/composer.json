@@ -1,0 +1,5 @@
+{
+    "require": {
+        "whatarmy/fedex-rest": "^0.5"
+    }
+}

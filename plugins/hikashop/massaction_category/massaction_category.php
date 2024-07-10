@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -102,7 +102,7 @@ class plgHikashopMassaction_category extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				$query->where[] = $this->massaction->getRequest($filter,'hk_category');
 			}
 		}
@@ -143,7 +143,7 @@ class plgHikashopMassaction_category extends JPlugin
 				if(!$in) unset($elements[$k]);
 			}
 		}else{
-			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				$query->leftjoin['parent_category'] = hikashop_table('category').' AS hk_parent_category ON hk_parent_category.category_id = hk_category.category_parent_id';
 				$query->where[] = $this->massaction->getRequest($filter,'hk_parent_category');
 			}

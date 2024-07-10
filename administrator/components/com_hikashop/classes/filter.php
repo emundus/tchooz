@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -1668,7 +1668,8 @@ class hikashopFilterTypeClass extends hikashopClass {
 				$key = $this->_getKey($categories_name, $category);
 				$sorting_array[$key] = $category;
 			}
-			$categories_name = ksort($sorting_array, SORT_STRING);
+			ksort($sorting_array, SORT_STRING);
+			$categories_name = $sorting_array;
 		}
 		if(!empty($datas))
 			$this->storeValuesInSession($filter, $categories_name);
@@ -2922,7 +2923,12 @@ class hikashopMultipledropdownClass extends hikashopSingledropdownClass{
 	function display(&$filter, $divName, &$parent, $datas='', $multiple='', $tab=''){
 		$multiple='multiple="multiple" size="5" data-placeholder="'.$filter->filter_name.'"';
 		$tab='[]';
-		return parent::display($filter, $divName, $parent, $datas, $multiple, $tab);
+		$html = parent::display($filter, $divName, $parent, $datas, $multiple, $tab);
+		if(HIKASHOP_J40) {
+			JFactory::getDocument()->getWebAssetManager()->usePreset('choicesjs')->useScript('webcomponent.field-fancy-select');
+			$html = '<joomla-field-fancy-select>'.$html.'</joomla-field-fancy-select>';
+		}
+		return $html;
 	}
 }
 

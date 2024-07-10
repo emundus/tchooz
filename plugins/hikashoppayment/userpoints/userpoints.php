@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -442,7 +442,7 @@ class plgHikashoppaymentUserpoints extends hikashopPaymentPlugin {
 		$order_status = null;
 		$config =& hikashop_config();
 
-		$points = $this->checkpoints($order);
+		$points = $this->checkPoints($order);
 		if($points !== false && $points > 0) {
 			$this->addPoints(-$points, $order);
 
@@ -855,6 +855,28 @@ class plgHikashoppaymentUserpoints extends hikashopPaymentPlugin {
 		return $foundry;
 	}
 
+	public function getRewardify($warning = false) {
+		static $foundry = null;
+
+		if($foundry !== null)
+			return $foundry;
+
+		$file = JPATH_ADMINISTRATOR . '/components/com_rewardify/rewardify.php';
+		jimport('joomla.filesystem.file');
+		$foundry = JFile::exists($file);
+
+		if($foundry) {
+			Factory::getApplication()->bootComponent( 'com_rewardify' );
+		} else if($warning) {
+			$app = JFactory::getApplication();
+			if(hikashop_isClient('administrator'))
+				$app->enqueueMessage('The HikaShop UserPoints plugin requires the component Rewardify to be installed. If you want to use it, please install the component or use another mode.');
+		}
+
+		return $foundry;
+	}
+
+
 	public function onPaymentConfiguration(&$element) {
 		parent::onPaymentConfiguration($element);
 
@@ -867,6 +889,8 @@ class plgHikashoppaymentUserpoints extends hikashopPaymentPlugin {
 			}
 			$this->modes[] = JHTML::_('select.option', 'aup', $name);
 		}
+		if($this->getRewardify(false))
+			$this->modes[] = JHTML::_('select.option', 'rwd', JText::_('Rewardify'));
 		if($this->getEasysocial(false))
 			$this->modes[] = JHTML::_('select.option', 'esp', JText::_('EASYSOCIAL_POINTS'));
 		$this->modes[] = JHTML::_('select.option', 'hk', JText::_('HIKASHOP_USER_POINTS'));

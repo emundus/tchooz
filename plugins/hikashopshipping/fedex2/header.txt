@@ -1,0 +1,10 @@
+<?php
+/**
+ * @package	Fedex 2 shipping Plugin
+ * @version	{__VERSION__}
+ * @author	hikashop.com
+ * @copyright	(C) 2010-{__YEAR__} HIKARI SOFTWARE. All rights reserved.
+ * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+ */
+defined('_JEXEC') or die('Restricted access');
+?>

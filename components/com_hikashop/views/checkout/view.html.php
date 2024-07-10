@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -56,15 +56,16 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 	public function termsandconditions() {
 		$step = hikaInput::get()->getInt('step', 0)-1;
 		$pos = hikaInput::get()->getInt('pos', 0);
-
-		$checkoutHelper = hikashopCheckoutHelper::get();
-		$this->workflow = $checkoutHelper->checkout_workflow;
-		$block = @$this->workflow['steps'][$step]['content'][$pos];
-		if(!empty($block) && $block['task'] == 'terms' && !empty($block['params']['article_id']))
-			$terms_article = $block['params']['article_id'];
-
+		$type = hikaInput::get()->getString('type', 'checkout_terms');
+		if(isset($_REQUEST['step']) && isset($_REQUEST['pos'])) {
+			$checkoutHelper = hikashopCheckoutHelper::get();
+			$this->workflow = $checkoutHelper->checkout_workflow;
+			$block = @$this->workflow['steps'][$step]['content'][$pos];
+			if(!empty($block) && $block['task'] == 'terms' && !empty($block['params']['article_id']))
+				$terms_article = $block['params']['article_id'];
+		}
 		if(empty($terms_article))
-			$terms_article = $this->config->get('checkout_terms', 0);
+			$terms_article = $this->config->get($type, 0);
 
 		if (empty($terms_article))
 			return;
@@ -245,20 +246,40 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 
 		$events = $checkoutHelper->getEvents();
 		if(!empty($events)) {
-			echo "\r\n".'<script type="text/javascript">'."\r\n";
-			foreach($events as $k => $v) {
-				echo 'window.Oby.fireAjax("'.$k.'", '.json_encode($v).');' . "\r\n";
+			$tryToAutoSubmitCurrentStep = false;
+			if(!empty($this->workflow['steps'][$this->workflow_step+1]['content']) && $this->workflow['steps'][$this->workflow_step+1]['content'][0]['task'] != 'end' && $block_task != 'cart') {
+				$tryToAutoSubmitCurrentStep = true;
 			}
-			echo "\r\n".'</script>';
+			echo 
+			'
+<script type="text/javascript">
+var triggered = 0;
+var result = 0;';
+			foreach($events as $k => $v) {
+				echo '
+result = window.Oby.fireAjax("'.$k.'", '.json_encode($v).');
+if(result) {
+	triggered += result.length;
+}
+				';
+			}
+			if($tryToAutoSubmitCurrentStep) {
+				echo '
+if(triggered == 0) {
+	window.checkout.submitStep(document.getElementById("hikabtn_checkout_next"));
+}
+				';
+			}
+			echo '</script>';
 		}
 		$config = hikashop_config();
 		if($config->get('bootstrap_forcechosen')) {
-			echo "\r\n".'<script type="text/javascript">'."\r\n";
 			echo '
-			if(typeof(hkjQuery) != "undefined" && hkjQuery().chosen)
-				hkjQuery(\'.hikashop_checkout_page select\').not(\'.chzen-done\').chosen();
+<script type="text/javascript">
+if(typeof(hkjQuery) != "undefined" && hkjQuery().chosen)
+	hkjQuery(\'.hikashop_checkout_page select\').not(\'.chzen-done\').chosen();
+</script>
 			';
-			echo "\r\n".'</script>';
 		}
 		$this->displayView = false;
 		return true;
@@ -283,12 +304,12 @@ class CheckoutViewCheckout extends CheckoutViewCheckoutLegacy {
 			$first = false;
 		}
 
-			$previous_options = null;
-			if(!empty($this->options))
-				$previous_options = $this->options;
+		$previous_options = null;
+		if(!empty($this->options))
+			$previous_options = $this->options;
 
-			$this->options = $options;
-			$this->module_position = (int)$pos;
+		$this->options = $options;
+		$this->module_position = (int)$pos;
 
 		$app = JFactory::getApplication();
 		$obj =& $this;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -14,6 +14,7 @@ class plgHikashopMassaction_user extends JPlugin
 	public $massaction = null;
 	public $user = null;
 	public $db = null;
+	public $deletedUser = null;
 
 	function __construct(&$subject, $config){
 		parent::__construct($subject, $config);
@@ -152,7 +153,7 @@ class plgHikashopMassaction_user extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				$query->leftjoin['joomla_user'] = hikashop_table('users',false).' as joomla_user ON joomla_user.id = hk_user.user_cms_id';
 				$query->where[] = $this->massaction->getRequest($filter);
 			}
@@ -185,7 +186,7 @@ class plgHikashopMassaction_user extends JPlugin
 				if($del) unset($elements[$k]);
 			}
 		}else{
-			if(!is_null($filter['value']) || (is_null($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!is_null($filter['value']) || (is_null($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				$query->select = ' DISTINCT '.$query->select;
 				$query->leftjoin[] = hikashop_table('address').' as hk_address ON hk_address.address_user_id = hk_user.user_id';
 				$query->where[] = $this->massaction->getRequest($filter,'hk_address');

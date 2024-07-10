@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.0.4
+ * @version	5.1.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -152,7 +152,7 @@ class plgHikashopMassaction_order extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				if($filter['type'] == 'order_currency_id' && !is_int($filter['value'])){
 					$nquery = 'SELECT currency_id FROM '.hikashop_table('currency').' WHERE currency_symbol = '.$db->quote($filter['value']).' OR currency_code = '.$db->quote($filter['value']).' OR currency_name = '.$db->quote($filter['value']);
 					$db->setQuery($nquery);
@@ -213,7 +213,7 @@ class plgHikashopMassaction_order extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				$query->leftjoin['order_product'] = hikashop_table('order_product').' as hk_order_product ON hk_order_product.order_id = hk_order.order_id';
 				$query->where[] = $this->massaction->getRequest($filter,'hk_order_product');
 				if(strpos($query->select, 'distinct(hk_order.order_id)') === false)
@@ -243,7 +243,7 @@ class plgHikashopMassaction_order extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				$query->leftjoin['user'] = hikashop_table('user').' as hk_user ON hk_order.order_user_id = hk_user.user_id';
 				$query->leftjoin['joomla_user'] = hikashop_table('users',false).' as joomla_user ON joomla_user.id = hk_user.user_cms_id';
 				$query->where[] = $this->massaction->getRequest($filter);
@@ -276,7 +276,7 @@ class plgHikashopMassaction_order extends JPlugin
 				if($del) unset($elements[$k]);
 			}
 		}else{
-			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				if($filter['address'] == 'both'){
 					$query->leftjoin[] = hikashop_table('address'). ' as hk_address ON hk_address.address_id = hk_order.order_billing_address_id OR hk_address.address_id = hk_order.order_shipping_address_id';
 				}else if($filter['address'] == 'ship'){
@@ -355,7 +355,7 @@ class plgHikashopMassaction_order extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
+			if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
 				$query->leftjoin['user'] = hikashop_table('user').' as hk_user ON hk_order.order_user_id = hk_user.user_id';
 				$query->leftjoin['joomla_user'] = hikashop_table('users',false).' as joomla_user ON joomla_user.id = hk_user.user_cms_id';
 
