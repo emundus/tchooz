@@ -2,7 +2,7 @@
   <div class="em-settings-menu">
     <div class="tw-w-full" v-if="!loading">
       <div v-if="$props.props.published">
-        <div class="tw-flex tw-items-center tw-pb-8" @click="handleToogleContent">
+        <div class="tw-flex tw-items-center tw-pb-8 tw-cursor-pointer" @click="handleToogleContent">
           <span class="tw-text-xl tw-font-bold">{{ translate(name) }}</span>
           <i class="material-icons-outlined scale-150" :id="'SubSectionArrow'+$props.name" name="SubSectionArrows"
              style="transform-origin: unset">expand_more</i>

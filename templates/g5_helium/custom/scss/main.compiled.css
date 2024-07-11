@@ -4250,6 +4250,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-bg-opacity: 1;
     background-color: rgb(107 114 128 / var(--tw-bg-opacity));
 }
+.tw-bg-green-700 {
+    background-color: var(--green-700);
+}
 .tw-bg-main-100 {
     background-color: var(--main-100);
 }
@@ -5146,6 +5149,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-text-green-500 {
     color: var(--green-500);
 }
+.tw-text-green-700 {
+    color: var(--green-700);
+}
 .tw-text-main-400 {
     color: var(--main-400);
 }
@@ -5175,6 +5181,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-text-red-500 {
     color: var(--red-500);
+}
+.tw-text-red-700 {
+    color: var(--red-700);
 }
 .tw-text-white {
     --tw-text-opacity: 1;
@@ -6294,16 +6303,15 @@ small {
 .hover\:tw-border-transparent:hover {
     border-color: transparent;
 }
-.hover\:tw-bg-\[\#008A35\]:hover {
-    --tw-bg-opacity: 1;
-    background-color: rgb(0 138 53 / var(--tw-bg-opacity));
-}
 .hover\:tw-bg-gray-200:hover {
     --tw-bg-opacity: 1;
     background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 .hover\:tw-bg-neutral-300:hover {
     background-color: var(--neutral-300);
+}
+.hover\:tw-bg-profile-full:hover {
+    background-color: var(--em-profile-color);
 }
 .hover\:tw-text-white:hover {
     --tw-text-opacity: 1;

@@ -37,7 +37,7 @@
       </ul>
     </div>
 
-    <div class="tchoozy-corner-bottom-left-bakground-mask-image tw-h-1/3	tw-w-full tw-absolute tw-bottom-0 tw-bg-main-500"></div>
+    <div class="tchoozy-corner-bottom-left-bakground-mask-image tw-h-1/3	tw-w-full tw-absolute tw-bottom-0 tw-bg-profile-full"></div>
 
   </aside>
 </template>

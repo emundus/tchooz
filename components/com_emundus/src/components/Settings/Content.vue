@@ -7,7 +7,8 @@
       </div>
 
       <div v-else
-           class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-p-5 tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-gray-200 tw-rounded-[15px] tw-bg-white tw-mb-3 tw-gap-3 tw-shadow"
+
+           class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-p-5 tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-gray-200 tw-rounded-[15px] tw-bg-white tw-mb-3 tw-gap-3 tw-shadow tw-cursor-pointer"
            data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
            aria-controls="accordion-collapse-body-1">
         <div @click="handleSection(indexSection)" class="tw-flex tw-items-center tw-justify-between tw-cursor-pointer">

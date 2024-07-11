@@ -80,16 +80,16 @@
             <input v-model="value" type="radio" class="fabrikinput !tw-hidden" :name="paramName"
                    :id="paramId+ '_input_0'"
                    value="0" :checked="value === 0">
-            <span :class="[value == 0 ? 'tw-text-white' : 'tw-text-profile-full']">{{ translate('JNO') }}</span>
+            <span :class="[value == 0 ? 'tw-text-white' : 'tw-text-red-700']">{{ translate('JNO') }}</span>
           </label>
 
           <label :for="paramId + '_input_1'"
-                 :class="[value == 1 ? 'tw-bg-profile-full' : 'tw-bg-white tw-border-neutral-400']"
+                 :class="[value == 1 ? 'tw-bg-green-700' : 'tw-bg-white tw-border-neutral-400']"
                  class="tw-w-60 tw-h-10 tw-p-2.5 tw-rounded-lg tw-border tw-justify-center tw-items-center tw-gap-2.5 tw-inline-flex">
             <input v-model="value" type="radio" class="fabrikinput !tw-hidden" :name="paramName"
                    :id="paramId+ '_input_1'"
                    value="1" :checked="value === 1">
-            <span :class="[value == 1 ? 'tw-text-white' : 'tw-text-profile-full']">{{ translate('JYES') }}</span></label>
+            <span :class="[value == 1 ? 'tw-text-white' : 'tw-text-green-700']">{{ translate('JYES') }}</span></label>
         </fieldset>
       </div>
 
