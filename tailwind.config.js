@@ -51,6 +51,11 @@ module.exports = {
                 '1000': '10',
             },
             colors: {
+                profile: {
+                    full: 'var(--em-profile-color)',
+                    light: 'hsl(from #eb0000 h s 90%)',
+                },
+
                 red: {
                     50: 'var(--red-50)',
                     100: 'var(--red-100)',
@@ -105,7 +110,7 @@ module.exports = {
                     200: 'var(--main-200)',
                     300: 'var(--main-300)',
                     400: 'var(--main-400)',
-                    500: 'var(--em-profile-color)',
+                    500: 'var(--main-500)',
                     600: 'var(--main-600)',
                     700: 'var(--main-700)',
                     800: 'var(--main-800)',

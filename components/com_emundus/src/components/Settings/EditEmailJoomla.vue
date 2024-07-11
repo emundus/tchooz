@@ -79,7 +79,7 @@
       </div>
       <div class="tw-flex tw-justify-between tw-mt-6">
         <button
-            :class=" noSendTestClick ?  'tw-bg-gray-200 tw-text-gray-400 tw-border-gray-300 tw-cursor-not-allowed tw-flex tw-items-center tw-rounded-coordinator tw-py-2 tw-px-3' :'' +   'tw-flex tw-items-center tw-bg-transparent hover:tw-bg-[#008A35] hover:tw-text-white tw-text-green-700 tw-font-semibold tw-py-2 tw-px-3 tw-border tw-border-green-500 hover:tw-border-transparent tw-rounded-coordinator'"
+            :class=" noSendTestClick ?  'tw-bg-gray-200 tw-text-gray-400 tw-border-gray-300 tw-cursor-not-allowed tw-flex tw-items-center tw-rounded-coordinator tw-py-2 tw-px-3' :'' +   'tw-flex tw-items-center tw-bg-transparent hover:tw-bg-[#008A35] hover:tw-text-white tw-text-profile-full tw-font-semibold tw-py-2 tw-px-3 tw-border tw-border-profile-full hover:tw-border-transparent tw-rounded-coordinator'"
             :disabled="noSendTestClick"
             @mouseover="hover =true"
             @mouseout="hover = false"
@@ -486,7 +486,7 @@ export default {
       return [
         'tw-mr-2',
         'material-icons-outlined',
-        this.noSendTestClick ? 'tw-text-gray-400' : (this.hover ? 'tw-text-white' : 'tw-text-green-500')
+        this.noSendTestClick ? 'tw-text-gray-400' : (this.hover ? 'tw-text-white' : 'tw-text-profile-full')
 
       ];
     },

@@ -4217,9 +4217,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-border-opacity: 1;
     border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
-.tw-border-green-500 {
-    border-color: var(--green-500);
-}
 .tw-border-neutral-300 {
     border-color: var(--neutral-300);
 }
@@ -4232,15 +4229,15 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-border-neutral-600 {
     border-color: var(--neutral-600);
 }
+.tw-border-profile-full {
+    border-color: var(--em-profile-color);
+}
 .tw-border-transparent {
     border-color: transparent;
 }
 .tw-border-white {
     --tw-border-opacity: 1;
     border-color: rgb(255 255 255 / var(--tw-border-opacity));
-}
-.tw-bg-\[\#008A351A\] {
-    background-color: #008A351A;
 }
 .tw-bg-blue-100 {
     background-color: var(--blue-100);
@@ -4253,9 +4250,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-bg-opacity: 1;
     background-color: rgb(107 114 128 / var(--tw-bg-opacity));
 }
-.tw-bg-green-700 {
-    background-color: var(--green-700);
-}
 .tw-bg-main-100 {
     background-color: var(--main-100);
 }
@@ -4263,7 +4257,7 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     background-color: var(--main-50);
 }
 .tw-bg-main-500 {
-    background-color: var(--em-profile-color);
+    background-color: var(--main-500);
 }
 .tw-bg-main-900 {
     background-color: var(--main-900);
@@ -4279,6 +4273,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-bg-orange-100 {
     background-color: var(--orange-100);
+}
+.tw-bg-profile-full {
+    background-color: var(--em-profile-color);
+}
+.tw-bg-profile-light {
+    background-color: hsl(from #eb0000 h s 90%);
 }
 .tw-bg-red-50 {
     background-color: var(--red-50);
@@ -5146,14 +5146,11 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-text-green-500 {
     color: var(--green-500);
 }
-.tw-text-green-700 {
-    color: var(--green-700);
-}
 .tw-text-main-400 {
     color: var(--main-400);
 }
 .tw-text-main-500 {
-    color: var(--em-profile-color);
+    color: var(--main-500);
 }
 .tw-text-neutral-500 {
     color: var(--neutral-500);
@@ -5172,6 +5169,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-text-orange-600 {
     color: var(--orange-600);
+}
+.tw-text-profile-full {
+    color: var(--em-profile-color);
 }
 .tw-text-red-500 {
     color: var(--red-500);
@@ -5989,6 +5989,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;

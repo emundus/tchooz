@@ -11,9 +11,9 @@
         <li class="tw-w-10 tw-flex tw-items-center tw-justify-between">
               <span class="tw-flex tw-items-center tw-px-2 tw-rounded-lg tw-group tw-cursor-pointer" @click="clickReturn()">
                 <!-- The back button icon -->
-                <span class="material-icons-outlined tw-user-select-none tw-text-green-700">arrow_back</span>
+                <span class="material-icons-outlined tw-user-select-none tw-text-profile-full">arrow_back</span>
                 <!-- The back button label -->
-                <span class="tw-pl-2.5 tw-text-green-700" v-if="minimized === false">{{ translate('BACK') }}</span>
+                <span class="tw-pl-2.5 tw-text-profile-full" v-if="minimized === false">{{ translate('BACK') }}</span>
               </span>
           <span class="material-icons-outlined tw-absolute tw-right-[-12px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
                 :class="minimized ? 'tw-rotate-180' : ''"
@@ -24,14 +24,14 @@
         <li v-for="(menu, indexMenu) in menus" class="!tw-mt-0 tw-w-full" v-if="menu.published === true">
               <div :id="'Menu-'+indexMenu" @click="activeMenu = indexMenu;"
                     class="tw-flex tw-items-start tw-w-full tw-p-2 tw-cursor-pointer tw-rounded-lg tw-group tw-user-select-none"
-              :class="activeMenu === indexMenu ? 'tw-font-bold tw-text-green-700 tw-bg-[#008A351A]'  : 'hover:tw-bg-gray-200'">
-                <span class="material-icons-outlined tw-font-bold tw-mr-2.5" :class="activeMenu === indexMenu ? 'tw-text-green-700' : ''"
+              :class="activeMenu === indexMenu ? 'tw-font-bold tw-text-profile-full tw-bg-profile-light'  : 'hover:tw-bg-gray-200'">
+                <span class="material-icons-outlined tw-font-bold tw-mr-2.5" :class="activeMenu === indexMenu ? 'tw-text-profile-full' : ''"
                    name="icon-Menu"
                    :title="translate(menu.label)"
                    :id="'icon-'+indexMenu">{{ menu.icon }}</span>
                 <p class="tw-font-bold tw-leading-6"
                       v-if="minimized === false"
-                      :class="activeMenu === indexMenu ? 'tw-text-green-700' : ''">{{ translate(menu.label) }}</p>
+                      :class="activeMenu === indexMenu ? 'tw-text-profile-full' : ''">{{ translate(menu.label) }}</p>
               </div>
         </li>
       </ul>
