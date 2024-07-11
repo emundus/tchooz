@@ -59,7 +59,8 @@ class modEmundusCampaignDropfilesHelper
 						->leftJoin($db->quoteName('jos_emundus_campaign_workflow', 'cw') . ' ON ' . $db->quoteName('cw.id') . ' = ' . $db->quoteName('cdf.parent_id'))
 						->leftJoin($db->quoteName('jos_dropfiles_files', 'df') . ' ON ' . $db->quoteName('df.id') . ' = ' . $db->quoteName('cdf.' . $column))
 						->leftJoin($db->quoteName('jos_categories', 'cat') . ' ON ' . $db->quoteName('cat.id') . ' = ' . $db->quoteName('df.catid'))
-						->where($db->quoteName('cw.profile') . ' = ' . $db->quote($current_profile));
+						->where($db->quoteName('cw.profile') . ' = ' . $db->quote($current_profile))
+						->order($db->quoteName('df.ordering'));
 					$db->setQuery($query);
 					$files = $db->loadObjectList();
 				}

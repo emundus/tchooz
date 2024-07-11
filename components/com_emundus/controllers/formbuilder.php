@@ -423,7 +423,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 			$label = json_decode($label, true);
 			$intro = json_decode($intro, true);
 			if ($modelid != -1) {
-				$keep_structure = $this->input->getBool('keep_structure', false);
+				$keep_structure = $this->input->getString('keep_structure') == 'true';
 				$response       = $this->m_formbuilder->createMenuFromTemplate($label, $intro, $modelid, $prid, $keep_structure);
 			}
 			else {
@@ -1107,7 +1107,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 			$document    = json_decode($document, true);
 			$types       = $this->input->getString('types');
 			$types       = json_decode($types, true);
-			$params      = ['has_sample' => $this->input->getBool('has_sample', false)];
+			$params = ['has_sample' => $this->input->getString('has_sample') == 'true'];
 
 			if ($params['has_sample'] && !empty($_FILES['file'])) {
 				$params['file'] = $_FILES['file'];
