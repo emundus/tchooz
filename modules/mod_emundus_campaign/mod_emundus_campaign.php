@@ -89,6 +89,9 @@ if ($user->guest || in_array($e_user->profile, $app_prof)) {
 	$mod_em_campaign_display_tmpl            = $params->get('mod_em_campaign_display_tmpl', 1);
 	$mod_em_campaign_groupby                 = $params->get('mod_em_campaign_groupby');
 	$mod_em_campaign_groupby_closed          = $params->get('mod_em_campaign_groupby_closed', 0);
+	$mod_em_campaign_go_back_link            = $params->get('mod_em_campaign_go_back_link', 1);
+	$mod_em_campaign_go_back_external_url    = $params->get('mod_em_campaign_go_back_external_url', '');
+	$mod_em_campaign_go_back_campaigns_link  = $params->get('mod_em_campaign_go_back_campaigns_link', '');
 
 	// OLD PARAMS
 	$mod_em_campaign_url                       = $params->get('mod_em_campaign_url');
