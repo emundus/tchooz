@@ -24,7 +24,7 @@
 
                 <template slot="popover">
                   <transition :name="'slide-down'" type="transition">
-                    <ul style="list-style-type: none; margin: 0;padding: 0">
+                    <ul style="list-style-type: none; margin: 0;padding: 0;text-align: left">
                         <li @click="deletePage(page)" class="tw-cursor-pointer tw-p-2 tw-text-base tw-text-red-500">
                           {{ translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE') }}
                         </li>

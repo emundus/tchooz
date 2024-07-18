@@ -1,7 +1,7 @@
 <template>
   <div :id="'form-builder-page-section-' + section.group_id" class="form-builder-page-section tw-mt-8 tw-mb-8">
     <div class="section-card tw-flex tw-flex-col">
-      <div class="section-identifier tw-bg-main-500 tw-cursor-pointer tw-flex tw-items-center"
+      <div class="section-identifier tw-bg-profile-full tw-cursor-pointer tw-flex tw-items-center"
            @click="closedSection = !closedSection">
         <span class="material-icons tw-mr-2 tw-text-white" v-show="section.repeat_group">library_add</span>
         {{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{ index }} / {{ totalSections }}
