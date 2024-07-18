@@ -103,6 +103,38 @@ body {
     min-height: 150px;
 }
 
+/* Profile form */
+.mon-profil .emundus-form {
+    position: relative;
+    overflow: hidden;
+}
+
+.mon-profil .emundus-form  #background-shapes-profile {
+    mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
+    -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: right top;
+    border-bottom-right-radius: 14px;
+    -webkit-mask-position: right top;
+    mask-size: 600px;
+    -webkit-mask-size: 600px;
+    position: absolute;
+    pointer-events: none;
+    height: 500px;
+    width: 100%;
+    z-index: 0;
+    background: var(--em-profile-color);
+    top: 0;
+}
+
+@media screen and (max-width: 767px) {
+    .mon-profil .emundus-form #background-shapes-profile {
+       display: none;
+    }
+}
+
+
 /* Connexion */
 .view-login.gantry > #g-page-surround {
     background-image: var(--display-digital-testing), var(--display-candidate-button);

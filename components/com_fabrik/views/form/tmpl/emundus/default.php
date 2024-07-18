@@ -52,7 +52,7 @@ endif;
 ?>
 <div class="emundus-form tw-p-6 <?php echo $pageClass; ?>">
 	<?php  if($form->id == $profile_form) : ?>
-        <iframe id="background-shapes" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
+        <iframe id="background-shapes-profile" alt="<?= JText::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
 	<?php endif; ?>
     <div class="tw-mb-0 fabrikMainError alert alert-error fabrikError<?php echo $active ?>">
         <span class="material-icons">cancel</span>
@@ -171,6 +171,12 @@ endif;
 </div>
 
 <script>
+
+    let displayBackgroundProfile = getComputedStyle(document.documentElement).getPropertyValue('--display-profile-corner-top-right-background');
+    if (displayBackgroundProfile === 'none') {
+        document.querySelector("#background-shapes-profile").style.display = 'none';
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         // Set sidebar sticky depends on height of header
         const headerNav = document.getElementById('g-navigation');
