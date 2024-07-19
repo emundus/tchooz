@@ -23,14 +23,30 @@
         </div>
 
         <div class="form-group controls" v-if="selectedColumn.index === 0 && this.form.content.col1 != null">
-          <editor-quill :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false"
-                        :id="'editor_1'" :key="dynamicComponent" v-model="form.content.col1"
-                        @focusout="saveFooter"></editor-quill>
+          <tip-tap-editor
+              v-model="form.content.col1"
+              :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
+              :editor-content-height="'30em'"
+              :class="'tw-mt-1'"
+              :locale="'fr'"
+              :preset="'custom'"
+              :plugins="editorPlugins"
+              :toolbar-classes="['tw-bg-white']"
+              :editor-content-classes="['tw-bg-white']"
+          />
         </div>
         <div class="form-group controls" v-if="selectedColumn.index === 1 && this.form.content.col2 != null">
-          <editor-quill :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false"
-                        :id="'editor_2'" :key="dynamicComponent" v-model="form.content.col2"
-                        @focusout="saveFooter"></editor-quill>
+          <tip-tap-editor
+              v-model="form.content.col2"
+              :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
+              :editor-content-height="'30em'"
+              :class="'tw-mt-1'"
+              :locale="'fr'"
+              :preset="'custom'"
+              :plugins="editorPlugins"
+              :toolbar-classes="['tw-bg-white']"
+              :editor-content-classes="['tw-bg-white']"
+          />
         </div>
         <button class="btn btn-primary tw-float-right tw-mt-3" v-if="updated" @click="saveMethod">
           {{ translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE") }}
@@ -45,20 +61,20 @@
 <script>
 /* COMPONENTS */
 import Multiselect from 'vue-multiselect';
-import EditorQuill from "@/components/editorQuill.vue";
+import TipTapEditor from 'tip-tap-editor'
+import 'tip-tap-editor/style.css'
+import '../../../../../../templates/g5_helium/css/editor.css'
 
 /* SERVICES */
-import client from "com_emundus/src/services/axiosClient";
-import mixin from "com_emundus/src/mixins/mixin";
-import Swal from "sweetalert2";
-
+import client from "@/services/axiosClient.js";
+import mixin from "@/mixins/mixin.js";
 
 export default {
   name: "EditFooter",
 
   components: {
-    EditorQuill,
-    Multiselect
+    Multiselect,
+    TipTapEditor
   },
 
   props: {
@@ -75,6 +91,8 @@ export default {
       updated: false,
       initcol1: "",
       initcol2: "",
+
+      editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
 
       form: {
         content: {
@@ -104,14 +122,14 @@ export default {
   methods: {
     async getArticles() {
       await client().get("index.php?option=com_emundus&controller=settings&task=getfooterarticles")
-          .then(response => {
-            this.initcol1 = response.data.data.column1;
-            this.initcol2 = response.data.data.column2;
+        .then(response => {
+          this.initcol1 = response.data.data.column1;
+          this.initcol2 = response.data.data.column2;
 
-            this.form.content.col1 = this.initcol1;
-            this.form.content.col2 = this.initcol2;
-            this.loading = false;
-          });
+          this.form.content.col1 = this.initcol1;
+          this.form.content.col2 = this.initcol2;
+          this.loading = false;
+        });
     },
 
     async saveMethod() {
@@ -122,12 +140,12 @@ export default {
       formData.append('col2', this.form.content.col2);
 
       await client().post(`index.php?option=com_emundus&controller=settings&task=updatefooter`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
           }
+        }
       ).then(() => {
         this.$emit('updateSaving', false);
         this.$emit('updateLastSaving', this.formattedDate('', 'LT'));

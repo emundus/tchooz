@@ -98,8 +98,9 @@ class EmundusControllerDashboard extends JControllerLegacy
 	public function getwidgets()
 	{
 		try {
+			$all_widgets = $this->input->getString('all',false) == 'true';
 			$profile = Factory::getApplication()->getSession()->get('emundusUser')->profile;
-			$widgets = $this->m_dashboard->getwidgets($this->_user->id, $profile);
+			$widgets = $this->m_dashboard->getwidgets($this->_user->id, $profile, $all_widgets);
 
 			$tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
 		}
@@ -155,7 +156,7 @@ class EmundusControllerDashboard extends JControllerLegacy
 		try {
 			$widget = $this->input->getInt('widget');
 
-			$tab = array('msg' => 'success', 'filters' => JFactory::getSession()->get('widget_filters_' . $widget));
+			$tab = array('msg' => 'success', 'filters' => json_encode(JFactory::getSession()->get('widget_filters_' . $widget)));
 		}
 		catch (Exception $e) {
 			$tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
@@ -168,7 +169,13 @@ class EmundusControllerDashboard extends JControllerLegacy
 	{
 		try {
 			$widget  = $this->input->getInt('widget');
-			$filters = $this->input->getRaw('filters');
+			$filters = $this->input->getRaw('filters','');
+			if(!empty($filters)) {
+				$filters = json_decode($filters, true);
+			}
+			else {
+				$filters = array();
+			}
 
 			$session = JFactory::getSession();
 			$session->set('widget_filters_' . $widget, $filters);

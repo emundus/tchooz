@@ -19,22 +19,22 @@
           </div>
           <div class="update-field-header">
             <h2 class="update-title-header">
-               {{ CreateDatasTable }}
+               {{ translate('COM_EMUNDUS_ONBOARD_CREATE_DATAS') }}
             </h2>
           </div>
         </div>
       <div class="modalC-content">
         <div class="form-group">
-          <label>{{ Name }} :</label>
+          <label>{{ translate('COM_EMUNDUS_ONBOARD_LASTNAME') }} :</label>
           <input v-model="form.label" type="text" maxlength="40" class="form__input field-general w-input"
                  style="margin: 0" :class="{ 'is-invalid': errors.label}"/>
         </div>
         <div class="form-group">
-          <label>{{ Description }} :</label>
+          <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }} :</label>
           <textarea v-model="form.desc" maxlength="150" class="form__input field-general w-input" style="margin: 0"/>
         </div>
         <div class="col-md-8 tw-flex">
-          <label class="require col-md-3">{{ Values }} :</label>
+          <label class="require col-md-3">{{ translate('COM_EMUNDUS_ONBOARD_VALUES') }} :</label>
           <button @click.prevent="add" class="add-option">+</button>
         </div>
         <div class="col-md-12">
@@ -43,7 +43,7 @@
               <input type="text" v-model="form.db_values[i][actualLanguage]"
                      class="form__input field-general w-input db-values" :id="'values_fr_' + i" @keyup.enter="add"/>
               <button class="translate-icon" :class="{'translate-icon-selected': form.db_values[i].translate}"
-                      v-if="manyLanguages !== '0'" type="button" :title="Translate"
+                      v-if="manyLanguages !== '0'" type="button" :title="translate('COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH')"
                       @click="form.db_values[i].translate = !form.db_values[i].translate"></button>
             </div>
             <translation :label="form.db_values[i]" :actualLanguage="actualLanguage"
@@ -58,11 +58,11 @@
             class="bouton-sauvergarder-et-continuer w-retour"
             @click.prevent="$modal.hide('modalAddDatas')"
         >
-          {{ Retour }}
+          {{ this.translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}
         </button>
         <button type="button" class="bouton-sauvergarder-et-continuer"
                 @click.prevent="saveDatas()">
-          {{ Continuer }}
+          {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
         </button>
       </div>
     </modal>
@@ -70,15 +70,14 @@
 </template>
 
 <script>
-import axios from "axios";
-import _ from "lodash";
+import axios from 'axios';
+import _ from 'lodash';
+import qs from 'qs';
 
-const qs = require("qs");
-
-import Translation from "@/components/translation";
+import Translation from '@/components/translation';
 
 export default {
-  name: "modalAddDatas",
+  name: 'modalAddDatas',
   props: {
     actualLanguage: String,
     manyLanguages: Number,
@@ -95,14 +94,7 @@ export default {
       },
       errors: {
         label: false,
-      },
-      Name: this.translate("COM_EMUNDUS_ONBOARD_LASTNAME"),
-      Translate: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-      Values: this.translate("COM_EMUNDUS_ONBOARD_VALUES"),
-      Description: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
-      CreateDatasTable: this.translate("COM_EMUNDUS_ONBOARD_CREATE_DATAS"),
-      Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      }
     };
   },
   methods: {
@@ -135,16 +127,16 @@ export default {
         }
       });
       axios({
-        method: "post",
-        url: "index.php?option=com_emundus&controller=settings&task=savedatas",
+        method: 'post',
+        url: 'index.php?option=com_emundus&controller=settings&task=savedatas',
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
         data: qs.stringify({
           form: this.form,
         })
       }).then(() => {
-        this.$emit("updateDatabases");
+        this.$emit('updateDatabases');
         this.$modal.hide('modalAddDatas');
       });
     },

@@ -33,22 +33,23 @@
 <script>
 import moment from "moment";
 
-import Attachments from "./views/Attachments.vue";
-import Files from './views/Files/Files.vue';
-
-import fileService from "./services/file.js";
-import list_v2 from "./views/list.vue";
-import addcampaign from "./views/addCampaign"
-import addemail from "./views/addEmail"
-import campaignedition from "./views/CampaignEdition"
-import formbuilder from "./views/formBuilder"
-import settings from "./views/globalSettings"
-import messagescoordinator from "./components/Messages/MessagesCoordinator";
-import messages from "./components/Messages/Messages";
-
-import settingsService from "./services/settings.js";
+import Attachments from "@/views/Attachments.vue";
+import Files from '@/views/Files/Files.vue';
+import fileService from "@/services/file.js";
+import list_v2 from "@/views/list.vue";
+import addcampaign from "@/views/addCampaign.vue";
+import addemail from "@/views/addEmail.vue";
+import campaignedition from "@/views/CampaignEdition.vue";
+import formbuilder from "@/views/formBuilder.vue";
+import settings from "@/views/globalSettings.vue";
+import messagescoordinator from "@/components/Messages/MessagesCoordinator.vue";
+import messages from "@/components/Messages/Messages.vue";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
-import TranslationTool from "./components/Settings/Translation/TranslationTool.vue";
+import TranslationTool from "@/components/Settings/Translation/TranslationTool.vue";
+
+import settingsService from "@/services/settings.js";
+import { useGlobalStore } from '@/stores/global.js';
+
 export default {
   props: {
     datas: NamedNodeMap,
@@ -86,10 +87,12 @@ export default {
   },
 
   created() {
-    if (this.$props.component === 'attachments') {
+    const globalStore = useGlobalStore();
+
+    if (this.component === 'attachments') {
       fileService.isDataAnonymized().then(response => {
         if (response.status !== false) {
-          this.$store.dispatch("global/setAnonyme", response.anonyme);
+          globalStore.setAnonyme(response.anonyme);
         }
       });
     }
@@ -102,44 +105,46 @@ export default {
       this.data.columns = JSON.parse(atob(this.data.columns));
     }
 
-    if (typeof this.$props.datas != 'undefined') {
-      this.$store.commit("global/initDatas", this.$props.datas);
+    if (typeof this.datas != 'undefined') {
+      globalStore.initDatas(this.datas);
     }
-    if (typeof this.$props.currentLanguage != 'undefined') {
-      this.$store.commit('global/initCurrentLanguage', this.$props.currentLanguage);
-      moment.locale(this.$store.state.global.currentLanguage);
+    if (typeof this.currentLanguage != 'undefined') {
+      globalStore.initCurrentLanguage(this.currentLanguage);
+
+      moment.locale(globalStore.currentLanguage);
     } else {
-      this.$store.commit('global/initCurrentLanguage', 'fr');
+      globalStore.initCurrentLanguage('fr');
       moment.locale('fr');
     }
-    if (typeof this.$props.shortLang != 'undefined') {
-      this.$store.commit('global/initShortLang', this.$props.shortLang);
+    if (typeof this.shortLang != 'undefined') {
+      globalStore.initShortLang(this.shortLang);
     }
-    if (typeof this.$props.manyLanguages != 'undefined') {
-      this.$store.commit("global/initManyLanguages", this.$props.manyLanguages);
+    if (typeof this.manyLanguages != 'undefined') {
+      globalStore.initManyLanguages(this.manyLanguages);
     }
-    if (typeof this.$props.defaultLang != 'undefined') {
-      this.$store.commit("global/initDefaultLang", this.$props.defaultLang);
+    if (typeof this.defaultLang != 'undefined') {
+      globalStore.initDefaultLang(this.defaultLang);
     }
-    if (typeof this.$props.coordinatorAccess != 'undefined') {
-      this.$store.commit("global/initCoordinatorAccess", this.$props.coordinatorAccess);
+    if (typeof this.coordinatorAccess != 'undefined') {
+      globalStore.initCoordinatorAccess(this.coordinatorAccess);
     }
-    if (typeof this.$props.coordinatorAccess != 'undefined') {
-      this.$store.commit("global/initSysadminAccess", this.$props.sysadminAccess);
+    if (typeof this.coordinatorAccess != 'undefined') {
+      globalStore.initSysadminAccess(this.sysadminAccess);
     }
 
     settingsService.getOffset().then(response => {
       if (response.status !== false) {
-        this.$store.commit("global/initOffset", response.data.data);
+        globalStore.initOffset(response.data.data);
       }
     });
   },
-
   mounted() {
     if (this.data.base) {
-      this.$store.dispatch('attachment/setAttachmentPath', this.data.base + '/images/emundus/files/');
+      const globalStore = useGlobalStore();
+
+      globalStore.initAttachmentPath(this.data.base + '/images/emundus/files/');
     }
-  },
+  }
 };
 </script>
 
@@ -206,6 +211,14 @@ export default {
 .view-emails.no-layout #g-container-main,
 .view-form #g-container-main {
   padding-left: 76px;
+}
+
+#g-page-surround {
+  z-index: 1;
+}
+
+.swal2-container {
+  z-index: 2;
 }
 
 

@@ -109,8 +109,14 @@
 </template>
 
 <script>
-import attachmentService from "../../services/attachment";
+import attachmentService from "@/services/attachment";
 import mixin from "../../mixins/mixin.js";
+
+import { useAttachmentStore } from '@/stores/attachment.js';
+import { useGlobalStore } from '@/stores/global.js';
+import { useUserStore } from '@/stores/user.js';
+import {storeToRefs} from "pinia";
+import {watch} from "vue";
 
 export default {
   name: "AttachmentEdit",
@@ -143,17 +149,32 @@ export default {
   },
   mounted() {
     this.displayed = this.isDisplayed;
-    this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
-    this.canSee = !this.$store.state.global.anonyme;
-    this.attachment = this.$store.state.attachment.selectedAttachment;
-    this.categories = this.$store.state.attachment.categories;
+    this.canUpdate = useUserStore().rights[this.fnum] ? useUserStore().rights[this.fnum].canUpdate : false;
+    this.canSee = !useGlobalStore().anonyme;
 
-    this.attachmentCanBeViewed = this.attachment.can_be_viewed == "1";
-    this.attachmentCanBeDeleted = this.attachment.can_be_deleted == "1";
-    this.attachmentDescription = this.attachment.upload_description != null ? this.attachment.upload_description : '';
-    this.attachmentIsValidated = this.attachment.is_validated;
+
+    const attachmentStore = useAttachmentStore();
+    this.categories = attachmentStore.categories;
+
+    const { selectedAttachment } = storeToRefs(attachmentStore);
+    watch(selectedAttachment, () => {
+      const keys = Object.keys(selectedAttachment);
+
+      if (keys.length !== 0) {
+        this.setAttachment(selectedAttachment);
+      }
+    });
+
+    this.setAttachment(attachmentStore.selectedAttachment);
   },
   methods: {
+    setAttachment(attachment) {
+      this.attachment = attachment;
+      this.attachmentCanBeViewed = this.attachment.can_be_viewed == "1";
+      this.attachmentCanBeDeleted = this.attachment.can_be_deleted == "1";
+      this.attachmentDescription = this.attachment.upload_description != null ? this.attachment.upload_description : '';
+      this.attachmentIsValidated = this.attachment.is_validated;
+    },
     async saveChanges() {
       let formData = new FormData();
 
@@ -161,7 +182,7 @@ export default {
       const canBeDeleted = this.attachmentCanBeDeleted ? "1" : "0";
 
       formData.append("fnum", this.fnum);
-      formData.append("user", this.$store.state.user.currentUser);
+      formData.append("user", useUserStore().currentUser);
       formData.append("id", this.attachment.aid);
       formData.append("description", this.attachmentDescription);
       formData.append("is_validated", this.attachmentIsValidated);
@@ -175,26 +196,25 @@ export default {
       const response = await attachmentService.updateAttachment(formData);
 
       if (response.status.update) {
-        this.attachment.modified_by = this.$store.state.user.currentUser;
+        this.attachment.modified_by = useUserStore().currentUser;
         this.attachment.upload_description = this.attachmentDescription != null ? this.attachmentDescription : '';
         this.attachment.is_validated = this.attachmentIsValidated;
         this.attachment.can_be_viewed = this.attachmentCanBeViewed;
         this.attachment.can_be_deleted = this.attachmentCanBeDeleted;
 
-        this.$store.dispatch("attachment/updateAttachmentOfFnum", {
+        useAttachmentStore().updateAttachmentOfFnum({
           fnum: this.fnum,
           attachment: this.attachment,
-        });
+        })
 
         if (response.status.file_update) {
           // need to update file preview
           const data = await attachmentService.getPreview(
-              this.$store.state.user.displayedUser,
+              useUserStore().displayedUser,
               this.attachment.filename
           );
 
-          // store preview data
-          this.$store.dispatch("attachment/setPreview", {
+          useAttachmentStore().setPreview({
             preview: data,
             id: this.attachment.aid,
           });
@@ -235,17 +255,7 @@ export default {
 
       return allowed_type;
     },
-  },
-  watch: {
-    "$store.state.attachment.selectedAttachment": function () {
-      // check if selected attachment is not an empty object
-      const keys = Object.keys(this.$store.state.attachment.selectedAttachment);
-
-      if (keys.length > 0) {
-        this.attachment = this.$store.state.attachment.selectedAttachment;
-      }
-    },
-  },
+  }
 };
 </script>
 
@@ -256,6 +266,10 @@ export default {
   float: right;
   border-left: 1px solid var(--border-color);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
 
   .error-msg {
     position: absolute;
@@ -277,11 +291,6 @@ export default {
       margin-bottom: 16px;
     }
   }
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
 
   .editable-data {
     width: 100%;

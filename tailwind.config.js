@@ -35,6 +35,9 @@ module.exports = {
         },
         {
             pattern: /tw-flex-/
+        },
+        {
+            pattern: /tw-grid-cols-/
         }
     ],
     theme: {
@@ -53,7 +56,7 @@ module.exports = {
             colors: {
                 profile: {
                     full: 'var(--em-profile-color)',
-                    light: 'hsl(from #eb0000 h s 90%)',
+                    light: 'hsl(from var(--em-profile-color) h s l / 15%)',
                 },
 
                 red: {

@@ -25,7 +25,7 @@
               class="tw-cursor-pointer tw-font-normal"
               :class="{
 								'em-light-tabs em-light-selected-tab': selectedListTab === tab.key,
-							  'em-light-tabs ': selectedListTab !== tab.key
+								'em-light-tabs ': selectedListTab !== tab.key
 							}"
               @click="onSelectTab(tab.key)"
           >
@@ -52,7 +52,8 @@
                    style="margin: 0;"
                    :disabled="items[this.selectedListTab].length < 1 && searches[selectedListTab].search === ''"
                    @change="searchItems" @keyup="searchItems">
-            <span class="material-icons-outlined tw-mr-2 tw-cursor-pointer" style="margin-left: -32px" @click="searchItems">
+            <span class="material-icons-outlined tw-mr-2 tw-cursor-pointer" style="margin-left: -32px"
+                  @click="searchItems">
 							search
 						</span>
           </div>
@@ -70,7 +71,8 @@
         </section>
       </section>
 
-      <section id="pagination-wrapper" class="tw-flex tw-justify-end tw-items-center tw-mb-3" v-if="this.items[this.selectedListTab].length > 0">
+      <section id="pagination-wrapper" class="tw-flex tw-justify-end tw-items-center tw-mb-3"
+               v-if="this.items[this.selectedListTab].length > 0">
         <select name="numberOfItemsToDisplay" v-model="numberOfItemsToDisplay" @change="getListItems()">
           <option value='10'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 10</option>
           <option value='25'>{{ translate('COM_EMUNDUS_ONBOARD_RESULTS') }} 25</option>
@@ -128,22 +130,24 @@
             </thead>
             <tbody>
             <tr v-for="item in displayedItems" :key="item.id"
-							    class="em-border-cards table-row"
+                class="em-border-cards table-row"
                 :class="{'em-card-neutral-100 em-card-shadow em-p-24' : viewType === 'blocs'}"
             >
               <td class="tw-cursor-pointer" @click="onClickAction(editAction, item.id)">
                 <span :class="{'tw-font-semibold tw-mb-4 tw-text-ellipsis tw-overflow-hidden':  viewType === 'blocs'}"
                       :title="item.label[params.shortlang]">{{ item.label[params.shortlang] }}</span>
               </td>
-              <td class="columns" v-for="column in item.additional_columns" :key="column.key"
-                  v-if="column.display === viewType || column.display === 'all'">
-                <div v-if="column.type === 'tags'" class="tw-flex tw-items-center tw-flex-wrap tw-gap-2" :class="column.classes">
-										<span v-for="tag in column.values" :key="tag.key" class="tw-mr-2 tw-h-max" :class="tag.classes" v-html="tag.value"></span>
+              <td class="columns" v-for="column in displayedColumns" :key="column.key">
+                <div v-if="column.type === 'tags'" class="tw-flex tw-items-center tw-flex-wrap tw-gap-2"
+                     :class="column.classes">
+                  <span v-for="tag in column.values" :key="tag.key" class="tw-mr-2 tw-h-max" :class="tag.classes"
+                        v-html="tag.value"></span>
                 </div>
-                <div v-else-if="column.hasOwnProperty('long_value')" >
-                  <span @click="displayLongValue(column.long_value)" class="tw-mt-2 tw-mb-2" :class="column.classes" v-html="column.value"></span>
+                <div v-else-if="column.hasOwnProperty('long_value')">
+                  <span @click="displayLongValue(column.long_value)" class="tw-mt-2 tw-mb-2" :class="column.classes"
+                        v-html="column.value"></span>
                 </div>
-									<span v-else class="tw-mt-2 tw-mb-2" :class="column.classes" v-html="column.value"></span>
+                <span v-else class="tw-mt-2 tw-mb-2" :class="column.classes" v-html="column.value"></span>
               </td>
               <div>
                 <hr v-if="viewType === 'blocs'" class="tw-w-full tw-mt-1.5 tw-mb-3">
@@ -165,24 +169,21 @@
                     >
 												{{ action.icon }}
 											</span>
-                    <v-popover
+                    <popover
+                        :position="'left'"
                         v-if="tabActionsPopover && tabActionsPopover.length > 0 && filterShowOnActions(tabActionsPopover, item).length"
-                        :popoverArrowClass="'custom-popover-arrow'"
+                        class="custom-popover-arrow">
+                      <ul style="list-style-type: none; margin: 0;" class="em-flex-col-center">
+                        <li v-for="action in tabActionsPopover"
+                            :key="action.name"
+                            :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
+                            @click="onClickAction(action, item.id)"
+                            class="tw-cursor-pointer tw-p-2 tw-text-base"
                         >
-                      <span class="tooltip-target b3 material-icons">more_vert</span>
-                      <template slot="popover">
-                        <ul style="list-style-type: none; margin: 0;padding: 0">
-                          <li v-for="action in tabActionsPopover"
-                              :key="action.name"
-                              :class="{'tw-hidden': !(typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon))}"
-                              @click="onClickAction(action, item.id)"
-                              class="tw-cursor-pointer tw-p-2 tw-text-base"
-                          >
-                            {{ translate(action.label) }}
-                          </li>
-                        </ul>
-                      </template>
-                    </v-popover>
+                          {{ translate(action.label) }}
+                        </li>
+                      </ul>
+                    </popover>
                   </div>
                 </td>
               </div>
@@ -190,31 +191,29 @@
             </tbody>
           </table>
         </div>
-        <div v-else id="empty-list" class="tw-mt-6">
-          <div class="noneDiscover tw-text-center tw-mb-4" v-html="noneDiscoverTranslation"></div>
-          <div class="no-result tw-bg-no-repeat tw-w-64 tw-h-64 tw-my-0 tw-mx-auto"></div>
-        </div>
-
+        <div v-else id="empty-list" class="noneDiscover" v-html="noneDiscoverTranslation"></div>
       </div>
+
     </div>
   </div>
 </template>
 
 <script>
-import Vue from 'vue';
-
+import {ref} from 'vue';
 // Components
-import Skeleton from '../components/Skeleton.vue';
+import Skeleton from '@/components/Skeleton.vue';
+import Popover from '@/components/Popover.vue';
 
 // Services
-import settingsService from '../services/settings.js';
-import client from '../services/axiosClient';
+import settingsService from '@/services/settings.js';
 import Swal from 'sweetalert2';
+import {useGlobalStore} from "@/stores/global.js";
 
 export default {
   name: 'list_v2',
   components: {
-    Skeleton
+    Skeleton,
+    Popover
   },
   props: {
     defaultLists: {
@@ -256,7 +255,8 @@ export default {
         'type': this.defaultType
       };
     } else {
-      const data = this.$store.getters['global/datas'];
+      const globalStore = useGlobalStore();
+      const data = globalStore.getDatas;
       this.params = Object.assign({}, ...Array.from(data).map(({name, value}) => ({[name]: value})));
     }
     this.type = this.params.type;
@@ -268,11 +268,7 @@ export default {
     }
     const storageNbItemsDisplay = localStorage.getItem('tchooz_number_of_items_to_display/' + document.location.hostname);
     if (storageNbItemsDisplay !== null) {
-      if (storageNbItemsDisplay !== 'all') {
-        this.numberOfItemsToDisplay = parseInt(storageNbItemsDisplay);
-      } else {
-        this.numberOfItemsToDisplay = storageNbItemsDisplay;
-      }
+      this.numberOfItemsToDisplay = storageNbItemsDisplay !== 'all' ? parseInt(storageNbItemsDisplay) : storageNbItemsDisplay;
     }
 
     this.initList();
@@ -287,7 +283,7 @@ export default {
         }
 
         this.currentList = this.lists[this.type];
-        if (this.params.hasOwnProperty('tab')) {
+        if (Object.prototype.hasOwnProperty.call(this.params, 'tab')) {
           this.onSelectTab(this.params.tab);
         } else {
           const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
@@ -306,8 +302,8 @@ export default {
     },
     getLists() {
       settingsService.getOnboardingLists().then(response => {
-        if (response.data.status) {
-          this.lists = response.data.data;
+        if (response.status) {
+          this.lists = response.data;
 
           if (typeof this.lists[this.type] === 'undefined') {
             console.error('List type ' + this.type + ' does not exist');
@@ -315,7 +311,7 @@ export default {
           }
 
           this.currentList = this.lists[this.type];
-          if (this.params.hasOwnProperty('tab')) {
+          if (Object.prototype.hasOwnProperty.call(this.params, 'tab')) {
             this.onSelectTab(this.params.tab);
           } else {
             const sessionTab = sessionStorage.getItem('tchooz_selected_tab/' + document.location.hostname);
@@ -338,7 +334,7 @@ export default {
     getListItems(page = 1, tab = null) {
       if (tab === null) {
         this.loading.tabs = true;
-        this.items = Vue.observable(Object.assign({}, ...this.currentList.tabs.map(tab => ({[tab.key]: []}))));
+        this.items = ref(Object.assign({}, ...this.currentList.tabs.map(tab => ({[tab.key]: []}))));
       } else {
         this.loading.items = true;
       }
@@ -355,8 +351,8 @@ export default {
           }
 
           // Init search value from sessionStorage
-          const searchValue = sessionStorage.getItem('tchooz_filter_'+this.selectedListTab+'_search/' + document.location.hostname);
-          if(searchValue !== null) {
+          const searchValue = sessionStorage.getItem('tchooz_filter_' + this.selectedListTab + '_search/' + document.location.hostname);
+          if (searchValue !== null) {
             this.searches[this.selectedListTab].search = searchValue;
           }
 
@@ -376,18 +372,18 @@ export default {
             }
 
             try {
-              client().get(url)
+              fetch(url).then(response => response.json())
                 .then(response => {
-                  if (response.data.status === true) {
-                    if (typeof response.data.data.datas !== 'undefined') {
-                      this.items[tab.key] = response.data.data.datas;
+                  if (response.status === true) {
+                    if (typeof response.data.datas !== 'undefined') {
+                      this.items[tab.key] = response.data.datas;
                       tab.pagination = {
                         current: page,
-                        total: Math.ceil(response.data.data.count / this.numberOfItemsToDisplay)
+                        total: Math.ceil(response.data.count / this.numberOfItemsToDisplay)
                       }
                     }
                   } else {
-                    console.error('Failed to get data : ' + response.data.data.msg);
+                    console.error('Failed to get data : ' + response.msg);
                   }
                   this.loading.tabs = false;
                   this.loading.items = false;
@@ -419,18 +415,19 @@ export default {
 
           tab.filters.forEach(filter => {
             //get the filter value from sessionStorage
-            let filterValue = sessionStorage.getItem('tchooz_filter_'+this.selectedListTab+'_'+filter.key + '/' + document.location.hostname);
-            if(filterValue == null) {
+            let filterValue = sessionStorage.getItem('tchooz_filter_' + this.selectedListTab + '_' + filter.key + '/' + document.location.hostname);
+            if (filterValue == null) {
               filterValue = filter.default ? filter.default : 'all'
             }
 
             if (filter.values === null) {
               if (filter.getter) {
                 const controller = typeof filter.controller !== 'undefined' ? filter.controller : tab.controller;
-                client().get('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
+                fetch('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
+                  .then(response => response.json())
                   .then(response => {
-                    if (response.data.status === true) {
-                      let options = response.data.data;
+                    if (response.status === true) {
+                      let options = response.data;
 
                       // if options is an array of strings, convert it to an array of objects
                       if (typeof options[0] === 'string') {
@@ -463,10 +460,10 @@ export default {
         clearTimeout(this.searches[this.selectedListTab].searchDebounce);
       }
 
-      if(this.searches[this.selectedListTab].search === '') {
-        sessionStorage.removeItem('tchooz_filter_'+this.selectedListTab+'_search/' + document.location.hostname);
+      if (this.searches[this.selectedListTab].search === '') {
+        sessionStorage.removeItem('tchooz_filter_' + this.selectedListTab + '_search/' + document.location.hostname);
       } else {
-        sessionStorage.setItem('tchooz_filter_'+this.selectedListTab+'_search/' + document.location.hostname, this.searches[this.selectedListTab].search);
+        sessionStorage.setItem('tchooz_filter_' + this.selectedListTab + '_search/' + document.location.hostname, this.searches[this.selectedListTab].search);
       }
 
       this.searches[this.selectedListTab].searchDebounce = setTimeout(() => {
@@ -517,9 +514,9 @@ export default {
           }
         }
 
-        if (action.hasOwnProperty('confirm')) {
+        if (Object.prototype.hasOwnProperty.call(action, 'confirm')) {
           Swal.fire({
-            type: 'warning',
+            icon: 'warning',
             title: action.label,
             text: action.confirm,
             showCancelButton: true,
@@ -545,19 +542,19 @@ export default {
     executeAction(url) {
       this.loading.items = true;
 
-      client().get(url)
+      fetch(url).then(response => response.json())
         .then(response => {
-          if (response.data.status === true || response.data.status === 1) {
-            if (response.data.redirect) {
-              window.location.href = response.data.redirect;
+          if (response.status === true || response.status === 1) {
+            if (response.redirect) {
+              window.location.href = response.redirect;
             }
 
             this.getListItems();
           } else {
-            if (response.data.msg) {
+            if (response.msg) {
               Swal.fire({
-                type: 'error',
-                title: this.translate(response.data.msg),
+                icon: 'error',
+                title: this.translate(response.msg),
                 reverseButtons: true,
                 customClass: {
                   title: 'em-swal-title',
@@ -569,8 +566,7 @@ export default {
           }
 
           this.loading.items = false;
-        })
-        .catch(error => {
+        }).catch(error => {
           console.error(error);
           this.loading.items = false;
         });
@@ -591,7 +587,7 @@ export default {
     },
     onChangeFilter(filter) {
       // Store value to sessionStorage
-      sessionStorage.setItem('tchooz_filter_'+this.selectedListTab+'_'+ filter.key + '/' + document.location.hostname, filter.value);
+      sessionStorage.setItem('tchooz_filter_' + this.selectedListTab + '_' + filter.key + '/' + document.location.hostname, filter.value);
 
       // when we change a filter, we reset the pagination
       this.getListItems(1, this.selectedListTab);
@@ -601,7 +597,7 @@ export default {
 
       if (this.selectedListTab !== tabKey) {
         // check if the tab exists
-        if (typeof this.currentList.tabs.find(tab => tab.key === tabKey) !== 'undefined') {
+        if (this.currentList.tabs.find(tab => tab.key === tabKey) !== 'undefined') {
           this.selectedListTab = tabKey;
           sessionStorage.setItem('tchooz_selected_tab/' + document.location.hostname, tabKey);
           selected = true;
@@ -616,7 +612,7 @@ export default {
     },
     filterShowOnActions(actions, item) {
       return actions.filter(action => {
-        if (action.hasOwnProperty('showon')) {
+        if (Object.prototype.hasOwnProperty.call(action, 'showon')) {
           return this.evaluateShowOn(item, action.showon);
         }
 
@@ -651,7 +647,17 @@ export default {
 
       return show;
     },
+    displayedColumns(item, viewType) {
+      let columns = [];
 
+      if (item && item.additionnal_columns) {
+        columns = item.additionnal_columns.filter((column) => {
+          return column.view_type === viewType || column.display === 'all';
+        });
+      }
+
+      return columns;
+    },
     displayLongValue(html) {
       Swal.fire({
         html: '<div style="text-align: left;">' + html + '</div>',
@@ -672,7 +678,7 @@ export default {
     },
     tabActionsPopover() {
       return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
-        return !(['add', 'edit', 'preview'].includes(action.name)) && !action.hasOwnProperty('icon');
+        return !(['add', 'edit', 'preview'].includes(action.name)) && !Object.prototype.hasOwnProperty.call(action, 'icon');
       }) : [];
     },
     editAction() {
@@ -692,7 +698,7 @@ export default {
     },
     iconActions() {
       return typeof this.currentTab.actions !== 'undefined' ? this.currentTab.actions.filter((action) => {
-        return !(['add', 'edit', 'preview'].includes(action.name)) && action.hasOwnProperty('icon');
+        return !(['add', 'edit', 'preview'].includes(action.name)) && Object.prototype.hasOwnProperty.call(action, 'icon');
       }) : [];
     },
     displayedItems() {
@@ -705,7 +711,8 @@ export default {
       let columns = [];
       let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
 
-      if (items.length > 0 && typeof items[0].additional_columns !== 'undefined') {
+      // eslint-disable-next-line valid-typeof
+      if (typeof items[0].additional_columns === 'array' && items.length > 0) {
         items[0].additional_columns.forEach((column) => {
           if (column.display === 'all' || (column.display === this.viewType)) {
             columns.push(column.key);
@@ -716,20 +723,21 @@ export default {
       return columns;
     },
     noneDiscoverTranslation() {
-      // todo: translation should be in the lists data. That way, adding a new list type would be easier,
-      // we should just update the database data and not the code
+      let translation = '';
 
       if (this.type === "campaigns") {
         if (this.currentTab.key === 'programs') {
-          return this.translate('COM_EMUNDUS_ONBOARD_NOPROGRAM');
+          translation = this.translate('COM_EMUNDUS_ONBOARD_NOPROGRAM');
         } else {
-          return this.translate('COM_EMUNDUS_ONBOARD_NOCAMPAIGN');
+          translation = this.translate('COM_EMUNDUS_ONBOARD_NOCAMPAIGN');
         }
       } else if (this.type === "emails") {
-        return this.translate('COM_EMUNDUS_ONBOARD_NOEMAIL');
+        translation = this.translate('COM_EMUNDUS_ONBOARD_NOEMAIL');
       } else if (this.type === "forms") {
-        return this.translate('COM_EMUNDUS_ONBOARD_NOFORM');
+        translation = this.translate('COM_EMUNDUS_ONBOARD_NOFORM');
       }
+
+      return translation;
     },
   },
   watch: {
@@ -741,11 +749,11 @@ export default {
 </script>
 
 <style lang="scss">
-.head  {
+.head {
   padding: 0 0 20px 0;
 }
 
-#onboarding_list .head  {
+#onboarding_list .head {
   min-height: 38px;
 }
 

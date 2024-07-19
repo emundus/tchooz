@@ -51,7 +51,7 @@
 
 <script>
 /* COMPONENTS */
-import General from "./General";
+import General from "../Style/General.vue";
 
 export default {
   name: "styleTool",

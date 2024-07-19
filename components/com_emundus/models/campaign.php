@@ -1487,7 +1487,7 @@ class EmundusModelCampaign extends JModelList
 											'target'        => -1,
 											'program'       => $pid,
 										);
-										$m_emails->createTrigger($trigger, array(), $this->_user);
+										$m_emails->createTrigger($trigger, $this->_user);
 									}
 								}
 							}
@@ -1570,22 +1570,24 @@ class EmundusModelCampaign extends JModelList
 					case 'limit_status':
 						$limit_status = $data['limit_status'];
 						break;
-					case 'end_date':
-					case 'start_date':
-						$dateStr = str_replace(' ', 'T', $val);
-						$date = new DateTime($dateStr);
-						$display_date = $date->format('Y-m-d H:i:s');
-						if (!empty($display_date)) {
-							$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($display_date);
-						}
-						else {
-							Log::add('Attempt to update campaign ' . $key . ' with value ' . $val . ' failed.', Log::WARNING, 'com_emundus.error');
+					case 'eval_start_date':
+					case 'eval_end_date':
+					case 'admission_start_date':
+					case 'admission_end_date':
+						if (empty($val)) {
+							$data[$key] = '0000-00-00 00:00:00';
 						}
 						break;
+					case 'limit':
 					case 'profileLabel':
 					case 'progid':
 					case 'status':
 						// do nothing
+						break;
+					case 'pinned':
+						if (!isset($val) || $val == '') {
+							$data[$key] = 0;
+						}
 						break;
 					case 'alias':
 						$details_menu = $this->getCampaignDetailsMenu($cid);
@@ -2284,22 +2286,26 @@ class EmundusModelCampaign extends JModelList
 	 */
 	function getCampaignDropfilesDocuments($campaign_cat)
 	{
-		$query = $this->_db->getQuery(true);
+		$documents = [];
 
-		try {
-			$query->select('*')
-				->from($this->_db->quoteName('#__dropfiles_files'))
-				->where($this->_db->quoteName('catid') . ' = ' . $this->_db->quote($campaign_cat))
-				->group($this->_db->quoteName('ordering'));
-			$this->_db->setQuery($query);
+		if (!empty($campaign_cat)) {
+			$query = $this->_db->getQuery(true);
 
-			return $this->_db->loadObjectList();
+			try {
+				$query->select('*')
+					->from($this->_db->quoteName('#__dropfiles_files'))
+					->where($this->_db->quoteName('catid') . ' = ' . $this->_db->quote($campaign_cat))
+					->order($this->_db->quoteName('ordering'))
+					->group($this->_db->quoteName('ordering'));
+				$this->_db->setQuery($query);
+
+				$documents = $this->_db->loadObjectList();
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/campaign | Cannot get dropfiles documents of the category ' . $campaign_cat . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+			}
 		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/models/campaign | Cannot get dropfiles documents of the category ' . $campaign_cat . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 
-			return false;
-		}
+		return $documents;
 	}
 
 	/**
@@ -2404,25 +2410,28 @@ class EmundusModelCampaign extends JModelList
 	 */
 	public function updateOrderDropfileDocuments($documents)
 	{
-		$query = $this->_db->getQuery(true);
+		$updated = false;
 
-		try {
-			foreach ($documents as $document) {
-				$query->clear()
-					->update($this->_db->quoteName('#__dropfiles_files'))
-					->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote($document['ordering']))
-					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote(($document['id'])));
-				$this->_db->setQuery($query);
-				$this->_db->execute();
+		if (!empty($documents)) {
+			$query = $this->_db->getQuery(true);
+			try {
+				$doc_order_updated = [];
+				foreach ($documents as $document) {
+					$query->clear()
+						->update($this->_db->quoteName('#__dropfiles_files'))
+						->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote($document['ordering']))
+						->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote(($document['id'])));
+					$this->_db->setQuery($query);
+					$doc_order_updated[] = $this->_db->execute();
+				}
+
+				$updated = !in_array(false, $doc_order_updated);
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/campaign | Cannot reorder the dropfile documents : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
-
-			return true;
 		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/models/campaign | Cannot reorder the dropfile documents : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 
-			return false;
-		}
+		return $updated;
 	}
 
 	/**

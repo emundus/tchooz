@@ -70,12 +70,12 @@
 
 <script>
 import axios from "axios";
-import vueDropzone from 'vue2-dropzone'
+import vueDropzone from 'vue2-dropzone-vue3'
 
 import "../../../assets/css/messenger.scss";
 import Swal from "sweetalert2";
 
-const qs = require("qs");
+import qs from "qs";
 
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
@@ -156,7 +156,7 @@ export default {
       Swal.fire({
         title: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
         text: message,
-        type: "error",
+        icon: "error",
         showCancelButton: false,
         showConfirmButton: false,
         timer: 3000,

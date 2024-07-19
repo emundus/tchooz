@@ -99,6 +99,8 @@ class EmundusHelperDate
 	 */
 	static function isNull($date)
 	{
-		return (empty($date) || $date === '0000-00-00 00:00:00' || $date === '0000-00-00');
+		preg_match('/\d{4}-\d{2}-\d{2}/', $date, $matches);
+
+		return (empty($date) || $date === '0000-00-00 00:00:00' || $date === '0000-00-00') || empty($matches);
 	}
 }

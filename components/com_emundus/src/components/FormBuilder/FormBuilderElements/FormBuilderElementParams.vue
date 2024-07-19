@@ -1,7 +1,6 @@
 <template>
   <div>
-    <div v-for="param in params"
-         v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)"
+    <div v-for="param in displayedParams"
          class="form-group tw-mb-4">
       <label :class="param.type === 'repeatable' ? 'tw-font-bold' : ''">{{ translate(param.label) }}</label>
 
@@ -42,32 +41,32 @@
       <!-- DATABASEJOIN -->
       <div v-else-if="param.type === 'databasejoin' && repeat_name !== ''">
         <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptions" :id="param.name" @change="updateDatabasejoinParams" class="tw-w-full" :class="databasejoin_description ? 'tw-mb-1' : ''">
-          <option v-for="option in param.options" :value="option.database_name">{{ option.label }}</option>
+          <option v-for="option in param.options" :key="option.database_name" :value="option.database_name">{{ option.label }}</option>
         </select>
         <label v-if="databasejoin_description" style="font-size: small">{{ databasejoin_description }}</label>
       </div>
       <div v-else-if="param.type === 'databasejoin'">
         <select v-model="element.params[param.name]" :key="reloadOptions" :id="param.name"
                 @change="updateDatabasejoinParams" class="tw-w-full" :class="databasejoin_description ? 'tw-mb-1' : ''">
-          <option v-for="option in param.options" :value="option.database_name">{{ option.label }}</option>
+          <option v-for="option in param.options" :key="option.database_name" :value="option.database_name">{{ option.label }}</option>
         </select>
         <label v-if="databasejoin_description" style="font-size: small">{{ databasejoin_description }}</label>
       </div>
 
       <div v-else-if="param.type === 'databasejoin_cascade' && repeat_name !== ''">
         <select v-model="element.params[repeat_name][index_name][param.name]" :key="reloadOptionsCascade" class="tw-w-full">
-          <option v-for="option in param.options" :value="option.COLUMN_NAME">{{ option.COLUMN_NAME }}</option>
+          <option v-for="option in param.options" :key="option.COLUMN_NAME" :value="option.COLUMN_NAME">{{ option.COLUMN_NAME }}</option>
         </select>
       </div>
       <div v-else-if="param.type === 'databasejoin_cascade'">
         <select v-model="element.params[param.name]" :key="reloadOptionsCascade" class="tw-w-full">
-          <option v-for="option in param.options" :value="option.COLUMN_NAME">{{ option.COLUMN_NAME }}</option>
+          <option v-for="option in param.options" :key="option.COLUMN_NAME" :value="option.COLUMN_NAME">{{ option.COLUMN_NAME }}</option>
         </select>
       </div>
 
       <!-- REPEATABLE -->
       <div v-else-if="param.type === 'repeatable'">
-        <div v-for="(repeat_param, key) in Object.entries(element.params[param.name])">
+        <div v-for="(repeat_param, key) in Object.entries(element.params[param.name])" :key="key">
           <hr/>
           <div class="tw-flex tw-justify-between tw-items-center">
             <label>-- {{ (key+1) }} --</label>
@@ -101,7 +100,8 @@
 import Multiselect from "vue-multiselect";
 
 /* IMPORT YOUR SERVICES */
-import formBuilderService from '../../../services/formbuilder';
+import formBuilderService from '@/services/formbuilder';
+import { useGlobalStore } from "@/stores/global.js";
 
 export default {
   name: "FormBuilderElementParams",
@@ -138,6 +138,11 @@ export default {
     idElement: 0,
     loading: false,
   }),
+  setup() {
+    return {
+      globalStore: useGlobalStore(),
+    }
+  },
   created() {
     this.params.forEach((param) => {
       if (param.type === 'databasejoin') {
@@ -146,14 +151,14 @@ export default {
           formBuilderService.getAllDatabases().then((response) => {
             param.options = response.data.data;
             this.reloadOptions += 1;
-            if (this.element.params['join_db_name'] != "") {
+            if (this.element.params['join_db_name'] !== "") {
               this.updateDatabasejoinParams();
             }
             this.loading = false;
           });
         } else {
           param.options = this.databases;
-          if (this.element.params['join_db_name'] != "") {
+          if (this.element.params['join_db_name'] !== "") {
             this.updateDatabasejoinParams();
           }
         }
@@ -237,13 +242,13 @@ export default {
         formBuilderService.getDatabaseJoinOrderColumns(this.element.params['join_db_name']).then((response) => {
           let index = this.params.map(e => e.name).indexOf('join_key_column');
           this.params[index].options = response.data.data;
-          if (this.element.params['join_key_column'] == '') {
+          if (this.element.params['join_key_column'] === '') {
             this.element.params['join_key_column'] = this.params[index].options[0].COLUMN_NAME;
           }
 
           index = this.params.map(e => e.name).indexOf('join_val_column');
           this.params[index].options = response.data.data;
-          if (this.element.params['join_val_column'] == '') {
+          if (this.element.params['join_val_column'] === '') {
             this.element.params['join_val_column'] = this.params[index].options[0].COLUMN_NAME;
           }
 
@@ -268,10 +273,15 @@ export default {
   },
   computed: {
     sysadmin: function () {
-      return parseInt(this.$store.state.global.sysadminAccess);
+      return parseInt(this.globalStore.hasSysadminAccess);
     },
     index_name: function() {
       return this.repeat_name !== '' ? this.repeat_name+this.index : '';
+    },
+    displayedParams() {
+      return this.params.filter((param) => {
+        return (param.published && !param.sysadmin_only) || (this.sysadmin && param.sysadmin_only && param.published)
+      });
     }
   }
 }

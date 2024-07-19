@@ -49,10 +49,10 @@
 </template>
 
 <script>
-import syncService from "com_emundus/src/services/sync";
+import syncService from "@/services/sync.js";
 import syncs from '../../../data/ged/syncType'
-import mixin from "../../../mixins/mixin";
-import AttachmentParameters from "./AttachmentParameters";
+import mixin from "@/mixins/mixin.js";
+import AttachmentParameters from "./AttachmentParameters.vue";
 
 export default {
   name: "Storage",

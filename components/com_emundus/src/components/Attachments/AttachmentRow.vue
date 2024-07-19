@@ -87,7 +87,11 @@
 
 <script>
 import mixin from "../../mixins/mixin.js";
-import syncService from "../../services/sync.js";
+import syncService from "@/services/sync.js";
+
+import { useAttachmentStore } from '@/stores/attachment.js';
+import { storeToRefs } from 'pinia'
+import { watch } from 'vue'
 
 export default {
   name: "AttachmentRow",
@@ -130,12 +134,23 @@ export default {
     };
   },
   mounted() {
-    this.categories = this.$store.state.attachment.categories;
+    this.categories = useAttachmentStore().categories;
     if (Object.entries(this.categories).length > 0) {
       this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : '';
     }
 
     this.checkedAttachments = this.checkedAttachmentsProp;
+
+    const attachmentStore = useAttachmentStore();
+    const { checkedAttachments, categories } = storeToRefs(attachmentStore);
+    watch(checkedAttachments, () => {
+      this.checkedAttachments = checkedAttachments;
+    });
+
+    watch(categories, () => {
+      this.categories = categories;
+      this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : '';
+    });
 
     if (this.sync) {
       this.getSynchronizeState(this.attachment.aid).then((response) => {
@@ -195,16 +210,7 @@ export default {
         });
       }
     },
-  },
-  watch: {
-    "$store.state.attachment.checkedAttachments": function () {
-      this.checkedAttachments = this.$store.state.attachment.checkedAttachments;
-    },
-    "$store.state.attachment.categories": function () {
-      this.categories = this.$store.state.attachment.categories;
-      this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
-    }
-  },
+  }
 };
 </script>
 

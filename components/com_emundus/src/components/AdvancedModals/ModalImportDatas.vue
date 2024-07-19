@@ -98,11 +98,10 @@
 </template>
 
 <script>
-import axios from "axios";
-import {VueCsvImport} from 'vue-csv-import';
-import _ from "lodash";
-
-const qs = require("qs");
+    import axios from "axios";
+    import { VueCsvImport } from 'vue-csv-import';
+    import _ from "lodash";
+    import qs from "qs";
 
 export default {
   name: "modalImportDatas",

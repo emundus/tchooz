@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import formBuilderService from '../../services/formbuilder';
+import formBuilderService from '@/services/formbuilder';
 import Swal from "sweetalert2";
 
 export default {

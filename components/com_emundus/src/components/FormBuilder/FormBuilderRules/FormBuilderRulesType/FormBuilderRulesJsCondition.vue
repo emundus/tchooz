@@ -13,7 +13,7 @@
       <div class="tw-flex tw-flex-col tw-ml-2 tw-w-full">
         <div class="tw-flex tw-items-center">
           <multiselect
-              v-model="condition.field"
+              v-model="conditionData.field"
               label="label_tag"
               :custom-label="labelTranslate"
               track-by="name"
@@ -35,16 +35,16 @@
           <div class="tw-flex tw-items-center tw-gap-3">
           <span v-for="operator in operators" :key="operator.id"
                 class="tw-cursor-pointer tw-p-2 tw-rounded-lg tw-ml-1 tw-border tw-border-neutral-500"
-                @click="condition.state = operator.value"
-                :class="{ 'label-darkblue': condition.state == operator.value }">
+                @click="conditionData.state = operator.value"
+                :class="{ 'label-darkblue': conditionData.state == operator.value }">
             {{ translate(operator.label) }}
           </span>
           </div>
 
           <div class="tw-mt-6">
             <multiselect
-                v-if="condition.field && (options_plugins.includes(condition.field.plugin) || condition.field.plugin == 'yesno')"
-                v-model="condition.values"
+                v-if="conditionData.field && (options_plugins.includes(conditionData.field.plugin) || conditionData.field.plugin == 'yesno')"
+                v-model="conditionData.values"
                 label="value"
                 track-by="primary_key"
                 :options="options"
@@ -59,7 +59,7 @@
                 :searchable="true"
                 :allow-empty="true"
             ></multiselect>
-            <input v-else-if="condition.field" v-model="condition.values"/>
+            <input v-else-if="conditionData.field" v-model="conditionData.values"/>
           </div>
         </div>
       </div>
@@ -68,15 +68,15 @@
 </template>
 
 <script>
-import formService from '../../../../services/form';
+import formBuilderMixin from '@/mixins/formbuilder.js';
+import globalMixin from '@/mixins/mixin.js';
+import fabrikMixin from '@/mixins/fabrik.js';
+import errorMixin from '@/mixins/errors.js';
 
-import formBuilderMixin from '../../../../mixins/formbuilder';
-import globalMixin from '../../../../mixins/mixin';
-import fabrikMixin from '../../../../mixins/fabrik';
-import errorMixin from '../../../../mixins/errors';
-import Swal from 'sweetalert2';
+import formBuilderService from "@/services/formbuilder.js";
+
 import Multiselect from 'vue-multiselect';
-import formBuilderService from "@/services/formbuilder";
+import { watch } from 'vue';
 
 export default {
   components: {
@@ -85,11 +85,11 @@ export default {
   props: {
     page: {
       type: Object,
-      default: {}
+      default: () => ({}),
     },
     condition: {
       type: Object,
-      default: {}
+      default: () => ({}),
     },
     index: {
       type: Number,
@@ -97,7 +97,7 @@ export default {
     },
     elements: {
       type: Array,
-      default: []
+      default: () => []
     },
     multiple: {
       type: Boolean,
@@ -108,35 +108,28 @@ export default {
   data() {
     return {
       loading: false,
-
       operators: [
         {id: 1, label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EQUALS', value: '='},
         {id: 2, label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EQUALS', value: '!='}
       ],
       options: [],
-      options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox']
+      options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox'],
+      conditionData: null,
     };
+  },
+  created() {
+    this.conditionData = this.condition;
   },
   mounted() {
     if (this.page.id) {
-      this.condition.field = this.elements.find(element => element.name === this.condition.field);
+      this.conditionData.field = this.elements.find(element => element.name === this.conditionData.field);
     }
-  },
-  methods: {
-    labelTranslate({label}) {
-      return label ? label.fr : '';
-    },
-  },
-  computed: {
-    conditionLabel() {
-      return `-- ${this.index + 1} --`;
-    }
-  },
-  watch: {
-    'condition.field': {
-      handler: function (val, oldVal) {
+
+    watch(
+      () => this.conditionData.field,
+      (val, oldVal) => {
         if (typeof oldVal === 'object') {
-          this.condition.values = '';
+          this.conditionData.values = '';
         }
         this.options = [];
 
@@ -149,8 +142,8 @@ export default {
                 if (response.status && response.data != '') {
                   this.options = response.options;
 
-                  if (this.condition.values) {
-                    this.condition.values = this.options.find(option => option.primary_key == this.condition.values);
+                  if (this.conditionData.values) {
+                    this.conditionData.values = this.options.find(option => option.primary_key == this.conditionData.values);
                   }
                 } else {
                   this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
@@ -176,8 +169,8 @@ export default {
 
                   ctr++;
                   if (ctr === Object.entries(val.params.sub_options).length) {
-                    if (this.condition.values) {
-                      this.condition.values = this.options.find(option => option.primary_key == this.condition.values);
+                    if (this.conditionData.values) {
+                      this.conditionData.values = this.options.find(option => option.primary_key == this.conditionData.values);
                     }
                   }
                 });
@@ -193,13 +186,22 @@ export default {
               {primary_key: 1, value: this.translate('COM_EMUNDUS_FORMBUILDER_YES')}
             ];
 
-            if (this.condition.values) {
-              this.condition.values = this.options.find(option => option.primary_key == this.condition.values);
+            if (this.conditionData.values) {
+              this.conditionData.values = this.options.find(option => option.primary_key == this.conditionData.values);
             }
           }
         }
-      },
-      deep: true
+      }
+    )
+  },
+  methods: {
+    labelTranslate({label}) {
+      return label ? label.fr : '';
+    },
+  },
+  computed: {
+    conditionLabel() {
+      return `-- ${this.index + 1} --`;
     }
   }
 }

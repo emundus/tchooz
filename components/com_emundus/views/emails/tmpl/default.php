@@ -188,4 +188,4 @@ $hash = EmundusHelperCache::getCurrentGitHash();
       manyLanguages="<?= $many_languages ?>">
 </list>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

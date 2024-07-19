@@ -103,13 +103,16 @@ Factory::getApplication()->getSession()->set('application_layout', 'evaluation')
     </div>
 </div>
 <script type="text/javascript">
-    document.getElementById('iframe').addEventListener('mouseleave', function () {
-        resizeIframe(document.getElementById('iframe'));
-    });
+    var iframeEl =  document.getElementById('iframe');
+    if (iframeEl) {
+        iframeEl.addEventListener('mouseleave', function () {
+            resizeIframe(document.getElementById('iframe'));
+        });
 
-    document.getElementById('iframe').addEventListener('mouseover', function () {
-        resizeIframe(document.getElementById('iframe'));
-    });
+        iframeEl.addEventListener('mouseover', function () {
+            resizeIframe(document.getElementById('iframe'));
+        });
+    }
 
     function onLoadIframe(iframe) {
         document.querySelector('.em-loader').classList.add('hidden');

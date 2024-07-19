@@ -33,10 +33,10 @@
 </template>
 
 <script>
-import formBuilderService from '../../services/formbuilder';
+import formBuilderService from '@/services/formbuilder.js';
 import sectionParams from '../../../data/form-builder/form-builder-groups-params.json'
-import FormBuilderSectionParams from "./FormBuilderSections/FormBuilderSectionParams";
-
+import FormBuilderSectionParams from "@/components/FormBuilder/FormBuilderSections/FormBuilderSectionParams.vue";
+import { useGlobalStore } from '@/stores/global';
 
 export default {
   name: 'FormBuilderSectionProperties',
@@ -71,6 +71,11 @@ export default {
       ]
     };
   },
+  setup() {
+    return {
+      globalStore: useGlobalStore()
+    }
+  },
   created() {
     this.paramsAvailable();
     this.getSection();
@@ -102,13 +107,13 @@ export default {
     },
     getSection() {
       formBuilderService.getSection(this.$props.section_id).then((response) => {
-        this.section_tmp = response.data.group;
+        this.section_tmp = response.group;
       });
     }
   },
   computed: {
     sysadmin: function () {
-      return parseInt(this.$store.state.global.sysadminAccess);
+      return parseInt(this.globalStore.sysadminAccess);
     },
     publishedTabs() {
       return this.tabs.filter((tab) => {

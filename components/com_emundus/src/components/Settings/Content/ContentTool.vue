@@ -10,7 +10,7 @@
         @closed="beforeClose"
     >
       <div class="em-modal-header">
-        <div class="tw-justify-between tw-flex tw-items-center tw-cursor-pointer" @click.prevent="$modal.hide('contentTool')">
+        <div class="tw-justify-between tw-flex tw-items-center tw-cursor-pointer" @click.prevent="beforeClose">
           <div class="tw-w-max tw-flex tw-items-center">
             <span class="material-icons-outlined">navigate_before</span>
             <span class="tw-ml-2 tw-text-neutral-900">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
@@ -60,10 +60,10 @@
 
 <script>
 /* COMPONENTS */
-import EditArticle from "./EditArticle";
-import EditFooter from "./EditFooter";
-import client from "com_emundus/src/services/axiosClient";
-import mixin from "com_emundus/src/mixins/mixin";
+import EditArticle from "@/components/Settings/Content/EditArticle.vue";
+import EditFooter from "@/components/Settings/Content/EditFooter.vue";
+import client from "@/services/axiosClient.js";
+import mixin from "@/mixins/mixin.js";
 
 export default {
   name: "contentTool",
@@ -74,7 +74,6 @@ export default {
     return {
       currentMenu: 1,
       menus: [],
-
       loading: false,
       saving: false,
       last_save: null,

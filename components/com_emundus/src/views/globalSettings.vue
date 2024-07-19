@@ -1,6 +1,6 @@
 <template>
   <div class="tw-w-full tw-flex tw-gap-8">
-    <SidebarMenu :key="keyMenu" json_source="settings/menus.json" @listMenus="GetList" @menuSelected="handleMenu"/>
+    <SidebarMenu :key="keyMenu" :menus-list="menusList" :id="'settings_menus'" @listMenus="GetList" @menuSelected="handleMenu"/>
 
     <div class="tw-w-full tw-pt-6 tw-pr-8 tw-pb-3 tw-pl-0" v-if="activeMenuItem">
       <h1 class="tw-text-2xl tw-pl-1 tw-font-semibold tw-text-profile-full tw-mb-3">
@@ -11,7 +11,7 @@
       </h1>
 
       <div>
-        <Content :ref="'content_'+activeMenuItem.name" :key="'json_'+activeMenuItem.name+clicker"
+        <SettingsContent :ref="'content_'+activeMenuItem.name" :key="'json_'+activeMenuItem.name+clicker"
                  v-if="activeMenuItem.type === 'JSON'" :json_source="'settings/sections/'+activeMenuItem.source"
                  @needSaving="handleNeedSaving" @listSections="GetList" :class="activeMenuItem.format === 'Tile' ? 'tw-flex tw-flex-wrap tw-justify-between' : ''"/>
 
@@ -37,18 +37,21 @@ import EditEmailJoomla from "@/components/Settings/EditEmailJoomla.vue";
 
 import Multiselect from 'vue-multiselect';
 import SidebarMenu from "@/components/Menus/SidebarMenu.vue";
-import Content from "@/components/Settings/Content.vue";
+import SettingsContent from "@/components/Settings/SettingsContent.vue";
 import Addons from "@/components/Settings/Addons.vue";
 import Info from "@/components/info.vue";
 import Swal from "sweetalert2";
-import SectionComponent from "@/components/Settings/SectionComposant.vue";
+import SectionComponent from "@/components/Settings/SectionComponent.vue";
+
+import { useSettingsStore } from "@/stores/settings.js";
+import menus from '@/assets/data/settings/menus.js'
 
 
 export default {
   name: "globalSettings",
   components: {
     SectionComponent,
-    Content,
+    SettingsContent,
     SidebarMenu,
     EditEmailJoomla,
     Multiselect,
@@ -79,9 +82,10 @@ export default {
     endSaving: false,
     loading: null,
     needSaving: false,
-
+    activeSectionComponent: 0,
     activeMenuItem: null,
     activeMenu: null,
+
     keyMenu: 0,
     clicker: 0,
     activeSection: null,
@@ -89,9 +93,18 @@ export default {
     urlRedirectSection: false,
     Menus: [],
     Sections: [],
-  }),
 
+    menusList: [],
+  }),
+  setup() {
+    const settingsStore = useSettingsStore();
+
+    return {
+      settingsStore
+    }
+  },
   created() {
+    this.menusList = menus;
   },
   mounted() {
     if(sessionStorage.getItem('goToMenu')) {
@@ -106,7 +119,7 @@ export default {
 
   methods: {
     handleNeedSaving(needSaving) {
-      this.$store.commit("settings/setNeedSaving", needSaving);
+      this.settingsStore.updateNeedSaving(needSaving);
     },
     GetList(list , type) {
       if(type === 'menus') {
@@ -117,7 +130,7 @@ export default {
     },
 
     handleMenu(item) {
-      if (this.$store.state.settings.needSaving) {
+      if (this.settingsStore.needSaving) {
         Swal.fire({
           title: this.translate('COM_EMUNDUS_ONBOARD_WARNING'),
           text: this.activeMenuItem.component==="EditEmailJoomla" ? this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_UNSAVED_MUST_TEST_MAIL') : this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_UNSAVED'),
@@ -190,7 +203,7 @@ export default {
       }
     },
     activeMenu: function (val) {
-      sessionStorage.setItem('tchooz_selected_menu/'+'settings/menus.json'.replace('.json','')+ '/' + document.location.hostname, val);
+      sessionStorage.setItem('tchooz_selected_menu/'+'settings/menus'+ '/' + document.location.hostname, val);
       this.keyMenu++;
     },
     activeSection: function (val) {

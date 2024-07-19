@@ -1,7 +1,7 @@
 <template>
   <div id="form-builder-preview-attachment" class="tw-h-full tw-w-full" :class="{loading: loading}">
     <div v-if="!loading" class="tw-text-center">
-      <img src="/media/com_emundus/images/icones/filetype/doc.png" class="em-m-center" style="width: 50px"
+      <img src="@/assets/images/filetype/doc.png" class="em-m-center" style="width: 50px"
            alt="filetype">
       <p class="tw-text-xs tw-w-full tw-mt-4">{{ document_label }}</p>
     </div>
@@ -10,8 +10,7 @@
 </template>
 
 <script>
-import formService from '../../services/form';
-import Skeleton from '../Skeleton';
+import Skeleton from '@/components/Skeleton.vue';
 
 export default {
   name: "FormBuilderPreviewAttachments",

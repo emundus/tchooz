@@ -79,7 +79,7 @@
               </div>
               <div class="messages__bottom-input-actions">
                 <div class="messages__actions_bar">
-                  <span class="material-icons-outlined tw-cursor-pointer" @click="attachDocument">attach_file</span>
+                  <span class="material-icons" @click="attachDocument">attach_file</span>
                 </div>
                 <button type="button" class="messages__send_button btn btn-primary" @click="sendMessage">
                     {{ translations.send }}
@@ -101,9 +101,9 @@ import moment from 'moment';
 
 import "../../assets/css/messenger.scss";
 
-import AttachDocument from "./modals/AttachDocument";
+import AttachDocument from "@/components/Messages/modals/AttachDocument.vue";
 
-const qs = require("qs");
+import qs from "qs";
 
 export default {
   name: "Messages",

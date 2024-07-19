@@ -17,8 +17,9 @@
 </template>
 
 <script>
-import formService from '../../services/form.js';
-import errors from "../../mixins/errors";
+import formService from '@/services/form.js';
+import errors from "@/mixins/errors";
+import { useFormBuilderStore } from "@/stores/formbuilder.js";
 
 export default {
   name: 'FormBuilderDocuments',
@@ -38,9 +39,15 @@ export default {
       documents: [],
     }
   },
+  setup() {
+    return {
+      formBuilderStore: useFormBuilderStore()
+    }
+  },
   created() {
     this.getDocuments();
-    if (this.$store.getters['formBuilder/getDocumentModels'].length === 0) {
+
+    if (this.formBuilderStore.getDocumentModels.length === 0) {
       this.getDocumentModels();
     }
   },
@@ -57,7 +64,7 @@ export default {
     getDocumentModels() {
       formService.getDocumentModels().then(response => {
         if (response.status) {
-          this.$store.dispatch('formBuilder/updateDocumentModels', response.data);
+          this.formBuilderStore.updateDocumentModels(response.data);
         }
       });
     },

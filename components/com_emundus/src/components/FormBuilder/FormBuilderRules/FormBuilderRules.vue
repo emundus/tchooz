@@ -33,34 +33,25 @@
               <h3>{{ ruleLabel(rule, index) }}</h3>
 
               <div class="tw-cursor-pointer">
-                <v-popover :popoverArrowClass="'custom-popover-arraow'" :open-class="'form-builder-pages-popover'"
-                           :placement="'left'">
-                  <span class="material-icons !tw-font-bold	!tw-text-2xl">more_vert</span>
-
-                  <template slot="popover">
-                    <transition :name="'slide-down'" type="transition">
-                      <div>
-                        <nav aria-label="action" class="em-flex-col-start">
-                          <p @click="$emit('add-rule','js',rule)" class="tw-py-3 tw-px-4 tw-w-full">
-                            {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_EDIT') }}
-                          </p>
-                          <p @click="publishRule(rule, 1)" class="tw-py-3 tw-px-4 tw-w-full" v-if="rule.published == 0">
-                            {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_PUBLISH') }}
-                          </p>
-                          <p @click="publishRule(rule, 0)" class="tw-py-3 tw-px-4 tw-w-full" v-if="rule.published == 1">
-                            {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_UNPUBLISH') }}
-                          </p>
-                          <!--                          <p @click="cloneRule(rule)" class="py-3 px-4 w-full">
-                                                      {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_DUPLICATE') }}
-                                                    </p>-->
-                          <p @click="deleteRule(rule)" class="tw-py-3 tw-px-4 tw-w-full tw-text-red-500">
-                            {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_DELETE') }}
-                          </p>
-                        </nav>
-                      </div>
-                    </transition>
-                  </template>
-                </v-popover>
+                <popover class="custom-popover-arrow" :position="'left'">
+                  <ul style="list-style-type: none; margin: 0;" class="tw-items-center tw-pl-0">
+                    <li @click="$emit('add-rule','js',rule)" class="tw-py-3 tw-px-4 tw-w-full hover:tw-bg-neutral-300">
+                      {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_EDIT') }}
+                    </li>
+                    <li @click="publishRule(rule, 1)" class="tw-py-3 tw-px-4 tw-w-full hover:tw-bg-neutral-300" v-if="rule.published == 0">
+                      {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_PUBLISH') }}
+                    </li>
+                    <li @click="publishRule(rule, 0)" class="tw-py-3 tw-px-4 tw-w-full hover:tw-bg-neutral-300" v-if="rule.published == 1">
+                      {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_UNPUBLISH') }}
+                    </li>
+                    <!--                          <li @click="cloneRule(rule)" class="py-3 px-4 w-full">
+                                                {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_DUPLICATE') }}
+                                              </li>-->
+                    <li @click="deleteRule(rule)" class="tw-py-3 tw-px-4 tw-w-full tw-text-red-500 hover:tw-bg-neutral-300">
+                      {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_DELETE') }}
+                    </li>
+                  </ul>
+                </popover>
               </div>
             </div>
 
@@ -151,8 +142,11 @@ import globalMixin from '../../../mixins/mixin';
 import errorMixin from '../../../mixins/errors';
 import Swal from 'sweetalert2';
 
+import { useFormBuilderStore } from "@/stores/formbuilder.js";
+import Popover from "@/components/Popover.vue";
+
 export default {
-  components: {},
+  components: {Popover},
   props: {
     page: {
       type: Object,
@@ -173,8 +167,15 @@ export default {
       loading: false,
     };
   },
+  setup() {
+    const formBuilderStore = useFormBuilderStore();
+
+    return {
+      formBuilderStore
+    }
+  },
   created() {
-    this.keywords = this.$store.getters['formBuilder/getRulesKeywords'];
+    this.keywords = this.formBuilderStore.getRulesKeywords;
     if(this.keywords) {
       setTimeout(() => {
         this.highlight(this.keywords);
@@ -217,10 +218,10 @@ export default {
 
     operator(state) {
       switch (state) {
-        case '=':
-          return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EQUALS');
-        case '!=':
-          return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EQUALS');
+      case '=':
+        return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EQUALS');
+      case '!=':
+        return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EQUALS');
       }
     },
 
@@ -329,6 +330,8 @@ export default {
     },
 
     highlight(searchTerm) {
+      this.formBuilderStore.updateRulesKeywords(searchTerm);
+
       const conditions = document.querySelectorAll(".conditions-label");
       const actions = document.querySelectorAll(".actions-label");
       const elements = [...conditions, ...actions];
@@ -342,12 +345,12 @@ export default {
           const parts = text.split(regex);
           // Create a new HTML structure with the matched term highlighted
           const highlightedText = parts
-              .map((part) =>
-                  part.match(regex)
-                      ? `<span style="background-color: var(--em-yellow-1);">${part}</span>`
-                      : part
-              )
-              .join("");
+            .map((part) =>
+              part.match(regex)
+                ? `<span style="background-color: var(--em-yellow-1);">${part}</span>`
+                : part
+            )
+            .join("");
           // Replace the original text with the highlighted version
           element.innerHTML = highlightedText;
         } else {
@@ -413,8 +416,8 @@ export default {
   },
   watch: {
     keywords: {
-      handler: function (val) {
-        this.$store.commit('formBuilder/updateRulesKeywords', val);
+      // eslint-disable-next-line vue/no-arrow-functions-in-watch
+      handler: function(val) {
         this.highlight(val);
       }
     }

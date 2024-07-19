@@ -36,6 +36,7 @@ class EmundusModelFormbuilder extends JModelList
 		$this->app = Factory::getApplication();
 		$this->db = Factory::getDbo();
 
+
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'translations.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
 		require_once(JPATH_ADMINISTRATOR . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'update.php');
@@ -73,6 +74,7 @@ class EmundusModelFormbuilder extends JModelList
 	public function updateTranslation($key, $values, $reference_table = '', $reference_id = 0, $reference_field = '')
 	{
 		$languages = JLanguageHelper::getLanguages();
+
 		foreach ($languages as $language) {
 			if (isset($values[$language->sef])) {
 				$key = $this->m_translations->updateTranslation($key, $values[$language->sef], $language->lang_code, 'override', $reference_table, $reference_id, $reference_field);
@@ -110,33 +112,27 @@ class EmundusModelFormbuilder extends JModelList
 		return true;
 	}
 
-	/**
-	 * Ge translation of an element in all languages
-	 *
-	 * @param $text
-	 * @param $content
-	 *
-	 * @return false|string|string[]
-	 */
-	function getTranslation($text, $code_lang)
-	{
-		$matches = [];
+    /**
+     * Ge translation of an element in all languages
+     * @param $text
+     * @param $code_lang
+     * @return string|string[]
+     */
+	function getTranslation($text, $code_lang){
+		$translation = '';
 
-		$fileName = constant('JPATH_SITE') . '/language/overrides/' . $code_lang . '.override.ini';
-		$strings  = JLanguageHelper::parseIniFile($fileName);
+		if(!empty($text) && !empty($code_lang)) {
+			$translation = $text;
 
-		if (!empty($text)) {
-			if (isset($strings[$text])) {
-				return $strings[$text];
-			}
-			else {
-				return $text;
+			$fileName = constant('JPATH_SITE') . '/language/overrides/' . $code_lang . '.override.ini';
+			$strings  = JLanguageHelper::parseIniFile($fileName);
+
+			if(isset($strings[$text])) {
+				$translation = $strings[$text];
 			}
 		}
-		else {
-			return '';
-		}
-		//
+
+		return $translation;
 	}
 
 	/**
@@ -189,6 +185,7 @@ class EmundusModelFormbuilder extends JModelList
 
 			if (!empty($element)) {
 				$new_key = $this->updateTranslation($labelTofind, $NewSubLabel, 'fabrik_elements', $element);
+
 				if (!empty($new_key) && !is_bool($new_key)) {
 					$query->update($this->db->quoteName('#__fabrik_elements'))
 						->set($this->db->quoteName('label') . ' = ' . $this->db->quote($new_key))
@@ -257,7 +254,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function updateElementWithoutTranslation($eid, $label)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -277,7 +274,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function updateGroupWithoutTranslation($gid, $label)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -298,7 +295,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function updatePageWithoutTranslation($pid, $label)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -325,7 +322,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function updatePageIntroWithoutTranslation($pid, $intro)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -360,7 +357,7 @@ class EmundusModelFormbuilder extends JModelList
 				'msg'    => 'MISSING_PRID'
 			];
 		}
-		
+
 		$query = $this->db->getQuery(true);
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
@@ -549,11 +546,10 @@ class EmundusModelFormbuilder extends JModelList
 		$form_id = 0;
 
 		if (!empty($prid) && !empty($label) && is_array($label)) {
-			if(empty($user))
-			{
+			if (empty($user)) {
 				$user = Factory::getApplication()->getIdentity();
 			}
-			
+
 			$query = $this->db->getQuery(true);
 
 			try {
@@ -615,7 +611,7 @@ class EmundusModelFormbuilder extends JModelList
 	{
 		$response = [];
 
-		
+
 		$query = $this->db->getQuery(true);
 
 		$user =  $this->app->getIdentity();
@@ -1194,7 +1190,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function deleteGroup($group)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 		try {
 			$query->update($this->db->quoteName('#__fabrik_groups'))
@@ -1390,7 +1386,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function createElement($name, $group_id, $plugin, $label, $default = '', $hidden = 0, $create_column = 1, $show_in_list_summary = 1, $published = 1, $parent_id = 0, $width = 20)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -1710,7 +1706,7 @@ class EmundusModelFormbuilder extends JModelList
 		$updated = false;
 
 		if (!empty($elements) && !empty($group_id)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			$elements_ids = [];
@@ -1761,7 +1757,7 @@ class EmundusModelFormbuilder extends JModelList
 				// groupe cible different du groupe de provenance
 				// on vérifie si le groupe cible est un groupe repeat
 
-				
+
 				$query = $this->db->getQuery(true);
 
 				$query->select('params')
@@ -1874,7 +1870,7 @@ class EmundusModelFormbuilder extends JModelList
 			$user = JFactory::getUser()->id;
 		}
 
-		
+
 		$query = $this->db->getQuery(true);
 
 		$date = new Date();
@@ -1959,7 +1955,7 @@ class EmundusModelFormbuilder extends JModelList
 		}
 		$date = new Date();
 
-		
+
 		$query = $this->db->getQuery(true);
 
 		// Get old element
@@ -2188,7 +2184,7 @@ class EmundusModelFormbuilder extends JModelList
 	function updateGroupParams($group_id, $params, $lang = null)
 	{
 		$updated = false;
-		
+
 		$query   = $this->db->getQuery(true);
 
 		// Get old params
@@ -2281,7 +2277,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function duplicateElement($eid, $group, $old_group, $form_id)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		// Prepare Fabrik API
@@ -2395,12 +2391,13 @@ class EmundusModelFormbuilder extends JModelList
 				}
 			}
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('component/com_emundus/models/formbuilder | Cannot duplicate the element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
 		}
-	}
+
+	    return false;
+    }
 
 	/**
 	 * Return an element with fabrik parameters
@@ -2561,7 +2558,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function deleteElement($elt)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -2622,7 +2619,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function getGroupOrdering($gid, $fid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -2644,7 +2641,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function reorderGroup($gid, $fid, $order)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -2673,7 +2670,7 @@ class EmundusModelFormbuilder extends JModelList
 	function getPagesModel($form_ids = [], $model_ids = [])
 	{
 		$models = [];
-		
+
 		$query  = $this->db->getQuery(true);
 
 		$query->select('*')
@@ -3229,7 +3226,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function checkConstraintGroup($cid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3252,7 +3249,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function checkVisibility($group, $cid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3277,7 +3274,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function publishUnpublishElement($element)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3309,7 +3306,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function hiddenUnhiddenElement($element)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3341,7 +3338,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function getDatabasesJoin()
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		$query->select('*')
@@ -3360,7 +3357,7 @@ class EmundusModelFormbuilder extends JModelList
 	function getDatabaseJoinOrderColumns($database_name)
 	{
 
-		
+
 		$query = "SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'$database_name'";
 
 		try {
@@ -3377,7 +3374,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function getAllDatabases()
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		$query->select('table_name as database_name,table_name as label')
@@ -3397,7 +3394,7 @@ class EmundusModelFormbuilder extends JModelList
 	function enableRepeatGroup($gid)
 	{
 		$saved = false;
-		
+
 		$query = $this->db->getQuery(true);
 		$user  = $this->app->getIdentity()->id;
 
@@ -3414,7 +3411,7 @@ class EmundusModelFormbuilder extends JModelList
 			$db_table  = $list->db_table_name;
 			$list_id   = $list->id;
 			$form_id   = $list->form_id;
-			
+
 			$group_params                      = json_decode($group->params);
 			$group_params->repeat_group_button = 1;
 
@@ -3436,7 +3433,7 @@ class EmundusModelFormbuilder extends JModelList
             ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4";
 			$this->db->setQuery($query);
 			$this->db->execute();
-			
+
 			// Create parent_id element
 			$query  = $this->db->getQuery(true);
 			$params = $this->h_fabrik->prepareElementParameters('field', false);
@@ -3607,7 +3604,7 @@ class EmundusModelFormbuilder extends JModelList
 	{
 		$group = null;
 
-		
+
 		$query = $this->db->getQuery(true);
 
 		$query->select('*')
@@ -3628,7 +3625,7 @@ class EmundusModelFormbuilder extends JModelList
 	{
 		$saved = false;
 
-		
+
 		$query = $this->db->getQuery(true);
 
 		$query->select('jfg.*, jff.form_id AS form_id')
@@ -3689,7 +3686,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function displayHideGroup($gid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3723,7 +3720,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function updateMenuLabel($label, $pid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
@@ -3751,7 +3748,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function getFormTesting($prid, $uid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3784,7 +3781,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function createTestingFile($cid, $uid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		include_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
@@ -3811,7 +3808,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function deleteFormTesting($fnum, $uid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 		try {
 			$query->delete()
@@ -3831,7 +3828,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function retriveElementFormAssociatedDoc($gid, $docid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3853,7 +3850,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	function updateDefaultValue($eid, $value)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3873,7 +3870,7 @@ class EmundusModelFormbuilder extends JModelList
 
 	public function getSection($section)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3918,7 +3915,7 @@ class EmundusModelFormbuilder extends JModelList
 	private function getGroupId($element)
 	{
 		$group = 0;
-		
+
 		$query = $this->db->getQuery(true);
 
 		$query->select('group_id')
@@ -3965,7 +3962,7 @@ class EmundusModelFormbuilder extends JModelList
 	{
 		$updated = false;
 		if (!empty($element) && !empty($params)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			$query->clear()
@@ -4083,7 +4080,7 @@ class EmundusModelFormbuilder extends JModelList
 	private function getFormId($group_id)
 	{
 		$form_id = 0;
-		
+
 		$query   = $this->db->getQuery(true);
 
 		$query->select('form_id')
@@ -4124,7 +4121,7 @@ class EmundusModelFormbuilder extends JModelList
 							$label = !empty($label) ? $label : 'Model - ' . $form_id_to_copy . ' - ' . $new_form_id;
 
 							// insert form into models list
-							
+
 							$query = $this->db->getQuery(true);
 
 							$insert = [
@@ -4170,7 +4167,7 @@ class EmundusModelFormbuilder extends JModelList
 			$model = $this->getPagesModel([$form_id]);
 
 			if (!empty($model)) {
-				
+
 				$query = $this->db->getQuery(true);
 
 				$query->delete('#__emundus_template_form')
@@ -4209,7 +4206,7 @@ class EmundusModelFormbuilder extends JModelList
 			}
 
 			if (!empty($models_to_delete)) {
-				
+
 				$query = $this->db->getQuery(true);
 
 				$query->delete('#__emundus_template_form')
@@ -4244,7 +4241,7 @@ class EmundusModelFormbuilder extends JModelList
 		$new_form_id = 0;
 
 		if (!empty($form_id_to_copy)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			$query->clear()
@@ -4300,7 +4297,7 @@ class EmundusModelFormbuilder extends JModelList
 		$new_list_id = 0;
 
 		if (!empty($list_model)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			$query->clear();
@@ -4350,7 +4347,7 @@ class EmundusModelFormbuilder extends JModelList
 		$list = new stdClass();
 
 		if (!empty($form_id)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			$query->select($columns)
@@ -4379,7 +4376,7 @@ class EmundusModelFormbuilder extends JModelList
 
 		if (!empty($form_id_to_copy) && !empty($new_form_id) && !empty($new_list_id)) {
 			$label = [];
-			
+
 			$query = $this->db->getQuery(true);
 
 			$languages = LanguageHelper::getLanguages();

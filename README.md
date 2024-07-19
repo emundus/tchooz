@@ -119,6 +119,12 @@ You can edit some variables by copying `docker-compose.yml` file
 docker-compose up --build -d
 ```
 
+## Mise à jour du projet
+### Via docker
+```shell
+php cli/joomla.php tchooz:update
+```
+
 <!-- ROADMAP -->
 ## Roadmap
 

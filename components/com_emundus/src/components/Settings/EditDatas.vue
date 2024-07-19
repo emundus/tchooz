@@ -1,12 +1,5 @@
 <template>
   <div class="em-settings-menu">
-    <notifications
-        group="foo-velocity"
-        animation-type="velocity"
-        :speed="500"
-        position="bottom left"
-        :classes="'vue-notification-custom'"
-    />
     <ModalAddDatas
         @updateDatabases="getDatabases"
         :actualLanguage="actualLanguage"
@@ -57,7 +50,7 @@ import axios from "axios";
 import ModalAddDatas from "@/components/AdvancedModals/ModalAddDatas";
 import ModalImportDatas from "@/components/AdvancedModals/ModalImportDatas";
 
-const qs = require("qs");
+import qs from "qs";
 
 export default {
   name: "EditDatas",

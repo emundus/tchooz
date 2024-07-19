@@ -6199,9 +6199,6 @@ async function sendMailQueue(fnums, nbFiles = 0) {
                 title = 'COM_EMUNDUS_EMAILS_EMAIL_PREVIEW';
                 html = '<div id="email-recap"></div>';
 
-                // update the textarea with the WYSIWYG content.
-                tinymce.triggerSave();
-
                 body = $('#mail_body').val();
 
                 // Get all form elements.

@@ -55,7 +55,19 @@
           <label for="element-default">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT") }}</label>
 
           <textarea v-if="element.eval == 0" id="element-default" name="element-default" v-model="element.default" class="tw-w-full tw-resize-y"></textarea>
-          <editor-quill v-if="element.eval == 1" v-model="element.default" :id="'element-default'" :text="element.default" :height="'30em'" />
+          <tip-tap-editor
+              v-if="element.eval == 1"
+              v-model="element.default"
+              :id="'element-default'"
+              :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
+              :editor-content-height="'30em'"
+              :class="'tw-mt-1'"
+              :locale="'fr'"
+              :preset="'custom'"
+              :plugins="editorPlugins"
+              :toolbar-classes="['tw-bg-white']"
+              :editor-content-classes="['tw-bg-white']"
+          />
         </div>
 
         <div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4" v-if="sysadmin">
@@ -83,18 +95,23 @@
 </template>
 
 <script>
-import formBuilderService from '../../services/formbuilder';
 import elementParams from '../../../data/form-builder/form-builder-elements-params.json'
-import formBuilderMixin from "../../mixins/formbuilder";
 
-import FormBuilderElementParams from "./FormBuilderElements/FormBuilderElementParams";
-import EditorQuill from "@/components/editorQuill.vue";
+import formBuilderService from '@/services/formbuilder.js';
+import FormBuilderElementParams from "@/components/FormBuilder/FormBuilderElements/FormBuilderElementParams.vue";
+import TipTapEditor from 'tip-tap-editor'
+import 'tip-tap-editor/style.css'
+import '../../../../../templates/g5_helium/css/editor.css'
+
+import { useGlobalStore } from "@/stores/global.js";
+
+import formBuilderMixin from "@/mixins/formbuilder.js";
 
 export default {
   name: 'FormBuilderElementProperties',
   components: {
-    EditorQuill,
-    FormBuilderElementParams
+    FormBuilderElementParams,
+    TipTapEditor
   },
   props: {
     element: {
@@ -133,6 +150,12 @@ export default {
       ],
 
       loading: false,
+      editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
+    };
+  },
+  setup() {
+    return {
+      globalStore: useGlobalStore(),
     };
   },
   mounted() {
@@ -142,8 +165,10 @@ export default {
   methods: {
     getDatabases() {
       formBuilderService.getDatabases().then(response => {
+        console.log(response);
+
         if (response.status) {
-          this.databases = response.data.data;
+          this.databases = response.data;
         }
       });
     },
@@ -219,17 +244,17 @@ export default {
     componentType() {
       let type = '';
       switch (this.element.plugin) {
-        case 'databasejoin':
-          type = this.element.params.database_join_display_type == 'radio' ? 'radiobutton' : this.element.params.database_join_display_type;
-          break;
-        case 'years':
-        case 'date':
-        case 'birthday':
-          type = 'birthday';
-          break;
-        default:
-          type = this.element.plugin;
-          break;
+      case 'databasejoin':
+        type = this.element.params.database_join_display_type == 'radio' ? 'radiobutton' : this.element.params.database_join_display_type;
+        break;
+      case 'years':
+      case 'date':
+      case 'birthday':
+        type = 'birthday';
+        break;
+      default:
+        type = this.element.plugin;
+        break;
       }
 
       return type;
@@ -241,7 +266,7 @@ export default {
       return this.element.hidden;
     },
     sysadmin: function () {
-      return parseInt(this.$store.state.global.sysadminAccess);
+      return parseInt(this.globalStore.hasSysadminAccess);
     },
     publishedTabs() {
       return this.tabs.filter((tab) => {

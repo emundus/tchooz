@@ -51,11 +51,11 @@
 </template>
 
 <script>
-import Global from "./Global";
-import Translations from "./Translations";
-import Orphelins from "./Orphelins";
+import Global from "@/components/Settings/Translation/Global.vue";
+import Translations from "@/components/Settings/Translation/Translations.vue";
+import Orphelins from "@/components/Settings/Translation/Orphelins.vue";
 
-import translationsService from "com_emundus/src/services/translations";
+import translationsService from "@/services/translations.js";
 
 export default {
   name: "translationTool",

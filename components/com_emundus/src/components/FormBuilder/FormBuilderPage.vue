@@ -11,11 +11,11 @@
           contenteditable="true"
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
           v-html="translate(title)"></span>
-      <button id="add-page-modele" class="em-secondary-button !tw-w-auto">
+      <button id="add-page-modele" class="em-secondary-button !tw-w-auto"  @click="$emit('open-create-model', page.id)">
         <span class="material-icons-outlined tw-cursor-pointer"
-              v-if="mode == 'forms'"
+              v-if="mode === 'forms'"
               :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
-              @click="$emit('open-create-model', page.id)">post_add</span>
+        >post_add</span>
         {{ translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE') }}
       </button>
     </div>
@@ -58,15 +58,14 @@
 </template>
 
 <script>
-import formService from '../../services/form';
-import formBuilderService from '../../services/formbuilder';
-import translationService from '../../services/translations';
+import formService from '@/services/form.js';
+import formBuilderService from '@/services/formbuilder.js';
+import translationService from '@/services/translations.js';
 
-import FormBuilderPageSection from './FormBuilderPageSection';
-import formBuilderMixin from '../../mixins/formbuilder';
-import globalMixin from '../../mixins/mixin';
-import errorMixin from '../../mixins/errors';
-import Swal from 'sweetalert2';
+import FormBuilderPageSection from '@/components/FormBuilder/FormBuilderPageSection.vue';
+import formBuilderMixin from '@/mixins/formbuilder.js';
+import globalMixin from '@/mixins/mixin.js';
+import errorMixin from '@/mixins/errors.js';
 
 export default {
   components: {
@@ -107,7 +106,7 @@ export default {
     getSections(eltid = null, scrollTo = false) {
       this.loading = true;
       formService.getPageObject(this.page.id).then(response => {
-        if (response.status && response.data != '') {
+        if (response.status && response.data !== '') {
           this.fabrikPage = response.data;
           this.title = this.fabrikPage.show_title.label[this.shortDefaultLang];
           const groups = Object.values(response.data.Groups);
@@ -131,7 +130,7 @@ export default {
           this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
         }
 
-        this.loading = false;
+	      this.loading = false;
       });
     },
     getDescription() {
@@ -148,7 +147,7 @@ export default {
         formBuilderService.createSimpleGroup(this.page.id, {
           fr: 'Nouvelle section',
           en: 'New section'
-        },this.mode).then(response => {
+        }, this.mode).then(response => {
           if (response.status) {
             this.getSections();
             this.updateLastSave();
@@ -237,7 +236,7 @@ export default {
         if (movedElement !== undefined && movedElement !== null && movedElement.id) {
           const foundElement = this.$refs['section-' + toGroup][0].elements.find(element => element.id === movedElement.id);
 
-          if (foundElement == undefined || foundElement == null) {
+          if (foundElement === undefined || foundElement === null) {
             this.$refs['section-' + toGroup][0].elements.splice(event.newIndex, 0, movedElement);
           }
 
@@ -248,15 +247,15 @@ export default {
             updated = response.data.status;
 
             if (!updated) {
-              this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+              this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED', '');
             }
           });
           this.updateLastSave();
         } else {
-          this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+          this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED', '');
         }
       } else {
-        this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED');
+        this.displayError('COM_EMUNDUS_FORM_BUILDER_UPDATE_ELEMENTS_ORDER_FAILED', '');
       }
     },
     deleteSection(sectionId) {

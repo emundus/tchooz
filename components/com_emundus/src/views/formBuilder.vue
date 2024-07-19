@@ -2,20 +2,14 @@
   <div :id="'formBuilder'" class="tw-w-full tw-h-full">
     <modal
         :name="'formBuilder'"
-        height="auto"
+        height="100vh"
         transition="fade"
         :delay="100"
         :adaptive="true"
         :clickToClose="false"
+        ref="modal"
     >
-      <notifications
-          group="foo-velocity"
-          animation-type="velocity"
-          :speed="500"
-          position="bottom left"
-          :classes="'vue-notification-custom'"
-      />
-      <div v-if="$store.state.global.currentLanguage !== $store.state.global.defaultLang" class="justify-center bg-[#FEF6EE] flex items-center gap-3 p-2">
+      <div v-if="this.globalStore.currentLanguage !== this.globalStore.defaultLang" class="justify-center bg-[#FEF6EE] flex items-center gap-3 p-2">
         <span class="material-icons-outlined text-[#EF681F]">warning_amber</span>
         <span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
       </div>
@@ -57,17 +51,21 @@
 
       <div v-if="principalContainer === 'default'" class="body tw-flex tw-items-center tw-justify-between">
         <aside class="left-panel tw-flex tw-justify-start tw-h-full tw-relative" v-show="!previewForm">
-          <div class="tabs tw-flex tw-flex-col tw-justify-start tw-h-full">
-            <div class="tab" v-for="(tab,i) in displayedLeftPanels" :key="title + '_' + i"
-                 :class="{ active: tab.active }" :title="tab.title">
+          <div class="tabs tw-flex tw-flex-col tw-justify-start tw-h-full tw-p-3 tw-gap-3">
+            <div v-for="(tab,i) in displayedLeftPanels" :key="title + '_' + i"
+                 class="tw-flex tw-items-start tw-w-full tw-p-2 tw-cursor-pointer tw-rounded-lg tw-group tw-user-select-none"
+                 :class="tab.active ? 'tw-font-bold tw-text-profile-full tw-bg-profile-light'  : 'hover:tw-bg-gray-200'"
+                 :title="tab.title">
               <span
-                  class="material-icons-outlined tw-p-4"
+                  class="material-icons-outlined tw-font-bold"
+                  :class="tab.active ? 'tw-text-profile-full' : ''"
                   @click="setSectionShown(tab.code)"
               >
                 {{ tab.icon }}
               </span>
             </div>
           </div>
+
           <div v-if="!previewForm && leftPanelActiveTab !== 'Rules' && (activeTab==='' || activeTab==='Elements')"
                class="tab-content tw-justify-start tw-transition-all tw-duration-300" :class="minimizedLeft === true ? 'tw-max-w-0' : 'tw-max-w-md'"
                @mouseover="showMinimizedLeft = true"
@@ -86,7 +84,7 @@
                   v-else-if="leftPanelActiveTab === 'Rules' && this.showInSection !== 'rules-add'"
                   :form="currentPage"
                   @add-rule="addRule"
-              />-->
+              />
               </transition>
           </div>
           <div v-if="activeTab==='' || activeTab==='Elements'" class="tw-w-[16px]"
@@ -191,18 +189,18 @@
                     :profile_id="parseInt(profile_id)"
                 ></form-builder-element-properties>
                 <form-builder-section-properties
-                    v-if="showInRightPanel === 'section-properties'"
+                    v-else-if="showInRightPanel === 'section-properties'"
                     @close="onCloseSectionProperties"
                     :section_id="selectedSection.group_id"
                     :profile_id="parseInt(profile_id)"
                 ></form-builder-section-properties>
                 <form-builder-create-model
-                    v-if="showInRightPanel === 'create-model'"
+                    v-else-if="showInRightPanel === 'create-model'"
                     :page="selectedPage"
                     @close="showInRightPanel = 'hierarchy';"
                 ></form-builder-create-model>
                 <form-builder-create-document
-                    v-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
+                    v-else-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
                     ref="formBuilderCreateDocument"
                     :key="formBuilderCreateDocumentKey"
                     :profile_id="parseInt(profile_id)"
@@ -228,25 +226,32 @@
 </template>
 
 <script>
+import { watch } from 'vue';
+
 // components
-import FormBuilderElements from "../components/FormBuilder/FormBuilderElements";
-import FormBuilderElementProperties from "../components/FormBuilder/FormBuilderElementProperties";
-import FormBuilderSectionProperties from "../components/FormBuilder/FormBuilderSectionProperties";
-import FormBuilderPage from "../components/FormBuilder/FormBuilderPage";
-import FormBuilderCreatePage from "../components/FormBuilder/FormBuilderCreatePage";
-import FormBuilderPages from "../components/FormBuilder/FormBuilderPages";
-import FormBuilderDocuments from "../components/FormBuilder/FormBuilderDocuments";
-import FormBuilderDocumentList from "../components/FormBuilder/FormBuilderDocumentList";
-import FormBuilderCreateDocument from "../components/FormBuilder/FormBuilderCreateDocument";
-import FormBuilderDocumentFormats from "../components/FormBuilder/FormBuilderDocumentFormats";
-import FormBuilderRules from "../components/FormBuilder/FormBuilderRules/FormBuilderRules";
-import FormBuilderRulesList from "../components/FormBuilder/FormBuilderRules/FormBuilderRulesList.vue";
+import FormBuilderElements  from "@/components/FormBuilder/FormBuilderElements.vue";
+import FormBuilderElementProperties  from "@/components/FormBuilder/FormBuilderElementProperties.vue";
+import FormBuilderSectionProperties  from "@/components/FormBuilder/FormBuilderSectionProperties.vue";
+import FormBuilderPage      from "@/components/FormBuilder/FormBuilderPage.vue";
+import FormBuilderCreatePage from "@/components/FormBuilder/FormBuilderCreatePage.vue";
+import FormBuilderPages     from "@/components/FormBuilder/FormBuilderPages.vue";
+import FormBuilderDocuments from "@/components/FormBuilder/FormBuilderDocuments.vue";
+import FormBuilderDocumentList from "@/components/FormBuilder/FormBuilderDocumentList.vue";
+import FormBuilderCreateDocument from "@/components/FormBuilder/FormBuilderCreateDocument.vue";
+import FormBuilderDocumentFormats from "@/components/FormBuilder/FormBuilderDocumentFormats.vue";
+import FormBuilderCreateModel from "@/components/FormBuilder/FormBuilderCreateModel.vue";
+import FormBuilderRules from "@/components/FormBuilder/FormBuilderRules/FormBuilderRules.vue";
+import FormBuilderRulesList from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesList.vue";
 import FormBuilderRulesAdd from "@/components/FormBuilder/FormBuilderRules/FormBuilderRulesAdd.vue";
+import Modal from "@/components/Modal.vue";
 
 // services
-import formService from '../services/form.js';
-import FormBuilderCreateModel from "../components/FormBuilder/FormBuilderCreateModel";
+import formService from '@/services/form.js';
 import formBuilderService from "@/services/formbuilder";
+
+// store
+import { useGlobalStore } from "@/stores/global.js";
+import { useFormBuilderStore } from "@/stores/formbuilder.js";
 
 // mixins
 import formBuilderMixin from '../mixins/formbuilder';
@@ -267,6 +272,7 @@ export default {
     FormBuilderDocumentList,
     FormBuilderCreateDocument,
     FormBuilderDocumentFormats,
+    Modal,
     FormBuilderRulesAdd,
     FormBuilderRulesList,
     FormBuilderRules,
@@ -348,9 +354,22 @@ export default {
       loading: false
     }
   },
+  setup() {
+    const formBuilderStore = useFormBuilderStore();
+    const globalStore = useGlobalStore();
+
+    return {
+      formBuilderStore,
+      globalStore
+    }
+  },
   created() {
-    const data = this.$store.getters['global/datas'];
-    if (parseInt(this.$store.state.global.manyLanguages) === 0) {
+    watch(() => this.formBuilderStore.lastSave, (newValue) => {
+      this.lastSave = newValue;
+    });
+
+    const data = this.globalStore.getDatas;
+    if (parseInt(this.globalStore.hasManyLanguages) === 0) {
       this.leftPanel.tabs[2].displayed = false;
     }
     this.profile_id = data.prid.value;
@@ -367,7 +386,7 @@ export default {
     if (data && data.mode && data.mode.value) {
       this.mode = data.mode.value;
 
-      if (this.mode === 'eval' || this.mode == 'models') {
+      if (this.mode === 'eval' || this.mode === 'models') {
         this.rightPanel.tabs = this.rightPanel.tabs.filter(tab => tab !== 'hierarchy' && tab !== 'create-document');
         this.leftPanel.tabs = this.leftPanel.tabs.filter(tab => tab.code != 'documents' && tab.code != 'translations');
         this.form_id = this.profile_id;
@@ -379,7 +398,7 @@ export default {
     this.getPages();
   },
   mounted() {
-    this.$modal.show('formBuilder');
+    this.$refs.modal.open();
   },
   methods: {
     getFormTitle() {
@@ -423,6 +442,8 @@ export default {
                   type: 'submission',
                   elements: [],
                 });
+              } else {
+                page.type = 'submission';
               }
             }
           });
@@ -610,7 +631,7 @@ export default {
       if (find) {
         return find.title;
       } else {
-        this.leftPanel.tabs[0].active = true;
+        //this.leftPanel.tabs[0].active = true;
         return this.leftPanel.tabs[0].title;
       }
     },
@@ -622,24 +643,18 @@ export default {
     defaultLangLabel() {
       let label = 'Français';
 
-      switch (this.$store.state.global.defaultLang) {
-        case 'en-GB':
-          label = 'English';
-          break;
-        case 'pt-PT':
-          label = 'Português';
+      switch (this.globalStore.defaultLang) {
+      case 'en-GB':
+        label = 'English';
+        break;
+      case 'pt-PT':
+        label = 'Português';
       }
 
       return label;
     }
   },
   watch: {
-    "$store.state.formBuilder.lastSave": {
-      handler(newValue) {
-        this.lastSave = newValue;
-      },
-      deep: true
-    },
     previewForm(newValue) {
       this.loading = true;
       if (newValue) {

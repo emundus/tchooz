@@ -1274,6 +1274,25 @@ if(value == 1) {
 			EmundusHelperUpdate::createTable('jos_emundus_setup_form_rules_js_conditions_group', $columns, [], 'Action rules for formbuilder');
 			//
 
+			EmundusHelperUpdate::installExtension('plg_editors_tiptap','tiptap',null,'plugin',1,'editors');
+
+			if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml')) {
+				$content = file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+				$content = str_replace('gantry-assets://custom/scss/quill.scss', 'gantry-assets://custom/scss/editor.scss', $content);
+				$content = str_replace('Quill', 'Editor', $content);
+
+				file_put_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml', $content);
+			}
+			if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml')) {
+				$content = file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml');
+				$content = str_replace('gantry-assets://custom/scss/quill.scss', 'gantry-assets://custom/scss/editor.scss', $content);
+				$content = str_replace('Quill', 'Editor', $content);
+
+				file_put_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/_error/page/assets.yaml', $content);
+			}
+
+			EmundusHelperUpdate::installExtension('plg_fabrik_element_iban','iban',null,'plugin',1,'fabrik_element');
+
 
 			$result['status'] = true;
 		}

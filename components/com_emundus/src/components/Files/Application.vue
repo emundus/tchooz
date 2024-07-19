@@ -69,12 +69,10 @@
 
 <script>
 import axios from "axios";
-import Attachments from "@/views/Attachments";
-import filesService from 'com_emundus/src/services/files';
-import errors from "@/mixins/errors";
-import Comments from "@/components/Files/Comments";
-
-
+import Attachments from "@/views/Attachments.vue";
+import filesService from '@/services/files.js';
+import errors from "@/mixins/errors.js";
+import Comments from "@/components/Files/Comments.vue";
 export default {
   name: "Application",
   components: {Comments, Attachments},

@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import settingsService from "../../../services/settings";
-import IntegrationGED from "./GED/IntegrationGED";
+import settingsService from "@/services/settings.js";
+import IntegrationGED from "./GED/IntegrationGED.vue";
 
 export default {
   name: "Configuration",

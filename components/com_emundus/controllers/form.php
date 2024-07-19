@@ -277,19 +277,19 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function createform()
 	{
-		$tab = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$result = $this->m_form->createApplicantProfile();
 
 			if ($result) {
-				$tab = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $result, 'redirect' => 'forms/formbuilder?prid=' . $result);
-			}
-			else {
-				$tab['msg'] = Text::_('ERROR_CANNOT_ADD_FORM');
+				$response = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $result, 'redirect' => 'forms/formbuilder?prid=' . $result);
+			} else {
+				$response['msg'] = Text::_('ERROR_CANNOT_ADD_FORM');
 			}
 		}
-		echo json_encode((object) $tab);
+
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -490,30 +490,35 @@ class EmundusControllerForm extends JControllerLegacy
 
 	public function getdocumentsusage()
 	{
+		$response  = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
-		$tab = array('status' => 0, 'msg' => Text::_("ACCESS_DENIED"));
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		{
+			$document_ids = $this->input->getString('documentIds', '');
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			$document_ids = $this->input->getString('documentIds');
-			$document_ids = explode(',', $document_ids);
-
-			if (!empty($document_ids)) {
+			if (!empty($document_ids))
+			{
+				$document_ids = explode(',', $document_ids);
 				$forms = $this->m_form->getDocumentsUsage($document_ids);
 
-				if (!empty($forms)) {
-					$tab['status'] = 1;
-					$tab['msg']    = 'SUCCESS';
-					$tab['data']   = $forms;
+				if (!empty($forms))
+				{
+					$response['status'] = 1;
+					$response['msg']    = 'SUCCESS';
+					$response['data']   = $forms;
 				}
-				else {
-					$tab['msg'] = Text::_("ERROR_GETTING_DOCUMENT_USAGE");
+				else
+				{
+					$response['msg'] = Text::_('ERROR_GETTING_DOCUMENT_USAGE');
 				}
 			}
-			else {
-				$tab['msg'] = Text::_('MISSING_PARAMS');
+			else
+			{
+				$response['msg'] = Text::_('MISSING_PARAMS');
 			}
 		}
-		echo json_encode((object) $tab);
+
+		echo json_encode((object) $response);
 		exit;
 	}
 

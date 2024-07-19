@@ -113,7 +113,7 @@ export default {
       this.hoverUnselect = false;
       this.emitValueChanges();
     },
-    emitValueChanges(event = null) {
+    emitValueChanges() {
       if (this.hoverUnselect) {
         return;
       }
@@ -145,7 +145,7 @@ export default {
   },
   watch: {
     defaultValue: {
-      handler(newValue) {
+      handler() {
         this.updateDefaultValue();
       }
     }

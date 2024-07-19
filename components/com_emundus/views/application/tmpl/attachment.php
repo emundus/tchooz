@@ -29,8 +29,8 @@ else {
 $can_export          = EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $this->fnum);
 $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
+require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
 ?>
 
 
@@ -62,4 +62,4 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 >
 </div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

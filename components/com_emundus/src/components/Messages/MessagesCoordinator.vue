@@ -34,7 +34,7 @@
       </div>
       <div class="messages__bottom-input-actions">
         <div class="messages__actions_bar">
-          <span class="material-icons-outlined tw-cursor-pointer"  @click="attachDocument">attach_file</span>
+          <span class="messages__send-icon material-icons" @click="attachDocument">attach_file</span>
         </div>
         <button type="button" class="messages__send_button btn btn-primary" @click="sendMessage">
           {{ translations.send }}
@@ -48,12 +48,13 @@
 <script>
 import axios from "axios";
 import moment from 'moment';
+import { useGlobalStore } from '@/stores/global';
 
 import "../../assets/css/messenger.scss";
 
-import AttachDocument from "./modals/AttachDocument";
+import AttachDocument from "@/components/Messages/modals/AttachDocument.vue";
 
-const qs = require("qs");
+import qs from "qs";
 
 export default {
   name: "MessagesCoordinator",
@@ -206,8 +207,8 @@ export default {
   },
 
   created() {
-    this.fnum = this.$store.getters['global/datas'].fnum.value;
-    this.user = this.$store.getters['global/datas'].user.value;
+    this.fnum = useGlobalStore().datas.fnum.value;
+    this.user = useGlobalStore().datas.user.value;
 
     if (typeof this.fnum != 'undefined') {
       this.fileSelected = this.fnum;

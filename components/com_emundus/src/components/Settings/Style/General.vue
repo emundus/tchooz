@@ -132,12 +132,11 @@
 </template>
 
 <script>
-
-import vueDropzone from 'vue2-dropzone';
-import Multiselect from 'vue-multiselect';
+import vueDropzone from 'vue2-dropzone-vue3';
 import Swal from "sweetalert2";
 import axios from "axios";
 
+import settingsService from '@/services/settings.js';
 
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
@@ -154,7 +153,6 @@ export default {
   name: "global",
   props: { },
   components: {
-    Multiselect,
     vueDropzone
   },
   data() {
@@ -245,14 +243,11 @@ export default {
   methods: {
     getLogo() {
       return new Promise((resolve) => {
-        axios({
-          method: "get",
-          url: 'index.php?option=com_emundus&controller=settings&task=getlogo',
-        }).then((rep) => {
-          if (rep.data.filename == null) {
+        settingsService.getLogo().then(response => {
+          if (response.filename == null) {
             this.imageLink = 'images/custom/logo.png';
           } else {
-            this.imageLink = 'images/custom/' + rep.data.filename + '?' + new Date().getTime();
+            this.imageLink = 'images/custom/' + response.filename + '?' + new Date().getTime();
           }
 
           resolve(true);
@@ -314,13 +309,6 @@ export default {
     updateBanner(ext = 'png') {
       this.bannerLink = 'images/custom/default_banner.' + ext + '?' + new Date().getTime();
       this.$forceUpdate();
-    },
-
-
-    beforeClose(event) {
-    },
-
-    beforeOpen(event) {
     },
 
     afterAdded() {

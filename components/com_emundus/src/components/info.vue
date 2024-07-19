@@ -55,15 +55,7 @@ export default {
 
   },
   mounted() {},
-  methods: {
-    translate(key) {
-      if (typeof key != undefined && key != null && Joomla !== null && typeof Joomla !== 'undefined') {
-        return Joomla.JText._(key) ? Joomla.JText._(key) : key;
-      } else {
-        return '';
-      }
-    },
-  },
+  methods: {},
   watch: {},
 }
 </script>
