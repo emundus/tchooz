@@ -77,7 +77,7 @@ class Dispatcher extends AbstractModuleDispatcher
 		    if (!$user->guest) {
 			    if (!empty($emundusUser->profile)) {
 				    $data['profile_details'] = $m_users->getProfileDetails($emundusUser->profile);
-					if(isset($data['profile_details']->display_description)) {
+					if(isset($data['profile_details']->display_description) && is_numeric($data['profile_details']->display_description)) {
 						$data['display_description'] = $data['profile_details']->display_description;
 					}
 			    } else {
