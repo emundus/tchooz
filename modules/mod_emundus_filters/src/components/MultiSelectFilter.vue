@@ -142,7 +142,7 @@ export default {
     }
   },
   mounted() {
-    this.filter.operator = this.filter.operator === '=' ? 'IN' : this.filter.operator;
+    this.filter.operator = this.filter.operator === '=' || this.filter.operator === null || typeof this.filter.operator === 'undefined' ? 'IN' : this.filter.operator;
     this.originalFilterValue = this.filter.value;
     this.originalFilterOperator = this.filter.operator;
     this.originalFilterAndorOperator = this.filter.andorOperator;
