@@ -549,7 +549,8 @@ class EmundusFiltersFiles extends EmundusFilters
 					'value'     => [1],
 					'default'   => true,
 					'available' => true,
-					'order'     => $config['filter_published_order']
+					'order'     => $config['filter_published_order'],
+					'operator'  => '='
 				];
 			}
 
