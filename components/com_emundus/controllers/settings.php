@@ -19,6 +19,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\Uri\Uri;
 
 
 /**
@@ -1372,6 +1373,40 @@ public function sendTestMail()
 			}
 			else {
 				$result['msg'] = Text::_('INVALID_EXTENSION');
+			}
+		}
+
+		echo json_encode((object) $result);
+		exit;
+	}
+	
+	public function getmedia()
+	{
+		$result = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
+
+		if (!$this->user->guest) {
+			$target_dir = 'images/emundus/custom/media/' . $this->user->id . '/';
+			$files      = glob($target_dir . '*');
+
+			if (!empty($files)) {
+				$result['status'] = 1;
+				$result['msg']    = Text::_('MEDIA_FOUND');
+
+				foreach ($files as $file) {
+					$media = new stdClass();
+					$ext   = pathinfo($file, PATHINFO_EXTENSION);
+					if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'svg'])) {
+						$media->url  = Uri::base() . $file;
+						$media->name = pathinfo($file, PATHINFO_BASENAME);
+						$media->type = 'image';
+						$media->size = filesize($file);
+
+						$result['data'][] = $media;
+					}
+				}
+			}
+			else {
+				$result['msg'] = Text::_('MEDIA_NOT_FOUND');
 			}
 		}
 

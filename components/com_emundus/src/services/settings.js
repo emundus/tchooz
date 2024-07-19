@@ -206,5 +206,16 @@ export default {
         msg: e.message
       };
     }
+  },
+  async getMedia()
+  {
+    try {
+      return await fetchClient.get('getmedia');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
   }
 };

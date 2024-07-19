@@ -33,7 +33,7 @@
                                 <span style="color: #e5283b">*</span></label
                             >
                             <tip-tap-editor
-                                v-if="suggestions.length > 0"
+                                v-if="editor_ready"
                                 v-model="form.message"
                                 :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
                                 :editor-content-height="'30em'"
@@ -44,6 +44,8 @@
                                 :toolbar-classes="['tw-bg-white']"
                                 :editor-content-classes="['tw-bg-white']"
                                 :suggestions="suggestions"
+                                :media-files="medias"
+                                @uploadedImage="getMedia"
                             />
                             <div class="tw-mt-12">
                                 <a
@@ -321,17 +323,16 @@ export default {
     candidate_attachments: [],
     email_sender: '',
 
+    editor_ready: false,
     editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
     suggestions: [],
+    medias: [],
   }),
   created() {
     const globalStore = useGlobalStore()
     this.loading = true
 
-    settingsService.getVariables().then((response) => {
-      this.suggestions = response.data
-    })
-
+    this.prepareEditor();
     this.getEmailSender()
     this.getAllAttachments()
     this.getAllTags()
@@ -364,6 +365,20 @@ export default {
     }
   },
   methods: {
+    prepareEditor() {
+      settingsService.getVariables().then((response) => {
+        this.suggestions = response.data
+        settingsService.getMedia().then((response) => {
+          this.medias = response.data
+          this.editor_ready = true
+        });
+      })
+    },
+    getMedia() {
+      settingsService.getMedia().then((response) => {
+        this.medias = response.data
+      });
+    },
     getEmailById() {
       emailService
         .getEmailById(this.email)
