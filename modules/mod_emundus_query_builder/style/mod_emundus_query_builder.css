@@ -86,15 +86,15 @@
 
 .btn {
     background-image: none !important;
-    background: #de6339 !important;
-    border: 1px solid #de6339 !important;
-    color: #ffffff !important;
+    background: var(--em-profile-color) !important;
+    border: 1px solid var(--em-profile-color) !important;
+    color: var(--neutral-0) !important;
     margin: 0;
 }
 
 .btn:hover {
-    background: #ffffff !important;
-    color: #de6339 !important;
+    background: var(--neutral-0) !important;
+    color: var(--em-profile-color) !important;
 }
 
 .input {
@@ -221,13 +221,13 @@
 
 .move {
     cursor: grab;
-    color: lightgray;
+    color: var(--neutral-200);
     border-radius: 0.25rem;
     font-size: 1.5rem;
 }
 
 #errorCreateModule {
-    color: red;
+    color: var(--red-500);
     font-weight: bold;
 }
 
@@ -242,7 +242,7 @@
     padding: 16px;
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
     border-radius: var(--em-default-br);
-    border: 1px solid #EDEDED;
+    border: 1px solid var(--neutral-100);
 }
 
 .etiquette label {
