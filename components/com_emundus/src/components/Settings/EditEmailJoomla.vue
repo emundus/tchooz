@@ -32,13 +32,13 @@
         <div class="tw-grid tw-grid-cols-2 tw-gap-6">
           <div class="form-group tw-w-full" v-for="param in globalInformations"
                :key="param.param">
-            <Parameter :parameter="param" @needSaving="updateParameterToSaving" v-if="param.displayed === true"/>
+            <Parameter :parameter-object="param" @needSaving="updateParameterToSaving" v-if="param.displayed === true"/>
           </div>
         </div>
       </div>
 
       <!-- CUSTOM CONFIGURATION -->
-      <div class="tw-flex tw-items-center tw-mb-3 tw-mt-6" v-if="enableEmail && computedEnableEmail">
+      <div class="tw-flex tw-items-center tw-mb-3 tw-mt-2" v-if="enableEmail && computedEnableEmail">
         <div class="em-toggle">
           <input type="checkbox"
                  class="em-toggle-check"
@@ -55,29 +55,31 @@
 
 
       <!-- visible even when the toogle custom value is false  -->
-      <div v-if="enableEmail && computedEnableEmail" class="tw-flex tw-flex-col tw-gap-6">
-        <div v-for="param in customInformations" :key="param.param"
-             v-if="param.param === 'mailfrom' || param.param === 'fromname'">
-          <Parameter :key="keyParamsCustom" :CustomValue="!!+customConfigurationToggle" :parameter="param"
-                     @needSaving="updateParameterToSaving" v-if="param.displayed === true"/>
-        </div>
+      <div v-if="enableEmail && computedEnableEmail" class="tw-flex tw-flex-col">
+        <template v-for="param in customInformations" :key="param.param">
+          <div v-if="param.param === 'mailfrom' || param.param === 'fromname'">
+            <Parameter :key="keyParamsCustom" :CustomValue="!!+customConfigurationToggle" :parameter-object="param"
+                       @needSaving="updateParameterToSaving" v-if="param.displayed === true"/>
+          </div>
+        </template>
       </div>
 
       <!-- only visible when the toogle custom value is true  -->
-      <div class="tw-mt-6" v-if="customConfigurationToggle && enableEmail && computedEnableEmail">
+      <div class="tw-mt-2" v-if="customConfigurationToggle && enableEmail && computedEnableEmail">
         <div class="tw-grid tw-grid-cols-2 tw-gap-4">
-          <div class="form-group tw-w-full !tw-ml-0 tw-mr-0 tw-mt-0"
-               :class="['smtpsecure','smtpauth'].includes(param.param) ? 'tw-col-span-full' : ''"
-               v-for="param in customInformations"
-               v-if="checkSmtpAuth(param) && param.param !== 'mailfrom' && param.param !== 'fromname'"
-               :key="param.param">
-            <Parameter :parameter="param" @needSaving="updateParameterToSaving"/>
-          </div>
+          <template v-for="param in customInformations" :key="param.param">
+            <div class="form-group tw-w-full !tw-ml-0 tw-mr-0 tw-mt-0"
+                 :class="['smtpsecure','smtpauth'].includes(param.param) ? 'tw-col-span-full' : ''"
+                 v-if="checkSmtpAuth(param) && param.param !== 'mailfrom' && param.param !== 'fromname'"
+            >
+              <Parameter :parameter-object="param" @needSaving="updateParameterToSaving"/>
+            </div>
+          </template>
           <!-- <Info :text="'COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_MAIL_SUBSECTION_SERVER_EMAIL_CONF_ADVICE'"
                  class="tw-mt-4"></Info> -->
         </div>
       </div>
-      <div class="tw-flex tw-justify-between tw-mt-6">
+      <div class="tw-flex tw-justify-between tw-mt-2">
         <button
             :class=" noSendTestClick ?  'tw-bg-gray-200 tw-text-gray-400 tw-border-gray-300 tw-cursor-not-allowed tw-flex tw-items-center tw-rounded-coordinator tw-py-2 tw-px-3' :'' +   'tw-flex tw-items-center tw-bg-transparent hover:tw-bg-profile-full hover:tw-text-white tw-text-profile-full tw-font-semibold tw-py-2 tw-px-3 tw-border tw-border-profile-full hover:tw-border-transparent tw-rounded-coordinator'"
             :disabled="noSendTestClick"
@@ -87,7 +89,7 @@
           <span id="iconSend" class="material-icons-outlined" :class="iconClasses">send</span>
           {{ translate("COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_BT") }}
         </button>
-          <div v-if="loadingMail" class="em-page-loader"> </div>
+        <div v-if="loadingMail" class="em-page-loader"></div>
 
 
         <div :title="computedTitle">
@@ -113,7 +115,8 @@ import Parameter from "@/components/Settings/Parameter.vue";
 import Info from "@/components/info.vue";
 import settingsService from "@/services/settings";
 
-//const qs = require("qs");
+import globalInformationsData from '@/assets/data/settings/emails/global.js';
+import customInformationsData from '@/assets/data/settings/emails/custom.js';
 
 export default {
   name: "EditEmailJoomla",
@@ -160,20 +163,20 @@ export default {
       editableParamsServerMail: null,
       keyParamsCustom: 0,
       clicker: 0,
-      noSendTestClick: null,
+      noSendTestClick: false,
       hover: null,
       isAccordionPanelVisible: false,
       tooltipText: this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_NEED_TEST'),
-      allgood:null,
+      allgood: null,
       allgoodPromiseResolve: null,
     };
   },
 
   created() {
     // eslint-disable-next-line no-undef
-    this.globalInformations = require('../../../data/settings/emails/global.json');
+    this.globalInformations = globalInformationsData;
     // eslint-disable-next-line no-undef
-    this.customInformations = require('../../../data/settings/emails/custom.json');
+    this.customInformations = customInformationsData;
   },
   mounted() {
     this.getEmundusParamsJoomlaConfiguration()
@@ -196,46 +199,45 @@ export default {
     },
 
 
-
     getEmundusParamsJoomlaConfiguration() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
-        .then(response => {
-          this.config = response.data;
-          Object.values(this.params).forEach((param) => {
+          .then(response => {
+            this.config = response.data;
+            Object.values(this.params).forEach((param) => {
 
-            param.value = this.config[param.component][param.param];
-            if ((param.value === "1") || (param.value === true) || (param.value === "true")) {
-              param.value = 1;
-            }
-            if ((param.value === "0") || (param.value === false) || (param.value === "false")) {
-              param.value = 0;
+              param.value = this.config[param.component][param.param];
+              if ((param.value === "1") || (param.value === true) || (param.value === "true")) {
+                param.value = 1;
+              }
+              if ((param.value === "0") || (param.value === false) || (param.value === "false")) {
+                param.value = 0;
+              }
+            });
+            this.loading = false;
+
+            this.enableEmail = this.getEmundusparamsEmailValue('mailonline', 'boolean')
+            this.AuthSMTP = this.config["joomla"]['smtpauth'];
+            this.customConfigurationToggle = this.config['emundus']['custom_email_conf'];
+            this.customConfigurationToggle = this.customConfigurationToggle == 1 ? true : false;
+            this.putValueIntoInputs(this.customConfigurationToggle);
+
+            for (let index in this.customInformations) {
+              if (this.customInformations[index].param === 'smtpauth') {
+                this.customInformations[index].value = this.AuthSMTP;
+              }
             }
           });
-          this.loading = false;
-
-          this.enableEmail = this.getEmundusparamsEmailValue('mailonline', 'boolean')
-          this.AuthSMTP = this.config["joomla"]['smtpauth'];
-          this.customConfigurationToggle = this.config['emundus']['custom_email_conf'];
-          this.customConfigurationToggle = this.customConfigurationToggle == 1 ? true : false;
-          this.putValueIntoInputs(this.customConfigurationToggle);
-
-          for (let index in this.customInformations) {
-            if (this.customInformations[index].param === 'smtpauth') {
-              this.customInformations[index].value = this.AuthSMTP;
-            }
-          }
-        });
 
     },
     putValueIntoInputs(customConfigurationToggle) {
       for (let index in this.globalInformations) {
         switch (this.globalInformations[index].param) {
-        case 'replyto':
-          this.globalInformations[index].value = this.config['emundus']['custom_email_replyto'];
-          break;
-        case 'replytoname':
-          this.globalInformations[index].value = this.config['emundus']['custom_email_replytoname'];
-          break;
+          case 'replyto':
+            this.globalInformations[index].value = this.config['emundus']['custom_email_replyto'];
+            break;
+          case 'replytoname':
+            this.globalInformations[index].value = this.config['emundus']['custom_email_replytoname'];
+            break;
         }
       }
       if (customConfigurationToggle == 1) {
@@ -295,8 +297,7 @@ export default {
       } else {
         this.parametersUpdated = this.parametersUpdated.filter((param) => param.param !== parameter.param);
       }
-      if (!valid)
-      {
+      if (!valid) {
         this.noSendTestClick = true;
         this.updatable = false;
       }
@@ -327,40 +328,40 @@ export default {
       });
 
       settingsService.saveParams(params)
-        .then(() => {
-          this.parametersUpdated = [];
-          Swal.fire({
-            title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
-            text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_SUCCESS"),
-            showCancelButton: false,
-            showConfirmButton: false,
-            customClass: {
-              title: 'em-swal-title'
-            },
-            timer: 1500,
-          }).then(() => {
-            this.updatable = false;
-            this.allgood = true;
+          .then(() => {
+            this.parametersUpdated = [];
+            Swal.fire({
+              title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
+              text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_SUCCESS"),
+              showCancelButton: false,
+              showConfirmButton: false,
+              customClass: {
+                title: 'em-swal-title'
+              },
+              timer: 1500,
+            }).then(() => {
+              this.updatable = false;
+              this.allgood = true;
+              return this.allgood;
+            });
+          })
+          .catch(() => {
+            this.allgood = false;
+            Swal.fire({
+              title: this.translate("COM_EMUNDUS_ERROR"),
+              text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_ERROR"),
+              showCancelButton: false,
+              confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+              reverseButtons: true,
+              allowOutsideClick: false,
+              customClass: {
+                title: 'em-swal-title',
+                confirmButton: 'em-swal-confirm-button',
+                actions: "em-swal-single-action",
+              },
+            });
             return this.allgood;
           });
-        })
-        .catch(() => {
-          this.allgood = false;
-          Swal.fire({
-            title: this.translate("COM_EMUNDUS_ERROR"),
-            text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_ERROR"),
-            showCancelButton: false,
-            confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
-            reverseButtons: true,
-            allowOutsideClick: false,
-            customClass: {
-              title: 'em-swal-title',
-              confirmButton: 'em-swal-confirm-button',
-              actions: "em-swal-single-action",
-            },
-          });
-          return this.allgood;
-        });
     },
 
     async CheckSendMail() {
@@ -371,12 +372,12 @@ export default {
       params = [...params, ...this.customInformations];
       this.loadingMail = true;
       axios.post('index.php?option=com_emundus&controller=settings&task=sendTestMail', params)
-        .then(async response => {
-          this.loadingMail = false;
-          let colorBT = response.data.data[3] == 'success' ? 'green' : 'red';
-          response.data.data[3] === 'success' ? this.updatable = true : this.updatable = false;
-          await this.generateSweetAlert(response, colorBT);
-        });
+          .then(async response => {
+            this.loadingMail = false;
+            let colorBT = response.data.data[3] == 'success' ? 'green' : 'red';
+            response.data.data[3] === 'success' ? this.updatable = true : this.updatable = false;
+            await this.generateSweetAlert(response, colorBT);
+          });
     },
     generateSweetAlert: async function (response, colorBT) {
       Swal.fire({
@@ -406,7 +407,7 @@ export default {
           confirmButton: 'my-button-class',
           cancelButton: 'my-button-class',
         },
-        onOpen: () => {
+        didOpen: () => {
           const hideDivButton = document.getElementById('hideDivButton');
           if (hideDivButton) {
             hideDivButton.addEventListener('click', () => {
@@ -437,13 +438,6 @@ export default {
         }
         this.noSendTestClick = false;
       });
-    },
-    translate(key) {
-      if (typeof key != undefined && key != null && Joomla !== null && typeof Joomla !== 'undefined') {
-        return Joomla.JText._(key) ? Joomla.JText._(key) : key;
-      } else {
-        return '';
-      }
     },
     generateConfirmModal(valueOfToggle) {
       Swal.fire({
@@ -499,8 +493,11 @@ export default {
         this.allgoodPromiseResolve = null;
       }
     },
-    parametersUpdated: function (val) {
-      this.$emit('needSaving', val.length > 0)
+    parametersUpdated: {
+      handler: function (val) {
+        this.$emit('needSaving', val.length > 0)
+      },
+      deep: true
     },
     enableEmail(val) {
       const oldVal = this.config["joomla"]['mailonline'];
@@ -555,7 +552,6 @@ export default {
       }
     },
   },
-
 
 
 };

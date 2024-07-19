@@ -72,15 +72,15 @@
 
 <script>
 import FormBuilderDocumentListElement from './FormBuilderDocumentListElement.vue';
-import draggable from "vuedraggable";
-import formService from "../../services/form";
-import campaignService from "../../services/campaign";
+import { VueDraggableNext } from 'vue-draggable-next';
+import formService from "@/services/form";
+import campaignService from "@/services/campaign";
 
 export default {
   name: 'FormBuilderDocumentList',
   components: {
     FormBuilderDocumentListElement,
-    draggable
+    draggable: VueDraggableNext
   },
   props: {
     profile_id: {

@@ -1,0 +1,95 @@
+export default
+[
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_CAMPAIGN_PAGE",
+    "name": "campaign_page",
+    "component": "EditArticle",
+    "props": {
+      "name": "text_campaign",
+      "article_id": 52,
+      "article_alias": "bienvenue-sur-votre-espace-de-candidature",
+      "field": "introtext",
+      "category": "homepage",
+      "published": 1
+    }
+  },
+  {
+    "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
+    "name": "footer",
+    "component": "EditFooter"
+  },
+  {
+    "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_ACCESSIBILITY",
+    "name": "accessibility",
+    "component": "EditArticle",
+    "props": {
+      "name": "text_accessibility",
+      "article_id": 1044,
+      "article_alias": "accessibilite",
+      "field": "introtext",
+      "category": "rgpd",
+      "published": 1
+    }
+  },
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_RGPD",
+    "name": "rgpd",
+    "component": "SubSection",
+    "helptext": "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_RGPD_HELPTEXT",
+    "notify": 1,
+    "props": [
+      {
+      "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_LEGAL_MENTION",
+      "name": "rgpd-legal-mention",
+      "component": "EditArticle",
+      "props": {
+        "name": "text_legal_notice",
+        "article_id": 1035,
+        "article_alias": "mentions-legales",
+        "field": "introtext",
+        "category": "rgpd",
+        "published": 1
+      }
+    },
+      {
+        "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_DATAS",
+          "name": "rgpd-Privacy-policy",
+        "component": "EditArticle",
+        "props": {
+          "name": "text_privacy_policy",
+          "article_id": 1038,
+          "article_alias": "politique-de-confidentialite-des-donnees",
+          "field": "introtext",
+          "category": "rgpd",
+          "published": 1
+        }
+      },
+      {
+        "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_RIGHTS",
+        "name": "rgpd-rights-management",
+        "component": "EditArticle",
+        "props": {
+          "name": "text_rights_management",
+          "article_id": 1037,
+          "article_alias": "gestion-des-droits",
+          "field": "introtext",
+          "category": "rgpd",
+          "published": 1
+        }
+      },
+      {
+        "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_COOKIES",
+        "name": "rgpd-cookies-management",
+        "component": "EditArticle",
+        "props": {
+          "name": "text_cookies_management",
+          "article_id": 1036,
+          "article_alias": "politique-de-cookies",
+          "field": "introtext",
+          "category": "rgpd",
+          "published": 1
+        }
+      }
+    ]
+  }
+]

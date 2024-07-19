@@ -970,10 +970,10 @@ class EmundusHelperEmails
 		
 		// Check if we are on http or https
 		$base_url = Uri::base();
-		$protocol = $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
+		/*$protocol = $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
 		if($protocol == 'http') {
 			$base_url = JPATH_BASE . '/';
-		}
+		}*/
 
 		if(!file_exists($logo)) {
 			$logo = 'images/custom/logo.png';

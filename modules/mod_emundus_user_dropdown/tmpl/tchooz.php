@@ -217,7 +217,7 @@ if ($user != null)
 
         @supports (background-color: hsl(from white h s 90%)) {
             .em-user-dropdown-icon:before {
-                background-color: hsl(from var(--em-profile-color) h s 90%);
+                background: linear-gradient(0deg, hsl(from var(--em-profile-color) h s l / 15%) 0%, hsl(from var(--em-profile-color) h s l / 15%) 100%), #FFF;
                 color: var(--em-profile-color);
             }
         }

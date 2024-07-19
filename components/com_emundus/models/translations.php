@@ -662,7 +662,7 @@ class EmundusModelTranslations extends JModelList
 				$query->set($this->_db->quoteName('override') . ' = ' . $this->_db->quote($override))
 					->set($this->_db->quoteName('override_md5') . ' = ' . $this->_db->quote(md5($override)))
 					->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user->id))
-					->set($this->_db->quoteName('modified_date') . ' = ' .$this->_db->quote(date('Y-m-d H:i:s')))
+					->set($this->_db->quoteName('modified_date') . ' = ' . $this->_db->quote(date('Y-m-d H:i:s')))
 					->set($this->_db->quoteName('location') . ' = ' . $this->_db->quote($location));
 
 				if (!empty($reference_table)) {

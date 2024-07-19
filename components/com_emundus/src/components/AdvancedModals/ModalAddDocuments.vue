@@ -155,10 +155,11 @@
 <script>
 import axios from "axios";
 
-const qs = require("qs");
+import qs from "qs";
 import Translation from "../translation";
 import Swal from "sweetalert2";
-import Editor from "../../components/editor";
+import Editor from "@/components/editor";
+import formService from "@/services/form.js";
 
 export default {
   name: "modalAddDocuments",
@@ -643,11 +644,8 @@ export default {
     },
 
     getModelsDocs() {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=form&task=getundocuments",
-      }).then(response => {
-        this.models = response.data.data;
+      formService.getUnDocuments().then(response => {
+        this.models = response.data;
         if (this.currentDoc != null) {
           this.doc = this.currentDoc;
         }

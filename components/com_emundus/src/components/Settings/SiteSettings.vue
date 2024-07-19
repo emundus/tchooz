@@ -3,9 +3,9 @@
 
     <div class="tw-w-full">
       <div class="tw-w-4/5" v-if="!loading">
-        <div class="form-group tw-flex tw-flex-col tw-mb-6 tw-w-full" v-for="(param, indexParam) in displayedParams"
+        <div class="form-group tw-flex tw-flex-col tw-w-full" v-for="(param, indexParam) in displayedParams"
              :key="param.param">
-          <Parameter :parameter="param" @needSaving="updateParameterToSaving"/>
+          <Parameter :parameter-object="param" @needSaving="updateParameterToSaving"/>
         </div>
 
         <Global v-if="displayLanguage === true"/>
@@ -27,6 +27,8 @@ import Swal from "sweetalert2";
 import Global from "@/components/Settings/Translation/Global.vue";
 import settingsService from "../../services/settings";
 
+const assetsPath = '/components/com_emundus/src/assets/data/';
+const getPath = (path) => `${assetsPath}${path}`;
 
 export default {
   name: "SiteSettings",
@@ -54,7 +56,11 @@ export default {
     }
   },
   created() {
-    this.parameters = require('../../../data/settings/sections/' + this.$props.json_source);
+    import(getPath(this.$props.json_source)).then((result) => {
+      if(result) {
+        this.parameters = result.default;
+      }
+    })
 
     this.getEmundusParams();
   },
@@ -174,8 +180,11 @@ export default {
     activeSection: function (val) {
       this.$emit('sectionSelected', this.sections[val])
     },
-    parametersUpdated: function (val) {
-      this.$emit('needSaving', val.length > 0)
+    parametersUpdated: {
+      handler: function (val) {
+        this.$emit('needSaving', val.length > 0)
+      },
+      deep: true
     }
   },
 }

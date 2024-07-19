@@ -38,7 +38,7 @@
         <transition name="fade" mode="out-in">
           <Configuration v-if="currentMenu === 1" class="em-modal-component" @updateSaving="updateSaving"
                          @updateLastSaving="updateLastSaving"></Configuration>
-          <Storage v-if="currentMenu === 2" class="em-modal-component" @updateSaving="updateSaving"
+          <Storage v-else-if="currentMenu === 2" class="em-modal-component" @updateSaving="updateSaving"
                    @updateLastSaving="updateLastSaving"></Storage>
         </transition>
       </div>
@@ -49,8 +49,8 @@
 </template>
 
 <script>
-import Configuration from "./Configuration";
-import Storage from "./Storage";
+import Configuration from "./Configuration.vue";
+import Storage from "./Storage.vue";
 
 export default {
   name: "attachmentStorage",

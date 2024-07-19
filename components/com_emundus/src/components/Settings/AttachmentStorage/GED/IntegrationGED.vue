@@ -36,12 +36,12 @@
 </template>
 
 <script>
-import Tree from "../Tree";
-import FilesName from "../FilesName";
-import Aspects from "./Aspects";
+import Tree from "../Tree.vue";
+import FilesName from "../FilesName.vue";
+import Aspects from "./Aspects.vue";
 
-import syncService from "com_emundus/src/services/sync";
-import mixin from "../../../../mixins/mixin";
+import syncService from "@/services/sync.js";
+import mixin from "@/mixins/mixin.js";
 
 export default {
   name: "IntegrationGED",

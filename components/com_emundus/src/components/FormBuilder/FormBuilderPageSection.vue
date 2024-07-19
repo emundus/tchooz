@@ -46,8 +46,9 @@
                 class="draggables-list"
                 @end="onDragEnd"
                 handle=".handle"
+                :data-prid="profile_id" :data-page="page_id" :data-sid="section.group_id"
             >
-              <transition-group :data-prid="profile_id" :data-page="page_id" :data-sid="section.group_id">
+              <transition-group>
                 <form-builder-page-section-element
                     v-for="element in elements"
                     :key="element.id"
@@ -66,6 +67,7 @@
                   group="form-builder-section-elements"
                   :sort="false"
                   class="draggables-list"
+                  :data-prid="profile_id" :data-page="page_id" :data-sid="section.group_id"
               >
                 <transition-group :data-prid="profile_id" :data-page="page_id" :data-sid="section.group_id">
                   <p class="tw-w-full tw-text-center" v-for="(item, index) in emptySection" :key="index">
@@ -82,17 +84,17 @@
 </template>
 
 <script>
-import formBuilderService from '../../services/formbuilder';
-import formBuilderMixin from "../../mixins/formbuilder";
-import globalMixin from "../../mixins/mixin";
-
-import FormBuilderPageSectionElement from "./FormBuilderPageSectionElement";
-import draggable from "vuedraggable";
+import formBuilderService from '@/services/formbuilder.js';
+import formBuilderMixin from "@/mixins/formbuilder.js";
+import globalMixin from "@/mixins/mixin.js";
+import FormBuilderPageSectionElement from "./FormBuilderPageSectionElement.vue";
+import { VueDraggableNext } from 'vue-draggable-next';
+import { useGlobalStore } from "@/stores/global.js";
 
 export default {
   components: {
     FormBuilderPageSectionElement,
-    draggable
+    draggable: VueDraggableNext
   },
   props: {
     profile_id: {
@@ -129,7 +131,11 @@ export default {
       elementsDeletedPending: [],
     };
   },
-
+  setup() {
+    return {
+      globalStore: useGlobalStore()
+    }
+  },
   created() {
     this.getElements();
   },
@@ -150,7 +156,7 @@ export default {
           Swal.fire({
             title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
             text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_SAVE_TRANSLATION'),
-            type: "error",
+            icon: "error",
             cancelButtonText: this.translate("OK"),
           });
         }
@@ -163,13 +169,13 @@ export default {
       this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim().replace(/[\r\n]/gm, " ");
       this.section.group_intro = this.$refs.sectionIntro.innerHTML;
       formBuilderService.updateGroupParams(this.section.group_id, {'intro': this.section.group_intro}, this.shortDefaultLang).then((response) => {
-        if (response.data.status) {
+        if (response.status) {
           this.updateLastSave();
         } else {
           Swal.fire({
             title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
             text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_UPDATE_GROUP_PARAMS'),
-            type: "error",
+            icon: "error",
             cancelButtonText: this.translate("OK"),
           });
         }
@@ -186,7 +192,7 @@ export default {
         formBuilderService.updateOrder(elements, this.section.group_id, movedElement).then((response) => {
           this.updateLastSave();
           let obj = {};
-          this.elements.forEach((elem, i) => {
+          this.elements.forEach((elem) => {
             obj['element' + elem.id] = elem
           });
           this.section.elements = obj;
@@ -207,15 +213,15 @@ export default {
     },
     deleteSection() {
       this.swalConfirm(
-          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_SECTION"),
-          this.section.label[this.shortDefaultLang],
-          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_SECTION_CONFIRM"),
-          this.translate("JNO"),
-          () => {
-            formBuilderService.deleteGroup(this.section.group_id);
-            this.$emit('delete-section', this.section.group_id);
-            this.updateLastSave();
-          }
+        this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_SECTION"),
+        this.section.label[this.shortDefaultLang],
+        this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_SECTION_CONFIRM"),
+        this.translate("JNO"),
+        () => {
+          formBuilderService.deleteGroup(this.section.group_id);
+          this.$emit('delete-section', this.section.group_id);
+          this.updateLastSave();
+        }
       );
     },
     moveSection(direction = 'up') {
@@ -237,7 +243,7 @@ export default {
       }) : [];
     },
     sysadmin: function () {
-      return parseInt(this.$store.state.global.sysadminAccess);
+      return parseInt(this.globalStore.hasSysadminAccess);
     },
   }
 }

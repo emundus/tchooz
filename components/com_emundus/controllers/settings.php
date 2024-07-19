@@ -1333,5 +1333,50 @@ public function sendTestMail()
         echo json_encode((object)$results);
         exit;
     }
+
+	public function uploadmedia()
+	{
+		$result = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'url' => ''];
+
+		if(!$this->user->guest) {
+			$file = $_FILES['file'];
+
+			if (!file_exists('images/emundus/custom/')) {
+				mkdir('images/emundus/custom/');
+			}
+
+			$target_dir = 'images/emundus/custom/media/';
+			if (!file_exists($target_dir)) {
+				mkdir($target_dir);
+			}
+
+			$target_dir = $target_dir . '/' . $this->user->id . '/';
+			if (!file_exists($target_dir)) {
+				mkdir($target_dir);
+			}
+
+			$target_file = $target_dir . basename($file['name']);
+
+			// Check if extension is allowed (images onyl)
+			$allowed = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
+			$ext = pathinfo($target_file, PATHINFO_EXTENSION);
+			if (in_array($ext, $allowed)) {
+				if (move_uploaded_file($file['tmp_name'], $target_file)) {
+					$result['status'] = 1;
+					$result['msg'] = Text::_('UPLOAD_SUCCESS');
+					$result['url'] = '/'.$target_file;
+				}
+				else {
+					$result['msg'] = Text::_('UPLOAD_FAILED');
+				}
+			}
+			else {
+				$result['msg'] = Text::_('INVALID_EXTENSION');
+			}
+		}
+
+		echo json_encode((object) $result);
+		exit;
+	}
 }
 

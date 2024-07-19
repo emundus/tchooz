@@ -96,9 +96,9 @@
 </template>
 
 <script>
-import FormBuilderPreviewForm from "./FormBuilderPreviewForm";
-import formBuilderService from '../../services/formbuilder';
-import Skeleton from '../Skeleton'
+import FormBuilderPreviewForm from "@/components/FormBuilder/FormBuilderPreviewForm.vue";
+import formBuilderService from '@/services/formbuilder';
+import Skeleton from '@/components/Skeleton.vue';
 
 export default {
   name: "FormBuilderCreatePage.vue",
@@ -181,33 +181,33 @@ export default {
         }
       }
 
-      const data = {...this.page, modelid: model_form_id, keep_structure: this.structure === 'initial'};
-      formBuilderService.addPage(data).then(response => {
-        if (!response.status) {
-          Swal.fire({
-            type: 'error',
-            title: this.translate('COM_EMUNDUS_FORM_BUILDER_CREATE_PAGE_ERROR'),
-            reverseButtons: true,
-            customClass: {
-              title: 'em-swal-title',
-              confirmButton: 'em-swal-confirm-button',
-              actions: "em-swal-single-action",
-            }
-          });
-          this.close(false);
-        } else {
-          this.close(true, response.data.id);
-        }
-      });
-    },
-    close(reload = true, newSelected = 0) {
-      this.$emit('close', {
-        'reload': reload,
-        'newSelected': newSelected
-      });
-    },
-    isInitialStructureAlreadyUsed() {
-      let used = false;
+			const data = {...this.page, modelid: model_form_id, keep_structure: this.structure === 'initial'};
+			formBuilderService.addPage(data).then(response => {
+				if (!response.status) {
+					Swal.fire({
+						type: 'error',
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_CREATE_PAGE_ERROR'),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: "em-swal-single-action",
+						}
+					});
+					this.close(false);
+				} else {
+					this.close(true, response.id);
+				}
+			});
+		},
+		close(reload = true, newSelected = 0) {
+			this.$emit('close', {
+				'reload': reload,
+				'newSelected': newSelected
+			});
+		},
+		isInitialStructureAlreadyUsed() {
+			let used = false;
 
       if (this.selected !== -1) {
         const found_model = this.models.find((model) => {

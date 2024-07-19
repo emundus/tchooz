@@ -3,7 +3,7 @@
     <p id="form-builder-document-title" class="tw-text-center tw-full tw-p-4">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_FORMATS') }}
     </p>
-    <input v-if="formats.length > 0" id="search" v-model="search" type="text" class="tw-mt-4 tw-full" placeholder=""/>
+    <input v-if="formats.length > 0" id="search" v-model="search" type="text" class="tw-mt-4 tw-full" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_SEARCH_FORMAT')"/>
     <draggable
         v-model="displayedFormats"
         class="draggables-list"
@@ -29,13 +29,13 @@
 </template>
 
 <script>
-import draggable from 'vuedraggable';
+import { VueDraggableNext } from 'vue-draggable-next';
 import formBuilderMixin from '../../mixins/formbuilder';
-import formService from '../../services/form';
+import formService from '@/services/form';
 
 export default {
   components: {
-    draggable
+    draggable: VueDraggableNext
   },
   props: {
     profile_id: {

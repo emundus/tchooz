@@ -157,14 +157,14 @@
 </template>
 
 <script>
-import formService from '../../services/form';
-import formBuilderService from '../../services/formbuilder';
-import campaignService from '../../services/campaign';
-import globalMixin from "../../mixins/mixin";
-import editor from '../editor.vue';
-import IncrementalSelect from "../IncrementalSelect";
-import formBuilderMixin from "../../mixins/formbuilder";
+import formService from '@/services/form';
+import formBuilderService from '@/services/formbuilder';
+import campaignService from '@/services/campaign';
+import globalMixin from "@/mixins/mixin";
+import IncrementalSelect from "@/components/IncrementalSelect.vue";
+import formBuilderMixin from "@/mixins/formbuilder";
 import Swal from 'sweetalert2';
+import fileTypes from '../../../data/form-builder/form-builder-filetypes.json';
 
 export default {
   name: 'FormBuilderCreateDocument',
@@ -188,7 +188,6 @@ export default {
   },
   components: {
     IncrementalSelect,
-    editor
   },
   mixins: [globalMixin, formBuilderMixin],
   data() {
@@ -280,7 +279,7 @@ export default {
       this.document.mandatory = this.document.mandatory == "1" ? "0" : "1";
     },
     getFileTypes() {
-      this.fileTypes = require('../../../data/form-builder/form-builder-filetypes.json');
+      this.fileTypes = fileTypes;
       this.fileTypes.forEach(filetype => {
         this.document.selectedTypes[filetype.value] = false;
       });

@@ -61,7 +61,7 @@ export default {
   },
 
   methods: {
-    onSearching(event) {
+    onSearching() {
       this.$emit("searched", this.search);
     },
 
@@ -72,7 +72,7 @@ export default {
     },
     filterResults() {
       this.results = this.items.filter(
-          item => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+        item => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1
       );
     },
     setResult(result) {

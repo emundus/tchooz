@@ -1,43 +1,46 @@
-import Vue from 'vue'
-import Dashboard from "./Dashboard"
+import { createApp } from 'vue';
 import VueFusionCharts from 'vue-fusioncharts';
 import FusionCharts from 'fusioncharts';
-import Column2D from 'fusioncharts/fusioncharts.charts';
+import Dashboard from './Dashboard.vue';
+import Charts from 'fusioncharts/fusioncharts.charts';
 import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.fusion';
-import {VTooltip, VPopover, VClosePopover} from 'v-tooltip';
+
 import translate from './mixins/translate';
 
-Vue.config.productionTip = false;
-Vue.config.devtools = false;
+const dashboardElement = document.getElementById('em-dashboard-vue');
 
-Vue.directive('close-popover', VClosePopover);
+let app = null;
 
-Vue.directive('tooltip', VTooltip);
-Vue.component('v-popover', VPopover);
-
-Vue.use(VueFusionCharts, FusionCharts, Column2D, FusionTheme);
-Vue.use(VTooltip);
-Vue.mixin(translate);
-
-if (document.getElementById('em-dashboard-vue')) {
-    const element = document.getElementById('em-dashboard-vue');
-
-    const vue = new Vue({
-        el: '#em-dashboard-vue',
-        render(h) {
-            return h(Dashboard, {
-                props: {
-                    programmeFilter: parseInt(element.attributes['programmeFilter'].value),
-                    displayDescription: parseInt(element.attributes['displayDescription'].value),
-                    displayShapes: parseInt(element.attributes['displayShapes'].value),
-                    displayTchoozy: parseInt(element.attributes['displayTchoozy'].value),
-                    displayName: parseInt(element.attributes['displayName'].value),
-                    name: element.attributes['name'].value,
-                    language: parseInt(element.attributes['language'].value),
-                    profile_name: element.attributes['profile_name'].value,
-                    profile_description: element.attributes['profile_description'].value,
-                }
-            });
-        }
+if (dashboardElement) {
+    app = createApp(Dashboard, {
+        programmeFilter: parseInt(dashboardElement.attributes.programmeFilter.value),
+        displayDescription: parseInt(dashboardElement.attributes.displayDescription.value),
+        displayShapes: parseInt(dashboardElement.attributes.displayShapes.value),
+        displayTchoozy: parseInt(dashboardElement.attributes.displayTchoozy.value),
+        displayName: parseInt(dashboardElement.attributes.displayName.value),
+        name: dashboardElement.attributes.name.value,
+        language: parseInt(dashboardElement.attributes.language.value),
+        profile_name: dashboardElement.attributes.profile_name.value,
+        profile_description: dashboardElement.attributes.profile_description.value,
     });
+}
+
+if (app !== null) {
+    app.use(VueFusionCharts, FusionCharts, Charts, FusionTheme);
+    app.mixin(translate);
+
+    const devmode = import.meta.env.MODE === 'development';
+    if(devmode) {
+        app.config.productionTip = false;
+        app.config.devtools = true;
+    }
+
+    app.mount('#em-dashboard-vue');
+
+    if(devmode) {
+        const version = app.version;
+        const devtools = window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+        devtools.enabled = true;
+        devtools.emit('app:init', app, version, {});
+    }
 }

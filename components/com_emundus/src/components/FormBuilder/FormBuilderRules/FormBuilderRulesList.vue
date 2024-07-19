@@ -35,6 +35,8 @@ import draggable from 'vuedraggable';
 import formBuilderMixin from '../../../mixins/formbuilder';
 import errorsMixin from '../../../mixins/errors';
 
+import rulesData from '../../../../data/form-builder/form-builder-rules.json';
+
 export default {
   components: {
     draggable
@@ -58,7 +60,7 @@ export default {
   },
   methods: {
     getRules() {
-      return require('../../../../data/form-builder/form-builder-rules.json');
+      return rulesData;
     },
 
     addRule(rule) {

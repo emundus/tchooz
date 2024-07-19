@@ -34,7 +34,7 @@
               {{ translate(element.name) }}
               <span class="tw-text-neutral-600 tw-text-xs">{{ translate(element.description) }}</span>
             </p>
-            <div class="tw-flex tw-items-center">
+            <div class="tw-flex tw-items-center tw-h-[18px] tw-w-[18px]">
 <!--              <span class="material-icons-outlined" style="font-size: 18px">drag_indicator</span>-->
               <span v-show="elementHovered == element.value" class="material-icons-outlined tw-cursor-copy" style="font-size: 18px" @click="$emit('create-element-lastgroup', element)">add_circle_outline</span>
             </div>
@@ -72,15 +72,17 @@
 
 <script>
 // external libraries
-import draggable from 'vuedraggable';
-
-import formBuilderService from '../../services/formbuilder';
-import formBuilderMixin from '../../mixins/formbuilder';
-import errorsMixin from '../../mixins/errors';
+import { VueDraggableNext } from 'vue-draggable-next';
+import formBuilderService from '@/services/formbuilder';
+import formBuilderMixin from '@/mixins/formbuilder';
+import errorsMixin from '@/mixins/errors';
+import formBuilderElements from '../../../data/form-builder/form-builder-elements.json';
+import formBuilderSections from '../../../data/form-builder/form-builder-sections.json';
+import { useGlobalStore } from '@/stores/global';
 
 export default {
   components: {
-    draggable
+    draggable: VueDraggableNext
   },
   mixins: [formBuilderMixin, errorsMixin],
   props: {
@@ -110,17 +112,18 @@ export default {
       keywords: ''
     }
   },
+  setup() {
+    const globalStore = useGlobalStore();
+
+    return {
+      globalStore
+    }
+  },
   created() {
-    this.elements = this.getElements();
-    this.groups = this.getSections();
+    this.elements = formBuilderElements;
+    this.groups = formBuilderSections;
   },
   methods: {
-    getElements() {
-      return require('../../../data/form-builder/form-builder-elements.json');
-    },
-    getSections() {
-      return require('../../../data/form-builder/form-builder-sections.json');
-    },
     setCloneElement(element) {
       this.cloneElement = element;
     },
@@ -138,7 +141,7 @@ export default {
         return;
       }
 
-      const data = this.$store.getters['global/datas'];
+	    const data = this.globalStore.getDatas;
       const mode = typeof data.mode !== 'undefined' ? data.mode.value : 'forms';
 
       formBuilderService.createSimpleElement({
@@ -164,7 +167,9 @@ export default {
     addGroup(group) {
       this.loading = true;
 
-      const data = this.$store.getters['global/datas'];
+      const globalStore = useGlobalStore();
+
+      const data = globalStore.datas;
       const mode = typeof data.mode !== 'undefined' ? data.mode.value : 'forms';
 
       formBuilderService.createSectionSimpleElements({
@@ -172,8 +177,7 @@ export default {
         fid: this.form.id,
         mode: mode
       }).then(response => {
-        console.log(response);
-        if (response.status && response.data.data.length > 0) {
+        if (response.status && response.data.length > 0) {
           this.$emit('element-created');
           this.updateLastSave();
           this.loading = false;

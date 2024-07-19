@@ -722,12 +722,6 @@ $secret        = $app->get('secret', '');
 $webhook_token = $app->get('webhook_token') ?: '';
 
 if (!in_array($name, ['settings', 'campaigns', 'emails', 'form'])) {
-	if ($cdn == 1) {
-		$wa->registerAndUseScript('com_emundus_tinymce', '//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js');
-	}
-	else {
-		$wa->registerAndUseScript('com_emundus_tinymce', 'media/com_emundus/js/lib/tinymce.min.js');
-	}
 	$wa->registerAndUseScript('com_emundus_jquery_ui', 'media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 	$wa->registerAndUseScript('com_emundus_bootstrap', 'media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
 	$wa->registerAndUseScript('com_emundus_chosen', 'media/com_emundus/js/chosen.jquery.js');
@@ -750,17 +744,6 @@ if (!in_array($name, ['settings', 'campaigns', 'emails', 'form'])) {
 
 $wa->registerAndUseScript('com_emundus_chunk_vendors', 'media/com_emundus_vue/chunk-vendors_emundus.js', ['version' => $hash]);
 $wa->registerAndUseStyle('com_emundus_app', 'media/com_emundus_vue/app_emundus.css', ['version' => $hash]);
-
-if ($cdn == 1) {
-	$wa->registerAndUseScript('com_emundus_quill', 'https://cdn.quilljs.com/1.3.6/quill.min.js');
-}
-else {
-	$wa->registerAndUseScript('com_emundus_quill', 'media/com_emundus/js/lib/quill.min.js');
-}
-
-$wa->registerAndUseScript('com_emundus_image_resize', 'media/com_emundus/js/lib/image-resize.min.js');
-$wa->registerAndUseStyle('com_emundus_quill_mention', 'media/com_emundus/js/lib/quill/quill-mention/quill.mention.min.css');
-$wa->registerAndUseScript('com_emundus_quill_mention', 'media/com_emundus/js/lib/quill/quill-mention/quill.mention.min.js');
 
 $wa->registerAndUseScript('lottie', 'media/com_emundus/js/lib/@lottiefiles/lottie-player/dist/lottie-player.js');
 

@@ -21,19 +21,22 @@
                 @click="handleSidebarSize">chevron_left</span>
         </li>
 
-        <li v-for="(menu, indexMenu) in menus" class="!tw-mt-0 tw-w-full" v-if="menu.published === true">
-              <div :id="'Menu-'+indexMenu" @click="activeMenu = indexMenu;"
-                    class="tw-flex tw-items-start tw-w-full tw-p-2 tw-cursor-pointer tw-rounded-lg tw-group tw-user-select-none"
-              :class="activeMenu === indexMenu ? 'tw-font-bold tw-text-profile-full tw-bg-profile-light'  : 'hover:tw-bg-gray-200'">
+        <template v-for="(menu, indexMenu) in menus" :key="$props.id+'_'+menu.name">
+          <li v-if="menu.published" class="!tw-mt-0 tw-w-full" >
+            <div :id="'Menu-'+indexMenu" @click="activeMenu = indexMenu;"
+                 class="tw-flex tw-items-start tw-w-full tw-p-2 tw-cursor-pointer tw-rounded-lg tw-group tw-user-select-none"
+                 :class="activeMenu === indexMenu ? 'tw-font-bold tw-text-profile-full tw-bg-profile-light'  : 'hover:tw-bg-gray-200'">
                 <span class="material-icons-outlined tw-font-bold tw-mr-2.5" :class="activeMenu === indexMenu ? 'tw-text-profile-full' : ''"
-                   name="icon-Menu"
-                   :title="translate(menu.label)"
-                   :id="'icon-'+indexMenu">{{ menu.icon }}</span>
-                <p class="tw-font-bold tw-leading-6"
-                      v-if="minimized === false"
-                      :class="activeMenu === indexMenu ? 'tw-text-profile-full' : ''">{{ translate(menu.label) }}</p>
-              </div>
-        </li>
+                      name="icon-Menu"
+                      :title="translate(menu.label)"
+                      :id="'icon-'+indexMenu">{{ menu.icon }}</span>
+              <p class="tw-font-bold tw-leading-6"
+                 v-if="minimized === false"
+                 :class="activeMenu === indexMenu ? 'tw-text-profile-full' : ''">{{ translate(menu.label) }}</p>
+            </div>
+          </li>
+        </template>
+
       </ul>
     </div>
 
@@ -43,13 +46,12 @@
 </template>
 
 <script>
-
 export default {
   name: "SidebarMenu",
   components: {},
   props: {
-    json_source: {
-      type: String,
+    menusList: {
+      type: Array,
       required: true,
     },
   },
@@ -66,10 +68,10 @@ export default {
     }
   },
   created() {
-    this.menus = require('../../../data/' + this.$props.json_source);
+    this.menus = this.$props.menusList;
     this.activeMenu = 0;
 
-    const sessionMenu = sessionStorage.getItem('tchooz_selected_menu/'+this.$props.json_source.replace('.json','')+ '/' + document.location.hostname);
+    const sessionMenu = sessionStorage.getItem('tchooz_selected_menu/'+this.$props.id+ '/' + document.location.hostname);
     const sessionSideBarMinimized = sessionStorage.getItem('tchooz_sidebar_minimized/'+ document.location.hostname);
     if (sessionSideBarMinimized) {
       this.minimized = sessionSideBarMinimized === 'true';
@@ -95,12 +97,10 @@ export default {
   },
   watch: {
     activeMenu: function (val) {
-      sessionStorage.setItem('tchooz_selected_menu/'+this.$props.json_source.replace('.json','')+ '/' + document.location.hostname, val);
+      sessionStorage.setItem('tchooz_selected_menu/'+this.$props.id+ '/' + document.location.hostname, val);
       this.$emit('menuSelected', this.menus[val])
     },
     minimized: function (val, oldVal) {
-      console.log('minimized', val);
-      console.log('oldVal', oldVal);
       if (oldVal !== null) {
         sessionStorage.setItem('tchooz_sidebar_minimized/' + document.location.hostname, val);
       }

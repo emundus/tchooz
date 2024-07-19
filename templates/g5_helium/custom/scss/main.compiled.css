@@ -3464,9 +3464,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-ml-96 {
     margin-left: 24rem;
 }
-.tw-ml-\[10px\] {
-    margin-left: 10px;
-}
 .tw-ml-auto {
     margin-left: auto;
 }
@@ -3731,6 +3728,12 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-h-\[16px\] {
     height: 16px;
 }
+.tw-h-\[18px\] {
+    height: 18px;
+}
+.tw-h-\[24px\] {
+    height: 24px;
+}
 .tw-h-form {
     height: var(--em-form-height);
 }
@@ -3743,6 +3746,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-h-screen {
     height: 100vh;
+}
+.tw-min-h-\[24px\] {
+    min-height: 24px;
 }
 .\!tw-w-auto {
     width: auto !important;
@@ -3933,8 +3939,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-w-\[16px\] {
     width: 16px;
 }
+.tw-w-\[18px\] {
+    width: 18px;
+}
 .tw-w-\[200px\] {
     width: 200px;
+}
+.tw-w-\[24px\] {
+    width: 24px;
 }
 .tw-w-\[50px\] {
     width: 50px;
@@ -4056,14 +4068,44 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-list-none {
     list-style-type: none;
 }
+.tw-grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.tw-grid-cols-10 {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+}
+.tw-grid-cols-11 {
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+}
+.tw-grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+}
 .tw-grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .tw-grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+.tw-grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
 .tw-grid-cols-5 {
     grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.tw-grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.tw-grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.tw-grid-cols-8 {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+.tw-grid-cols-9 {
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+}
+.tw-grid-cols-none {
+    grid-template-columns: none;
 }
 .tw-flex-row {
     flex-direction: row;
@@ -4133,13 +4175,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-gap-8 {
     gap: var(--em-spacing-8);
-}
-.tw-gap-x-6 {
-    -moz-column-gap: var(--em-spacing-6);
-         column-gap: var(--em-spacing-6);
-}
-.tw-gap-y-0 {
-    row-gap: 0px;
 }
 .tw-space-y-2 > :not([hidden]) ~ :not([hidden]) {
     --tw-space-y-reverse: 0;
@@ -4281,7 +4316,7 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     background-color: var(--em-profile-color);
 }
 .tw-bg-profile-light {
-    background-color: hsl(from #eb0000 h s 90%);
+    background-color: hsl(from var(--em-profile-color) h s l / 15%);
 }
 .tw-bg-red-50 {
     background-color: var(--red-50);
@@ -5051,10 +5086,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     font-size: 1.5rem !important;
     line-height: 2rem !important;
 }
-.\!tw-text-6xl {
-    font-size: 3.75rem !important;
-    line-height: 1 !important;
-}
 .\!tw-text-base {
     font-size: 1rem !important;
     line-height: 1.5rem !important;
@@ -5093,9 +5124,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-text-xxs {
     font-size: 8px;
-}
-.\!tw-font-bold {
-    font-weight: 700 !important;
 }
 .\!tw-font-medium {
     font-weight: 500 !important;
@@ -5186,12 +5214,14 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-text-opacity: 1;
     color: rgb(255 255 255 / var(--tw-text-opacity));
 }
-.tw-text-yellow-500 {
-    --tw-text-opacity: 1;
-    color: rgb(234 179 8 / var(--tw-text-opacity));
-}
 .tw-underline {
     text-decoration-line: underline;
+}
+.tw-opacity-0 {
+    opacity: 0;
+}
+.tw-opacity-100 {
+    opacity: 1;
 }
 .tw-shadow {
     --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -5207,9 +5237,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-.tw-outline-green-500 {
-    outline-color: var(--green-500);
 }
 .tw-transition-all {
     transition-property: all;
@@ -5995,9 +6022,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\[-a-zA-Z\:0-9_\.\] {
-    -a-z-a--z: 0-9 .;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -6321,6 +6345,11 @@ small {
 .after\:tw-bg-red-800::after {
     content: var(--tw-content);
     background-color: var(--red-800);
+}
+.hover\:tw-scale-110:hover {
+    --tw-scale-x: 1.1;
+    --tw-scale-y: 1.1;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 .hover\:tw-border-neutral-300:hover {
     border-color: var(--neutral-300);

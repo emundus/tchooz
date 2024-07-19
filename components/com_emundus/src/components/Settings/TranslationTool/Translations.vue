@@ -112,11 +112,11 @@
 </template>
 
 <script>
-import client from "com_emundus/src/services/axiosClient";
-import translationsService from "com_emundus/src/services/translations";
-import mixin from "com_emundus/src/mixins/mixin";
+import client from "@/services/axiosClient.js";
+import translationsService from "@/services/translations.js";
+import mixin from "@/mixins/mixin.js";
 import Multiselect from 'vue-multiselect';
-import TranslationRow from "./TranslationRow";
+import TranslationRow from "./TranslationRow.vue";
 
 export default {
   name: 'Translations',

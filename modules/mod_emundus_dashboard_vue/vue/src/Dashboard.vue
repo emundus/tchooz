@@ -4,64 +4,87 @@
       <div v-if="displayShapes === 1" id="background-shapes"></div>
       <div class="profile_widget-text-container">
         <div class="profile_widget-text">
-          <h1 v-if="language === 1">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}} <span class="em-lowercase" v-if="profile_name !== ''">{{ profile_name }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span></h1>
-          <h1 v-else><span v-if="profile_name!== ''">{{ profile_name }}</span><span v-else>{{ translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL')}}</span> <span class="em-lowercase">{{ translate('COM_EMUNDUS_DASHBOARD_AREA')}}</span></h1>
-          <p v-if="displayName === 1">{{ translate('COM_EMUNDUS_DASHBOARD_HELLO') }} {{name}} {{ translate('COM_EMUNDUS_DASHBOARD_WELCOME') }}</p>
-          <p v-if="displayDescription === 1" class="profile_widget-desc">{{profile_description}}</p>
+          <h1 v-if="language === 1">
+            {{ translate("COM_EMUNDUS_DASHBOARD_AREA") }}
+            <span class="em-lowercase" v-if="profile_name !== ''">{{
+              profile_name
+            }}</span
+            ><span v-else>{{
+              translate("COM_EMUNDUS_DASHBOARD_EMPTY_LABEL")
+            }}</span>
+          </h1>
+          <h1 v-else>
+            <span v-if="profile_name !== ''">{{ profile_name }}</span
+            ><span v-else>{{
+              translate("COM_EMUNDUS_DASHBOARD_EMPTY_LABEL")
+            }}</span>
+            <span class="em-lowercase">{{
+              translate("COM_EMUNDUS_DASHBOARD_AREA")
+            }}</span>
+          </h1>
+          <p v-if="displayName === 1">
+            {{ translate("COM_EMUNDUS_DASHBOARD_HELLO") }} {{ name }}
+            {{ translate("COM_EMUNDUS_DASHBOARD_WELCOME") }}
+          </p>
+          <p v-if="displayDescription === 1" class="profile_widget-desc">
+            {{ profile_description }}
+          </p>
         </div>
         <div v-if="displayTchoozy === 1" id="background-tchoozy"></div>
       </div>
       <div class="profile_widget-container"></div>
     </div>
 
-    <draggable
-        v-model="widgets"
-        :disabled="!enableDrag"
-        handle=".handle"
-        drag-class="plugin-drag"
-        chosen-class="plugin-chosen"
-        ghost-class="plugin-ghost">
+    <div>
       <div v-if="programmeFilter === 1" class="program-filter">
         <label>{{ translations.filterByProgram }}</label>
         <select v-model="selectedProgramme" class="tw-h-form">
           <option :value="null" selected>{{ translations.all }}</option>
-          <option v-for="programme in programmes" v-bind:key="programme.id" :value="programme.code">
+          <option
+            v-for="programme in programmes"
+            v-bind:key="programme.id"
+            :value="programme.code"
+          >
             {{ programme.label }}
           </option>
         </select>
       </div>
       <template v-if="widgets.length > 0">
-        <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index"
-             :class="enableDrag ? 'jello-horizontal handle' : widget.name + '-' + widget.class"
-             :key="widget.name + '_' + index">
-          <Custom v-if="widget.name === 'custom'" :widget="widget" @forceUpdate="$forceUpdate"/>
+        <div
+          v-for="(widget, index) in widgets"
+          :id="widget.name + '_' + index"
+          :class="widget.name + '-' + widget.class"
+          :key="widget.name + '_' + index"
+        >
+          <Custom
+            v-if="widget.name === 'custom'"
+            :widget="widget"
+            @forceUpdate="$forceUpdate"
+          />
         </div>
       </template>
-    </draggable>
+    </div>
   </div>
 </template>
 
 <script>
-import draggable from "vuedraggable";
-import axios from "axios";
-import Custom from "./components/Custom";
+import Custom from "@/components/Custom.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   props: {
     programmeFilter: Number,
     displayDescription: Number,
     displayName: Number,
     displayShapes: Number,
     displayTchoozy: Number,
-    name: Text,
+    name: String,
     language: Number,
     profile_name: String,
-    profile_description: String,
+    profile_description: String
   },
   components: {
-    Custom,
-    draggable
+    Custom
   },
   data() {
     return {
@@ -71,11 +94,11 @@ export default {
       colors: "",
       translations: {
         all: "",
-        filterByProgram: "",
+        filterByProgram: ""
       },
       status: null,
-      enableDrag: false,
-    }
+      enableDrag: false
+    };
   },
   created() {
     this.getTranslations();
@@ -88,33 +111,36 @@ export default {
     getTranslations() {
       this.translations = {
         all: this.translate("COM_EMUNDUS_DASHBOARD_ALL_PROGRAMMES"),
-        filterByProgram: this.translate("COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES"),
-        profilArea: this.translate("COM_EMUNDUS_DASHBOARD_OK "),
+        filterByProgram: this.translate(
+          "COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES"
+        ),
+        profilArea: this.translate("COM_EMUNDUS_DASHBOARD_OK ")
       };
     },
     getWidgets() {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=dashboard&task=getwidgets",
-      }).then(response => {
-        this.widgets = response.data.data;
-      });
+      fetch(
+        "/index.php?option=com_emundus&controller=dashboard&task=getwidgets"
+      )
+        .then(response => response.json())
+        .then(data => {
+          this.widgets = data.data;
+        });
     },
 
     getProgrammes() {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=program&task=getallprogram",
-      }).then(response => {
-        this.programmes = response.data.data;
-      });
-    },
+      fetch(
+        "/index.php?option=com_emundus&controller=program&task=getallprogram"
+      )
+        .then(response => response.json())
+        .then(data => {
+          this.programmes = data.data;
+        });
+    }
   }
-}
+};
 </script>
 
 <style scoped>
-
 #app > div {
   display: flex;
   flex-wrap: wrap;

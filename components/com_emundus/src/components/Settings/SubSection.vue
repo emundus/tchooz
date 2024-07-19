@@ -28,24 +28,15 @@
 <script>
 
 import mixin from "com_emundus/src/mixins/mixin";
-import EditorQuill from "@/components/editorQuill.vue";
-import Editor from "@/components/editor"
 import Multiselect from 'vue-multiselect';
 import Parameter from "@/components/Settings/Parameter.vue";
 import EditArticle from "@/components/Settings/Content/EditArticle.vue";
-
-
-
-
-//const qs = require("qs");
 
 export default {
   name: "SubSection",
 
   components: {
     Parameter,
-    EditorQuill,
-    Editor,
     Multiselect,
     EditArticle
   },
@@ -116,7 +107,7 @@ export default {
       this.toggleVisibilityContent()
     },
     handleNeedSaving(needSaving , article) {
-      this.$emit('NeedSaving', needSaving, article);
+      this.$emit('needSaving', needSaving, article);
     },
     updateNotif(needNotify) {
       this.subSectionNotif = needNotify

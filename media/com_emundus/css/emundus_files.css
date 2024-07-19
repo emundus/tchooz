@@ -2424,7 +2424,7 @@ label[for="em-file_to_upload"]:hover {
     margin-right: 16px;
 }
 .swal2-container{
-    z-index: 99999 !important;
+    z-index: 9999 !important;
 }
 
 .g-back-office-emundus-tableau.files-board .em-utilitize input#em-searchbar {

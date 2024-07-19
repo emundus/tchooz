@@ -1,10 +1,14 @@
 /* jshint esversion: 8 */
 import client from './axiosClient';
 
+import {FetchClient} from './fetchClient.js';
+
+const fetchClient = new FetchClient('settings');
+
 export default {
   async getActiveLanguages() {
     try {
-      return await client().get('index.php?option=com_emundus&controller=settings&task=getactivelanguages');
+      return await fetchClient.get('getactivelanguages');
     } catch (e) {
       return {
         status: false,
@@ -48,11 +52,20 @@ export default {
     }
   },
   async getOnboardingLists() {
-    try {
-      return await client().get('index.php?option=com_emundus&controller=settings&task=getonboardinglists');
-    } catch (e) {
-      return false;
-    }
+    return fetch('index.php?option=com_emundus&controller=settings&task=getonboardinglists').then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Get onboarding lists fetch failed');
+      }
+    }).then((data) => {
+      return data;
+    }).catch((error) => {
+      return {
+        status: false,
+        msg: error.message
+      };
+    });
   },
 
   async getOffset() {
@@ -74,6 +87,7 @@ export default {
       if (response.ok) {
         return response.json();
       }
+      // eslint-disable-next-line no-undef
       throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
     }).then((result) => {
       if (result.status) {
@@ -96,19 +110,20 @@ export default {
       formData.append('params[]', JSON.stringify(params[key]));
     });
 
-    try {
-      const response = await client().post(
-        'index.php?option=com_emundus&controller=settings&task=updateemundusparams',
-        formData
-      );
-
-      return response.data;
-    } catch (e) {
-      return {
-        status: false,
-        msg: e.message
-      };
-    }
+    fetch(window.location.origin + '/index.php?option=com_emundus&controller=settings&task=updateemundusparams', {
+      method: 'POST',
+      body: formData,
+    }).then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      // eslint-disable-next-line no-undef
+      throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+    }).then((result) => {
+      if (result.status) {
+        return result.data;
+      }
+    });
   },
 
 
@@ -130,4 +145,66 @@ export default {
       };
     }
   },
+
+  async getStatus() {
+    try {
+      return await fetchClient.get('getstatus');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getTags() {
+    try {
+      return await client.get('gettags');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getEmailSender() {
+    try {
+      return await client.get('getemailsender');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getLogo() {
+    try {
+      return await client.get('getlogo');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getVariables() {
+    try {
+      return await fetchClient.get('geteditorvariables');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+  async getAllArticleNeedToModify()
+  {
+    try {
+      return await fetchClient.get('getAllArticleNeedToModify');
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  }
 };

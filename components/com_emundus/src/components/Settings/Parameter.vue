@@ -15,7 +15,7 @@
 
     <div name="input-field">
       <select v-if="isSelect" class="dropdown-toggle w-select !tw-mb-0"
-              :class="empty && parameter.optional==0 ?'tw-rounded-lg !tw-border-red-500':''"
+              :class="errors[parameter.param] ?'tw-rounded-lg !tw-border-red-500':''"
               :id="paramId"
               v-model="value"
               :disabled="parameter.editable === false">
@@ -40,14 +40,14 @@
           :key="parameter.value !== undefined ? parameter.value.length : 0"
           :class="['tw-cursor-pointer']"
       >
-        <template #noOptions>{{ translate('COM_EMUNDUS_MULTISELECT_NOKEYWORDS')}}</template>
+        <template #noOptions>{{ translate('COM_EMUNDUS_MULTISELECT_NOKEYWORDS') }}</template>
       </multiselect>
 
       <textarea v-else-if="isTextarea"
                 :id="paramId"
                 v-model="value"
                 class="!mb-0"
-                :class="empty && parameter.optional==0 ?'tw-rounded-lg !tw-border-red-500':''"
+                :class="errors[parameter.param] ?'tw-rounded-lg !tw-border-red-500':''"
                 :maxlength="parameter.maxlength"
                 :readonly="parameter.editable === false">
     </textarea>
@@ -72,7 +72,7 @@
         ></multiselect>
       </div>
 
-      <div v-else-if="isYesNo">
+      <div v-else-if="isYesNo" class="tw-mb-5">
         <fieldset data-toggle="buttons" class="tw-flex tw-items-center tw-gap-2">
           <label :for="paramId + '_input_0'"
                  :class="[value == 0 ? 'tw-bg-red-700' : 'tw-bg-white tw-border-neutral-400']"
@@ -93,7 +93,7 @@
         </fieldset>
       </div>
 
-      <div v-else-if="isToggle" class="tw-mt-4 tw-flex tw-items-center">
+      <div v-else-if="isToggle" class="tw-flex tw-items-center">
         <div class="em-toggle">
           <input type="checkbox"
                  class="em-toggle-check"
@@ -107,7 +107,7 @@
       </div>
 
       <input v-else-if="isInput" :type="parameter.type" class="form-control !tw-mb-0"
-             :class="empty && parameter.optional==0 ?'tw-rounded-lg !tw-border-red-500':''"
+             :class="errors[parameter.param] ?'tw-rounded-lg !tw-border-red-500':''"
              :max="parameter.type === 'number' ? parameter.max : null"
              :min="undefined"
              :placeholder="parameter.placeholder"
@@ -116,33 +116,45 @@
              :maxlength="parameter.maxlength"
              :readonly="parameter.editable === false"
              @change.self="checkValue(parameter)"
-             @keydown.enter="validate(parameter)"
-             @focusout="validate(parameter)"
-             @focusin="ClearPassword(parameter)"
+             @focusin="clearPassword(parameter)"
       >
 
 
       <div
-          v-if="(($props.parameter.type ==='email') && ($props.parameter.editable ==='semi') &&($props.parameter.displayed))"
-          :class="'tw-flex tw-items-center '" >
-        <div name="input-field-Semi0" class="tw-w-full">
-        <input :class="emptySemi[0] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''"  :placeholder="translate(segmentPlaceHolderEmail[0])" v-model="segmentValueEmail[0]">
+          v-if="parameter.type ==='email' && parameter.editable ==='semi' && parameter.displayed"
+          :class="'tw-flex tw-items-center '">
+        <div name="input-field-semi_0" class="tw-w-full">
+          <input
+              :class="errors[parameter.param+'-semi-0'] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''"
+              :placeholder="translate(senderEmailPlaceholder)" v-model="senderEmail">
+          <div v-if="errors[parameter.param+'-semi-0']"
+               class="tw-mt-1 tw-mb-4 tw-text-red-500 tw-absolute"
+               :id="'emailCheck-'+parameter.param">
+            {{ translate(errors[parameter.param + '-semi-0']) }}
+          </div>
         </div>
         <span class="tw-ml-2 tw-mr-2">@</span>
         <div name="input-field-Semi1" class="tw-w-full">
-        <input v-if="customValue" :placeholder="translate(segmentPlaceHolderEmail[1])" v-model="segmentValueEmail[1]" :class="emptySemi[1] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''">
-        <span v-else :class="'tw-w-full'">{{ this.segmentValueEmail[1] }}</span>
+          <input v-if="customValue" :placeholder="translate(senderEmailDomainPlaceholder)" v-model="senderEmailDomain"
+                 :class="errors[parameter.param+'-semi-1'] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''">
+          <span v-else :class="'tw-w-full'">{{ senderEmailDomain }}</span>
+          <div v-if="errors[parameter.param+'-semi-1']"
+               class="tw-mt-1 tw-mb-4 tw-text-red-500 tw-absolute"
+               :id="'emailCheck-'+parameter.param">
+            {{ translate(errors[parameter.param + '-semi-1']) }}
+          </div>
         </div>
       </div>
     </div>
 
-    <div v-if="parameter.warning && !checkPort && value!==''" v-html="translate(parameter.warning)"
-         @click="SwalWarningPort" class="tw-cursor-pointer tw-text-orange-400 "></div>
+    <div v-show="parameter.warning && !checkPort && value!==''" v-html="translate(parameter.warning)"
+         @click="SwalWarningPort" class="tw-cursor-pointer tw-text-orange-400"></div>
 
-    <div v-if="(($props.parameter.type ==='email')||(parameter.optional === 0 )) && validationString !== ''" class="tw-mt-1 tw-mb-4"
-         :id="'emailCheck-'+parameter.param"
-         :style="{ color: emailValidationColor[parameter.param] }">
-      {{ translate(validationString) }}
+    <div v-if="(!parameter.warning || (parameter.warning && checkPort && value!=='') || value === '') && !['yesno','toggle'].includes(parameter.type) && parameter.displayed"
+         class="tw-mt-1 tw-text-red-500 tw-min-h-[24px]"
+         :class="errors[parameter.param] ?'tw-opacity-100 ':'tw-opacity-0'"
+         :id="'error-message-'+parameter.param">
+      {{ translate(errors[parameter.param]) }}
     </div>
   </div>
 </template>
@@ -157,7 +169,7 @@ export default {
   name: "Parameter",
   components: {Multiselect},
   props: {
-    parameter: {
+    parameterObject: {
       type: Object,
       required: true
     },
@@ -172,64 +184,74 @@ export default {
       initValue: null,
       value: null,
       config: {},
+      parameter: {},
+
+      senderEmail: '',
+      senderEmailDomain: '',
+      senderEmailPlaceholder: '',
+      senderEmailDomainPlaceholder: '',
 
       tagOptions: [],
       timezoneOptions: [],
       inputValidationMessage: [],
       emailValidationColor: [],
       validationString: "",
-      segmentValueEmail: [],
-      segmentPlaceHolderEmail: [],
       customValue: false,
-      empty: false,
-      emptySemi: [false, false],
+
+      errors: {},
     }
   },
   created() {
-    if (this.$props.parameter && this.$props.parameter.type === 'timezone') {
+    this.parameter = this.parameterObject;
+    if (this.parameter && this.parameter.type === 'timezone') {
       settingsService.getTimezoneList().then((response) => {
         if (response.data.status) {
           this.timezoneOptions = response.data.data;
-          this.value = this.timezoneOptions.find((timezone) => timezone.value === this.$props.parameter.value);
+          this.value = this.timezoneOptions.find((timezone) => timezone.value === this.parameter.value);
           this.initValue = this.value;
         }
       });
-    } else if (this.$props.parameter) {
-      this.value = this.$props.parameter.value;
-      if(this.parameter.editable === 'semi'){
-        this.initValue = this.segmentValue(this.parameter.value)
-      }else{
+    } else if (this.parameter) {
+      this.value = this.parameter.value;
+      if (this.parameter.editable === 'semi') {
+        if (this.parameter.type === 'email') {
+          this.initValue = this.parameter.value;
+          let sender = this.parameter.value.split('@');
+          let senderPlaceholder = this.parameter.placeholder.split('@');
+          this.senderEmail = sender[0];
+          this.senderEmailDomain = sender[1];
+          this.senderEmailPlaceholder = senderPlaceholder[0];
+          this.senderEmailDomainPlaceholder = senderPlaceholder[1];
+        }
+      } else {
         this.initValue = this.value;
       }
     }
+
     if (this.parameter.editable === 'semi' && this.parameter.displayed) {
       if (this.CustomValue == 1) {
         this.customValue = true
-      }
-      if (this.parameter.value !== null) {
-        this.segmentValueEmail = this.segmentValue(this.parameter.value)
-        this.segmentPlaceHolderEmail = this.segmentValue(this.parameter.placeholder)
       }
     }
   },
   methods: {
     getEmundusParamsJoomlaConfiguration() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
-        .then(response => {
-          this.config = response.data;
+          .then(response => {
+            this.config = response.data;
 
-          Object.values(this.params).forEach((param) => {
+            Object.values(this.params).forEach((param) => {
 
-            param.value = this.config[param.component][param.param];
-            if ((param.value === "1") || (param.value === true) || (param.value === "true")) {
-              param.value = 1;
-            }
-            if ((param.value === "0") || (param.value === false) || (param.value === "false")) {
-              param.value = 0;
-            }
+              param.value = this.config[param.component][param.param];
+              if ((param.value === "1") || (param.value === true) || (param.value === "true")) {
+                param.value = 1;
+              }
+              if ((param.value === "0") || (param.value === false) || (param.value === "false")) {
+                param.value = 0;
+              }
+            });
+            this.customValue = this.config['emundus']['custom_email_conf'];
           });
-          this.customValue = this.config['emundus']['custom_email_conf'];
-        });
     },
     displayHelp(message) {
       Swal.fire({
@@ -252,70 +274,49 @@ export default {
         code: newTag
       }
       this.tagOptions.push(tag)
-      this.$props.parameter.value.push(tag)
+      this.parameter.value.push(tag)
     },
 
     validateEmail(email) {
       let res = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
       return res.test(email);
     },
-    validate(paramEmail) {
-      if (paramEmail.type === 'email') {
-        let email = paramEmail.value;
-        this.inputValidationMessage[paramEmail.param] = "";
-        if (email === '' && paramEmail.optional === "1") {
-          this.validationString = '';
-          return true;
-        } else if (email === '') {
-          this.validationString = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL';
-          this.$set(this.emailValidationColor, paramEmail.param, "red");
-          return true;
+    validate() {
+      if (this.parameter.value === '' && this.parameter.optional == 1) {
+        delete this.errors[this.parameter.param];
+        return true;
+      }
+      else if(this.parameter.value === '' && this.parameter.optional == 0) {
+        this.errors[this.parameter.param] = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL';
+        return false;
+      }
+      else {
+        if (this.parameter.type === 'email') {
+          if (!this.validateEmail(this.parameter.value)) {
+            this.errors[this.parameter.param] = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_NO';
+            return false;
+          }
         }
-        if (this.validateEmail(email)) {
-          this.validationString = "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_YES"
-          this.$set(this.emailValidationColor, paramEmail.param, "green");
-          return true;
-        } else {
-          this.validationString = "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_NO"
-          this.$set(this.emailValidationColor, paramEmail.param, "red");
-          this.$emit('needSaving', false, this.$props.parameter, false)
-          return false;
-        }
-      } else {
-        if ((this.$props.parameter.optional == 0) && this.$props.parameter.value === '' || this.$props.parameter.value === null || this.$props.parameter.value.isNaN) {
-          this.validationString = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL';
-          this.empty = true;
-          this.$set(this.emailValidationColor, paramEmail.param, "red");
-          return false;
-        } else {
-          this.empty = false;
-          this.validationString = '';
-        }
+
+        delete this.errors[this.parameter.param];
         return true;
       }
     },
     checkValue(parameter) {
       if (parameter.type === 'number') {
         if (this.value > parameter.max) {
-          this.value = parameter.max;}
-      }else{
+          this.value = parameter.max;
+        }
+      } else {
         this.validate(parameter)
       }
     },
-    segmentValue(theValue) {
-      if (this.parameter.type === 'email') {
-        return theValue.split('@');
-      }
-      return []
-    },
     regroupeValue() {
-      if (this.segmentValueEmail[0] === '' && this.segmentValueEmail[1] === '') {
-        this.$props.parameter.value = ''
+      if (this.senderEmail === '' && this.senderEmailDomain === '') {
+        this.value = ''
       } else {
-        this.$props.parameter.value = this.segmentValueEmail[0] + '@' + this.segmentValueEmail[1]
+        this.value = this.senderEmail + '@' + this.senderEmailDomain
       }
-      this.$emit('needSaving', true, this.$props.parameter , true)
-
     },
     SwalWarningPort: function () {
       Swal.fire({
@@ -343,118 +344,77 @@ export default {
       });
 
     },
-    translate(key) {
-      if (typeof key != undefined && key != null && Joomla !== null && typeof Joomla !== 'undefined') {
-        return Joomla.JText._(key) ? Joomla.JText._(key) : key;
-      } else {
-        return '';
-      }
-    },
 
-    ClearPassword(parameter) {
+    clearPassword(parameter) {
       if (parameter.type === 'password') {
         this.value = '';
       }
     }
-
   },
   watch: {
-    value: {
+    senderEmail: {
       handler: function (val, oldVal) {
-        this.$props.parameter.value = val;
-        if (oldVal !== null) {
-          if (this.initValue !== val) {
-            if (this.parameter.regex !== undefined) {
-              let res = new RegExp(this.parameter.regex);
-              if (res.test(val)) {
-                //check the value with the regex
-                if (this.$props.parameter.type === 'number') {
-                  this.$props.parameter.value = parseInt(val);
-                } else if (val === true || val === false) {
-                  this.$props.parameter.value = val ? 1 : 0;
-                }
-                this.$emit('needSaving', true, this.$props.parameter, true)
-              } else {
-                //the check failed
-                if (this.parameter.optional === 0) {
-                  this.$emit('needSaving', true, this.$props.parameter, false)
-                } else {
-                  if (this.$props.parameter.type === 'number') {
-                    this.$props.parameter.value = null;
-                  } else if (val === true || val === false) {
-                    this.$props.parameter.value = val ? 1 : 0;
-                  }
-                  this.$emit('needSaving', true, this.$props.parameter, true)
-                }
-              }
-            } else {
-              if (this.parameter.optional === 0) {
-                this.$emit('needSaving', true, this.$props.parameter, true)
-              } else {
-                this.$emit('needSaving', true, this.$props.parameter, true)
-              }
-            }
+        if (val === '') {
+          this.errors[this.parameter.param + '-semi-0'] = this.parameter.error;
+          this.$emit('needSaving', true, this.parameter, false)
+        } else if (val !== '') {
+          delete this.errors[this.parameter.param + '-semi-0'];
+        }
+
+        if (this.parameter.regex !== undefined && val !== '') {
+          let res = new RegExp(this.parameter.regex[0]);
+          if (res.test(val)) {
+            delete this.errors[this.parameter.param + '-semi-0'];
+            this.regroupeValue()
           } else {
-            this.$emit('needSaving', true, this.$props.parameter, true)
+            this.errors[this.parameter.param + '-semi-0'] = "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_NAME_EXP";
+            this.$emit('needSaving', true, this.parameter, false)
           }
         }
       },
       deep: true
     },
-    segmentValueEmail: {
-      handler: function (val,oldVal) {
-        if (val[0] === ''){
-          this.emptySemi[0] = true;
-          this.validationString = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL';
-          this.emailValidationColor[this.parameter.param] = "red";
-          this.$emit('needSaving', true, this.$props.parameter, false)
-        }else if (val[0] !== '' ){
-          this.emptySemi[0] = false;
+    senderEmailDomain: {
+      handler: function (val, oldVal) {
+        if (val === '') {
+          this.errors[this.parameter.param + '-semi-1'] = this.parameter.error;
+          this.$emit('needSaving', true, this.parameter, false)
+        } else if (val !== '') {
+          delete this.errors[this.parameter.param + '-semi-1'];
         }
-        if (val[1] === ''){
-          this.emptySemi[1] = true;
-          this.validationString = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL';
-          this.emailValidationColor[this.parameter.param] = "red";
-          this.$emit('needSaving', true, this.$props.parameter, false)
-        }else if (val[1] !== '' ){
-          this.emptySemi[1] = false;
-        }
-        let valueCheck =0;
-        for (let i = 0; i <= val.length-1 ; ++i) {
-          if (val[i] !== this.initValue[i]) {
-            if (this.parameter.regex !== undefined) {
-              let res = new RegExp(this.parameter.regex[i]);
-              if (res.test(val[i])) {
-                this.regroupeValue()
-                this.validationString = "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_YES"
-                this.$set(this.emailValidationColor, this.parameter.param, "green");
-              } else {
-                if(val[i] !== '') {
-                  if (i === 0) {
-                    this.validationString = "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_NAME_EXP"
-                    this.$set(this.emailValidationColor, this.parameter.param, "red");
-                    this.emptySemi[0] = true;
-                    this.$emit('needSaving', true, this.$props.parameter,false)
-                  } else if (i === 1) {
-                    this.validationString = "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_DOMAIN_EXP"
-                    this.$set(this.emailValidationColor, this.parameter.param, "red");
-                    this.emptySemi[1] = true;
-                    this.$emit('needSaving', true, this.$props.parameter,false)
-                  }
-                }
-              }
-            }
-          }else{valueCheck++}
-        }
-        if (oldVal.length>0) {
-          if (valueCheck === val.length) {
+
+        if (this.parameter.regex !== undefined && val !== '') {
+          let res = new RegExp(this.parameter.regex[1]);
+          if (res.test(val)) {
+            delete this.errors[this.parameter.param + '-semi-1'];
             this.regroupeValue()
-            this.validationString = "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_YES"
-            this.$set(this.emailValidationColor, this.parameter.param, "green");
+          } else {
+            this.errors[this.parameter.param + '-semi-1'] = "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_DOMAIN_EXP";
+            this.$emit('needSaving', true, this.parameter, false)
           }
         }
-      }
-    }
+      },
+      deep: true
+    },
+    value: {
+      handler: function (val, oldVal) {
+        if(val !== oldVal && val !== this.initValue) {
+          let valid = true;
+          this.parameter.value = val;
+
+          if (['text', 'email', 'number', 'password', 'textarea'].includes(this.parameter.type)) {
+            valid = this.validate();
+          }
+
+          this.$emit('needSaving', true, this.parameter, valid)
+        }
+
+        if(val == this.initValue) {
+          this.$emit('needSaving', false, this.parameter, true)
+        }
+      },
+      deep: true
+    },
   },
   computed: {
     isSelect() {
@@ -490,7 +450,7 @@ export default {
     checkPort() {
       let goodPort = [25, 587, 465]
       for (let i = 0; i < goodPort.length; i++) {
-        if (this.$props.parameter.value === goodPort[i]) {
+        if (this.parameter.value === goodPort[i]) {
           return true;
         }
       }

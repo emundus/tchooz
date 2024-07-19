@@ -131,16 +131,16 @@ export default {
         };
       }
     case 'override':
-      let params = {
+      var params = {
         default_lang: default_lang,
         lang_to: lang_to,
         reference_table: reference_table,
         reference_id: reference_id,
-        fields: fields
+        fields: fields,
       };
 
-      let myAxios = axios.create({
-        paramsSerializer: params => qs.stringify(params)
+      var myAxios = axios.create({
+        paramsSerializer: (params) => qs.stringify(params),
       });
       try {
         return await myAxios.get(`index.php?option=com_emundus&controller=translations&task=gettranslations`, {params});
@@ -150,7 +150,6 @@ export default {
           msg: e.message
         };
       }
-      break;
     default:
     }
   },
@@ -178,9 +177,8 @@ export default {
         return {
           status: false,
           msg: e.message
-        }
+        };
       }
-      break;
     case 'override':
       try {
         const formData = new FormData();
@@ -203,9 +201,8 @@ export default {
         return {
           status: false,
           msg: e.message
-        }
+        };
       }
-      break;
     default:
     }
   },
@@ -233,9 +230,8 @@ export default {
         return {
           status: false,
           msg: e.message
-        }
+        };
       }
-      break;
     default:
     }
   },

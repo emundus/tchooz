@@ -39,8 +39,18 @@
         </div>
 
         <div class="form-group controls">
-          <editor-quill :height="'30em'" :text="form.content" :enable_variables="false" :id="'editor_'+this.name"
-                        :key="dynamicComponent" v-model="form.content" @input="updated = true"></editor-quill>
+          <tip-tap-editor
+              v-model="form.content"
+              :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
+              :editor-content-height="'30em'"
+              :class="'tw-mt-1'"
+              :locale="'fr'"
+              :preset="'custom'"
+              :plugins="editorPlugins"
+              :toolbar-classes="['tw-bg-white']"
+              :editor-content-classes="['tw-bg-white']"
+              @input="updated = true"
+          />
         </div>
       </div>
 
@@ -56,12 +66,14 @@
 <script>
 /* COMPONENTS */
 import Multiselect from 'vue-multiselect';
+import TipTapEditor from 'tip-tap-editor'
+import 'tip-tap-editor/style.css'
+import '../../../../../../templates/g5_helium/css/editor.css'
 
 /* SERVICES */
-import client from "com_emundus/src/services/axiosClient";
-import translationsService from "com_emundus/src/services/translations";
-import mixin from "com_emundus/src/mixins/mixin";
-import EditorQuill from "@/components/editorQuill.vue";
+import client from "@/services/axiosClient";
+import translationsService from "@/services/translations";
+import mixin from "@/mixins/mixin";
 import Swal from "sweetalert2";
 import axios from "axios";
 
@@ -69,8 +81,8 @@ export default {
   name: "editArticle",
 
   components: {
-    EditorQuill,
-    Multiselect
+    Multiselect,
+    TipTapEditor
   },
 
   props: {
@@ -104,6 +116,7 @@ export default {
     return {
       defaultLang: null,
       availableLanguages: [],
+      editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
 
       lang: null,
       loading: false,

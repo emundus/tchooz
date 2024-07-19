@@ -55,7 +55,7 @@
 
 <script>
 import formBuilderService from '../../../services/formbuilder';
-import draggable from "vuedraggable";
+import { VueDraggableNext } from 'vue-draggable-next';
 
 export default {
   props: {
@@ -69,7 +69,7 @@ export default {
     }
   },
   components: {
-    draggable,
+    draggable: VueDraggableNext,
   },
   data() {
     return {
@@ -87,8 +87,8 @@ export default {
     async reloadOptions(new_option = false) {
       this.loading = true;
       formBuilderService.getElementSubOptions(this.element.id).then((response) => {
-        if (response.data.status) {
-          this.element.params.sub_options = response.data.new_options;
+        if (response.status) {
+          this.element.params.sub_options = response.new_options;
           this.getSubOptionsTranslation(new_option);
         } else {
           this.loading = false;
@@ -100,6 +100,7 @@ export default {
 
       formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
         if (response) {
+          // transform object response to array
           this.optionsTranslations = Object.values(response.data);
           this.arraySubValues = this.element.params.sub_options.sub_values.map((value, i) => {
             return {
@@ -127,7 +128,7 @@ export default {
       this.loading = true;
       formBuilderService.addOption(this.element.id, this.newOption, this.shortDefaultLang).then((response) => {
         this.newOption = '';
-        if (response.data.status) {
+        if (response.status) {
           this.reloadOptions(true);
         }
         this.loading = false;
@@ -136,7 +137,7 @@ export default {
     updateOption(index, option, next = false) {
       this.loading = true;
       formBuilderService.updateOption(this.element.id, this.element.params.sub_options, index, option, this.shortDefaultLang).then((response) => {
-        if (response.data.status) {
+        if (response.status) {
           this.reloadOptions().then(() => {
             if(next) {
               setTimeout(() => {
@@ -164,7 +165,7 @@ export default {
         if (!this.element.params.sub_options.sub_values.every((value, index) => value === sub_options_in_new_order.sub_values[index])) {
           this.loading = true;
           formBuilderService.updateElementSubOptionsOrder(this.element.id, this.element.params.sub_options, sub_options_in_new_order).then((response) => {
-            if (response.data.status) {
+            if (response.status) {
               this.reloadOptions();
             } else {
               this.loading = false;
@@ -180,7 +181,7 @@ export default {
     removeOption(index) {
       this.loading = true;
       formBuilderService.deleteElementSubOption(this.element.id, index).then((response) => {
-        if (response.data.status) {
+        if (response.status) {
           this.reloadOptions();
         } else {
           this.loading = false;

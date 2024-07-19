@@ -58,38 +58,34 @@
 
           <div class="tw-grid tw-grid-cols-2 tw-mb-4 tw-gap-1.5">
             <div>
-              <div>
                 <label for="startDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span
                     class="tw-text-red-500">*</span></label>
-                <datetime
-                    v-model="form.start_date"
-                    id="startDate"
-                    type="datetime"
-                    class="tw-mt-2 tw-w-full"
-                    format=""
-                    :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE')"
-                    :input-id="'start_date'"
-                    :phrases="{ok: translate('COM_EMUNDUS_ONBOARD_OK'), cancel: translate('COM_EMUNDUS_ONBOARD_CANCEL')}"
-                    @focusout="onFormChange()"
-                ></datetime>
-              </div>
+              <DatePicker v-model="form.start_date" :popover="false" :time-accuracy="2" mode="dateTime" is24hr hide-time-header title-position="left" :input-debounce="500">
+                <template #default="{ showPopover, inputValue, inputEvents }">
+                    <input
+                        :value="inputValue"
+                        v-on="inputEvents"
+                        @focus="() => showPopover()"
+                        class="tw-mt-2 form-control fabrikinput tw-w-full"
+                    />
+                </template>
+              </DatePicker>
             </div>
             <div>
               <div>
                 <label for="endDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') }} <span
                     class="tw-text-red-500">*</span></label>
-                <datetime
-                    v-model="form.end_date"
-                    id="endDate"
-                    type="datetime"
-                    class="tw-mt-2 tw-w-full"
-                    format=""
-                    :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') + ' *'"
-                    :input-id="'end_date'"
-                    :min-datetime="minDate"
-                    :phrases="{ok: translate('COM_EMUNDUS_ONBOARD_OK'), cancel: translate('COM_EMUNDUS_ONBOARD_CANCEL')}"
-                    @focusout="onFormChange()"
-                ></datetime>
+                <DatePicker v-model="form.end_date" :popover="false" :time-accuracy="2" mode="dateTime" is24hr hide-time-header title-position="left" :min-date="minDate" :input-debounce="500">
+                  <template #default="{ showPopover, inputValue, inputEvents }">
+
+                      <input
+                          :value="inputValue"
+                          v-on="inputEvents"
+                          @focus="() => showPopover()"
+                          class="tw-mt-2 form-control fabrikinput tw-w-full"
+                      />
+                  </template>
+                </DatePicker>
               </div>
             </div>
           </div>
@@ -153,32 +149,32 @@
           <div class="tw-mb-4">
             <label style="top: 5em">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }} <span
                 class="tw-text-red-500">*</span></label>
-            <editor-quill
-                style="height: 25em"
-                :text="form.short_description"
+            <tip-tap-editor
                 v-model="form.short_description"
-                :enable_variables="false"
+                :editor-content-height="'5em'"
+                :class="'tw-mt-1'"
+                :locale="'fr'"
+                :preset="'basic'"
+                :toolbar-classes="['tw-bg-white']"
+                :editor-content-classes="['tw-bg-white']"
                 :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME')"
-                :id="'campResume'"
-                :key="editorResumeKey"
-                :limit="500"
-                :toolbar="'light'"
-                @focusout="onFormChange">
-            </editor-quill>
+            />
           </div>
 
           <label class="tw-mt-4">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
           <div class="tw-mb-4" v-if="typeof form.description != 'undefined'">
-            <editor-quill
-                style="height: 25em"
-                :text="form.description"
+            <tip-tap-editor
                 v-model="form.description"
-                :enable_variables="false"
+                :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
+                :editor-content-height="'30em'"
+                :class="'tw-mt-1'"
+                :locale="'fr'"
+                :preset="'custom'"
+                :plugins="editorPlugins"
+                :toolbar-classes="['tw-bg-white']"
+                :editor-content-classes="['tw-bg-white']"
                 :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION')"
-                :id="'campaign_description'"
-                :key="editorKey"
-                @focusout="onFormChange"
-            ></editor-quill>
+            />
           </div>
         </div>
 
@@ -238,13 +234,12 @@
                 <div class="tw-mb-4" style="display: none">
                   <label for="prog_color">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
                   <div class="tw-flex">
-                    <div v-for="(color,index) in colors">
+                    <div v-for="(color,index) in colors" :key="index">
                       <div class="em-color-round tw-cursor-pointer tw-flex tw-justify-center"
-                           :class="index != 0 ? 'ml-2' : ''"
-                           :style="selectedColor == color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
+                           :class="index !== 0 ? 'ml-2' : ''"
+                           :style="selectedColor === color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
                            @click="programForm.color = color.text;selectedColor = color.text">
-                        <span v-if="selectedColor == color.text" class="material-icons-outlined"
-                              style="font-weight: bold;color: black;filter: invert(1)">done</span>
+                        <span v-if="selectedColor === color.text" class="material-icons-outlined" style="font-weight: bold;color: black;filter: invert(1)">done</span>
                       </div>
                     </div>
                   </div>
@@ -274,27 +269,33 @@
 
 <script>
 import Swal from "sweetalert2";
-import axios from "axios";
-import {Datetime} from "vue-datetime";
-import {DateTime as LuxonDateTime, Settings} from "luxon";
-import Autocomplete from "../components/autocomplete";
-import Translation from "../components/translation"
+import Autocomplete from "@/components/autocomplete.vue";
+
+/** VCalendar **/
+import { Calendar, DatePicker } from 'v-calendar';
+import 'v-calendar/style.css';
+
+/** TipTap Editor **/
+import TipTapEditor from 'tip-tap-editor'
+import 'tip-tap-editor/style.css'
+import '../../../../templates/g5_helium/css/editor.css'
 
 /** SERVICES **/
-import campaignService from 'com_emundus/src/services/campaign';
-import settingsService from 'com_emundus/src/services/settings';
-import EditorQuill from "../components/editorQuill";
+import campaignService from '@/services/campaign.js'
+import settingsService from '@/services/settings.js';
+import programmeService from '@/services/programme.js';
 
-const qs = require("qs");
+import { useGlobalStore } from "@/stores/global.js";
+import { useCampaignStore } from "@/stores/campaign.js";
 
 export default {
   name: "addCampaign",
 
   components: {
-    EditorQuill,
-    Datetime,
+    TipTapEditor,
     Autocomplete,
-    Translation
+    DatePicker,
+    Calendar
   },
 
   directives: {
@@ -324,15 +325,13 @@ export default {
 
     programs: [],
     years: [],
-    status: [],
     languages: [],
     aliases: [],
+    editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
 
     session: [],
     old_training: "",
     old_program_form: "",
-    editorKey: 0,
-    editorResumeKey: 0,
     aliasUpdated: false,
 
     form: {
@@ -404,22 +403,17 @@ export default {
   }),
 
   created() {
-    if (this.$props.campaign == '') {
-      // Get datas that we need with store
-      this.campaignId = this.$store.getters['global/datas'].campaign ? this.$store.getters['global/datas'].campaign.value : 0;
+    const globalStore = useGlobalStore();
+
+    if (this.campaign === '') {
+      this.campaignId = globalStore.getDatas.campaign ? globalStore.getDatas.campaign.value : 0;
     } else {
       this.campaignId = this.$props.campaign ? this.$props.campaign : 0;
     }
 
-    this.actualLanguage = this.$store.getters['global/shortLang'];
-    this.coordinatorAccess = this.$store.getters['global/coordinatorAccess'];
+    this.actualLanguage = globalStore.getShortLang;
+    this.coordinatorAccess = globalStore.hasCoordinatorAccess;
 
-    // Configure datetime
-    Settings.defaultLocale = this.actualLanguage;
-    //
-
-    let now = new Date();
-    this.form.start_date = LuxonDateTime.local(now.getFullYear(), now.getMonth() + 1, now.getDate(), 0, 0, 0).toISO();
     this.getLanguages().then(() => {
       this.getCampaignById();
     });
@@ -445,19 +439,16 @@ export default {
     },
 
     getCampaignById() {
-      // Check if we add or edit a campaign
       if (typeof this.campaignId !== 'undefined' && this.campaignId !== '' && this.campaignId > 0) {
-        axios.get(
-            `index.php?option=com_emundus&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`
-        ).then(response => {
-          let label = response.data.data.campaign.label;
+        campaignService.getCampaignById(this.campaignId).then((response) => {
+          let label = response.data.campaign.label;
 
-          this.form = response.data.data.campaign;
+          this.form = response.data.campaign;
           this.$emit('getInformations', this.form);
-          this.programForm = response.data.data.program;
+          this.programForm = response.data.program;
 
           // Check label translations
-          this.form.label = response.data.data.label;
+          this.form.label = response.data.label;
           this.languages.forEach((language) => {
             if (this.form.label[language.sef] === '' || this.form.label[language.sef] == null) {
               this.form.label[language.sef] = label;
@@ -466,17 +457,14 @@ export default {
           //
 
           // Convert date
-          this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date).toISO();
-          this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date).toISO();
-          if (this.form.end_date === "0000-00-00T00:00:00.000Z") {
-            this.form.end_date = "";
-          }
+          this.form.start_date = new Date(this.form.start_date);
+          this.form.end_date = new Date(this.form.end_date);
           //
 
-          if (typeof response.data.data.campaign.status != 'undefined') {
+          if (typeof response.data.campaign.status != 'undefined') {
             this.form.limit_status = [];
             this.form.is_limited = 1;
-            Object.values(response.data.data.campaign.status).forEach((statu) => {
+            Object.values(response.data.campaign.status).forEach((statu) => {
               this.form.limit_status[parseInt(statu.limit_status)] = true;
             });
           } else {
@@ -487,53 +475,52 @@ export default {
           console.log(e);
         });
       } else {
+        this.form.start_date = new Date();
         this.ready = true;
       }
+
       this.getAllPrograms();
     },
-    getAllPrograms() {
-      axios.get('index.php?option=com_emundus&controller=programme&task=getallprogram')
-          .then(response => {
 
-            if (response.data.status) {
-              this.programs = response.data.data.datas;
-              if (Object.keys(this.programs).length !== 0) {
-                this.programs.sort((a, b) => a.id - b.id);
-              }
-            } else {
-              this.programs = [];
-            }
-          }).catch(e => {
+    getAllPrograms() {
+      programmeService.getAllPrograms().then(response => {
+        if (response.status) {
+          this.programs = response.data.datas;
+
+          if (Object.keys(this.programs).length !== 0) {
+            this.programs.sort((a, b) => a.id - b.id);
+          }
+        } else {
+          this.programs = [];
+        }
+      }).catch(e => {
         console.log(e);
       });
       this.getYears();
     },
+
     getYears() {
-      axios.get('index.php?option=com_emundus&controller=campaign&task=getyears')
-          .then(response => {
-            this.years = response.data.data;
+      campaignService.getYears()
+        .then(response => {
+          this.years = response.data;
 
-            this.years.forEach((year) => {
-              this.session.push(year.schoolyear);
-            });
+          this.years.forEach((year) => {
+            this.session.push(year.schoolyear);
+          });
 
-          }).catch(e => {
-        console.log(e);
-      });
-
-      this.getStatus();
+        }).catch(e => {
+          console.log(e);
+        });
     },
+
     async getLanguages() {
-      const response = await axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=settings&task=getactivelanguages"
+      return settingsService.getActiveLanguages().then(response => {
+        if (response) {
+          this.languages = response.data;
+        }
+
+        return response;
       });
-
-      if (response) {
-        this.languages = response.data.data;
-      }
-
-      return response;
     },
 
     setCategory(e) {
@@ -541,58 +528,49 @@ export default {
       this.programForm = this.programs.find(program => program.code == this.form.training);
     },
 
-    getStatus() {
-      axios.get("index.php?option=com_emundus&controller=settings&task=getstatus")
-          .then(response => {
-            this.status = response.data.data;
-          });
-    },
-
     createCampaign(form_data) {
+      form_data.start_date = this.formatDate(new Date(this.form.start_date));
+      form_data.end_date = this.formatDate(new Date(this.form.end_date));
+
       campaignService.createCampaign(form_data).then((response) => {
-        if(response.data.status == 1) {
-            this.campaignId = response.data.data;
-            this.quitFunnelOrContinue(this.quit, response.data.redirect);
+        if(response.status == 1) {
+          this.campaignId = response.data;
+          this.quitFunnelOrContinue(this.quit, response.redirect);
         }
       });
     },
 
     createCampaignWithNoExistingProgram(programForm) {
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus&controller=programme&task=createprogram",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({body: programForm})
-      }).then((rep) => {
-        if (rep.data.status) {
-          this.form.progid = rep.data.data.programme_id;
-          this.form.training = rep.data.data.programme_code;
-          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+      programmeService.createProgram(programForm).then((response) => {
+        if (response.status) {
+          this.form.progid = response.data.programme_id;
+          this.form.training = response.data.programme_code;
+          this.programForm.code = response.data.programme_code;
 
-          this.createCampaign(this.form);
+          if (this.campaignId > 0) {
+            this.updateCampaign();
+          } else {
+            this.createCampaign(this.form);
+          }
         } else {
           Swal.fire({
-            title: this.translate(rep.data.msg),
-            text: rep.data.data,
-            type: "error",
-            confirmButtonText: this.translate("OK"),
+            icon: 'error',
+            title: this.translate('COM_EMUNDUS_ADD_CAMPAIGN_ERROR'),
+            reverseButtons: true,
             customClass: {
               title: 'em-swal-title',
-              confirmButton: 'tw-justify-center',
-            }
+              confirmButton: 'em-swal-confirm-button',
+              actions: "em-swal-single-action",
+            },
           });
-
           this.submitted = false;
         }
       });
     },
 
-
     submit() {
-      this.$store.dispatch('campaign/setUnsavedChanges', true);
+      const campaignStore = useCampaignStore();
+      campaignStore.setUnsavedChanges(true);
 
       // Checking errors
       this.errors = {
@@ -609,8 +587,8 @@ export default {
         return 0;
       }
 
-      if (this.form.end_date == '' || this.form.end_date == '0000-00-00 00:00:00') {
-        window.scrollTo({top: 0, behavior: 'smooth'});
+      if (this.form.end_date === '' || this.form.end_date === '0000-00-00 00:00:00') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         const endDate = document.getElementById('end_date');
         if (endDate) {
           endDate.focus();
@@ -618,8 +596,8 @@ export default {
         return 0;
       }
 
-      if (this.form.start_date == '' || this.form.start_date == '0000-00-00 00:00:00') {
-        window.scrollTo({top: 0, behavior: 'smooth'});
+      if (this.form.start_date === '' || this.form.start_date === '0000-00-00 00:00:00') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         const startDate = document.getElementById('start_date');
         if (startDate) {
           startDate.focus();
@@ -627,8 +605,8 @@ export default {
         return 0;
       }
 
-      if (this.form.year == "") {
-        window.scrollTo({top: 0, behavior: 'smooth'});
+      if (this.form.year === '') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         const year = document.getElementById('year');
         if (year) {
           year.focus();
@@ -640,8 +618,8 @@ export default {
         let least_one_status = this.form.limit_status.every((value) => {
           return value === false;
         });
-        if (this.form.limit == '') {
-          window.scrollTo({top: 0, behavior: 'smooth'});
+        if(this.form.limit === ''){
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           this.errors.limit_files_number = true;
           return 0;
         }
@@ -652,19 +630,19 @@ export default {
         }
       }
 
-      if (this.form.training == "") {
+      if (this.form.training === '') {
         if (this.isHiddenProgram) {
-          if (this.programForm.label == "") {
+          if (this.programForm.label === '') {
             this.errors.progLabel = true;
             document.getElementById('prog_label').focus();
             return 0;
           } else {
             // does this label already exists
             const similarProgram = this.programs.find((program) => {
-              return program.label == this.programForm.label;
+              return program.label === this.programForm.label;
             });
 
-            if (similarProgram != undefined) {
+            if (similarProgram !== undefined) {
               this.errors.progLabel = true;
               document.getElementById('prog_label').focus();
               return 0;
@@ -684,39 +662,23 @@ export default {
       this.year.profile_id = this.form.profile_id;
       //
 
-      if (this.form.label.en == "" || this.form.label.en == null || typeof this.form.label.en == "undefined") {
+      if (this.form.label.en === '' || this.form.label.en == null || typeof this.form.label.en == "undefined") {
         this.form.label.en = this.form.label.fr;
       }
 
       this.submitted = true;
 
       if (typeof this.campaignId !== 'undefined' && this.campaignId !== null && this.campaignId !== "" && this.campaignId !== 0) {
-        if (this.form.training != '') {
+        if (this.form.training !== '') {
           this.updateCampaign();
         } else {
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus&controller=programme&task=createprogram",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({body: this.programForm})
-          }).then((response) => {
-            this.programForm.code = response.data.data.programme_code;
-            this.form.progid = response.data.data.programme_id;
-
-            this.updateCampaign();
-          }).catch(error => {
-            console.log(error);
-          });
+          this.createCampaignWithNoExistingProgram(this.programForm);
         }
-      } else {
-        // get program code if there is training value
-        if (this.form.training !== "") {
-          this.programForm = this.programs.find(program => program.code == this.form.training);
+      }
+      else {
+        if (this.form.training !== '')  {
+          this.programForm = this.programs.find(program => program.code === this.form.training);
           this.form.training = this.programForm.code;
-          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
           this.createCampaign(this.form);
         } else {
           this.createCampaignWithNoExistingProgram(this.programForm);
@@ -725,21 +687,15 @@ export default {
     },
 
     updateCampaign() {
-      this.form.training = this.programForm.code;
-      this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-      this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+      let form_data = this.form;
+      form_data.training = this.programForm.code;
+      form_data.start_date = this.formatDate(new Date(this.form.start_date));
+      form_data.end_date = this.formatDate(new Date(this.form.end_date));
 
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus&controller=campaign&task=updatecampaign',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        data: qs.stringify({body: this.form, cid: this.campaignId})
-      }).then((response) => {
+      campaignService.updateCampaign(form_data, this.campaignId).then((response) => {
         if (!response.status) {
           Swal.fire({
-            type: 'error',
+            icon: 'error',
             title: this.translate('COM_EMUNDUS_ADD_CAMPAIGN_ERROR'),
             reverseButtons: true,
             customClass: {
@@ -780,7 +736,8 @@ export default {
       this.form.year = value;
     },
     onFormChange() {
-      this.$store.dispatch('campaign/setUnsavedChanges', true);
+      const campaignStore = useCampaignStore();
+      campaignStore.setUnsavedChanges(true);
     },
     displayProgram() {
       if (this.isHiddenProgram) {
@@ -817,7 +774,7 @@ export default {
       navigator.clipboard.writeText(window.location.origin + '/' + this.form.alias);
       Swal.fire({
         title: this.translate('COM_EMUNDUS_ONBOARD_ALIAS_COPIED'),
-        type: 'success',
+        icon: 'success',
         showConfirmButton: false,
         customClass: {
           title: 'em-swal-title',
@@ -826,6 +783,23 @@ export default {
         timer: 1500,
       });
     },
+
+    formatDate(date, format = 'YYYY-MM-DD HH:mm:ss') {
+      let year = date.getFullYear();
+      let month = (1 + date.getMonth()).toString().padStart(2, '0');
+      let day = date.getDate().toString().padStart(2, '0');
+      let hours = date.getHours().toString().padStart(2, '0');
+      let minutes = date.getMinutes().toString().padStart(2, '0');
+      let seconds = date.getSeconds().toString().padStart(2, '0');
+
+      return format
+        .replace('YYYY', year)
+        .replace('MM', month)
+        .replace('DD', day)
+        .replace('HH', hours)
+        .replace('mm', minutes)
+        .replace('ss', seconds);
+    }
   },
 
   computed: {
@@ -841,26 +815,31 @@ export default {
   },
 
   watch: {
-    'form.alias': function (val) {
-      this.form.alias = val.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
-      // Check if alias already exists
-      if (this.aliases.includes(val)) {
-        this.form.alias = val + '-1';
-      }
-    },
     'form.start_date': function (val) {
-      this.minDate = LuxonDateTime.fromISO(val).plus({days: 1}).toISO();
-      if (this.form.end_date == "") {
-        this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1}).toISO();
+      if(typeof val === 'object') {
+        let startDate = new Date(val);
+        let endDate = new Date(this.form.end_date);
+        this.minDate = new Date(startDate.setDate(startDate.getDate() + 1)).toISOString();
+        if (endDate < this.minDate) {
+          this.form.end_date = this.minDate;
+        }
       }
     },
+
+    'form.alias': function(val, oldVal) {
+      if (val !== oldVal) {
+        this.form.alias = val.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
+        // Check if alias already exists
+        if (typeof this.aliases !== 'undefined' && this.aliases.includes(val)) {
+          this.form.alias = val + '-1';
+        }
+      }
+    }
   }
 };
 </script>
 
 <style scoped>
-@import "../assets/css/date-time.css";
-
 #add-program {
   height: 24px;
   width: 24px;
@@ -875,5 +854,10 @@ export default {
   height: 30px;
   width: 30px;
   border-radius: 50%;
+}
+
+.modal-date-picker {
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 9999px 9999px rgb(0 0 0 / 50%);
 }
 </style>

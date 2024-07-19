@@ -91,8 +91,6 @@ export default {
           method: "get",
           url: 'index.php?option=com_emundus&controller=settings&task=getappVariablegantry',
         }).then((rep) => {
-          console.log(rep.data);
-
           resolve(true);
         });
       });

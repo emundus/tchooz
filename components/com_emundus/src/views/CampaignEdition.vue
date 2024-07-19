@@ -2,10 +2,6 @@
   <div id="edit-campaign">
     <div class="em-w-custom"></div>
     <div>
-      <ModalWarningFormBuilder
-          :pid="getProfileId"
-          :cid="campaignId"
-      />
       <div>
         <div class="tw-flex tw-items-center tw-cursor-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
           <span class="material-icons-outlined">navigate_before</span>
@@ -100,19 +96,20 @@
 </template>
 
 <script>
-import mixin from '../mixins/mixin';
-import axios from "axios";
+import mixin from '@/mixins/mixin.js';
 import campaignService from '@/services/campaign.js';
+import formService from '@/services/form.js';
+import programmeService from '@/services/programme.js';
+import settingsService from "@/services/settings.js";
 
-import addCampaign from "@/views/addCampaign";
-import ModalWarningFormBuilder from "@/components/AdvancedModals/ModalWarningFormBuilder";
-import AddDocumentsDropfiles from "@/components/FunnelFormulaire/addDocumentsDropfiles";
-import addEmail from "@/components/FunnelFormulaire/addEmail";
-import addFormulaire from "@/components/FunnelFormulaire/addFormulaire";
-import campaignMore from "@/components/FunnelFormulaire/CampaignMore";
-import settingsService from "@/services/settings";
+import addCampaign from "@/views/addCampaign.vue";
+import AddDocumentsDropfiles from "@/components/FunnelFormulaire/addDocumentsDropfiles.vue";
+import addEmail from "@/components/FunnelFormulaire/addEmail.vue";
+import addFormulaire from "@/components/FunnelFormulaire/addFormulaire.vue";
+import campaignMore from "@/components/FunnelFormulaire/CampaignMore.vue";
 
-const qs = require("qs");
+import { useGlobalStore } from '@/stores/global.js';
+
 
 export default {
   name: 'CampaignEdition',
@@ -120,7 +117,6 @@ export default {
   components: {
     AddDocumentsDropfiles,
     addCampaign,
-    ModalWarningFormBuilder,
     addFormulaire,
     addEmail,
     campaignMore
@@ -198,10 +194,12 @@ export default {
   }),
 
   created() {
+    const globalStore = useGlobalStore();
+
     // Get datas that we need with store
-    this.campaignId = parseInt(this.$store.getters['global/datas'].campaignId.value);
-    this.actualLanguage = this.$store.getters['global/shortLang'];
-    this.manyLanguages = parseInt(this.$store.getters['global/manyLanguages']);
+    this.campaignId = parseInt(globalStore.datas.campaignId.value);
+    this.actualLanguage = globalStore.getCurrentLang;
+    this.manyLanguages = globalStore.hasManyLanguages;
     //
 
     this.getCampaignMoreForm();
@@ -215,19 +213,18 @@ export default {
   methods: {
     getCampaignMoreForm() {
       campaignService.getCampaignMoreFormUrl(this.campaignId)
-          .then(response => {
-            if (response.status && response.data.length > 0) {
-              this.menus.forEach(menu => {
-                if (menu.component === 'campaignMore') {
-                  menu.displayed = true;
-                }
-              });
-              this.campaignMoreFormUrl = response.data;
-            }
-          })
-          .catch(error => {
-            console.error(error);
-          });
+        .then(response => {
+          if (response.status && response.data.length > 0) {
+            this.menus.forEach(menu => {
+              if (menu.component === 'campaignMore') {
+                menu.displayed = true;
+              }
+            });
+            this.campaignMoreFormUrl = response.data;
+          }
+        }).catch(error => {
+          console.error(error);
+        });
     },
     initInformations(campaign) {
       this.form.label = campaign.label;
@@ -236,15 +233,12 @@ export default {
 
       this.initDates(campaign);
 
-      axios.get(
-          `index.php?option=com_emundus&controller=form&task=getallformpublished`
-      ).then(profiles => {
-        this.profiles = profiles.data.data;
+      formService.getPublishedForms().then(response => {
+        this.profiles = response.data.data;
         if (this.form.profile_id == null) {
           this.profiles.length != 0 ? this.profileId = this.profiles[0].id : this.profileId = null;
           if (this.profileId != null) {
             this.formReload += 1;
-            //this.updateProfileCampaign(this.profileId)
           }
         } else {
           this.formReload += 1;
@@ -269,7 +263,7 @@ export default {
       this.form.start_date = campaign.start_date;
       this.form.end_date = campaign.end_date;
 
-      let currentLanguage = this.$store.getters['global/currentLanguage'];
+      let currentLanguage = useGlobalStore().getCurrentLang;
       if (currentLanguage === '' || currentLanguage === undefined) {
         currentLanguage = 'fr-FR';
       }
@@ -287,22 +281,17 @@ export default {
     },
 
     getProgram() {
-      axios.get(`/index.php?option=com_emundus&controller=campaign&task=getProgrammeByCampaignID&campaign_id=${this.campaignId}`)
-          .then(rep => {
-            this.program = rep.data.data;
-            axios({
-              method: "get",
-              url: "index.php?option=com_emundus&controller=programme&task=getcampaignsbyprogram",
-              params: {
-                pid: this.program.id,
-              },
-              paramsSerializer: params => {
-                return qs.stringify(params);
-              }
-            }).then(repcampaigns => {
-              this.campaignsByProgram = repcampaigns.data.campaigns;
-            });
-          }).catch(e => {
+      campaignService.getProgrammeByCampaignID(this.campaignId).then(response => {
+        this.program = response.data;
+
+        if (this.program.id) {
+          programmeService.getCampaignsByProgram(this.program.id).then(resp => {
+            this.campaignsByProgram = resp.campaigns;
+          });
+        }
+
+      }).catch(e => {
+        console.error(e);
       });
     },
     selectMenu(menu) {

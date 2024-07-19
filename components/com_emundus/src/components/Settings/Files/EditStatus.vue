@@ -1,11 +1,11 @@
 <template>
-  <div class="em-settings-menu">
-    <div class="em-w-80">
+  <div class="tw-flex tw-flex-wrap tw-justify-start">
+    <div class="tw-w-10/12">
 
-      <div class="em-grid-3 em-mb-16">
-        <button @click="pushStatus" class="em-primary-button em-mb-24" style="width: max-content">
+      <div class="tw-grid tw-grid-cols-3 tw-mb-4">
+        <button @click="pushStatus" class="em-primary-button tw-mb-6 tw-w-max">
           <div class="add-button-div">
-            <em class="fas fa-plus em-mr-4"></em>
+            <em class="fas fa-plus tw-mr-1"></em>
             {{ translate('COM_EMUNDUS_ONBOARD_ADD_STATUS') }}
           </div>
         </button>
@@ -17,33 +17,29 @@
           :class="'draggables-list'"
           @end="updateStatusOrder"
       >
-        <div v-for="(statu, index) in status" class="em-mb-24" :title="'step_' + statu.step"  :key="statu.step" :id="'step_' + statu.step" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-          <div class="em-flex-row em-flex-row-start em-w-100">
-            <span class="handle em-grab" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
+        <div v-for="(statu, index) in status" class="tw-mb-6" :title="'step_' + statu.step"  :key="statu.step" :id="'step_' + statu.step" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+          <div class="tw-flex tw-items-center tw-justify-start tw-w-full">
+            <span class="handle tw-cursor-grab" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
               <span class="material-icons-outlined">drag_indicator</span>
             </span>
             <div class="status-field">
               <div>
-                <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + statu.step" @focusout="updateStatus(statu)" @keyup.enter="manageKeyup(statu)" @keydown="checkMaxlength">{{statu.label[actualLanguage]}}</p>
+                <p class="tw-px-2 tw-py-3 em-editable-content" contenteditable="true" :id="'status_label_' + statu.step" @focusout="updateStatus(statu)" @keyup.enter="manageKeyup(statu)" @keydown="checkMaxlength">{{statu.label[actualLanguage]}}</p>
               </div>
               <input type="hidden" :class="'label-' + statu.class">
             </div>
-            <div class="em-flex-row">
-              <v-swatches
+            <div class="tw-flex tw-items-center">
+              <color-picker
                   v-model="statu.class"
                   @input="updateStatus(statu)"
-                  :swatches="swatches"
-                  shapes="circles"
-                  row-length="8"
-                  show-border
-                  popover-x="left"
-                  popover-y="top"
-              ></v-swatches>
-              <a type="button" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" @click="removeStatus(statu,index)" class="em-flex-row em-ml-8 em-pointer">
-                <span class="material-icons-outlined em-red-500-color">delete_outline</span>
+                  :row-length="8"
+                  :id="'status_swatches_'+statu.step"
+              />
+              <a type="button" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" @click="removeStatus(statu,index)" class="tw-flex tw-items-center tw-ml-2 tw-cursor-pointer">
+                <span class="material-icons-outlined tw-text-red-500">delete_outline</span>
               </a>
-              <a type="button" v-else :title="translate('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS')" class="em-flex-row em-ml-8 em-pointer">
-                <span class="material-icons-outlined em-text-neutral-600">delete_outline</span>
+              <a type="button" v-else :title="translate('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS')" class="tw-flex tw-items-center tw-ml-2 tw-cursor-pointer">
+                <span class="material-icons-outlined tw-text-neutral-600">delete_outline</span>
               </a>
             </div>
           </div>
@@ -58,24 +54,23 @@
 
 <script>
 /* COMPONENTS */
-import draggable from "vuedraggable";
+import { VueDraggableNext } from 'vue-draggable-next';
 import axios from "axios";
-
-import VSwatches from 'vue-swatches'
-import 'vue-swatches/dist/vue-swatches.css'
 
 /* SERVICES */
 import client from "com_emundus/src/services/axiosClient";
 import mixin from "com_emundus/src/mixins/mixin";
 
-const qs = require("qs");
+import { useGlobalStore } from '@/stores/global';
+import ColorPicker from "@/components/ColorPicker.vue";
+import basicPreset from "@/assets/data/colorpicker/presets/basic.js";
 
 export default {
   name: "editStatus",
 
   components: {
-    VSwatches,
-    draggable
+    ColorPicker,
+    draggable: VueDraggableNext,
   },
 
   props: {},
@@ -93,69 +88,31 @@ export default {
       status: [],
       show: false,
       actualLanguage : '',
-      swatches: [],
+
       colors: [],
       variables: null,
     };
+  },
+  setup() {
+    return {
+      globalStore: useGlobalStore()
+    }
   },
 
   created() {
     let root = document.querySelector(':root');
     this.variables = getComputedStyle(root);
 
-    this.prepareSwatchesColor();
+    for(const swatch of basicPreset) {
+      let color = this.variables.getPropertyValue('--em-'+swatch);
+      this.colors.push({name: swatch,value: color});
+    }
+
     this.getStatus();
-    this.actualLanguage = this.$store.getters['global/shortLang'];
+    this.actualLanguage = this.globalStore.shortLang;
   },
 
   methods: {
-    prepareSwatchesColor() {
-      this.swatches.push(this.variables.getPropertyValue('--em-red-1'));
-      this.colors.push({name: 'red-1', value: this.variables.getPropertyValue('--em-red-1')})
-      this.swatches.push(this.variables.getPropertyValue('--em-red-2'));
-      this.colors.push({name: 'red-2', value: this.variables.getPropertyValue('--em-red-2')})
-      this.swatches.push(this.variables.getPropertyValue('--em-pink-1'));
-      this.colors.push({name: 'pink-1', value: this.variables.getPropertyValue('--em-pink-1')})
-      this.swatches.push(this.variables.getPropertyValue('--em-pink-2'));
-      this.colors.push({name: 'pink-2', value: this.variables.getPropertyValue('--em-pink-2')})
-      this.swatches.push(this.variables.getPropertyValue('--em-purple-1'));
-      this.colors.push({name: 'purple-1', value: this.variables.getPropertyValue('--em-purple-1')})
-      this.swatches.push(this.variables.getPropertyValue('--em-purple-2'));
-      this.colors.push({name: 'purple-2', value: this.variables.getPropertyValue('--em-purple-2')})
-      this.swatches.push(this.variables.getPropertyValue('--em-light-blue-1'));
-      this.colors.push({name: 'light-blue-1', value: this.variables.getPropertyValue('--em-light-blue-1')})
-      this.swatches.push(this.variables.getPropertyValue('--em-light-blue-2'));
-      this.colors.push({name: 'light-blue-2', value: this.variables.getPropertyValue('--em-light-blue-2')})
-      this.swatches.push(this.variables.getPropertyValue('--em-blue-1'));
-      this.colors.push({name: 'blue-1', value: this.variables.getPropertyValue('--em-blue-1')})
-      this.swatches.push(this.variables.getPropertyValue('--em-blue-2'));
-      this.colors.push({name: 'blue-2', value: this.variables.getPropertyValue('--em-blue-2')})
-      this.swatches.push(this.variables.getPropertyValue('--em-blue-3'));
-      this.colors.push({name: 'blue-3', value: this.variables.getPropertyValue('--em-blue-3')})
-      this.swatches.push(this.variables.getPropertyValue('--em-green-1'));
-      this.colors.push({name: 'green-1', value: this.variables.getPropertyValue('--em-green-1')})
-      this.swatches.push(this.variables.getPropertyValue('--em-green-2'));
-      this.colors.push({name: 'green-2', value: this.variables.getPropertyValue('--em-green-2')})
-      this.swatches.push(this.variables.getPropertyValue('--em-yellow-1'));
-      this.colors.push({name: 'yellow-1', value: this.variables.getPropertyValue('--em-yellow-1')})
-      this.swatches.push(this.variables.getPropertyValue('--em-yellow-2'));
-      this.colors.push({name: 'yellow-2', value: this.variables.getPropertyValue('--em-yellow-2')})
-      this.swatches.push(this.variables.getPropertyValue('--em-orange-1'));
-      this.colors.push({name: 'orange-1', value: this.variables.getPropertyValue('--em-orange-1')})
-      this.swatches.push(this.variables.getPropertyValue('--em-orange-2'));
-      this.colors.push({name: 'orange-2', value: this.variables.getPropertyValue('--em-orange-2')})
-      this.swatches.push(this.variables.getPropertyValue('--em-beige'));
-      this.colors.push({name: 'beige', value: this.variables.getPropertyValue('--em-beige')})
-      this.swatches.push(this.variables.getPropertyValue('--em-brown'));
-      this.colors.push({name: 'brown', value: this.variables.getPropertyValue('--em-brown')})
-      this.swatches.push(this.variables.getPropertyValue('--em-grey-1'));
-      this.colors.push({name: 'grey-1', value: this.variables.getPropertyValue('--em-grey-1')})
-      this.swatches.push(this.variables.getPropertyValue('--em-grey-2'));
-      this.colors.push({name: 'grey-2', value: this.variables.getPropertyValue('--em-grey-2')})
-      this.swatches.push(this.variables.getPropertyValue('--em-black'));
-      this.colors.push({name: 'black', value: this.variables.getPropertyValue('--em-black')})
-    },
-
     getStatus() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getstatus")
           .then(response => {
@@ -244,10 +201,10 @@ export default {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
-          data: qs.stringify({
+          data: {
             id: status.id,
             step: status.step
-          })
+          }
         }).then(() => {
           this.status.splice(index, 1);
 

@@ -169,7 +169,7 @@ class EmundusModelDashboard extends JModelList
 		}
 	}
 
-	public function getwidgets($user_id, $profile = null)
+	public function getwidgets($user_id, $profile = null, $all = false)
 	{
 		$widgets = [];
 
@@ -193,11 +193,16 @@ class EmundusModelDashboard extends JModelList
 					->from($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets', 'esdr'))
 					->leftJoin($this->_db->quoteName('#__emundus_setup_dashboard', 'esd') . ' ON ' . $this->_db->quoteName('esd.id') . ' = ' . $this->_db->quoteName('esdr.parent_id'))
 					->leftJoin($this->_db->quoteName('#__emundus_widgets', 'ew') . ' ON ' . $this->_db->quoteName('ew.id') . ' = ' . $this->_db->quoteName('esdr.widget'))
-					->leftJoin($this->_db->quoteName('#__emundus_widgets_repeat_access', 'ewra') . ' ON ' . $this->_db->quoteName('ew.id') . ' = ' . $this->_db->quoteName('ewra.parent_id'))
-					->where($this->_db->quoteName('esd.user') . ' = ' . $this->_db->quote($user_id))
-					->andWhere($this->_db->quoteName('esd.profile') . ' = ' . $this->_db->quote($profile))
-					->andWhere('ewra.profile = ' . $this->_db->quote($profile))
+					->leftJoin($this->_db->quoteName('#__emundus_widgets_repeat_access', 'ewra') . ' ON ' . $this->_db->quoteName('ew.id') . ' = ' . $this->_db->quoteName('ewra.parent_id'));
+				if(!$all) {
+					$query->where($this->_db->quoteName('esd.user') . ' = ' . $this->_db->quote($user_id))
+						->where($this->_db->quoteName('esd.profile') . ' = ' . $this->_db->quote($profile));
+				}
+				$query->where('ewra.profile = ' . $this->_db->quote($profile))
 					->order('esdr.position');
+				if($all) {
+					$query->group('ew.id');
+				}
 				$this->_db->setQuery($query);
 				$widgets = $this->_db->loadObjectList();
 

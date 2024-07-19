@@ -6,11 +6,11 @@ css:
     priority: '0'
     name: 'Material Icons'
   -
-    location: 'gantry-assets://custom/scss/quill.scss'
+    location: 'gantry-assets://custom/scss/editor.scss'
     inline: ''
     extra: '{  }'
     priority: '0'
-    name: Quill
+    name: Editor
   -
     location: 'gantry-assets://custom/scss/main.compiled.css'
     inline: ''

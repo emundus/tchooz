@@ -5,7 +5,7 @@
       <div class="preview-groups tw-flex tw-flex-col">
         <section v-for="(group, index) in formData.groups" :key="group.id" class="tw-mb-2 form-builder-page-section">
           <div class="section-card tw-flex tw-flex-col">
-            <div class="section-identifier tw-bg-main-500 tw-flex tw-items-center">
+            <div class="section-identifier tw-bg-profile-full tw-flex tw-items-center">
               <span class="text-xxs">{{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{
                   index + 1
                 }} / {{ formData.groups.length }}</span>
@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import formService from '../../services/form';
-import Skeleton from '../Skeleton';
+import formService from '@/services/form.js';
+import Skeleton from '@/components/Skeleton.vue';
 
 export default {
   name: "FormBuilderPreviewForm",

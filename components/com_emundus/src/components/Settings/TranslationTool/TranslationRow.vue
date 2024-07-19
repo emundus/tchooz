@@ -17,8 +17,8 @@
 
 <script>
 import Multiselect from "vue-multiselect";
-import mixin from "com_emundus/src/mixins/mixin";
-import translationsService from "com_emundus/src/services/translations";
+import mixin from "@/mixins/mixin";
+import translationsService from "@/services/translations";
 
 export default {
   name: "TranslationRow",

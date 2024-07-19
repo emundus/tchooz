@@ -2,7 +2,7 @@
   <div class="form-builder-page-section-element"
        :id="'element_'+element.id"
        v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
-       :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened == element.id}">
+       :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened === element.id}">
     <div class="tw-flex tw-items-start tw-justify-between tw-w-full tw-mb-2">
       <div class="tw-w-11/12">
         <label class="tw-w-full tw-flex tw-items-center fabrikLabel control-label tw-mb-0" @click="triggerElementProperties">
@@ -46,17 +46,16 @@
 </template>
 
 <script>
-import formBuilderService from '../../services/formbuilder';
-import formBuilderMixin from "../../mixins/formbuilder";
-import mixin from "../../mixins/mixin";
-import FormBuilderElementOptions from "./FormBuilderSectionSpecificElements/FormBuilderElementOptions";
-import FormBuilderElementWysiwig from "./FormBuilderSectionSpecificElements/FormBuilderElementWysiwig";
-import FormBuilderElementPhoneNumber
-  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementPhoneNumber.vue";
-import FormBuilderElementCurrency
-  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementCurrency.vue";
-import FormBuilderElementGeolocation
-  from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementGeolocation.vue";
+import formBuilderService from '@/services/formbuilder.js';
+import formBuilderMixin from "@/mixins/formbuilder.js";
+import mixin from "@/mixins/mixin.js";
+import FormBuilderElementOptions from "./FormBuilderSectionSpecificElements/FormBuilderElementOptions.vue";
+import FormBuilderElementWysiwig from "./FormBuilderSectionSpecificElements/FormBuilderElementWysiwig.vue";
+import FormBuilderElementPhoneNumber from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementPhoneNumber.vue";
+import FormBuilderElementCurrency from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementCurrency.vue";
+import FormBuilderElementGeolocation from "@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementGeolocation.vue";
+
+import { useGlobalStore } from "@/stores/global.js";
 
 export default {
   components: {
@@ -79,6 +78,11 @@ export default {
       options_enabled: false,
     }
   },
+  setup() {
+    return {
+      globalStore: useGlobalStore()
+    }
+  },
   methods: {
     updateLabel() {
       this.element.label[this.shortDefaultLang] = this.$refs['element-label-' + this.element.id].value.trim().replace(/[\r\n]/gm, "");
@@ -94,7 +98,7 @@ export default {
           Swal.fire({
             title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
             text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_SAVE_TRANSLATION'),
-            type: "error",
+            icon: "error",
             cancelButtonText: this.translate("OK"),
           });
         }
@@ -112,7 +116,7 @@ export default {
           Swal.fire({
             title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
             text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_UPDATE_PARAMS'),
-            type: "error",
+            icon: "error",
             cancelButtonText: this.translate("OK"),
           });
         }
@@ -129,7 +133,7 @@ export default {
             this.$emit('delete-element', this.element.id);
             this.updateLastSave();
 
-            this.tip("foo-velocity", this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TEXT"), this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TITLE"));
+            this.tipToast(this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TEXT"));
             window.addEventListener('keydown', this.cancelDelete);
           }
       );
@@ -138,7 +142,7 @@ export default {
       navigator.clipboard.writeText(this.element.id);
       Swal.fire({
         title: 'Identifiant de l\'élément copié',
-        type: "success",
+        icon: "success",
         showCancelButton: false,
         showConfirmButton: false,
         customClass: {
@@ -171,19 +175,13 @@ export default {
   },
   computed: {
     sysadmin: function () {
-      return parseInt(this.$store.state.global.sysadminAccess);
+      return parseInt(this.globalStore.hasSysadminAccess);
     },
     displayOptions: function () {
-      return this.$parent.$parent.$parent.$parent.$parent.$parent.optionsSelectedElement
-          && this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement !== null
-          && this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement.id == this.element.id;
+      return false;
     },
-    propertiesOpened: function () {
-      if (this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement !== null) {
-        return this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement.id;
-      } else {
-        return 0;
-      }
+    propertiesOpened: function(){
+      return 0;
     }
   }
 }

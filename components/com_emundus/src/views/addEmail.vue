@@ -1,258 +1,274 @@
 <template>
-  <div class="emails__add-email">
-    <notifications
-        group="foo-velocity"
-        position="bottom left"
-        animation-type="velocity"
-        :speed="500"
-        :classes="'vue-notification-custom'"
-    />
-    <div>
-      <form @submit.prevent="submit" class="fabrikForm emundus-form">
+    <div class="emails__add-email">
         <div>
-          <div class="tw-mb-4">
-            <h1 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
-            <span class="tw-text-red-500 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</span>
-          </div>
+            <form @submit.prevent="submit" class="fabrikForm emundus-form">
+                <div>
+                    <div class="tw-mb-4">
+                        <h1 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
+                        <span class="tw-text-red-500 tw-mb-2">{{
+                            translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE')
+                        }}</span>
+                    </div>
 
-          <div>
-            <div class="tw-mb-4">
-              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME') }} <span style="color: #E5283B">*</span></label>
-              <input
-                  type="text"
-                  class="tw-w-full tw-mt-2"
-                  v-model="form.subject"
-                  :class="{ 'is-invalid': errors.subject}"
-              />
-            </div>
-            <span v-if="errors.subject" class="tw-text-red-500 tw-mb-2">
-              <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED') }}</span>
-            </span>
+                    <div>
+                        <div class="tw-mb-4">
+                            <label
+                                >{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME') }}
+                                <span style="color: #e5283b">*</span></label
+                            >
+                            <input
+                                type="text"
+                                class="tw-w-full tw-mt-2"
+                                v-model="form.subject"
+                                :class="{ 'is-invalid': errors.subject }"
+                            />
+                        </div>
+                        <span v-if="errors.subject" class="tw-text-red-500 tw-mb-2">
+                            <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED') }}</span>
+                        </span>
 
-            <div class="tw-mb-4">
-              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY') }} <span style="color: #E5283B">*</span></label>
-              <editor-quill
-                  style="height: 30em"
-                  :text="form.message"
-                  v-model="form.message"
-                  :enable_variables="true"
-                  :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME')"
-                  :id="'email'"
-                  :key="dynamicComponent"
-                  :class="{ 'is-invalid': errors.message}"
-              >
-              </editor-quill>
-              <div class="tw-mt-12">
-                <a href="/component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
-                   class="em-main-500-color em-hover-main-600 em-text-underline"
-                   target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
-              </div>
-            </div>
-            <p v-if="errors.message" class="tw-text-red-500 tw-mb-2">
-              <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_BODY_REQUIRED') }}</span>
-            </p>
+                        <div class="tw-mb-4">
+                            <label
+                                >{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY') }}
+                                <span style="color: #e5283b">*</span></label
+                            >
+                            <tip-tap-editor
+                                v-if="suggestions.length > 0"
+                                v-model="form.message"
+                                :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
+                                :editor-content-height="'30em'"
+                                :class="'tw-mt-1'"
+                                :locale="'fr'"
+                                :preset="'custom'"
+                                :plugins="editorPlugins"
+                                :toolbar-classes="['tw-bg-white']"
+                                :editor-content-classes="['tw-bg-white']"
+                                :suggestions="suggestions"
+                            />
+                            <div class="tw-mt-12">
+                                <a
+                                    href="/component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
+                                    class="em-main-500-color em-hover-main-600 em-text-underline"
+                                    target="_blank"
+                                    >{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a
+                                >
+                            </div>
+                        </div>
+                        <p v-if="errors.message" class="tw-text-red-500 tw-mb-2">
+                            <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_BODY_REQUIRED') }}</span>
+                        </p>
 
-            <div class="form-group">
-              <label>{{ translate('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY') }}</label>
-              <incremental-select
-                  v-if="categories.length > 0"
-                  :options="this.categoriesList"
-                  :defaultValue="incSelectDefaultValue"
-                  :locked="mode != 'create'"
-                  @update-value="updateCategorySelectedValue"
-              >
-              </incremental-select>
-            </div>
-          </div>
+                        <div class="form-group">
+                            <label>{{ translate('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY') }}</label>
+                            <incremental-select
+                                v-if="categories.length > 0"
+                                :options="this.categoriesList"
+                                :defaultValue="incSelectDefaultValue"
+                                :locked="mode != 'create'"
+                                @update-value="updateCategorySelectedValue"
+                            >
+                            </incremental-select>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="em-container-accordeon">
+                    <div class="tw-flex tw-items-center tw-gap-1 tw-justify-between">
+                        <h3 class="tw-cursor-pointer !tw-mb-0" @click="displayAdvanced">
+                            {{ translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING') }}
+                        </h3>
+                        <button
+                            :title="translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING')"
+                            type="button"
+                            class="tw-bg-transparent tw-flex tw-flex-col"
+                            @click="displayAdvanced"
+                            v-show="!displayAdvancedParameters"
+                        >
+                            <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
+                        </button>
+                        <button
+                            :title="translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING')"
+                            type="button"
+                            @click="displayAdvanced"
+                            class="tw-bg-transparent tw-flex tw-flex-col"
+                            v-show="displayAdvancedParameters"
+                        >
+                            <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
+                        </button>
+                    </div>
+                    <div id="email-advanced-parameters" class="tw-mt-4" v-if="displayAdvancedParameters">
+                        <div class="form-group tw-mb-4">
+                            <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL') }}</label>
+                            <p class="tw-mt-2">{{ email_sender }}</p>
+                        </div>
+
+                        <div class="form-group tw-mb-4">
+                            <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER') }}</label>
+                            <input type="text" class="tw-w-full fabrikinput tw-mt-2" v-model="form.name" />
+                        </div>
+
+                        <div class="form-group tw-mb-4">
+                            <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS') }}</label>
+                            <input
+                                type="text"
+                                class="tw-w-full fabrikinput tw-mt-2"
+                                v-model="form.emailfrom"
+                                placeholder="reply-to@tchooz.io"
+                            />
+                            <p class="tw-text-xs tw-text-neutral-700">
+                                {{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP') }}
+                            </p>
+                        </div>
+
+                        <div class="form-group tw-mb-4" id="receivers_cc">
+                            <label>{{ translate('COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS') }}</label>
+                            <multiselect
+                                :class="'tw-mt-2'"
+                                v-model="selectedReceiversCC"
+                                label="email"
+                                track-by="email"
+                                :options="receivers_cc"
+                                :multiple="true"
+                                :searchable="true"
+                                :taggable="true"
+                                select-label=""
+                                selected-label=""
+                                deselect-label=""
+                                @tag="addNewCC"
+                                :close-on-select="false"
+                                :clear-on-select="false"
+                            ></multiselect>
+                        </div>
+
+                        <!-- Email -- BCC (in form of email adress or fabrik element -->
+                        <div class="form-group tw-mb-4" id="receivers_bcc">
+                            <label>{{ translate('COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS') }}</label>
+                            <multiselect
+                                :class="'tw-mt-2'"
+                                v-model="selectedReceiversBCC"
+                                label="email"
+                                track-by="email"
+                                :options="receivers_bcc"
+                                :multiple="true"
+                                :searchable="true"
+                                :taggable="true"
+                                select-label=""
+                                selected-label=""
+                                deselect-label=""
+                                @tag="addNewBCC"
+                                :close-on-select="false"
+                                :clear-on-select="false"
+                            >
+                            </multiselect>
+                        </div>
+
+                        <!-- Email -- Associated letters (in form of email adress or fabrik element -->
+                        <div class="form-group tw-mb-4" id="attached_letters" v-if="attached_letters">
+                            <label>{{ translate('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT') }}</label>
+                            <multiselect
+                                :class="'tw-mt-2'"
+                                v-model="selectedLetterAttachments"
+                                label="value"
+                                track-by="id"
+                                :options="attached_letters"
+                                :multiple="true"
+                                :taggable="true"
+                                select-label=""
+                                selected-label=""
+                                deselect-label=""
+                                :placeholder="translate('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT')"
+                                :close-on-select="false"
+                                :clear-on-select="false"
+                            ></multiselect>
+                        </div>
+
+                        <!-- Email -- Action tags -->
+                        <div class="form-group tw-mb-4" v-if="tags">
+                            <label>{{ translate('COM_EMUNDUS_ONBOARD_EMAIL_TAGS') }}</label>
+                            <multiselect
+                                :class="'tw-mt-2'"
+                                v-model="selectedTags"
+                                label="label"
+                                track-by="id"
+                                :options="action_tags"
+                                :multiple="true"
+                                :taggable="true"
+                                select-label=""
+                                selected-label=""
+                                deselect-label=""
+                                :placeholder="translate('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS')"
+                                :close-on-select="false"
+                                :clear-on-select="false"
+                            ></multiselect>
+                        </div>
+
+                        <!-- Email -- Candidat attachments -->
+                        <div class="form-group tw-mb-4">
+                            <label>{{ translate('COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS') }}</label>
+                            <multiselect
+                                :class="'tw-mt-2'"
+                                v-model="selectedCandidateAttachments"
+                                label="value"
+                                track-by="id"
+                                :options="candidate_attachments"
+                                :multiple="true"
+                                :taggable="true"
+                                select-label=""
+                                selected-label=""
+                                deselect-label=""
+                                :placeholder="translate('COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS')"
+                                :close-on-select="false"
+                                :clear-on-select="false"
+                            ></multiselect>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tw-flex tw-justify-between tw-mt-4">
+                    <button type="button" class="em-secondary-button !tw-w-auto" onclick="history.back()">
+                        {{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}
+                    </button>
+                    <button type="submit" class="em-primary-button !tw-w-auto">
+                        {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
+                    </button>
+                </div>
+            </form>
         </div>
 
-        <hr/>
-
-        <div class="em-container-accordeon">
-          <div class="tw-flex tw-items-center  tw-gap-1 tw-justify-between">
-            <h3 class="tw-cursor-pointer !tw-mb-0" @click="displayAdvanced">{{ translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING') }}</h3>
-            <button :title="translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING')" type="button" class="tw-bg-transparent tw-flex tw-flex-col"
-                    @click="displayAdvanced" v-show="!displayAdvancedParameters">
-              <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
-            </button>
-            <button :title="translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING')" type="button" @click="displayAdvanced"
-                    class="tw-bg-transparent tw-flex tw-flex-col" v-show="displayAdvancedParameters">
-              <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
-            </button>
-          </div>
-          <div id="email-advanced-parameters" class="tw-mt-4" v-if="displayAdvancedParameters">
-            <div class="form-group tw-mb-4">
-              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL') }}</label>
-              <p class="tw-mt-2">{{ email_sender }}</p>
-            </div>
-
-            <div class="form-group tw-mb-4">
-              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER') }}</label>
-              <input
-                  type="text"
-                  class="tw-w-full fabrikinput tw-mt-2"
-                  v-model="form.name"
-              />
-            </div>
-
-            <div class="form-group tw-mb-4">
-              <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS') }}</label>
-              <input
-                  type="text"
-                  class="tw-w-full fabrikinput tw-mt-2"
-                  v-model="form.emailfrom"
-                  placeholder="reply-to@tchooz.io"
-              />
-              <p class="tw-text-xs tw-text-neutral-700">
-                {{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP') }}</p>
-            </div>
-
-            <div class="form-group tw-mb-4" id="receivers_cc">
-              <label>{{ translate('COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS') }}</label>
-              <multiselect
-                  :class="'tw-mt-2'"
-                  v-model="selectedReceiversCC"
-                  label="email"
-                  track-by="email"
-                  :options="receivers_cc"
-                  :multiple="true"
-                  :searchable="true"
-                  :taggable="true"
-                  select-label=""
-                  selected-label=""
-                  deselect-label=""
-                  @tag="addNewCC"
-                  :close-on-select="false"
-                  :clear-on-select="false"
-              ></multiselect>
-            </div>
-
-            <!-- Email -- BCC (in form of email adress or fabrik element -->
-            <div class="form-group tw-mb-4" id="receivers_bcc">
-              <label>{{ translate('COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS') }}</label>
-              <multiselect
-                  :class="'tw-mt-2'"
-                  v-model="selectedReceiversBCC"
-                  label="email"
-                  track-by="email"
-                  :options="receivers_bcc"
-                  :multiple="true"
-                  :searchable="true"
-                  :taggable="true"
-                  select-label=""
-                  selected-label=""
-                  deselect-label=""
-                  @tag="addNewBCC"
-                  :close-on-select="false"
-                  :clear-on-select="false">
-              </multiselect>
-            </div>
-
-            <!-- Email -- Associated letters (in form of email adress or fabrik element -->
-            <div class="form-group tw-mb-4" id="attached_letters" v-if="attached_letters">
-              <label>{{ translate('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT') }}</label>
-              <multiselect
-                  :class="'tw-mt-2'"
-                  v-model="selectedLetterAttachments"
-                  label="value"
-                  track-by="id"
-                  :options="attached_letters"
-                  :multiple="true"
-                  :taggable="true"
-                  select-label=""
-                  selected-label=""
-                  deselect-label=""
-                  :placeholder="translate('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT')"
-                  :close-on-select="false"
-                  :clear-on-select="false"
-              ></multiselect>
-            </div>
-
-            <!-- Email -- Action tags -->
-            <div class="form-group tw-mb-4" v-if="tags">
-              <label>{{ translate('COM_EMUNDUS_ONBOARD_EMAIL_TAGS') }}</label>
-              <multiselect
-                  :class="'tw-mt-2'"
-                  v-model="selectedTags"
-                  label="label"
-                  track-by="id"
-                  :options="action_tags"
-                  :multiple="true"
-                  :taggable="true"
-                  select-label=""
-                  selected-label=""
-                  deselect-label=""
-                  :placeholder="translate('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS')"
-                  :close-on-select="false"
-                  :clear-on-select="false"
-              ></multiselect>
-            </div>
-
-            <!-- Email -- Candidat attachments -->
-            <div class="form-group tw-mb-4">
-              <label>{{ translate('COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS') }}</label>
-              <multiselect
-                  :class="'tw-mt-2'"
-                  v-model="selectedCandidateAttachments"
-                  label="value"
-                  track-by="id"
-                  :options="candidate_attachments"
-                  :multiple="true"
-                  :taggable="true"
-                  select-label=""
-                  selected-label=""
-                  deselect-label=""
-                  :placeholder="translate('COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS')"
-                  :close-on-select="false"
-                  :clear-on-select="false"
-              ></multiselect>
-            </div>
-          </div>
-        </div>
-
-        <div class="tw-flex tw-justify-between tw-mt-4">
-          <button
-              type="button"
-              class="em-secondary-button !tw-w-auto"
-              onclick="history.back()">
-            {{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}
-          </button>
-          <button type="submit" class="em-primary-button !tw-w-auto">
-            {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
-          </button>
-        </div>
-      </form>
+        <div class="em-page-loader" v-if="loading || submitted"></div>
     </div>
-
-    <div class="em-page-loader" v-if="loading || submitted"></div>
-  </div>
 </template>
 
 <script>
-import Autocomplete from "../components/autocomplete";
-import axios from "axios";
-import EditorQuill from "@/components/editorQuill";
-import Multiselect from 'vue-multiselect';
-import IncrementalSelect from "@/components/IncrementalSelect.vue";
-import settingsService from '../services/settings';
+import Multiselect from 'vue-multiselect'
+import IncrementalSelect from '@/components/IncrementalSelect.vue'
+import settingsService from '@/services/settings.js'
+import emailService from '@/services/email.js'
+import messagesService from '@/services/messages.js'
+import { useGlobalStore } from '@/stores/global.js'
+import mixin from '@/mixins/mixin.js'
 
-
-const qs = require("qs");
+import TipTapEditor from 'tip-tap-editor'
+import 'tip-tap-editor/style.css'
+import '../../../../templates/g5_helium/css/editor.css'
 
 export default {
-  name: "addEmail",
+  name: 'addEmail',
+
+  mixins: [mixin],
 
   components: {
     IncrementalSelect,
-    EditorQuill,
-    Autocomplete,
-    Multiselect
+    Multiselect,
+    TipTapEditor,
   },
   props: {
     mode: {
       type: String,
-      default: "create"
-    }
+      default: 'create',
+    },
   },
 
   data: () => ({
@@ -277,14 +293,14 @@ export default {
     selectedCategory: 0,
 
     form: {
-      lbl: "",
-      subject: "",
-      name: "",
-      emailfrom: "",
-      message: "",
+      lbl: '',
+      subject: '',
+      name: '',
+      emailfrom: '',
+      message: '',
       type: 2,
-      category: "",
-      published: 1
+      category: '',
+      published: 1,
     },
     errors: {
       subject: false,
@@ -304,265 +320,247 @@ export default {
     action_tags: [],
     candidate_attachments: [],
     email_sender: '',
+
+    editorPlugins: ['history', 'link', 'image', 'bold', 'italic', 'underline','left','center','right','h1', 'h2', 'ul'],
+    suggestions: [],
   }),
   created() {
-    this.loading = true;
+    const globalStore = useGlobalStore()
+    this.loading = true
 
-    this.getEmailSender();
-    this.getAllAttachments();
-    this.getAllTags();
-    this.getAllDocumentLetter();
+    settingsService.getVariables().then((response) => {
+      this.suggestions = response.data
+    })
 
-    this.actualLanguage = this.$store.getters['global/shortLang'];
+    this.getEmailSender()
+    this.getAllAttachments()
+    this.getAllTags()
+    this.getAllDocumentLetter()
+    this.actualLanguage = globalStore.getShortLang
 
-    axios.get("index.php?option=com_emundus&controller=email&task=getemailcategories")
-        .then(rep => {
-          this.categories = rep.data.data;
-          this.email = this.$store.getters['global/datas'].email.value;
-          if (typeof this.email !== 'undefined' && this.email !== 0 && this.email !== '') {
-            this.getEmailById(this.email);
-          } else {
-            this.dynamicComponent = true;
-            this.loading = false;
-          }
-        }).catch(e => {
-      console.log(e);
-    });
+    emailService
+      .getEmailCategories()
+      .then((response) => {
+        this.categories = response.data
+        this.email = globalStore.getDatas.email.value
+        if (typeof this.email !== 'undefined' && this.email !== 0 && this.email !== '') {
+          this.getEmailById(this.email)
+        } else {
+          this.dynamicComponent = true
+          this.loading = false
+        }
+      })
+      .catch((e) => {
+        console.log(e)
+      })
+
     setTimeout(() => {
-      this.enableVariablesTip();
-    },2000);
+      this.enableVariablesTip()
+    }, 2000)
   },
   mounted() {
-    if (this.actualLanguage === "en") {
-      this.langue = 1;
+    if (this.actualLanguage === 'en') {
+      this.langue = 1
     }
   },
   methods: {
     getEmailById() {
-      axios.get(`index.php?option=com_emundus&controller=email&task=getemailbyid&id=${this.email}`)
-          .then((resp) => {
-            if (resp.data.data === false || resp.data.status == 0) {
-              this.runError(undefined, resp.data.msg);
-              return;
-            }
+      emailService
+        .getEmailById(this.email)
+        .then((resp) => {
+          if (resp.data === false || resp.status == 0) {
+            this.runError(undefined, resp.msg)
+            return
+          }
 
-            this.form = resp.data.data.email;
-            this.dynamicComponent = true;
+          this.form = resp.data.email
+          this.dynamicComponent = true
 
-            this.selectedLetterAttachments = resp.data.data.letter_attachment ? resp.data.data.letter_attachment : [];
-            this.selectedCandidateAttachments = resp.data.data.candidate_attachment ? resp.data.data.candidate_attachment : [];
-            this.selectedTags = resp.data.data.tags ? resp.data.data.tags : [];
+          this.selectedLetterAttachments = resp.data.letter_attachment ? resp.data.letter_attachment : []
+          this.selectedCandidateAttachments = resp.data.candidate_attachment
+            ? resp.data.candidate_attachment
+            : []
+          this.selectedTags = resp.data.tags ? resp.data.tags : []
 
-            if (resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
-              this.setEmailReceivers(resp.data.data.receivers);
-            }
-            this.loading = false;
-          }).catch(e => {
-        console.log(e);
-        this.runError(undefined, e.data.msg);
-      });
+          if (
+            resp.data.receivers !== null &&
+                        resp.data.receivers !== undefined &&
+                        resp.data.receivers !== ''
+          ) {
+            this.setEmailReceivers(resp.data.receivers)
+          }
+          this.loading = false
+        })
+        .catch((e) => {
+          console.log(e)
+          this.runError(undefined, e.data.msg)
+        })
     },
     setEmailReceivers(receivers) {
-      let receiver_cc = [];
-      let receiver_bcc = [];
+      let receiver_cc = []
+      let receiver_bcc = []
       for (let index = 0; index < receivers.length; index++) {
-        receiver_cc[index] = {};
-        receiver_bcc[index] = {};
+        receiver_cc[index] = {}
+        receiver_bcc[index] = {}
         if (receivers[index].type === 'receiver_cc_email' || receivers[index].type === 'receiver_cc_fabrik') {
-          receiver_cc[index]['id'] = receivers[index].id;
-          receiver_cc[index]['email'] = receivers[index].receivers;
-        } else if (receivers[index].type === 'receiver_bcc_email' || receivers[index].type === 'receiver_bcc_fabrik') {
-          receiver_bcc[index]['id'] = receivers[index].id;
-          receiver_bcc[index]['email'] = receivers[index].receivers;
+          receiver_cc[index]['id'] = receivers[index].id
+          receiver_cc[index]['email'] = receivers[index].receivers
+        } else if (
+          receivers[index].type === 'receiver_bcc_email' ||
+                    receivers[index].type === 'receiver_bcc_fabrik'
+        ) {
+          receiver_bcc[index]['id'] = receivers[index].id
+          receiver_bcc[index]['email'] = receivers[index].receivers
         }
       }
 
-      const cc_filtered = receiver_cc.filter(el => {
-        return el['id'] !== null && el['id'] !== undefined;
+      const cc_filtered = receiver_cc.filter((el) => {
+        return el['id'] !== null && el['id'] !== undefined
       })
-      const bcc_filtered = receiver_bcc.filter(el => {
-        return el['id'] !== null && el['id'] !== undefined;
+      const bcc_filtered = receiver_bcc.filter((el) => {
+        return el['id'] !== null && el['id'] !== undefined
       })
 
-      this.selectedReceiversCC = cc_filtered;
-      this.selectedReceiversBCC = bcc_filtered;
+      this.selectedReceiversCC = cc_filtered
+      this.selectedReceiversBCC = bcc_filtered
     },
     displayAdvanced() {
-      this.displayAdvancedParameters = !this.displayAdvancedParameters;
+      this.displayAdvancedParameters = !this.displayAdvancedParameters
     },
-    addNewCC (newCC) {
+    addNewCC(newCC) {
       const tag = {
         email: newCC,
-        id: newCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
+        id: newCC.substring(0, 2) + Math.floor(Math.random() * 10000000),
       }
-      this.receivers_cc.push(tag);
-      this.selectedReceiversCC.push(tag);
+      this.receivers_cc.push(tag)
+      this.selectedReceiversCC.push(tag)
     },
 
     /// add new BCC
-    addNewBCC (newBCC) {
+    addNewBCC(newBCC) {
       const tag = {
         email: newBCC,
-        id: newBCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
+        id: newBCC.substring(0, 2) + Math.floor(Math.random() * 10000000),
       }
-      this.receivers_bcc.push(tag);
-      this.selectedReceiversBCC.push(tag);
+      this.receivers_bcc.push(tag)
+      this.selectedReceiversBCC.push(tag)
     },
     getEmailSender() {
-      axios.get("index.php?option=com_emundus&controller=settings&task=getemailsender")
-          .then(response => {
-            this.email_sender = response.data.data;
-          });
+      settingsService.getEmailSender().then((response) => {
+        this.email_sender = response.data
+      })
     },
 
     submit() {
       this.errors = {
         subject: false,
         message: false,
-      };
-
-      if (this.form.subject == "") {
-        this.errors.subject = true;
-        return 0;
       }
 
-      if (this.form.message == "") {
-        this.errors.message = true;
-        return 0;
+      if (this.form.subject == '') {
+        this.errors.subject = true
+        return 0
       }
 
-      this.submitted = true;
+      if (this.form.message == '') {
+        this.errors.message = true
+        return 0
+      }
 
-      if (this.email !== "") {
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus&controller=email&task=updateemail",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({ body: this.form,
-            code: this.email,
-            selectedReceiversCC: this.selectedReceiversCC,
-            selectedReceiversBCC: this.selectedReceiversBCC,
-            selectedLetterAttachments:this.selectedLetterAttachments,
-            selectedCandidateAttachments: this.selectedCandidateAttachments,
-            selectedTags: this.selectedTags
-          })
-        }).then(() => {
-          history.back();
-        }).catch(error => {
-          console.log(error);
-        });
-      } else {
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus&controller=email&task=createemail",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
+      this.submitted = true
+
+      if (this.email !== '') {
+        emailService
+          .updateEmail(this.email, {
             body: this.form,
             selectedReceiversCC: this.selectedReceiversCC,
             selectedReceiversBCC: this.selectedReceiversBCC,
             selectedLetterAttachments: this.selectedLetterAttachments,
             selectedCandidateAttachments: this.selectedCandidateAttachments,
-            selectedTags: this.selectedTags
+            selectedTags: this.selectedTags,
           })
-        }).then(response => {
-          this.redirectJRoute('index.php?option=com_emundus&view=emails');
-        }).catch(error => {
-          console.log(error);
-        });
+          .then(() => {
+            history.back()
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      } else {
+        emailService
+          .createEmail({
+            body: this.form,
+            selectedReceiversCC: this.selectedReceiversCC,
+            selectedReceiversBCC: this.selectedReceiversBCC,
+            selectedLetterAttachments: this.selectedLetterAttachments,
+            selectedCandidateAttachments: this.selectedCandidateAttachments,
+            selectedTags: this.selectedTags,
+          })
+          .then(() => {
+            this.redirectJRoute('index.php?option=com_emundus&view=emails')
+          })
+          .catch((error) => {
+            console.log(error)
+          })
       }
     },
 
     onSearchCategory(value) {
-      this.form.category = value;
+      this.form.category = value
     },
 
     enableVariablesTip() {
       if (!this.enableTip) {
-        this.enableTip = true;
-        this.tip();
+        this.enableTip = true
+        this.tipToast(
+          this.translate('COM_EMUNDUS_ONBOARD_VARIABLESTIP') + " <strong style='font-size: 16px'>/</strong>",
+        )
       }
     },
 
     redirectJRoute(link) {
-      settingsService.redirectJRoute(link);
-    },
-
-    /**
-     * ** Methods for notify
-     */
-    tip: function () {
-      this.show(
-          "foo-velocity",
-          this.translate("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
-          this.translate("COM_EMUNDUS_ONBOARD_TIP"),
-      );
-    },
-
-    show(group, text = "", title = "Information") {
-      this.$notify({
-        group,
-        title: `${title}`,
-        text,
-        duration: 10000
-      });
-    },
-    clean(group) {
-      this.$notify({group, clean: true});
+      settingsService.redirectJRoute(link)
     },
 
     /// get all tags
     getAllTags: function () {
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus&controller=settings&task=gettags',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-      }).then(response => {
-        this.action_tags = response.data.data;
-      }).catch(error => {
-        console.log(error);
-      })
+      settingsService
+        .getTags()
+        .then((response) => {
+          this.action_tags = response.data
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
 
     getAllDocumentLetter: function () {
-      axios({
-        method: 'post',
-        url: 'index.php?option=com_emundus&controller=messages&task=getalldocumentsletters',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-      }).then(response => {
-        this.attached_letters = response.data.documents;
-      }).catch(error => {
-        console.log(error);
-      })
+      messagesService
+        .getAllDocumentsLetters()
+        .then((response) => {
+          this.attached_letters = response.documents
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
 
     getAllAttachments: function () {
-      axios({
-        method: 'get',
-        url: 'index.php?option=com_emundus&controller=messages&task=getallattachments',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-      }).then(response => {
-        this.candidate_attachments = response.data.attachments;
-      }).catch(error => {
-        console.log(error);
-      })
+      messagesService
+        .getAllAttachments()
+        .then((response) => {
+          this.candidate_attachments = response.attachments
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
 
     updateCategorySelectedValue(category) {
       if (category.label) {
-        this.form.category = category.label;
+        this.form.category = category.label
       } else {
-        this.selectedCategory = null;
-        this.form.category = '';
+        this.selectedCategory = null
+        this.form.category = ''
       }
     },
   },
@@ -572,36 +570,39 @@ export default {
       return this.categories.map((category, index) => {
         return {
           id: index + 1,
-          label: category
-        };
-      });
+          label: category,
+        }
+      })
     },
 
     incSelectDefaultValue() {
-      let defaultValue = null;
-      if (this.form && (this.form.category)) {
+      let defaultValue = null
+      if (this.form && this.form.category) {
         this.categories.forEach((category, index) => {
           if (category === this.form.category) {
-            defaultValue = index + 1;
+            defaultValue = index + 1
           }
-        });
+        })
       }
-      return defaultValue;
+      return defaultValue
     },
-  }
-};
+  },
+}
 </script>
 
 <style scoped>
 .emails__add-email {
-  width: 100%;
-  margin-left: auto;
+    width: 100%;
+    margin-left: auto;
 }
 
 .em-container-accordeon {
-  background: var(--neutral-0);
-  padding: 24px;
-  border-radius: var(--em-coordinator-br-cards);
-  box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+    background: var(--neutral-0);
+    padding: 24px;
+    border-radius: var(--em-coordinator-br-cards);
+    box-shadow:
+        var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1),
+        var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2),
+        var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
 }
 </style>

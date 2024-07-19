@@ -33,11 +33,6 @@
 
 import mixin from "com_emundus/src/mixins/mixin";
 
-//import Parameter from "@/components/Settings/Parameter.vue";
-
-
-//const qs = require("qs");
-
 export default {
   name: "Tile",
 
@@ -84,7 +79,6 @@ export default {
 
   created() {
     this.loading = true;
-    console.log(this.$props)
     this.loading = false;
   },
 

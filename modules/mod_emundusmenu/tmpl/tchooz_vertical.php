@@ -95,7 +95,7 @@ defined('_JEXEC') or die;
 
     ul.tchooz-vertical-toplevel > li.active.tchooz-vertical-item > a.item span[class*="material-icons"] {
         color: var(--em-profile-color) !important;
-        background-color: hsl(from var(--em-profile-color) h s 90%);
+        background-color: hsl(from var(--em-profile-color) h s l / 15%);
         border-radius: var(--em-default-br);
     }
 

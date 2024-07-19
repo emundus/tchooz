@@ -24,8 +24,8 @@
 </template>
 
 <script>
-import syncService from '../../../../services/sync';
-import Aspects from "./Aspects";
+import syncService from '@/services/sync.js';
+import Aspects from "./Aspects.vue";
 
 export default {
   name: 'AttachmentAspectsMapping',

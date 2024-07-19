@@ -50,7 +50,7 @@ class EmundusModelForm extends JModelList
 		$data = ['datas' => [], 'count' => 0];
 		require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
 
-		
+
 		$query    = $this->db->getQuery(true);
 
 		// Build filter / limit / pagination part of the query
@@ -167,7 +167,7 @@ class EmundusModelForm extends JModelList
 	function getAllGrilleEval($filter, $sort, $recherche, $lim, $page): array
 	{
 		$data     = ['datas' => [], 'count' => 0];
-		
+
 		$query    = $this->db->getQuery(true);
 
 		try {
@@ -217,7 +217,7 @@ class EmundusModelForm extends JModelList
 
 	function getAllFormsPublished()
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		$filterId = $this->db->quoteName('sp.published') . ' = 1';
@@ -244,7 +244,7 @@ class EmundusModelForm extends JModelList
 
 	public function deleteForm($data)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'formbuilder.php');
@@ -542,7 +542,7 @@ class EmundusModelForm extends JModelList
 			'msg'    => ''
 		];
 
-		
+
 		$query = $this->db->getQuery(true);
 
 		if (!empty($data)) {
@@ -590,7 +590,7 @@ class EmundusModelForm extends JModelList
 
 	public function publishForm($data)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		if (!empty($data)) {
@@ -630,7 +630,7 @@ class EmundusModelForm extends JModelList
 		}
 
 		if (!empty($data)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			// Prepare languages
@@ -811,7 +811,8 @@ class EmundusModelForm extends JModelList
 													'type' => $rule->type,
 													'group' => $rule->group,
 													'published' => $rule->published,
-													'form_id' => $new_form['id']
+													'form_id' => $new_form['id'],
+													'created_by' => $rule->created_by,
 												];
 												$insert = (object) $insert;
 												$this->db->insertObject('#__emundus_setup_form_rules', $insert);
@@ -1281,7 +1282,7 @@ class EmundusModelForm extends JModelList
 
 	public function createMenu($menu, $menutype)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		// Insert columns.
@@ -1621,21 +1622,19 @@ class EmundusModelForm extends JModelList
 	{
 		$forms = [];
 
-		if (!empty($documentIds)) {
-
-			$query = $this->db->getQuery(true);
+        if (!empty($documentIds)) {
+            $query = $this->db->getQuery(true);
 
 			$query->select('jesap.attachment_id, jesap.profile_id, jesp.label')
 				->from('jos_emundus_setup_attachment_profiles AS jesap')
 				->leftJoin('jos_emundus_setup_profiles AS jesp ON jesap.profile_id = jesp.id')
 				->where('jesap.attachment_id  IN (' . implode(',', $documentIds) . ')');
 
-			$this->db->setQuery($query);
 
 			try {
+				$this->db->setQuery($query);
 				$profile_infos = $this->db->loadObjectList();
-			}
-			catch (Exception $e) {
+			} catch (Exception $e) {
 				$msg = 'Error trying to get profile info from attachment_id ' . $e->getMessage();
 				Log::add($msg, Log::ERROR, 'com_emundus');
 			}
@@ -1663,7 +1662,7 @@ class EmundusModelForm extends JModelList
 
 	public function deleteRemainingDocuments($prid, $allDocumentsIds)
 	{
-		
+
 
 		$values = [];
 
@@ -1699,7 +1698,7 @@ class EmundusModelForm extends JModelList
 
 	public function removeDocument($did, $prid, $cid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		$query->delete($this->db->quoteName('#__emundus_setup_attachment_profiles'))
@@ -1727,7 +1726,7 @@ class EmundusModelForm extends JModelList
 
 	public function updateMandatory($did, $prid, $cid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -1765,7 +1764,7 @@ class EmundusModelForm extends JModelList
 
 	public function addDocument($did, $profile, $campaign)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -1810,7 +1809,7 @@ class EmundusModelForm extends JModelList
 
 	public function deleteDocument($did)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
@@ -1845,7 +1844,7 @@ class EmundusModelForm extends JModelList
 
 	public function addChecklistMenu($prid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
@@ -1957,7 +1956,7 @@ class EmundusModelForm extends JModelList
 
 	public function removeChecklistMenu($prid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
@@ -2294,7 +2293,7 @@ class EmundusModelForm extends JModelList
 	function affectCampaignsToForm($prid, $campaigns)
 	{
 		foreach ($campaigns as $campaign) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			$query->select('year')
@@ -2336,7 +2335,7 @@ class EmundusModelForm extends JModelList
 		$attachments_by_profile = [];
 
 		if (!empty($prid)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			$query->select('sa.id as docid,sa.value as label,sap.*,sa.allowed_types')
@@ -2359,7 +2358,7 @@ class EmundusModelForm extends JModelList
 
 	function reorderDocuments($documents)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		$results = array();
@@ -2388,7 +2387,7 @@ class EmundusModelForm extends JModelList
 
 	function removeDocumentFromProfile($did)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -2407,7 +2406,7 @@ class EmundusModelForm extends JModelList
 
 	function deleteModelDocument($did)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -2507,7 +2506,7 @@ class EmundusModelForm extends JModelList
 	public function getProgramsByForm($form_id,$mode = 'eval')
 	{
 		$programs = [];
-		
+
 		$query = $this->db->getQuery(true);
 
 		if(!empty($form_id)) {

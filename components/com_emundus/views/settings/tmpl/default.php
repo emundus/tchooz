@@ -447,6 +447,9 @@ require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 ?>
 
+<style link="media/com_emundus_vue/app_emundus.css?<?php echo $hash ?>"></style>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+
 <div id="em-component-vue"
      component="settings"
      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"

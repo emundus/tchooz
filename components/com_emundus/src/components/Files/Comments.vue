@@ -63,10 +63,9 @@
 </template>
 
 <script>
-import filesService from 'com_emundus/src/services/files';
-import mixins from '../../mixins/mixin';
-import errors from '../../mixins/errors';
-
+import filesService from '@/services/files.js';
+import mixins from '@/mixins/mixin.js';
+import errors from '@/mixins/errors.js';
 export default {
   name: "Comments",
   props: {

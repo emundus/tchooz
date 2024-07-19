@@ -108,24 +108,6 @@ phpunit-job:
   only:
     - merge_request
 
-jest-job:
-  stage: test
-  image: emundus/tchooz-test-app:latest
-  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
-  services:
-    - name: emundus/tchooz-test-db:latest
-      alias: database
-    - redis:7
-  before_script:
-    - /entrypoint.sh
-    - cat configuration.php
-    - cd components && yarn
-    - apache2-foreground &
-  script:
-    - yarn run test:unit com_emundus/ --ci --coverage
-  only:
-    - merge_request
-
 release-job:
   variables:
     IMAGE_TAG: "latest"

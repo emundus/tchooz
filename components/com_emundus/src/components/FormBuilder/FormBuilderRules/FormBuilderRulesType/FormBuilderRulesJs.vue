@@ -216,7 +216,7 @@ export default {
           if (response.status) {
             Swal.fire({
               title: this.translate('COM_EMUNDUS_FORM_BUILDER_RULE_SUCCESS'),
-              type: 'success',
+              icon: 'success',
               showConfirmButton: false,
               customClass: {
                 title: 'em-swal-title',

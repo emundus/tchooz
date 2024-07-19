@@ -599,4 +599,4 @@ JHTML::script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
 	<?php endif; ?>
 ></div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

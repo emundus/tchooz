@@ -77,14 +77,15 @@ body ::-webkit-scrollbar-track {
 }
 
 .vue-swatches__wrapper {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   position: absolute;
   border: solid 2px #cecece;
   background: #cecece;
   border-radius: 5px;
   justify-content: center;
-  margin-top: -8em;
+  width: max-content;
+  gap: 6px 8px;
+  padding: 6px;
   z-index: 999;
 }
 
@@ -138,5 +139,30 @@ body ::-webkit-scrollbar-track {
 .v-popover .trigger {
   display: flex !important;
   align-items: center;
+}
+
+/* VCalendar */
+.vc-pane-container {
+  display: flex;
+  flex-direction: column-reverse;
+}
+.vc-time-picker {
+  align-items: start;
+}
+.vc-time-select-group {
+  background: transparent;
+  border: unset;
+  .vc-base-icon {
+    display: none;
+  }
+  .vc-base-select {
+    height: auto;
+    select {
+      height: auto;
+    }
+  }
+}
+.vc-highlight-bg-solid {
+  background-color: var(--em-profile-color);
 }
 

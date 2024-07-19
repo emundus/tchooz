@@ -244,14 +244,15 @@
 
 <script>
 import Tabs from "@/components/Files/Tabs.vue";
-import {Table, TableColumn} from 'element-ui';
+// use element-plus instead
+import { ElTable } from 'element-plus';
 
 /** SERVICES **/
-import filesService from 'com_emundus/src/services/files';
+import filesService from '@/services/files.js'
 import errors from '@/mixins/errors';
-import Application from '@/components/Files/Application';
+import Application from '@/components/Files/Application.vue';
 import multiselect from 'vue-multiselect';
-import Skeleton from '../../components/Skeleton';
+import Skeleton from '@/components/Skeleton.vue';
 
 export default {
   name: 'Files',
@@ -259,9 +260,8 @@ export default {
     Skeleton,
     Application,
     Tabs,
-    'el-table': Table,
-    'el-table-column': TableColumn,
-    multiselect
+    'el-table': ElTable,
+	  multiselect
   },
   props: {
     type: {

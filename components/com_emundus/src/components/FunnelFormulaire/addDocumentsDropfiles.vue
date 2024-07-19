@@ -32,23 +32,23 @@
           <div :id="'itemDoc' + document.id"
                v-for="(document,indexDoc) in documents"
                :key="document.id"
-               class="em-document-dropzone-card tw-cursor-grab">
+               class="em-document-dropzone-card tw-cursor-grab handle tw-mr-2">
             <button type="button" class="tw-float-right tw-bg-transparent" @click="deleteDoc(indexDoc,document.id)">
               <span class="material-icons-outlined">close</span>
             </button>
             <div class="tw-flex tw-items-center tw-w-full tw-justify-center">
-              <div class="tw-flex tw-flex-col em-edit-cursor" @click="editName(document)">
-                <img v-if="document.ext === 'pdf'" src="/media/com_emundus/images/icones/filetype/pdf.png"
+              <div class="tw-flex tw-flex-col tw-items-center em-edit-cursor" @click="editName(document)">
+                <img v-if="document.ext === 'pdf'" src="@/assets/images/filetype/pdf.png"
                      class="em-filetype-icon" alt="filetype">
                 <img v-else-if="['docx','doc','odf'].includes(document.ext)"
-                     src="/media/com_emundus/images/icones/filetype/doc.png" class="em-filetype-icon" alt="filetype">
+                     src="@/assets/images/filetype/doc.png" class="em-filetype-icon" alt="filetype">
                 <img v-else-if="['xls','xlsx','csv'].includes(document.ext)"
-                     src="/media/com_emundus/images/icones/filetype/excel.png" class="em-filetype-icon" alt="filetype">
+                     src="@/assets/images/filetype/excel.png" class="em-filetype-icon" alt="filetype">
                 <img v-else-if="['png','gif','jpg','jpeg'].includes(document.ext)"
-                     src="/media/com_emundus/images/icones/filetype/image.png" class="em-filetype-icon" alt="filetype">
+                     src="@/assets/images/filetype/image.png" class="em-filetype-icon" alt="filetype">
                 <img v-else-if="['zip','rar'].includes(document.ext)"
-                     src="/media/com_emundus/images/icones/filetype/zip.png" class="em-filetype-icon" alt="filetype">
-                <img v-else-if="['svg'].includes(document.ext)" src="/media/com_emundus/images/icones/filetype/svg.png"
+                     src="@/assets/images/filetype/zip.png" class="em-filetype-icon" alt="filetype">
+                <img v-else-if="['svg'].includes(document.ext)" src="@/assets/images/filetype/svg.png"
                      class="em-filetype-icon" alt="filetype">
                 <div class="tw-mt-2">
                   <span class="em-overflow-ellipsis em-max-width-250 tw-mr-1">{{ document.title }}</span>
@@ -70,12 +70,10 @@
 </template>
 
 <script>
-import axios from "axios";
 import Swal from "sweetalert2";
-import vueDropzone from 'vue2-dropzone';
-import draggable from "vuedraggable";
-
-const qs = require("qs");
+import vueDropzone from 'vue2-dropzone-vue3';
+import { VueDraggableNext } from 'vue-draggable-next';
+import campaignService from '@/services/campaign.js';
 
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
@@ -94,7 +92,7 @@ export default {
 
   components: {
     vueDropzone,
-    draggable
+    draggable: VueDraggableNext
   },
 
   props: {
@@ -139,34 +137,20 @@ export default {
   methods: {
     getDocumentsDropfiles() {
       this.loading = true;
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=campaign&task=getdocumentsdropfiles",
-        params: {
-          cid: this.campaignId,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        this.loading = false;
-        this.documents = response.data.documents;
-      });
+
+      campaignService.get('getdocumentsdropfiles', {cid: this.campaignId})
+        .then(response => {
+          this.documents = response.documents;
+        }).finally(() => {
+          this.loading = false;
+        });
     },
     updateDocumentsOrder() {
       this.documents.forEach((document, index) => {
         document.ordering = index;
       });
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus&controller=campaign&task=updateorderdropfiledocuments",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          documents: this.documents,
-        })
-      });
+
+      campaignService.reorderDropfileDocuments(this.documents);
     },
     editName(doc) {
       Swal.fire({
@@ -190,17 +174,7 @@ export default {
             newname = newname.substring(0, 200);
           }
 
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus&controller=campaign&task=editdocumentdropfile",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              did: doc.id,
-              name: newname
-            })
-          }).then(() => {
+          campaignService.editDropfileDocument(doc.id, newname).then(() => {
             doc.title = newname;
           });
         }
@@ -208,16 +182,8 @@ export default {
     },
     deleteDoc(index, id) {
       this.documents.splice(index, 1);
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus&controller=campaign&task=deletedocumentdropfile",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          did: id,
-        })
-      });
+
+      campaignService.deleteDropfileDocument(id);
     },
     formatBytes(bytes, decimals = 2) {
       if (bytes === 0) return '0 Bytes';

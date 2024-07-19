@@ -815,7 +815,7 @@ class EmundusModelsettings extends JModelList
 			$language = 1;
 		}
 
-		$query->select('st.id as id,st.tag as `value`,fc.value as description')
+		$query->select('st.id as id,CONCAT("[",st.tag,"]") as `value`,fc.value as label')
 			->from($this->db->quoteName('#__emundus_setup_tags', 'st'))
 			->leftJoin($this->db->quoteName('#__falang_content', 'fc') . ' ON ' . $this->db->quoteName('fc.reference_id') . ' = ' . $this->db->quoteName('st.id'))
 			->where($this->db->quoteName('st.published') . ' = ' . $this->db->quote(1))
@@ -1676,17 +1676,17 @@ class EmundusModelsettings extends JModelList
 		$params = ['emundus' => [], 'joomla' => []];
 
 
-		$settings_general            = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/sections/site-settings.json');
-		$settings_applicants         = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/sections/file-settings.json');
-		$settings_mail_server_custom = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/emails/custom.json');
-		$settings_mail_base          = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/emails/global.json');
-		$settings_mail_value         = file_get_contents(JPATH_ROOT . '/components/com_emundus/data/settings/emails/values.json');
+		$settings_general            = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/sections/site-settings.js');
+		$settings_applicants         = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/sections/file-settings.js');
+		$settings_mail_server_custom = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/custom.js');
+		$settings_mail_base          = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/global.js');
+		$settings_mail_value         = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/values.js');
 
-		$settings_applicants         = json_decode($settings_applicants, true);
-		$settings_general            = json_decode($settings_general, true);
-		$settings_mail_base          = json_decode($settings_mail_base, true);
-		$settings_mail_server_custom = json_decode($settings_mail_server_custom, true);
-		$settings_mail_value         = json_decode($settings_mail_value, true);
+		$settings_applicants         = json_decode(str_replace('export default','',$settings_applicants), true);
+		$settings_general            = json_decode(str_replace('export default','',$settings_general), true);
+		$settings_mail_base          = json_decode(str_replace('export default','',$settings_mail_base), true);
+		$settings_mail_server_custom = json_decode(str_replace('export default','',$settings_mail_server_custom), true);
+		$settings_mail_value         = json_decode(str_replace('export default','',$settings_mail_value), true);
 
 		$emundus_parameters = ComponentHelper::getParams('com_emundus');
 

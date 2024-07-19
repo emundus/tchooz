@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import { useGlobalStore } from "@/stores/global.js";
+
 export default {
   name: "FormBuilderSectionParams",
   props: {
@@ -41,9 +43,15 @@ export default {
   data: () => ({
     loading: false,
   }),
+  setup() {
+    const globalStore = useGlobalStore();
+    return {
+      globalStore
+    };
+  },
   computed: {
     sysadmin: function () {
-      return parseInt(this.$store.state.global.sysadminAccess);
+      return parseInt(this.globalStore.hasSysadminAccess);
     },
     displayedParams() {
       return this.params.filter((param) => {
