@@ -198,6 +198,15 @@ class Com_EmundusInstallerScript
 		    EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du stockage des champs mot de passe.', 'error');
 	    }
 
+		$query->clear()
+			->update($db->quoteName('#__extensions'))
+			->set($db->quoteName('enabled') . ' = 0')
+			->where($db->quoteName('name') . ' = ' . $db->quote('plg_authentication_cookie'))
+			->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+			->where($db->quoteName('folder') . ' = ' . $db->quote('authentication'));
+		$db->setQuery($query);
+		$db->execute();
+
 	    EmundusHelperUpdate::generateCampaignsAlias();
 
 		return true;

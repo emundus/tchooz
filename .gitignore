@@ -95,6 +95,7 @@ libraries/emundus/custom/*
 
 # MEDIA FOLDER
 /media/cache/*
+/media/com_dropfiles/*
 
 # FRONTEND TEMPLATES
 ## G5_HELIUM

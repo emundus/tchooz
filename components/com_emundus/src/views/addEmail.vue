@@ -36,6 +36,7 @@
                                 v-if="editor_ready"
                                 v-model="form.message"
                                 :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
+                                :delete-media-url="'/index.php?option=com_emundus&controller=settings&task=deletemedia'"
                                 :editor-content-height="'30em'"
                                 :class="'tw-mt-1'"
                                 :locale="'fr'"
