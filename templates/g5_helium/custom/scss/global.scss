@@ -1187,6 +1187,8 @@ footer#g-footer > .g-container {
 
   tbody input.fabrik_filter[type="text"]  {
     background-color: var(--neutral-0) !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .list-footer .limit {
@@ -1665,10 +1667,27 @@ footer#g-footer > .g-container {
   }
 }
 
-.view-list .dropdown-menu > li > a {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.view-list .dropdown-menu > li {
+  padding: 4px;
+  a {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--neutral-900);
+    background: var(--transparent) !important;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  &:hover {
+    background: var(--neutral-300) !important;
+  }
+
+  &.selected.active {
+    background: var(--neutral-300) !important;
+  }
 }
 
 .view-list .list-footer span.add-on {
@@ -1827,6 +1846,8 @@ div.fabrikFilterContainer {
         }
 
         .fabrikListFilterCheckbox {
+          margin-left: 1.5rem;
+
           .fabrikgrid_checkbox {
             input {
               height: auto;
@@ -1847,7 +1868,7 @@ div.fabrikFilterContainer {
       }
 
       select.fabrik_filter {
-        padding: 0 var(--p-8);
+        padding: 0 24px 0 8px;
       }
 
       a.chzn-single {
