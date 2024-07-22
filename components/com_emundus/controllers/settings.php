@@ -1413,5 +1413,28 @@ public function sendTestMail()
 		echo json_encode((object) $result);
 		exit;
 	}
+
+	public function deletemedia()
+	{
+		$result = ['success' => false, 'msg' => Text::_('ACCESS_DENIED')];
+
+		if (!$this->user->guest) {
+			$filename = $this->input->getString('file');
+			$target_dir = 'images/emundus/custom/media/' . $this->user->id . '/';
+			$target_file = $target_dir . basename($filename);
+
+			if (file_exists($target_file)) {
+				unlink($target_file);
+				$result['success'] = true;
+				$result['msg'] = Text::_('MEDIA_DELETED');
+			}
+			else {
+				$result['msg'] = Text::_('MEDIA_NOT_FOUND');
+			}
+		}
+
+		echo json_encode((object) $result);
+		exit;
+	}
 }
 
