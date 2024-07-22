@@ -75,7 +75,7 @@
       <div v-else-if="isYesNo" class="tw-mb-5">
         <fieldset data-toggle="buttons" class="tw-flex tw-items-center tw-gap-2">
           <label :for="paramId + '_input_0'"
-                 :class="[value == 0 ? 'tw-bg-red-700' : 'tw-bg-white tw-border-neutral-400']"
+                 :class="[value == 0 ? 'tw-bg-red-700' : 'tw-bg-white tw-border-neutral-500 hover:tw-border-red-700']"
                  class="tw-w-60 tw-h-10 tw-p-2.5 tw-rounded-lg tw-border tw-justify-center tw-items-center tw-gap-2.5 tw-inline-flex">
             <input v-model="value" type="radio" class="fabrikinput !tw-hidden" :name="paramName"
                    :id="paramId+ '_input_0'"
@@ -84,7 +84,7 @@
           </label>
 
           <label :for="paramId + '_input_1'"
-                 :class="[value == 1 ? 'tw-bg-green-700' : 'tw-bg-white tw-border-neutral-400']"
+                 :class="[value == 1 ? 'tw-bg-green-700' : 'tw-bg-white tw-border-neutral-500 hover:tw-border-green-700']"
                  class="tw-w-60 tw-h-10 tw-p-2.5 tw-rounded-lg tw-border tw-justify-center tw-items-center tw-gap-2.5 tw-inline-flex">
             <input v-model="value" type="radio" class="fabrikinput !tw-hidden" :name="paramName"
                    :id="paramId+ '_input_1'"

@@ -6022,6 +6022,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -6351,8 +6354,14 @@ small {
     --tw-scale-y: 1.1;
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
+.hover\:tw-border-green-700:hover {
+    border-color: var(--green-700);
+}
 .hover\:tw-border-neutral-300:hover {
     border-color: var(--neutral-300);
+}
+.hover\:tw-border-red-700:hover {
+    border-color: var(--red-700);
 }
 .hover\:tw-border-transparent:hover {
     border-color: transparent;
