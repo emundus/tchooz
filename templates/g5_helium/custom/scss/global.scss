@@ -25,6 +25,32 @@
   height: var(--em-form-height);
 }
 
+/* Gestion des curseurs dans le menu des paramètres globaux */
+
+.view-settings .multiselect__tags,
+.view-settings .dropdown-toggle,
+.view-settings .custom-color-picker,
+.view-settings button,
+.view-settings fieldset[data-toggle="buttons"] label {
+  cursor: pointer;
+}
+
+.view-settings textarea,
+.view-settings input {
+  cursor: text;
+}
+
+.view-settings .em-logo-box {
+  cursor: auto;
+}
+
+.view-settings button[disabled] {
+  cursor : not-allowed;
+}
+
+/* FIN de gestion des curseurs dans le menu des paramètres globaux */
+
+
 details summary:focus{
   outline: unset;
 }
