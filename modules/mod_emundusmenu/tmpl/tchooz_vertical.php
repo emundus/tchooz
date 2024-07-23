@@ -521,7 +521,7 @@ defined('_JEXEC') or die;
         if (tooltipMenu) {
             if (window.getComputedStyle(document.querySelector('.image-title')).getPropertyValue('display') !== 'none') {
                 if (document.querySelector('#sublevel_list_' + menu)) {
-                    tooltipMenu.style.marginLeft = '200px';
+                    tooltipMenu.style.marginLeft = '0px';
                     tooltipMenu.style.display = 'block';
                 }
             } else {
