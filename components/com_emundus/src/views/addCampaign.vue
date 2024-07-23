@@ -60,7 +60,7 @@
             <div>
                 <label for="startDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span
                     class="tw-text-red-500">*</span></label>
-              <DatePicker v-model="form.start_date" :popover="false" :time-accuracy="2" mode="dateTime" is24hr hide-time-header title-position="left" :input-debounce="500">
+              <DatePicker v-model="form.start_date" :popover="false" :time-accuracy="2" mode="dateTime" is24hr hide-time-header title-position="left" :input-debounce="500" :locale="actualLanguage" id="campaign_start_date">
                 <template #default="{ showPopover, inputValue, inputEvents }">
                     <input
                         :value="inputValue"
@@ -75,7 +75,7 @@
               <div>
                 <label for="endDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') }} <span
                     class="tw-text-red-500">*</span></label>
-                <DatePicker v-model="form.end_date" :popover="false" :time-accuracy="2" mode="dateTime" is24hr hide-time-header title-position="left" :min-date="minDate" :input-debounce="500">
+                <DatePicker v-model="form.end_date" :popover="false" :time-accuracy="2" mode="dateTime" is24hr hide-time-header title-position="left" :min-date="minDate" :input-debounce="500" :locale="actualLanguage" id="campaign_end_date">
                   <template #default="{ showPopover, inputValue, inputEvents }">
 
                       <input
