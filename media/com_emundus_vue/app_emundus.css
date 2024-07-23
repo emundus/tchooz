@@ -3519,6 +3519,14 @@ a.tw-cursor-pointer:nth-child(2):hover .material-icons[data-v-8ae51476] {
 .fabrikActions {
   display: none;
 }
+
+/* Ajout d'un hover sur les titres du formbuilder */
+#formBuilder #pageDescription.editable-data {
+  margin-top: 8px;
+}
+#formBuilder .editable-data:hover {
+  background-color: #ededed;
+}
 .adaptativeMultiselect[data-v-a08d0c67] {
 }
 
