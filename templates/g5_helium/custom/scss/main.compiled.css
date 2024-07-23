@@ -5192,6 +5192,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-text-neutral-700 {
     color: var(--neutral-700);
 }
+.tw-text-neutral-800 {
+    color: var(--neutral-800);
+}
 .tw-text-neutral-900 {
     color: var(--neutral-900);
 }

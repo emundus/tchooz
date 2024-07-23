@@ -142,12 +142,17 @@ body ::-webkit-scrollbar-track {
 }
 
 /* VCalendar */
-.vc-pane-container {
-  display: flex;
-  flex-direction: column-reverse;
+.vc-time-date {
+  display: none;
 }
 .vc-time-picker {
-  align-items: start;
+  justify-content: center;
+}
+.vc-time-icon {
+  display: none;
+}
+.vc-select-arrow {
+  display: none;
 }
 .vc-time-select-group {
   background: transparent;
@@ -162,7 +167,7 @@ body ::-webkit-scrollbar-track {
     }
   }
 }
-.vc-highlight-bg-solid {
-  background-color: var(--em-profile-color);
+.vc-highlight-bg-solid,.vc-highlight {
+  background-color: var(--em-profile-color) !important;
 }
 

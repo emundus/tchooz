@@ -60,13 +60,24 @@
             <div>
                 <label for="startDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span
                     class="tw-text-red-500">*</span></label>
-              <DatePicker v-model="form.start_date" :popover="false" :time-accuracy="2" mode="dateTime" is24hr hide-time-header title-position="left" :input-debounce="500" :locale="actualLanguage" id="campaign_start_date">
-                <template #default="{ showPopover, inputValue, inputEvents }">
+              <DatePicker
+                  id="campaign_start_date"
+                  v-model="form.start_date"
+                  :keepVisibleOnInput="true"
+                  :time-accuracy="2"
+                  mode="dateTime"
+                  is24hr
+                  hide-time-header
+                  title-position="left"
+                  :input-debounce="500"
+                  :popover="{visibility: 'focus'}"
+                  :locale="actualLanguage">
+                <template #default="{ inputValue, inputEvents }">
                     <input
                         :value="inputValue"
                         v-on="inputEvents"
-                        @focus="() => showPopover()"
                         class="tw-mt-2 form-control fabrikinput tw-w-full"
+                        id="start_date_input"
                     />
                 </template>
               </DatePicker>
@@ -75,14 +86,26 @@
               <div>
                 <label for="endDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') }} <span
                     class="tw-text-red-500">*</span></label>
-                <DatePicker v-model="form.end_date" :popover="false" :time-accuracy="2" mode="dateTime" is24hr hide-time-header title-position="left" :min-date="minDate" :input-debounce="500" :locale="actualLanguage" id="campaign_end_date">
-                  <template #default="{ showPopover, inputValue, inputEvents }">
+                <DatePicker
+                    id="campaign_end_date"
+                    v-model="form.end_date"
+                    :keepVisibleOnInput="true"
+                    :popover="{visibility: 'focus'}"
+                    :time-accuracy="2"
+                    mode="dateTime"
+                    is24hr
+                    hide-time-header
+                    title-position="left"
+                    :min-date="minDate"
+                    :input-debounce="500"
+                    :locale="actualLanguage">
+                  <template #default="{ inputValue, inputEvents }">
 
                       <input
                           :value="inputValue"
                           v-on="inputEvents"
-                          @focus="() => showPopover()"
                           class="tw-mt-2 form-control fabrikinput tw-w-full"
+                          id="end_date_input"
                       />
                   </template>
                 </DatePicker>
@@ -273,7 +296,7 @@ import Autocomplete from "@/components/autocomplete.vue";
 
 /** VCalendar **/
 import { Calendar, DatePicker } from 'v-calendar';
-import 'v-calendar/style.css';
+import 'v-calendar/dist/style.css';
 
 /** TipTap Editor **/
 import TipTapEditor from 'tip-tap-editor'
@@ -423,6 +446,11 @@ export default {
     });
   },
   methods: {
+    changed() {
+      console.debug('changed');
+      throw new Error('It\'s not an Error, please ignore.');
+    },
+
     displayPinnedCampaignTip() {
       Swal.fire({
         title: this.translate("COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP"),
