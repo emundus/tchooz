@@ -1,4 +1,8 @@
 <?php
+
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 ?>
@@ -13,7 +17,7 @@ header('Content-Type: text/html; charset=utf-8');
     </div>
     <br/>
     <!-- Button to consult the data of the graph -->
-    <div class="btnConsulter"><i class="search icon"></i><a href="<?php echo JURI::base();?>index.php?option=com_fabrik&view=list&listid=<?php echo $listId; ?>&Itemid=0<?php echo $urlFiltre; ?>"><?php echo JText::_('VIEW_DATA')?></a></div>
+    <div class="btnConsulter"><i class="search icon"></i><a href="<?php echo Uri::base();?>index.php?option=com_fabrik&view=list&listid=<?php echo $listId; ?>&Itemid=0<?php echo $urlFiltre; ?>"><?php echo Text::_('VIEW_DATA')?></a></div>
 </center>
 
 <script type="text/javascript"
@@ -25,23 +29,23 @@ header('Content-Type: text/html; charset=utf-8');
 	<?php if($jsonGraph != 'null') { ?>
 	<?php if($typeGraph === "timeseries") { ?>
     data<?php echo $view; ?> = JSON.parse('<?php echo $jsonGraph; ?>');
-    schema<?php echo $view; ?> = JSON.parse('[{"name": "<?php echo JText::_($yAxeName); ?>","type": "number"}, {"name": "<?php echo JText::_($xAxeName); ?>", "type": "date", "format": "%Y-%m-%d %I:%M:%S"}]');
+    schema<?php echo $view; ?> = JSON.parse('[{"name": "<?php echo Text::_($yAxeName); ?>","type": "number"}, {"name": "<?php echo Text::_($xAxeName); ?>", "type": "date", "format": "%Y-%m-%d %I:%M:%S"}]');
 
 
     dataStore = new FusionCharts.DataStore();
     dataSource<?php echo $view; ?> = {
         chart: {
-            yaxisname: "<?php echo JText::_($yAxeName); ?>",
+            yaxisname: "<?php echo Text::_($yAxeName); ?>",
             theme: "fusion",
             showLegend: "0"
         },
         caption: {
-            text: "<?php echo JText::_($titleGraph); ?>"
+            text: "<?php echo Text::_($titleGraph); ?>"
         },
         yAxis: [
             {
                 plot: {
-                    value: "<?php echo JText::_($yAxeName); ?>",
+                    value: "<?php echo Text::_($yAxeName); ?>",
                     type: "column",
                     aggregation: "Sum"
                 }
@@ -52,12 +56,12 @@ header('Content-Type: text/html; charset=utf-8');
 	<?php } else { ?>
     dataSource<?php echo $view; ?> = {
         chart: {
-            caption: "<?php echo JText::_($titleGraph); ?>",
+            caption: "<?php echo Text::_($titleGraph); ?>",
 			<?php if(substr_count($typeGraph, "dy") != 0) {
-				echo "pYAxisName:\"" . JText::_($yAxeName) . "\",";
-				echo "sYAxisName:\"" . JText::_($yAxeName1) . "\",";
+				echo "pYAxisName:\"" . Text::_($yAxeName) . "\",";
+				echo "sYAxisName:\"" . Text::_($yAxeName1) . "\",";
 			} else { ?>
-            yaxisname: "<?php echo JText::_($yAxeName); ?>",
+            yaxisname: "<?php echo Text::_($yAxeName); ?>",
 			<?php } ?>
             theme: "fusion",
             plotHighlightEffect: "fadeout",
@@ -81,7 +85,7 @@ header('Content-Type: text/html; charset=utf-8');
     // Configuration of the graph
     chartConfig<?php echo $view; ?> = {
         id: "<?php echo $view; ?>",
-        type: "<?php echo JText::_($typeGraph); ?>",
+        type: "<?php echo Text::_($typeGraph); ?>",
         renderAt: "chart-container-<?php echo $view; ?>",
         width: "100%",
         height: "500"
