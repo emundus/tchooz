@@ -30,6 +30,7 @@
             ref="formTitle"
             @focusout="updateFormTitle"
             @keyup.enter="updateFormTitleKeyup"
+            :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_FORM_TITLE_ADD')"
         >
             {{ title }}
           </span>
@@ -813,4 +814,15 @@ export default {
 .fabrikActions {
   display: none;
 }
+
+/* Ajout d'un hover sur les titres du formbuilder */
+
+#formBuilder #pageDescription.editable-data {
+  margin-top: 8px;
+}
+
+#formBuilder .editable-data:hover {
+  background-color: #ededed;
+}
+
 </style>
