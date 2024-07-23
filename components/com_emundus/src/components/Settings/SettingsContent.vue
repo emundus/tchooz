@@ -11,8 +11,8 @@
            class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-p-5 tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-gray-200 tw-rounded-[15px] tw-bg-white tw-mb-3 tw-gap-3 tw-shadow"
            data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
            aria-controls="accordion-collapse-body-1">
-        <div @click="handleSection(indexSection)" class="tw-flex tw-items-center tw-justify-between tw-cursor-pointer">
-          <div class="tw-flex">
+        <div @click="handleSection(indexSection)" class="tw-cursor-pointer">
+          <div class="tw-flex tw-items-center tw-justify-between">
             <h1 id="accordion-collapse-heading-1" class="tw-user-select-none tw-flex tw-justify-between">
               <span :id="'Subtile' + indexSection" class="tw-text-2xl tw-user-select-none">{{ translate(section.label) }}</span>
               <div :key="countNotifUpdate" v-if="sectionsToNotif.includes(indexSection) && numberNotif > 0"
@@ -20,11 +20,12 @@
                 <span class="tw-text-white tw-text-xs tw-font-bold">{{ numberNotif }}</span>
               </div>
             </h1>
+            <!-- The expand icon of the section which rotates -->
+            <span class="material-icons-outlined tw-scale-150 tw-user-select-none" :id="'SubtitleArrow' + indexSection"
+                  name="SubtitleArrows"
+                  :class="activeSection === indexSection ? 'tw-rotate-180' : ''">expand_more</span>
           </div>
-          <!-- The expand icon of the section which rotates -->
-          <span class="material-icons-outlined tw-scale-150 tw-user-select-none" :id="'SubtitleArrow' + indexSection"
-                name="SubtitleArrows"
-                :class="activeSection === indexSection ? 'rotate-180' : ''">expand_more</span>
+          <span v-if="section.intro" class="tw-text-sm tw-text-neutral-800">{{ translate(section.intro) }}</span>
         </div>
 
         <!-- The content of the section -->
