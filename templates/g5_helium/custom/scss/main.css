@@ -144,7 +144,7 @@ body {
     overflow: hidden;
 }
 
-.view-login.gantry > #g-page-surround #login-background-shapes-left {
+#login-background-shapes-left {
     mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg");
     -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg");
     background: var(--em-profile-color);
@@ -159,7 +159,7 @@ body {
     width: 100%;
 }
 
-.view-login.gantry > #g-page-surround #login-background-shapes-right {
+#login-background-shapes-right {
     mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
     -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
     background: var(--em-profile-color);

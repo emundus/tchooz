@@ -415,10 +415,10 @@ if ($user != null)
             var messageIcon = document.getElementById('messageDropdownIcon');
 
             if (dropdown.classList.contains('open')) {
-                jQuery("#userDropdownMenu").css("transform", "translate(300px)")
+                document.querySelector('#userDropdownMenu').style.transform = 'translate(300px)';
                 setTimeout(() => {
                     dropdown.classList.remove('open');
-                    jQuery("#userDropdownMenu").css("transform", "unset")
+                    document.querySelector('#userDropdownMenu').style.transform = 'unset';
                     if (icon !== null) {
                         icon.classList.remove('active');
                     }
@@ -480,10 +480,10 @@ if ($user != null)
                 const dropdown = document.getElementById('userDropdown');
                 const icon = document.getElementById('userDropdownIcon');
 
-                jQuery("#userDropdownMenu").css("transform", "translate(250px)")
+                document.querySelector('#userDropdownMenu').style.transform = 'translate(250px)';
                 setTimeout(() => {
                     dropdown.classList.remove('open');
-                    jQuery("#userDropdownMenu").css("transform", "unset")
+                    document.querySelector('#userDropdownMenu').style.transform = 'unset';
                     if (icon !== null) {
                         icon.classList.remove('active');
                     }
@@ -496,10 +496,10 @@ if ($user != null)
             let elmnt2 = document.getElementById("g-top");
             if (elmnt2 !== null) {
                 let hauteurTotaleElem = elmnt.offsetHeight + elmnt2.offsetHeight;
-                jQuery("#userDropdownMenu").css("top", hauteurTotaleElem + 'px');
+                document.querySelector('#userDropdownMenu').style.top = hauteurTotaleElem + 'px';
             } else {
                 let hauteurTotaleElem = elmnt.offsetHeight;
-                jQuery("#userDropdownMenu").css("top", hauteurTotaleElem + 'px');
+                document.querySelector('#userDropdownMenu').style.top = hauteurTotaleElem + 'px';
             }
 
         }

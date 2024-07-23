@@ -1293,6 +1293,11 @@ if(value == 1) {
 
 			EmundusHelperUpdate::installExtension('plg_fabrik_element_iban','iban',null,'plugin',1,'fabrik_element');
 
+			EmundusHelperUpdate::removeYamlVariable('structure',JPATH_ROOT . '/templates/g5_helium/custom/config/_error/layout.yaml','navigation');
+			EmundusHelperUpdate::removeYamlVariable('structure',JPATH_ROOT . '/templates/g5_helium/custom/config/_error/layout.yaml','footer');
+			EmundusHelperUpdate::removeYamlVariable('structure',JPATH_ROOT . '/templates/g5_helium/custom/config/_error/layout.yaml','top');
+			EmundusHelperUpdate::removeYamlVariable('structure',JPATH_ROOT . '/templates/g5_helium/custom/config/_error/layout.yaml','sidebar');
+			EmundusHelperUpdate::removeYamlVariable('structure',JPATH_ROOT . '/templates/g5_helium/custom/config/_error/layout.yaml','bottom');
 
 			$result['status'] = true;
 		}

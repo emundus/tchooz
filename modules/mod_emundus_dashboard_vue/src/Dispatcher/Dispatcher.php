@@ -45,8 +45,9 @@ class Dispatcher extends AbstractModuleDispatcher
 	    require_once JPATH_ROOT . '/components/com_emundus/models/profile.php';
 	    $m_profiles = $this->app->bootComponent('com_emundus')->getMVCFactory()->createModel('Profile', 'EmundusModel');
 	    $applicant_profiles = $m_profiles->getApplicantsProfilesArray();
+		$data['display_dashboard'] = in_array($emundusUser->profile, $profiles) && !in_array($emundusUser->profile, $applicant_profiles);
 
-	    if (in_array($emundusUser->profile, $profiles) && !in_array($emundusUser->profile, $applicant_profiles)) {
+	    if ($data['display_dashboard']) {
 		    $wa = $this->app->getDocument()->getWebAssetManager();
 		    $wa->registerAndUseStyle('mod_emundus_dashboard_css','modules/mod_emundus_dashboard_vue/vue/src/assets/mod_emundus_dashbord_vue.css');
 		    $wa->registerAndUseScript('mod_emundus_dashboard_chunks','media/mod_emundus_dashboard_vue/chunk-vendors.js');
@@ -86,7 +87,7 @@ class Dispatcher extends AbstractModuleDispatcher
 			    }
 		    }
 		}
-		
+
         return $data;
     }
 }

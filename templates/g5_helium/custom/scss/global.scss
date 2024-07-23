@@ -4143,6 +4143,18 @@ div#em-appli-block {
     }
   }
 
+  #login-background-shapes-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  #login-background-shapes-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
   .container-404 {
     display: flex;
     justify-content: space-around;
@@ -4185,9 +4197,9 @@ div#em-appli-block {
     }
 
     img {
-      width : 55vw;
-      margin-top: -50px;
-      margin-bottom: -50px;
+      width : 50vw;
+      margin-top: -60px;
+      margin-bottom: -60px;
     }
 
   }

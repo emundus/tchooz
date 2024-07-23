@@ -6022,9 +6022,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\[-a-zA-Z\:0-9_\.\] {
-    -a-z-a--z: 0-9 .;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -6149,7 +6146,7 @@ body {
     background-size : 25%, 25%;
     overflow: hidden;
 }
-.view-login.gantry > #g-page-surround #login-background-shapes-left {
+#login-background-shapes-left {
     mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg");
     -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg");
     background: var(--em-profile-color);
@@ -6163,7 +6160,7 @@ body {
     height: 100%;
     width: 100%;
 }
-.view-login.gantry > #g-page-surround #login-background-shapes-right {
+#login-background-shapes-right {
     mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
     -webkit-mask-image: url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg");
     background: var(--em-profile-color);

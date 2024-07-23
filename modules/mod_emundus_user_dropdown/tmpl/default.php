@@ -122,10 +122,10 @@ if ($user != null) {
                 const dropdown = document.getElementById('userDropdown');
                 const icon = document.getElementById('userDropdownIcon');
 
-                jQuery("#userDropdownMenu").css("transform", "translate(250px)")
+                document.querySelector('#userDropdownMenu').style.transform = 'translate(250px)';
                 setTimeout(() => {
                     dropdown.classList.remove('open');
-                    jQuery("#userDropdownMenu").css("transform", "unset")
+                    document.querySelector('#userDropdownMenu').style.transform = 'unset';
                     if (icon !== null) {
                         icon.classList.remove('active');
                     }

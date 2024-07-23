@@ -612,6 +612,7 @@ class EmundusHelperUpdate
 		$config_file    = JPATH_CONFIGURATION . '/configuration.php';
 		return file_get_contents($config_file);
 	}
+
 	public static function getYamlVariable($key1, $file, $key2 = null)
 	{
 		$yaml   = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
@@ -738,6 +739,36 @@ class EmundusHelperUpdate
 		$new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 3, 2);
 
 		file_put_contents($file, $new_yaml);
+	}
+
+	public static function removeYamlVariable($key1, $file, $key2 = null, $full_content = null)
+	{
+		$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
+
+		if (!empty($full_content))
+		{
+			$content_yaml = \Symfony\Component\Yaml\Yaml::parse($full_content);
+			$yaml         = $content_yaml;
+		}
+		else
+		{
+			if (!empty($key2))
+			{
+				unset($yaml[$key1][$key2]);
+			}
+			elseif (isset($yaml[$key1]))
+			{
+				unset($yaml[$key1]);
+			}
+			else
+			{
+				echo("Key " . $key1 . ' not found in file ' . $file);
+			}
+		}
+
+		$new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 4, 2);
+
+		return file_put_contents($file, $new_yaml);
 	}
 
 	public static function updateFont($font = 'family=Maven+Pro:500,700,900,400&subset=latin,vietnamese,latin-ext')
