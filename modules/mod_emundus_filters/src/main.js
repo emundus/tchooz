@@ -3,7 +3,6 @@ import Vuex from 'vuex';
 import App from './App.vue';
 import translate from './mixins/translate';
 
-
 const modFilters =  document.getElementById('em-filters-vue');
 if (modFilters) {
     const appliedFilters = JSON.parse(atob(modFilters.getAttribute('data-applied-filters')));

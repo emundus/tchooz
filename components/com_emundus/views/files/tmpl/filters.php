@@ -32,7 +32,7 @@ if ($this->use_module_for_filters === null) {
 <div id="em_filters">
 	<?php
 	if (!$this->use_module_for_filters) {
-	echo @$this->filters;
+	echo $this->filters;
 
 	?>
     <script>
