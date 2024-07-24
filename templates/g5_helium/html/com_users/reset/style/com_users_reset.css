@@ -6,6 +6,10 @@
     background: transparent;
 }
 
+.reset-complete .form-control-feedback {
+    display: none;
+}
+
 #user-registration fieldset p,
 .reset-confirm fieldset p,
 .reset-complete fieldset p {
@@ -139,6 +143,14 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 
 .password-group .input-group {
     align-items: center;
+}
+
+.password-group meter {
+    display: none;
+}
+
+.password-group #password-0 {
+    display: none;
 }
 
 
