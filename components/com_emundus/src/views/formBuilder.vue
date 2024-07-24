@@ -825,4 +825,19 @@ export default {
   background-color: #ededed;
 }
 
+/* DATABASEJOIN */
+
+.fabrikElementdatabasejoin.element-field .fabrikElement  {
+  padding-left: 1.5rem;
+}
+
+.fabrikElementdatabasejoin.element-field .fabrikElement .fabrikgrid_radio {
+  display: flex;
+  align-items: center;
+}
+
+.fabrikElementdatabasejoin.element-field .fabrikElement .fabrikgrid_radio label {
+  margin-bottom: 0;
+}
+
 </style>
