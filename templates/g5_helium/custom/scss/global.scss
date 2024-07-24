@@ -2784,6 +2784,14 @@ button#back,
     background-color: var(--em-secondary-color);
     color: var(--neutral-0);
     border-color: unset;
+
+    span {
+      color: var(--neutral-0) !important;
+    }
+  }
+
+  span {
+    color: var(--em-secondary-color);
   }
 }
 
