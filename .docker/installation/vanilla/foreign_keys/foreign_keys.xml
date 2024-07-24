@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <tables>
+  <table name="jos_emundus_1001_00">
+    <row constraint_name="jos_emundus_1001_00_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_1001_00_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_1001_01">
+    <row constraint_name="jos_emundus_1001_01_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_1001_01_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_1001_04">
+    <row constraint_name="jos_emundus_1001_04_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_1001_04_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_1001_06">
+    <row constraint_name="jos_emundus_1001_06_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_1001_06_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
+  <table name="jos_emundus_1001_08">
+    <row constraint_name="jos_emundus_1001_08_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
+    <row constraint_name="jos_emundus_1001_08_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>
+  </table>
   <table name="jos_emundus_9_00">
     <row constraint_name="jos_emundus_9_00_ibfk_1" column_name="user" referenced_table_name="jos_emundus_users" referenced_column_name="user_id"/>
     <row constraint_name="jos_emundus_9_00_ibfk_2" column_name="fnum" referenced_table_name="jos_emundus_campaign_candidature" referenced_column_name="fnum"/>

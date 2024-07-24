@@ -8,13 +8,8 @@ const baseUrl = 'index.php?option=com_emundus&controller=form';
 
 export default {
   async updateFormLabel(params) {
-    const formData = new FormData();
-    Object.keys(params).forEach(key => formData.append(key, params[key]));
-
     try {
-      const response = await client().post(baseUrl + '&task=updateformlabel', formData);
-
-      return response;
+      return await fetchClient.post('updateformlabel', params);
     } catch (error) {
       return {
         status: false,
@@ -101,13 +96,8 @@ export default {
   },
   
   async getProfileLabelByProfileId(id) {
-    const formData = new FormData();
-    formData.append('profile_id', id);
-
     try {
-      const response = await client().post(baseUrl + '&task=getProfileLabelByProfileId', formData);
-
-      return response;
+      return await fetchClient.get('getProfileLabelByProfileId&profile_id=' + id);
     } catch (error) {
       return {
         status: false,

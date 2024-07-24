@@ -1,5 +1,6 @@
 <template>
-  <div
+  <modal
+      v-show="showModal"
       id="application-modal"
       name="application-modal"
       v-if="selectedFile !== null && selectedFile !== undefined"
@@ -71,7 +72,7 @@
         <div class="em-page-loader" v-if="loading"></div>
       </div>
     </div>
-  </div>
+  </modal>
 </template>
 
 <script>
@@ -80,11 +81,12 @@ import Attachments from "@/views/Attachments.vue";
 import filesService from '@/services/files.js';
 import errors from "@/mixins/errors.js";
 import Comments from "@/components/Files/Comments.vue";
+import Modal from "@/components/Modal.vue";
 
 
 export default {
   name: "ApplicationSingle",
-  components: {Comments, Attachments},
+  components: {Comments, Attachments, Modal},
   props: {
     file: Object | String,
     type: String,
@@ -103,6 +105,7 @@ export default {
   },
   mixins: [errors],
   data: () => ({
+    showModal: true,
     fnums: [],
     selectedFile: null,
     applicationform: '',
@@ -145,7 +148,7 @@ export default {
       this.render();
     } else {
       // hide modal if no file is selected
-      this.$modal.hide('application-modal');
+      this.showModal = false;
     }
 
     this.addEventListeners();
@@ -157,7 +160,10 @@ export default {
   methods: {
     addEventListeners() {
       window.addEventListener('openSingleApplicationWithFnum', (e) => {
-        this.selectedFile = e.detail.fnum;
+        console.log(e);
+        if (e.detail.fnum) {
+          this.selectedFile = e.detail.fnum;
+        }
 
         if (e.detail.fnums) {
           this.fnums = e.detail.fnums;
@@ -181,24 +187,29 @@ export default {
       if (typeof this.selectedFile == 'string') {
         filesService.getFile(fnum, this.$props.type).then((result) => {
           if (result.status == 1) {
+            console.log(this.$props.type);
+
             this.selectedFile = result.data;
             this.access = result.rights;
+            this.selected = 'application';
             this.updateURL(this.selectedFile.fnum)
             this.getApplicationForm();
             if (this.$props.type === 'evaluation') {
               this.getEvaluationForm();
             }
 
-            this.$modal.show('application-modal');
+            this.showModal = true;
             this.hidden = false;
+            this.loading = false;
           } else {
             this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', result.msg
             ).then((confirm) => {
               if (confirm === true) {
-                this.$modal.hide('application-modal');
+                this.showModal = false;
                 this.hidden = true;
               }
             });
+            this.loading = false;
           }
         });
       } else {
@@ -218,12 +229,12 @@ export default {
             if (this.$props.type === 'evaluation') {
               this.getEvaluationForm();
             }
-            this.$modal.show('application-modal');
+            this.showModal = true;
             this.hidden = false;
           } else {
             this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', 'COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC').then((confirm) => {
               if (confirm === true) {
-                this.$modal.hide('application-modal');
+                this.showModal = false;
                 this.hidden = true;
               }
             });
@@ -290,7 +301,7 @@ export default {
     onClose(e) {
       e.preventDefault();
       this.hidden = true;
-      this.$modal.hide('application-modal');
+      this.showModal = false;
       document.querySelector('body').style.overflow= 'visible';
       swal.close();
     },

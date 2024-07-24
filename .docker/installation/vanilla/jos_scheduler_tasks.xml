@@ -44,9 +44,9 @@
     <field name="cron_rules">{&quot;type&quot;:&quot;interval&quot;,&quot;exp&quot;:&quot;P30D&quot;}</field>
     <field name="state">1</field>
     <field name="last_exit_code">0</field>
-    <field name="last_execution">2024-05-03 08:17:36</field>
-    <field name="next_execution">2024-06-02 08:17:36</field>
-    <field name="times_executed">4</field>
+    <field name="last_execution">2024-07-04 08:09:05</field>
+    <field name="next_execution">2024-08-03 08:09:05</field>
+    <field name="times_executed">6</field>
     <field name="times_failed">0</field>
     <field name="locked" value_is_null="true"></field>
     <field name="priority">0</field>
@@ -68,9 +68,9 @@
     <field name="cron_rules">{&quot;type&quot;:&quot;interval&quot;,&quot;exp&quot;:&quot;PT24H&quot;}</field>
     <field name="state">1</field>
     <field name="last_exit_code">0</field>
-    <field name="last_execution">2024-05-14 15:02:24</field>
-    <field name="next_execution">2024-05-15 15:02:24</field>
-    <field name="times_executed">37</field>
+    <field name="last_execution">2024-07-23 13:19:30</field>
+    <field name="next_execution">2024-07-24 13:19:30</field>
+    <field name="times_executed">65</field>
     <field name="times_failed">0</field>
     <field name="locked" value_is_null="true"></field>
     <field name="priority">0</field>

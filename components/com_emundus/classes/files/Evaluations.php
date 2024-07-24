@@ -2,6 +2,7 @@
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'files' . DS . 'Files.php');
 
 use classes\files\Files;
+use Joomla\CMS\Factory;
 
 class Evaluations extends Files
 {
@@ -15,7 +16,7 @@ class Evaluations extends Files
 	{
 		JLog::addLogger(['text_file' => 'com_emundus.evaluations.php'], JLog::ERROR, 'com_emundus.evaluations');
 
-		$this->current_user = JFactory::getUser();
+		$this->current_user = Factory::getApplication()->getIdentity();
 		$this->files        = [];
 	}
 
@@ -24,7 +25,7 @@ class Evaluations extends Files
 	{
 		$files_associated = [];
 
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$read_access_file         = $db->quoteName('action_id') . ' = ' . $db->quote(1) . ' AND ' . $db->quoteName('r') . ' = ' . $db->quote(1);
@@ -259,36 +260,38 @@ class Evaluations extends Files
 
 	public function getEvaluationFormByFnum($fnum)
 	{
-		try {
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+		$form_id = 0;
 
-			$query->clear()
-				->select('distinct esp.fabrik_group_id')
-				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
-				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
-				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
-				->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
-			$db->setQuery($query);
-			$eval_groups = $db->loadColumn();
-			$eval_groups = array_filter($eval_groups, function ($value) {
-				return !empty($value);
-			});
+		if (!empty($fnum)) {
+			try {
+				$db    = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
 
-			$query->clear()
-				->select('form_id')
-				->from($db->quoteName('#__fabrik_formgroup'))
-				->where($db->quoteName('group_id') . ' IN (' . implode(',', $eval_groups) . ')');
-			$db->setQuery($query);
-			$form_id = $db->loadResult();
+				$query->clear()
+					->select('distinct esp.fabrik_group_id')
+					->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+					->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
+					->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+					->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+				$db->setQuery($query);
+				$eval_groups = $db->loadColumn();
+				$eval_groups = array_filter($eval_groups, function ($value) {
+					return !empty($value);
+				});
 
-			return $form_id;
+				$query->clear()
+					->select('form_id')
+					->from($db->quoteName('#__fabrik_formgroup'))
+					->where($db->quoteName('group_id') . ' IN (' . implode(',', $eval_groups) . ')');
+				$db->setQuery($query);
+				$form_id = $db->loadResult();
+			}
+			catch (Exception $e) {
+				JLog::add('Problem when get evaluation form of fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
+			}
 		}
-		catch (Exception $e) {
-			JLog::add('Problem when get evaluation form of fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.evaluations');
 
-			return 0;
-		}
+		return $form_id;
 	}
 
 	public function getMyEvaluation($fnum)

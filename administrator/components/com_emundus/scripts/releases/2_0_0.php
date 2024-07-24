@@ -1299,6 +1299,33 @@ if(value == 1) {
 			EmundusHelperUpdate::removeYamlVariable('structure',JPATH_ROOT . '/templates/g5_helium/custom/config/_error/layout.yaml','sidebar');
 			EmundusHelperUpdate::removeYamlVariable('structure',JPATH_ROOT . '/templates/g5_helium/custom/config/_error/layout.yaml','bottom');
 
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_MINIMUM_REQUIREMENTS', 'Minimum %s');
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_MINIMUM_REQUIREMENTS', 'Minimum %s', 'override', 0, null, null, 'en-GB');
+
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_CHARACTERS', '%d caractères');
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_CHARACTERS', '%d characters', 'override', 0, null, null, 'en-GB');
+
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_DIGITS', '%d chiffre(s)');
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_DIGITS', '%d number(s)', 'override', 0, null, null, 'en-GB');
+
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_SYMBOLS', '%d symbole(s)');
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_SYMBOLS', '%d symbol(s)', 'override', 0, null, null, 'en-GB');
+
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_UPPERCASE', '%d lettre(s) majuscule');
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_UPPERCASE', '%d uppercase letter(s)', 'override', 0, null, null, 'en-GB');
+
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_LOWERCASE', '%d lettre(s) minuscule');
+			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_LOWERCASE', '%d lowercase letter(s)', 'override', 0, null, null, 'en-GB');
+
+			$query->clear()
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('enabled') . ' = 0')
+				->where($this->db->quoteName('element') . ' LIKE ' . $this->db->quote('dropfilesbtn'))
+				->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('plugin'))
+				->where($this->db->quoteName('folder') . ' LIKE ' . $this->db->quote('editors-xtd'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

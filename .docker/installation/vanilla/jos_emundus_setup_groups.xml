@@ -15,6 +15,8 @@
    <field Field="attachment_id_link" Type="int" Null="YES" Key="MUL" Extra="" />
    <field Field="anonymize" Type="text" Null="YES" Key="" Extra="" />
    <field Field="parent_id" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="filter_status" Type="int" Null="YES" Key="" Default="0" Extra="" />
+   <field Field="status" Type="int" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_setup_groups" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_groups" Non_unique="1" Key_name="label" Seq_in_index="1" Column_name="label" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_groups" Non_unique="1" Key_name="profile_id" Seq_in_index="1" Column_name="profile_id" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
@@ -39,6 +41,8 @@
     <field name="attachment_id_link" value_is_null="true"></field>
     <field name="anonymize">0</field>
     <field name="parent_id" value_is_null="true"></field>
+    <field name="filter_status">0</field>
+    <field name="status" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">2</field>
@@ -54,6 +58,8 @@
     <field name="attachment_id_link" value_is_null="true"></field>
     <field name="anonymize">0</field>
     <field name="parent_id" value_is_null="true"></field>
+    <field name="filter_status">0</field>
+    <field name="status" value_is_null="true"></field>
    </row>
    <row>
     <field name="id">3</field>
@@ -69,6 +75,8 @@
     <field name="attachment_id_link" value_is_null="true"></field>
     <field name="anonymize">0</field>
     <field name="parent_id" value_is_null="true"></field>
+    <field name="filter_status">0</field>
+    <field name="status" value_is_null="true"></field>
    </row>
   </table_data>
  </database>

@@ -1695,7 +1695,7 @@ footer#g-footer > .g-container {
 
 .view-list .dropdown-menu > li {
   padding: 4px;
-  a {
+  a:not(.edit-button-user):not(.logout-button-user) {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

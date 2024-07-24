@@ -6,6 +6,8 @@ use JFactory;
 use JLog;
 use Throwable;
 
+use Joomla\CMS\Factory;
+
 class Files
 {
 	protected \Joomla\CMS\User\User $current_user;
@@ -836,7 +838,7 @@ class Files
 
 	public function getFile($fnum)
 	{
-		$db = JFactory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		$select     = $this->buildSelect(false);
 		$left_joins = $this->buildLeftJoin(null, false);

@@ -406,7 +406,7 @@ export default {
       if (this.profile_id) {
         formService.getProfileLabelByProfileId(this.profile_id).then(response => {
           if (response.status !== false) {
-            this.title = response.data.data.label;
+            this.title = response.data.label;
           }
         });
       }

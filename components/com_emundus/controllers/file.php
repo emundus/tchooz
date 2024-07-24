@@ -72,7 +72,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asAccessAction(1, 'r', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id)) {
 			$results['data']   = $this->files->getFiles();
 			$results['total']  = $this->files->getTotal();
 			$results['status'] = true;
@@ -93,7 +93,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$results = ['status' => 1, 'msg' => '', 'data' => []];
 
-		if (EmundusHelperAccess::asAccessAction(1, 'r', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id)) {
 			$results['data'] = $this->files->getColumns();
 		}
 		else {
@@ -109,7 +109,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$results = ['status' => 1, 'msg' => '', 'data' => []];
 
-		if (EmundusHelperAccess::asAccessAction(1, 'r', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id)) {
 			$results['data'] = $this->files->getLimit();
 		}
 		else {
@@ -125,7 +125,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$results = ['status' => 1, 'msg' => '', 'data' => []];
 
-		if (EmundusHelperAccess::asAccessAction(1, 'r', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id)) {
 			$results['data'] = $this->files->getPage();
 		}
 		else {
@@ -139,20 +139,15 @@ class EmundusControllerFile extends JControllerLegacy
 
 	public function getevaluationformbyfnum()
 	{
-		$results = ['status' => 1, 'msg' => '', 'data' => []];
+		$results = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'data' => []];
 		$fnum = $this->input->getString('fnum', null);
 
 		if (!empty($fnum)) {
-			if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id, $fnum) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id, $fnum)) {
+			if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum)) {
 				$results['data'] = $this->files->getEvaluationFormByFnum($fnum);
+				$results['status'] = 1;
+				$results['msg'] = '';
 			}
-			else {
-				$results['status'] = 0;
-				$results['msg']    = JText::_('ACCESS_DENIED');
-			}
-		} else {
-			$results['status'] = 0;
-			$results['msg']    = JText::_('ACCESS_DENIED');
 		}
 
 		echo json_encode((object) $results);
@@ -163,7 +158,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$results = ['status' => 1, 'msg' => '', 'data' => []];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
 			$fnum = $this->input->getString('fnum', null);
 
 			$results['data'] = $this->files->getMyEvaluation($fnum);
@@ -181,7 +176,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$results = ['status' => 0, 'msg' => '', 'data' => []];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
 			$fnum = $this->input->getString('fnum', null);
 
 			$results['status'] = $this->files->checkAccess($fnum);
@@ -197,29 +192,19 @@ class EmundusControllerFile extends JControllerLegacy
 
 	public function getfile()
 	{
-		$results = ['status' => 1, 'msg' => '', 'data' => [], 'rights' => []];
+		$results = ['status' => 0, 'msg' => JText::_('ACCESS_DENIED'), 'data' => [], 'rights' => []];
 		$fnum = $this->input->getString('fnum', null);
 
-		if(!empty($fnum)) {
-			if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id, $fnum) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id, $fnum)) {
+		if (!empty($fnum)) {
+			if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum)) {
 				$access = $this->files->checkAccess($fnum);
 				if ($access) {
+					$results['status'] = 1;
+					$results['msg']    = '';
 					$results['data']   = $this->files->getFile($fnum);
 					$results['rights'] = $this->files->getAccess($fnum);
 				}
-				else {
-					$results['status'] = 0;
-					$results['msg']    = JText::_('ACCESS_DENIED');
-				}
 			}
-			else {
-				$results['status'] = 0;
-				$results['msg']    = JText::_('ACCESS_DENIED');
-			}
-		}
-		else {
-			$results['status'] = 0;
-			$results['msg']    = JText::_('ACCESS_DENIED');
 		}
 
 		echo json_encode((object) $results);
@@ -230,7 +215,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$results = ['status' => 1, 'msg' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
 			$limit = $this->input->getInt('limit', 5);
 
 			$this->files->setLimit($limit);
@@ -250,7 +235,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$results = ['status' => 1, 'msg' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
 			$page = $this->input->getInt('page', 0);
 
 			$this->files->setPage($page);
@@ -270,7 +255,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$results = ['status' => 1, 'msg' => '', 'data' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
 			$results['data'] = $this->files->getSelectedTab();
 		}
 		else {
@@ -286,7 +271,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$results = ['status' => 1, 'msg' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
 			$tab = $this->input->getString('tab', '');
 
 			$this->files->setSelectedTab($tab);
@@ -307,7 +292,7 @@ class EmundusControllerFile extends JControllerLegacy
 		$results = ['status' => 1, 'msg' => '', 'data' => []];
 		$fnum    = $this->input->getString('fnum', '');
 
-		if (!empty($fnum) && (EmundusHelperAccess::asAccessAction(10, 'r', JFactory::getUser()->id, $fnum) || EmundusHelperAccess::asAccessAction(10, 'c', JFactory::getUser()->id, $fnum))) {
+		if (!empty($fnum) && (EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $fnum) || EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $fnum))) {
 			$results['data'] = $this->files->getComments($fnum);
 		}
 		else {
@@ -356,7 +341,7 @@ class EmundusControllerFile extends JControllerLegacy
 
 		$cid = $this->input->getString('cid', '');
 
-		if (!empty($cid) && EmundusHelperAccess::asAccessAction(10, 'c', JFactory::getUser()->id)) {
+		if (!empty($cid) && EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id)) {
 			$results['status'] = $this->files->deleteComment($cid);
 		}
 
@@ -368,7 +353,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$response = ['status' => 1, 'msg' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
 			$filters                    = $this->files->getFilters();
 			$filters['default_filters'] = array_values($filters['default_filters']);
 			$response['data']           = $filters;
@@ -386,7 +371,7 @@ class EmundusControllerFile extends JControllerLegacy
 	{
 		$response = ['status' => 1, 'msg' => ''];
 
-		if (EmundusHelperAccess::asAccessAction(5, 'r', JFactory::getUser()->id) || EmundusHelperAccess::asAccessAction(5, 'c', JFactory::getUser()->id)) {
+		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
 
 			$filters = $this->input->getString('filters');
 			$filters = json_decode($filters, true);

@@ -131,15 +131,6 @@
     <field name="ordering">13</field>
    </row>
    <row>
-    <field name="id">14</field>
-    <field name="asset_id">0</field>
-    <field name="menutype">menu-profile9</field>
-    <field name="title">Formulaire de base candidat</field>
-    <field name="description">Menu for applicant</field>
-    <field name="client_id">0</field>
-    <field name="ordering">14</field>
-   </row>
-   <row>
     <field name="id">15</field>
     <field name="asset_id">125</field>
     <field name="menutype">dropfiles</field>
@@ -154,6 +145,24 @@
     <field name="menutype">hikashop_default</field>
     <field name="title">HikaShop default menus</field>
     <field name="description">This menu is used by HikaShop to store menus configurations</field>
+    <field name="client_id">0</field>
+    <field name="ordering">0</field>
+   </row>
+   <row>
+    <field name="id">17</field>
+    <field name="asset_id">131</field>
+    <field name="menutype">menu-profile1001</field>
+    <field name="title">Formulaire de base</field>
+    <field name="description"></field>
+    <field name="client_id">0</field>
+    <field name="ordering">0</field>
+   </row>
+   <row>
+    <field name="id">18</field>
+    <field name="asset_id">0</field>
+    <field name="menutype">campaigns</field>
+    <field name="title">Détails des campagnes</field>
+    <field name="description">Liste des liens de menus pour accéder aux détails des campagnes</field>
     <field name="client_id">0</field>
     <field name="ordering">0</field>
    </row>

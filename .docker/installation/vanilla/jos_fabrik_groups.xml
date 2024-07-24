@@ -413,40 +413,6 @@
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
    <row>
-    <field name="id">507</field>
-    <field name="name">Part F - First Reference </field>
-    <field name="css"></field>
-    <field name="label">FIRST_REFEREE</field>
-    <field name="published">1</field>
-    <field name="created">2016-12-01 16:35:29</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">509</field>
-    <field name="name">Confirmation d'envoi de dossier</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">1</field>
-    <field name="created">2016-12-01 16:37:47</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
     <field name="id">536</field>
     <field name="name">GROUP_SETUP_TAGS</field>
     <field name="css"></field>
@@ -481,61 +447,10 @@
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
    <row>
-    <field name="id">541</field>
-    <field name="name">Part D - Language</field>
-    <field name="css"></field>
-    <field name="label">LANGUAGE</field>
-    <field name="published">1</field>
-    <field name="created">2017-06-02 10:13:38</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">542</field>
-    <field name="name">Part D - Test score</field>
-    <field name="css"></field>
-    <field name="label">OTHER_TEST_SCORE</field>
-    <field name="published">0</field>
-    <field name="created">2017-06-02 10:26:30</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">551</field>
-    <field name="name">Evaluation</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">1</field>
-    <field name="created">2017-06-05 14:54:12</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time">0000-00-00 00:00:00</field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_sortable&quot;:&quot;0&quot;,&quot;repeat_order_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;1&quot;,&quot;labels_above_details&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
     <field name="id">552</field>
     <field name="name">Décision</field>
     <field name="css"></field>
-    <field name="label"></field>
+    <field name="label">DECISION</field>
     <field name="published">1</field>
     <field name="created">2017-06-27 09:39:37</field>
     <field name="created_by">1</field>
@@ -543,10 +458,10 @@
     <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time">0000-00-00 00:00:00</field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="is_join">0</field>
     <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_sortable&quot;:&quot;0&quot;,&quot;repeat_order_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
    <row>
     <field name="id">569</field>
@@ -583,57 +498,6 @@
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
    <row>
-    <field name="id">595</field>
-    <field name="name">Admission</field>
-    <field name="css"></field>
-    <field name="label">Admission</field>
-    <field name="published">0</field>
-    <field name="created">2018-04-16 10:21:44</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;repeat_group_button&quot;:0,&quot;repeat_group_show_first&quot;:1}</field>
-   </row>
-   <row>
-    <field name="id">606</field>
-    <field name="name">Part F - Second Reference </field>
-    <field name="css"></field>
-    <field name="label">SECOND_REFEREE</field>
-    <field name="published">1</field>
-    <field name="created">2018-07-12 09:23:30</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">609</field>
-    <field name="name">Personal Details</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">0</field>
-    <field name="created">2018-07-12 12:16:36</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
     <field name="id">625</field>
     <field name="name">MESSAGE</field>
     <field name="css"></field>
@@ -668,23 +532,6 @@
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:0,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:1,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
    <row>
-    <field name="id">639</field>
-    <field name="name">Admission - Details</field>
-    <field name="css"></field>
-    <field name="label">Admission - Details</field>
-    <field name="published">0</field>
-    <field name="created">2019-03-21 16:00:12</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:0,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:1,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
     <field name="id">640</field>
     <field name="name">Inscription</field>
     <field name="css"></field>
@@ -717,227 +564,6 @@
     <field name="is_join">0</field>
     <field name="private">0</field>
     <field name="params">{&quot;repeat_group_button&quot;:0,&quot;repeat_group_show_first&quot;:1}</field>
-   </row>
-   <row>
-    <field name="id">683</field>
-    <field name="name">Part A - Personal Details</field>
-    <field name="css"></field>
-    <field name="label">PART_A_-_PERSONAL_DETAILS</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 09:19:45</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">684</field>
-    <field name="name">Part A - Address (Residency at time of application)</field>
-    <field name="css"></field>
-    <field name="label">PART_A_-_ADDRESS_RESIDENCY_AT_TIME_OF_APPLICATION</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 09:20:51</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">686</field>
-    <field name="name">Part B - Previous Higher Education Records</field>
-    <field name="css"></field>
-    <field name="label">PART_B_-_PREVIOUS_HIGHER_EDUCATION_RECORDS</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 12:13:28</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">1</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;1&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">688</field>
-    <field name="name">Part B - Interests</field>
-    <field name="css"></field>
-    <field name="label">FORMATIONS_DIPLOMA</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 12:17:42</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">689</field>
-    <field name="name">Part B - Academique qualification</field>
-    <field name="css"></field>
-    <field name="label">PART_B_-_ACADEMIQUE_QUALIFICATION</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 12:18:05</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">1</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;1&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">690</field>
-    <field name="name">Part C - Full-time work experience</field>
-    <field name="css"></field>
-    <field name="label">PART_C_-_FULL-TIME_WORK_EXPERIENCE</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 12:40:34</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">1</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;1&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">691</field>
-    <field name="name">Part C - Language</field>
-    <field name="css"></field>
-    <field name="label">GROUP_LANGUAGE</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 12:42:44</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">692</field>
-    <field name="name">Part D - Other languages</field>
-    <field name="css"></field>
-    <field name="label">PART_D_-_OTHER_LANGUAGES</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 13:20:03</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">1</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;1&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">693</field>
-    <field name="name">Part E - GRE</field>
-    <field name="css"></field>
-    <field name="label">FORM_GRE</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 13:41:33</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">694</field>
-    <field name="name">Part G - University Preferences</field>
-    <field name="css"></field>
-    <field name="label">UNIVERSITY_PREFERENCES</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 14:14:40</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">695</field>
-    <field name="name">Part H - Scholarships</field>
-    <field name="css"></field>
-    <field name="label">FORM_SCHOLARSHIP</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 14:26:42</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">698</field>
-    <field name="name">Part J - how did you find out</field>
-    <field name="css"></field>
-    <field name="label">HOW_DID_YOU_LEARNED_ABOUT_THIS_MASTER</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-17 14:38:06</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">700</field>
-    <field name="name">Part F - Third Reference</field>
-    <field name="css"></field>
-    <field name="label">THIRD_REFEREE</field>
-    <field name="published">1</field>
-    <field name="created">2019-07-18 10:14:36</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
    <row>
     <field name="id">704</field>
@@ -1076,161 +702,8 @@
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:0,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:1,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
    <row>
-    <field name="id">715</field>
-    <field name="name">Hidden Group</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">1</field>
-    <field name="created">2020-10-07 09:20:07</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">716</field>
-    <field name="name">Hidden Group</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">1</field>
-    <field name="created">2020-10-07 09:20:24</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">717</field>
-    <field name="name">Hidden Group</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">1</field>
-    <field name="created">2020-10-07 09:20:42</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">718</field>
-    <field name="name">Hidden Group</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">1</field>
-    <field name="created">2020-10-07 09:20:54</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">719</field>
-    <field name="name">Hidden Group</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">1</field>
-    <field name="created">2020-10-07 09:21:05</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">720</field>
-    <field name="name">Hidden Group</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">1</field>
-    <field name="created">2020-10-07 09:21:28</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">721</field>
-    <field name="name">Hidden Group</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">1</field>
-    <field name="created">2020-10-07 09:21:41</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">722</field>
-    <field name="name">Hidden Group</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">1</field>
-    <field name="created">2020-10-07 09:21:57</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">723</field>
-    <field name="name">Hidden Group</field>
-    <field name="css"></field>
-    <field name="label"></field>
-    <field name="published">1</field>
-    <field name="created">2020-10-07 09:22:09</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified" value_is_null="true"></field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
     <field name="id">760</field>
-    <field name="name">Gestion des admissions</field>
+    <field name="name">PHASE_DETAIL</field>
     <field name="css"></field>
     <field name="label"></field>
     <field name="published">1</field>
@@ -1240,78 +713,10 @@
     <field name="modified">2021-02-15 10:54:47</field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="is_join">0</field>
     <field name="private">0</field>
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_sortable&quot;:&quot;0&quot;,&quot;repeat_order_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">761</field>
-    <field name="name">GROUP_324_761</field>
-    <field name="css"></field>
-    <field name="label">GROUP_324_761</field>
-    <field name="published">1</field>
-    <field name="created">2021-04-21 09:33:19</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified">2021-04-21 09:33:19</field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time">2021-04-21 09:33:19</field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">762</field>
-    <field name="name">GROUP_325_762</field>
-    <field name="css"></field>
-    <field name="label">GROUP_325_762</field>
-    <field name="published">1</field>
-    <field name="created">2021-04-21 09:58:49</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified">2021-04-21 09:58:49</field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time">2021-04-21 09:58:49</field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">763</field>
-    <field name="name">GROUP_360_763</field>
-    <field name="css"></field>
-    <field name="label">GROUP_360_763</field>
-    <field name="published">1</field>
-    <field name="created">2021-05-31 11:11:53</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified">2021-05-31 11:11:53</field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time">2021-05-31 11:11:53</field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">764</field>
-    <field name="name">GROUP_360_764</field>
-    <field name="css"></field>
-    <field name="label">GROUP_360_764</field>
-    <field name="published">1</field>
-    <field name="created">2021-05-31 11:11:54</field>
-    <field name="created_by">1</field>
-    <field name="created_by_alias">admin</field>
-    <field name="modified">2021-05-31 11:11:54</field>
-    <field name="modified_by">0</field>
-    <field name="checked_out">0</field>
-    <field name="checked_out_time">2021-05-31 11:11:54</field>
-    <field name="is_join">0</field>
-    <field name="private">0</field>
-    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
    <row>
     <field name="id">765</field>
@@ -1536,9 +941,9 @@
    </row>
    <row>
     <field name="id">795</field>
-    <field name="name">Documents à télécharger</field>
+    <field name="name">PHASE_DOCUMENTS</field>
     <field name="css"></field>
-    <field name="label">Documents à télécharger</field>
+    <field name="label">PHASE_DOCUMENTS</field>
     <field name="published">1</field>
     <field name="created">2023-04-19 08:36:17</field>
     <field name="created_by">1</field>
@@ -1546,7 +951,7 @@
     <field name="modified" value_is_null="true"></field>
     <field name="modified_by">0</field>
     <field name="checked_out">0</field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out_time">0000-00-00 00:00:00</field>
     <field name="is_join">1</field>
     <field name="private">0</field>
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:1,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_sortable&quot;:&quot;0&quot;,&quot;repeat_order_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
@@ -1618,6 +1023,448 @@
     <field name="is_join">0</field>
     <field name="private">0</field>
     <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:1,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">800</field>
+    <field name="name">GROUP_380_800</field>
+    <field name="css"></field>
+    <field name="label">GROUP_380_800</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 13:49:16</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 13:49:16</field>
+    <field name="modified_by">1</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 13:49:16</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">801</field>
+    <field name="name">GROUP_380_801</field>
+    <field name="css"></field>
+    <field name="label">GROUP_380_801</field>
+    <field name="published">0</field>
+    <field name="created">2024-07-04 13:49:17</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 13:49:17</field>
+    <field name="modified_by">1</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 13:49:17</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">802</field>
+    <field name="name">GROUP_381_802</field>
+    <field name="css"></field>
+    <field name="label">GROUP_381_802</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 13:49:17</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 13:49:17</field>
+    <field name="modified_by">1</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 13:49:17</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">803</field>
+    <field name="name">GROUP_381_803</field>
+    <field name="css"></field>
+    <field name="label">GROUP_381_803</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 13:49:17</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 13:49:17</field>
+    <field name="modified_by">1</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 13:49:17</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">804</field>
+    <field name="name">Informations personnelles</field>
+    <field name="css"></field>
+    <field name="label">GROUP_380_804</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 13:52:23</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 13:52:23</field>
+    <field name="modified_by">1</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 13:52:23</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">805</field>
+    <field name="name">GROUP_380_805</field>
+    <field name="css"></field>
+    <field name="label">GROUP_380_805</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 13:53:52</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 13:53:52</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 13:53:52</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">806</field>
+    <field name="name">GROUP_382_806</field>
+    <field name="css"></field>
+    <field name="label">GROUP_382_806</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 13:59:57</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 13:59:57</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 13:59:57</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">807</field>
+    <field name="name">GROUP_382_807</field>
+    <field name="css"></field>
+    <field name="label">GROUP_382_807</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 13:59:57</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 13:59:57</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 13:59:57</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">808</field>
+    <field name="name">GROUP_MODEL_383_808</field>
+    <field name="css"></field>
+    <field name="label">GROUP_MODEL_383_808</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:00:07</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:00:07</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">2</field>
+    <field name="checked_out_time">2024-07-04 14:00:07</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">809</field>
+    <field name="name">GROUP_MODEL_383_809</field>
+    <field name="css"></field>
+    <field name="label">GROUP_MODEL_383_809</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:00:07</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:00:07</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">2</field>
+    <field name="checked_out_time">2024-07-04 14:00:07</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">810</field>
+    <field name="name">GROUP_MODEL_383_810</field>
+    <field name="css"></field>
+    <field name="label">GROUP_MODEL_383_810</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:00:07</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:00:07</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">2</field>
+    <field name="checked_out_time">2024-07-04 14:00:07</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">811</field>
+    <field name="name">Renseignez le ou les diplôme(s)</field>
+    <field name="css"></field>
+    <field name="label">GROUP_382_811</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:02:40</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:02:40</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:02:40</field>
+    <field name="is_join">1</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:1,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;3&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">812</field>
+    <field name="name">GROUP_382_812</field>
+    <field name="css"></field>
+    <field name="label">GROUP_382_812</field>
+    <field name="published">0</field>
+    <field name="created">2024-07-04 14:10:09</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:10:09</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:10:09</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">813</field>
+    <field name="name">GROUP_382_813</field>
+    <field name="css"></field>
+    <field name="label">GROUP_382_813</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:13:48</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:13:48</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:13:48</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">814</field>
+    <field name="name">Renseignez le ou les formation(s)</field>
+    <field name="css"></field>
+    <field name="label">GROUP_382_814</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:14:06</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:14:06</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:14:06</field>
+    <field name="is_join">1</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:1,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;5&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">815</field>
+    <field name="name">GROUP_384_815</field>
+    <field name="css"></field>
+    <field name="label">GROUP_384_815</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:21:44</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:21:44</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:21:44</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">816</field>
+    <field name="name">GROUP_384_816</field>
+    <field name="css"></field>
+    <field name="label">GROUP_384_816</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:21:44</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:21:44</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:21:44</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">817</field>
+    <field name="name">Renseignez votre ou vos expérience(s)</field>
+    <field name="css"></field>
+    <field name="label">GROUP_384_817</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:23:07</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:23:07</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:23:07</field>
+    <field name="is_join">1</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:1,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;10&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">818</field>
+    <field name="name">GROUP_385_818</field>
+    <field name="css"></field>
+    <field name="label">GROUP_385_818</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:30:08</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:30:08</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:30:08</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">819</field>
+    <field name="name">GROUP_385_819</field>
+    <field name="css"></field>
+    <field name="label">GROUP_385_819</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:30:08</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:30:08</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:30:08</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">820</field>
+    <field name="name">GROUP_385_820</field>
+    <field name="css"></field>
+    <field name="label">GROUP_385_820</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:32:47</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:32:47</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:32:47</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">821</field>
+    <field name="name">GROUP_385_821</field>
+    <field name="css"></field>
+    <field name="label">GROUP_385_821</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:34:26</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:34:26</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:34:26</field>
+    <field name="is_join">1</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:1,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;5&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">822</field>
+    <field name="name">GROUP_386_822</field>
+    <field name="css"></field>
+    <field name="label">GROUP_386_822</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:36:02</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:36:02</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:36:02</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">823</field>
+    <field name="name">GROUP_386_823</field>
+    <field name="css"></field>
+    <field name="label">GROUP_386_823</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:36:02</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:36:02</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">0</field>
+    <field name="checked_out_time">2024-07-04 14:36:02</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">824</field>
+    <field name="name">GROUP_MODEL_387_824</field>
+    <field name="css"></field>
+    <field name="label">GROUP_MODEL_387_824</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:40:28</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:40:28</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">2</field>
+    <field name="checked_out_time">2024-07-04 14:40:28</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;-1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">825</field>
+    <field name="name">GROUP_MODEL_387_825</field>
+    <field name="css"></field>
+    <field name="label">GROUP_MODEL_387_825</field>
+    <field name="published">1</field>
+    <field name="created">2024-07-04 14:40:28</field>
+    <field name="created_by">1</field>
+    <field name="created_by_alias">admin</field>
+    <field name="modified">2024-07-04 14:40:28</field>
+    <field name="modified_by">2</field>
+    <field name="checked_out">2</field>
+    <field name="checked_out_time">2024-07-04 14:40:28</field>
+    <field name="is_join">0</field>
+    <field name="private">0</field>
+    <field name="params">{&quot;split_page&quot;:&quot;0&quot;,&quot;list_view_and_query&quot;:&quot;1&quot;,&quot;access&quot;:&quot;1&quot;,&quot;intro&quot;:&quot;&quot;,&quot;outro&quot;:&quot;&quot;,&quot;repeat_group_button&quot;:&quot;0&quot;,&quot;repeat_template&quot;:&quot;repeatgroup&quot;,&quot;repeat_max&quot;:&quot;&quot;,&quot;repeat_min&quot;:&quot;&quot;,&quot;repeat_num_element&quot;:&quot;&quot;,&quot;repeat_error_message&quot;:&quot;&quot;,&quot;repeat_no_data_message&quot;:&quot;&quot;,&quot;repeat_intro&quot;:&quot;&quot;,&quot;repeat_add_access&quot;:&quot;1&quot;,&quot;repeat_delete_access&quot;:&quot;1&quot;,&quot;repeat_delete_access_user&quot;:&quot;&quot;,&quot;repeat_copy_element_values&quot;:&quot;0&quot;,&quot;group_columns&quot;:&quot;1&quot;,&quot;group_column_widths&quot;:&quot;&quot;,&quot;repeat_group_show_first&quot;:&quot;1&quot;,&quot;random&quot;:&quot;0&quot;,&quot;labels_above&quot;:&quot;-1&quot;,&quot;labels_above_details&quot;:&quot;-1&quot;}</field>
    </row>
   </table_data>
  </database>

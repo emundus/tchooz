@@ -137,7 +137,7 @@
                 <span :class="{'tw-font-semibold tw-mb-4 tw-text-ellipsis tw-overflow-hidden':  viewType === 'blocs'}"
                       :title="item.label[params.shortlang]">{{ item.label[params.shortlang] }}</span>
               </td>
-              <td class="columns" v-for="column in displayedColumns" :key="column.key">
+              <td class="columns" v-for="column in displayedColumns(item, viewType)" :key="column.key">
                 <div v-if="column.type === 'tags'" class="tw-flex tw-items-center tw-flex-wrap tw-gap-2"
                      :class="column.classes">
                   <span v-for="tag in column.values" :key="tag.key" class="tw-mr-2 tw-h-max" :class="tag.classes"
@@ -650,9 +650,9 @@ export default {
     displayedColumns(item, viewType) {
       let columns = [];
 
-      if (item && item.additionnal_columns) {
-        columns = item.additionnal_columns.filter((column) => {
-          return column.view_type === viewType || column.display === 'all';
+      if (item && item.additional_columns) {
+        columns = item.additional_columns.filter((column) => {
+          return column.display === viewType || column.display === 'all';
         });
       }
 
@@ -712,8 +712,9 @@ export default {
       let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
 
       // eslint-disable-next-line valid-typeof
-      if (typeof items[0].additional_columns === 'array' && items.length > 0) {
+      if (items.length > 0 && items[0].additional_columns && items[0].additional_columns.length > 0) {
         items[0].additional_columns.forEach((column) => {
+
           if (column.display === 'all' || (column.display === this.viewType)) {
             columns.push(column.key);
           }

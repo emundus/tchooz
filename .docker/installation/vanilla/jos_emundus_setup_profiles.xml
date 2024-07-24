@@ -102,25 +102,6 @@
     <field name="display_description" value_is_null="true"></field>
    </row>
    <row>
-    <field name="id">9</field>
-    <field name="label">Formulaire de base candidat</field>
-    <field name="description">Déposant</field>
-    <field name="published">1</field>
-    <field name="schoolyear"></field>
-    <field name="candidature_start" value_is_null="true"></field>
-    <field name="candidature_end" value_is_null="true"></field>
-    <field name="menutype">menu-profile9</field>
-    <field name="reference_letter"></field>
-    <field name="acl_aro_groups">2</field>
-    <field name="is_evaluator">0</field>
-    <field name="evaluation_start" value_is_null="true"></field>
-    <field name="evaluation_end" value_is_null="true"></field>
-    <field name="evaluation" value_is_null="true"></field>
-    <field name="status">1</field>
-    <field name="class">label-blue-2</field>
-    <field name="display_description" value_is_null="true"></field>
-   </row>
-   <row>
     <field name="id">1000</field>
     <field name="label">noprofile</field>
     <field name="description"></field>
@@ -136,6 +117,25 @@
     <field name="evaluation_end" value_is_null="true"></field>
     <field name="evaluation" value_is_null="true"></field>
     <field name="status">0</field>
+    <field name="class"></field>
+    <field name="display_description" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">1001</field>
+    <field name="label">Formulaire de base</field>
+    <field name="description"></field>
+    <field name="published">1</field>
+    <field name="schoolyear"></field>
+    <field name="candidature_start" value_is_null="true"></field>
+    <field name="candidature_end" value_is_null="true"></field>
+    <field name="menutype">menu-profile1001</field>
+    <field name="reference_letter"></field>
+    <field name="acl_aro_groups">2</field>
+    <field name="is_evaluator">0</field>
+    <field name="evaluation_start" value_is_null="true"></field>
+    <field name="evaluation_end" value_is_null="true"></field>
+    <field name="evaluation" value_is_null="true"></field>
+    <field name="status">1</field>
     <field name="class"></field>
     <field name="display_description" value_is_null="true"></field>
    </row>
