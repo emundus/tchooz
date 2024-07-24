@@ -1317,6 +1317,15 @@ if(value == 1) {
 			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_LOWERCASE', '%d lettre(s) minuscule');
 			EmundusHelperUpdate::insertTranslationsTag('JFIELD_PASSWORD_RULES_LOWERCASE', '%d lowercase letter(s)', 'override', 0, null, null, 'en-GB');
 
+			$query->clear()
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('enabled') . ' = 0')
+				->where($this->db->quoteName('element') . ' LIKE ' . $this->db->quote('dropfilesbtn'))
+				->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('plugin'))
+				->where($this->db->quoteName('folder') . ' LIKE ' . $this->db->quote('editors-xtd'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

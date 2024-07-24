@@ -155,7 +155,7 @@ export default {
       this.$emit('open-element-properties');
     },
     cancelDelete(event) {
-      let elementsPending = this.$parent.$parent.$parent.elementsDeletedPending;
+      let elementsPending = this.$parent.$parent.$parent.$parent.$data.elementsDeletedPending
       let index = elementsPending.indexOf(this.element.id)
 
       if (elementsPending.indexOf(this.element.id) === (elementsPending.length - 1)) {
@@ -168,7 +168,7 @@ export default {
           this.keysPressed = [];
 
           document.removeEventListener('keydown', this.cancelDelete);
-          this.$parent.$parent.$parent.elementsDeletedPending.splice(index, 1)
+          this.$parent.$parent.$parent.$parent.$data.elementsDeletedPending.splice(index, 1)
         }
       }
     }
