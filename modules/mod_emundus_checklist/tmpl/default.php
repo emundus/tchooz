@@ -239,7 +239,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 						<?php if ($paid_class == 'need_missing') : ?>
                             <span class="material-icons-outlined">close</span>
 						<?php elseif ($paid_class == 'need_ok') : ?>
-                            <span class="material-icons-outlined">done</span>
+                            <span class="material-icons-outlined tw-text-white">done</span>
 						<?php endif; ?>
                     </div>
                     <a href="<?php echo $confirm_form_url; ?>"><?php echo JText::_('MOD_EMUNDUS_CHECKLIST_PAYMENT') ?></a>

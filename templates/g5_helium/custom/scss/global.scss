@@ -4173,12 +4173,14 @@ div#em-appli-block {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 0;
   }
 
   #login-background-shapes-right {
     position: absolute;
     top: 0;
     right: 0;
+    z-index: 0;
   }
 
   .container-404 {
@@ -4187,6 +4189,8 @@ div#em-appli-block {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    position: relative;
+    z-index: 1;
 
     h2 {
       text-align: center;

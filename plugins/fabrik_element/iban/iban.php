@@ -10,6 +10,7 @@
 
 // No direct access
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Profiler\Profiler;
 use Symfony\Component\Yaml\Yaml;
 
@@ -95,7 +96,7 @@ class PlgFabrik_ElementIban extends PlgFabrik_Element
 	 */
 	public function getValidationErr()
 	{
-		return FText::_('PLG_ELEMENT_IBAN_INVALID');
+		return Text::_('PLG_ELEMENT_IBAN_INVALID');
 	}
 
 	/**

@@ -141,7 +141,11 @@ export default {
           this.reloadOptions().then(() => {
             if(next) {
               setTimeout(() => {
-                document.getElementById('option-' + this.element.id + '-' + (index + 1)).focus();
+                if(!document.getElementById('option-' + this.element.id + '-' + (index + 1))) {
+                  document.getElementById('new-option-' + this.element.id).focus();
+                } else {
+                  document.getElementById('option-' + this.element.id + '-' + (index + 1)).focus();
+                }
               }, 300)
             }
           })

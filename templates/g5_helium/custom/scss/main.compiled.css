@@ -1305,6 +1305,10 @@ form.fabrikForm .fabrikGroup table .fabrikSubGroupElements td select {
             height: var(--em-form-height) !important;
             background-position-x: 92% !important;
         }
+/* DATABASEJOIN */
+form.fabrikForm .plg-databasejoin.mode-radio .fabrikElement .fabrikSubElementContainer {
+            padding-left: 1.5rem;
+        }
 /* CALENDAR - DATE */
 form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer {
                     display: flex;
@@ -6025,6 +6029,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;

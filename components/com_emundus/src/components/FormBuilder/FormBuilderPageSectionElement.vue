@@ -124,18 +124,18 @@ export default {
     },
     deleteElement() {
       this.swalConfirm(
-          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_ELEMENT"),
-          this.element.label[this.shortDefaultLang],
-          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_ELEMENT_CONFIRM"),
-          this.translate("JNO"),
-          () => {
-            formBuilderService.deleteElement(this.element.id);
-            this.$emit('delete-element', this.element.id);
-            this.updateLastSave();
+        this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_ELEMENT"),
+        this.element.label[this.shortDefaultLang],
+        this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_ELEMENT_CONFIRM"),
+        this.translate("JNO"),
+        () => {
+          formBuilderService.deleteElement(this.element.id);
+          this.$emit('delete-element', this.element.id);
+          this.updateLastSave();
 
-            this.tipToast(this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TEXT"));
-            window.addEventListener('keydown', this.cancelDelete);
-          }
+          this.tipToast(this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TEXT"));
+          window.addEventListener('keydown', this.cancelDelete);
+        }
       );
     },
     openAdmin() {
@@ -178,10 +178,15 @@ export default {
       return parseInt(this.globalStore.hasSysadminAccess);
     },
     displayOptions: function () {
-      return false;
+      return this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement !== null
+          && this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement.id == this.element.id;
     },
     propertiesOpened: function(){
-      return 0;
+      if (this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement !== null) {
+        return this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement.id;
+      } else {
+        return 0;
+      }
     }
   }
 }

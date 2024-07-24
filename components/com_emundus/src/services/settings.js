@@ -132,12 +132,20 @@ export default {
     formData.append('preset', JSON.stringify(preset));
 
     try {
-      const response = await client().post(
-        'index.php?option=com_emundus&controller=settings&task=updatecolor',
-        formData
-      );
-
-      return response.data;
+      fetch(window.location.origin + '/index.php?option=com_emundus&controller=settings&task=updatecolor', {
+        method: 'POST',
+        body: formData,
+      }).then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        // eslint-disable-next-line no-undef
+        throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
+      }).then((result) => {
+        if (result.status) {
+          return result.data;
+        }
+      });
     } catch (e) {
       return {
         status: false,
