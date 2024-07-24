@@ -1326,6 +1326,19 @@ if(value == 1) {
 			$this->db->setQuery($query);
 			$this->db->execute();
 
+			$datas       = [
+				'menutype'     => 'coordinatormenu',
+				'title'        => 'Liste des balises',
+				'alias'        => 'export-tags',
+				'link'         => 'index.php?option=com_emundus&view=export_select_columns&layout=allprograms',
+				'type'         => 'component',
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'params' => [
+					'menu_show'    => 0
+				]
+			];
+			$tags_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
