@@ -792,7 +792,7 @@ export default {
     },
 
     updateAlias() {
-      if (!this.aliasUpdated) {
+      if (!this.aliasUpdated && this.campaignId === 0) {
         let alias = this.form.label[this.actualLanguage].normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         this.form.alias = alias.replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
       }
