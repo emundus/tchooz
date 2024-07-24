@@ -275,6 +275,7 @@
         </field>
         <field name="copy_include_forms"
                label="COM_EMUNDUS_COPY_APPLICATION_FORM_INCLUDE"
+               class="advancedSelect"
                description=""
                showon="copy_application_form:1[AND]copy_application_form_type:1[AND]copy_application_form_or_table:form"
                menu="hide"
@@ -287,6 +288,7 @@
         />
         <field name="copy_exclude_forms"
                label="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE"
+               class="advancedSelect"
                description="COM_EMUNDUS_COPY_APPLICATION_FORM_EXCLUDE_DESC"
                showon="copy_application_form:1[AND]copy_application_form_type:0[AND]copy_application_form_or_table:form"
                menu="hide"

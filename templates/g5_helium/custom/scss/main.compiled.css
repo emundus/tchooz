@@ -1073,22 +1073,22 @@ video {
                 border-radius: 0 !important;
             }
 /** AUTOCOMPLETE **/
-.com_fabrik .dropdown-menu {
+.com_fabrik .dropdown-menu:not(#userDropdownMenu) {
             padding: 0;
         }
-.com_fabrik .dropdown-menu li {
+.com_fabrik .dropdown-menu:not(#userDropdownMenu) li {
                 padding: 4px;
             }
-.com_fabrik .dropdown-menu li a {
+.com_fabrik .dropdown-menu:not(#userDropdownMenu) li a {
                     padding: 4px;
                     background-color: var(--transparent) !important;
                     color: var(--neutral-900);
                     text-decoration: none;
                 }
-.com_fabrik .dropdown-menu li:hover {
+.com_fabrik .dropdown-menu:not(#userDropdownMenu) li:hover {
                     background-color: var(--neutral-300) !important;
                 }
-.com_fabrik .dropdown-menu li:hover a {
+.com_fabrik .dropdown-menu:not(#userDropdownMenu) li:hover a {
                         color: var(--neutral-900);
                         text-decoration: none;
                         background-color: var(--transparent) !important;
@@ -6041,9 +6041,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\[-a-zA-Z\:0-9_\.\] {
-    -a-z-a--z: 0-9 .;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
