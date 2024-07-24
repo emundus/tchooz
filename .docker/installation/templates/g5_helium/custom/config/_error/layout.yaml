@@ -28,16 +28,6 @@ structure:
     inherit:
       outline: default
       include: [attributes, block, children]
-  top:
-    type: section
-    inherit:
-      outline: default
-      include: [attributes, block, children]
-  navigation:
-    type: section
-    inherit:
-      outline: default
-      include: [attributes, block, children]
   showcase:
     type: section
     inherit:
@@ -67,14 +57,6 @@ structure:
     title: Mainbody
     attributes:
       class: ''
-  sidebar:
-    type: section
-    subtype: aside
-    inherit:
-      outline: default
-      include: [attributes, block, children]
-    block:
-      fixed: 1
   container-main:
     attributes:
       boxed: ''
@@ -85,15 +67,6 @@ structure:
       include: [attributes, block, children]
   extension:
     type: section
-    inherit:
-      outline: default
-      include: [attributes, block, children]
-  bottom:
-    type: section
-    inherit:
-      outline: default
-      include: [attributes, block, children]
-  footer:
     inherit:
       outline: default
       include: [attributes, block, children]
