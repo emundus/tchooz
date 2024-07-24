@@ -85,7 +85,8 @@ export default {
         profile_id: form.profile_id,
         limit: form.limit,
         limit_status: form.limit_status,
-        alias: form.alias
+        alias: form.alias,
+        pinned: form.pinned
       };
 
       return await client.post(`createcampaign`, data);

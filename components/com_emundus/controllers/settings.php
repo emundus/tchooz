@@ -603,7 +603,13 @@ class EmundusControllersettings extends JControllerLegacy
 		}
 		else {
 
-			$preset = $this->input->post->getRaw('preset');
+			$preset = $this->input->getRaw('preset');
+			if(!empty($preset)) {
+				$preset = json_decode($preset, true);
+			}
+			else {
+				$preset = array('primary' => '#000000', 'secondary' => '#000000');
+			}
 
 			$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
 
