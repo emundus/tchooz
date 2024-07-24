@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <database name="">
+  <table_structure name="#__emundus_1001_00">
+   <field Field="id" Type="int" Null="NO" Key="PRI" Extra="auto_increment" />
+   <field Field="time_date" Type="datetime" Null="YES" Key="" Default="CURRENT_TIMESTAMP" Extra="DEFAULT_GENERATED" />
+   <field Field="fnum" Type="varchar(28)" Null="NO" Key="UNI" Extra="" />
+   <field Field="user" Type="int" Null="YES" Key="MUL" Extra="" />
+   <field Field="e_804_7994" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_804_7995" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_804_7996" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_804_7997" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_804_7998" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_804_7999" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_804_8000" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_805_8001" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_805_8002" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_805_8003" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_805_8004" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_805_8005" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_804_8006" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="e_804_8007" Type="text" Null="YES" Key="" Extra="" />
+   <key Table="#__emundus_1001_00" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_1001_00" Non_unique="0" Key_name="fnum" Seq_in_index="1" Column_name="fnum" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
+   <key Table="#__emundus_1001_00" Non_unique="1" Key_name="user" Seq_in_index="1" Column_name="user" Collation="A" Null="YES" Index_type="BTREE" Sub_part="" Comment="" />
+  </table_structure>
+ </database>
+</mysqldump>

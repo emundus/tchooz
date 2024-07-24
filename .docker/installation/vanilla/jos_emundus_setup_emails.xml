@@ -314,6 +314,22 @@
     <field name="cci"></field>
     <field name="tags" value_is_null="true"></field>
    </row>
+   <row>
+    <field name="id">83</field>
+    <field name="lbl">mail_tester</field>
+    <field name="subject">E-mail de test provenant de [SITE_NAME]</field>
+    <field name="emailfrom" value_is_null="true"></field>
+    <field name="message">&lt;img src=&quot;[SITE_URL]/media/com_emundus/images/tchoozy/complex-illustrations/message-sent.svg&quot; alt=&quot;Tchoozy message sent&quot; style=&quot;width: 180px; display: block; margin-left: auto; margin-right: auto; margin-bottom: 20px;&quot;&gt;&lt;p&gt;Bonjour,&lt;/p&gt;&lt;p&gt;Ceci est un test d'e-mail envoyé par [SITE_NAME]. Si vous le recevez, vos paramètres e-mail sont corrects !&lt;/p&gt;&lt;hr/&gt;&lt;p&gt;Hello,&lt;/p&gt;&lt;p&gt;This is a test e-mail sent by [SITE_NAME]. If you receive it, your e-mail settings are correct!&lt;/p&gt;</field>
+    <field name="name" value_is_null="true"></field>
+    <field name="type">1</field>
+    <field name="published">0</field>
+    <field name="email_tmpl">1</field>
+    <field name="letter_attachment" value_is_null="true"></field>
+    <field name="candidate_attachment" value_is_null="true"></field>
+    <field name="category">Système</field>
+    <field name="cci" value_is_null="true"></field>
+    <field name="tags" value_is_null="true"></field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

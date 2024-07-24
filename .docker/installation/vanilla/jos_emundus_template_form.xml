@@ -10,5 +10,21 @@
    <key Table="#__emundus_template_form" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_template_form" Non_unique="1" Key_name="form_id" Seq_in_index="1" Column_name="form_id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
+  <table_data name="#__emundus_template_form">
+   <row>
+    <field name="id">1</field>
+    <field name="form_id">383</field>
+    <field name="created">2024-07-04 14:00:07</field>
+    <field name="label">Informations personnelles</field>
+    <field name="intro" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">2</field>
+    <field name="form_id">387</field>
+    <field name="created">2024-07-04 14:40:28</field>
+    <field name="label">Sondage</field>
+    <field name="intro" value_is_null="true"></field>
+   </row>
+  </table_data>
  </database>
 </mysqldump>

@@ -56,10 +56,10 @@
     <field name="fulltext"></field>
     <field name="state">0</field>
     <field name="catid">2</field>
-    <field name="created">2024-05-15 15:29:45</field>
+    <field name="created">2024-07-24 09:12:53</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-05-15 15:29:45</field>
+    <field name="modified">2024-07-24 09:12:53</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -88,10 +88,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">2</field>
-    <field name="created">2024-05-15 15:29:45</field>
+    <field name="created">2024-07-24 09:12:53</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-05-15 15:29:45</field>
+    <field name="modified">2024-07-24 09:12:53</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -120,10 +120,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">2</field>
-    <field name="created">2024-05-15 15:29:45</field>
+    <field name="created">2024-07-24 09:12:53</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-05-15 15:29:45</field>
+    <field name="modified">2024-07-24 09:12:53</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -322,10 +322,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-05-15 15:29:45</field>
+    <field name="created">2024-07-24 09:12:53</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-05-15 15:29:45</field>
+    <field name="modified">2024-07-24 09:12:53</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -512,13 +512,13 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-05-15 15:29:45</field>
+    <field name="created">2024-07-24 09:12:53</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-05-15 15:29:45</field>
+    <field name="modified">2024-07-24 09:12:53</field>
     <field name="modified_by">1</field>
     <field name="checked_out">1</field>
-    <field name="checked_out_time">2024-04-03 15:00:41</field>
+    <field name="checked_out_time">2024-06-05 08:20:28</field>
     <field name="publish_up">2023-05-10 09:08:24</field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
@@ -707,10 +707,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-05-15 15:29:45</field>
+    <field name="created">2024-07-24 09:12:53</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-05-15 15:29:45</field>
+    <field name="modified">2024-07-24 09:12:53</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -783,13 +783,13 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-05-15 15:29:45</field>
+    <field name="created">2024-07-24 09:12:53</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-05-15 15:29:45</field>
+    <field name="modified">2024-07-24 09:12:53</field>
     <field name="modified_by">1</field>
-    <field name="checked_out" value_is_null="true"></field>
-    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="checked_out">1</field>
+    <field name="checked_out_time">2024-06-05 08:30:13</field>
     <field name="publish_up">2023-05-10 09:09:10</field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="images">{&quot;image_intro&quot;:&quot;&quot;,&quot;image_intro_alt&quot;:&quot;&quot;,&quot;float_intro&quot;:&quot;&quot;,&quot;image_intro_caption&quot;:&quot;&quot;,&quot;image_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_alt&quot;:&quot;&quot;,&quot;float_fulltext&quot;:&quot;&quot;,&quot;image_fulltext_caption&quot;:&quot;&quot;}</field>
@@ -850,10 +850,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">8</field>
-    <field name="created">2024-05-15 15:29:45</field>
+    <field name="created">2024-07-24 09:12:53</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-05-15 15:29:45</field>
+    <field name="modified">2024-07-24 09:12:53</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -882,10 +882,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">12</field>
-    <field name="created">2024-05-15 15:29:45</field>
+    <field name="created">2024-07-24 09:12:53</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-05-15 15:29:45</field>
+    <field name="modified">2024-07-24 09:12:53</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>
@@ -914,10 +914,10 @@
     <field name="fulltext"></field>
     <field name="state">1</field>
     <field name="catid">12</field>
-    <field name="created">2024-05-15 15:29:45</field>
+    <field name="created">2024-07-24 09:12:53</field>
     <field name="created_by">1</field>
     <field name="created_by_alias"></field>
-    <field name="modified">2024-05-15 15:29:45</field>
+    <field name="modified">2024-07-24 09:12:53</field>
     <field name="modified_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>

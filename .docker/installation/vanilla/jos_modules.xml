@@ -62,7 +62,7 @@
     <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
     <field name="module">mod_toolbar</field>
-    <field name="access">3</field>
+    <field name="access">1</field>
     <field name="showtitle">1</field>
     <field name="params"></field>
     <field name="client_id">1</field>
@@ -696,8 +696,8 @@
     <field name="content"></field>
     <field name="ordering">2</field>
     <field name="position">header-c</field>
-    <field name="checked_out">1</field>
-    <field name="checked_out_time">2024-04-02 08:45:15</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-04-24 09:57:26</field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
@@ -836,8 +836,8 @@
     <field name="content"></field>
     <field name="ordering">1</field>
     <field name="position">drawer</field>
-    <field name="checked_out">1</field>
-    <field name="checked_out_time">2024-03-01 09:49:36</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
     <field name="publish_up">2023-09-28 16:03:39</field>
     <field name="publish_down" value_is_null="true"></field>
     <field name="published">1</field>
@@ -1197,8 +1197,8 @@
     <field name="ordering">1</field>
     <field name="position">status</field>
     <field name="checked_out">62</field>
-    <field name="checked_out_time">2024-06-12 12:41:48</field>
-    <field name="publish_up">2024-06-11 12:41:48</field>
+    <field name="checked_out_time">2024-06-12 12:54:32</field>
+    <field name="publish_up">2024-06-11 12:54:32</field>
     <field name="publish_down">2099-01-01 00:00:00</field>
     <field name="published">1</field>
     <field name="module">mod_emundus_version</field>
@@ -1216,9 +1216,9 @@
     <field name="content" value_is_null="true"></field>
     <field name="ordering">1</field>
     <field name="position">cpanel</field>
-    <field name="checked_out">62</field>
-    <field name="checked_out_time">2024-06-12 12:41:48</field>
-    <field name="publish_up">2024-06-11 12:41:48</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+    <field name="publish_up">2024-06-11 12:54:32</field>
     <field name="publish_down">2099-01-01 00:00:00</field>
     <field name="published">1</field>
     <field name="module">mod_emundus_notes</field>
