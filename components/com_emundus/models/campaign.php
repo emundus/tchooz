@@ -1585,6 +1585,7 @@ class EmundusModelCampaign extends JModelList
 						// do nothing
 						break;
 					case 'pinned':
+					case 'is_limited':
 						if (!isset($val) || $val == '') {
 							$data[$key] = 0;
 						}

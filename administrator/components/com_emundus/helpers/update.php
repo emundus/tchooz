@@ -4391,7 +4391,7 @@ class EmundusHelperUpdate
 			// Second level
 			$storage_value['second_level']             = 1;
 			$storage_value['second_level_redirect']    = 1;
-			$storage_value['second_level_limit_words'] = 3;
+			$storage_value['second_level_limit_words'] = 5;
 			$storage_value['second_level_words']       = 'ZHJvcCx1cGRhdGUsc2V0LGFkbWluLHNlbGVjdCx1c2VyLHBhc3N3b3JkLGNvbmNhdCxsb2dpbixsb2FkX2ZpbGUsYXNjaWksY2hhcix1bmlvbixncm91cCBieSxvcmRlciBieSxpbnNlcnQsdmFsdWVzLHBhc3Msd2hlcmUsc3Vic3RyaW5nLGJlbmNobWFyayxtZDUsc2hhMSxzY2hlbWEsdmVyc2lvbixyb3dfY291bnQsY29tcHJlc3MsZW5jb2RlLGluZm9ybWF0aW9uX3NjaGVtYSxzY3JpcHQsamF2YXNjcmlwdCxpbWcsc3JjLGlucHV0LGJvZHksaWZyYW1lLGZyYW1lLCRfUE9TVCxldmFsLCRfUkVRVUVTVCxiYXNlNjRfZGVjb2RlLGd6aW5mbGF0ZSxnenVuY29tcHJlc3MsZ3ppbmZsYXRlLHN0cnRyZXhlYyxwYXNzdGhydSxzaGVsbF9leGVjLGNyZWF0ZUVsZW1lbnQ=';
 
 			// Emails
@@ -4400,17 +4400,18 @@ class EmundusHelperUpdate
 			// Exceptions
 			$storage_value['exclude_exceptions_if_vulnerable'] = 1;
 			$storage_value['check_header_referer']             = 1;
-			$storage_value['check_base_64']                    = 1;
+			$storage_value['check_base_64']                    = 0;
 			$storage_value['base64_exceptions']                = 'com_hikashop,com_emundus,com_fabrik';
-			$storage_value['strip_all_tags']                   = 1;
-			$storage_value['strip_tags_exceptions']            = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik';
-			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['strip_all_tags']                   = 0;
+			$storage_value['tags_to_filter'] = 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,ilayer,layer,meta,object,script,xml';
+			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik,com_gantry5';
+			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik,com_content,com_languages,com_gantry5';
 			$storage_value['sql_pattern_exceptions'] = 'com_emundus,com_fabrik';
 			$storage_value['line_comments_exceptions'] = 'com_emundus,com_fabrik,com_content';
-			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik';
+			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik,com_users';
 			$storage_value['escape_strings_exceptions'] = 'com_jce,com_fabrik';
-			$storage_value['lfi_exceptions'] = 'com_emundus,com_fabrik';
-			$storage_value['second_level_exceptions'] = 'com_emundus';
+			$storage_value['lfi_exceptions'] = 'com_emundus,com_fabrik,com_content,com_users';
+			$storage_value['second_level_exceptions'] = '';
 
 			// Session
 			$storage_value['session_protection_active']               = 0;

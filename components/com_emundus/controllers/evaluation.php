@@ -903,23 +903,11 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
 		$m_evaluation = $this->getModel('Evaluation');
 		foreach ($ids as $id) {
-			$eval = $m_evaluation->getEvaluationById($id);
-			if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $fnum)) {
-				$res->status = $m_evaluation->delevaluation($id);
-
-				
-				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
-
-				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-				$mFile        = $this->getModel('Files');
-				$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
-
-				EmundusModelLogs::log($this->_user->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
-			}
-			else {
+			if(!empty($id)) {
 				$eval = $m_evaluation->getEvaluationById($id);
-				if ($eval->user == $this->_user->id) {
+				if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $fnum)) {
 					$res->status = $m_evaluation->delevaluation($id);
+
 
 					require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
 
@@ -930,16 +918,28 @@ class EmundusControllerEvaluation extends JControllerLegacy
 					EmundusModelLogs::log($this->_user->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
 				}
 				else {
-					$res->status = false;
-					$res->msg    = Text::_("ACCESS_DENIED");
+					$eval = $m_evaluation->getEvaluationById($id);
+					if ($eval->user == $this->_user->id) {
+						$res->status = $m_evaluation->delevaluation($id);
+
+						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+
+						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+						$mFile        = $this->getModel('Files');
+						$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+						EmundusModelLogs::log($this->_user->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
+					}
+					else {
+						$res->status = false;
+						$res->msg    = Text::_("ACCESS_DENIED");
+					}
 				}
 			}
-
-
 		}
+
 		echo json_encode($res);
 		exit();
-
 	}
 
 	function pdf_decision()

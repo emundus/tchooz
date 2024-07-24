@@ -406,7 +406,7 @@ export default {
       if (this.profile_id) {
         formService.getProfileLabelByProfileId(this.profile_id).then(response => {
           if (response.status !== false) {
-            this.title = response.data.data.label;
+            this.title = response.data.label;
           }
         });
       }
@@ -823,6 +823,21 @@ export default {
 
 #formBuilder .editable-data:hover {
   background-color: #ededed;
+}
+
+/* DATABASEJOIN */
+
+.fabrikElementdatabasejoin.element-field .fabrikElement  {
+  padding-left: 1.5rem;
+}
+
+.fabrikElementdatabasejoin.element-field .fabrikElement .fabrikgrid_radio {
+  display: flex;
+  align-items: center;
+}
+
+.fabrikElementdatabasejoin.element-field .fabrikElement .fabrikgrid_radio label {
+  margin-bottom: 0;
 }
 
 </style>

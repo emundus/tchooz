@@ -6,7 +6,7 @@
       <section id="new-page">
         <div class="tw-mt-4 tw-mb-4 card-wrapper" :class="{selected: -1 === selected}" @click="selected = -1;">
           <div class="card em-shadow-cards tw-cursor-pointer tw-flex tw-items-center" @dblclick="createPage">
-            <span class="add_circle material-icons-outlined em-main-500-color">add_circle</span>
+            <span class="add_circle material-icons-outlined tw-text-profile-full">add_circle</span>
           </div>
           <input
               type="text"
@@ -14,15 +14,15 @@
               class="em-p-4"
               :class="{
 								'tw-text-white': -1 === selected,
-								'tw-bg-main-500':  -1 === selected
+								'tw-bg-profile-full':  -1 === selected
 							}"
           >
         </div>
       </section>
       <div class="separator tw-mt-8">
-        <p class="line-head em-mt-4 em-p-8 tw-text-white tw-bg-main-500">
+        <p class="line-head em-mt-4 em-p-8 tw-text-white tw-bg-profile-full">
           {{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}</p>
-        <div class="line tw-bg-main-500"></div>
+        <div class="line tw-bg-profile-full"></div>
       </div>
       <section id="models" class="tw-flex tw-items-center tw-w-full">
         <div v-if="!loading" class="tw-w-full">
@@ -55,13 +55,13 @@
                   class="card em-shadow-cards model-preview tw-cursor-pointer"
                   :class="{
 									'tw-text-white': model.id === selected,
-									'tw-bg-main-500': model.id === selected
+									'tw-bg-profile-full': model.id === selected
 								}"
               >
               </form-builder-preview-form>
               <p class="em-p-4" :class="{
 								'tw-text-white': model.id === selected,
-								'tw-bg-main-500': model.id === selected
+								'tw-bg-profile-full': model.id === selected
 							}">
                 {{ model.label[shortDefaultLang] }}
               </p>
@@ -313,12 +313,12 @@ export default {
 
     &.selected {
       .em-shadow-cards {
-        border: 2px solid #20835F;
+        border: 2px solid var(--em-profile-color);
       }
 
       p, input {
         color: white !important;
-        background-color: #20835F !important;
+        background-color: var(--em-profile-color) !important;
       }
     }
   }
@@ -344,7 +344,7 @@ export default {
 
     .reset-search {
       position: absolute;
-      top: 27px;
+      top: 9px;
       right: 10px;
     }
   }
