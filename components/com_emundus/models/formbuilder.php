@@ -1328,8 +1328,8 @@ class EmundusModelFormbuilder extends JModelList
 				case 'email':
 
 					$label = array(
-						'fr' => 'Adresse email',
-						'en' => 'Email address',
+						'fr' => 'Adresse e-mail',
+						'en' => 'E-mail address',
 					);
 
 					$created_elements[] = $this->createSimpleElement($gid, $plugin, null, $evaluation, $label);
