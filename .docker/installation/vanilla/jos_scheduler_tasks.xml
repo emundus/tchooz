@@ -68,9 +68,9 @@
     <field name="cron_rules">{&quot;type&quot;:&quot;interval&quot;,&quot;exp&quot;:&quot;PT24H&quot;}</field>
     <field name="state">1</field>
     <field name="last_exit_code">0</field>
-    <field name="last_execution">2024-07-23 13:19:30</field>
-    <field name="next_execution">2024-07-24 13:19:30</field>
-    <field name="times_executed">65</field>
+    <field name="last_execution">2024-07-24 14:21:52</field>
+    <field name="next_execution">2024-07-25 14:21:52</field>
+    <field name="times_executed">66</field>
     <field name="times_failed">0</field>
     <field name="locked" value_is_null="true"></field>
     <field name="priority">0</field>
@@ -79,6 +79,54 @@
     <field name="params">{&quot;enable_session_gc&quot;:1,&quot;enable_session_metadata_gc&quot;:1}</field>
     <field name="note" value_is_null="true"></field>
     <field name="created">2023-11-02 11:07:04</field>
+    <field name="created_by">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">3</field>
+    <field name="asset_id">167</field>
+    <field name="title">Unlock elements</field>
+    <field name="type">plg_task_globalcheckin_task_get</field>
+    <field name="execution_rules">{&quot;rule-type&quot;:&quot;interval-minutes&quot;,&quot;interval-minutes&quot;:&quot;5&quot;,&quot;exec-day&quot;:&quot;24&quot;,&quot;exec-time&quot;:&quot;09:36&quot;}</field>
+    <field name="cron_rules">{&quot;type&quot;:&quot;interval&quot;,&quot;exp&quot;:&quot;PT5M&quot;}</field>
+    <field name="state">1</field>
+    <field name="last_exit_code">-2</field>
+    <field name="last_execution">2024-07-24 15:43:30</field>
+    <field name="next_execution">2024-07-24 15:48:30</field>
+    <field name="times_executed">41</field>
+    <field name="times_failed">41</field>
+    <field name="locked" value_is_null="true"></field>
+    <field name="priority">0</field>
+    <field name="ordering">0</field>
+    <field name="cli_exclusive">0</field>
+    <field name="params">{&quot;individual_log&quot;:false,&quot;log_file&quot;:&quot;&quot;,&quot;notifications&quot;:{&quot;success_mail&quot;:&quot;0&quot;,&quot;failure_mail&quot;:&quot;0&quot;,&quot;fatal_failure_mail&quot;:&quot;1&quot;,&quot;orphan_mail&quot;:&quot;1&quot;},&quot;delay&quot;:1}</field>
+    <field name="note"></field>
+    <field name="created">2024-07-24 09:37:22</field>
+    <field name="created_by">1</field>
+    <field name="checked_out" value_is_null="true"></field>
+    <field name="checked_out_time" value_is_null="true"></field>
+   </row>
+   <row>
+    <field name="id">5</field>
+    <field name="asset_id">171</field>
+    <field name="title">SCP Cron</field>
+    <field name="type">securitycheckpro.cron</field>
+    <field name="execution_rules">{&quot;rule-type&quot;:&quot;interval-days&quot;,&quot;interval-days&quot;:1,&quot;exec-time&quot;:&quot;02:00&quot;,&quot;exec-day&quot;:&quot;24&quot;}</field>
+    <field name="cron_rules">{&quot;type&quot;:&quot;interval&quot;,&quot;exp&quot;:&quot;P1D&quot;}</field>
+    <field name="state">1</field>
+    <field name="last_exit_code">0</field>
+    <field name="last_execution" value_is_null="true"></field>
+    <field name="next_execution">2024-07-25 02:00:00</field>
+    <field name="times_executed">0</field>
+    <field name="times_failed">0</field>
+    <field name="locked" value_is_null="true"></field>
+    <field name="priority">0</field>
+    <field name="ordering">0</field>
+    <field name="cli_exclusive">0</field>
+    <field name="params">{&quot;task_to_be_launched&quot;:&quot;integrity&quot;}</field>
+    <field name="note" value_is_null="true"></field>
+    <field name="created">2024-07-24 15:43:29</field>
     <field name="created_by">1</field>
     <field name="checked_out" value_is_null="true"></field>
     <field name="checked_out_time" value_is_null="true"></field>

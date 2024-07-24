@@ -423,36 +423,6 @@
     <field name="solution_type">update</field>
     <field name="solution">5.0.1</field>
    </row>
-   <row>
-    <field name="id">28</field>
-    <field name="Product">Joomla!</field>
-    <field name="vuln_type">core</field>
-    <field name="Vulnerableversion">4.4.2</field>
-    <field name="modvulnversion">&lt;=</field>
-    <field name="Joomlaversion">4.0.0</field>
-    <field name="modvulnjoomla">&gt;=</field>
-    <field name="description">Joomla! core</field>
-    <field name="vuln_class">Five vulnerabilities</field>
-    <field name="published">Feb 21 2024</field>
-    <field name="vulnerable">Joomla 3.2.0 to 4.4.2</field>
-    <field name="solution_type">update</field>
-    <field name="solution">4.4.3</field>
-   </row>
-   <row>
-    <field name="id">29</field>
-    <field name="Product">Joomla!</field>
-    <field name="vuln_type">core</field>
-    <field name="Vulnerableversion">5.0.2</field>
-    <field name="modvulnversion">&lt;=</field>
-    <field name="Joomlaversion">5.0.0</field>
-    <field name="modvulnjoomla">&gt;=</field>
-    <field name="description">Joomla! core</field>
-    <field name="vuln_class">Five vulnerabilities</field>
-    <field name="published">Feb 21 2024</field>
-    <field name="vulnerable">Joomla 5.0.0 to 5.0.2</field>
-    <field name="solution_type">update</field>
-    <field name="solution">5.0.3</field>
-   </row>
   </table_data>
  </database>
 </mysqldump>

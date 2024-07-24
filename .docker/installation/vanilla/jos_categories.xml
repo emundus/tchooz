@@ -47,7 +47,7 @@
     <field name="asset_id">0</field>
     <field name="parent_id">0</field>
     <field name="lft">0</field>
-    <field name="rgt">71</field>
+    <field name="rgt">21</field>
     <field name="level">0</field>
     <field name="path"></field>
     <field name="extension">system</field>
@@ -307,10 +307,10 @@
     <field name="id">12</field>
     <field name="asset_id">143</field>
     <field name="parent_id">1</field>
-    <field name="lft">37</field>
-    <field name="rgt">38</field>
+    <field name="lft">17</field>
+    <field name="rgt">18</field>
     <field name="level">1</field>
-    <field name="path"></field>
+    <field name="path">referents</field>
     <field name="extension">com_content</field>
     <field name="title">Referents</field>
     <field name="alias">referents</field>
