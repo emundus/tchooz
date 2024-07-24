@@ -187,7 +187,7 @@
 
         /** AUTOCOMPLETE **/
 
-        .dropdown-menu {
+        .dropdown-menu:not(#userDropdownMenu) {
             padding: 0;
 
             li {

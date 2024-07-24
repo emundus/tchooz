@@ -318,7 +318,7 @@ export default {
             this.document.selectedTypes['pdf'] = true;
           }
           if (['jpeg', 'jpg', 'png', 'gif'].includes(type)) {
-            this.document.selectedTypes['jpeg;jpg;png;gif'] = true;
+            this.document.selectedTypes['jpeg;jpg;png'] = true;
           }
           if (['doc', 'docx', 'odt', 'ppt', 'pptx'].includes(type)) {
             this.document.selectedTypes['doc;docx;odt;ppt;pptx'] = true;
@@ -425,12 +425,12 @@ export default {
 
         if (Object.keys(this.modelsUsage).includes(this.document.id) && this.modelsUsage[this.document.id].usage > 1) {
           this.swalConfirm(
-              this.translate('COM_EMUNDUS_FORM_BUILDER_MULTIPLE_FORMS_IMPACTED'),
-              this.translate('COM_EMUNDUS_FORM_BUILDER_MULTIPLE_FORMS_IMPACTED_TEXT') + ' : ' + this.modelsUsage[this.document.id].profiles.map((profile) => {
-                return profile.label;
-              }).join(', '),
-              this.translate('COM_EMUNDUS_ONBOARD_OK'),
-              this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+            this.translate('COM_EMUNDUS_FORM_BUILDER_MULTIPLE_FORMS_IMPACTED'),
+            this.translate('COM_EMUNDUS_FORM_BUILDER_MULTIPLE_FORMS_IMPACTED_TEXT') + ' : ' + this.modelsUsage[this.document.id].profiles.map((profile) => {
+              return profile.label;
+            }).join(', '),
+            this.translate('COM_EMUNDUS_ONBOARD_OK'),
+            this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
           ).then((response) => {
             if (response) {
               formBuilderService.updateDocument(data).then(response => {
