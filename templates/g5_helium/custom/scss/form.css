@@ -191,8 +191,21 @@
             padding: 0;
 
             li {
+                padding: 4px;
                 a {
                     padding: 4px;
+                    background-color: var(--transparent) !important;
+                    color: var(--neutral-900);
+                    text-decoration: none;
+                }
+
+                &:hover {
+                    background-color: var(--neutral-300) !important;
+                    a {
+                        color: var(--neutral-900);
+                        text-decoration: none;
+                        background-color: var(--transparent) !important;
+                    }
                 }
             }
         }
@@ -456,8 +469,11 @@
         }
 
         /* DATABASEJOIN */
-        .plg-databasejoin.mode-radio .fabrikElement .fabrikSubElementContainer {
-            padding-left: 1.5rem;
+        .plg-databasejoin {
+            &.mode-radio .fabrikElement .fabrikSubElementContainer,
+            &.mode-checkbox .fabrikElement .fabrikSubElementContainer {
+                padding-left: 1.5rem;
+            }
         }
 
         /* CALENDAR - DATE */

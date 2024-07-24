@@ -1076,9 +1076,23 @@ video {
 .com_fabrik .dropdown-menu {
             padding: 0;
         }
+.com_fabrik .dropdown-menu li {
+                padding: 4px;
+            }
 .com_fabrik .dropdown-menu li a {
                     padding: 4px;
+                    background-color: var(--transparent) !important;
+                    color: var(--neutral-900);
+                    text-decoration: none;
                 }
+.com_fabrik .dropdown-menu li:hover {
+                    background-color: var(--neutral-300) !important;
+                }
+.com_fabrik .dropdown-menu li:hover a {
+                        color: var(--neutral-900);
+                        text-decoration: none;
+                        background-color: var(--transparent) !important;
+                    }
 .com_fabrik .dropdown-menu > .active > a, .com_fabrik .dropdown-menu > .active > a:hover, .com_fabrik .dropdown-menu > .active > a:focus {
             background-color: var(--blue-500);
             background-image: unset;
@@ -1306,9 +1320,10 @@ form.fabrikForm .fabrikGroup table .fabrikSubGroupElements td select {
             background-position-x: 92% !important;
         }
 /* DATABASEJOIN */
-form.fabrikForm .plg-databasejoin.mode-radio .fabrikElement .fabrikSubElementContainer {
-            padding-left: 1.5rem;
-        }
+form.fabrikForm .plg-databasejoin.mode-radio .fabrikElement .fabrikSubElementContainer,
+            form.fabrikForm .plg-databasejoin.mode-checkbox .fabrikElement .fabrikSubElementContainer {
+                padding-left: 1.5rem;
+            }
 /* CALENDAR - DATE */
 form.fabrikForm .plg-date .fabrikElement .fabrikSubElementContainer {
                     display: flex;
@@ -4297,9 +4312,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-bg-main-50 {
     background-color: var(--main-50);
-}
-.tw-bg-main-500 {
-    background-color: var(--main-500);
 }
 .tw-bg-main-900 {
     background-color: var(--main-900);
