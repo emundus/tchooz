@@ -4391,7 +4391,7 @@ class EmundusHelperUpdate
 			// Second level
 			$storage_value['second_level']             = 1;
 			$storage_value['second_level_redirect']    = 1;
-			$storage_value['second_level_limit_words'] = 3;
+			$storage_value['second_level_limit_words'] = 5;
 			$storage_value['second_level_words']       = 'ZHJvcCx1cGRhdGUsc2V0LGFkbWluLHNlbGVjdCx1c2VyLHBhc3N3b3JkLGNvbmNhdCxsb2dpbixsb2FkX2ZpbGUsYXNjaWksY2hhcix1bmlvbixncm91cCBieSxvcmRlciBieSxpbnNlcnQsdmFsdWVzLHBhc3Msd2hlcmUsc3Vic3RyaW5nLGJlbmNobWFyayxtZDUsc2hhMSxzY2hlbWEsdmVyc2lvbixyb3dfY291bnQsY29tcHJlc3MsZW5jb2RlLGluZm9ybWF0aW9uX3NjaGVtYSxzY3JpcHQsamF2YXNjcmlwdCxpbWcsc3JjLGlucHV0LGJvZHksaWZyYW1lLGZyYW1lLCRfUE9TVCxldmFsLCRfUkVRVUVTVCxiYXNlNjRfZGVjb2RlLGd6aW5mbGF0ZSxnenVuY29tcHJlc3MsZ3ppbmZsYXRlLHN0cnRyZXhlYyxwYXNzdGhydSxzaGVsbF9leGVjLGNyZWF0ZUVsZW1lbnQ=';
 
 			// Emails
