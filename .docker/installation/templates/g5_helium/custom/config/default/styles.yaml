@@ -64,21 +64,21 @@ coordinator:
   horizontal: 12px
   border-radius-cards: 16px
 em-alert:
-  error-background-color: '#FEF3F2'
-  error-color: '#727272'
-  error-icon-color: '#f04437'
-  error-border-width: 1px
-  error-border-color: '#f04437'
-  warning-background-color: '#FEF6EE'
-  warning-color: '#727272'
-  warning-icon-color: '#ef681f'
+  error-background-color: '#fae9e9'
+  error-color: '#520105'
+  error-icon-color: '#a60e15'
+  error-border-width: 0px
+  error-border-color: 'rgba(255, 255, 255, 0)'
+  warning-background-color: '#fff6de'
+  warning-color: '#563a04'
+  warning-icon-color: '#b38405'
   warning-border-width: 1px
-  warning-border-color: '#ef681f'
-  info-background-color: '#EFF8FF'
-  info-color: '#727272'
-  info-icon-color: '#2E90FA'
+  warning-border-color: 'rgba(255, 255, 255, 0)'
+  info-background-color: '#ebeefa'
+  info-color: '#232b4f'
+  info-icon-color: '#525b85'
   info-border-width: 1px
-  info-border-color: '#2e90fa'
+  info-border-color: 'rgba(255, 255, 255, 0)'
   success-background-color: '#eaf3e8'
   success-color: '#02300c'
   success-icon-color: '#2d871d'
@@ -193,8 +193,8 @@ link:
 tchoozy:
   wide-background: 'url("/media/com_emundus/images/tchoozy/backgrounds/wide-background.svg")'
   demonstration: 'url("/media/com_emundus/images/tchoozy/complex-illustrations/demonstration.svg")'
-  corner-bottom-left-background: 'url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-left-background.svg")'
-  corner-top-right-background: 'url("/media/com_emundus/images/tchoozy/backgrounds/corner-top-right-background.svg")'
+  corner-bottom-left-background: block
+  corner-top-right-background: block
   candidate-button: 'url("/media/com_emundus/images/tchoozy/complex-illustrations/candidate-button.svg")'
   digital-testing: 'url("/media/com_emundus/images/tchoozy/complex-illustrations/digital-testing.svg")'
   corner-bottom-right-background: 'url("/media/com_emundus/images/tchoozy/backgrounds/corner-bottom-right-background.svg")'
