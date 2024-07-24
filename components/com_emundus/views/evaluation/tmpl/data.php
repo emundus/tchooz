@@ -250,7 +250,7 @@ if ($this->open_file_in_modal) {
     >
     </div>
 
-    <script src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+    <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
     <script>
         function clickOpenfile(fnum) {
             const fnums = <?= json_encode($fnums) ?>;

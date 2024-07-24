@@ -46,6 +46,8 @@ export default {
   },
   methods: {
     open() {
+      console.log('mounted');
+
       this.$emit('beforeOpen');
       this.isOpened = true;
 
