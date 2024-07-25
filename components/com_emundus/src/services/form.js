@@ -200,16 +200,10 @@ export default {
     }
   },
   async reorderDocuments(documents) {
+    let data = {};
+    data.documents = JSON.stringify(documents);
     try {
-      const formData = new FormData();
-      formData.append('documents', JSON.stringify(documents));
-
-      const response = await client().post(
-        baseUrl + '&task=reorderDocuments',
-        formData
-      );
-
-      return response;
+      return await fetchClient.post('reorderDocuments', data);
     } catch (error) {
       return {
         status: false,

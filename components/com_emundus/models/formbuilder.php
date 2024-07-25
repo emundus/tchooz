@@ -1989,6 +1989,18 @@ class EmundusModelFormbuilder extends JModelList
 					unset($element['params']['validations']['must_validate'][$key]);
 					unset($element['params']['validations']['show_icon'][$key]);
 
+					$isemail_key = array_search("isemail", $element['params']['validations']['plugin']);
+					if($isemail_key !== false && $isemail_key !== null) {
+						unset($element['params']['isemail-message'][$key]);
+						unset($element['params']['isemail-validation_condition'][$key]);
+						unset($element['params']['isemail-allow_empty'][$key]);
+						unset($element['params']['isemail-check_mx'][$key]);
+						$element['params']['isemail-message'] = array_values($element['params']['isemail-message']);
+						$element['params']['isemail-validation_condition'] = array_values($element['params']['isemail-validation_condition']);
+						$element['params']['isemail-allow_empty'] = array_values($element['params']['isemail-allow_empty']);
+						$element['params']['isemail-check_mx'] = array_values($element['params']['isemail-check_mx']);
+					}
+
 					// Reindex validations
 					$element['params']['validations']['plugin'] = array_values($element['params']['validations']['plugin']);
 					$element['params']['validations']['plugin_published'] = array_values($element['params']['validations']['plugin_published']);
@@ -2008,6 +2020,14 @@ class EmundusModelFormbuilder extends JModelList
 					$element['params']['validations']['validate_hidden'][]  = "0";
 					$element['params']['validations']['must_validate'][]    = "0";
 					$element['params']['validations']['show_icon'][]        = "1";
+
+					$isemail_key = array_search("isemail", $element['params']['validations']['plugin']);
+					if($isemail_key !== false && $isemail_key !== null) {
+						$element['params']['isemail-message'][] = "";
+						$element['params']['isemail-validation_condition'][] = "";
+						$element['params']['isemail-allow_empty'][] = "";
+						$element['params']['isemail-check_mx'][] = "";
+					}
 				}
 			}
 
@@ -2147,6 +2167,15 @@ class EmundusModelFormbuilder extends JModelList
 						unset($element['params']['isemail-validation_condition']);
 						unset($element['params']['isemail-allow_empty']);
 						unset($element['params']['isemail-check_mx']);
+
+						// Reindex validations
+						$element['params']['validations']['plugin'] = array_values($element['params']['validations']['plugin']);
+						$element['params']['validations']['plugin_published'] = array_values($element['params']['validations']['plugin_published']);
+						$element['params']['validations']['validate_in'] = array_values($element['params']['validations']['validate_in']);
+						$element['params']['validations']['validation_on'] = array_values($element['params']['validations']['validation_on']);
+						$element['params']['validations']['validate_hidden'] = array_values($element['params']['validations']['validate_hidden']);
+						$element['params']['validations']['must_validate'] = array_values($element['params']['validations']['must_validate']);
+						$element['params']['validations']['show_icon'] = array_values($element['params']['validations']['show_icon']);
 					}
 				}
 			}
