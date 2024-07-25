@@ -1326,6 +1326,47 @@ if(value == 1) {
 			$this->db->setQuery($query);
 			$this->db->execute();
 
+			$datas       = [
+				'menutype'     => 'coordinatormenu',
+				'title'        => 'Liste des balises',
+				'alias'        => 'export-tags',
+				'link'         => 'index.php?option=com_emundus&view=export_select_columns&layout=allprograms',
+				'type'         => 'component',
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'params' => [
+					'menu_show'    => 0
+				]
+			];
+			$tags_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+
+			EmundusHelperUpdate::installExtension('plg_task_checkgantrymode','checkgantrymode',null,'plugin',1,'task');
+
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__scheduler_tasks'))
+				->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('plg_task_checkgantrymode_task_get'));
+			$this->db->setQuery($query);
+			$check_gantry_task = $this->db->loadResult();
+
+			if(empty($check_gantry_task)) {
+				$insert = [
+					'asset_id' => 0,
+					'title' => 'Check Gantry Production Mode',
+					'type' => 'plg_task_checkgantrymode_task_get',
+					'execution_rules' => '{"rule-type":"interval-days","interval-days":"1","exec-day":"25","exec-time":"23:00"}',
+					'cron_rules' => '{"type":"interval","exp":"P1D"}',
+					'state' => 1,
+					'last_exit_code' => 0,
+					'priority' => 0,
+					'ordering' => 0,
+					'cli_exclusive' => 0,
+					'params' => '{"individual_log":false,"log_file":"","notifications":{"success_mail":"0","failure_mail":"0","fatal_failure_mail":"1","orphan_mail":"1"}}',
+					'created' => date('Y-m-d H:i:s'),
+				];
+				$insert = (object) $insert;
+				$this->db->insertObject('#__scheduler_tasks', $insert);
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

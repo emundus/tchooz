@@ -652,7 +652,7 @@ if ($allowed_attachments !== true) {
                         if (email.name !== '') {
                             document.getElementById('mail_from_name').innerText = email.name;
                         } else {
-                            document.getElementById('mail_from_name').innerText = <?= $app->getConfig()->get('fromname'); ?>;
+                            document.getElementById('mail_from_name').innerText = "<?= $app->getConfig()->get('fromname'); ?>";
                         }
 
                         document.getElementById('mail_body').value = email.message;

@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__securitycheckpro_logs">
    <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="ip" Type="varchar(255)" Null="YES" Key="" Extra="" />
+   <field Field="ip" Type="varchar(255)" Null="NO" Key="" Extra="" />
    <field Field="geolocation" Type="varchar(150)" Null="YES" Key="" Default="---" Extra="" />
    <field Field="username" Type="varchar(150)" Null="YES" Key="" Default="---" Extra="" />
    <field Field="time" Type="datetime" Null="NO" Key="" Extra="" />

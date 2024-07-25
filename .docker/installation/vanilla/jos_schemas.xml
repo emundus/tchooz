@@ -25,8 +25,8 @@
     <field name="version_id">update_flags</field>
    </row>
    <row>
-    <field name="extension_id">601</field>
-    <field name="version_id">4.1.1</field>
+    <field name="extension_id">750</field>
+    <field name="version_id">4.0.1</field>
    </row>
   </table_data>
  </database>

@@ -749,8 +749,8 @@ die("<script>
 				break;
 			case 'email':
 				$label = array(
-					'fr' => 'Adresse email',
-					'en' => 'Email address',
+					'fr' => 'Adresse e-mail',
+					'en' => 'E-mail address',
 				);
 				break;
 			case 'emundus_phonenumber':

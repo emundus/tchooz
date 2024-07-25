@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__securitycheckpro_users_control">
    <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="users" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="users" Type="text" Null="NO" Key="" Extra="" />
    <field Field="contador" Type="int unsigned" Null="NO" Key="" Extra="" />
    <key Table="#__securitycheckpro_users_control" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>

@@ -8,7 +8,7 @@
       </div>
       <div class="tw-flex tw-items-center">
         <a class="tw-mr-4 tw-cursor-pointer em-blue-500-color em-hover-blue-500"
-           href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173"
+           href="/export-tags"
            target="_blank">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_TAGS_LIST') }}</a>
         <div class="tw-cursor-pointer em-blue-500-color" @click="resetName">
           {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_RESET') }}

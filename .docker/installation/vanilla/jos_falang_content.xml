@@ -8049,6 +8049,32 @@
     <field name="modified_by">62</field>
     <field name="published">1</field>
    </row>
+   <row>
+    <field name="id">606</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">6</field>
+    <field name="reference_table">emundus_setup_status</field>
+    <field name="reference_field">value</field>
+    <field name="value">In evaluation</field>
+    <field name="original_value">a61ba122ca95dbf04b9ccc0f145a99ae</field>
+    <field name="original_text">En évaluation</field>
+    <field name="modified">2024-07-24 09:12:53</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
+   <row>
+    <field name="id">607</field>
+    <field name="language_id">1</field>
+    <field name="reference_id">0</field>
+    <field name="reference_table">emundus_setup_status</field>
+    <field name="reference_field">value</field>
+    <field name="value">Draft</field>
+    <field name="original_value" value_is_null="true"></field>
+    <field name="original_text">En cours de saisie</field>
+    <field name="modified">2024-07-24 09:12:53</field>
+    <field name="modified_by">62</field>
+    <field name="published">1</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

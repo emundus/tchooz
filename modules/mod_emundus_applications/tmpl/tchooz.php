@@ -1026,7 +1026,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         if (target.indexOf('actions_button_') !== -1 || target.indexOf('actions_block_delete_') !== -1) {
             //do nothing
         } else {
-            window.location.href = url;
+            window.location.href = '/'+url;
         }
     }
 
