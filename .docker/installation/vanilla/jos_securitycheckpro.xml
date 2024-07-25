@@ -3,7 +3,7 @@
  <database name="">
   <table_structure name="#__securitycheckpro">
    <field Field="id" Type="int unsigned" Null="NO" Key="PRI" Extra="auto_increment" />
-   <field Field="Product" Type="text" Null="YES" Key="" Extra="" />
+   <field Field="Product" Type="text" Null="NO" Key="" Extra="" />
    <field Field="sc_type" Type="varchar(35)" Null="YES" Key="" Extra="" />
    <field Field="Installedversion" Type="varchar(60)" Null="YES" Key="" Default="---" Extra="" />
    <field Field="Vulnerable" Type="varchar(10)" Null="NO" Key="" Default="No" Extra="" />
