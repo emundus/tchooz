@@ -1532,7 +1532,7 @@ function updateState(fnums, state)
                 Swal.fire({
                     position: 'center',
                     type: 'success',
-                    iconHtml: '<img class="em-sending-email-img tw-w-full tw-max-w-none" src="/media/com_emundus/images/tchoozy/complex-illustrations/checklist.svg"/>',
+                    iconHtml: '<img class="em-sending-email-img tw-w-2/3 tw-max-w-none" src="/media/com_emundus/images/tchoozy/complex-illustrations/goal-achieved-green.svg"/>',
                     title: result.msg,
                     showConfirmButton: false,
                     timer: 3000,
