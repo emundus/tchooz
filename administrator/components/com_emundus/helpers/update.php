@@ -4375,7 +4375,7 @@ class EmundusHelperUpdate
 			$storage_value['blacklist_email']           = 0;
 
 			// Strict mode
-			$storage_value['mode'] = 1;
+			$storage_value['mode'] = 0;
 
 			// Logs
 			$storage_value['logs_attacks']              = 1;
@@ -4389,7 +4389,7 @@ class EmundusHelperUpdate
 			$storage_value['custom_code']           = '<h1 style="text-align: center;">The application\'s firewall has been triggered by your use of the platform.<br />You no longer have access to the platform.<br />Please contact the platform manager so that he can unblock your account.</h1><hr /><h1 style="text-align: center;">Le pare-feu de l\'application vient de se déclencher suite à votre utilisation de la plateforme.<br />Vous n\'avez plus accès à la plateforme.<br />Merci de prendre contact avec le gestionnaire de cette plateforme afin qu\'il débloque votre compte.</h1>';
 
 			// Second level
-			$storage_value['second_level']             = 1;
+			$storage_value['second_level']             = 0;
 			$storage_value['second_level_redirect']    = 1;
 			$storage_value['second_level_limit_words'] = 5;
 			$storage_value['second_level_words']       = base64_encode('drop,update,set,admin,select,password,concat,login,load_file,ascii,char,union,group by,order by,insert,values,where,substring,benchmark,md5,sha1,schema,row_count,compress,encode,information_schema,script,javascript,img,src,body,iframe,frame,$_POST,eval,$_REQUEST,base64_decode,gzinflate,gzuncompress,gzinflate,strtrexec,passthru,shell_exec,createElement');
@@ -4404,7 +4404,7 @@ class EmundusHelperUpdate
 			$storage_value['strip_all_tags']                   = 0;
 			$storage_value['tags_to_filter'] = 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,ilayer,layer,meta,object,script,xml';
 			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik,com_gantry5';
-			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik,com_content,com_languages,com_gantry5';
+			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik,com_content,com_languages';
 			$storage_value['sql_pattern_exceptions'] = 'com_emundus,com_fabrik';
 			$storage_value['line_comments_exceptions'] = 'com_emundus,com_fabrik,com_content';
 			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik,com_users';

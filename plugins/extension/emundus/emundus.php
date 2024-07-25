@@ -14,7 +14,7 @@ class PlgExtensionEmundus extends CMSPlugin
 			return;
 		}
 
-		$db    = Factory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		// New component params.
@@ -77,6 +77,35 @@ class PlgExtensionEmundus extends CMSPlugin
 
 		if (!empty($ids_to_add) || !empty($ids_to_delete)) {
 			Factory::getApplication()->enqueueMessage(JText::_('PLG_EXTENSION_EMUNDUS_EXCEPTIONS_SYNCED'));
+		}
+
+		// AddPipe
+		$add_pipe = $params->get('addpipe_activation',0);
+		if($add_pipe) {
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__emundus_setup_attachments'))
+				->where($db->quoteName('allowed_types') . ' = ' . $db->quote('video'));
+			$db->setQuery($query);
+			$attachment_id = $db->loadResult();
+
+			if(empty($attachment_id)) {
+				$insert = [
+					'lbl' => '_video',
+					'value' => 'Video',
+					'allowed_types' => 'video',
+					'nbmax' => 1,
+					'ordering' => 0,
+					'published' => 1,
+					'video_max_length' => 60,
+					'storage_usage' => 'Durée 0Jours1heures40minutes45secondes (100 minutes)'
+				];
+				$insert = (object) $insert;
+				$inserted = $db->insertObject('#__emundus_setup_attachments', $insert);
+				if ($inserted) {
+					Factory::getApplication()->enqueueMessage(JText::_('PLG_EXTENSION_EMUNDUS_ADDPIPE_CREATED'));
+				}
+			}
 		}
 	}
 }

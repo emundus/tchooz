@@ -1393,6 +1393,15 @@ if(value == 1) {
 				$this->db->insertObject('#__scheduler_tasks', $insert);
 			}
 
+			$query->clear()
+				->update($this->db->quoteName('#__hikashop_config'))
+				->set($this->db->quoteName('config_value') . ' = 0')
+				->where($this->db->quoteName('config_namekey') . ' LIKE ' . $this->db->quote('dark_mode'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			EmundusHelperUpdate::installExtension('plg_extension_emundus','emundus',null,'plugin',1,'extension');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

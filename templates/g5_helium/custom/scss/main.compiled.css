@@ -3772,6 +3772,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .\!tw-w-auto {
     width: auto !important;
 }
+.\!tw-w-max {
+    width: -moz-max-content !important;
+    width: max-content !important;
+}
 .tw-w-0 {
     width: 0px;
 }

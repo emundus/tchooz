@@ -155,6 +155,10 @@
     color: var(--main-500);
 }
 
+.mod_emundus_checklist .mod_emundus_checklist_need_ok:not(.active) .mod_emundus_checklist___step_count .material-icons-outlined.tw-text-white {
+    color: var(--neutral-0);
+}
+
 .mod_emundus_checklist___step_count .material-icons-outlined {
     font-size: 14px;
 }

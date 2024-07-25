@@ -13,37 +13,46 @@
  * @description Sets the price to 0 depending if the excelia user exists
  */
 // No direct access
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die('Restricted access');
 
 
-class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
+class PlgHikashopEmundus_hikashop extends CMSPlugin {
 
     function __construct(&$subject, $config) {
         jimport('joomla.log.log');
-        JLog::addLogger(array('text_file' => 'com_emundus.emundus_hikashop_plugin.php'), JLog::ALL, array('com_emundus'));
+        Log::addLogger(array('text_file' => 'com_emundus.emundus_hikashop_plugin.php'), Log::ALL, array('com_emundus'));
         parent::__construct($subject, $config);
     }
 
     public function onBeforeOrderCreate(&$order,&$do)
     {
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopBeforeOrderCreate', ['order' => $order, 'do' => $do]]);
+        PluginHelper::importPlugin('emundus','custom_event_handler');
+        Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopBeforeOrderCreate', ['order' => $order, 'do' => $do]]);
     }
 
     public function onAfterOrderCreate(&$order)
     {
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderCreate', ['order' => $order]]);
+		$app = Factory::getApplication();
+	    PluginHelper::importPlugin('emundus','custom_event_handler');
+	    $app->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderCreate', ['order' => $order]]);
 
         // We get the emundus payment type from the config
-        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $eMConfig = ComponentHelper::getParams('com_emundus');
         $em_application_payment = $eMConfig->get('application_payment', 'user');
 
-        $session = JFactory::getSession()->get('emundusUser');
+        $session = $app->getSession()->get('emundusUser');
 	    $order_id = $order->order_parent_id ?: $order->order_id;
 
 		// find the fnum related to current order (it isn't always the same as the session)
-	    $db = JFactory::getDbo();
+	    $db = Factory::getContainer()->get('DatabaseDriver');
 	    $query = $db->getQuery(true);
 	    $query->clear()
 		    ->select('order_id')
@@ -68,27 +77,27 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
 			$cid = $fnum_infos['campaign_id'];
 			$status = $fnum_infos['status'];
 		} else if (!empty($session)) {
-            $user = $session->id;
+            $user = $session->id ?: $app->getIdentity()->id;
             $fnum = $session->fnum;
             $cid = $session->campaign_id;
             $status = $session->status;
         }
         else {
-            JLog::add('Could not get session on order ID nor fnum from order_id. -> '. $order_id, JLog::ERROR, 'com_emundus');
+            Log::add('Could not get session on order ID nor fnum from order_id. -> '. $order_id, Log::ERROR, 'com_emundus');
             return false;
         }
 
         if ($eMConfig->get('hikashop_session')) {
-	        $payment_session = JFactory::getSession()->get('emundusPayment', null);
+	        $payment_session = $app->getSession()->get('emundusPayment', null);
 	        if (empty($payment_session->fnum)) {
                 $emundus_payment = new StdClass();
                 $emundus_payment->user_id = $user;
                 $emundus_payment->fnum = $fnum;
-                JFactory::getSession()->set('emundusPayment', $emundus_payment);
+		        $app->getSession()->set('emundusPayment', $emundus_payment);
             }
         }
 
-        $db = JFactory::getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $config = hikashop_config();
         $confirmed_statuses = explode(',', trim($config->get('invoice_order_statuses','confirmed,shipped'), ','));
         if (empty($confirmed_statuses)) {
@@ -99,21 +108,25 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
 		    ->select('*')
 		    ->from($db->quoteName('#__emundus_hikashop'));
 
-        switch ($em_application_payment) {
-            case 'campaign':
-				$query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR (' . $db->quoteName('campaign_id') . ' = ' . $cid . ' AND ' . $db->quoteName('user') . ' = ' . $user .' ) ');
-                break;
-            case 'fnum':
-				$query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-				break;
-            case 'status':
-                $query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR (' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum).' AND '. $db->quoteName('status').' = '.$status.')');
-                break;
-            case 'user':
-            default :
-                $query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR ' . $db->quoteName('user') . ' = ' . $user);
-                break;
-        }
+		if(!empty($user)) {
+			switch ($em_application_payment) {
+				case 'campaign':
+					$query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR (' . $db->quoteName('campaign_id') . ' = ' . $cid . ' AND ' . $db->quoteName('user') . ' = ' . $user . ' ) ');
+					break;
+				case 'fnum':
+					$query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR ' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+					break;
+				case 'status':
+					$query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR (' . $db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum) . ' AND ' . $db->quoteName('status') . ' = ' . $status . ')');
+					break;
+				case 'user':
+				default :
+					$query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ') OR ' . $db->quoteName('user') . ' = ' . $user);
+					break;
+			}
+		} else {
+			$query->where($db->quoteName('order_id') . ' IN (' . implode(',', $orders) . ')');
+		}
 
         try {
             $db->setQuery($query);
@@ -135,7 +148,7 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
                 $db->setQuery($query);
 
             } else {
-                JLog::add('Updating Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::INFO, 'com_emundus');
+                Log::add('Updating Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), Log::INFO, 'com_emundus');
 
                 $fields = array(
                     $db->quoteName('order_id') . ' = ' . $db->quote($order_id)
@@ -158,25 +171,26 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
             $res = $db->execute();
 
             if ($res) {
-                JLog::add('Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::INFO, 'com_emundus');
+                Log::add('Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), Log::INFO, 'com_emundus');
                 return true;
             }
             return $res;
 
         } catch (Exception $exception) {
-            JLog::add('Error SQL -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            Log::add('Error SQL -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), Log::ERROR, 'com_emundus');
             return false;
         }
     }
 
     public function onBeforeOrderUpdate(&$order,&$do)
     {
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopBeforeOrderUpdate', ['order' => $order, 'do' => $do]]);
+        PluginHelper::importPlugin('emundus','custom_event_handler');
+        Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopBeforeOrderUpdate', ['order' => $order, 'do' => $do]]);
     }
 
     public function onAfterOrderUpdate(&$order) {
-        $db         = JFactory::getDbo();
+		$app = Factory::getApplication();
+        $db         = Factory::getContainer()->get('DatabaseDriver');
 
 	    if(isset($order->order_parent_id)){
 			$order_id = $order->order_parent_id;
@@ -208,20 +222,20 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
                 $status = $em_order->status;
 
             } catch (Exception $exception) {
-                JLog::add('Error SQL -> '. preg_replace("/[\r\n]/"," ",$query), JLog::ERROR, 'com_emundus');
+                Log::add('Error SQL -> '. preg_replace("/[\r\n]/"," ",$query), Log::ERROR, 'com_emundus');
                 return false;
             }
         }
         else {
-            JLog::add('Could not get user session on order ID. -> '. $order_id, JLog::ERROR, 'com_emundus');
+            Log::add('Could not get user session on order ID. -> '. $order_id, Log::ERROR, 'com_emundus');
             return false;
         }
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $eMConfig = ComponentHelper::getParams('com_emundus');
 
         if($eMConfig->get('hikashop_session', 0)) {
             if (in_array($order->order_status, ['cancelled', 'confirmed', 'shipped'])) {
-                JFactory::getSession()->set('emundusPayment', null);
+	            $app->getSession()->set('emundusPayment', null);
             }
         }
 
@@ -235,12 +249,12 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
         $confirmed_statuses = explode(',', trim($config->get('invoice_order_statuses','confirmed,shipped'), ','));
 
         if ($status_after_payment[$key] > 0 && in_array($order->order_status, $confirmed_statuses)) {
-            require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+	        require_once (JPATH_SITE.'/components/com_emundus/models/files.php');
             $m_files = new EmundusModelFiles();
 
 			if(!empty($fnum)) {
 				$m_files->updateState($fnum, $status_after_payment[$key]);
-				JLog::add('Application file status updated to -> ' . $status_after_payment[$key], JLog::INFO, 'com_emundus');
+				Log::add('Application file status updated to -> ' . $status_after_payment[$key], Log::INFO, 'com_emundus');
 			}
 
             $query = $db->getQuery(true);
@@ -252,7 +266,7 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
                 $db->setQuery($query);
                 $db->execute();
             } catch (Exception $e) {
-                JLog::add('Failed to update file submitted after payment ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                Log::add('Failed to update file submitted after payment ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
             }
         }
         else {
@@ -261,10 +275,9 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
             $hika_order = $db->loadObject();
 
             if(empty($hika_order->order_payment_method)){
-                $user = JFactory::getSession()->get('emundusUser');
+                $user = $app->getSession()->get('emundusUser');
                 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
-                $app = JFactory::getApplication();
                 $app->enqueueMessage( JText::_('THANK_YOU_FOR_PURCHASE') );
 
                 $m_application 	= new EmundusModelApplication;
@@ -273,47 +286,47 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
                 $app->redirect($redirect);
             }
 
-            JLog::add('Could not set application file status on order ID -> '. $order_id, JLog::ERROR, 'com_emundus');
+            Log::add('Could not set application file status on order ID -> '. $order_id, Log::ERROR, 'com_emundus');
             return false;
         }
 
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
+        PluginHelper::importPlugin('emundus','custom_event_handler');
+	    $app->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderUpdate', ['order' => $order, 'em_order' => $em_order]]);
 
         $this->onAfterOrderCreate($order);
     }
 
     public function onAfterOrderConfirm(&$order,&$methods,$method_id)
     {
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderConfirm',
+        PluginHelper::importPlugin('emundus','custom_event_handler');
+        Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderConfirm',
             ['order' => $order, 'methods' => $methods, 'method_id' => $method_id]
         ]);
     }
 
     public function onAfterOrderDelete($elements)
     {
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderDelete', ['elements' => $elements]]);
+        PluginHelper::importPlugin('emundus','custom_event_handler');
+        Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderDelete', ['elements' => $elements]]);
     }
 
 
     public function onCheckoutWorkflowLoad(&$checkout_workflow, &$shop_closed, $cart_id)
     {
-	    JPluginHelper::importPlugin('emundus', 'custom_event_handler');
-	    \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopCheckoutWorkflowLoad',
+		$app = Factory::getApplication();
+	    PluginHelper::importPlugin('emundus', 'custom_event_handler');
+	    $app->triggerEvent('onCallEventHandler', ['onHikashopCheckoutWorkflowLoad',
 		    ['checkout_workflow' => $checkout_workflow, 'shop_closed' => $shop_closed, 'cart_id' => $cart_id]
 	    ]);
 
-	    $eMConfig = JComponentHelper::getParams('com_emundus');
+	    $eMConfig = ComponentHelper::getParams('com_emundus');
 	    if ($eMConfig->get('hikashop_session')) {
-		    $session = JFactory::getSession()->get('emundusUser');
+		    $session = $app->getSession()->get('emundusUser');
 
 		    if (!empty($session) && !empty($session->fnum)) {
-			    $app = JFactory::getApplication();
 			    $itemId = $app->input->get('Itemid', null,'int');
 
-			    $db = JFactory::getDBO();
+			    $db = Factory::getContainer()->get('DatabaseDriver');
 			    $query = $db->getQuery(true);
 
 			    $query->select('menutype')
@@ -330,8 +343,8 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
 					    $current_profile = $m_profile->getProfileByFnum($session->fnum);
 
 					    if (strpos($menutype, 'menu-profile') !== false && $menutype !== 'menu-profile'.$current_profile) {
-						    JLog::add('FNUM ' . $session->fnum  . ' tried to pay product of menu ' . $menutype . ' but its current profile is ' . $current_profile  , JLog::WARNING, 'com_emundus.emundus_hikashop_plugin');
-						    $app->enqueueMessage(JText::_('COM_EMUNDUS_WRONG_PRODUCT_FOR_CAMPAIGN'), 'warning');
+						    Log::add('FNUM ' . $session->fnum  . ' tried to pay product of menu ' . $menutype . ' but its current profile is ' . $current_profile  , Log::WARNING, 'com_emundus.emundus_hikashop_plugin');
+						    $app->enqueueMessage(Text::_('COM_EMUNDUS_WRONG_PRODUCT_FOR_CAMPAIGN'), 'warning');
 						    $app->redirect('/');
 					    } else {
 						    // TODO: is correct product ??
@@ -339,20 +352,20 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
 				    }
 
 			    } catch (Exception $e) {
-				    JLog::add('Failed to get menu type associated to user profile ' .  $e->getMessage(), JLog::ERROR, 'com_emundus.emundus_hikashop_plugin');
+				    Log::add('Failed to get menu type associated to user profile ' .  $e->getMessage(), Log::ERROR, 'com_emundus.emundus_hikashop_plugin');
 			    }
 		    }
 	    }
     }
 
     public function onBeforeProductListingLoad(&$filters,&$order,&$parent, &$select, &$select2, &$a, &$b, &$on) {
-        $app = JFactory::getApplication();
+        $app = Factory::getApplication();
 
-        $isAdmin = JFactory::getApplication()->isClient('administrator');
+        $isAdmin = $app->isClient('administrator');
 
         if(!$isAdmin) {
-            JPluginHelper::importPlugin('emundus','custom_event_handler');
-            \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopBeforeProductListingLoad',
+            PluginHelper::importPlugin('emundus','custom_event_handler');
+	        $app->triggerEvent('onCallEventHandler', ['onHikashopBeforeProductListingLoad',
                 ['filters' => $filters, 'order' => $order,'parent' => $parent, 'select' => $select, 'select2' => $select2, 'a' => $a, 'b' => $b, 'on' => $on]
             ]);
 
@@ -362,38 +375,40 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
     }
 
     public function onAfterCartProductsLoad(&$cart) {
-        $params	= JComponentHelper::getParams('com_emundus');
+	    $app = Factory::getApplication();
+        $params	= ComponentHelper::getParams('com_emundus');
         if ($params->get('hikashop_session')) {
-            $payment_session = JFactory::getSession()->get('emundusPayment', null);
+            $payment_session = $app->getSession()->get('emundusPayment', null);
 
             if (empty($payment_session->fnum)) {
-                $user = JFactory::getSession()->get('emundusUser');
+                $user = $app->getSession()->get('emundusUser');
                 $emundus_payment = new StdClass();
                 $emundus_payment->user_id = $user->id;
                 $emundus_payment->fnum = $user->fnum;
 
-                JFactory::getSession()->set('emundusPayment', $emundus_payment);
+	            $app->getSession()->set('emundusPayment', $emundus_payment);
             }
         }
 
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterCartProductsLoad', ['cart' => &$cart]]);
+        PluginHelper::importPlugin('emundus','custom_event_handler');
+	    $app->triggerEvent('onCallEventHandler', ['onHikashopAfterCartProductsLoad', ['cart' => &$cart]]);
     }
 
     public function onCheckoutStepList(&$list)
     {
         $list['emundus_return'] = array('name' => 'eMundus - Retour au dossier', 'params' => array('reset_session' => ['name' => JText::_('COM_EMUNDUS_RESET_SESSION_ON_QUIT'), 'type' => 'boolean', 'default' => 0]));
-	    JPluginHelper::importPlugin('emundus','custom_event_handler');
-	    \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopCheckoutStepList', ['list' => &$list]]);
+	    PluginHelper::importPlugin('emundus','custom_event_handler');
+	    Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopCheckoutStepList', ['list' => &$list]]);
     }
 
     public function onCheckoutStepDisplay($layoutName, &$html, &$view, $pos = null, $options = null)
     {
+	    $app = Factory::getApplication();
         if ($layoutName != 'emundus_return')
             return;
 
-        $user = JFactory::getSession()->get('emundusUser');
-        $layout = '<div><a id="go-back-button" data-fnum="'. $user->fnum . '" class="em-primary-button em-mt-16" style="width:fit-content;" href="' . JUri::base() . 'component/emundus/?task=openfile&fnum=' . $user->fnum . '"><span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">Retour</span></a></div>';
+        $user = $app->getSession()->get('emundusUser');
+        $layout = '<div><a id="go-back-button" data-fnum="'. $user->fnum . '" class="em-primary-button em-mt-16" style="width:fit-content;" href="' . Uri::base() . 'component/emundus/?task=openfile&fnum=' . $user->fnum . '"><span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">Retour</span></a></div>';
 
         if ($options['reset_session'] == 1) {
             $layout .= "<script>
@@ -409,21 +424,22 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
 
         $html .= $layout;
 
-	    JPluginHelper::importPlugin('emundus','custom_event_handler');
-	    \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopCheckoutStepDisplay', ['layoutName' => $layoutName, 'html' => &$html]]);
+	    PluginHelper::importPlugin('emundus','custom_event_handler');
+	    $app->triggerEvent('onCallEventHandler', ['onHikashopCheckoutStepDisplay', ['layoutName' => $layoutName, 'html' => &$html]]);
     }
 
     public function onAfterCheckoutStep($controllerName, &$go_back, $original_go_back, &$controller) {
-        $params	= JComponentHelper::getParams('com_emundus');
+	    $app = Factory::getApplication();
+        $params	= ComponentHelper::getParams('com_emundus');
 
         if ($params->get('hikashop_session')) {
-            $session = JFactory::getSession()->get('emundusUser');
+            $session = $app->getSession()->get('emundusUser');
             require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'payment.php');
             $m_payment = new EmundusModelPayment();
             $m_payment->checkPaymentSession($session->fnum, 'onAfterCheckoutStep');
         }
 
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterCheckoutStep', ['controllerName' => $controllerName, 'go_back' => &$go_back, 'original_go_back' => $original_go_back, 'controller' => &$controller]]);
+        PluginHelper::importPlugin('emundus','custom_event_handler');
+	    $app->triggerEvent('onCallEventHandler', ['onHikashopAfterCheckoutStep', ['controllerName' => $controllerName, 'go_back' => &$go_back, 'original_go_back' => $original_go_back, 'controller' => &$controller]]);
     }
 }

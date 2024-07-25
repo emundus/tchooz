@@ -319,32 +319,33 @@ export default {
   },
 
   async addRule(formId, conditions, actions, group, label) {
-    const formData = new FormData();
-    formData.append('conditions', JSON.stringify(conditions));
-    formData.append('actions', JSON.stringify(actions));
-    formData.append('form_id', formId);
-    formData.append('group', group);
-    formData.append('label', label);
+    let data = {};
+    data.conditions = JSON.stringify(conditions);
+    data.actions = JSON.stringify(actions);
+    data.form_id = formId;
+    data.group = group;
+    data.label = label;
 
-    const response = await fetch('/' + baseUrl + '&task=addRule', {
-      method: 'POST',
-      body: formData
-    });
-    return await response.json();
+    try {
+      return await fetchClient.post('addRule', data);
+    } catch (error) {
+      return {
+        status: false,
+        error: error
+      };
+    }
   },
 
   async editRule(ruleId, conditions, actions, group, label) {
-    const formData = new FormData();
-    formData.append('conditions', JSON.stringify(conditions));
-    formData.append('actions', JSON.stringify(actions));
-    formData.append('rule_id', ruleId);
-    formData.append('group', group);
-    formData.append('label', label);
+    let data = {};
+    data.conditions = JSON.stringify(conditions);
+    data.actions = JSON.stringify(actions);
+    data.rule_id = ruleId;
+    data.group = group;
+    data.label = label;
 
     try {
-      const response = await client().post(baseUrl + '&task=editRule', formData);
-
-      return response;
+      return await fetchClient.post('editRule', data);
     } catch (error) {
       return {
         status: false,
