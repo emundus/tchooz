@@ -2408,16 +2408,16 @@ button.swal2-styled.swal2-cancel[data-v-0c447415] {
 }
 
 
-.custom-color-picker[data-v-0e7cd861] {
-  width: 44px !important;
-  height: 48px !important;
-  border: none !important;
-  padding: 0 !important;
-  outline: none;
-  cursor: pointer;
+.custom-color-picker[data-v-d5020f8b] {
+    width: 44px !important;
+    height: 48px !important;
+    border: none !important;
+    padding: 0 !important;
+    outline: none;
+    cursor: pointer;
 }
-.custom-color-picker[data-v-0e7cd861]::-webkit-color-swatch {
-  border-radius: 100%;
+.custom-color-picker[data-v-d5020f8b]::-webkit-color-swatch {
+    border-radius: 100%;
 }
 .status-field[data-v-1f603673] {
   border-radius: 5px;
