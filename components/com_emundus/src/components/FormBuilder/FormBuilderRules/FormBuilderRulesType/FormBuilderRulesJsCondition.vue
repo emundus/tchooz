@@ -123,6 +123,9 @@ export default {
   mounted() {
     if (this.page.id) {
       this.conditionData.field = this.elements.find(element => element.name === this.conditionData.field);
+      if(this.conditionData.field) {
+        this.defineOptions(this.conditionData.field);
+      }
     }
 
     watch(
@@ -134,62 +137,7 @@ export default {
         this.options = [];
 
         if (val) {
-          if (this.options_plugins.includes(val.plugin)) {
-            if (val.plugin == 'databasejoin') {
-              this.loading = true;
-
-              this.getDatabasejoinOptions(val.params.join_db_name, val.params.join_key_column, val.params.join_val_column, val.params.join_val_column_concat).then(response => {
-                if (response.status && response.data != '') {
-                  this.options = response.options;
-
-                  if (this.conditionData.values) {
-                    this.conditionData.values = this.options.find(option => option.primary_key == this.conditionData.values);
-                  }
-                } else {
-                  this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
-                }
-                this.loading = false;
-              });
-            } else {
-              formBuilderService.getJTEXTA(val.params.sub_options.sub_labels).then(response => {
-                if (response) {
-                  val.params.sub_options.sub_labels.forEach((label, index) => {
-                    val.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
-                  });
-                }
-
-                var ctr = 0;
-                Object.values(val.params.sub_options.sub_values).forEach((option, key) => {
-                  let new_option = {
-                    primary_key: option,
-                    value: val.params.sub_options.sub_labels[key]
-                  };
-
-                  this.options.push(new_option);
-
-                  ctr++;
-                  if (ctr === Object.entries(val.params.sub_options).length) {
-                    if (this.conditionData.values) {
-                      this.conditionData.values = this.options.find(option => option.primary_key == this.conditionData.values);
-                    }
-                  }
-                });
-
-                this.loading = false;
-              });
-            }
-          }
-
-          if (val.plugin == 'yesno') {
-            this.options = [
-              {primary_key: 0, value: this.translate('COM_EMUNDUS_FORMBUILDER_NO')},
-              {primary_key: 1, value: this.translate('COM_EMUNDUS_FORMBUILDER_YES')}
-            ];
-
-            if (this.conditionData.values) {
-              this.conditionData.values = this.options.find(option => option.primary_key == this.conditionData.values);
-            }
-          }
+          this.defineOptions(val);
         }
       }
     )
@@ -198,6 +146,64 @@ export default {
     labelTranslate({label}) {
       return label ? label.fr : '';
     },
+    defineOptions(val) {
+      if (this.options_plugins.includes(val.plugin)) {
+        if (val.plugin == 'databasejoin') {
+          this.loading = true;
+
+          this.getDatabasejoinOptions(val.params.join_db_name, val.params.join_key_column, val.params.join_val_column, val.params.join_val_column_concat).then(response => {
+            if (response.status && response.data != '') {
+              this.options = response.options;
+
+              if (this.conditionData.values) {
+                this.conditionData.values = this.options.find(option => option.primary_key == this.conditionData.values);
+              }
+            } else {
+              this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
+            }
+            this.loading = false;
+          });
+        } else {
+          formBuilderService.getJTEXTA(val.params.sub_options.sub_labels).then(response => {
+            if (response) {
+              val.params.sub_options.sub_labels.forEach((label, index) => {
+                val.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
+              });
+            }
+
+            var ctr = 0;
+            Object.values(val.params.sub_options.sub_values).forEach((option, key) => {
+              let new_option = {
+                primary_key: option,
+                value: val.params.sub_options.sub_labels[key]
+              };
+
+              this.options.push(new_option);
+
+              ctr++;
+              if (ctr === Object.entries(val.params.sub_options).length) {
+                if (this.conditionData.values) {
+                  this.conditionData.values = this.options.find(option => option.primary_key == this.conditionData.values);
+                }
+              }
+            });
+
+            this.loading = false;
+          });
+        }
+      }
+
+      if (val.plugin == 'yesno') {
+        this.options = [
+          {primary_key: 0, value: this.translate('COM_EMUNDUS_FORMBUILDER_NO')},
+          {primary_key: 1, value: this.translate('COM_EMUNDUS_FORMBUILDER_YES')}
+        ];
+
+        if (this.conditionData.values) {
+          this.conditionData.values = this.options.find(option => option.primary_key == this.conditionData.values);
+        }
+      }
+    }
   },
   computed: {
     conditionLabel() {
