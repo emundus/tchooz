@@ -13,37 +13,44 @@
  * @description Sets the price to 0 depending if the excelia user exists
  */
 // No direct access
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die('Restricted access');
 
 
-class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
+class PlgHikashopEmundus_hikashop extends CMSPlugin {
 
     function __construct(&$subject, $config) {
         jimport('joomla.log.log');
-        JLog::addLogger(array('text_file' => 'com_emundus.emundus_hikashop_plugin.php'), JLog::ALL, array('com_emundus'));
+        Log::addLogger(array('text_file' => 'com_emundus.emundus_hikashop_plugin.php'), Log::ALL, array('com_emundus'));
         parent::__construct($subject, $config);
     }
 
     public function onBeforeOrderCreate(&$order,&$do)
     {
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopBeforeOrderCreate', ['order' => $order, 'do' => $do]]);
+        PluginHelper::importPlugin('emundus','custom_event_handler');
+        Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopBeforeOrderCreate', ['order' => $order, 'do' => $do]]);
     }
 
     public function onAfterOrderCreate(&$order)
     {
-        JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderCreate', ['order' => $order]]);
+	    PluginHelper::importPlugin('emundus','custom_event_handler');
+        Factory::getApplication()->triggerEvent('onCallEventHandler', ['onHikashopAfterOrderCreate', ['order' => $order]]);
 
         // We get the emundus payment type from the config
-        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $eMConfig = ComponentHelper::getParams('com_emundus');
         $em_application_payment = $eMConfig->get('application_payment', 'user');
 
-        $session = JFactory::getSession()->get('emundusUser');
+        $session = Factory::getApplication()->getSession()->get('emundusUser');
 	    $order_id = $order->order_parent_id ?: $order->order_id;
 
 		// find the fnum related to current order (it isn't always the same as the session)
-	    $db = JFactory::getDbo();
+	    $db = Factory::getContainer()->get('DatabaseDriver');
 	    $query = $db->getQuery(true);
 	    $query->clear()
 		    ->select('order_id')
@@ -62,7 +69,7 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
 
 		if (!empty($fnum)) {
 			$user = $session->id;
-			require_once (JPATH_SITE.'/components/com_emundus/models/files.php');
+			require_once (Uri::base().'/components/com_emundus/models/files.php');
 			$m_files = new EmundusModelFiles();
 			$fnum_infos = $m_files->getFnumInfos($fnum);
 			$cid = $fnum_infos['campaign_id'];
@@ -74,7 +81,7 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
             $status = $session->status;
         }
         else {
-            JLog::add('Could not get session on order ID nor fnum from order_id. -> '. $order_id, JLog::ERROR, 'com_emundus');
+            Log::add('Could not get session on order ID nor fnum from order_id. -> '. $order_id, Log::ERROR, 'com_emundus');
             return false;
         }
 
@@ -135,7 +142,7 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
                 $db->setQuery($query);
 
             } else {
-                JLog::add('Updating Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::INFO, 'com_emundus');
+                Log::add('Updating Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), Log::INFO, 'com_emundus');
 
                 $fields = array(
                     $db->quoteName('order_id') . ' = ' . $db->quote($order_id)
@@ -158,13 +165,13 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
             $res = $db->execute();
 
             if ($res) {
-                JLog::add('Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::INFO, 'com_emundus');
+                Log::add('Order '. $order_id .' update -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), Log::INFO, 'com_emundus');
                 return true;
             }
             return $res;
 
         } catch (Exception $exception) {
-            JLog::add('Error SQL -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            Log::add('Error SQL -> '. preg_replace("/[\r\n]/"," ",$query->__toString()), Log::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -208,12 +215,12 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
                 $status = $em_order->status;
 
             } catch (Exception $exception) {
-                JLog::add('Error SQL -> '. preg_replace("/[\r\n]/"," ",$query), JLog::ERROR, 'com_emundus');
+                Log::add('Error SQL -> '. preg_replace("/[\r\n]/"," ",$query), Log::ERROR, 'com_emundus');
                 return false;
             }
         }
         else {
-            JLog::add('Could not get user session on order ID. -> '. $order_id, JLog::ERROR, 'com_emundus');
+            Log::add('Could not get user session on order ID. -> '. $order_id, Log::ERROR, 'com_emundus');
             return false;
         }
 
@@ -240,7 +247,7 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
 
 			if(!empty($fnum)) {
 				$m_files->updateState($fnum, $status_after_payment[$key]);
-				JLog::add('Application file status updated to -> ' . $status_after_payment[$key], JLog::INFO, 'com_emundus');
+				Log::add('Application file status updated to -> ' . $status_after_payment[$key], Log::INFO, 'com_emundus');
 			}
 
             $query = $db->getQuery(true);
@@ -252,7 +259,7 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
                 $db->setQuery($query);
                 $db->execute();
             } catch (Exception $e) {
-                JLog::add('Failed to update file submitted after payment ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                Log::add('Failed to update file submitted after payment ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
             }
         }
         else {
@@ -273,7 +280,7 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
                 $app->redirect($redirect);
             }
 
-            JLog::add('Could not set application file status on order ID -> '. $order_id, JLog::ERROR, 'com_emundus');
+            Log::add('Could not set application file status on order ID -> '. $order_id, Log::ERROR, 'com_emundus');
             return false;
         }
 
@@ -330,7 +337,7 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
 					    $current_profile = $m_profile->getProfileByFnum($session->fnum);
 
 					    if (strpos($menutype, 'menu-profile') !== false && $menutype !== 'menu-profile'.$current_profile) {
-						    JLog::add('FNUM ' . $session->fnum  . ' tried to pay product of menu ' . $menutype . ' but its current profile is ' . $current_profile  , JLog::WARNING, 'com_emundus.emundus_hikashop_plugin');
+						    Log::add('FNUM ' . $session->fnum  . ' tried to pay product of menu ' . $menutype . ' but its current profile is ' . $current_profile  , Log::WARNING, 'com_emundus.emundus_hikashop_plugin');
 						    $app->enqueueMessage(JText::_('COM_EMUNDUS_WRONG_PRODUCT_FOR_CAMPAIGN'), 'warning');
 						    $app->redirect('/');
 					    } else {
@@ -339,7 +346,7 @@ class PlgHikashopEmundus_hikashop extends \Joomla\CMS\Plugin\CMSPlugin {
 				    }
 
 			    } catch (Exception $e) {
-				    JLog::add('Failed to get menu type associated to user profile ' .  $e->getMessage(), JLog::ERROR, 'com_emundus.emundus_hikashop_plugin');
+				    Log::add('Failed to get menu type associated to user profile ' .  $e->getMessage(), Log::ERROR, 'com_emundus.emundus_hikashop_plugin');
 			    }
 		    }
 	    }
