@@ -2171,7 +2171,10 @@ body.error-page .container-404 p {
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
     font-size: 16px;
     font-family: var(--em-coordinator-font);
-    line-height: 1.5;
+    line-height: 1.25;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 
     &:hover, &:active, &:focus {
       background: var(--em-profile-color) !important;
