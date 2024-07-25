@@ -33,18 +33,12 @@ export default {
   },
 
   async setDocumentMandatory(params) {
-    const formData = new FormData();
-    Object.keys(params).forEach(key => {
-      formData.append(key, params[key]);
-    });
-
     try {
-      const response = await client.post('updatedocumentmandatory', formData);
-
-      return response.data;
-    } catch (e) {
+      return await client.post('updatedocumentmandatory', params);
+    } catch (error) {
       return {
-        status: false, msg: e.message
+        status: false,
+        error: error
       };
     }
   },
