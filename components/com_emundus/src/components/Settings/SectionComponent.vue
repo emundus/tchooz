@@ -49,7 +49,6 @@ export default {
     Info,
   },
   props: ['activeMenuItem', 'activeSectionComponent'],
-
   methods: {
     handleSectionComponent(item) {
       this.$emit('handleSectionComponent', item);

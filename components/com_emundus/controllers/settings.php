@@ -221,15 +221,9 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function getarticle()
 	{
-		$user = JFactory::getUser();
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
-
-
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
 			$article_id    = $this->input->getString('article_id', 0);
 			$article_alias = $this->input->getString('article_alias', '');
 			$lang          = $this->input->getString('lang');
@@ -238,13 +232,13 @@ class EmundusControllersettings extends JControllerLegacy
 			$content = $this->m_settings->getArticle($lang, $article_id, $article_alias, $field);
 
 			if (!empty($content)) {
-				$tab = array('status' => 1, 'msg' => JText::_('ARTICLE_FIND'), 'data' => $content);
-			}
-			else {
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_ARTICLE') . $article_id, 'data' => $content);
+				$response = array('status' => 1, 'msg' => JText::_('ARTICLE_FIND'), 'data' => $content);
+			} else {
+				$response['msg'] = JText::_('ERROR_CANNOT_RETRIEVE_ARTICLE') . $article_id;
 			}
 		}
-		echo json_encode((object) $tab);
+
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -278,12 +272,9 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function publisharticle()
 	{
-		$response = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
-		$user     = JFactory::getUser();
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-
-
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
 			$publish       = $this->input->getInt('publish', 1);
 			$article_id    = $this->input->getString('article_id', 0);
 			$article_alias = $this->input->getString('article_alias', '');

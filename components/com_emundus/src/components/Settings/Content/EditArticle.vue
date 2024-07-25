@@ -77,6 +77,8 @@ import mixin from "@/mixins/mixin";
 import Swal from "sweetalert2";
 import axios from "axios";
 
+import { useSettingsStore } from "@/stores/settings.js";
+
 export default {
   name: "editArticle",
 
@@ -278,9 +280,9 @@ export default {
           if (this.initContent !== newVal) {
             this.clearNotif = true;
             this.previousContent = newVal;
-            this.$store.commit("settings/setNeedSaving", 1);
+            useSettingsStore().updateNeedSaving(1);
           } else {
-            this.$store.commit("settings/setNeedSaving", 0);
+            useSettingsStore().updateNeedSaving(0);
             this.clearNotif = false;
             this.updated = false;
           }
