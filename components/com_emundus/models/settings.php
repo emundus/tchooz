@@ -612,6 +612,8 @@ class EmundusModelsettings extends JModelList
 					}
 				}
 
+				$article->published = $this->getArticlePublishedState($article_id, $article_alias);
+
 				return $article;
 			}
 		}
@@ -1639,6 +1641,63 @@ class EmundusModelsettings extends JModelList
 		}
 
 		return $result;
+	}
+
+
+	function getArticlePublishedState($article_id = 0, $article_alias = '') {
+		$published = 0;
+
+		$query = $this->db->getQuery(true);
+
+		try {
+			$query->select('params')
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_footer'));
+			$this->db->setQuery($query);
+			$footer = $this->db->loadObject();
+
+			if (!empty($footer->params)) {
+				$params = json_decode($footer->params, true);
+
+				if (empty($article_id)) {
+					switch ($article_alias) {
+						case 'mentions-legales':
+							$published = $params['mod_emundus_footer_legal_info'];
+							break;
+						case 'politique-de-confidentialite-des-donnees':
+							$published = $params['mod_emundus_footer_data_privacy'];
+							break;
+						case 'gestion-des-droits':
+							$published = $params['mod_emundus_footer_rights'];
+							break;
+						case 'gestion-des-cookies':
+							$published = $params['mod_emundus_footer_cookies'];
+							break;
+						case 'accessibilite':
+							$published = $params['mod_emundus_footer_accessibility'];
+							break;
+					}
+				} else {
+					$query->clear()
+						->select('alias')
+						->from($this->db->quoteName('#__menu'))
+						->where('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("id=",link)+3, 6), "&", 1) = ' . $this->db->quote($article_id));
+					$this->db->setQuery($query);
+					$article_alias = $this->db->loadResult();
+
+					if (!empty($article_alias)) {
+						$section = array_search($article_alias, $params, true);
+						$section_to_edit = str_replace('_alias', '', $section);
+
+						$published = $params[$section_to_edit];
+					}
+				}
+			}
+		} catch (Exception $e) {
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $published;
 	}
 
 	function getMenuId($link = '', $alias = '')

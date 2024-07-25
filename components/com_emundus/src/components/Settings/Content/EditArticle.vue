@@ -164,6 +164,7 @@ export default {
         params: params
       }).then(response => {
         this.form.content = response.data.data.introtext;
+        this.form.published = response.data.data.published;
         this.dynamicComponent++;
       });
     },
