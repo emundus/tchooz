@@ -1400,6 +1400,8 @@ if(value == 1) {
 			$this->db->setQuery($query);
 			$this->db->execute();
 
+			EmundusHelperUpdate::installExtension('plg_extension_emundus','emundus',null,'plugin',1,'extension');
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
