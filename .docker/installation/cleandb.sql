@@ -165,4 +165,6 @@ ALTER TABLE `jos_emundus_users` auto_increment = 100 ROW_FORMAT = COMPACT;
 
 TRUNCATE TABLE `jos_emundus_users_profiles`;
 
+DELETE FROM jos_menu WHERE menutype LIKE 'campaigns'
+
 SET FOREIGN_KEY_CHECKS=1;
