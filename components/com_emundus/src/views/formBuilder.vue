@@ -15,11 +15,14 @@
       </div>
       <header class="tw-grid tw-grid-cols-3 tw-items-center">
         <div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
-          <span id="go-back"
-                class="material-icons-outlined em-p-12-16 em-pointer"
-                @click="clickGoBack">
-            navigate_before
-          </span>
+          <p class="em-flex-row">
+            <span id="go-back"
+                  class="material-icons-outlined tw-py-3 tw-pl-5 tw-pr-1 em-pointer"
+                  @click="clickGoBack">
+              navigate_before
+            </span>
+            {{ translate('COM_EMUNDUS_ACTIONS_BACK') }}
+          </p>
           <p v-if="lastSave" id="saved-at" class="em-font-size-14 em-main-500-color">
             {{ translate("COM_EMUNDUS_FORM_BUILDER_SAVED_AT") }} {{ lastSave }}
           </p>
