@@ -678,7 +678,7 @@ class EmundusHelperEvents
 											{
 												foreach ($stored as $store)
 												{
-													if (count($formModel->data[$repeat_table . '___id']) < count($stored))
+													if (!empty($formModel->data[$repeat_table . '___id']) && (count($formModel->data[$repeat_table . '___id']) < count($stored)))
 													{
 														$formModel->data[$repeat_table . '___id'][]            = "";
 														$formModel->data[$repeat_table . '___id_raw'][]        = "";
