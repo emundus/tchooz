@@ -3,6 +3,7 @@
       v-show="showModal"
       id="application-modal"
       name="application-modal"
+      ref="modal"
       v-if="selectedFile !== null && selectedFile !== undefined"
       :class="{ 'context-files': context === 'files', 'hidden': hidden }"
   >
@@ -160,7 +161,7 @@ export default {
   methods: {
     addEventListeners() {
       window.addEventListener('openSingleApplicationWithFnum', (e) => {
-        console.log(e);
+        this.showModal = true;
         if (e.detail.fnum) {
           this.selectedFile = e.detail.fnum;
         }
@@ -171,6 +172,7 @@ export default {
 
         if (typeof this.selectedFile !== 'undefined' && this.selectedFile !== null) {
           this.render();
+          this.$refs['modal'].open();
         }
       });
     },
@@ -187,8 +189,6 @@ export default {
       if (typeof this.selectedFile == 'string') {
         filesService.getFile(fnum, this.$props.type).then((result) => {
           if (result.status == 1) {
-            console.log(this.$props.type);
-
             this.selectedFile = result.data;
             this.access = result.rights;
             this.selected = 'application';
@@ -202,8 +202,7 @@ export default {
             this.hidden = false;
             this.loading = false;
           } else {
-            this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', result.msg
-            ).then((confirm) => {
+            this.displayError('COM_EMUNDUS_FILES_CANNOT_ACCESS', result.msg).then((confirm) => {
               if (confirm === true) {
                 this.showModal = false;
                 this.hidden = true;
@@ -414,6 +413,7 @@ export default {
   z-index: 9999;
   width: 100vw;
   height: 100vh;
+  opacity: 1;
 }
 
 .hidden {
