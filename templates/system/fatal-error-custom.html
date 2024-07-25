@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/images/custom/favicon.png" sizes="32x32">
     <title>An Error Occurred: {{statusText}}</title><!-- Sets the page title, IMPORTANT DO NOT REMOVE -->
     <style>
         body {
@@ -138,350 +140,409 @@
                 font-size: 30px
             }
         }</style><!-- Sets the page styling, IMPORTANT DO NOT REMOVE -->
-    <script>window.errorLocale = {
+    <script>
+        window.errorLocale = {
         "af-ZA": {
             "language": "Engels GB",
             "header": "Jammer, daar was 'n probleem waarvan ons nie kon herstel nie.",
             "text1": "Die bediener gee terug 'n \"{{statusCode_statusText}}\"",
-            "help-url-text": "Help my om dit op te los"
+            "helpUrlText": "Help my om dit op te los",
+            "homepage": "Terug na die tuisblad"
         },
         "ar-AA": {
             "language": "اللغة العربية بالكود الموحد",
             "header": "عذرًا ، كانت هناك مشكلة لم نتمكن من تجاوزها.",
             "text1": "أعاد الخادم ملف \"{{statusCode_statusText}}\"",
-            "help-url-text": "ساعدني في حل هذا"
+            "helpUrlText": "ساعدني في حل هذا",
+            "homepage": "العودة إلى الصفحة الرئيسية"
         },
         "be-BY": {
             "language": "Беларуская BY",
             "header": "Выбачце, здарылася крытычная памылка, якой мы ня можам даць рады.",
             "text1": "Сервер звярнуў адказ \"{{statusCode_statusText}}\"",
-            "help-url-text": "Дапамажыце мне гэта вырашыць"
+            "helpUrlText": "Дапамажыце мне гэта вырашыць",
+            "homepage": "Вярнуцца на галоўную старонку"
         },
         "bg-BG": {
             "language": "Български",
             "header": "За съжаление възникна проблем, който не можахме да поправим.",
             "text1": "Сървърът върна \"{{statusCode_statusText}}\"",
-            "help-url-text": "Помогнете ми да разреша това"
+            "helpUrlText": "Помогнете ми да разреша това",
+            "homepage": "Върни се на началната страница"
         },
         "ca-ES": {
             "language": "Català ca_ES",
             "header": "Ho sentim, hi ha hagut un problema que no hem pogut recuperar.",
             "text1": "El servidor ha retornat \"{{statusCode_statusText}}\"",
-            "help-url-text": "Ajuda'm a resoldre això"
+            "helpUrlText": "Ajuda'm a resoldre això",
+            "homepage": "Torna a la pàgina d'inici"
         },
         "cs-CZ": {
             "language": "Čeština",
             "header": "Omlouváme se, došlo k problému, ze kterého jsme se nemohli vrátit.",
             "text1": "Server vrátil \"{{statusCode_statusText}}\"",
-            "help-url-text": "Pomozte mi to vyřešit"
+            "helpUrlText": "Pomozte mi to vyřešit",
+            "homepage": "Zpět na domovskou stránku"
         },
         "cy-GB": {
             "language": "Cymraeg GB",
             "header": "Mae'n ddrwg gennym, bu problem na lwyddwyd i'w goresgyn.",
             "text1": "Dychwelwyd \"{{statusCode_statusText}}\" gan y gweinydd",
-            "help-url-text": "Helpwch fi i ddatrys hyn"
+            "helpUrlText": "Helpwch fi i ddatrys hyn",
+            "homepage": "Yn ôl i'r dudalen hafan"
         },
         "da-DK": {
             "language": "Dansk DK",
             "header": "Beklager, men der opstod et problem som ikke kan rettes.",
             "text1": "Serveren returnerede en \"{{statusCode_statusText}}\"",
-            "help-url-text": "Hjælp mig med at løse dette"
+            "helpUrlText": "Hjælp mig med at løse dette",
+            "homepage": "Tilbage til hjemmesiden"
         },
         "de-AT": {
             "language": "Deutsch AT",
             "header": "Es ist ein Problem aufgetreten.",
             "text1": "Der Server lieferte ein &quot;{{statusCode_statusText}}&quot;",
-            "help-url-text": "Weitere Informationen sind in der Dokumentation zu finden."
+            "helpUrlText": "Weitere Informationen sind in der Dokumentation zu finden.",
+            "homepage": "Zurück zur Startseite"
         },
         "de-CH": {
             "language": "Deutsch CH",
             "header": "Es ist ein Problem aufgetreten.",
             "text1": "Der Server lieferte ein &quot;{{statusCode_statusText}}&quot;",
-            "help-url-text": "Weitere Informationen sind in der Dokumentation zu finden."
+            "helpUrlText": "Weitere Informationen sind in der Dokumentation zu finden.",
+            "homepage": "Zurück zur Startseite"
         },
         "de-DE": {
             "language": "Deutsch DE",
             "header": "Es ist ein Problem aufgetreten.",
             "text1": "Der Server lieferte ein &quot;{{statusCode_statusText}}&quot;",
-            "help-url-text": "Weitere Informationen sind in der Dokumentation zu finden."
+            "helpUrlText": "Weitere Informationen sind in der Dokumentation zu finden.",
+            "homepage": "Zurück zur Startseite"
         },
         "de-LI": {
             "language": "Deutsch LI",
             "header": "Es ist ein Problem aufgetreten.",
             "text1": "Der Server lieferte ein &quot;{{statusCode_statusText}}&quot;",
-            "help-url-text": "Weitere Informationen sind in der Dokumentation zu finden."
+            "helpUrlText": "Weitere Informationen sind in der Dokumentation zu finden.",
+            "homepage": "Zurück zur Startseite"
         },
         "de-LU": {
             "language": "Deutsch LU",
             "header": "Es ist ein Problem aufgetreten.",
             "text1": "Der Server lieferte ein &quot;{{statusCode_statusText}}&quot;",
-            "help-url-text": "Weitere Informationen sind in der Dokumentation zu finden."
+            "helpUrlText": "Weitere Informationen sind in der Dokumentation zu finden.",
+            "homepage": "Zurück zur Startseite"
         },
         "el-GR": {
             "language": "Greek el-GR",
             "header": "Λυπούμαστε, υπήρξε ένα πρόβλημα από το οποίο δεν μπορέσαμε να ανακάμψουμε.",
             "text1": "Ο διακομιστής επέστρεψε ένα \"{{statusCode_statusText}}\"",
-            "help-url-text": "Βοήθεια για την επίλυση"
+            "helpUrlText": "Βοήθεια για την επίλυση",
+            "homepage": "Επιστροφή στην αρχική σελίδα"
         },
         "en-AU": {
             "language": "English AU",
             "header": "Sorry, there was a problem we could not recover from.",
             "text1": "The server returned a \"{{statusCode_statusText}}\"",
-            "help-url-text": "Help me resolve this"
+            "helpUrlText": "Help me resolve this",
+            "homepage": "Back to homepage"
         },
         "en-CA": {
             "language": "English CA",
             "header": "Sorry, there was a problem we could not recover from.",
             "text1": "The server returned a \"{{statusCode_statusText}}\"",
-            "help-url-text": "Help me resolve this"
+            "helpUrlText": "Help me resolve this",
+            "homepage": "Back to homepage"
         },
         "en-GB": {
             "language": "English GB",
             "header": "Sorry, there was a problem we could not recover from.",
             "text1": "The server returned a \"{{statusCode_statusText}}\"",
-            "help-url-text": "Help me resolve this"
+            "helpUrlText": "Help me resolve this",
+            "homepage": "Back to homepage"
         },
         "en-NZ": {
             "language": "English NZ",
             "header": "Sorry, there was a problem we could not recover from.",
             "text1": "The server returned a \"{{statusCode_statusText}}\"",
-            "help-url-text": "Help me resolve this"
+            "helpUrlText": "Help me resolve this",
+            "homepage": "Back to homepage"
         },
         "en-US": {
             "language": "English US",
             "header": "Sorry, there was a problem we could not recover from.",
             "text1": "The server returned a \"{{statusCode_statusText}}\"",
-            "help-url-text": "Help me resolve this"
+            "helpUrlText": "Help me resolve this",
+            "homepage": "Back to homepage"
         },
         "es-ES": {
             "language": "Español ES",
             "header": "Lo sentimos, hubo un problema del que no pudimos recuperarnos.",
             "text1": "El servidor devuelve un \"{{statusCode_statusText}}\"",
-            "help-url-text": "Ayúdeme a resolver esto"
+            "helpUrlText": "Ayúdeme a resolver esto",
+            "homepage": "Volver a la página de inicio"
         },
         "et-EE": {
             "language": "Estonian",
             "header": "Vabandame, aga tegemist on veaga, millega me toime ei tule.",
             "text1": "Serverilt saadi vastus \"{{statusCode_statusText}}\"",
-            "help-url-text": "Aita mul seda lahendada"
+            "helpUrlText": "Aita mul seda lahendada",
+            "homepage": "Tagasi avalehele"
         },
         "eu-ES": {
             "language": "Euskara ES",
             "header": "Barkatu, ezin izan dugu berreskuratu izandako arazoa.",
             "text1": "Zerbitzariak hau itzuli du \"{{statusCode_statusText}}\"",
-            "help-url-text": "Lagundu niri hau konpontzen"
+            "helpUrlText": "Lagundu niri hau konpontzen",
+            "homepage": "Itzuli hasierako orrialdera"
         },
         "fa-AF": {
             "language": "فارسی دری",
             "header": "با عرض پوزش، مشکلی پیش آمده که نمی‌توانیم آن را حل کنیم.",
             "text1": "سرور یک \"{{statusCode_statusText}}\" را بازگشت داده است",
-            "help-url-text": "برای حل این مشکل کمک کن"
+            "helpUrlText": "برای حل این مشکل کمک کن",
+            "homepage": "بازگشت به صفحه اصلی"
         },
         "fa-IR": {
             "language": "Persian IR",
             "header": "متأسفیم، مشکلی پیش آمد که نتوانستیم آن را برطرف کنیم.",
             "text1": "سرور بازگشت \"{{statusCode_statusText}}\"",
-            "help-url-text": "به من کمک کنید تا این مسئله را حل کنم"
+            "helpUrlText": "به من کمک کنید تا این مسئله را حل کنم",
+            "homepage": "بازگشت به صفحه اصلی"
         },
         "fi-FI": {
             "language": "Suomi",
             "header": "Pahoittelut, meillä oli ongelma, josta emme voineet toipua.",
             "text1": "Palvelin palautti \"{{statusCode_statusText}}\"",
-            "help-url-text": "Auta minua ratkaisemaan tämä"
+            "helpUrlText": "Auta minua ratkaisemaan tämä",
+            "homepage": "Takaisin etusivulle"
         },
         "fr-CA": {
             "language": "Français FR",
             "header": "Désolé, il y a eu un problème que nous n'avons pas pu récupérer.",
             "text1": "Le serveur a renvoyé un \"{{statusCode_statusText}}\"",
-            "help-url-text": "Aidez-moi à résoudre ceci"
+            "helpUrlText": "Aidez-moi à résoudre ceci",
+            "homepage": "Retour à la page d'accueil"
         },
         "fr-FR": {
             "language": "Français FR",
             "header": "Désolé, il y a eu un problème que nous n'avons pas pu récupérer.",
             "text1": "Le serveur a renvoyé un \"{{statusCode_statusText}}\"",
-            "help-url-text": "Aidez-moi à résoudre ceci"
+            "helpUrlText": "Aidez-moi à résoudre ceci",
+            "homepage": "Retour à la page d'accueil"
         },
         "he-IL": {
             "language": "אנגלית GB",
             "header": "מצטערים, הייתה בעיה שלא הצלחנו להתאושש ממנה.",
             "text1": "השרת החזיר \"{{statusCode_statusText}}\"",
-            "help-url-text": "עזור לי לפתור זאת"
+            "helpUrlText": "עזור לי לפתור זאת",
+            "homepage": "חזרה לדף הבית"
         },
         "hr-HR": {
             "language": "Hrvatski",
             "header": "Nažalost, došlo je do problema koji nismo u mogućnosti oporaviti.",
             "text1": "Server je vratio \"{{statusCode_statusText}}\"",
-            "help-url-text": "Pomozite mi riješiti ovo"
+            "helpUrlText": "Pomozite mi riješiti ovo",
+            "homepage": "Natrag na početnu stranicu"
         },
         "hu-HU": {
             "language": "Magyar",
             "header": "Sajnáljuk, de egy olyan hiba történt, amelyet nem sikerült megoldanunk.",
             "text1": "A kiszolgáló egy \"{{statusCode_statusText}} \" üzenetet adott vissza",
-            "help-url-text": "Segíts ezt megoldani"
+            "helpUrlText": "Segíts ezt megoldani",
+            "homepage": "Vissza a főoldalra"
         },
         "it-IT": {
             "language": "Italiano IT",
             "header": "Siamo spiacenti, c'è stato un problema che non abbiamo potuto risolvere.",
             "text1": "Il server ha restituito un \"{{statusCode_statusText}}\"",
-            "help-url-text": "Aiutami a risolvere questo"
+            "helpUrlText": "Aiutami a risolvere questo",
+            "homepage": "Torna alla homepage"
         },
         "ja-JP": {
             "language": "Japanese JP",
             "header": "申し訳ありませんが、回復できない問題が発生しました。",
             "text1": "サーバーの応答：「{{statusCode_statusText}}」",
-            "help-url-text": "この問題を解決するには"
+            "helpUrlText": "この問題を解決するには",
+            "homepage": "ホームページに戻る"
         },
         "ka-GE": {
             "language": "ქართული GE",
             "header": "უკაცრავად, გაჩნდა პრობლემა რომელსაც ვერ გავუმკლავდით.",
             "text1": "სერვერმა დააბრუნა პასუხი \"{{statusCode_statusText}}\"",
-            "help-url-text": "დამეხმარეთ პრობლემის მოგვარებაში"
+            "helpUrlText": "დამეხმარეთ პრობლემის მოგვარებაში",
+            "homepage": "დაბრუნება მთავარ გვერდზე"
         },
         "kk-KZ": {
             "language": "English GB",
             "header": "Кешіріңіз, біз түзете алмайтын қателік байқалды.",
             "text1": "Сервер мынаны қайтарды: \"{{statusCode_statusText}}\"",
-            "help-url-text": "Бұл мәселені шешуге көмектес"
+            "helpUrlText": "Бұл мәселені шешуге көмектес",
+            "homepage": "Басты бетке оралу"
         },
         "ko-KR": {
             "language": "Korean KO",
             "header": "자동 복구될 수 없는 문제가 발생했습니다.",
             "text1": "서버가 \"{{statusCode_statusText}}\" 를 리턴했습니다.",
-            "help-url-text": "이 문제를 해결하도록 도와주세요."
+            "helpUrlText": "이 문제를 해결하도록 도와주세요.",
+            "homepage": "홈페이지로 돌아가기"
         },
         "lt-LT": {
             "language": "Lietuvių LT",
             "header": "Atsiprašome, kilo problema, nuo kurios negalėjome atstatyti.",
             "text1": "Iš serverio gautas atsakymas \"{{statusCode_statusText}}\"",
-            "help-url-text": "Padėkite man tai išspręsti"
+            "helpUrlText": "Padėkite man tai išspręsti",
+            "homepage": "Grįžti į pagrindinį puslapį"
         },
         "lv-LV": {
             "language": "Latviešu LV",
             "header": "Diemžēl radās problēma, no kā nevarēja atgūt.",
             "text1": "Servera atbilde \"{{statusCode_statusText}}\"",
-            "help-url-text": "Palīdziet man to atrisināt"
+            "helpUrlText": "Palīdziet man to atrisināt",
+            "homepage": "Atpakaļ uz sākumlapu"
         },
         "mk-MK": {
             "language": "English GB",
             "header": "Извинете, имаше проблем од кој не можевме да се опоравиме.",
             "text1": "Серверот врати \"{{statusCode_statusText}}\"",
-            "help-url-text": "Помогни ми да го решам ова"
+            "helpUrlText": "Помогни ми да го решам ова",
+            "homepage": "Назад на почетната страна"
         },
         "nl-BE": {
             "language": "Engels GB",
             "header": "Sorry, er deed zich een probleem voor dat we niet konden herstellen.",
             "text1": "De server heeft een \"{{statusCode_statusText}} \" teruggestuurd",
-            "help-url-text": "Help dit probleem op te lossen"
+            "helpUrlText": "Help dit probleem op te lossen",
+            "homepage": "Terug naar de startpagina"
         },
         "nl-NL": {
             "language": "Engels GB",
             "header": "Sorry, er deed zich een probleem voor dat we niet konden herstellen.",
             "text1": "De server heeft een \"{{statusCode_statusText}} \" teruggestuurd",
-            "help-url-text": "Help dit probleem op te lossen"
+            "helpUrlText": "Help dit probleem op te lossen",
+            "homepage": "Terug naar de startpagina"
         },
         "pl-PL": {
             "language": "Polski PL",
             "header": "Niestety, wystąpił problem, którego nie mogliśmy rozwiązać.",
             "text1": "Odpowiedź serwera \"{{statusCode_statusText}}\"",
-            "help-url-text": "Pomoc w rozwiązaniu tego problemu"
+            "helpUrlText": "Pomoc w rozwiązaniu tego problemu",
+            "homepage": "Powrót do strony głównej"
         },
         "pt-BR": {
             "language": "Português do Brasil (pt-BR)",
             "header": "Desculpe, houve um problema que não pôde ser recuperado.",
             "text1": "O servidor retornou um \"{{statusCode_statusText}}\"",
-            "help-url-text": "Ajude-me a resolver isto"
+            "helpUrlText": "Ajude-me a resolver isto",
+            "homepage": "Voltar para a página inicial"
         },
         "pt-PT": {
             "language": "Portuguese (pt-PT)",
             "header": "Desculpe, ocorreu um problema do qual não foi possível recuperar.",
             "text1": "O servidor devolveu um \"{{statusCode_statusText}}\"",
-            "help-url-text": "Ajude-me a resolver isto"
+            "helpUrlText": "Ajude-me a resolver isto",
+            "homepage": "Voltar à página inicial"
         },
         "ro-RO": {
             "language": "Română RO",
             "header": "Ne pare rău, a apărut o problemă de la care nu ne-am putut reveni.",
             "text1": "Serverul a returnat \"{{statusCode_statusText}}\"",
-            "help-url-text": "Ajută-mă să rezolv această problemă"
+            "helpUrlText": "Ajută-mă să rezolv această problemă",
+            "homepage": "Înapoi la pagina de pornire"
         },
         "ru-RU": {
             "language": "Русский RU",
             "header": "Произошла критическая ошибка",
             "text1": "Сервер вернул ответ \"{{statusCode_statusText}}\".",
-            "help-url-text": "Подробнее о решении проблемы"
+            "helpUrlText": "Подробнее о решении проблемы",
+            "homepage": "Вернуться на главную страницу"
         },
         "sk-SK": {
             "language": "Slovensky",
             "header": "Prepáčte, ale došlo k problému, ktorý nedokážeme obnoviť.",
             "text1": "Server vrátil \"{{statusCode_statusText}}\"",
-            "help-url-text": "Pomôžte mi vyriešiť to"
+            "helpUrlText": "Pomôžte mi vyriešiť to",
+            "homepage": "Späť na domovskú stránku"
         },
         "sl-SI": {
             "language": "Slovenščina SI",
             "header": "Žal je prišlo do težave, od katere se nismo mogli obnoviti.",
             "text1": "Strežnik je vrnil \"{{statusCode_statusText}}\"",
-            "help-url-text": "Pomagajte mi rešiti to težavo"
+            "helpUrlText": "Pomagajte mi rešiti to težavo",
+            "homepage": "Nazaj na začetno stran"
         },
         "sr-YU": {
             "language": "Srpski Latinica SRB",
             "header": "Žao nam je, došlo je do problema i ne možemo se oporaviti.",
             "text1": "Server je vratio grešku \"{{statusCode_statusText}}\"",
-            "help-url-text": "Kako da rešim ovo"
+            "helpUrlText": "Kako da rešim ovo",
+            "homepage": "Nazad na početnu stranu"
         },
         "sv-SE": {
             "language": "Svensk SE",
             "header": "Tyvärr, det uppstod ett problem som vi inte kunde återhämta oss från.",
             "text1": "Servern returnerade en \"{{statusCode_statusText}}\"",
-            "help-url-text": "Hjälp mig att lösa detta"
+            "helpUrlText": "Hjälp mig att lösa detta",
+            "homepage": "Tillbaka till startsidan"
         },
         "ta-IN": {
             "language": "தமிழ் இந்தியா",
             "header": "மன்னிக்கவும், எங்களால் மீட்க முடியாத ஒரு சிக்கல் இருந்தது.",
             "text1": "சேவையகம் திருப்பியது: \"{{statusCode_statusText}}\"",
-            "help-url-text": "இதனைத் தீர்க்க எனக்கு உதவுக"
+            "helpUrlText": "இதனைத் தீர்க்க எனக்கு உதவுக",
+            "homepage": "முதல் பக்கத்திற்கு திரும்பு"
         },
         "th-TH": {
             "language": "ภาษาไทย",
             "header": "ขออภัย เกิดปัญหาที่เราไม่สามารถกู้คืนได้",
             "text1": "เซิฟเวอร์ตอบกลับมาว่า \"{{statusCode_statusText}}\"",
-            "help-url-text": "ช่วยฉันแก้ปัญหานี้"
+            "helpUrlText": "ช่วยฉันแก้ปัญหานี้",
+            "homepage": "กลับสู่หน้าหลัก"
         },
         "tr-TR": {
             "language": "Turkish TR",
             "header": "Üzgünüz, çözemediğimiz bir sorun oluştu.",
             "text1": "Sunucu bir \"{{statusCode_statusText}}\" döndürdü",
-            "help-url-text": "Bunu çözmeme yardım et"
+            "helpUrlText": "Bunu çözmeme yardım et",
+            "homepage": "Anasayfaya geri dön"
         },
         "uk-UA": {
             "language": "Українська (UA)",
             "header": "На жаль, виникла проблема, з якою ми не змогли впоратися.",
             "text1": "Сервер повернув \"{{statusCode_statusText}}\"",
-            "help-url-text": "Допоможіть мені це вирішити"
+            "helpUrlText": "Допоможіть мені це вирішити",
+            "homepage": "Повернутися на головну сторінку"
         },
         "ur-PK": {
             "language": "انگریزی جی-بی",
             "header": "معاف کیجیے گا، ایک مسئلہ تھا جس سے ہم بازیاب نہ ہو سکے.",
             "text1": "سرور نے \"{{statusCode_statusText}}\" لوٹایا",
-            "help-url-text": "اس کو حل کرنے میں میری مدد کریں."
+            "helpUrlText": "اس کو حل کرنے میں میری مدد کریں.",
+            "homepage": "واپس ہوم پیج پر"
         },
         "vi-VN": {
             "language": "Vietnamese VN",
             "header": "Xin lỗi, đã xảy ra sự cố mà chúng tôi không thể khôi phục.",
             "text1": "Máy chủ trả về một \"{{statusCode_statusText}}\"",
-            "help-url-text": "Giúp tôi giải quyết vấn đề này"
+            "helpUrlText": "Giúp tôi giải quyết vấn đề này",
+            "homepage": "Quay lại trang chủ"
         },
         "zh-CN": {
             "language": "简体中文",
             "header": "抱歉，有一个无法恢复的问题。",
             "text1": "服务器返回 \"{{statusCode_statusText}}\"",
-            "help-url-text": "帮助我解决这个问题"
+            "helpUrlText": "帮助我解决这个问题",
+            "homepage": "返回首页"
         },
         "zh-TW": {
             "language": "中文 台灣繁體",
             "header": "很抱歉，遇到問題無法回復。",
             "text1": "伺服器回傳 \"{{statusCode_statusText}}\" 訊息",
-            "help-url-text": "協助我解決這個問題"
+            "helpUrlText": "協助我解決這個問題",
+            "homepage": "返回首頁"
         }
-    };</script><!-- Sets the content of the translated text, IMPORTANT DO NOT REMOVE -->
+    };
+    </script><!-- Sets the content of the translated text, IMPORTANT DO NOT REMOVE -->
 </head>
 <body>
 <div class="container">
@@ -491,15 +552,22 @@
             <div id="login-background-shapes-right"></div>
             <div class="left-side-404 container-404">
                 <h2 class="gradient-404">Oups !</h2>
-                <p>An Error Occurred: {{statusText}}</p>
+                <p id="error_message_header"></p>
+                <p id="error_message"></p>
                 <img src="/media/com_emundus/images/tchoozy/complex-illustrations/building-error.svg" alt="Erreur 500">
                 <div style="display: flex;flex-wrap: wrap;align-items: center;gap: 8px;justify-content: center">
-                    <p><a href="/">Go back to homepage</a></p>
-                    <p><a href="https://emundus.atlassian.net/servicedesk/customer/portals" target="_blank" class="secondary-button">Contact support</a></p>
+                    <p><a href="/" id="error_homepage_button">Go back to homepage</a></p>
+                    <p><a href="https://emundus.atlassian.net/servicedesk/customer/portals" target="_blank" class="secondary-button" id="error_support_button"></a></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 </body>
+<script>
+    document.querySelector('#error_message_header').innerText = errorLocale[navigator.language]?.header || 'Sorry, there was a problem we could not recover from.';
+    document.querySelector('#error_message').innerText = errorLocale[navigator.language]?.text1 || 'The server returned a "{{statusCode_statusText}}"';
+    document.querySelector('#error_support_button').innerText = errorLocale[navigator.language]?.helpUrlText || 'Help me resolve this';
+    document.querySelector('#error_homepage_button').innerText = errorLocale[navigator.language]?.homepage || 'Back to homepage';
+</script>
 </html>

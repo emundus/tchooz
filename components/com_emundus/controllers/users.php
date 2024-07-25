@@ -771,7 +771,7 @@ class EmundusControllerUsers extends JControllerLegacy
 		$newuser['em_oprofiles']     = $this->input->getString('oprofiles');
 		$newuser['groups']           = array($this->input->get('jgr'));
 		$newuser['university_id']    = $this->input->getInt('university_id',0);
-		$newuser['em_campaigns']     = $this->input->get('campaigns', null);
+		$newuser['em_campaigns']     = $this->input->getString('campaigns');
 		$newuser['em_groups']        = $this->input->getString('groups');
 		$newuser['news']             = $this->input->getInt('newsletter');
 
