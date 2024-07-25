@@ -172,7 +172,9 @@ export default {
 
         if (typeof this.selectedFile !== 'undefined' && this.selectedFile !== null) {
           this.render();
-          this.$refs['modal'].open();
+          if (this.$refs['modal']) {
+            this.$refs['modal'].open();
+          }
         }
       });
     },
