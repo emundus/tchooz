@@ -7,7 +7,7 @@
       <!-- DROPDOWN -->
       <div v-if="param.type === 'dropdown' || param.type === 'sqldropdown'">
         <select v-if="repeat_name !== '' && param.options.length > 0 && !param.multiple" v-model="element.params[repeat_name][index_name][param.name]" class="tw-w-full">
-          <option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
+          <option v-for="option in param.options" :key="option.value" :value="option.value">{{ translate(option.label) }}</option>
         </select>
 
         <select v-else-if="param.options.length > 0 && !param.multiple" v-model="element.params[param.name]" class="tw-w-full">
@@ -165,53 +165,71 @@ export default {
       }
 
       if (param.type === 'sqldropdown') {
-        let table = param.table;
-        let key = param.key;
-        let value = param.value;
-
-        if(param.table.includes('{')) {
-          let param_name = param.table.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
-          table = this.element.params[param_name];
-        }
-        if(param.key.includes('{')) {
-          let param_name = param.key.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
-          key = this.element.params[param_name];
-        }
-        if(param.value.includes('{')) {
-          let param_name = param.value.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
-          value = this.element.params[param_name];
-        }
-
-        if(table.includes('{') || key.includes('{') || value.includes('{')) {
-          return;
-        }
-
         this.loading = true;
-        formBuilderService.getSqlDropdownOptions(table,key,value,param.translate).then((response) => {
-          param.options = response.data;
+        this.getSqlDropdownOptions(param);
+      }
 
-          if(this.element.params[param.name] && this.element.params[param.name].length > 0){
-            let ids_to_exclude = this.element.params[param.name].split(',');
-            const regex = /\'|"/ig;
+      if (param.reload_on_change) {
+        // find param to watch
+        let param_to_watch = this.params.find(p => p.name === param.reload_on_change);
 
-            this.element.params[param.name] = [];
-
-            ids_to_exclude.forEach(id => {
-              id = id.replace(regex,'');
-              let option = param.options.find(option => id == option.value);
-
-              if(option) {
-                this.element.params[param.name].push(option);
-              }
-            });
-          }
-
-          this.loading = false;
-        });
+        if(param_to_watch) {
+          this.$watch(() => this.element.params[param_to_watch.name], (newValue, oldValue) => {
+            if(newValue !== oldValue) {
+              this.loading = true;
+              this.getSqlDropdownOptions(param);
+            }
+          });
+        }
       }
     })
   },
   methods: {
+    getSqlDropdownOptions(param) {
+      let table = param.table;
+      let key = param.key;
+      let value = param.value;
+
+      if(param.table.includes('{')) {
+        let param_name = param.table.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
+        table = this.element.params[param_name];
+      }
+      if(param.key.includes('{')) {
+        let param_name = param.key.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
+        key = this.element.params[param_name];
+      }
+      if(param.value.includes('{')) {
+        let param_name = param.value.match(/\{(.*?)\}/g)[0].replace('{','').replace('}','');
+        value = this.element.params[param_name];
+      }
+
+      if(table.includes('{') || key.includes('{') || value.includes('{')) {
+        return;
+      }
+
+      formBuilderService.getSqlDropdownOptions(table, key, value, param.translate).then((response) => {
+        param.options = response.data;
+
+        if(this.element.params[param.name] && this.element.params[param.name].length > 0){
+          let ids_to_exclude = this.element.params[param.name].split(',');
+          const regex = /\'|"/ig;
+
+          this.element.params[param.name] = [];
+
+          ids_to_exclude.forEach(id => {
+            id = id.replace(regex,'');
+            let option = param.options.find(option => id == option.value);
+
+            if(option) {
+              this.element.params[param.name].push(option);
+            }
+          });
+        }
+
+        this.loading = false;
+      });
+    },
+
     updateDatabasejoinParams() {
       if (!this.sysadmin) {
         const index = this.databases.map(e => e.database_name).indexOf(this.element.params['join_db_name']);
@@ -279,6 +297,8 @@ export default {
       return this.repeat_name !== '' ? this.repeat_name+this.index : '';
     },
     displayedParams() {
+      console.log(this.params);
+
       return this.params.filter((param) => {
         return (param.published && !param.sysadmin_only) || (this.sysadmin && param.sysadmin_only && param.published)
       });

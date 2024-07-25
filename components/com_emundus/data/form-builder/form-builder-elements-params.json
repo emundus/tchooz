@@ -443,7 +443,8 @@
       "published": true,
       "sysadmin_only": false,
       "options": [],
-      "multiple": true
+      "multiple": true,
+      "reload_on_change": "join_db_name"
     },
     {
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_WHERE",
