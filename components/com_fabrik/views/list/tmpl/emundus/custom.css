@@ -139,17 +139,28 @@ font-size: 16px;
 	align-items: center;
 	padding: 10px 16px;
 	color: black;
+	margin-left: 3px;
 }
 
+.view-list .fabrikForm .fabrikButtonsContainer .em-action-buttons li a:focus {
+	outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
+	 border-radius: var(--em-form-br-focus);
+	 outline-offset: var(--em-form-outline-offset-focus);
+	box-shadow: unset;
+	border-color: var(--em-form-bc-focus);
+	background-color: var(--em-form-bgc-focus);
+}
+
+
 .view-list .fabrikForm .fabrikButtonsContainer .em-action-buttons li a:hover{
-	text-decoration: none;
+    text-decoration: none;
 }
 .view-list .fabrikForm .fabrikButtonsContainer .em-action-buttons li a i{
-	margin-right: 12px;
+    margin-right: 12px;
 }
 .view-list .fabrikForm .fabrikButtonsContainer .em-action-buttons li a b.caret{
-	margin-top: unset;
-	margin-left: 4px;
+    margin-top: unset;
+    margin-left: 4px;
 }
 /** **/
 
