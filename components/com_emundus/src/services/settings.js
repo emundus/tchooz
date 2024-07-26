@@ -128,24 +128,11 @@ export default {
 
 
   async saveColors(preset) {
-    const formData = new FormData();
-    formData.append('preset', JSON.stringify(preset));
+    let data = {};
+    data.preset = JSON.stringify(preset);
 
     try {
-      fetch(window.location.origin + '/index.php?option=com_emundus&controller=settings&task=updatecolor', {
-        method: 'POST',
-        body: formData,
-      }).then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-        // eslint-disable-next-line no-undef
-        throw new Error(Joomla.JText._('COM_EMUNDUS_ERROR_OCCURED'));
-      }).then((result) => {
-        if (result.status) {
-          return result.data;
-        }
-      });
+      return await fetchClient.post('updatecolor',data);
     } catch (e) {
       return {
         status: false,

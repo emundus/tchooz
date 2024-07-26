@@ -584,7 +584,7 @@ die("<script>
 				$params['validations']['validation_on'][]    = 'both';
 				$params['validations']['validate_hidden'][]  = '0';
 				$params['validations']['must_validate'][]    = '0';
-				$params['validations']['show_icon'][]        = '1';
+				$params['validations']['show_icon'][]        = '0';
 
 				$params['isemail-message']              = array('', '');
 				$params['isemail-validation_condition'] = array('', '');

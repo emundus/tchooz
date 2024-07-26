@@ -970,7 +970,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             cancelButtonText: "<?php echo Text::_('JNO');?>"
         }).then((confirm) => {
             if (confirm.value) {
-                document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum + "&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
+                document.location.href = "/index.php?option=com_emundus&task=deletefile&fnum=" + fnum + "&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
             }
         });
     }
