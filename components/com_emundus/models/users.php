@@ -2457,6 +2457,25 @@ class EmundusModelUsers extends JModelList
 		return true;
 	}
 
+	public function getGroupDetails($gid)
+	{
+		$group = [];
+
+		try {
+			$query = $this->db->getQuery(true);
+			$query->select('id,label,description,published,class,anonymize')
+				->from($this->db->quoteName('#__emundus_setup_groups'))
+				->where($this->db->quoteName('id') . ' = ' . $gid);
+			$this->db->setQuery($query);
+			$group = $this->db->loadAssoc();
+		}
+		catch (Exception $e) {
+			Log::add('Error getting group programs ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $group;
+	}
+
 	/**
 	 * @param $gid
 	 *
@@ -2466,23 +2485,23 @@ class EmundusModelUsers extends JModelList
 	 */
 	public function getGroupProgs($gid)
 	{
+		$programs = [];
+
 		try {
-			$query = "select prg.id, prg.label, esg.label as group_label
-                      from #__emundus_setup_groups as esg
-                      left join #__emundus_setup_groups_repeat_course as esgrc on esgrc.parent_id = esg.id
-                      left join #__emundus_setup_programmes as prg on prg.code = esgrc.course
-                      where esg.id = " . $gid;
-//echo str_replace('#_', 'jos', $query);
-
+			$query = $this->db->getQuery(true);
+			$query->select('prg.id, prg.label, esg.label as group_label')
+				->from($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_groups', 'esg') . ' ON ' . $this->db->quoteName('esgrc.parent_id') . ' = ' . $this->db->quoteName('esg.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'prg') . ' ON ' . $this->db->quoteName('prg.code') . ' = ' . $this->db->quoteName('esgrc.course'))
+				->where($this->db->quoteName('esg.id') . ' = ' . $gid);
 			$this->db->setQuery($query);
-
-			return $this->db->loadAssocList();
+			$programs = $this->db->loadAssocList();
 		}
 		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
-
-			return false;
+			Log::add('Error getting group programs ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
+
+		return $programs;
 	}
 
 	/**
@@ -2504,7 +2523,7 @@ class EmundusModelUsers extends JModelList
 				$gids = [$gids];
 			}
 
-			$query->select('esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d')
+			$query->select('esa.label, ea.*, esa.c as is_c, esa.r as is_r, esa.u as is_u, esa.d as is_d, esa.description as action_description')
 				->from($this->db->quoteName('#__emundus_acl', 'ea'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_actions', 'esa') . ' ON ' . $this->db->quoteName('esa.id') . ' = ' . $this->db->quoteName('ea.action_id'))
 				->where($this->db->quoteName('ea.group_id') . ' IN (' . implode(',', $gids) . ')')

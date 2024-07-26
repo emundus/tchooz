@@ -1101,7 +1101,7 @@ export default {
         .material-icons-outlined.delete {
             transition: all 0.3s;
             width: 30px;
-            color: var(--grey-color);
+             color: var(--red-500);
 
             &.disabled {
                 color: var(--disabled-color);
@@ -1110,7 +1110,7 @@ export default {
 
             &:hover {
                 cursor: pointer;
-                color: var(--error-color);
+                color: var(--red-500);
             }
         }
     }

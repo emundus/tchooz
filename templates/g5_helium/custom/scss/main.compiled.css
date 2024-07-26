@@ -4338,6 +4338,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-bg-profile-light {
     background-color: hsl(from var(--em-profile-color) h s l / 15%);
 }
+.tw-bg-profile-medium {
+    background-color: hsl(from var(--em-profile-color) h s l / 30%);
+}
 .tw-bg-red-50 {
     background-color: var(--red-50);
 }
@@ -5109,6 +5112,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .\!tw-text-base {
     font-size: 1rem !important;
     line-height: 1.5rem !important;
+}
+.\!tw-text-lg {
+    font-size: 1.125rem !important;
+    line-height: 1.75rem !important;
 }
 .\!tw-text-sm {
     font-size: 0.875rem !important;
@@ -6045,6 +6052,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;

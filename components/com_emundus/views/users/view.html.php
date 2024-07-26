@@ -168,8 +168,8 @@ class EmundusViewUsers extends JViewLegacy
 	private function _loadGroupRights($gid)
 	{
 		$m_users       = new EmundusModelUsers();
-		$group         = $m_users->getGroupProgs($gid);
-		$g[0]['label'] = $group[0]['group_label'];
+		$group         = $m_users->getGroupDetails($gid);
+		$g[0]['label'] = $group['label'];
 		$g[0]['progs'] = $m_users->getGroupProgs($gid);
 		$g[0]['acl']   = $m_users->getGroupsAcl($gid);
 		$this->groups  = $g;
