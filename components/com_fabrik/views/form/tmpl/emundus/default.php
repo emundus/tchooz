@@ -66,8 +66,7 @@ endif;
                     <p class="tw-mb-5 tw-text-neutral-600"><?= JText::_('COM_FABRIK_REQUIRED_ICON_NOT_DISPLAYED') ?></p>
                 <?php endif; ?>
                 <div class="page-header">
-			        <?php $title = trim(preg_replace('/^([^-]+ - )/', '', $form->label)); ?>
-                    <h2 class="after-em-border after:tw-bg-red-800"><?= JText::_($title) ?></h2>
+                    <h2 class="after-em-border after:tw-bg-red-800"><?= JText::_($form->label) ?></h2>
                 </div>
 	        <?php endif; ?>
         </div>
