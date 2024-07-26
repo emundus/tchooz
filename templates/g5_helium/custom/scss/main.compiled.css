@@ -5110,6 +5110,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     font-size: 1rem !important;
     line-height: 1.5rem !important;
 }
+.\!tw-text-lg {
+    font-size: 1.125rem !important;
+    line-height: 1.75rem !important;
+}
 .\!tw-text-sm {
     font-size: 0.875rem !important;
     line-height: 1.25rem !important;
