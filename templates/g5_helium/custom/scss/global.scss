@@ -50,6 +50,11 @@
 
 /* FIN de gestion des curseurs dans le menu des paramètres globaux */
 
+/* Couleurs des labels des menus dans les paramètres globaux */
+aside#settings_menus div ul li p,
+aside#settings_menus div ul li span span:nth-child(2) {
+  color: var(--grey-color);
+}
 
 details summary:focus{
   outline: unset;
@@ -868,6 +873,11 @@ footer#g-footer > .g-container {
   a.toggle {
     color: #1b1f3c;
   }
+}
+
+/* TYPES DE DOCUMENTS */
+.view-form form .documents-type-candidacy-page #group827 {
+  margin-bottom: 0;
 }
 
 /* DROPFILE */
