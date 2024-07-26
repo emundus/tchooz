@@ -169,7 +169,7 @@
             <h3>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h3>
           </div>
 
-          <div class="tw-mb-4">
+          <div id="campResume" class="tw-mb-4">
             <label style="top: 5em">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }} <span
                 class="tw-text-red-500">*</span></label>
             <tip-tap-editor
@@ -185,7 +185,7 @@
           </div>
 
           <label class="tw-mt-4">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
-          <div class="tw-mb-4" v-if="typeof form.description != 'undefined'">
+          <div id="campDescription" class="tw-mb-4" v-if="typeof form.description != 'undefined'">
             <tip-tap-editor
                 v-model="form.description"
                 :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"

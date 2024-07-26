@@ -31,7 +31,7 @@
 
 <script>
 
-import mixin from "com_emundus/src/mixins/mixin";
+import mixin from "@/mixins/mixin";
 
 export default {
   name: "Tile",

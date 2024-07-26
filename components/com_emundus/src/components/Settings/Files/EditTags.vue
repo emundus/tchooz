@@ -42,8 +42,8 @@
 import axios from "axios";
 
 /* SERVICES */
-import client from "com_emundus/src/services/axiosClient";
-import mixin from "com_emundus/src/mixins/mixin";
+import client from "@/services/axiosClient";
+import mixin from "@/mixins/mixin";
 
 import basicPreset from "@/assets/data/colorpicker/presets/basic";
 import { useGlobalStore } from '@/stores/global';

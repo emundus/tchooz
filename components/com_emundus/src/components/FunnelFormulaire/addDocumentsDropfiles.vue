@@ -21,6 +21,7 @@
 
       <draggable
           v-model="documents"
+          id="campaignDocs"
           style="margin: 0"
           handle=".handle"
           class="tw-flex tw-items-center"
@@ -56,7 +57,7 @@
               </div>
             </div>
             <hr/>
-            <div>
+            <div id="itemDocSize">
               <span><strong>{{ translate('COM_EMUNDUS_ONBOARD_FILE_SIZE') }} : </strong></span>
               <span>{{ formatBytes(document.size) }}</span>
             </div>

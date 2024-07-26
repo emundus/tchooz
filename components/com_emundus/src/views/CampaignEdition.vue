@@ -13,7 +13,7 @@
         <p v-html="translate(selectedMenuItem.description)"></p>
         <hr>
 
-        <div class="tw-flex tw-items-center tw-mb-8">
+        <div id="campaign-info-line" class="tw-flex tw-items-center tw-mb-8">
           <p>
             <b style="color: var(--em-profile-color); font-weight: 700 !important;"> {{ form.label }}</b>
             {{ translate('COM_EMUNDUS_ONBOARD_FROM') }}
@@ -25,7 +25,7 @@
 
         <ul class="tw-flex tw-items-center tw-gap-2 tw-list-none tw-mb-4 tw-pl-0 tw-border-b tw-border-neutral-400">
           <li v-for="menu in displayedMenus" :key="menu.component" @click="selectMenu(menu)" class="tw-border tw-border-transparent tw-flex tw-flex-col tw-rounded-t-lg hover:tw-border-neutral-300" :class="{'tw-border tw-border-neutral-300 tw-bg-neutral-300': selectedMenu === menu.component}">
-            <span class="tw-cursor-pointer tw-p-2 tw-text-neutral-700">{{ translate(menu.label) }}</span>
+            <span :id="menu.component" class="tw-cursor-pointer tw-p-2 tw-text-neutral-700">{{ translate(menu.label) }}</span>
           </li>
         </ul>
 
