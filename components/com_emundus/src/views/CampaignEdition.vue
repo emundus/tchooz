@@ -316,7 +316,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      settingsService.redirectJRoute(link);
+      settingsService.redirectJRoute(link,useGlobalStore().getCurrentLang);
     },
 
     getCookie(cname) {

@@ -9,16 +9,15 @@
         :clickToClose="false"
         ref="modal"
     >
-      <div v-if="this.globalStore.currentLanguage !== this.globalStore.defaultLang" class="justify-center bg-[#FEF6EE] flex items-center gap-3 p-2">
+      <div v-if="this.globalStore.currentLanguage !== this.globalStore.defaultLang" class="tw-justify-center tw-bg-[#FEF6EE] tw-flex tw-items-center tw-gap-3 tw-p-2">
         <span class="material-icons-outlined text-[#EF681F]">warning_amber</span>
         <span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
       </div>
       <header class="tw-grid tw-grid-cols-3 tw-items-center">
         <div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
-          <p class="em-flex-row">
+          <p class="tw-flex tw-items-center tw-cursor-pointer" @click="clickGoBack">
             <span id="go-back"
-                  class="material-icons-outlined tw-py-3 tw-pl-5 tw-pr-1 em-pointer"
-                  @click="clickGoBack">
+                  class="material-icons-outlined tw-py-3 tw-pl-5 tw-pr-1 em-pointer">
               navigate_before
             </span>
             {{ translate('COM_EMUNDUS_ACTIONS_BACK') }}
@@ -260,6 +259,7 @@ import { useFormBuilderStore } from "@/stores/formbuilder.js";
 // mixins
 import formBuilderMixin from '../mixins/formbuilder';
 import Translations from "@/components/Settings/TranslationTool/Translations.vue";
+import settingsService from "@/services/settings.js";
 
 export default {
   name: 'FormBuilder',
@@ -468,6 +468,9 @@ export default {
       this.$refs.formBuilderPage.getSections(eltid,scrollTo);
     },
     createElementLastGroup(element) {
+      if(this.loading) {
+        return;
+      }
       const groups = Object.values(this.$refs.formBuilderPage.fabrikPage.Groups);
       const last_group = groups[groups.length - 1].group_id;
 
@@ -601,7 +604,7 @@ export default {
         if (this.principalContainer === 'create-page') {
           this.onCloseCreatePage({reload: false});
         } else {
-          window.history.go(-1);
+          settingsService.redirectJRoute('index.php?option=com_emundus&view=form',useGlobalStore().getCurrentLang);
         }
       }
     },
