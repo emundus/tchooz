@@ -120,7 +120,8 @@
           <table id="list-table" :class="{'blocs': viewType === 'blocs'}">
             <thead>
             <tr>
-              <th>{{ translate('COM_EMUNDUS_ONBOARD_LABEL') }}</th>
+              <th>{{ translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) == ('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ?
+                  translate('COM_EMUNDUS_ONBOARD_LABEL') : translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) }}</th>
               <th v-for="column in additionalColumns" :key="column"> {{ column }}</th>
               <th v-if="tabActionsPopover && tabActionsPopover.length > 0">{{
                   translate('COM_EMUNDUS_ONBOARD_ACTIONS')
