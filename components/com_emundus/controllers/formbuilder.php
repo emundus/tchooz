@@ -28,6 +28,8 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 {
 
 	protected $app;
+
+	private $user;
 	private $m_formbuilder;
 
 	public function __construct($config = array())
@@ -39,17 +41,15 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'formbuilder.php');
 
 		$this->app           = Factory::getApplication();
+		$this->user          = $this->app->getIdentity();
 		$this->m_formbuilder = $this->getModel('Formbuilder');
 	}
 
 	public function updateOrder()
 	{
 		$update = array('status' => false, 'msg' => JText::_('ACCESS_DENIED'));
-		$user   = JFactory::getUser();
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-
-
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
 			$elements = $this->input->getString('elements');
 			$elements = json_decode($elements, true);
 			$group_id = $this->input->getInt('group_id');
@@ -60,7 +60,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 				$update['msg'] = JText::_('INVALID_PARAMETERS');
 			}
 			else {
-				$update['status'] = $this->m_formbuilder->updateOrder($elements, $group_id, $user->id, $moved_el);
+				$update['status'] = $this->m_formbuilder->updateOrder($elements, $group_id, $this->user->id, $moved_el);
 				$update['msg']    = $update['status'] ? JText::_('SUCCESS') : JText::_('FAILURE');
 			}
 		}
@@ -100,35 +100,25 @@ class EmundusControllerFormbuilder extends JControllerLegacy
 
 	public function updategroupparams()
 	{
-		$user = JFactory::getUser();
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			$update = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
-
-
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
 			$group_id = $this->input->getInt('group_id');
-			$params   = $this->input->getString('params');
-			$params   = json_decode($params, true);
+			$params   = $this->input->getRaw('params');
+			$params = json_decode($params, true);
 			$lang     = $this->input->getString('lang', '');
 
 			if (!empty($params)) {
-				$update = array(
+				$response = array(
 					'status' => 1,
 					'data'   => $this->m_formbuilder->updateGroupParams($group_id, $params, $lang)
 				);
-			}
-			else {
-				$update = array(
-					'status' => 0,
-					'msg'    => JText::_('MISSING_PARAMS')
-				);
-				JLog::add("Nothing to update in group params", JLog::WARNING, 'com_emundus');
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+				JLog::add('Nothing to update in group params', JLog::WARNING, 'com_emundus');
 			}
 		}
-		echo json_encode($update);
+		echo json_encode($response);
 		exit;
 	}
 
