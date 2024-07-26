@@ -161,7 +161,7 @@ if ($allowed_attachments !== true) {
 </div>
 
 <form id="emailForm" class="em-form-message" name="emailForm">
-    <div class="em_email_block" id="em_email_block">
+    <div class="em_email_block tw-mb-8" id="em_email_block">
 
         <div class="form-inline row">
 
@@ -379,10 +379,8 @@ if ($allowed_attachments !== true) {
                                    accept=".xls,.xlsx,.doc,.docx,.pdf,.png,.jpg,.jpeg,.gif,.odf,.ppt,.pptx,.svg,.csv"
                                    id="em-file_to_upload" onChange="addFile();">
                         </label>
-                    </div>
-                    <div id="em-progress-wrp" class="loading-bar">
-                        <div class="progress-bar"></div>
-                        <div class="status">0%</div>
+                        <p><?php echo Text::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY'); ?>.xls,.docx,.pdf,.png,.jpg,.jpeg,.gif,.odf,.pptx,.svg,.csv</p>
+                        <p id="error_message" class="tw-text-red-500 tw-font-semibold"></p>
                     </div>
                 </div>
 
@@ -422,12 +420,11 @@ if ($allowed_attachments !== true) {
 				<?php } ?>
             </div>
         </div>
-    </div>
-    <br>
-    <div class="form-group attachment em-form-attachments-location">
-        <ul class="list-group" id="em-attachment-list">
-            <!-- Files to be attached will be added here. -->
-        </ul>
+        <div class="em-form-attachments-location tw-w-max tw-mt-2">
+            <ul class="list-group tw-flex tw-flex-col tw-gap-2" id="em-attachment-list">
+                <!-- Files to be attached will be added here. -->
+            </ul>
+        </div>
     </div>
 
     <input type="hidden" name="task" value=""/>
@@ -1063,49 +1060,22 @@ if ($allowed_attachments !== true) {
         formData.append("file", this.file, this.getName().replace(/\s/g, '-').normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
         formData.append("upload_file", true);
 
-        $.ajax({
-            type: "POST",
-            url: "/index.php?option=com_emundus&controller=messages&task=uploadfiletosend",
-            xhr: function () {
-                var myXhr = $.ajaxSettings.xhr();
-                if (myXhr.upload) {
-                    myXhr.upload.addEventListener('progress', that.progressHandling, false);
-                }
-                return myXhr;
-            },
-            success: function (data) {
-                try {
-                    data = JSON.parse(data);
-                } catch (e) {
-                    document.getElementById('em-progress-wrp').remove();
-                    $("#upload_file").append('<span class="alert"> <?= Text::_('UPLOAD_FAILED'); ?> </span>')
-                    return false; // error in the above string (in this case, yes)!
-                }
-
+        fetch('/index.php?option=com_emundus&controller=messages&task=uploadfiletosend', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
                 if (data.status) {
-                    $('#em-attachment-list').append(
-                        '<li class="list-group-item upload" style="padding: 6px 12px; display: flex; align-content: center; justify-content: space-between">' +
-                        '<div class="value hidden">' + data.file_path + '</div>' + data.file_name +
-                        '<div>' +
-                        '<span class="badge"><span class="glyphicon glyphicon-saved"></span></span>' +
-                        '<span class="badge btn-danger" onClick="removeAttachment(this);"><span class="glyphicon glyphicon-remove"></span></span>' +
-                        '</div>' +
-                        '</li>');
+                    document.querySelector('#error_message').innerText = '';
+                    $('#em-attachment-list').append('<li class="list-group-item upload tw-flex tw-items-center tw-justify-between tw-gap-2"><div class="value hidden">' + data.file_path + '</div>' + data.file_name + '<span class="material-icons-outlined tw-cursor-pointer tw-text-red-500" onClick="removeAttachment(this);">clear</span></li>');
                 } else {
-                    $("#em-file_to_upload").append('<span class="alert"> <?= Text::_('UPLOAD_FAILED'); ?> </span>')
+                    document.querySelector('#error_message').innerText = data.msg;
                 }
-            },
-            error: function (error) {
-                // handle error
-                $("#em-file_to_upload").append('<span class="alert"> <?= Text::_('UPLOAD_FAILED'); ?> </span>')
-            },
-            async: true,
-            data: formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            timeout: 60000
-        });
+            })
+            .catch(function (error) {
+                document.querySelector('#error_message').innerText = error.msg;
+            });
     };
 
     Upload.prototype.progressHandling = function (event) {

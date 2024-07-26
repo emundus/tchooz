@@ -112,72 +112,66 @@ class EmundusControllerMessages extends JControllerLegacy
 	 */
 	public function uploadfiletosend()
 	{
+		$result = ['status' => false, 'file_name' => '', 'file_path' => '', 'msg' => ''];
 
-
-		// If a filetype was sent in POST: check it.
 		$filetype = $this->input->post->get('filetype', null);
-
-		// Get the file sent via AJAX POST
 		$file = $this->input->files->get('file');
-
-		// Get the user sent via AJAX POST
 		$user = $this->input->post->get('user');
-
-		// Get the user sent via AJAX POST
 		$fnum = $this->input->post->get('fnum');
 
-		// Check if an error is present
-		if (!isset($file['error']) || is_array($file['error'])) {
-			echo json_encode(['status' => false]);
+		try {
+			if (!isset($file['error']) || is_array($file['error'])) {
+				throw new Exception(Text::_('COM_EMUNDUS_ERROR_OCCURED'));
+			}
+
+			// Sanitize filename.
+			$file['name'] = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $file['name']);
+			$file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
+			$file['name'] = str_replace(array('(', ')'), '', $file['name']);
+
+			// Check if file name is alphanumeric
+			if (!preg_match("`^[-0-9A-Z_\.]+$`i", $file['name'])) {
+				throw new Exception(Text::_('COM_EMUNDUS_ERROR_INVALID_FILENAME'));
+			}
+
+			// Check if file name is not too long.
+			if (mb_strlen($file['name'], "UTF-8") > 225) {
+				throw new Exception(Text::_('COM_EMUNDUS_ERROR_FILENAME_TOO_LONG'));
+			}
+
+			// If we specifically are uploading a PDF, check the MIME type.
+			if ($filetype == 'pdf' && $file['type'] != 'application/pdf') {
+				throw new Exception(Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE'));
+			}
+
+			// Check file extension and remove any dengerous ones.
+			if (preg_match("/.exe$|.com$|.bat$|.zip$|.php$|.sh$/i", $file['name'])) {
+				throw new Exception(Text::_('COM_EMUNDUS_ERROR_INVALID_FILETYPE'));
+			}
+			// Check if the message attachments directory exists.
+			if (!is_dir('images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum)) {
+				mkdir('images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum, 0777, true);
+			}
+
+			// Move the uploaded file to the server directory.
+			if (!empty($user) && empty($fnum)) {
+				$target = 'images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum . DS . $file['name'];
+			}
+			else {
+				$target = 'images' . DS . 'emundus' . DS . 'files' . DS . $file['name'];
+			}
+
+			if (file_exists($target)) {
+				unlink($target);
+			}
+
+			move_uploaded_file($file['tmp_name'], $target);
+		}
+		catch (Exception $e) {
+			$result['msg'] = $e->getMessage();
+			echo json_encode($result);
 			exit;
 		}
-
-		// Sanitize filename.
-		$file['name'] = preg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $file['name']);
-		$file['name'] = preg_replace("([\.]{2,})", '', $file['name']);
-		$file['name'] = str_replace(array('(', ')'), '', $file['name']);
-
-		// Check if file name is alphanumeric
-		if (!preg_match("`^[-0-9A-Z_\.]+$`i", $file['name'])) {
-			echo json_encode(['status' => false]);
-			exit;
-		}
-
-		// Check if file name is not too long.
-		if (mb_strlen($file['name'], "UTF-8") > 225) {
-			echo json_encode(['status' => false]);
-			exit;
-		}
-
-		// If we specifically are uploading a PDF, check the MIME type.
-		if ($filetype == 'pdf' && $file['type'] != 'application/pdf') {
-			echo json_encode(['status' => false]);
-			exit;
-		}
-
-		// Check file extension and remove any dengerous ones.
-		if (preg_match("/.exe$|.com$|.bat$|.zip$|.php$|.sh$/i", $file['name'])) {
-			exit("You cannot upload this type of file.");
-		}
-		// Check if the message attachments directory exists.
-		if (!is_dir('images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum)) {
-			mkdir('images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum, 0777, true);
-		}
-
-		// Move the uploaded file to the server directory.
-
-		if (!empty($user) && empty($fnum)) {
-			$target = 'images' . DS . 'emundus' . DS . 'files' . DS . $user . DS . $fnum . DS . $file['name'];
-		}
-		else {
-			$target = 'images' . DS . 'emundus' . DS . 'files' . DS . $file['name'];
-		}
-
-		if (file_exists($target)) {
-			unlink($target);
-		}
-
-		move_uploaded_file($file['tmp_name'], $target);
 
 		// Send back the info to the frontend.
 		echo json_encode(['status' => true, 'file_name' => $file['name'], 'file_path' => $target]);
