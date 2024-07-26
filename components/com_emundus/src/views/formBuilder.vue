@@ -103,22 +103,22 @@
         <section v-if="!previewForm && (activeTab==='' || activeTab==='Elements')" class="tw-flex tw-flex-col tw-w-full tw-h-full" id="center_content">
           <transition name="fade" mode="out-in">
             <form-builder-page
-                ref="formBuilderPage"
                 v-if="currentPage && showInSection === 'page'"
                 :key="currentPage.id"
-                :profile_id="parseInt(profile_id)"
-                :page="currentPage"
+                ref="formBuilderPage"
                 :mode="mode"
+                :page="currentPage"
+                :profile_id="parseInt(profile_id)"
                 @open-element-properties="onOpenElementProperties"
                 @open-section-properties="onOpenSectionProperties"
                 @open-create-model="onOpenCreateModel"
                 @update-page-title="getPages(currentPage.id)"
             ></form-builder-page>
             <form-builder-document-list
-                ref="formBuilderDocumentList"
                 v-else-if="showInSection === 'documents'"
-                :profile_id="parseInt(profile_id)"
+                ref="formBuilderDocumentList"
                 :campaign_id="parseInt(campaign_id)"
+                :profile_id="parseInt(profile_id)"
                 @add-document="onOpenCreateDocument"
                 @edit-document="onEditDocument"
                 @delete-document="onDeleteDocument"
@@ -126,8 +126,8 @@
             <form-builder-rules
                 v-else-if="currentPage && showInSection === 'rules'"
                 :key="currentPage.id"
-                :page="currentPage"
                 :mode="mode"
+                :page="currentPage"
                 @add-rule="addRule"
             />
             <form-builder-rules-add
