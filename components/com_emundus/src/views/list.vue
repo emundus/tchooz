@@ -494,7 +494,7 @@ export default {
           });
         }
 
-        settingsService.redirectJRoute(url)
+        settingsService.redirectJRoute(url,useGlobalStore().getCurrentLang)
 
         //window.location.href = url;
       } else {

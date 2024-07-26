@@ -54,6 +54,7 @@ import FormBuilderPreviewAttachments from '@/components/FormBuilder/FormBuilderP
 import settingsService from '@/services/settings.js';
 import formService from '@/services/form.js';
 import campaignService from '@/services/campaign.js';
+import {useGlobalStore} from "@/stores/global.js";
 
 export default {
   name: 'addFormulaire',
@@ -114,7 +115,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      settingsService.redirectJRoute(link);
+      settingsService.redirectJRoute(link,useGlobalStore().getCurrentLang);
     },
 
     addNewForm() {

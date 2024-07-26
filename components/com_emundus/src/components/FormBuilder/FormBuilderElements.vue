@@ -36,7 +36,7 @@
             </p>
             <div class="tw-flex tw-items-center tw-h-[18px] tw-w-[18px]">
 <!--              <span class="material-icons-outlined" style="font-size: 18px">drag_indicator</span>-->
-              <span v-show="elementHovered == element.value" class="material-icons-outlined tw-cursor-copy" style="font-size: 18px" @click="$emit('create-element-lastgroup', element)">add_circle_outline</span>
+              <span v-show="elementHovered == element.value" class="material-icons-outlined tw-cursor-copy" style="font-size: 18px" @click="clickCreateElement(element)">add_circle_outline</span>
             </div>
           </div>
         </transition-group>
@@ -109,7 +109,8 @@ export default {
       cloneElement: {},
       loading: false,
       elementHovered: 0,
-      keywords: ''
+      keywords: '',
+      debounce: false
     }
   },
   setup() {
@@ -189,6 +190,16 @@ export default {
         console.warn(error);
         this.loading = false;
       });
+    },
+    clickCreateElement(element) {
+      if(this.debounce) {
+        return;
+      }
+      this.debounce = true;
+      this.$emit('create-element-lastgroup', element)
+      setTimeout(() => {
+        this.debounce = false;
+      }, 1000);
     }
   },
   computed: {
