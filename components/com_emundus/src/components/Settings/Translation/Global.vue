@@ -57,8 +57,8 @@
 
 <script>
 
-import client from "com_emundus/src/services/axiosClient";
-import translationsService from "com_emundus/src/services/translations";
+import client from "@/services/axiosClient";
+import translationsService from "@/services/translations";
 import Multiselect from 'vue-multiselect';
 import Swal from "sweetalert2";
 

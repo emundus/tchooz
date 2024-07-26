@@ -30,7 +30,8 @@
 
 <script>
 // external libraries
-import draggable from 'vuedraggable';
+//import draggable from 'vuedraggable';
+import { VueDraggableNext } from 'vue-draggable-next';
 
 import formBuilderMixin from '../../../mixins/formbuilder';
 import errorsMixin from '../../../mixins/errors';
@@ -39,7 +40,7 @@ import rulesData from '../../../../data/form-builder/form-builder-rules.json';
 
 export default {
   components: {
-    draggable
+    draggable: VueDraggableNext
   },
   mixins: [formBuilderMixin, errorsMixin],
   props: {

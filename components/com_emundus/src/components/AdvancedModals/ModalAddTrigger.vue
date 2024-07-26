@@ -25,7 +25,7 @@
       <div class="tw-mb-4">
         <label>{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERMODEL") }}* :</label>
         <div class="tw-flex tw-items-center">
-          <select v-if="models.length > 0" v-model="form.model" class="tw-w-full"
+          <select :id="'modal-email-model'" v-if="models.length > 0" v-model="form.model" class="tw-w-full"
                   :class="{ 'is-invalid': errors.model}">
             <option v-for="(model, index) in models" :key="index" :value="model.id">{{ model.subject }}</option>
           </select>
@@ -38,7 +38,7 @@
 
       <div class="tw-mb-4">
         <label>{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS") }}* :</label>
-        <select v-model="form.status" class="tw-w-full" :class="{ 'is-invalid': errors.status}">
+        <select :id="'modal-status-trigger'" v-model="form.status" class="tw-w-full" :class="{ 'is-invalid': errors.status}">
           <option v-for="(statu,index) in status" :key="index" :value="statu.step">{{ statu.value }}</option>
         </select>
         <span v-if="errors.status" class="tw-text-red-500 tw-mb-2">
@@ -48,7 +48,7 @@
 
       <div class="tw-mb-4">
         <label>{{ translate("COM_EMUNDUS_ONBOARD_TRIGGERTARGET") }}* :</label>
-        <select v-model="form.target" class="tw-w-full" :class="{ 'is-invalid': errors.target}">
+        <select :id="'modal-recipient'" v-model="form.target" class="tw-w-full" :class="{ 'is-invalid': errors.target}">
           <option value="5">{{ translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS") }}</option>
           <option value="6">{{ translate("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS") }}</option>
           <option value="1000">{{ translate("COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES") }}</option>
