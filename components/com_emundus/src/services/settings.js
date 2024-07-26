@@ -76,9 +76,10 @@ export default {
     }
   },
 
-  async redirectJRoute(link) {
+  async redirectJRoute(link, language = 'fr-FR') {
     let formDatas = new FormData();
     formDatas.append('link', link);
+    formDatas.append('redirect_language', language);
 
     fetch(window.location.origin + '/index.php?option=com_emundus&controller=settings&task=redirectjroute', {
       method: 'POST',

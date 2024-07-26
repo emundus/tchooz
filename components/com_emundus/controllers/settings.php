@@ -16,6 +16,7 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Component\Config\Controller\ApplicationController;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\Session\Session;
@@ -772,6 +773,7 @@ class EmundusControllersettings extends JControllerLegacy
 	{
 
 		$current_link = $this->input->getString('link');
+		$language = $this->input->getString('redirect_language','fr-FR');
 
 		$options_to_set = [];
 		$segments       = explode('?', $current_link);
@@ -789,11 +791,17 @@ class EmundusControllersettings extends JControllerLegacy
 		$link = 'index.php?' . implode('&', $segments);
 
 		$response = array('status' => true, 'msg' => 'SUCCESS', 'data' => $current_link);
-
+		
 		$menu = Factory::getApplication()->getMenu()->getItems('link', $link, true);
 
 		if (!empty($menu)) {
-			$response['data'] = $menu->route;
+			$languages = LanguageHelper::getLanguages('lang_code');
+			$sef = '';
+			if (isset($languages[$language]))
+			{
+				$sef = $languages[$language]->sef;
+			}
+			$response['data'] = !empty($sef) ? $sef.'/'.$menu->route : $menu->route;
 
 			if (!empty($options_to_set)) {
 				$response['data'] .= '?' . http_build_query($options_to_set);

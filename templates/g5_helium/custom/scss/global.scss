@@ -50,6 +50,11 @@
 
 /* FIN de gestion des curseurs dans le menu des paramètres globaux */
 
+/* Couleurs des labels des menus dans les paramètres globaux */
+aside#settings_menus div ul li p,
+aside#settings_menus div ul li span span:nth-child(2) {
+  color: var(--grey-color);
+}
 
 details summary:focus{
   outline: unset;
@@ -868,6 +873,11 @@ footer#g-footer > .g-container {
   a.toggle {
     color: #1b1f3c;
   }
+}
+
+/* TYPES DE DOCUMENTS */
+.view-form form .documents-type-candidacy-page #group827 {
+  margin-bottom: 0;
 }
 
 /* DROPFILE */
@@ -3322,15 +3332,6 @@ ul.unstyled.em-linkForgot li a {
   *:not(.material-icons):not(.material-icons-outlined):not(.glyphicon):not(.fas):not(i.icon):not(i.mce-ico):not(.fa):not([class^=icon-]) {
     font-family: var(--em-profile-font), Inter, sans-serif;
   }
-}
-
-#g-main-mainbody #application-modal #modal-applicationform .scrollable div:first-child {
-  z-index: 10;
-}
-
-#g-main-mainbody #application-modal #modal-applicationform .scrollable div:nth-child(2) {
-  position: relative;
-  z-index: 7;
 }
 
 .files-board.com_emundus, .view-list.com_fabrik {

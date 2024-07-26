@@ -9,16 +9,15 @@
         :clickToClose="false"
         ref="modal"
     >
-      <div v-if="this.globalStore.currentLanguage !== this.globalStore.defaultLang" class="justify-center bg-[#FEF6EE] flex items-center gap-3 p-2">
+      <div v-if="this.globalStore.currentLanguage !== this.globalStore.defaultLang" class="tw-justify-center tw-bg-[#FEF6EE] tw-flex tw-items-center tw-gap-3 tw-p-2">
         <span class="material-icons-outlined text-[#EF681F]">warning_amber</span>
         <span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
       </div>
       <header class="tw-grid tw-grid-cols-3 tw-items-center">
         <div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
-          <p class="em-flex-row">
+          <p class="tw-flex tw-items-center tw-cursor-pointer" @click="clickGoBack">
             <span id="go-back"
-                  class="material-icons-outlined tw-py-3 tw-pl-5 tw-pr-1 em-pointer"
-                  @click="clickGoBack">
+                  class="material-icons-outlined tw-py-3 tw-pl-5 tw-pr-1 em-pointer">
               navigate_before
             </span>
             {{ translate('COM_EMUNDUS_ACTIONS_BACK') }}
@@ -104,22 +103,22 @@
         <section v-if="!previewForm && (activeTab==='' || activeTab==='Elements')" class="tw-flex tw-flex-col tw-w-full tw-h-full" id="center_content">
           <transition name="fade" mode="out-in">
             <form-builder-page
-                ref="formBuilderPage"
                 v-if="currentPage && showInSection === 'page'"
                 :key="currentPage.id"
-                :profile_id="parseInt(profile_id)"
-                :page="currentPage"
+                ref="formBuilderPage"
                 :mode="mode"
+                :page="currentPage"
+                :profile_id="parseInt(profile_id)"
                 @open-element-properties="onOpenElementProperties"
                 @open-section-properties="onOpenSectionProperties"
                 @open-create-model="onOpenCreateModel"
                 @update-page-title="getPages(currentPage.id)"
             ></form-builder-page>
             <form-builder-document-list
-                ref="formBuilderDocumentList"
                 v-else-if="showInSection === 'documents'"
-                :profile_id="parseInt(profile_id)"
+                ref="formBuilderDocumentList"
                 :campaign_id="parseInt(campaign_id)"
+                :profile_id="parseInt(profile_id)"
                 @add-document="onOpenCreateDocument"
                 @edit-document="onEditDocument"
                 @delete-document="onDeleteDocument"
@@ -127,8 +126,8 @@
             <form-builder-rules
                 v-else-if="currentPage && showInSection === 'rules'"
                 :key="currentPage.id"
-                :page="currentPage"
                 :mode="mode"
+                :page="currentPage"
                 @add-rule="addRule"
             />
             <form-builder-rules-add
@@ -260,6 +259,7 @@ import { useFormBuilderStore } from "@/stores/formbuilder.js";
 // mixins
 import formBuilderMixin from '../mixins/formbuilder';
 import Translations from "@/components/Settings/TranslationTool/Translations.vue";
+import settingsService from "@/services/settings.js";
 
 export default {
   name: 'FormBuilder',
@@ -468,6 +468,9 @@ export default {
       this.$refs.formBuilderPage.getSections(eltid,scrollTo);
     },
     createElementLastGroup(element) {
+      if(this.loading) {
+        return;
+      }
       const groups = Object.values(this.$refs.formBuilderPage.fabrikPage.Groups);
       const last_group = groups[groups.length - 1].group_id;
 
@@ -601,7 +604,7 @@ export default {
         if (this.principalContainer === 'create-page') {
           this.onCloseCreatePage({reload: false});
         } else {
-          window.history.go(-1);
+          settingsService.redirectJRoute('index.php?option=com_emundus&view=form',useGlobalStore().getCurrentLang);
         }
       }
     },

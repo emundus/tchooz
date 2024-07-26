@@ -75,7 +75,6 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 					<?php
 					$class      = $form->rowid == 0 ? 'need_missing' : 'need_ok';
 					$step       = $index + 1;
-					$form_title = explode(' - ', $form->title)[1] ?: $form->title;
 					?>
                     <div id="mlf<?php echo $form->id; ?>"
                          class="<?php if ($form->id == $menuid) echo 'active' ?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item tw-relative">
@@ -105,7 +104,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                                 </span>
                             </div>
                             <a href="<?php echo $form->link ?>" style="color: <?php echo $title_color; ?>;" <?php if ($form->id == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
-                                <?php echo JText::_($form_title); ?>
+                                <?php echo JText::_($form->title); ?>
                             </a>
                         </div>
 						<?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && !empty($mandatory_documents)) || ($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>

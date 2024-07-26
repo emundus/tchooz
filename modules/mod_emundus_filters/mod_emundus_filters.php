@@ -7,7 +7,7 @@ use Joomla\CMS\Language\Text;
 $app = Factory::getApplication();
 $user = $app->getSession()->get('emundusUser');
 
-if (!empty($user) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
+if (!empty($user->id) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
 	if (!empty($params)) {
 		$layout = $params->get('layout', '');
 		$filter_on_fnums = $params->get('filter_on_fnums', 0);
