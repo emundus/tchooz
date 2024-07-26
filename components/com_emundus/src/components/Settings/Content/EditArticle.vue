@@ -1,6 +1,6 @@
 <template>
   <div class="em-settings-menu">
-    <div class="tw-w-full">
+    <div class="tw-w-full tw-mb-4">
       <div class="tw-w-5/6">
         <div class="tw-grid tw-grid-cols-3 tw-gap-6 tw-mb-4">
           <multiselect
@@ -48,7 +48,7 @@
               :preset="'custom'"
               :plugins="editorPlugins"
               :toolbar-classes="['tw-bg-white']"
-              :editor-content-classes="['tw-bg-white']"
+              :editor-content-classes="['tw-bg-white tw-mb-2']"
               @input="updated = true"
           />
         </div>

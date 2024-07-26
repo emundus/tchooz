@@ -639,6 +639,8 @@ class EmundusModelsettings extends JModelList
 	 */
 	function updateArticle($content, $lang_code, $article_id = 0, $article_alias = '', $reference_field = 'introtext', $note)
 	{
+		$updated = false;
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -677,17 +679,12 @@ class EmundusModelsettings extends JModelList
 
 			if (empty($falang_result)) {
 				$query->clear()
-					->update($this->db->quoteName('#__content'))
-					->set($this->db->quoteName('introtext') . ' = ' . $this->db->quote($content))
-					->where($this->db->quoteName('id') . ' = ' . $article->id);
-
-				if ($note !== null) {
-					$query->set($this->db->quoteName('note') . ' = ' . $this->db->quote($note));
-				}
+					->insert('#__falang_content')
+					->columns(['reference_id', 'reference_table', 'reference_field', 'language_id', 'value', 'published'])
+					->values($article->id . ', ' . $this->db->quote('content') . ', ' . $this->db->quote($reference_field) . ', ' . $lang_id . ', ' . $this->db->quote($content) . ', 1');
 
 				$this->db->setQuery($query);
-
-				return $this->db->execute();
+				$updated = $this->db->execute();
 			}
 			else {
 				$query->clear()
@@ -701,14 +698,14 @@ class EmundusModelsettings extends JModelList
 					));
 				$this->db->setQuery($query);
 
-				return $this->db->execute();
+				$updated = $this->db->execute();
 			}
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/settings | Error at updating article ' . $article_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
 		}
+
+		return $updated;
 	}
 
 	/**

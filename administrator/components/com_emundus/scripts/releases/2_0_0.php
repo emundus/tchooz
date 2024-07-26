@@ -1402,6 +1402,19 @@ if(value == 1) {
 
 			EmundusHelperUpdate::installExtension('plg_extension_emundus','emundus',null,'plugin',1,'extension');
 
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_actions', 'description', 'VARCHAR',255);
+			$query->clear()
+				->select('id,label,description')
+				->from($this->db->quoteName('#__emundus_setup_actions'))
+				->where($this->db->quoteName('description') . ' IS NULL')
+				->orWhere($this->db->quoteName('description') . ' = ' . $this->db->quote(''));
+			$this->db->setQuery($query);
+			$actions = $this->db->loadObjectList();
+			foreach ($actions as $action) {
+				$action->description = $action->label.'_DESC';
+				$this->db->updateObject('#__emundus_setup_actions', $action, 'id');
+			}
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

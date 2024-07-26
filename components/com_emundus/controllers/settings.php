@@ -51,7 +51,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function getstatus()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result = 0;
@@ -73,7 +73,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function gettags()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result = 0;
@@ -95,7 +95,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function createtag()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result         = 0;
@@ -110,7 +110,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function createstatus()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result         = 0;
@@ -125,7 +125,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function deletetag()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result         = 0;
@@ -144,7 +144,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function deletestatus()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result         = 0;
@@ -165,7 +165,7 @@ class EmundusControllersettings extends JControllerLegacy
 	public function updatestatus()
 	{
 		$changeresponse = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$status = $this->input->getInt('status');
@@ -181,7 +181,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function updatestatusorder()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result         = 0;
@@ -200,7 +200,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function updatetags()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result         = 0;
@@ -244,13 +244,10 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function updatearticle()
 	{
-		$user = JFactory::getUser();
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+		$user = $this->user;
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$content       = $this->input->getRaw('content');
 			$article_id    = $this->input->getString('article_id', 0);
 			$article_alias = $this->input->getString('article_alias', '');
@@ -258,9 +255,10 @@ class EmundusControllersettings extends JControllerLegacy
 			$field         = $this->input->getString('field');
 			$note		   = $this->input->getString('note');
 
-			$changeresponse = $this->m_settings->updateArticle($content, $lang, $article_id, $article_alias, $field, $note);
+			$response = $this->m_settings->updateArticle($content, $lang, $article_id, $article_alias, $field, $note);
 		}
-		echo json_encode((object) $changeresponse);
+		
+		echo json_encode((object) $response);
 		exit;
 	}
 	public function getAllArticleNeedToModify() {
@@ -288,7 +286,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function getfooterarticles()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result = 0;
@@ -310,7 +308,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function updatefooter()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result         = 0;
@@ -357,7 +355,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function updatelogo()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result = 0;
@@ -404,7 +402,7 @@ class EmundusControllersettings extends JControllerLegacy
 	public function updateicon()
 	{
 		$result = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'filename' => '', 'old_favicon' => ''];
-		$user   = JFactory::getUser();
+		$user   = $this->user;
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$image  = $this->input->files->get('file');
@@ -449,7 +447,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function removeicon()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result = 0;
@@ -468,7 +466,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function updatehomebackground()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result = 0;
@@ -501,7 +499,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function getbackgroundoption()
 	{
-		$user  = JFactory::getUser();
+		$user  = $this->user;
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -533,7 +531,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function updatebackgroundmodule()
 	{
-		$user  = JFactory::getUser();
+		$user  = $this->user;
 		$db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
@@ -567,7 +565,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function getappcolors()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result = 0;
@@ -586,7 +584,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function updatecolor()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result = 0;
@@ -633,7 +631,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function getdatasfromtable()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result   = 0;
@@ -653,7 +651,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function savedatas()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result   = 0;
@@ -673,7 +671,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function saveimporteddatas()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result   = 0;
@@ -694,7 +692,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function unlockuser()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result   = 0;
@@ -714,7 +712,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function lockuser()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result   = 0;
@@ -734,7 +732,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function checkfirstdatabasejoin()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result   = 0;
@@ -752,7 +750,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function removeparam()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result   = 0;
@@ -808,7 +806,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function geteditorvariables()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result   = 0;
@@ -826,7 +824,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function getactivelanguages()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result   = 0;
@@ -845,7 +843,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function uploadimages()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result = 0;
@@ -887,7 +885,7 @@ class EmundusControllersettings extends JControllerLegacy
 
 	public function gettasks()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result = 0;
@@ -1079,7 +1077,7 @@ public function sendTestMail()
 	/// get all users
 	public function getallusers()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$result = 0;
@@ -1116,7 +1114,7 @@ public function sendTestMail()
 
 	public function uploadimagetocustomfolder()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$result = 0;
@@ -1186,7 +1184,7 @@ public function sendTestMail()
 
 	public function updatebanner()
 	{
-		$user = JFactory::getUser();
+		$user = $this->user;
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$results['status'] = false;
@@ -1222,7 +1220,7 @@ public function sendTestMail()
 
 	public function getonboardinglists()
 	{
-		$user    = JFactory::getUser();
+		$user    = $this->user;
 		$results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -1237,7 +1235,7 @@ public function sendTestMail()
 
 	public function getOffset()
 	{
-		$user    = JFactory::getUser();
+		$user    = $this->user;
 		$results = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
 
 		// get input format, second, minutes or hours

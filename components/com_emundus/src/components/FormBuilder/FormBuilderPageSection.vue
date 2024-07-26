@@ -31,14 +31,13 @@
         </div>
         <transition name="slide-down">
           <div v-show="!closedSection">
-            <p id="section-intro"
-               class="editable-data"
+            <span id="section-intro"
+               class="editable-data description"
                ref="sectionIntro"
                contenteditable="true"
                @focusout="updateIntro"
-               @keyup.enter="blurElement('#section-intro')"
                v-html="section.group_intro">
-            </p>
+            </span>
             <draggable
                 v-model="elements"
                 group="form-builder-section-elements"
@@ -166,7 +165,7 @@ export default {
       document.querySelector(selector).blur();
     },
     updateIntro() {
-      this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim().replace(/[\r\n]/gm, " ");
+      this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim().replace(/[\r\n]/gm, "<br/>");
       this.section.group_intro = this.$refs.sectionIntro.innerHTML;
       formBuilderService.updateGroupParams(this.section.group_id, {'intro': this.section.group_intro}, this.shortDefaultLang).then((response) => {
         if (response.status) {
