@@ -27,7 +27,6 @@ export default
       "article_id": 1035,
       "article_alias": "mentions-legales",
       "field": "introtext",
-      "category": "rgpd",
       "published": 1
     }
   },
@@ -88,7 +87,6 @@ export default
       "article_id": 1044,
       "article_alias": "accessibilite",
       "field": "introtext",
-      "category": "rgpd",
       "published": 1
     }
   }
