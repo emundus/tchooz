@@ -19,13 +19,13 @@ export default
     "component": "EditFooter"
   },
   {
-    "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_ACCESSIBILITY",
-    "name": "accessibility",
+    "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_LEGAL_MENTION",
+    "name": "rgpd-legal-mention",
     "component": "EditArticle",
     "props": {
-      "name": "text_accessibility",
-      "article_id": 1044,
-      "article_alias": "accessibilite",
+      "name": "text_legal_notice",
+      "article_id": 1035,
+      "article_alias": "mentions-legales",
       "field": "introtext",
       "category": "rgpd",
       "published": 1
@@ -39,21 +39,8 @@ export default
     "notify": 1,
     "props": [
       {
-      "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_LEGAL_MENTION",
-      "name": "rgpd-legal-mention",
-      "component": "EditArticle",
-      "props": {
-        "name": "text_legal_notice",
-        "article_id": 1035,
-        "article_alias": "mentions-legales",
-        "field": "introtext",
-        "category": "rgpd",
-        "published": 1
-      }
-    },
-      {
         "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_DATAS",
-          "name": "rgpd-Privacy-policy",
+        "name": "rgpd-Privacy-policy",
         "component": "EditArticle",
         "props": {
           "name": "text_privacy_policy",
@@ -91,5 +78,18 @@ export default
         }
       }
     ]
+  },
+  {
+    "label": "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_ACCESSIBILITY",
+    "name": "accessibility",
+    "component": "EditArticle",
+    "props": {
+      "name": "text_accessibility",
+      "article_id": 1044,
+      "article_alias": "accessibilite",
+      "field": "introtext",
+      "category": "rgpd",
+      "published": 1
+    }
   }
 ]
