@@ -686,6 +686,10 @@ Text::script('COM_EMUNDUS_EMAIL_CURRENT_FILE');
 Text::script('COM_EMUNDUS_EMAIL_ALL_FILES');
 Text::script('COM_EMUNDUS_EMAIL_ON_FILE');
 
+Text::script('COM_EMUNDUS_ERROR_INVALID_FILENAME');
+Text::script('COM_EMUNDUS_ERROR_INVALID_FILETYPE');
+Text::script('COM_EMUNDUS_ERROR_FILENAME_TOO_LONG');
+
 
 // Require specific controller if requested
 if ($controller = $app->input->get('controller', '', 'WORD')) {
