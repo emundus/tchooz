@@ -102,16 +102,25 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 		parent::__construct($dispatcher, $config);
 		
 		$this->loadLanguage();
-		$type = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_STRING);
-		if (!empty($type)) {
-			$second_configuration_type = $this->params->get('type_2', '');
 
-			if (!empty($second_configuration_type) && $type === $second_configuration_type) {
-				// it means we should use the configuration n°2
+		$configurations = (array)$this->params->get('configurations', null);
+		if(!empty($configurations)) {
+			$type = filter_input(INPUT_GET, 'type', FILTER_SANITIZE_STRING);
+			if (!empty($type)) {
+				foreach ($configurations as $configuration) {
+					if ($configuration->type === $type) {
+						$parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode'];
+
+						foreach ($parameters as $parameter) {
+							$this->params->set($parameter, $configuration->{$parameter});
+						}
+					}
+				}
+			} else {
 				$parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode'];
 
 				foreach ($parameters as $parameter) {
-					$this->params->set($parameter, $this->params->get($parameter . '_2'));
+					$this->params->set($parameter, $configurations['configurations0']->{$parameter});
 				}
 			}
 		}
