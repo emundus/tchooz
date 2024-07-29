@@ -3,7 +3,7 @@
         'name' => 'emundus/tchooz',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'c1d657ed3d0b4e2919c29fd3bf0407985b9253ab',
+        'reference' => '6d8367230885fa822e91ac17a29d027eb7163d3e',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'emundus/oauth2' => array(
             'pretty_version' => 'dev-3.x-dev',
             'version' => 'dev-3.x-dev',
-            'reference' => '4ef34ae052983300d9b6fa84b52aa038dda58982',
+            'reference' => '4db47a12eafb64e2257d381cecf9c19b6f264c74',
             'type' => 'emundus-package',
             'install_path' => __DIR__ . '/../emundus/oauth2',
             'aliases' => array(
@@ -42,7 +42,7 @@
         'emundus/tchooz' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'c1d657ed3d0b4e2919c29fd3bf0407985b9253ab',
+            'reference' => '6d8367230885fa822e91ac17a29d027eb7163d3e',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

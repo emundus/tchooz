@@ -150,12 +150,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/emundus/oauth2.git",
-                "reference": "4ef34ae052983300d9b6fa84b52aa038dda58982"
+                "reference": "4db47a12eafb64e2257d381cecf9c19b6f264c74"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/emundus/oauth2/zipball/4ef34ae052983300d9b6fa84b52aa038dda58982",
-                "reference": "4ef34ae052983300d9b6fa84b52aa038dda58982",
+                "url": "https://api.github.com/repos/emundus/oauth2/zipball/4db47a12eafb64e2257d381cecf9c19b6f264c74",
+                "reference": "4db47a12eafb64e2257d381cecf9c19b6f264c74",
                 "shasum": ""
             },
             "require": {
@@ -214,7 +214,7 @@
                     "url": "https://community.joomla.org/sponsorship-campaigns.html"
                 }
             ],
-            "time": "2024-07-29T12:04:35+00:00"
+            "time": "2024-07-29T13:17:50+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",

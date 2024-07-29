@@ -112,9 +112,22 @@ class Client
                 );
             }
 
-            if (strpos($response->headers['Content-Type'], 'application/json') !== false || strpos($response->headers['content-type'], 'application/json') !== false) {
-                $token = array_merge(json_decode($response->body, true), ['created' => time()]);
-            } else {
+            $token = [];
+            $content_type = $response->headers['Content-Type'];
+            if(empty($content_type)) {
+                $content_type = $response->headers['content-type'];
+            }
+            if(!empty($content_type)) {
+                if(is_array($content_type)) {
+                   $content_type = $content_type[0];
+                }
+
+                if(strpos($content_type, 'application/json') !== false) {
+                    $token = array_merge(json_decode($response->body, true), ['created' => time()]);
+                }
+            }
+
+            if(empty($token)) {
                 parse_str($response->body, $token);
                 $token = array_merge($token, ['created' => time()]);
             }
