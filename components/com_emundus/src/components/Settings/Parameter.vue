@@ -123,7 +123,7 @@
       <div
           v-if="parameter.type ==='email' && parameter.editable ==='semi' && parameter.displayed"
           :class="'tw-flex tw-items-center '">
-        <div name="input-field-semi_0" class="tw-w-full">
+        <div name="input-field-semi_0" style="width: 400px;">
           <input
               :class="errors[parameter.param+'-semi-0'] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''"
               :placeholder="translate(senderEmailPlaceholder)" v-model="senderEmail">
@@ -134,7 +134,7 @@
           </div>
         </div>
         <span class="tw-ml-2 tw-mr-2">@</span>
-        <div name="input-field-Semi1" class="tw-w-full">
+        <div name="input-field-Semi1" style="width: 400px;">
           <input v-if="customValue" :placeholder="translate(senderEmailDomainPlaceholder)" v-model="senderEmailDomain"
                  :class="errors[parameter.param+'-semi-1'] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''">
           <span v-else :class="'tw-w-full'">{{ senderEmailDomain }}</span>
