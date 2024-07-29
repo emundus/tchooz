@@ -21,7 +21,7 @@
           ></multiselect>
         </div>
 
-        <div class="tw-mb-4 tw-flex tw-items-center">
+        <div class="tw-mb-4 tw-flex tw-items-center" v-if="displayPublishedToggle">
           <div class="em-toggle">
             <input type="checkbox"
                    true-value="1"
@@ -110,6 +110,10 @@ export default {
     },
     name: {
       default: null
+    },
+    displayPublishedToggle: {
+      type: Boolean,
+      default: true
     }
   },
 
