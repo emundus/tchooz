@@ -1232,6 +1232,9 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         })
 
         let new_url = existing_filters.join('&');
+        if(new_url.indexOf('?') === -1) {
+            new_url += '?';
+        }
         if (codes.length > 0) {
             program_filter = '&code=';
             program_filter += codes.join(',');
