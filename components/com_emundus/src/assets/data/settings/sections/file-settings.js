@@ -82,7 +82,7 @@ export default
     "value": 1
   },
   {
-    "displayed": true,
+    "displayed": false,
     "component": "emundus",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ANONYM_FILE",
     "param": "allow_anonym_files",

@@ -16,6 +16,7 @@ export default
   },
   {
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL",
+    "intro": "COM_EMUNDUS_FILES_SETTINGS_INTRO",
     "name": "file_settings",
     "component": "SiteSettings",
     "props": {
