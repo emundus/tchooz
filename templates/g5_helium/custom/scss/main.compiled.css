@@ -1611,11 +1611,12 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
     margin-left: 0px;
     display: flex;
     align-items: flex-start;
-    flex: 1 1 0%;
-    width: 0px;
                     padding: var(--em-form-radio-padding);
                     border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
                     border-radius: var(--em-form-radio-br);
+}
+form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio.col-sm-6 {
+    flex: 1 1 0%;
 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio input {
                         accent-color: var(--em-form-radio-color-checked);
@@ -2241,9 +2242,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-right-\[1px\] {
     right: 1px;
-}
-.tw-right-\[5px\] {
-    right: 5px;
 }
 .tw-top-0 {
     top: 0px;
@@ -6056,9 +6054,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\[-a-zA-Z\:0-9_\.\] {
-    -a-z-a--z: 0-9 .;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;

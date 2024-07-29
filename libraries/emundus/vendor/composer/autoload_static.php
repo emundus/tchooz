@@ -59,6 +59,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         array (
             'ZipStream\\' => 10,
         ),
+        'T' => 
+        array (
+            'Tests\\PhpOffice\\Math\\' => 21,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
@@ -73,6 +77,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'Psr\\Http\\Client\\' => 16,
             'PhpOffice\\PhpWord\\' => 18,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
+            'PhpOffice\\Math\\' => 15,
         ),
         'M' => 
         array (
@@ -81,7 +86,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         ),
         'L' => 
         array (
-            'Laminas\\Escaper\\' => 16,
             'Laminas\\Diactoros\\' => 18,
         ),
         'J' => 
@@ -91,7 +95,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'Joomla\\String\\' => 14,
             'Joomla\\Session\\' => 15,
             'Joomla\\Registry\\' => 16,
-            'Joomla\\OAuth2\\' => 14,
             'Joomla\\Input\\' => 13,
             'Joomla\\Http\\' => 12,
             'Joomla\\Filter\\' => 14,
@@ -116,6 +119,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'F' => 
         array (
             'FontLib\\' => 8,
+        ),
+        'E' => 
+        array (
+            'Emundus\\OAuth2\\' => 15,
         ),
         'D' => 
         array (
@@ -144,6 +151,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'ZipStream\\' => 
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
+        ),
+        'Tests\\PhpOffice\\Math\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/math/tests/Math',
         ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
@@ -182,6 +193,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
         ),
+        'PhpOffice\\Math\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/math/src/Math',
+        ),
         'Matrix\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
@@ -189,10 +204,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'Masterminds\\' => 
         array (
             0 => __DIR__ . '/..' . '/masterminds/html5/src',
-        ),
-        'Laminas\\Escaper\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/laminas/laminas-escaper/src',
         ),
         'Laminas\\Diactoros\\' => 
         array (
@@ -217,10 +228,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'Joomla\\Registry\\' => 
         array (
             0 => __DIR__ . '/..' . '/joomla/registry/src',
-        ),
-        'Joomla\\OAuth2\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/joomla/oauth2/src',
         ),
         'Joomla\\Input\\' => 
         array (
@@ -281,6 +288,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'FontLib\\' => 
         array (
             0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
+        ),
+        'Emundus\\OAuth2\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/emundus/oauth2/src',
         ),
         'Dompdf\\' => 
         array (

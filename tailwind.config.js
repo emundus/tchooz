@@ -177,7 +177,78 @@ module.exports = {
                     fontStyle: 'normal',
                     lineHeight: '24.2px',
                     fontWeight: 500,
-                }
+                },
+
+                '.btn-primary': {
+                    backgroundColor: 'var(--em-primary-color)',
+                    color: 'var(--neutral-0)',
+                    border: '1px solid var(--em-primary-color)',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
+                    fontSize: '16px',
+                    fontFamily: 'var(--em-applicant-font)',
+                    lineHeight: '1.25',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.3s ease-in-out',
+
+                    '&:hover': {
+                        backgroundColor: 'var(--neutral-0)',
+                        color: 'var(--em-primary-color)',
+                        border: '1px solid var(--em-primary-color)',
+                        textDecoration: 'none',
+                    },
+                },
+
+                '.btn-secondary': {
+                    backgroundColor: 'var(--neutral-0)',
+                    color: 'var(--em-secondary-color)',
+                    border: '1px solid var(--em-secondary-color)',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
+                    fontSize: '16px',
+                    fontFamily: 'var(--em-applicant-font)',
+                    lineHeight: '1.25',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.3s ease-in-out',
+
+                    '&:hover': {
+                        backgroundColor: 'var(--em-secondary-color)',
+                        color: 'var(--neutral-0)',
+                        border: '1px solid var(--em-secondary-color)',
+                        textDecoration: 'none',
+                    },
+                },
+
+                '.btn-tertiary': {
+                    backgroundColor: 'var(--em-tertiary-color)',
+                    color: 'var(--neutral-0)',
+                    border: '1px solid var(--em-tertiary-color)',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
+                    fontSize: '16px',
+                    fontFamily: 'var(--em-applicant-font)',
+                    lineHeight: '1.25',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.3s ease-in-out',
+
+                    '&:hover': {
+                        backgroundColor: 'var(--neutral-0)',
+                        color: 'var(--em-tertiary-color)',
+                        border: '1px solid var(--em-tertiary-color)',
+                        textDecoration: 'none',
+                    },
+                },
+
+                '.btn-disabled': {
+                    opacity: '0.6',
+
+                    '&:hover': {
+                        cursor: 'not-allowed',
+                    },
+                },
             });
         })
     ],
