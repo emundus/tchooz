@@ -95,7 +95,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'Joomla\\String\\' => 14,
             'Joomla\\Session\\' => 15,
             'Joomla\\Registry\\' => 16,
-            'Joomla\\OAuth2\\' => 14,
             'Joomla\\Input\\' => 13,
             'Joomla\\Http\\' => 12,
             'Joomla\\Filter\\' => 14,
@@ -120,6 +119,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'F' => 
         array (
             'FontLib\\' => 8,
+        ),
+        'E' => 
+        array (
+            'Emundus\\OAuth2\\' => 15,
         ),
         'D' => 
         array (
@@ -226,10 +229,6 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         array (
             0 => __DIR__ . '/..' . '/joomla/registry/src',
         ),
-        'Joomla\\OAuth2\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/joomla/oauth2/src',
-        ),
         'Joomla\\Input\\' => 
         array (
             0 => __DIR__ . '/..' . '/joomla/input/src',
@@ -289,6 +288,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'FontLib\\' => 
         array (
             0 => __DIR__ . '/..' . '/phenx/php-font-lib/src/FontLib',
+        ),
+        'Emundus\\OAuth2\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/emundus/oauth2/src',
         ),
         'Dompdf\\' => 
         array (

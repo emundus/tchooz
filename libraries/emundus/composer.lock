@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b629b735766d2269171f6cb2192c9fb",
+    "content-hash": "c4dd7e6d03b1438fe9f6521674ca21e3",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -143,6 +143,78 @@
                 "source": "https://github.com/dompdf/dompdf/tree/v2.0.8"
             },
             "time": "2024-04-29T13:06:17+00:00"
+        },
+        {
+            "name": "emundus/oauth2",
+            "version": "dev-3.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/emundus/oauth2.git",
+                "reference": "4ef34ae052983300d9b6fa84b52aa038dda58982"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/emundus/oauth2/zipball/4ef34ae052983300d9b6fa84b52aa038dda58982",
+                "reference": "4ef34ae052983300d9b6fa84b52aa038dda58982",
+                "shasum": ""
+            },
+            "require": {
+                "joomla/application": "^3.0",
+                "joomla/http": "^3.0",
+                "joomla/input": "^3.0",
+                "joomla/session": "^3.0",
+                "joomla/uri": "^3.0",
+                "php": "^8.1.0"
+            },
+            "require-dev": {
+                "phan/phan": "^5.4.2",
+                "phpstan/phpstan": "^1.10.7",
+                "phpunit/phpunit": "^9.5.28",
+                "squizlabs/php_codesniffer": "^3.7.2"
+            },
+            "default-branch": true,
+            "type": "emundus-package",
+            "extra": {
+                "branch-alias": {
+                    "dev-2.0-dev": "2.0-dev",
+                    "dev-3.x-dev": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Emundus\\OAuth2\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Emundus\\OAuth2\\Tests\\": "Tests/"
+                }
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "eMundus OAuth2 Package",
+            "homepage": "https://github.com/emundus/oauth2",
+            "keywords": [
+                "emundus",
+                "framework",
+                "joomla",
+                "oauth2"
+            ],
+            "support": {
+                "source": "https://github.com/emundus/oauth2/tree/3.x-dev"
+            },
+            "funding": [
+                {
+                    "type": "github",
+                    "url": "https://github.com/joomla"
+                },
+                {
+                    "type": "custom",
+                    "url": "https://community.joomla.org/sponsorship-campaigns.html"
+                }
+            ],
+            "time": "2024-07-29T12:04:35+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -1108,77 +1180,6 @@
                 }
             ],
             "time": "2023-10-07T21:27:35+00:00"
-        },
-        {
-            "name": "joomla/oauth2",
-            "version": "dev-3.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/emundus/oauth2.git",
-                "reference": "f1e97b59acd09efe25fbc6fa34a8cc799a911977"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/emundus/oauth2/zipball/f1e97b59acd09efe25fbc6fa34a8cc799a911977",
-                "reference": "f1e97b59acd09efe25fbc6fa34a8cc799a911977",
-                "shasum": ""
-            },
-            "require": {
-                "joomla/application": "^3.0",
-                "joomla/http": "^3.0",
-                "joomla/input": "^3.0",
-                "joomla/session": "^3.0",
-                "joomla/uri": "^3.0",
-                "php": "^8.1.0"
-            },
-            "require-dev": {
-                "phan/phan": "^5.4.2",
-                "phpstan/phpstan": "^1.10.7",
-                "phpunit/phpunit": "^9.5.28",
-                "squizlabs/php_codesniffer": "^3.7.2"
-            },
-            "default-branch": true,
-            "type": "joomla-package",
-            "extra": {
-                "branch-alias": {
-                    "dev-2.0-dev": "2.0-dev",
-                    "dev-3.x-dev": "3.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Joomla\\OAuth2\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Joomla\\OAuth2\\Tests\\": "Tests/"
-                }
-            },
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "description": "Joomla OAuth2 Package",
-            "homepage": "https://github.com/joomla-framework/oauth2",
-            "keywords": [
-                "framework",
-                "joomla",
-                "oauth2"
-            ],
-            "support": {
-                "source": "https://github.com/emundus/oauth2/tree/3.x-dev"
-            },
-            "funding": [
-                {
-                    "type": "github",
-                    "url": "https://github.com/joomla"
-                },
-                {
-                    "type": "custom",
-                    "url": "https://community.joomla.org/sponsorship-campaigns.html"
-                }
-            ],
-            "time": "2024-02-02T10:15:47+00:00"
         },
         {
             "name": "joomla/registry",
@@ -3291,7 +3292,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "svrnm/exceldatatables": 20,
-        "joomla/oauth2": 20
+        "emundus/oauth2": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

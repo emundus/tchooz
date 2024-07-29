@@ -3,7 +3,7 @@
         'name' => 'emundus/tchooz',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '110647136b48037a8cf1c517868efbf504afd045',
+        'reference' => 'c1d657ed3d0b4e2919c29fd3bf0407985b9253ab',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -28,10 +28,21 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'emundus/oauth2' => array(
+            'pretty_version' => 'dev-3.x-dev',
+            'version' => 'dev-3.x-dev',
+            'reference' => '4ef34ae052983300d9b6fa84b52aa038dda58982',
+            'type' => 'emundus-package',
+            'install_path' => __DIR__ . '/../emundus/oauth2',
+            'aliases' => array(
+                0 => '3.0.x-dev',
+            ),
+            'dev_requirement' => false,
+        ),
         'emundus/tchooz' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '110647136b48037a8cf1c517868efbf504afd045',
+            'reference' => 'c1d657ed3d0b4e2919c29fd3bf0407985b9253ab',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -149,17 +160,6 @@
             'type' => 'joomla-package',
             'install_path' => __DIR__ . '/../joomla/input',
             'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'joomla/oauth2' => array(
-            'pretty_version' => 'dev-3.x-dev',
-            'version' => 'dev-3.x-dev',
-            'reference' => 'f1e97b59acd09efe25fbc6fa34a8cc799a911977',
-            'type' => 'joomla-package',
-            'install_path' => __DIR__ . '/../joomla/oauth2',
-            'aliases' => array(
-                0 => '3.0.x-dev',
-            ),
             'dev_requirement' => false,
         ),
         'joomla/registry' => array(
@@ -359,8 +359,8 @@
         'psr/http-client-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '*',
-                1 => '1.0',
+                0 => '1.0',
+                1 => '*',
             ),
         ),
         'psr/http-factory' => array(

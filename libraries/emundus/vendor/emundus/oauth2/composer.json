@@ -1,9 +1,9 @@
 {
-    "name": "joomla/oauth2",
-    "type": "joomla-package",
-    "description": "Joomla OAuth2 Package",
-    "keywords": ["joomla", "framework", "oauth2"],
-    "homepage": "https://github.com/joomla-framework/oauth2",
+    "name": "emundus/oauth2",
+    "type": "emundus-package",
+    "description": "eMundus OAuth2 Package",
+    "keywords": ["joomla", "framework", "oauth2", "emundus"],
+    "homepage": "https://github.com/emundus/oauth2",
     "license": "GPL-2.0-or-later",
     "require": {
         "php": "^8.1.0",
@@ -21,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Joomla\\OAuth2\\": "src/"
+            "Emundus\\OAuth2\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Joomla\\OAuth2\\Tests\\": "Tests/"
+            "Emundus\\OAuth2\\Tests\\": "Tests/"
         }
     },
     "minimum-stability": "dev",

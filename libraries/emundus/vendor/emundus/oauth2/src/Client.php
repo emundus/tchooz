@@ -7,7 +7,7 @@
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
-namespace Joomla\OAuth2;
+namespace Emundus\OAuth2;
 
 use Joomla\Application\WebApplicationInterface;
 use Joomla\Http\Exception\UnexpectedResponseException;
@@ -96,6 +96,7 @@ class Client
                 'redirect_uri'  => $this->getOption('redirecturi'),
                 'client_id'     => $this->getOption('clientid'),
                 'client_secret' => $this->getOption('clientsecret'),
+                'code'          => $this->input->get('code', false, 'raw'),
             ];
 
             $response = $this->http->post($this->getOption('tokenurl'), $data);

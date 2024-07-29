@@ -5,7 +5,7 @@
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
-namespace Joomla\OAuth2\Tests;
+namespace Emundus\OAuth2\Tests;
 
 use Joomla\Application\WebApplicationInterface;
 use Joomla\Http\Http;
