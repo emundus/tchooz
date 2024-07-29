@@ -8,7 +8,7 @@ export default
     "type": "text",
     "maxlength": 50,
     "placeholder": "",
-    "optional": 0
+    "optional": 1
   },
   {
     "displayed": true,
