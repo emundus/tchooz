@@ -1,7 +1,7 @@
 <template>
   <div id="form-builder-page">
     <div class="tw-flex tw-items-center tw-justify-between">
-	    <span
+      <span
           class="tw-text-2xl tw-font-semibold editable-data"
           id="page-title"
           ref="pageTitle"
@@ -78,7 +78,7 @@ export default {
     },
     page: {
       type: Object,
-      default: {}
+      default: () => {}
     },
     mode: {
       type: String,
@@ -130,17 +130,26 @@ export default {
           this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
         }
 
-	      this.loading = false;
+        this.loading = false;
       });
     },
     getDescription() {
-      formBuilderService.getAllTranslations(this.fabrikPage.intro_raw).then(response => {
-        if (response.status && response.data) {
-          if (response.data[this.shortDefaultLang] !== '') {
-            this.description = response.data[this.shortDefaultLang];
+      if (this.fabrikPage.intro_raw) {
+        formBuilderService.getAllTranslations(this.fabrikPage.intro_raw).then(response => {
+          if (response.status && response.data) {
+            if (response.data[this.shortDefaultLang] !== '') {
+              let strippedString = response.data[this.shortDefaultLang].replace(/(<([^>]+)>)/gi, "");
+
+              if (strippedString.length > 0) {
+                this.description = response.data[this.shortDefaultLang];
+              }
+            }
           }
-        }
-      });
+        });
+      } else {
+        this.fabrikPage.intro_raw = 'FORM_' + this.profile_id + '_INTRO_' + this.fabrikPage.id;
+        this.fabrikPage.intro = {};
+      }
     },
     addSection() {
       if (this.sections.length < 10) {
