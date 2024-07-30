@@ -26,7 +26,7 @@
     </div>
 
 
-    <button type="button" @click="$emit('add-condition',index)" class="em-tertiary-button tw-mt-2 !tw-w-max tw-float-right">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_CONDITION') }}</button>
+    <button type="button" @click="$emit('add-condition',index)" class="tw-btn-tertiary tw-mt-2 !tw-w-max tw-float-right">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_CONDITION') }}</button>
   </div>
 </template>
 

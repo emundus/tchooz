@@ -278,7 +278,7 @@
           <button
               id="save-btn"
               type="button"
-              class="em-primary-button tw-w-auto"
+              class="tw-btn-primary tw-w-auto"
               @click="quit = 1; submit()">
             {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
           </button>

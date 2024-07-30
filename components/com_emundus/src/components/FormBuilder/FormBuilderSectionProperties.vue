@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="tw-flex tw-items-center tw-justify-between actions tw-m-4">
-      <button class="em-primary-button" @click="saveProperties()">
+      <button class="tw-btn-primary" @click="saveProperties()">
         {{ translate("COM_EMUNDUS_FORM_BUILDER_SECTION_PROPERTIES_SAVE") }}
       </button>
     </div>

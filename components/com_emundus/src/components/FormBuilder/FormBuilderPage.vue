@@ -11,7 +11,7 @@
           contenteditable="true"
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
           v-html="translate(title)"></span>
-      <button id="add-page-modele" class="em-secondary-button !tw-w-auto"  @click="$emit('open-create-model', page.id)">
+      <button id="add-page-modele" class="tw-btn-cancel !tw-w-auto"  @click="$emit('open-create-model', page.id)">
         <span class="material-icons-outlined tw-cursor-pointer"
               v-if="mode === 'forms'"
               :title="translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE')"
@@ -28,7 +28,7 @@
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD')"></span>
 
     <div class="form-builder-page-sections tw-mt-2">
-      <button v-if="sections.length > 0" id="add-section" class="em-primary-button tw-px-6 tw-py-3" @click="addSection()">
+      <button v-if="sections.length > 0" id="add-section" class="tw-btn-primary tw-px-6 tw-py-3" @click="addSection()">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
       </button>
       <form-builder-page-section
@@ -49,7 +49,7 @@
       >
       </form-builder-page-section>
     </div>
-    <button id="add-section" class="em-primary-button tw-px-6 tw-py-3" @click="addSection()">
+    <button id="add-section" class="tw-btn-primary tw-px-6 tw-py-3" @click="addSection()">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
     </button>
 

@@ -330,7 +330,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
 				<?php if ($show_show_campaigns) : ?>
                     <a id="add-application"
-                       class="em-secondary-button em-w-auto em-default-font em-applicant-border-radius"
+                       class="tw-btn-cancel em-w-auto em-default-font em-applicant-border-radius"
                        style="width: auto" href="<?= $campaigns_list_url; ?>">
                         <span> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
                     </a>
@@ -658,7 +658,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
 				<?php if ($show_show_campaigns) : ?>
                     <a id="add-application"
-                       class="em-secondary-button em-w-auto em-default-font em-applicant-border-radius"
+                       class="tw-btn-cancel em-w-auto em-default-font em-applicant-border-radius"
                        style="width: auto" href="<?= $campaigns_list_url; ?>">
                         <span> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
                     </a>

@@ -3,7 +3,7 @@
     <div class="em-h4 tw-mb-4">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS') }}</div>
     <div id="no-aspects" class="tw-flex tw-items-center" v-if="aspects.length < 1 && upload">
       <input type="file" id="aspect-file" class="em-m-0" accept=".xml"/>
-      <div class="em-primary-button em-w-33 em-ml-16 tw-cursor-pointer" @click="uploadAspectFile">
+      <div class="tw-btn-primary em-w-33 em-ml-16 tw-cursor-pointer" @click="uploadAspectFile">
         {{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD') }}
       </div>
     </div>
@@ -25,7 +25,7 @@
         </div>
         <div id="add-aspects-from-file" class="tw-flex tw-items-center">
           <input type="file" id="update-aspect-file" accept=".xml"/>
-          <div class="em-primary-button tw-cursor-pointer" @click="updateAspectListFromFile">
+          <div class="tw-btn-primary tw-cursor-pointer" @click="updateAspectListFromFile">
             {{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_ADD') }}
           </div>
         </div>
@@ -106,7 +106,7 @@ export default {
 
 #add-aspects-from-file {
 
-  .em-primary-button {
+  .tw-btn-primary {
     width: fit-content;
   }
 }

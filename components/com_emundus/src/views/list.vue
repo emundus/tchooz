@@ -3,7 +3,7 @@
     <skeleton v-if="loading.lists" height="40px" width="100%" class="tw-mb-4 tw-mt-4 tw-rounded-lg"></skeleton>
     <div v-else class="head tw-flex tw-items-center tw-justify-between">
       <h2>{{ translate(currentList.title) }}</h2>
-      <a v-if="addAction" id="add-action-btn" class="em-primary-button tw-w-auto tw-cursor-pointer"
+      <a v-if="addAction" id="add-action-btn" class="tw-btn-primary tw-w-auto tw-cursor-pointer"
          @click="onClickAction(addAction)">{{ translate(addAction.label) }}</a>
     </div>
     <hr class="tw-w-full tw-mt-1.5 tw-mb-4">
@@ -154,7 +154,7 @@
                 <hr v-if="viewType === 'blocs'" class="tw-w-full tw-mt-1.5 tw-mb-3">
                 <td class="actions">
                   <a v-if="viewType === 'blocs' && editAction" @click="onClickAction(editAction, item.id)"
-                     class="em-primary-button tw-text-sm tw-cursor-pointer tw-w-auto">
+                     class="tw-btn-primary tw-text-sm tw-cursor-pointer tw-w-auto">
                     {{ translate(editAction.label) }}
                   </a>
                   <div class="tw-flex tw-items-center tw-gap-2">

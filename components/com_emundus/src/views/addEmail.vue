@@ -230,10 +230,10 @@
                 </div>
 
                 <div class="tw-flex tw-justify-between tw-mt-4">
-                    <button type="button" class="em-secondary-button !tw-w-auto" onclick="history.back()">
+                    <button type="button" class="tw-btn-cancel !tw-w-auto" onclick="history.back()">
                         {{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}
                     </button>
-                    <button type="submit" class="em-primary-button !tw-w-auto">
+                    <button type="submit" class="tw-btn-primary !tw-w-auto">
                         {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
                     </button>
                 </div>

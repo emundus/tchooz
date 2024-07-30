@@ -5,7 +5,7 @@
           translate('COM_EMUNDUS_FORMBUILDER_RULES') + this.$props.page.label
         }}</h2>
 
-      <button id="add-section" class="em-primary-button tw-px-6 tw-py-3 tw-mb-4" @click="$emit('add-rule','js')">
+      <button id="add-section" class="tw-btn-primary tw-px-6 tw-py-3 tw-mb-4" @click="$emit('add-rule','js')">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_CONDITION') }}
       </button>
 
@@ -125,7 +125,7 @@
         </div>
       </div>
 
-      <button v-if="searchedRules.length > 5" id="add-section" class="em-primary-button tw-px-6 tw-py-3 tw-mt-4"
+      <button v-if="searchedRules.length > 5" id="add-section" class="tw-btn-primary tw-px-6 tw-py-3 tw-mt-4"
               @click="$emit('add-rule','js')">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_CONDITION') }}
       </button>

@@ -37,13 +37,13 @@
             {{ title }}
           </span>
         <div class="tw-flex tw-flex-col tw-items-end">
-        <button class="em-primary-button tw-px-6 tw-py-3 tw-gap-3 em-w-auto" v-if="!previewForm && ['page','rules'].includes(showInSection)" @click="previewForm = true">
+        <button class="tw-btn-primary tw-px-6 tw-py-3 tw-gap-3 em-w-auto" v-if="!previewForm && ['page','rules'].includes(showInSection)" @click="previewForm = true">
           <span class="tw-text-white material-icons-outlined">
             remove_red_eye
           </span>
           <label class="tw-mb-0" for="previewform">{{ translate('COM_EMUNDUS_FORMBUILDER_GO_TO_PREVIEW') }}</label>
         </button>
-          <button class="em-primary-button tw-px-6 tw-py-3 tw-gap-3 em-w-auto" v-if="previewForm" @click="previewForm = false">
+          <button class="tw-btn-primary tw-px-6 tw-py-3 tw-gap-3 em-w-auto" v-if="previewForm" @click="previewForm = false">
           <span class="tw-text-white material-icons-outlined">
             handyman
           </span>

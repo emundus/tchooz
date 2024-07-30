@@ -161,7 +161,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
 						<?php if ($show_registration) : ?>
                             <a href="<?php echo $links->link_register ?>">
-                                <button class="em-applicant-secondary-button em-w-auto em-applicant-border-radius"
+                                <button class="tw-btn-secondary em-w-auto em-applicant-border-radius"
                                         type="button">
 									<?php echo JText::_('MOD_EM_CAMPAIGN_REGISTRATION_URL') ?>
                                 </button>

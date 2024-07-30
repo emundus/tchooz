@@ -149,7 +149,7 @@
     </div>
 
     <div class="tw-p-4">
-      <button class="em-primary-button" @click="saveDocument">
+      <button class="tw-btn-primary" @click="saveDocument">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE') }}
       </button>
     </div>

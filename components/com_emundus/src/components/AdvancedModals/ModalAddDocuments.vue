@@ -42,7 +42,7 @@
         </div>
 
         <div class="tw-mb-4" v-if="can_be_deleted">
-          <button type="button" class="em-tertiary-button"
+          <button type="button" class="tw-btn-tertiary"
                   @click="deleteModel">{{ translations.DeleteDocTemplate }}</button>
         </div>
 
@@ -138,12 +138,12 @@
       <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
         <button
             type="button"
-            class="em-secondary-button !tw-w-auto"
+            class="tw-btn-cancel !tw-w-auto"
             @click.prevent="$modal.hide('modalAddDocuments')">
           {{ translations.Retour }}
         </button>
         <button type="button"
-                class="em-primary-button !tw-w-auto"
+                class="tw-btn-primary !tw-w-auto"
                 @click.prevent="createNewDocument()">
           {{ translations.Continuer }}
         </button>

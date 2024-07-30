@@ -200,7 +200,7 @@ if (!empty($this->custom_title)) :?>
 					$div .= '<tr class="em-added-files">
                     <td class="em-flex-row">';
 					if ($item->can_be_viewed == 1) {
-						$div .= '<a class="em-flex-row em-mr-16 btn-tertiary" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>' . Text::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
+						$div .= '<a class="em-flex-row em-mr-16 tw-btn-tertiary" href="' . $chemin . $this->_user->id . '/' . $item->filename . '" target="_blank"><span class="material-icons-outlined em-mr-4">visibility</span>' . Text::_('COM_EMUNDUS_ATTACHMENTS_VIEW') . '</a>';
 					}
 					else {
 						$div .= Text::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';

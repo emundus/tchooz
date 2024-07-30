@@ -85,10 +85,10 @@
       </section>
     </div>
     <div class="actions tw-justify-between tw-flex tw-items-center tw-w-full">
-      <button class="em-secondary-button !tw-w-auto tw-bg-white" @click="close(false)">
+      <button class="tw-btn-cancel !tw-w-auto tw-bg-white" @click="close(false)">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}
       </button>
-      <button class="em-primary-button tw-w-auto tw-ml-2" :disabled="loading" @click="createPage">
+      <button class="tw-btn-primary tw-w-auto tw-ml-2" :disabled="loading" @click="createPage">
         {{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}
       </button>
     </div>

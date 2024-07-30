@@ -84,7 +84,7 @@
            v-if="['addDocumentsDropfiles', 'addFormulaire'].includes(selectedMenu)">
         <button
             type="button"
-            class="em-primary-button tw-w-auto mb-4"
+            class="tw-btn-primary tw-w-auto mb-4"
             @click="next">
           {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
         </button>

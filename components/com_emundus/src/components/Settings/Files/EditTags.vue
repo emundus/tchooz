@@ -3,7 +3,7 @@
     <div class="tw-w-10/12">
 
       <div class="tw-grid tw-grid-cols-3 tw-mb-4">
-        <button @click="pushTag" class="em-primary-button tw-mb-6 tw-w-max">
+        <button @click="pushTag" class="tw-btn-primary tw-mb-6 tw-w-max">
           <div class="add-button-div">
             <em class="fas fa-plus tw-mr-1"></em>
             {{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_ADDTAG') }}

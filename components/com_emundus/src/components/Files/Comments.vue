@@ -44,7 +44,7 @@
         </div>
 
         <div class="tw-mt-2">
-          <button class="em-primary-button !tw-w-auto tw-float-right" @click="saveComment">
+          <button class="tw-btn-primary !tw-w-auto tw-float-right" @click="saveComment">
             {{ translate('COM_EMUNDUS_FILES_VALIDATE_COMMENT') }}
           </button>
         </div>
@@ -53,7 +53,7 @@
     </div>
 
     <div v-if="$props.access.c && !adding_comment" class="tw-flex tw-items-center tw-justify-center tw-mt-8">
-      <button class="em-primary-button !tw-w-auto" @click="adding_comment = true;">
+      <button class="tw-btn-primary !tw-w-auto" @click="adding_comment = true;">
         {{ translate('COM_EMUNDUS_FILES_ADD_COMMENT') }}
       </button>
     </div>

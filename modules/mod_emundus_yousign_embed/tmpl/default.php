@@ -14,6 +14,6 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
 ?>
 <div class="em-w-100 em-flex-row" style="justify-content: flex-end;">
     <a class="em-mt-16 em-pointer" href="<?= $yousignSession['iframe_url']; ?>" target="_blank">
-        <button class="em-primary-button">Signer l'engagement de confidentialité.</button>
+        <button class="tw-btn-primary">Signer l'engagement de confidentialité.</button>
     </a>
 </div>

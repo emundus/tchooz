@@ -9,7 +9,7 @@
       </div>
 
       <div class="tw-flex tw-justify-end">
-        <button type="button" @click="addGroupedCondition()" class="em-tertiary-button tw-mt-2 tw-w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_CONDITION_GROUP') }}</button>
+        <button type="button" @click="addGroupedCondition()" class="tw-btn-tertiary tw-mt-2 tw-w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_CONDITION_GROUP') }}</button>
       </div>
     </div>
 
@@ -27,12 +27,12 @@
       </div>
 
       <div class="tw-flex tw-justify-end">
-        <button type="button" @click="addAction()" class="em-tertiary-button tw-mt-2 tw-w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_ACTION') }}</button>
+        <button type="button" @click="addAction()" class="tw-btn-tertiary tw-mt-2 tw-w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_ACTION') }}</button>
       </div>
     </div>
 
     <hr/>
-    <button class="tw-mt-4 em-primary-button tw-w-auto tw-float-right" @click="saveRule">{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_SAVE') }}</button>
+    <button class="tw-mt-4 tw-btn-primary tw-w-auto tw-float-right" @click="saveRule">{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_SAVE') }}</button>
 
   </div>
 </template>
