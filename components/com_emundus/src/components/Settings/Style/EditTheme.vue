@@ -1,57 +1,58 @@
 <template>
     <div v-if="primary && secondary">
-        <div class="tw-flex tw-flex-col">
-            <div class="tw-flex tw-flex-col tw-gap-2">
-                <div>
-                    <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_PRIMARY_COLOR') }}</label>
-                    <div class="tw-mt-1">
-                        <input type="color" class="custom-color-picker" v-model="primary" id="primary_color" />
+        <div class="tw-flex tw-flex-row tw-gap-6">
+            <div class="tw-flex tw-flex-col tw-gap-3" style="display: flex; flex-direction: row;">
+                <div class="tw-flex-row" style="display: flex; flex-direction: row; align-items: center; gap: 12px;">
+                    <div>
+                      <input type="color" class="custom-color-picker" style="width: 48px !important; border-radius: 100px;" v-model="primary" id="primary_color" />
                     </div>
+                    <label class="tw-font-medium tw-mb-0" style="max-width: 100px;">{{ translate('COM_EMUNDUS_ONBOARD_PRIMARY_COLOR') }}</label>
                 </div>
 
-                <div>
-                    <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_SECONDARY_COLOR') }}</label>
-                    <div class="tw-mt-1">
-                        <input type="color" v-model="secondary" class="custom-color-picker" id="secondary_color" />
+                <div style="display: flex; flex-direction: row; align-items: center; gap: 12px;">
+                    <div>
+                      <input type="color" v-model="secondary" class="custom-color-picker" style="width: 48px !important; border-radius: 100px;" id="secondary_color" />
                     </div>
-                </div>
-            </div>
-
-            <div class="tw-mt-4" v-if="contrastRatio < 3.1 || rgaaState === 0">
-                <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_THEME_ACCESSIBILITY') }}</label>
-                <div>
-<!--                  <div
-                      class="tw-mt-2 tw-w-32 tw-rounded-md tw-p-3 tw-cursor-help"
-                      :class="contrastRatio > 3.1 && rgaaState === 1 ? 'tw-bg-main-50' : 'tw-bg-red-50'"
-                  >
-                    <div
-                        class="tw-flex tw-items-center tw-justify-between"
-                        :class="rgaaState === 1 ? 'tw-text-green-500' : 'tw-text-red-500'"
-                    >
-                      <label class="tw-text-xs !tw-mb-0 tw-cursor-help">RGAA</label>
-                      <span class="material-icons-outlined tw-text-green-500 !tw-text-sm" v-if="rgaaState === 1"
-                      >check_circle</span
-                      >
-                      <span class="material-icons-outlined tw-text-red-500" v-else>report_problem</span>
-                    </div>
-
-                    <div
-                        class="tw-flex tw-items-start tw-justify-between"
-                        :class="contrastRatio > 3.1 ? 'tw-text-green-500' : 'tw-text-red-500'"
-                    >
-                      <label class="tw-text-xs !tw-mb-0 tw-cursor-help">Contrast ratio</label>
-                      <span class="tw-text-xs tw-font-medium">{{ Math.round(contrastRatio * 100) / 100 }}</span>
-                    </div>
-                  </div>-->
-                    <Info
-                        v-if="errorMessage"
-                        :text="errorMessage"
-                        :icon="'warning'" :bg-color="'tw-bg-orange-100'"
-                        :icon-type="'material-icons'" :icon-color="'tw-text-orange-600'"
-                        :class="'tw-mt-2'"
-                    ></Info>
+                    <label class="tw-font-medium tw-mb-0" style="max-width: 100px;">{{ translate('COM_EMUNDUS_ONBOARD_SECONDARY_COLOR') }}</label>
                 </div>
             </div>
+            <div class="tw-gap-8" style="display: flex; flex-direction: row;">
+                <div>
+                    <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_THEME_ACCESSIBILITY') }}</label>
+                    <div
+                        class="tw-mt-2 tw-w-full tw-rounded-md tw-p-3 tw-cursor-help tw-gap-4" style="display: flex; flex-direction: row"
+                        :class="contrastRatio < 3.1 ? 'tw-bg-main-50' : 'tw-bg-red-50'"
+                    >
+                        <div
+                            class="tw-flex tw-items-center tw-justify-between tw-gap-2"
+                            :class="contrastRatio < 3.1 ? 'tw-text-green-500' : 'tw-text-red-500'"
+                        >
+                          <label class="!tw-mb-0" style="font-size: var(--em-applicant-font-size)">RGAA :</label>
+                          <span class="material-icons-outlined tw-text-green-500" style="font-size: var(--em-applicant-font-size)" v-if="contrastRatio < 3.1"
+                          >check_circle</span
+                          >
+                          <span class="material-icons-outlined tw-text-red-500" style="font-size: var(--em-applicant-font-size)" v-else>report_problem</span>
+                        </div>
+                        <div
+                            class="tw-flex tw-items-start tw-justify-between tw-gap-2"
+                            :class="contrastRatio < 3.1 ? 'tw-text-green-500' : 'tw-text-red-500'"
+                        >
+                          <label class="!tw-mb-0" style="font-size: var(--em-applicant-font-size)">Contrast ratio :</label>
+                          <span style="font-size: var(--em-applicant-font-size)">{{ Math.round(contrastRatio * 100) / 100 }}</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div>
+          <Info
+              v-if="errorMessage"
+              :text="errorMessage"
+              :icon="'warning'" :bg-color="'tw-bg-orange-100'"
+              :icon-type="'material-icons'" :icon-color="'tw-text-orange-600'"
+              :class="'tw-mt-2'"
+          ></Info>
         </div>
 
         <button class="tw-mt-3 btn btn-primary tw-float-right" v-if="changes" @click="saveColors">
@@ -269,7 +270,7 @@ export default {
   },
   computed: {
     errorMessage() {
-      if (this.contrastRatio < 3.1) {
+      if (this.contrastRatio > 3.1) {
         return this.translate('COM_EMUNDUS_SETTINGS_CONTRAST_ERROR')
       } else if (this.rgaaState === 0) {
         return this.translate('COM_EMUNDUS_ONBOARD_ERROR_COLORS_SAME')
