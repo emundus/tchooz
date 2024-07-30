@@ -19,9 +19,10 @@ $group = $this->group;
 $i = 1;
 $w = new FabrikWorker;
 
-foreach ($group->subgroups as $subgroup) :
+foreach ($group->subgroups as $key => $subgroup) :
 	$introData = array_merge($input->getArray(), array('i' => $i));
 	?>
+    <span class="fabrik-anchor" id="<?php echo 'fabrikSubGroup_'.$key; ?>"></span>
 	<div class="fabrikSubGroup">
 		<div data-role="group-repeat-intro">
 			<?php echo $w->parseMessageForPlaceHolder($group->repeatIntro, $introData);?>

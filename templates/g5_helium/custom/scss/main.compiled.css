@@ -1054,6 +1054,12 @@ video {
             padding-bottom: 24px
     }
         }
+.com_fabrik .fabrik-anchor{
+            display: block;
+            height: 115px; /*same height as header*/
+            margin-top: -115px; /*same height as header*/
+            visibility: hidden;
+        }
 .com_fabrik .popover:not(.clockpicker-popover) {
             display: none !important;
         }
@@ -6063,9 +6069,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\[-a-zA-Z\:0-9_\.\] {
-    -a-z-a--z: 0-9 .;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
