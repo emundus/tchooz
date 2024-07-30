@@ -2160,7 +2160,7 @@ class EmundusModelCampaign extends JModelList
 				$query->set($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
 					->set($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did))
 					->set($this->_db->quoteName('mandatory') . ' = ' . $this->_db->quote($document['mandatory']))
-					->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote($ordering + 1))
+					->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote(($ordering + 1)))
 					->set($this->_db->quoteName('has_sample') . ' = ' . $params['has_sample']);
 
 				if ($did === 20) {
@@ -2224,8 +2224,7 @@ class EmundusModelCampaign extends JModelList
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/campaign | Cannot update a document ' . $did . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
-
-			return $e->getMessage();
+			return false;
 		}
 	}
 
