@@ -1095,7 +1095,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy
             if (!empty($document_id) && !empty($document) && !empty($profile_id)) {
 	            $types = $this->input->getString('types');
 	            $types = json_decode($types, true);
-	            $params = ['has_sample' => $this->input->getBool('has_sample', false)];
+	            $params = ['has_sample' => $this->input->getInt('has_sample', 0) == 1];
 
 	            if ($params['has_sample'] && !empty($_FILES['file'])) {
 		            $params['file'] = $_FILES['file'];
