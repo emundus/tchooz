@@ -7311,6 +7311,13 @@ tbody .el-table__row:nth-child(odd){
       transition: all 0.3s ease-in-out;
     }
   }
+
+  joomla-alert {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    max-width: 50vw;
+  }
 }
 
 .emundus-form .fabrikMainError  {
