@@ -139,7 +139,7 @@
                 :rule="currentRule"
                 @close-rule-add="showInSection = 'rules';showInRightPanel = 'hierarchy';"
             />
-            <translations :key="currentPage.id" v-if="currentPage && showInSection === 'translations'" :class="'tw-p-4'" :objectValue="'emundus_setup_profiles'" :dataValue="profile_id" :childrenValue="currentPage.id" />
+            <translations v-else-if="currentPage && showInSection === 'translations'" :key="currentPage.id" :class="'tw-p-4'" :objectValue="'emundus_setup_profiles'" :dataValue="profile_id" :childrenValue="currentPage.id" />
           </transition>
         </section>
 
@@ -666,15 +666,15 @@ export default {
       this.loading = true;
       if (newValue) {
         setTimeout(() => {
-          var myIframe = document.getElementById('preview_iframe');
+          const myIframe = document.getElementById('preview_iframe');
           myIframe.addEventListener("load", () => {
-            var cssLink = document.createElement("link");
+            let cssLink = document.createElement("link");
             cssLink.href = "media/com_fabrik/css/fabrik.css";
             cssLink.rel = "stylesheet";
             cssLink.type = "text/css";
             frames['preview_iframe'].document.head.appendChild(cssLink);
 
-            var css = '<style type="text/css">' +
+            const css = '<style type="text/css">' +
                 '.fabrikActions{display:none}; ' +
                 '</style>';
             frames['preview_iframe'].document.head.insertAdjacentHTML('beforeend', css);
