@@ -1415,6 +1415,8 @@ if(value == 1) {
 				$this->db->updateObject('#__emundus_setup_actions', $action, 'id');
 			}
 
+			EmundusHelperUpdate::addColumn('jos_fabrik_form_sessions', 'fnum', 'VARCHAR', 28, 1);
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)
