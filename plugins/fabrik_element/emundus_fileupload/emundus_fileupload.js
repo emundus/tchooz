@@ -55,7 +55,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     }
 
                     if (res.limitObtained) {
-                        div.querySelector('div .btn-upload').style.display = 'none';
+                        div.querySelector('div.btn-upload').style.display = 'none';
                         div.querySelector('input#file_' + this.element.id).style.display = 'none';
                         divCtrlGroup.querySelector('.fabrikLabel').style.cursor = 'default';
 
@@ -64,7 +64,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                             descriptionElt.style.display = 'none';
                         }
                     } else {
-                        div.querySelector('div .btn-upload').style.display = 'flex';
+                        div.querySelector('div.btn-upload').style.display = 'flex';
                         div.querySelector('input#file_' + this.element.id).style.display = 'block';
                         divCtrlGroup.querySelector('.fabrikLabel').style.cursor = 'pointer';
                     }
@@ -233,10 +233,15 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     }
 
                     if (res[j].noMoreUploads) {
-                        div.querySelector('div .btn-upload').hide();
-                        div.querySelector('input#' + this.element.id).hide();
+                        div.querySelector('div.btn-upload').style.display = 'none';
+                        div.querySelector('input#file_' + this.element.id).style.display = 'none';
                         divCtrlGroup.querySelector('.fabrikLabel').style.cursor = 'default';
                         input.hide();
+
+                        var descriptionElt = document.querySelector('div#' + this.element.id + '_description_block');
+                        if (typeof descriptionElt != 'undefined' && descriptionElt != null) {
+                            descriptionElt.style.display = 'none';
+                        }
                     }
                 }
 
@@ -282,7 +287,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     }).then((res) => {
                         if (res.status) {
                             div_parent.querySelector('div.btn-upload').style.display = 'flex';
-                            div_parent.querySelector('input#' + this.element.id).style.display = 'block';
+                            div_parent.querySelector('input#file_' + this.element.id).style.display = 'block';
 
                             var descriptionElt = document.querySelector('div#' + this.element.id + '_description_block');
                             if (typeof descriptionElt != 'undefined' && descriptionElt != null) {
