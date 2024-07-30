@@ -61,11 +61,12 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 
 	$this->oauth2Config = null;
 	$this->state = null;
-	$this->nonce = EmundusHelperMenu::getNonce();
+	$this->nonce = null;
 	$emundusOauth2 = PluginHelper::getPlugin('authentication','emundus_oauth2');
 	if(!empty($emundusOauth2)) {
 		$this->oauth2Config = json_decode($emundusOauth2->params);
 		$this->state = bin2hex(random_bytes(128/8));
+		$this->nonce = EmundusHelperMenu::getNonce();
 	}
 
 	echo $this->loadTemplate('login');

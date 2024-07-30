@@ -82,7 +82,7 @@ if($user_module->id) {
                 <?php foreach($this->oauth2Config->configurations as $configuration) : ?>
                     <?php if ($configuration->display_on_login == 1) : ?>
                     <a class="tw-w-full tw-flex tw-items-center tw-justify-center tw-border tw-py-3 tw-px-2 tw-rounded-applicant tw-border-profile-full tw-text-profile-full tw-gap-4 hover:tw-bg-profile-full hover:tw-text-white"
-                       href="<?php echo $configuration->auth_url; ?>?response_type=code&client_id=<?php echo $configuration->client_id; ?>&scope=<?php echo str_replace(',','+',$configuration->scopes); ?>&redirect_uri=<?php echo $configuration->redirect_url ?>&state=<?php echo $this->state; ?>&nonce=<?php echo $this->nonce; ?>">
+                       href="<?php echo $configuration->auth_url; ?>?response_type=code&client_id=<?php echo $configuration->client_id; ?>&scope=<?php echo str_replace(',','+',$configuration->scopes); ?>&redirect_uri=<?php echo $configuration->redirect_url ?>&state=<?php echo $this->state; ?>&nonce=<?php echo $this->nonce; ?>&type=<?php echo $configuration->type; ?>">
                         <?php if ($configuration->button_type == 'google') : ?>
                         <div class="tw-w-[20px] tw-h-[20px]">
                             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">

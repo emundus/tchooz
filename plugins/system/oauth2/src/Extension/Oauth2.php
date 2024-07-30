@@ -95,14 +95,23 @@ final class Oauth2 extends CMSPlugin implements SubscriberInterface
 	{
 		$app = $this->getApplication();
 
-		PluginHelper::importPlugin('authentication');
-		$dispatcher = $app->getDispatcher();
-
 		$uri = clone Uri::getInstance();
 		$queries = $uri->getQuery(true);
 
 		$task = ArrayHelper::getValue($queries, 'task');
+		$client_id = ArrayHelper::getValue($queries, 'client_id');
+		$scope = ArrayHelper::getValue($queries, 'scope');
+		$redirect_uri = ArrayHelper::getValue($queries, 'redirect_uri');
+		
+		if(isset($client_id) && isset($scope) && isset($redirect_uri)) {
+			if(empty($client_id) || empty($scope) || empty($redirect_uri)) {
+				$app->enqueueMessage('External directory not configured');
+				$app->redirect(Route::_('index.php?option=com_users&view=login', false));
+			}
+		}
 
+		PluginHelper::importPlugin('authentication');
+		$dispatcher = $app->getDispatcher();
 		if ($task == 'oauth2.authenticate') {
 			$data = $app->getUserState('users.login.form.data', array());
 			$data['return'] = $app->input->get('return', null);
