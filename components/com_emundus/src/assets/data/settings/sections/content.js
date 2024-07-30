@@ -10,7 +10,8 @@ export default
       "article_alias": "bienvenue-sur-votre-espace-de-candidature",
       "field": "introtext",
       "category": "homepage",
-      "published": 1
+      "published": 1,
+      "displayPublishedToggle": false
     }
   },
   {
@@ -27,7 +28,8 @@ export default
       "article_id": 1035,
       "article_alias": "mentions-legales",
       "field": "introtext",
-      "published": 1
+      "published": 1,
+      "displayPublishedToggle": true
     }
   },
   {
@@ -47,7 +49,8 @@ export default
           "article_alias": "politique-de-confidentialite-des-donnees",
           "field": "introtext",
           "category": "rgpd",
-          "published": 1
+          "published": 1,
+          "displayPublishedToggle": true
         }
       },
       {
@@ -60,7 +63,8 @@ export default
           "article_alias": "gestion-des-droits",
           "field": "introtext",
           "category": "rgpd",
-          "published": 1
+          "published": 1,
+          "displayPublishedToggle": true
         }
       },
       {
@@ -73,7 +77,8 @@ export default
           "article_alias": "politique-de-cookies",
           "field": "introtext",
           "category": "rgpd",
-          "published": 1
+          "published": 1,
+          "displayPublishedToggle": true
         }
       }
     ]
@@ -87,7 +92,8 @@ export default
       "article_id": 1044,
       "article_alias": "accessibilite",
       "field": "introtext",
-      "published": 1
+      "published": 1,
+      "displayPublishedToggle": true
     }
   }
 ]

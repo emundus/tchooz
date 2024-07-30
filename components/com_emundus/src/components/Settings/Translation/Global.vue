@@ -2,8 +2,8 @@
   <div>
     <div class="tw-mt-3 tw-mb-6">
       <div class="tw-mb-2">
-        <p class="tw-font-medium tw-mb-1">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>
-        <p class="tw-text-sm">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT_DESC') }}</p>
+        <p class="tw-font-semibold tw-mb-1">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>
+        <!--<p class="tw-text-sm">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT_DESC') }}</p>-->
       </div>
       <div class="tw-w-1/3">
         <multiselect
@@ -27,8 +27,8 @@
 
     <div class="tw-mb-6">
       <div class="tw-mb-2">
-        <p class="tw-font-medium tw-mb-1">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY') }}</p>
-        <p class="tw-text-sm">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC') }}</p>
+        <p class="tw-font-semibold tw-mb-1">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY') }}</p>
+        <!--<p class="tw-text-sm">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC') }}</p>-->
       </div>
       <div class="tw-w-1/3">
         <multiselect

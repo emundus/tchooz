@@ -39,6 +39,11 @@
           :tagPlaceholder="translate('COM_EMUNDUS_MULTISELECT_ADDKEYWORDS')"
           :key="parameter.value !== undefined ? parameter.value.length : 0"
           :class="['tw-cursor-pointer']"
+          :selectLabel="translate('PRESS_ENTER_TO_SELECT')"
+          :selectGroupLabel="translate('PRESS_ENTER_TO_SELECT_GROUP')"
+          :selectedLabel="translate('SELECTED')"
+          :deselect-label="translate('PRESS_ENTER_TO_REMOVE')"
+          :deselectGroupLabel="translate('PRESS_ENTER_TO_DESELECT_GROUP')"
       >
         <template #noOptions>{{ translate('COM_EMUNDUS_MULTISELECT_NOKEYWORDS') }}</template>
       </multiselect>
@@ -123,7 +128,7 @@
       <div
           v-if="parameter.type ==='email' && parameter.editable ==='semi' && parameter.displayed"
           :class="'tw-flex tw-items-center '">
-        <div name="input-field-semi_0" class="tw-w-full">
+        <div name="input-field-semi_0" style="width: 400px;">
           <input
               :class="errors[parameter.param+'-semi-0'] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''"
               :placeholder="translate(senderEmailPlaceholder)" v-model="senderEmail">
@@ -134,7 +139,7 @@
           </div>
         </div>
         <span class="tw-ml-2 tw-mr-2">@</span>
-        <div name="input-field-Semi1" class="tw-w-full">
+        <div name="input-field-Semi1" style="width: 400px;">
           <input v-if="customValue" :placeholder="translate(senderEmailDomainPlaceholder)" v-model="senderEmailDomain"
                  :class="errors[parameter.param+'-semi-1'] && parameter.optional===0 ?'tw-rounded-lg !tw-border-red-500':''">
           <span v-else :class="'tw-w-full'">{{ senderEmailDomain }}</span>

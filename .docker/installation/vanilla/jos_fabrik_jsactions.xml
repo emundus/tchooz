@@ -427,7 +427,7 @@ let {
 if (value != &amp;#039;0&amp;#039;) {
     showFabrikElt(jos_emundus_campaign_workflow___specific_documents)
 } else {
-    /* document.querySelector(&amp;#039;#jos_emundus_campaign_workflow___specific_documents_input_0&amp;#039;).click(); */
+    document.querySelector(&amp;#039;input#jos_emundus_campaign_workflow___specific_documents0&amp;#039;).click();
     hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0);
     hideFabrikElt(jos_emundus_campaign_workflow___specific_documents)
 }</field>
@@ -447,7 +447,7 @@ let {
 if (value != &amp;#039;0&amp;#039;) {
     showFabrikElt(jos_emundus_campaign_workflow___specific_documents)
 } else {
-    /* document.querySelector(&amp;#039;#jos_emundus_campaign_workflow___specific_documents_input_0&amp;#039;).click(); */
+    document.querySelector(&amp;#039;input#jos_emundus_campaign_workflow___specific_documents0&amp;#039;).click();
     hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0);
     hideFabrikElt(jos_emundus_campaign_workflow___specific_documents, true)
 }</field>

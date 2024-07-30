@@ -722,15 +722,6 @@ class plgUserEmundus extends CMSPlugin
 
 		$sharedSessions = $this->app->get('shared_session', '0');
 
-		// Check if the user is using oAuth2
-		if (Factory::getUser($user["id"])->getParam('OAuth2')) {
-
-			PluginHelper::importPlugin('authentication');
-			$this->app->triggerEvent('onUserAfterLogout', $user['id']);
-
-			return true;
-		}
-
 		// Check to see if we're deleting the current session
 		if ($my->id == $userid && ($sharedSessions || (!$sharedSessions && $options['clientid'] == $this->app->getClientId()))) {
 			// Hit the user last visit field

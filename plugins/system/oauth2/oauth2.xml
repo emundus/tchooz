@@ -9,8 +9,10 @@
     <authorUrl>emundus.fr</authorUrl>
     <version>3.8.13</version>
     <description>PLG_SYSTEM_OAUTH2_XML_DESCRIPTION</description>
+    <namespace path="src">Joomla\Plugin\System\Oauth2</namespace>
     <files>
-        <filename plugin="oauth2">oauth2.php</filename>
+        <folder plugin="oauth2">services</folder>
+        <folder>src</folder>
     </files>
     <config>
         <fields name="params">

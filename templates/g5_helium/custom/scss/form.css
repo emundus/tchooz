@@ -794,11 +794,12 @@
                     @apply tw-ml-0;
                     @apply tw-flex;
                     @apply tw-items-start;
-                    @apply tw-flex-1;
-                    @apply tw-w-0;
                     padding: var(--em-form-radio-padding);
                     border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
                     border-radius: var(--em-form-radio-br);
+                    &.col-sm-6 {
+                        @apply tw-flex-1;
+                    }
 
                     input {
                         accent-color: var(--em-form-radio-color-checked);

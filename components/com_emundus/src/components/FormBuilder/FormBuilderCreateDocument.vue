@@ -414,7 +414,7 @@ export default {
           document_id: this.document.id,
           types: JSON.stringify(types),
           document: JSON.stringify(this.document),
-          has_sample: this.hasSample,
+          has_sample: this.hasSample ? 1 : 0,
         };
 
         if (this.hasSample && this.newSample !== null) {
@@ -514,9 +514,8 @@ export default {
         this.currentSample = '';
       } else {
         formBuilderService.getDocumentSample(Number(this.document.id), Number(this.profile_id)).then((response) => {
-
           if (response.status && response.data) {
-            this.hasSample = response.data.has_sample === '1';
+            this.hasSample = response.data.has_sample == 1;
             this.currentSample = this.hasSample ? response.data.sample_filepath : '';
           } else {
             this.hasSample = false;

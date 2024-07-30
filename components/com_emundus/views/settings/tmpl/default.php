@@ -387,6 +387,17 @@ Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_CONTENT_SHOW_DELETED_FILES'); /
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_CONTENT_ALLOW_LOCK_PDF'); // Autoriser les PDF verrouillés
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_CONTENT_ALLOW_COPY_OF_FILES'); // Autoriser la copie des fichiers
 
+Text::script('COM_EMUNDUS_SITESETTINGS_PARAM_INTRO'); // Intro des paramètres du site
+Text::script('COM_EMUNDUS_SITESETTINGS_IMAGE_INTRO'); // Intro des images du site
+Text::script('COM_EMUNDUS_SITESETTINGS_THEME_INTRO'); // Intro du thème du site
+Text::script('COM_EMUNDUS_FILES_SETTINGS_INTRO'); // Intro de la gestion des dossiers
+
+Text::script('PRESS_ENTER_TO_SELECT'); // Multiselect : supprimer
+Text::script('PRESS_ENTER_TO_SELECT_GROUP'); // Multiselect : supprimer
+Text::script('SELECTED'); // Multiselect : supprimer
+Text::script('PRESS_ENTER_TO_REMOVE'); // Multiselect : supprimer
+Text::script('PRESS_ENTER_TO_DESELECT_GROUP'); // Multiselect : supprimer
+
 ## EMAILS ##
 Text::script('COM_EMUNDUS_FILTERS_CHECK_NONE');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_ENABLE');

@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Plugin\PluginHelper;
 use Symfony\Component\Yaml\Yaml;
 
 /** @var \Joomla\Component\Users\Site\View\Login\HtmlView $this */
@@ -57,6 +58,16 @@ if (!empty($cookieLogin) || $this->user->get('guest')) {
 	$m_settings = new EmundusModelsettings();
 
 	$this->favicon = $m_settings->getFavicon();
+
+	$this->oauth2Config = null;
+	$this->state = null;
+	$this->nonce = null;
+	$emundusOauth2 = PluginHelper::getPlugin('authentication','emundus_oauth2');
+	if(!empty($emundusOauth2)) {
+		$this->oauth2Config = json_decode($emundusOauth2->params);
+		$this->state = bin2hex(random_bytes(128/8));
+		$this->nonce = EmundusHelperMenu::getNonce();
+	}
 
 	echo $this->loadTemplate('login');
 }

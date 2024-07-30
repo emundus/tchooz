@@ -123,8 +123,7 @@ export default {
       if(result) {
         this.sections = result.default;
       }
-    })
-
+    });
     const sessionSection = sessionStorage.getItem('tchooz_settings_selected_section/' + document.location.hostname);
     if (sessionSection) {
       this.activeSection = parseInt(sessionSection);

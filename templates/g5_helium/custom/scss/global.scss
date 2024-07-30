@@ -876,7 +876,7 @@ footer#g-footer > .g-container {
 }
 
 /* TYPES DE DOCUMENTS */
-.view-form form .documents-type-candidacy-page #group827 {
+.view-form .documents-type-candidacy-page form .fabrikGroup {
   margin-bottom: 0;
 }
 
@@ -3155,17 +3155,17 @@ ul.g-dropdown.g-dropdown-right.g-fade {
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary:hover {
   border: 1px solid var(--em-primary-color);
-  background: var(--em-primary-color);
-  color: var(--neutral-0);
+  background: var(--neutral-0);
+  color: var(--em-primary-color);
   padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary {
   border: 1px solid var(--em-primary-color);
-  background: var(--neutral-0);
-  color: var(--em-primary-color);
-  padding: 0 var(--p-16) !important;
-  height: 40px;
+  background: var(--em-primary-color);
+  color: var(--neutral-0);
+  padding: var(--em-spacing-3) var(--em-spacing-2) !important;
+  transition: all 0.2s ease-in-out;
 }
 
 /* CONNEXION */

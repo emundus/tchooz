@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h1>
+    <!--<h1 class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h1>-->
 
     <p class="em-font-size-14 em-mb-24 em-h-25" v-if="availableLanguages.length === 0 && !loading">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_NO_LANGUAGES_AVAILABLE') }}</p>
 

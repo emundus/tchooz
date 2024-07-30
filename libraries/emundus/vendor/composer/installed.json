@@ -2,17 +2,17 @@
     "packages": [
         {
             "name": "composer/ca-bundle",
-            "version": "1.5.0",
-            "version_normalized": "1.5.0.0",
+            "version": "1.5.1",
+            "version_normalized": "1.5.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "0c5ccfcfea312b5c5a190a21ac5cef93f74baf99"
+                "reference": "063d9aa8696582f5a41dffbbaf3c81024f0a604a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/0c5ccfcfea312b5c5a190a21ac5cef93f74baf99",
-                "reference": "0c5ccfcfea312b5c5a190a21ac5cef93f74baf99",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/063d9aa8696582f5a41dffbbaf3c81024f0a604a",
+                "reference": "063d9aa8696582f5a41dffbbaf3c81024f0a604a",
                 "shasum": ""
             },
             "require": {
@@ -22,11 +22,11 @@
             },
             "require-dev": {
                 "phpstan/phpstan": "^1.10",
-                "psr/log": "^1.0",
+                "psr/log": "^1.0 || ^2.0 || ^3.0",
                 "symfony/phpunit-bridge": "^4.2 || ^5",
                 "symfony/process": "^4.0 || ^5.0 || ^6.0 || ^7.0"
             },
-            "time": "2024-03-15T14:00:32+00:00",
+            "time": "2024-07-08T15:28:20+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -61,7 +61,7 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/ca-bundle/issues",
-                "source": "https://github.com/composer/ca-bundle/tree/1.5.0"
+                "source": "https://github.com/composer/ca-bundle/tree/1.5.1"
             },
             "funding": [
                 {
@@ -145,6 +145,81 @@
             "install-path": "../dompdf/dompdf"
         },
         {
+            "name": "emundus/oauth2",
+            "version": "dev-3.x-dev",
+            "version_normalized": "dev-3.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/emundus/oauth2.git",
+                "reference": "4db47a12eafb64e2257d381cecf9c19b6f264c74"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/emundus/oauth2/zipball/4db47a12eafb64e2257d381cecf9c19b6f264c74",
+                "reference": "4db47a12eafb64e2257d381cecf9c19b6f264c74",
+                "shasum": ""
+            },
+            "require": {
+                "joomla/application": "^3.0",
+                "joomla/http": "^3.0",
+                "joomla/input": "^3.0",
+                "joomla/session": "^3.0",
+                "joomla/uri": "^3.0",
+                "php": "^8.1.0"
+            },
+            "require-dev": {
+                "phan/phan": "^5.4.2",
+                "phpstan/phpstan": "^1.10.7",
+                "phpunit/phpunit": "^9.5.28",
+                "squizlabs/php_codesniffer": "^3.7.2"
+            },
+            "time": "2024-07-29T13:17:50+00:00",
+            "default-branch": true,
+            "type": "emundus-package",
+            "extra": {
+                "branch-alias": {
+                    "dev-2.0-dev": "2.0-dev",
+                    "dev-3.x-dev": "3.0-dev"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Emundus\\OAuth2\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Emundus\\OAuth2\\Tests\\": "Tests/"
+                }
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "eMundus OAuth2 Package",
+            "homepage": "https://github.com/emundus/oauth2",
+            "keywords": [
+                "emundus",
+                "framework",
+                "joomla",
+                "oauth2"
+            ],
+            "support": {
+                "source": "https://github.com/emundus/oauth2/tree/3.x-dev"
+            },
+            "funding": [
+                {
+                    "type": "github",
+                    "url": "https://github.com/joomla"
+                },
+                {
+                    "type": "custom",
+                    "url": "https://community.joomla.org/sponsorship-campaigns.html"
+                }
+            ],
+            "install-path": "../emundus/oauth2"
+        },
+        {
             "name": "ezyang/htmlpurifier",
             "version": "v4.17.0",
             "version_normalized": "4.17.0.0",
@@ -210,17 +285,17 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.13.36",
-            "version_normalized": "8.13.36.0",
+            "version": "8.13.42",
+            "version_normalized": "8.13.42.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "9ca4179e4332d21578cb29f0c0406f0a2b8803e3"
+                "reference": "b7ee848bbd1958ff7464522d5c6e3688cca2a125"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/9ca4179e4332d21578cb29f0c0406f0a2b8803e3",
-                "reference": "9ca4179e4332d21578cb29f0c0406f0a2b8803e3",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/b7ee848bbd1958ff7464522d5c6e3688cca2a125",
+                "reference": "b7ee848bbd1958ff7464522d5c6e3688cca2a125",
                 "shasum": ""
             },
             "require": {
@@ -240,7 +315,7 @@
                 "symfony/console": "^2.8|^3.0|^v4.4|^v5.2",
                 "symfony/phpunit-bridge": "^4.2 || ^5"
             },
-            "time": "2024-05-03T06:27:03+00:00",
+            "time": "2024-07-29T07:19:22+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -345,17 +420,17 @@
         },
         {
             "name": "gotenberg/gotenberg-php",
-            "version": "v2.4.0",
-            "version_normalized": "2.4.0.0",
+            "version": "v2.6.0",
+            "version_normalized": "2.6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gotenberg/gotenberg-php.git",
-                "reference": "b47aacbc9b145d1d7d0d06c4ef1c4a1a39f15c00"
+                "reference": "241005e390728d4cd28325c3000a2c6c665376a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gotenberg/gotenberg-php/zipball/b47aacbc9b145d1d7d0d06c4ef1c4a1a39f15c00",
-                "reference": "b47aacbc9b145d1d7d0d06c4ef1c4a1a39f15c00",
+                "url": "https://api.github.com/repos/gotenberg/gotenberg-php/zipball/241005e390728d4cd28325c3000a2c6c665376a8",
+                "reference": "241005e390728d4cd28325c3000a2c6c665376a8",
                 "shasum": ""
             },
             "require": {
@@ -373,7 +448,7 @@
                 "phpstan/phpstan": "^1.10",
                 "squizlabs/php_codesniffer": "^3.6"
             },
-            "time": "2024-04-25T15:49:00+00:00",
+            "time": "2024-07-03T15:14:44+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -417,29 +492,35 @@
             ],
             "support": {
                 "issues": "https://github.com/gotenberg/gotenberg-php/issues",
-                "source": "https://github.com/gotenberg/gotenberg-php/tree/v2.4.0"
+                "source": "https://github.com/gotenberg/gotenberg-php/tree/v2.6.0"
             },
+            "funding": [
+                {
+                    "url": "https://github.com/gulien",
+                    "type": "github"
+                }
+            ],
             "install-path": "../gotenberg/gotenberg-php"
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "7.8.1",
-            "version_normalized": "7.8.1.0",
+            "version": "7.9.2",
+            "version_normalized": "7.9.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "41042bc7ab002487b876a0683fc8dce04ddce104"
+                "reference": "d281ed313b989f213357e3be1a179f02196ac99b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/41042bc7ab002487b876a0683fc8dce04ddce104",
-                "reference": "41042bc7ab002487b876a0683fc8dce04ddce104",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/d281ed313b989f213357e3be1a179f02196ac99b",
+                "reference": "d281ed313b989f213357e3be1a179f02196ac99b",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "guzzlehttp/promises": "^1.5.3 || ^2.0.1",
-                "guzzlehttp/psr7": "^1.9.1 || ^2.5.1",
+                "guzzlehttp/promises": "^1.5.3 || ^2.0.3",
+                "guzzlehttp/psr7": "^2.7.0",
                 "php": "^7.2.5 || ^8.0",
                 "psr/http-client": "^1.0",
                 "symfony/deprecation-contracts": "^2.2 || ^3.0"
@@ -450,9 +531,9 @@
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
                 "ext-curl": "*",
-                "php-http/client-integration-tests": "dev-master#2c025848417c1135031fdf9c728ee53d0a7ceaee as 3.0.999",
+                "guzzle/client-integration-tests": "3.0.2",
                 "php-http/message-factory": "^1.1",
-                "phpunit/phpunit": "^8.5.36 || ^9.6.15",
+                "phpunit/phpunit": "^8.5.39 || ^9.6.20",
                 "psr/log": "^1.1 || ^2.0 || ^3.0"
             },
             "suggest": {
@@ -460,7 +541,7 @@
                 "ext-intl": "Required for Internationalized Domain Name (IDN) support",
                 "psr/log": "Required for using the Log middleware"
             },
-            "time": "2023-12-03T20:35:24+00:00",
+            "time": "2024-07-24T11:22:20+00:00",
             "type": "library",
             "extra": {
                 "bamarni-bin": {
@@ -532,7 +613,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.8.1"
+                "source": "https://github.com/guzzle/guzzle/tree/7.9.2"
             },
             "funding": [
                 {
@@ -552,17 +633,17 @@
         },
         {
             "name": "guzzlehttp/promises",
-            "version": "2.0.2",
-            "version_normalized": "2.0.2.0",
+            "version": "2.0.3",
+            "version_normalized": "2.0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/promises.git",
-                "reference": "bbff78d96034045e58e13dedd6ad91b5d1253223"
+                "reference": "6ea8dd08867a2a42619d65c3deb2c0fcbf81c8f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/promises/zipball/bbff78d96034045e58e13dedd6ad91b5d1253223",
-                "reference": "bbff78d96034045e58e13dedd6ad91b5d1253223",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/6ea8dd08867a2a42619d65c3deb2c0fcbf81c8f8",
+                "reference": "6ea8dd08867a2a42619d65c3deb2c0fcbf81c8f8",
                 "shasum": ""
             },
             "require": {
@@ -570,9 +651,9 @@
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
-                "phpunit/phpunit": "^8.5.36 || ^9.6.15"
+                "phpunit/phpunit": "^8.5.39 || ^9.6.20"
             },
-            "time": "2023-12-03T20:19:20+00:00",
+            "time": "2024-07-18T10:29:17+00:00",
             "type": "library",
             "extra": {
                 "bamarni-bin": {
@@ -618,7 +699,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/promises/issues",
-                "source": "https://github.com/guzzle/promises/tree/2.0.2"
+                "source": "https://github.com/guzzle/promises/tree/2.0.3"
             },
             "funding": [
                 {
@@ -638,17 +719,17 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.6.2",
-            "version_normalized": "2.6.2.0",
+            "version": "2.7.0",
+            "version_normalized": "2.7.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "45b30f99ac27b5ca93cb4831afe16285f57b8221"
+                "reference": "a70f5c95fb43bc83f07c9c948baa0dc1829bf201"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/45b30f99ac27b5ca93cb4831afe16285f57b8221",
-                "reference": "45b30f99ac27b5ca93cb4831afe16285f57b8221",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/a70f5c95fb43bc83f07c9c948baa0dc1829bf201",
+                "reference": "a70f5c95fb43bc83f07c9c948baa0dc1829bf201",
                 "shasum": ""
             },
             "require": {
@@ -663,13 +744,13 @@
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
-                "http-interop/http-factory-tests": "^0.9",
-                "phpunit/phpunit": "^8.5.36 || ^9.6.15"
+                "http-interop/http-factory-tests": "0.9.0",
+                "phpunit/phpunit": "^8.5.39 || ^9.6.20"
             },
             "suggest": {
                 "laminas/laminas-httphandlerrunner": "Emit PSR-7 responses"
             },
-            "time": "2023-12-03T20:05:35+00:00",
+            "time": "2024-07-18T11:15:46+00:00",
             "type": "library",
             "extra": {
                 "bamarni-bin": {
@@ -737,7 +818,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.6.2"
+                "source": "https://github.com/guzzle/psr7/tree/2.7.0"
             },
             "funding": [
                 {
@@ -1138,80 +1219,6 @@
                 }
             ],
             "install-path": "../joomla/input"
-        },
-        {
-            "name": "joomla/oauth2",
-            "version": "dev-3.x-dev",
-            "version_normalized": "dev-3.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/emundus/oauth2.git",
-                "reference": "f1e97b59acd09efe25fbc6fa34a8cc799a911977"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/emundus/oauth2/zipball/f1e97b59acd09efe25fbc6fa34a8cc799a911977",
-                "reference": "f1e97b59acd09efe25fbc6fa34a8cc799a911977",
-                "shasum": ""
-            },
-            "require": {
-                "joomla/application": "^3.0",
-                "joomla/http": "^3.0",
-                "joomla/input": "^3.0",
-                "joomla/session": "^3.0",
-                "joomla/uri": "^3.0",
-                "php": "^8.1.0"
-            },
-            "require-dev": {
-                "phan/phan": "^5.4.2",
-                "phpstan/phpstan": "^1.10.7",
-                "phpunit/phpunit": "^9.5.28",
-                "squizlabs/php_codesniffer": "^3.7.2"
-            },
-            "time": "2024-02-02T10:15:47+00:00",
-            "default-branch": true,
-            "type": "joomla-package",
-            "extra": {
-                "branch-alias": {
-                    "dev-2.0-dev": "2.0-dev",
-                    "dev-3.x-dev": "3.0-dev"
-                }
-            },
-            "installation-source": "dist",
-            "autoload": {
-                "psr-4": {
-                    "Joomla\\OAuth2\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Joomla\\OAuth2\\Tests\\": "Tests/"
-                }
-            },
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "description": "Joomla OAuth2 Package",
-            "homepage": "https://github.com/joomla-framework/oauth2",
-            "keywords": [
-                "framework",
-                "joomla",
-                "oauth2"
-            ],
-            "support": {
-                "source": "https://github.com/emundus/oauth2/tree/3.x-dev"
-            },
-            "funding": [
-                {
-                    "type": "github",
-                    "url": "https://github.com/joomla"
-                },
-                {
-                    "type": "custom",
-                    "url": "https://community.joomla.org/sponsorship-campaigns.html"
-                }
-            ],
-            "install-path": "../joomla/oauth2"
         },
         {
             "name": "joomla/registry",
@@ -1693,71 +1700,6 @@
                 }
             ],
             "install-path": "../laminas/laminas-diactoros"
-        },
-        {
-            "name": "laminas/laminas-escaper",
-            "version": "2.13.0",
-            "version_normalized": "2.13.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/laminas/laminas-escaper.git",
-                "reference": "af459883f4018d0f8a0c69c7a209daef3bf973ba"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-escaper/zipball/af459883f4018d0f8a0c69c7a209daef3bf973ba",
-                "reference": "af459883f4018d0f8a0c69c7a209daef3bf973ba",
-                "shasum": ""
-            },
-            "require": {
-                "ext-ctype": "*",
-                "ext-mbstring": "*",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
-            },
-            "conflict": {
-                "zendframework/zend-escaper": "*"
-            },
-            "require-dev": {
-                "infection/infection": "^0.27.0",
-                "laminas/laminas-coding-standard": "~2.5.0",
-                "maglnet/composer-require-checker": "^3.8.0",
-                "phpunit/phpunit": "^9.6.7",
-                "psalm/plugin-phpunit": "^0.18.4",
-                "vimeo/psalm": "^5.9"
-            },
-            "time": "2023-10-10T08:35:13+00:00",
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "psr-4": {
-                    "Laminas\\Escaper\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Securely and safely escape HTML, HTML attributes, JavaScript, CSS, and URLs",
-            "homepage": "https://laminas.dev",
-            "keywords": [
-                "escaper",
-                "laminas"
-            ],
-            "support": {
-                "chat": "https://laminas.dev/chat",
-                "docs": "https://docs.laminas.dev/laminas-escaper/",
-                "forum": "https://discourse.laminas.dev",
-                "issues": "https://github.com/laminas/laminas-escaper/issues",
-                "rss": "https://github.com/laminas/laminas-escaper/releases.atom",
-                "source": "https://github.com/laminas/laminas-escaper"
-            },
-            "funding": [
-                {
-                    "url": "https://funding.communitybridge.org/projects/laminas-project",
-                    "type": "community_bridge"
-                }
-            ],
-            "install-path": "../laminas/laminas-escaper"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -2385,6 +2327,62 @@
             "install-path": "../php-http/promise"
         },
         {
+            "name": "phpoffice/math",
+            "version": "0.1.0",
+            "version_normalized": "0.1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPOffice/Math.git",
+                "reference": "f0f8cad98624459c540cdd61d2a174d834471773"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPOffice/Math/zipball/f0f8cad98624459c540cdd61d2a174d834471773",
+                "reference": "f0f8cad98624459c540cdd61d2a174d834471773",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-xml": "*",
+                "php": "^7.1|^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.88 || ^1.0.0",
+                "phpunit/phpunit": "^7.0 || ^9.0"
+            },
+            "time": "2023-09-25T12:08:20+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "PhpOffice\\Math\\": "src/Math/",
+                    "Tests\\PhpOffice\\Math\\": "tests/Math/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Progi1984",
+                    "homepage": "https://lefevre.dev"
+                }
+            ],
+            "description": "Math - Manipulate Math Formula",
+            "homepage": "https://phpoffice.github.io/Math/",
+            "keywords": [
+                "MathML",
+                "officemathml",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/PHPOffice/Math/issues",
+                "source": "https://github.com/PHPOffice/Math/tree/0.1.0"
+            },
+            "install-path": "../phpoffice/math"
+        },
+        {
             "name": "phpoffice/phpspreadsheet",
             "version": "1.29.0",
             "version_normalized": "1.29.0.0",
@@ -2494,36 +2492,38 @@
         },
         {
             "name": "phpoffice/phpword",
-            "version": "0.18.3",
-            "version_normalized": "0.18.3.0",
+            "version": "1.2.0",
+            "version_normalized": "1.2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPWord.git",
-                "reference": "be0190cd5d8f95b4be08d5853b107aa4e352759a"
+                "reference": "e76b701ef538cb749641514fcbc31a68078550fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/be0190cd5d8f95b4be08d5853b107aa4e352759a",
-                "reference": "be0190cd5d8f95b4be08d5853b107aa4e352759a",
+                "url": "https://api.github.com/repos/PHPOffice/PHPWord/zipball/e76b701ef538cb749641514fcbc31a68078550fa",
+                "reference": "e76b701ef538cb749641514fcbc31a68078550fa",
                 "shasum": ""
             },
             "require": {
+                "ext-dom": "*",
+                "ext-json": "*",
                 "ext-xml": "*",
-                "laminas/laminas-escaper": "^2.2",
-                "php": "^5.3.3 || ^7.0 || ^8.0"
+                "php": "^7.1|^8.0",
+                "phpoffice/math": "^0.1"
             },
             "require-dev": {
-                "dompdf/dompdf": "0.8.* || 1.0.*",
+                "dompdf/dompdf": "^2.0",
                 "ext-gd": "*",
+                "ext-libxml": "*",
                 "ext-zip": "*",
-                "friendsofphp/php-cs-fixer": "^2.2",
-                "mpdf/mpdf": "5.7.4 || 6.* || 7.* || 8.*",
-                "php-coveralls/php-coveralls": "1.1.0 || ^2.0",
-                "phploc/phploc": "2.* || 3.* || 4.* || 5.* || 6.* || 7.*",
-                "phpmd/phpmd": "2.*",
-                "phpunit/phpunit": "^4.8.36 || ^7.0",
-                "squizlabs/php_codesniffer": "^2.9 || ^3.5",
-                "tecnickcom/tcpdf": "6.*"
+                "friendsofphp/php-cs-fixer": "^3.3",
+                "mpdf/mpdf": "^8.1",
+                "phpmd/phpmd": "^2.13",
+                "phpstan/phpstan-phpunit": "@stable",
+                "phpunit/phpunit": ">=7.0",
+                "symfony/process": "^4.4 || ^5.0",
+                "tecnickcom/tcpdf": "^6.5"
             },
             "suggest": {
                 "dompdf/dompdf": "Allows writing PDF",
@@ -2532,13 +2532,8 @@
                 "ext-xsl": "Allows applying XSL style sheet to headers, to main document part, and to footers of an OOXML template",
                 "ext-zip": "Allows writing OOXML and ODF"
             },
-            "time": "2022-02-17T15:40:03+00:00",
+            "time": "2023-11-30T11:22:23+00:00",
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-develop": "0.19-dev"
-                }
-            },
             "installation-source": "dist",
             "autoload": {
                 "psr-4": {
@@ -2575,7 +2570,7 @@
                 }
             ],
             "description": "PHPWord - A pure PHP library for reading and writing word processing documents (OOXML, ODF, RTF, HTML, PDF)",
-            "homepage": "http://phpoffice.github.io",
+            "homepage": "https://phpoffice.github.io/PHPWord/",
             "keywords": [
                 "ISO IEC 29500",
                 "OOXML",
@@ -2603,7 +2598,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PHPWord/issues",
-                "source": "https://github.com/PHPOffice/PHPWord/tree/0.18.3"
+                "source": "https://github.com/PHPOffice/PHPWord/tree/1.2.0"
             },
             "install-path": "../phpoffice/phpword"
         },
@@ -2932,17 +2927,17 @@
         },
         {
             "name": "sabberworm/php-css-parser",
-            "version": "v8.5.1",
-            "version_normalized": "8.5.1.0",
+            "version": "v8.6.0",
+            "version_normalized": "8.6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MyIntervals/PHP-CSS-Parser.git",
-                "reference": "4a3d572b0f8b28bb6fd016ae8bbfc445facef152"
+                "reference": "d2fb94a9641be84d79c7548c6d39bbebba6e9a70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MyIntervals/PHP-CSS-Parser/zipball/4a3d572b0f8b28bb6fd016ae8bbfc445facef152",
-                "reference": "4a3d572b0f8b28bb6fd016ae8bbfc445facef152",
+                "url": "https://api.github.com/repos/MyIntervals/PHP-CSS-Parser/zipball/d2fb94a9641be84d79c7548c6d39bbebba6e9a70",
+                "reference": "d2fb94a9641be84d79c7548c6d39bbebba6e9a70",
                 "shasum": ""
             },
             "require": {
@@ -2955,7 +2950,7 @@
             "suggest": {
                 "ext-mbstring": "for parsing UTF-8 CSS"
             },
-            "time": "2024-02-15T16:41:13+00:00",
+            "time": "2024-07-01T07:33:21+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -2994,7 +2989,7 @@
             ],
             "support": {
                 "issues": "https://github.com/MyIntervals/PHP-CSS-Parser/issues",
-                "source": "https://github.com/MyIntervals/PHP-CSS-Parser/tree/v8.5.1"
+                "source": "https://github.com/MyIntervals/PHP-CSS-Parser/tree/v8.6.0"
             },
             "install-path": "../sabberworm/php-css-parser"
         },
@@ -3156,22 +3151,23 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/svrnm/exceldatatables.git",
-                "reference": "cc3511c6573da8a9900a22043990047ecb7dce9a"
+                "reference": "be99ebd6aba28797aa5e35af9e2039b6f7bf7ac6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/svrnm/exceldatatables/zipball/cc3511c6573da8a9900a22043990047ecb7dce9a",
-                "reference": "cc3511c6573da8a9900a22043990047ecb7dce9a",
+                "url": "https://api.github.com/repos/svrnm/exceldatatables/zipball/be99ebd6aba28797aa5e35af9e2039b6f7bf7ac6",
+                "reference": "be99ebd6aba28797aa5e35af9e2039b6f7bf7ac6",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=7.0.0"
             },
             "require-dev": {
-                "mikey179/vfsstream": "1.3.*@dev",
-                "phpspec/phpspec": "~2.0"
+                "mikey179/vfsstream": "~1.6",
+                "phpbench/phpbench": "^1.3",
+                "phpspec/phpspec": "~7.5"
             },
-            "time": "2020-07-05T15:28:36+00:00",
+            "time": "2024-07-16T14:54:14+00:00",
             "default-branch": true,
             "type": "library",
             "installation-source": "dist",
@@ -3278,17 +3274,17 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.29.0",
-            "version_normalized": "1.29.0.0",
+            "version": "v1.30.0",
+            "version_normalized": "1.30.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "9773676c8a1bb1f8d4340a62efe641cf76eda7ec"
+                "reference": "fd22ab50000ef01661e2a31d850ebaa297f8e03c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/9773676c8a1bb1f8d4340a62efe641cf76eda7ec",
-                "reference": "9773676c8a1bb1f8d4340a62efe641cf76eda7ec",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/fd22ab50000ef01661e2a31d850ebaa297f8e03c",
+                "reference": "fd22ab50000ef01661e2a31d850ebaa297f8e03c",
                 "shasum": ""
             },
             "require": {
@@ -3300,7 +3296,7 @@
             "suggest": {
                 "ext-mbstring": "For best performance"
             },
-            "time": "2024-01-29T20:11:03+00:00",
+            "time": "2024-06-19T12:30:46+00:00",
             "type": "library",
             "extra": {
                 "thanks": {
@@ -3341,7 +3337,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.29.0"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.30.0"
             },
             "funding": [
                 {
@@ -3429,6 +3425,6 @@
             "install-path": "../tecnickcom/tcpdf"
         }
     ],
-    "dev": false,
+    "dev": true,
     "dev-package-names": []
 }

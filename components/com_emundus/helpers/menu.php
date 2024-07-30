@@ -244,6 +244,36 @@ class EmundusHelperMenu
 
 		return $alias;
 	}
+
+	static function getNonce() {
+		$sitename = ComponentHelper::getParams('com_emundus')->get('sitename');
+
+		// Step 1: Hash the input string
+		$hash = md5($sitename);
+
+		// Step 2: Convert the hash to a numeric value
+		$numericHash = self::hexToDec($hash);
+
+		// Step 3: Split the numeric value into parts of 7 digits each
+		$part1 = substr($numericHash, 0, 7);
+		$part2 = substr($numericHash, 7, 7);
+		$part3 = substr($numericHash, 14, 7);
+
+		// Step 4: Combine the parts with hyphens
+		return sprintf('%s-%s-%s', $part1, $part2, $part3);
+	}
+
+	private static function hexToDec($hex) {
+		$dec = '0';
+		$len = strlen($hex);
+
+		for ($i = 0; $i < $len; $i++) {
+			$dec = bcmul($dec, '16');
+			$dec = bcadd($dec, hexdec($hex[$i]));
+		}
+
+		return $dec;
+	}
 }
 
 ?>

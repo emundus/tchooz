@@ -67,7 +67,7 @@ export default {
     },
     onDragEnd(event) {
       const to = event.to;
-      if (to === null) {
+      if (to === null || to.id === '') {
         return;
       }
 

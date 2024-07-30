@@ -495,7 +495,7 @@
     "@vue/compiler-dom" "3.4.31"
     "@vue/shared" "3.4.31"
 
-"@vue/devtools-api@^6.5.0":
+"@vue/devtools-api@^6.6.3":
   "integrity" "sha512-0MiMsFma/HqA6g3KLKn+AGpL1kgKhFWszC9U29NfpWK5LE7bjeXxySWJrOJ77hBz+TBrBQ7o4QJqbPbqbs8rJw=="
   "resolved" "https://registry.npmjs.org/@vue/devtools-api/-/devtools-api-6.6.3.tgz"
   "version" "6.6.3"
@@ -1552,13 +1552,13 @@
   "resolved" "https://registry.npmjs.org/picomatch/-/picomatch-2.3.1.tgz"
   "version" "2.3.1"
 
-"pinia@^2.1.6":
-  "integrity" "sha512-+C2AHFtcFqjPih0zpYuvof37SFxMQ7OEG2zV9jRI12i9BOy3YQVAHwdKtyyc8pDcDyIc33WCIsZaCFWU7WWxGQ=="
-  "resolved" "https://registry.npmjs.org/pinia/-/pinia-2.1.7.tgz"
-  "version" "2.1.7"
+"pinia@^2.2.0":
+  "integrity" "sha512-iPrIh26GMqfpUlMOGyxuDowGmYousTecbTHFwT0xZ1zJvh23oQ+Cj99ZoPQA1TnUPhU6AuRPv6/drkTCJ0VHQA=="
+  "resolved" "https://registry.npmjs.org/pinia/-/pinia-2.2.0.tgz"
+  "version" "2.2.0"
   dependencies:
-    "@vue/devtools-api" "^6.5.0"
-    "vue-demi" ">=0.14.5"
+    "@vue/devtools-api" "^6.6.3"
+    "vue-demi" "^0.14.8"
 
 "postcss-selector-parser@^6.0.15":
   "integrity" "sha512-UMz42UD0UY0EApS0ZL9o1XnLhSTtvvvLe5Dc2H2O56fvRZi+KulDyf5ctDhhtYJBGKStV2FL1fy6253cmLgqVQ=="
@@ -1923,8 +1923,7 @@
   "version" "0.2.0"
 
 "tip-tap-editor@https://github.com/emundus/tiptap#release/0.0.1":
-  "integrity" "sha512-j8qYsONlKvxwNJbdwUZMI1lwG7oc5c5iB1tw18cUnLOSD0H0u0RErFnZBhwEyukDUBLrMO6jv1KyQps1bRshJA=="
-  "resolved" "git+ssh://git@github.com/emundus/tiptap.git"
+  "resolved" "git+ssh://git@github.com/emundus/tiptap.git#021a44cd93adf7373e8cf0e9544240b5d39d8853"
   "version" "0.1.0"
   dependencies:
     "@fortawesome/fontawesome-svg-core" "^6.5.2"
@@ -2067,7 +2066,7 @@
   "resolved" "https://registry.npmjs.org/vue-demi/-/vue-demi-0.14.8.tgz"
   "version" "0.14.8"
 
-"vue-demi@>=0.14.5":
+"vue-demi@^0.14.8":
   "integrity" "sha512-Uuqnk9YE9SsWeReYqK2alDI5YzciATE0r2SkA6iMAtuXvNTMNACJLJEXNXaEy94ECuBe4Sk6RzRU80kjdbIo1Q=="
   "resolved" "https://registry.npmjs.org/vue-demi/-/vue-demi-0.14.8.tgz"
   "version" "0.14.8"
