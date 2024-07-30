@@ -4893,7 +4893,10 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$msg = '';
 
-		$email_from_sys = $this->app->get('mailfrom');
+		$config = $this->app->getConfig();
+		$email_from_sys = $config->get('mailfrom');
+		$email_from_sysname = $config->get('fromname');
+
 		$fnumsInfos     = $this->getFnumsInfos($fnums);
 
 		$current_user = $this->app->getIdentity();
@@ -5024,7 +5027,7 @@ class EmundusModelFiles extends JModelLegacy
 							$from     = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
 							$from_id  = $this->app->getIdentity()->id;
 							$from_id  = empty($from_id) ? 62 : $from_id;
-							$fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']);
+							$fromname = !empty($trigger['tmpl']['name']) ? preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['name']) : $email_from_sysname;
 							$to       = $file['email'];
 							$subject  = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['subject']);
 							$body     = $trigger['tmpl']['message'];
