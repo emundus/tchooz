@@ -39,6 +39,11 @@
           :tagPlaceholder="translate('COM_EMUNDUS_MULTISELECT_ADDKEYWORDS')"
           :key="parameter.value !== undefined ? parameter.value.length : 0"
           :class="['tw-cursor-pointer']"
+          :selectLabel="translate('PRESS_ENTER_TO_SELECT')"
+          :selectGroupLabel="translate('PRESS_ENTER_TO_SELECT_GROUP')"
+          :selectedLabel="translate('SELECTED')"
+          :deselect-label="translate('PRESS_ENTER_TO_REMOVE')"
+          :deselectGroupLabel="translate('PRESS_ENTER_TO_DESELECT_GROUP')"
       >
         <template #noOptions>{{ translate('COM_EMUNDUS_MULTISELECT_NOKEYWORDS') }}</template>
       </multiselect>
