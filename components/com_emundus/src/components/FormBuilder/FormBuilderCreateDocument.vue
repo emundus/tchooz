@@ -514,7 +514,6 @@ export default {
         this.currentSample = '';
       } else {
         formBuilderService.getDocumentSample(Number(this.document.id), Number(this.profile_id)).then((response) => {
-          console.log(response);
           if (response.status && response.data) {
             this.hasSample = response.data.has_sample == 1;
             this.currentSample = this.hasSample ? response.data.sample_filepath : '';
