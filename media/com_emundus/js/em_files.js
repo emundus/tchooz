@@ -1888,7 +1888,7 @@ $(document).ready(function() {
                                 '</select>'+
                                 '<div class="em-flex-row em-flex-row-justify-end em-mt-8">' +
                                 '<button class="em-tertiary-button em-w-auto" id="delfilter" style="border-radius: 4px;" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>' +
-                                '<button class="em-primary-button em-w-auto" id="savefilter" title="'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
+                                '<button class="tw-btn-primary em-w-auto" id="savefilter" title="'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
                                 '</div>' +
                                 '</div>' +
                                 '</div>'+
@@ -3218,7 +3218,7 @@ $(document).ready(function() {
                     '</select>'+
                     '<div class="em-flex-row em-flex-row-justify-end em-mt-8">' +
                     '<button class="em-tertiary-button em-w-auto" id="delPDFfilter" style="border-radius: 4px;" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>'+
-                    '<button class="em-primary-button em-w-auto" id="savePDFfilter" title="'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
+                    '<button class="tw-btn-primary em-w-auto" id="savePDFfilter" title="'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
                     '</div>' +
                     '</div>' +
                     '</div>'+

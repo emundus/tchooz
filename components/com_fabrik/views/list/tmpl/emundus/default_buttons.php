@@ -20,7 +20,7 @@ use Joomla\CMS\Language\Text;
 
 <?php if ($this->showAdd && $this->showTitle != 1) :?>
 
-	<div><a class="addbutton addRecord em-primary-button em-w-max-content" href="<?php echo $this->addRecordLink;?>">
+	<div><a class="addbutton addRecord tw-btn-primary em-w-max-content" href="<?php echo $this->addRecordLink;?>">
 		<?php echo Text::_($this->addLabel);?>
 	</a></div>
 <?php

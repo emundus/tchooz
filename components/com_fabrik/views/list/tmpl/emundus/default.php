@@ -34,7 +34,7 @@ if ($this->params->get('show-title')) : ?>
 		<h1><?php echo $this->table->label;?></h1>
 		<?php if ($this->showAdd) :?>
 
-            <div><a class="addbutton addRecord em-primary-button em-w-max-content" href="<?php echo $this->addRecordLink;?>">
+            <div><a class="addbutton addRecord tw-btn-primary em-w-max-content" href="<?php echo $this->addRecordLink;?>">
 					<?php echo Text::_($this->addLabel);?>
                 </a></div>
 		<?php

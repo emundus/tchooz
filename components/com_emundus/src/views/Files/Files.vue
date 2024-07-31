@@ -108,7 +108,7 @@
           <span class="material-icons-outlined tw-mr-4 tw-text-red-500"
                 :class="{'tw-cursor-pointer': filters.length > 0, 'tw-cursor-pointer-disbabled': filters.length < 1 }"
                 :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_alt_off</span>
-          <button class="em-primary-button tw-cusor-pointer" @click="applyFilters">
+          <button class="tw-btn-primary tw-cusor-pointer" @click="applyFilters">
             {{ translate('COM_EMUNDUS_FILES_APPLY_FILTER') }}
           </button>
         </div>

@@ -51,7 +51,7 @@
     </div>
     <section id="filters-bottom-actions">
       <button id="em-add-filter" class="em-secondary-button em-white-bg em-mt-16" @click="openFilterOptions = !openFilterOptions">{{ translate('MOD_EMUNDUS_FILTERS_ADD_FILTER') }}</button>
-      <button id="em-apply-filters" class="em-primary-button em-mt-16 hidden" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
+      <button id="em-apply-filters" class="tw-btn-primary em-mt-16 hidden" @click="applyFilters">{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}</button>
     </section>
   </div>
 </template>

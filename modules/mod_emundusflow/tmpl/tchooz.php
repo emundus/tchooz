@@ -151,7 +151,7 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			<?php endif; ?>
             <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>"
                target="_blank" title="<?php echo JText::_('PRINT') ?>">
-                <button class="btn-tertiary mod_emundus_flow___print">
+                <button class="tw-btn-tertiary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 19px">print</span>
                     <p><?php echo JText::_('PRINT') ?></p>
                 </button>

@@ -778,49 +778,105 @@ video {
     --tw-backdrop-saturate:  ;
     --tw-backdrop-sepia:  ;
 }
-.em-primary-button {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
-        border-radius: var(--em-coordinator-br);
-        border: unset;
-        color: var(--neutral-0);
-        background-color: var(--em-profile-color);
-        border: solid 1px transparent;
-        font-family: var(--em-profile-font), Inter, sans-serif;
-        font-size: var(--em-coordinator-font-size) !important;
-    }
-.em-primary-button:hover, .em-primary-button:focus, .em-primary-button:active {
-            background-color: var(--neutral-0);
-            color: var(--em-profile-color);
-            border: 1px solid var(--em-profile-color);
-            text-decoration: none;
-        }
-.em-primary-button:hover .material-icons, .em-primary-button:focus .material-icons, .em-primary-button:active .material-icons {
-                color: var(--em-profile-color) !important;
-            }
-.em-primary-button .material-icons {
-            color: var(--white);
-        }
-.btn-tertiary {
-        padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
-        border: 1px solid var(--em-tertiary-color);
-        border-radius: var(--em-applicant-br);
-        color: var(--em-tertiary-color);
-        transition: all 0.3s ease-in-out;
-    }
-.btn-tertiary p,.btn-tertiary span {
-            color: var(--em-tertiary-color);
-        }
-.btn-tertiary:hover, .btn-tertiary:focus, .btn-tertiary:active {
-            background: var(--em-tertiary-color);
+.tw-btn-primary {
+    background-color: var(--em-profile-color);
+    color: var(--neutral-0);
+    border: 1px solid var(--em-profile-color);
+    text-shadow: none;
+    text-transform: math-auto;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+    font-size: 16px;
+    font-family: var(--em-profile-font);
+    line-height: 1.25;
+    border-radius: var(--em-applicant-br);
+    transition: all 0.3s ease-in-out;
+}
+.tw-btn-primary:hover {
+    background-color: var(--neutral-0);
+    color: var(--em-profile-color);
+    border: 1px solid var(--em-profile-color);
+    text-decoration: none;
+}
+.tw-btn-secondary {
+    background-color: var(--neutral-0);
+    color: var(--em-secondary-color);
+    border: 1px solid var(--em-secondary-color);
+    text-shadow: none;
+    text-transform: math-auto;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+    font-size: 16px;
+    font-family: var(--em-profile-font);
+    line-height: 1.25;
+    border-radius: var(--em-applicant-br);
+    transition: all 0.3s ease-in-out;
+}
+.tw-btn-secondary:hover {
+    background-color: var(--em-secondary-color);
+    color: var(--neutral-0);
+    border: 1px solid var(--em-secondary-color);
+    text-decoration: none;
+}
+.tw-btn-tertiary {
+    background-color: var(--neutral-0);
+    color: var(--em-tertiary-color);
+    border: 1px solid var(--em-tertiary-color);
+    text-shadow: none;
+    text-transform: math-auto;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+    font-size: 16px;
+    font-family: var(--em-profile-font);
+    line-height: 1.25;
+    border-radius: var(--em-applicant-br);
+    transition: all 0.3s ease-in-out;
+}
+.tw-btn-tertiary:hover {
+    background-color: var(--em-tertiary-color);
+    color: var(--neutral-0);
+    border: 1px solid var(--em-tertiary-color);
+    text-decoration: none;
+}
+.tw-btn-cancel {
+    background-color: var(--neutral-0);
+    color: var(--em-coordinator-secondary-color);
+    border: 1px solid var(--em-coordinator-secondary-color);
+    text-shadow: none;
+    text-transform: math-auto;
+    padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
+    font-size: var(--em-coordinator-font-size);
+    font-family: var(--em-profile-font);
+    line-height: 1.25;
+    border-radius: var(--em-coordinator-br);
+    transition: all 0.3s ease-in-out;
+}
+.tw-btn-cancel:hover {
+    background-color: var(--em-coordinator-secondary-color);
+    color: var(--neutral-0);
+    border: 1px solid var(--em-coordinator-secondary-color);
+    text-decoration: none;
+}
+.tw-btn-primary p,.tw-btn-primary span {
             color: var(--neutral-0);
         }
-.btn-tertiary:hover p,.btn-tertiary:hover span,.btn-tertiary:focus p,.btn-tertiary:focus span,.btn-tertiary:active p,.btn-tertiary:active span {
+.tw-btn-primary:hover p,.tw-btn-primary:hover span,.tw-btn-primary:focus p,.tw-btn-primary:focus span,.tw-btn-primary:active p,.tw-btn-primary:active span {
+                color: var(--em-profile-color);
+            }
+.tw-btn-secondary p,.tw-btn-secondary span {
+            color: var(--em-secondary-color);
+        }
+.tw-btn-secondary:hover p,.tw-btn-secondary:hover span,.tw-btn-secondary:focus p,.tw-btn-secondary:focus span,.tw-btn-secondary:active p,.tw-btn-secondary:active span {
                 color: var(--neutral-0);
+            }
+.tw-btn-tertiary p,.tw-btn-tertiary span {
+            color: var(--em-tertiary-color);
+        }
+.tw-btn-tertiary:hover p,.tw-btn-tertiary:hover span,.tw-btn-tertiary:focus p,.tw-btn-tertiary:focus span,.tw-btn-tertiary:active p,.tw-btn-tertiary:active span {
+                color: var(--neutral-0);
+            }
+.tw-btn-cancel p,.tw-btn-cancel span {
+            color: var(--neutral-0);
+        }
+.tw-btn-cancel:hover p,.tw-btn-cancel:hover span,.tw-btn-cancel:focus p,.tw-btn-cancel:focus span,.tw-btn-cancel:active p,.tw-btn-cancel:active span {
+                color: var(--em-coordinator-secondary-color);
             }
 /** DROPFILES **/
 .dropfiles-page .breadcrumbs {
@@ -5134,10 +5190,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     font-size: 1.125rem !important;
     line-height: 1.75rem !important;
 }
-.\!tw-text-sm {
-    font-size: 0.875rem !important;
-    line-height: 1.25rem !important;
-}
 .\!tw-text-xl\/5 {
     font-size: 1.25rem !important;
     line-height: 1.25rem !important;
@@ -6069,6 +6121,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;

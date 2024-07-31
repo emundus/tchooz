@@ -91,10 +91,10 @@ if(!empty($user_module->id)) {
 
         <div class="com-users-profile__edit-submit control-group">
             <div class="controls tw-flex tw-justify-content-between">
-                <a class="btn" href="#" onclick="history.go(-1);" title="<?php echo JText::_('JCANCEL'); ?>">
+                <a class="tw-btn-cancel" href="#" onclick="history.go(-1);" title="<?php echo JText::_('JCANCEL'); ?>">
 					<?php echo JText::_('JCANCEL'); ?>
                 </a>
-                <button type="submit" class="btn btn-primary validate" name="task" value="profile.save">
+                <button type="submit" class="tw-btn-primary validate" name="task" value="profile.save">
 					<?php echo Text::_('JSAVE'); ?>
                 </button>
                 <input type="hidden" name="option" value="com_users">

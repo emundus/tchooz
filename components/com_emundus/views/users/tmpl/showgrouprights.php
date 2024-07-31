@@ -158,7 +158,7 @@ use Joomla\CMS\Router\Route;
             </div>
 		<?php endif; ?>
         <div class="modal-footer">
-            <button type="button" class="btn em-primary-button em-w-auto"
+            <button type="button" class="btn tw-btn-primary em-w-auto"
                     onclick="history.go(-1)"><?php echo Text::_('COM_EMUNDUS_OK'); ?></button>
         </div>
     </fieldset>

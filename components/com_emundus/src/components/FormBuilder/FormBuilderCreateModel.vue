@@ -21,7 +21,7 @@
     </div>
     <div class="tw-flex tw-items-center tw-justify-between actions tw-w-full">
       <button
-          class="em-primary-button tw-m-4"
+          class="tw-btn-primary tw-m-4"
           @click="addFormModel()"
           :disabled="modelTitle.length < 1 || loading"
           :class="{'tw-text-white tw-bg-gray-500 tw-w-full tw-px-2 tw-py-3 tw-rounded-coordinator': modelTitle.length < 1 || loading,}"
@@ -153,7 +153,7 @@ export default {
     height: fit-content;
   }
 
-  .em-primary-button:disabled {
+  .tw-btn-primary:disabled {
     cursor: not-allowed;
     border-color: var(--grey-color);
     background: var(--grey-color);

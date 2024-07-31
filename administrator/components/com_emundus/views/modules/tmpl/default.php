@@ -20,7 +20,7 @@ defined('_JEXEC') or die('RESTRICTED');
             </td>
         </tr>
         <tr>
-            <td><button class="em-primary-button em-w-auto" type="button" onclick="install('<?= $m_key ?>')">Installer le module</button></td>
+            <td><button class="tw-btn-primary em-w-auto" type="button" onclick="install('<?= $m_key ?>')">Installer le module</button></td>
         </tr>
       <?php endforeach; ?>
   </tr>

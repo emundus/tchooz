@@ -241,7 +241,7 @@
                 {{ translate('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND') }}
             </p>
             <section id="add-document-section" class="tw-mt-4 tw-flex tw-items-center" v-if="this.canCreate">
-                <button class="em-primary-button em-w-auto" @click="addAttachment">
+                <button class="tw-btn-primary em-w-auto" @click="addAttachment">
                     {{ translate('COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT') }}
                 </button>
             </section>

@@ -79,7 +79,7 @@
         </div>
 
         <div class="tw-flex tw-justify-end">
-          <button type="button" @click="addRepeatableField(param.name)" class="em-tertiary-button tw-mt-2 tw-w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}</button>
+          <button type="button" @click="addRepeatableField(param.name)" class="tw-btn-tertiary tw-mt-2 tw-w-auto">{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}</button>
         </div>
       </div>
 

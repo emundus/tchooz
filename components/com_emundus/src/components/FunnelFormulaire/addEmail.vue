@@ -29,7 +29,7 @@
       </div>
       <p>{{ translate('COM_EMUNDUS_ONBOARD_THE_CANDIDATE_DESCRIPTION') }}</p>
 
-      <button class="em-primary-button tw-w-auto tw-mt-2"
+      <button class="tw-btn-primary tw-w-auto tw-mt-2"
               @click="showModalAddTriggerApplicant = true; triggerSelected = null">
         {{ translate("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER") }}
       </button>
@@ -76,7 +76,7 @@
       </div>
       <p>{{ translate('COM_EMUNDUS_ONBOARD_MANUAL_DESCRIPTION') }}</p>
 
-      <button class="em-primary-button tw-w-auto tw-mt-2"
+      <button class="tw-btn-primary tw-w-auto tw-mt-2"
               @click="showModalAddTriggerManual = true; triggerSelected = null">
         {{ translate("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER") }}
       </button>

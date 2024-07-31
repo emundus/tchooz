@@ -60,10 +60,10 @@
     </div>
 
     <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
-      <button type="button" class="em-secondary-button !tw-w-auto"
+      <button type="button" class="tw-btn-cancel !tw-w-auto"
               @click.prevent="$emit('close')">{{ translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR") }}</button>
       <button type="button"
-              class="em-primary-button !tw-w-auto"
+              class="tw-btn-primary !tw-w-auto"
               @click.prevent="createTrigger()"
       >{{ translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER") }}</button>
     </div>

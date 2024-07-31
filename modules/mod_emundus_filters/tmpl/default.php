@@ -79,7 +79,7 @@ JText::script('MOD_EMUNDUS_FILTERS_PLEASE_SELECT');
             </select>
         </div>
         <div class="actions em-mt-16">
-            <button id="apply-filters" class="em-primary-button"><?= JText::_('MOD_EMUNDUS_FILTERS_APPLY_FILTERS'); ?></button>
+            <button id="apply-filters" class="tw-btn-primary"><?= JText::_('MOD_EMUNDUS_FILTERS_APPLY_FILTERS'); ?></button>
             <button id="add-filter" class="em-secondary-button em-mt-16"><?= JText::_('MOD_EMUNDUS_FILTERS_ADD_FILTER'); ?></button>
         </div>
     <?php

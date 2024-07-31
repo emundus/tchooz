@@ -105,18 +105,18 @@ else {
 
                     <div id="apply-filters" class="em-flex-row-justify-end">
                         <button id="log-reset-filter-btn"
-                                class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8">
+                                class="em-w-auto tw-btn-cancel em-mt-8 em-mb-8 em-ml-8 em-mr-8">
 							<?= JText::_('COM_EMUNDUS_LOGS_RESET_FILTER') ?>
                         </button>
                         <button id="log-filter-btn"
-                                class="em-w-auto em-primary-button em-mt-8 em-mb-8 em-ml-8 em-mr-16">
+                                class="em-w-auto tw-btn-primary em-mt-8 em-mb-8 em-ml-8 em-mr-16">
 							<?= JText::_('COM_EMUNDUS_LOGS_FILTER') ?>
                         </button>
                     </div>
 
                     <div id="export-logs" class="em-flex-row-justify-end">
                         <button id="log-export-btn"
-                                class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-16"
+                                class="em-w-auto tw-btn-cancel em-mt-8 em-mb-8 em-ml-8 em-mr-16"
                                 onclick="exportLogs(<?= "'" . $this->fnum . "'" ?>)">
                             <span class="material-icons-outlined em-mr-8">file_upload</span>
 							<?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
