@@ -25,7 +25,23 @@ export default {
               "title": "COM_EMUNDUS_ONBOARD_WORKFLOWS",
               "key": "workflow",
               "controller": "workflow",
-              "getter": "getworkflows"
+              "getter": "getworkflows",
+              "actions": [
+                {
+                  "action": "/workflows/add",
+                  "label": "COM_EMUNDUS_ONBOARD_ADD_WORKFLOW",
+                  "controller": "workflow",
+                  "name": "add",
+                  "type": "redirect"
+                },
+                {
+                  "action": "/workflows/edit?wid=%id%",
+                  "label": "COM_EMUNDUS_ONBOARD_MODIFY",
+                  "controller": "workflow",
+                  "type": "redirect",
+                  "name": "edit"
+                },
+              ]
             }
           ]
         }

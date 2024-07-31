@@ -7,6 +7,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\LanguageHelper;
 
+Text::script('COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WORKFLOWS');
+Text::script('COM_EMUNDUS_GLOBAL_PARAMS_WORKFLOWS');
+
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();
 $short_lang   = substr($lang->getTag(), 0, 2);
