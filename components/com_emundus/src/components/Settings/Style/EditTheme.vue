@@ -31,7 +31,7 @@
                 </div>
             </div>
         </div>
-        <div class="tw-mt-4 tw-w-full">
+        <div class="tw-mt-5 tw-w-full">
             <h3 class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_THEME_ACCESSIBILITY') }}</h3>
             <div class="tw-w-full" v-if="contrastPrimary && contrastSecondary">
                 <Info
@@ -71,16 +71,15 @@
                     :icon-color="'tw-text-orange-600'"
                     :class="'tw-mt-2'"
                 ></Info>
-                <div class="tw-mt-3">
+                <div class="tw-mt-4">
                     <h4
                         @click="showDetails = !showDetails"
                         class="tw-flex tw-items-center tw-font-semibold tw-cursor-pointer"
                     >
                         {{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS') }}
-                        <span class="material-icons-outlined tw-font-sm" v-if="!showDetails">add</span>
-                        <span class="material-icons-outlined tw-font-sm" v-if="showDetails">remove</span>
+                        <span class="material-icons-outlined tw-font-sm" :class="showDetails ? 'tw-rotate-90' : ''">navigate_next</span>
                     </h4>
-                    <div v-if="showDetails" class="tw-mt-2">
+                    <div v-if="showDetails" class="tw-mt-2 tw-border-s-4 tw-border-neutral-400 tw-pl-2">
                         <div>
                             <h5>{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_NORMAL_TEXT') }}</h5>
                             <div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
@@ -122,7 +121,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="tw-mt-2">
+                        <div class="tw-mt-3">
                             <h5>{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LARGE_TEXT') }}</h5>
                             <div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
                                 <span

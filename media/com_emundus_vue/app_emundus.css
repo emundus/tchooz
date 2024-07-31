@@ -2408,7 +2408,7 @@ button.swal2-styled.swal2-cancel[data-v-7cf57dac] {
 }
 
 
-.custom-color-picker[data-v-20c25afc] {
+.custom-color-picker[data-v-c5f2a00b] {
     width: 44px !important;
     height: 48px !important;
     border: none !important;
@@ -2416,7 +2416,7 @@ button.swal2-styled.swal2-cancel[data-v-7cf57dac] {
     outline: none;
     cursor: pointer;
 }
-.custom-color-picker[data-v-20c25afc]::-webkit-color-swatch {
+.custom-color-picker[data-v-c5f2a00b]::-webkit-color-swatch {
     border-radius: 100%;
 }
 .status-field[data-v-e4065d47] {
