@@ -63,8 +63,9 @@ import EditArticle from "@/components/Settings/Content/EditArticle.vue";
 import EditFooter from "@/components/Settings/Content/EditFooter.vue";
 import Info from "@/components/info.vue";
 import SubSection from "@/components/Settings/SubSection.vue";
-import Swal from "sweetalert2";
 import Tile from "@/components/Settings/Tile.vue";
+import Workflows from '@/views/Workflows.vue';
+import Swal from "sweetalert2";
 import settingsService from '@/services/settings.js';
 
 const assetsPath = '/components/com_emundus/src/assets/data/';
@@ -87,6 +88,7 @@ export default {
     Info,
     SubSection,
     Tile,
+    Workflows
   },
 
   props: {

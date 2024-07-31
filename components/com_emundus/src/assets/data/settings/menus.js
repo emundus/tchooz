@@ -65,5 +65,13 @@ export default
     "type": "JSON",
     "source": "translate.js",
     "published": true
+  },
+  {
+    "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WORKFLOWS",
+    "name": "workflows",
+    "icon": "schema",
+    "type": "component",
+    "component": "Workflows",
+    "published": true,
   }
 ]

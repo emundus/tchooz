@@ -242,21 +242,21 @@ export default {
   methods: {
     getEmundusParamsJoomlaConfiguration() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
-          .then(response => {
-            this.config = response.data;
+        .then(response => {
+          this.config = response.data;
 
-            Object.values(this.params).forEach((param) => {
+          Object.values(this.params).forEach((param) => {
 
-              param.value = this.config[param.component][param.param];
-              if ((param.value === "1") || (param.value === true) || (param.value === "true")) {
-                param.value = 1;
-              }
-              if ((param.value === "0") || (param.value === false) || (param.value === "false")) {
-                param.value = 0;
-              }
-            });
-            this.customValue = this.config['emundus']['custom_email_conf'];
+            param.value = this.config[param.component][param.param];
+            if ((param.value === "1") || (param.value === true) || (param.value === "true")) {
+              param.value = 1;
+            }
+            if ((param.value === "0") || (param.value === false) || (param.value === "false")) {
+              param.value = 0;
+            }
           });
+          this.customValue = this.config['emundus']['custom_email_conf'];
+        });
     },
     displayHelp(message) {
       Swal.fire({
