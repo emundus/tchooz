@@ -55,7 +55,7 @@ if(!empty($user_module->id)) {
 
         <div>
             <a class="em-back-button em-pointer" style="justify-content: start; padding: 0;" href="<?php echo $back_url ?>">
-                <span class="material-icons em-mr-4">navigate_before</span>
+                <span class="material-icons tw-text-neutral-600 em-mr-4">navigate_before</span>
 			    <?php echo Text::_('GO_BACK'); ?>
             </a>
         </div>

@@ -661,8 +661,7 @@ if (!empty($this->custom_title)) :?>
                 <div class="tw-flex tw-justify-between">
                     <div>
                         <div class="btn-group">
-                            <div class="em-goback-btn tw-flex tw-items-center"><span class="material-icons-outlined"
-                                                                               style="color:var(--neutral-900);">navigate_before</span>
+                            <div class="em-goback-btn tw-flex tw-items-center"><span class="material-icons-outlined tw-text-neutral-600">navigate_before</span>
                                 <button type="button" class="btn goback-btn button" onclick="window.history.go(-1)"
                                         name="Goback"><?php echo Text::_('GO_BACK') ?></button>
                             </div>

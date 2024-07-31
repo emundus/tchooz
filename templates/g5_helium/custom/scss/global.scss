@@ -52,7 +52,7 @@
 
 /* Couleurs des labels des menus dans les paramètres globaux */
 aside#settings_menus div ul li p,
-aside#settings_menus div ul li span span:nth-child(2) {
+aside#settings_menus div ul li span span:nth-child(2):not(.tw-text-neutral-900) {
   color: var(--grey-color);
 }
 

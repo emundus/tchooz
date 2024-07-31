@@ -11,9 +11,9 @@
         <li class="tw-w-10 tw-flex tw-items-center tw-justify-between">
               <span class="tw-flex tw-items-center tw-rounded-lg tw-group tw-cursor-pointer" @click="clickReturn()">
                 <!-- The back button icon -->
-                <span class="material-icons-outlined tw-user-select-none">navigate_before</span>
+                <span class="material-icons-outlined tw-text-neutral-600 tw-user-select-none">navigate_before</span>
                 <!-- The back button label -->
-                <span class="tw-pl-1" v-if="minimized === false">{{ translate('BACK') }}</span>
+                <span class="tw-pl-1 tw-text-neutral-900" v-if="minimized === false">{{ translate('BACK') }}</span>
               </span>
           <span class="material-icons-outlined tw-absolute tw-right-[-12px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
                 :class="minimized ? 'tw-rotate-180' : ''"
