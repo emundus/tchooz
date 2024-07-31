@@ -23,7 +23,7 @@ class EmundusViewWorkflows extends JViewLegacy
 {
 
 	public $hash = '';
-	private $user = null;
+	public $user = null;
 
 	private $model = null;
 

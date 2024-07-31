@@ -24,6 +24,9 @@
         :context="data.context || ''"
     ></ApplicationSingle>
 
+    <WorkflowEdit v-else-if="component === 'WorkflowEdit'" :workflow-id="datas.workflowid.value">
+    </WorkflowEdit>
+
     <transition v-else name="slide-right">
       <component v-bind:is="$props.component"/>
     </transition>
@@ -46,6 +49,7 @@ import messagescoordinator from "@/components/Messages/MessagesCoordinator.vue";
 import messages from "@/components/Messages/Messages.vue";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
 import TranslationTool from "@/components/Settings/Translation/TranslationTool.vue";
+import WorkflowEdit from "@/views/Workflows/WorkflowEdit.vue";
 
 import settingsService from "@/services/settings.js";
 import { useGlobalStore } from '@/stores/global.js';
@@ -83,7 +87,8 @@ export default {
     messages,
     Files,
     list_v2,
-    TranslationTool
+    TranslationTool,
+    WorkflowEdit
   },
 
   created() {
