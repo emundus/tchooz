@@ -37,8 +37,9 @@ module.exports = {
             pattern: /tw-flex-/
         },
         {
-            pattern: /tw-grid-cols-/
-        }
+            pattern: /tw-grid-cols-/,
+            variants: ['sm', 'md', 'lg'],
+        },
     ],
     theme: {
         extend: {
