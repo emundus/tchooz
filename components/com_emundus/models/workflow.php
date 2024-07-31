@@ -34,6 +34,25 @@ class EmundusModelWorkflow extends JModelList
 		Log::addLogger(['text_file' => 'com_emundus.formbuilder.php'], Log::ALL, array('com_emundus.workflow'));
 	}
 
+
+	public function add()
+	{
+		$new_workflow_id = 0;
+
+		$workflow = new stdClass();
+		$workflow->label = Text::_('COM_EMUNDUS_WORKFLOW_NEW');
+		$workflow->published = 1;
+
+		try {
+			$this->db->insertObject('#__emundus_setup_workflows', $workflow);
+			$new_workflow_id = $this->db->insertid();
+		} catch (Exception $e) {
+			Log::add('Error while adding workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+		}
+
+		return $new_workflow_id;
+	}
+
 	public function getWorkflows($ids = [], $limit = 0, $page = 0) {
 		$workflows = [];
 
