@@ -110,26 +110,51 @@ class EmundusModelWorkflow extends JModelList
 				}
 			}
 
+			// select programs from the workflow
 			$query->clear()
-				->delete($this->db->quoteName('#__emundus_setup_workflows_programs'))
+				->select('id, program_id')
+				->from($this->db->quoteName('#__emundus_setup_workflows_programs'))
 				->where($this->db->quoteName('workflow_id') . ' = ' . $workflow['id']);
 
 			try {
 				$this->db->setQuery($query);
-				$this->db->execute();
+				$workflow_programs = $this->db->loadAssocList('program_id');
 			} catch (Exception $e) {
-				Log::add('Error while deleting workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				Log::add('Error while fetching workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 			}
 
-			foreach ($programs as $program) {
-				$programData = new stdClass();
-				$programData->workflow_id = $workflow['id'];
-				$programData->program_id = $program['id'];
+			// delete the programs that are not in the workflow
+			$new_program_ids = array_map(function($program) {
+				return $program['id'];
+			}, $programs);
+			foreach($workflow_programs as $program_id => $workflow_program) {
+				if (!in_array($program_id, $new_program_ids)) {
+					$query->clear()
+						->delete($this->db->quoteName('#__emundus_setup_workflows_programs'))
+						->where($this->db->quoteName('workflow_id') . ' = ' . $workflow['id'])
+						->where($this->db->quoteName('program_id') . ' = ' . $program_id);
 
-				try {
-					$this->db->insertObject('#__emundus_setup_workflows_programs', $programData);
-				} catch (Exception $e) {
-					Log::add('Error while adding workflow program: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					try {
+						$this->db->setQuery($query);
+						$this->db->execute();
+					} catch (Exception $e) {
+						Log::add('Error while deleting workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					}
+				}
+			}
+
+			// insert the programs that are not in the workflow
+			foreach ($new_program_ids as $new_prog_id) {
+				if (!array_key_exists($new_prog_id, $workflow_programs)) {
+					$programData = new stdClass();
+					$programData->workflow_id = $workflow['id'];
+					$programData->program_id = $new_prog_id;
+
+					try {
+						$this->db->insertObject('#__emundus_setup_workflows_programs', $programData);
+					} catch (Exception $e) {
+						Log::add('Error while adding workflow program: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					}
 				}
 			}
 		}

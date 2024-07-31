@@ -145,8 +145,9 @@ export default {
     }
   },
   mounted() {
-    this.getPrograms();
-    this.getWorkflow();
+    this.getPrograms().then(() => {
+      this.getWorkflow();
+    });
     this.getStatuses();
   },
   methods: {
@@ -177,8 +178,8 @@ export default {
           console.log(e);
         });
     },
-    getPrograms() {
-      programmeService.getAllPrograms()
+    async getPrograms() {
+      return await programmeService.getAllPrograms()
         .then(response => {
           this.programsOptions = response.data.datas.map(program => {
             return {
