@@ -250,13 +250,13 @@
     <field name="id">4054</field>
     <field name="form_id">374</field>
     <field name="group_id">789</field>
-    <field name="ordering">1</field>
+    <field name="ordering">2</field>
    </row>
    <row>
     <field name="id">4055</field>
     <field name="form_id">374</field>
     <field name="group_id">790</field>
-    <field name="ordering">2</field>
+    <field name="ordering">1</field>
    </row>
    <row>
     <field name="id">4056</field>

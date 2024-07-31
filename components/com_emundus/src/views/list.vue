@@ -192,7 +192,7 @@
             </tbody>
           </table>
         </div>
-        <div v-else id="empty-list" class="noneDiscover" v-html="noneDiscoverTranslation"></div>
+        <div v-else id="empty-list" class="noneDiscover tw-text-center" v-html="noneDiscoverTranslation"></div>
       </div>
 
     </div>
@@ -725,18 +725,18 @@ export default {
       return columns;
     },
     noneDiscoverTranslation() {
-      let translation = '';
+      let translation = '<img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">';
 
       if (this.type === "campaigns") {
         if (this.currentTab.key === 'programs') {
-          translation = this.translate('COM_EMUNDUS_ONBOARD_NOPROGRAM');
+          translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOPROGRAM')+'</span>';
         } else {
-          translation = this.translate('COM_EMUNDUS_ONBOARD_NOCAMPAIGN');
+          translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOCAMPAIGN')+'</span>';
         }
       } else if (this.type === "emails") {
-        translation = this.translate('COM_EMUNDUS_ONBOARD_NOEMAIL');
+        translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOEMAIL')+'</span>';
       } else if (this.type === "forms") {
-        translation = this.translate('COM_EMUNDUS_ONBOARD_NOFORM');
+        translation += '<span>'+this.translate('COM_EMUNDUS_ONBOARD_NOFORM')+'</span>';
       }
 
       return translation;

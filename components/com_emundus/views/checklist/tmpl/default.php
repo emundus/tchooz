@@ -438,8 +438,7 @@ if (!empty($this->custom_title)) :?>
                                 if (n >= 0) {
                                     if (required_desc == 1 && desc.trim() === "") {
                                         Swal.fire({
-                                            position: "top",
-                                            type: "warning",
+                                            icon: "warning",
                                             title: "' . Text::_("COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED") . '",
                                             confirmButtonText: "' . Text::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
                                             showCancelButton: false,
@@ -456,8 +455,7 @@ if (!empty($this->custom_title)) :?>
                                     }
                                 } else {           
                                     Swal.fire({
-                                            position: "top",
-                                            type: "warning",
+                                            icon: "warning",
                                             title: "' . Text::_("COM_EMUNDUS_WRONG_FORMAT") . ' ' . $attachment->allowed_types . '",
                                             confirmButtonText: "' . Text::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
                                             showCancelButton: false,
@@ -492,8 +490,7 @@ if (!empty($this->custom_title)) :?>
                                 // Remove the file preview.
                                 this.removeFile(file);
                                 Swal.fire({
-                                    position: "top",
-                                    type: "warning",
+                                    icon: "warning",
                                     title: response["message"],
                                     confirmButtonText: "' . Text::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
                                     showCancelButton: false,
@@ -506,8 +503,7 @@ if (!empty($this->custom_title)) :?>
                             } else {
                                 if(profile_attachments_not_uploaded.includes(attachment_id)) {
                                     Swal.fire({
-                                        position: "top",
-                                        type: "info",
+                                        icon: "info",
                                         title: "' . Text::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND") . '",
                                         text: "' . Text::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_TEXT") . '",
                                         confirmButtonText: "' . Text::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_UPDATE") . '",
@@ -578,8 +574,7 @@ if (!empty($this->custom_title)) :?>
                           this.on("error", function(file, responseText) {
                               this.removeFile(file);
                               Swal.fire({
-                                    position: "top",
-                                    type: "warning",
+                                    icon: "warning",
                                     text: responseText,
                                     confirmButtonText: "' . Text::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
                                     showCancelButton: false,
@@ -795,8 +790,7 @@ if (!empty($this->custom_title)) :?>
 		<?php if ($this->notify_complete_file == 1 && !$block_upload && $this->attachments_prog >= 100 && $this->forms_prog >= 100) :?>
         $(document).ready(() => {
             Swal.fire({
-                position: 'top',
-                type: 'success',
+                icon: 'success',
                 title: '<?= Text::_('COM_EMUNDUS_CHECKLIST_FILE_COMPLETE'); ?>',
                 confirmButtonText: '<?= Text::_('COM_EMUNDUS_CHECKLIST_SEND_FILE'); ?>',
                 showCancelButton: true,
@@ -826,8 +820,7 @@ if (!empty($this->custom_title)) :?>
 			?>
             var attachments = "<?php echo $attachments_label; ?>";
             Swal.fire({
-                position: 'top',
-                type: 'info',
+                icon: 'info',
                 title: '<?= Text::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND'); ?>',
                 html: '<p><?= Text::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT') . '</p><div class="em-mt-8">' . $attachments_label . '</div><p class="em-mt-8">' . Text::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT_2'); ?></p>',
                 confirmButtonText: '<?= Text::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_UPLOAD'); ?>',
@@ -869,8 +862,7 @@ if (!empty($this->custom_title)) :?>
                     clearInterval(is_file_uploaded_timer);
 
                     Swal.fire({
-                        position: 'top',
-                        type: 'success',
+                        icon: 'success',
                         title: "<?= Text::_('COM_EMUNDUS_UPLOAD_SUCCESS'); ?>",
                         showCancelButton: false,
                         showConfirmButton: false,
@@ -887,8 +879,7 @@ if (!empty($this->custom_title)) :?>
                         console.log("ERROR: " + jqXHR.responseText);
 
                 Swal.fire({
-                    position: 'top',
-                    type: 'error',
+                    icon: 'error',
                     title: "<?= Text::_('COM_EMUNDUS_ERROR_OCCURED'); ?>",
                     showCancelButton: false,
                     showConfirmButton: false,
