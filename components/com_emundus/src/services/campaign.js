@@ -14,15 +14,10 @@ export default {
     }
   },
   async updateDocument(params, create = false) {
-    const formData = new FormData();
-    Object.keys(params).forEach(key => {
-      formData.append(key, params[key]);
-    });
-
     const task = create ? 'createdocument' : 'updatedocument';
 
     try {
-      const response = await client.post(task, formData);
+      const response = await client.post(task, params);
 
       return response.data;
     } catch (e) {

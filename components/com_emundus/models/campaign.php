@@ -1948,7 +1948,7 @@ class EmundusModelCampaign extends JModelList
 	 *
 	 * @since version 1.0
 	 */
-	public function createDocument($document, $types, $cid, $pid)
+	public function createDocument($document, $types, $pid)
 	{
 		$created = [
 			'status' => false,

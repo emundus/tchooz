@@ -160,9 +160,12 @@
 import formService from '@/services/form';
 import formBuilderService from '@/services/formbuilder';
 import campaignService from '@/services/campaign';
-import globalMixin from "@/mixins/mixin";
 import IncrementalSelect from "@/components/IncrementalSelect.vue";
-import formBuilderMixin from "@/mixins/formbuilder";
+
+import globalMixin from '@/mixins/mixin';
+import formBuilderMixin from '@/mixins/formbuilder';
+import errorsMixin from '@/mixins/errors';
+
 import Swal from 'sweetalert2';
 import fileTypes from '../../../data/form-builder/form-builder-filetypes.json';
 
@@ -189,7 +192,7 @@ export default {
   components: {
     IncrementalSelect,
   },
-  mixins: [globalMixin, formBuilderMixin],
+  mixins: [globalMixin, formBuilderMixin, errorsMixin],
   data() {
     return {
       models: [],
@@ -369,7 +372,7 @@ export default {
       });
 
       let types = [];
-      Object.entries(this.document.selectedTypes).forEach((entry, type) => {
+      Object.entries(this.document.selectedTypes).forEach((entry) => {
         if (entry[1]) {
           types.push(entry[0]);
         }
@@ -378,7 +381,7 @@ export default {
       if (types.length < 1) {
         Swal.fire({
           type: 'warning',
-          title: this.translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PLEASE_FILL_FORMAT"),
+          title: this.translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PLEASE_FILL_FORMAT'),
           reverseButtons: true,
           customClass: {
             title: 'em-swal-title',
@@ -406,7 +409,11 @@ export default {
         }
 
         campaignService.updateDocument(data, true).then(response => {
-          this.$emit('documents-updated');
+          if (response.status) {
+            this.$emit('documents-updated');
+          } else {
+            this.displayError('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAVE_ERROR', response.msg);
+          }
         });
       } else {
         const data = {
@@ -434,13 +441,21 @@ export default {
           ).then((response) => {
             if (response) {
               formBuilderService.updateDocument(data).then(response => {
-                this.$emit('documents-updated');
+                if (response.status) {
+                  this.$emit('documents-updated');
+                } else {
+                  this.displayError('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAVE_ERROR', response.msg);
+                }
               });
             }
           });
         } else {
           formBuilderService.updateDocument(data).then(response => {
-            this.$emit('documents-updated');
+            if (response.status) {
+              this.$emit('documents-updated');
+            } else {
+              this.displayError('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAVE_ERROR', response.msg);
+            }
           });
         }
       }
