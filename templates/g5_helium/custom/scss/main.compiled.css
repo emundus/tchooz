@@ -790,6 +790,9 @@ video {
     line-height: 1.25;
     border-radius: var(--em-applicant-br);
     transition: all 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .tw-btn-primary:hover {
     background-color: var(--neutral-0);
@@ -809,6 +812,9 @@ video {
     line-height: 1.25;
     border-radius: var(--em-applicant-br);
     transition: all 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .tw-btn-secondary:hover {
     background-color: var(--em-secondary-color);
@@ -828,6 +834,9 @@ video {
     line-height: 1.25;
     border-radius: var(--em-applicant-br);
     transition: all 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .tw-btn-tertiary:hover {
     background-color: var(--em-tertiary-color);
@@ -847,6 +856,9 @@ video {
     line-height: 1.25;
     border-radius: var(--em-coordinator-br);
     transition: all 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .tw-btn-cancel:hover {
     background-color: var(--em-coordinator-secondary-color);
@@ -873,10 +885,10 @@ video {
                 color: var(--neutral-0);
             }
 .tw-btn-cancel p,.tw-btn-cancel span {
-            color: var(--neutral-0);
+            color: var(--em-coordinator-secondary-color);
         }
 .tw-btn-cancel:hover p,.tw-btn-cancel:hover span,.tw-btn-cancel:focus p,.tw-btn-cancel:focus span,.tw-btn-cancel:active p,.tw-btn-cancel:active span {
-                color: var(--em-coordinator-secondary-color);
+                color: var(--neutral-0);
             }
 /** DROPFILES **/
 .dropfiles-page .breadcrumbs {
