@@ -1221,6 +1221,10 @@ footer#g-footer > .g-container {
     background-color: var(--background-color) !important;
   }
 
+  tbody tr.fabrik_row {
+    margin-left: 3px;
+  }
+
   tbody input.fabrik_filter[type="text"]  {
     background-color: var(--neutral-0) !important;
     overflow: hidden;
@@ -1853,6 +1857,7 @@ div.fabrikFilterContainer {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
+    align-items: flex-end;
 
     tr {
       min-width: 200px;
@@ -1948,9 +1953,39 @@ div.fabrikFilterContainer {
 
       .fabrikDateListFilterRange {
         display: flex;
+        flex-direction: row;
+
+        &> .col-sm-6:nth-child(1) {
+          margin-right: 8px;
+        }
+
+        &> .col-sm-6 {
+          width: auto;
+        }
 
         input.fabrik_filter {
           border-radius: 4px 0 0 4px !important;
+        }
+
+        .input-group {
+          width: fit-content;
+
+          &:hover {
+            outline: var(--em-form-outline-color-focus) solid var(--em-form-outline-width-focus);
+            border-radius: var(--em-form-br-focus);
+            outline-offset: var(--em-form-outline-offset-focus);
+            box-shadow: unset;
+            border-color: var(--em-form-bc-focus);
+            background-color: var(--em-form-bgc-focus);
+          }
+
+           input:focus {
+            outline: none !important;
+            border: 1px solid #e0e0e5 !important;
+          }
+           input:hover {
+            border: 1px solid #e0e0e5 !important;
+          }
         }
 
         .calendarbutton {
@@ -1958,6 +1993,11 @@ div.fabrikFilterContainer {
           color: var(--neutral-900);
           border: solid 1px #ececee;
           border-radius: 0 4px 4px 0 !important;
+
+          &:focus {
+            outline: none !important;
+            box-shadow: none !important;
+          }
         }
 
         .input-append:first-child {
