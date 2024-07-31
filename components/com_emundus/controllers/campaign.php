@@ -766,35 +766,30 @@ class EmundusControllerCampaign extends JControllerLegacy
 	 */
 	public function createdocument()
 	{
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$document = $this->input->getString('document');
 			$document = json_decode($document, true);
 
 			$types = $this->input->getString('types');
 			$types = json_decode($types, true);
 
-			$cid = $this->input->getInt('cid');
-			$pid = $this->input->getInt('pid');
+			$pid = $this->input->getInt('pid', 0);
 
-			$result = $this->m_campaign->createDocument($document, $types, $cid, $pid);
-
-			if ($result['status'])
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('DOCUMENT_ADDED'), 'data' => $result);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_($result['msg']), 'data' => $result);
+			if (!empty($pid)) {
+				$result = $this->m_campaign->createDocument($document, $types, $pid);
+				if ($result['status']) {
+					$response = array('status' => 1, 'msg' => Text::_('DOCUMENT_ADDED'), 'data' => $result);
+				} else {
+					$response['msg'] = Text::_($result['msg']);
+				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMETERS');
 			}
 		}
-		echo json_encode((object) $tab);
+
+		echo json_encode($response);
 		exit;
 	}
 
@@ -806,13 +801,9 @@ class EmundusControllerCampaign extends JControllerLegacy
 	 */
 	public function updatedocument()
 	{
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
 		{
 			$document = $this->input->getString('document');
 			$document = json_decode($document, true);
@@ -824,22 +815,24 @@ class EmundusControllerCampaign extends JControllerLegacy
 			$did               = $this->input->getInt('did');
 			$pid               = $this->input->getInt('pid');
 
-			$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => '');
+			$response = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => '');
 
-			if (!empty($document))
+			if (!empty($document) && !empty($pid) && !empty($did))
 			{
 				$result = $this->m_campaign->updateDocument($document, $types, $did, $pid, $isModeleAndUpdate);
 
-				$tab['data'] = $result;
+				$response['data'] = $result;
 				if ($result)
 				{
-					$tab['status'] = 1;
-					$tab['msg']    = Text::_('DOCUMENT_UPDATED');
+					$response['status'] = 1;
+					$response['msg']    = Text::_('DOCUMENT_UPDATED');
 				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMETERS');
 			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 

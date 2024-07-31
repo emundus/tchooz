@@ -351,7 +351,7 @@ class Release2_0_0Installer extends ReleaseInstaller
 
 			if ($existing_cron !== null)
 			{
-				echo "Plugin cron already created.";
+				EmundusHelperUpdate::displayMessage('Plugin cron already created.');
 			}
 			else
 			{
@@ -1415,7 +1415,20 @@ if(value == 1) {
 				$this->db->updateObject('#__emundus_setup_actions', $action, 'id');
 			}
 
+			// Update jos_fabrik_form_sessions for emundus_fileupload
 			EmundusHelperUpdate::addColumn('jos_fabrik_form_sessions', 'fnum', 'VARCHAR', 28, 1);
+			$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `referring_url` VARCHAR(255) NULL';
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `last_page` INT(11) NULL';
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			$query = 'ALTER TABLE `jos_fabrik_form_sessions` MODIFY `hash` VARCHAR(255) NULL';
+			$this->db->setQuery($query);
+			$this->db->execute();
+			//
 
 			$result['status'] = true;
 		}
