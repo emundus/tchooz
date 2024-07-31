@@ -29,14 +29,14 @@
   <table_data name="#__emundus_setup_groups">
    <row>
     <field name="id">1</field>
-    <field name="label">Tous les droits</field>
+    <field name="label">Administrateur de plateforme</field>
     <field name="description">Toutes les actions sur tous les programmes</field>
     <field name="published">1</field>
     <field name="profile_id" value_is_null="true"></field>
     <field name="course" value_is_null="true"></field>
     <field name="fac_rattachement"></field>
     <field name="commission" value_is_null="true"></field>
-    <field name="class">label-green-2</field>
+    <field name="class">label-red-2</field>
     <field name="fabrik_group_link" value_is_null="true"></field>
     <field name="attachment_id_link" value_is_null="true"></field>
     <field name="anonymize">0</field>

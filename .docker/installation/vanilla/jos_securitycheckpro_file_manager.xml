@@ -37,7 +37,7 @@
     <field name="files_with_bad_integrity">0</field>
     <field name="estado">ENDED</field>
     <field name="estado_integrity">ENDED</field>
-    <field name="hash_alg" value_is_null="true"></field>
+    <field name="hash_alg"></field>
     <field name="estado_cambio_permisos">ENDED</field>
     <field name="estado_clear_data">DELETING_ENTRIES</field>
     <field name="last_task">INTEGRITY</field>

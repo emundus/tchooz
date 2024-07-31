@@ -414,46 +414,6 @@ spanShowPassword.addEventListener(&amp;#039;click&amp;#039;, function () {
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group760&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
    <row>
-    <field name="id">4442</field>
-    <field name="element_id">7955</field>
-    <field name="action">load</field>
-    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
-const fab = this.form.elements;
-let {
-    jos_emundus_campaign_workflow___specific_documents,
-    jos_emundus_campaign_workflow_repeat_documents___id_0
-} = fab;
-
-if (value != &amp;#039;0&amp;#039;) {
-    showFabrikElt(jos_emundus_campaign_workflow___specific_documents)
-} else {
-    document.querySelector(&amp;#039;input#jos_emundus_campaign_workflow___specific_documents0&amp;#039;).click();
-    hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0);
-    hideFabrikElt(jos_emundus_campaign_workflow___specific_documents)
-}</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group760&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">4443</field>
-    <field name="element_id">7955</field>
-    <field name="action">change</field>
-    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
-const fab = this.form.elements;
-let {
-    jos_emundus_campaign_workflow___specific_documents,
-    jos_emundus_campaign_workflow_repeat_documents___id_0
-} = fab;
-
-if (value != &amp;#039;0&amp;#039;) {
-    showFabrikElt(jos_emundus_campaign_workflow___specific_documents)
-} else {
-    document.querySelector(&amp;#039;input#jos_emundus_campaign_workflow___specific_documents0&amp;#039;).click();
-    hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0);
-    hideFabrikElt(jos_emundus_campaign_workflow___specific_documents, true)
-}</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group760&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
     <field name="id">4444</field>
     <field name="element_id">7995</field>
     <field name="action">keyup</field>
@@ -463,20 +423,6 @@ if (value != &amp;#039;0&amp;#039;) {
    <row>
     <field name="id">4445</field>
     <field name="element_id">7996</field>
-    <field name="action">keyup</field>
-    <field name="code">const mySentence = this.get(&amp;#039;value&amp;#039;);const words = mySentence.split(&amp;quot; &amp;quot;);for (let i = 0; i &amp;lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&amp;quot; &amp;quot;));</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">4446</field>
-    <field name="element_id">8017</field>
-    <field name="action">keyup</field>
-    <field name="code">this.set(this.get('value').toUpperCase());</field>
-    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
-   </row>
-   <row>
-    <field name="id">4447</field>
-    <field name="element_id">8018</field>
     <field name="action">keyup</field>
     <field name="code">const mySentence = this.get(&amp;#039;value&amp;#039;);const words = mySentence.split(&amp;quot; &amp;quot;);for (let i = 0; i &amp;lt; words.length; i++) {words[i] = words[i][0].toUpperCase() + words[i].substr(1);};this.set(words.join(&amp;quot; &amp;quot;));</field>
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
@@ -576,6 +522,390 @@ if(value == 1){
   hideFabrikGroupByElt(jos_emundus_setup_letters___body);
 }</field>
     <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group184&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4520</field>
+    <field name="element_id">8092</field>
+    <field name="action">load</field>
+    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_setup_attachments___img_min_width,
+    jos_emundus_setup_attachments___img_max_width,
+    jos_emundus_setup_attachments___img_min_height,
+    jos_emundus_setup_attachments___img_max_height,
+    jos_emundus_setup_attachments___video_max_length,
+    jos_emundus_setup_attachments___min_pages_pdf,
+    jos_emundus_setup_attachments___max_pages_pdf
+} = fab;
+
+hideFabrikElt([
+    jos_emundus_setup_attachments___img_min_width,
+    jos_emundus_setup_attachments___img_max_width,
+    jos_emundus_setup_attachments___img_min_height,
+    jos_emundus_setup_attachments___img_max_height,
+    jos_emundus_setup_attachments___video_max_length,
+    jos_emundus_setup_attachments___min_pages_pdf,
+    jos_emundus_setup_attachments___max_pages_pdf
+]);
+
+if(value == 1){ /* Si PDF */
+  showFabrikElt([
+    jos_emundus_setup_attachments___min_pages_pdf,
+    jos_emundus_setup_attachments___max_pages_pdf
+  ]);
+  hideFabrikElt([
+    jos_emundus_setup_attachments___img_min_width,
+    jos_emundus_setup_attachments___img_max_width,
+    jos_emundus_setup_attachments___img_min_height,
+    jos_emundus_setup_attachments___img_max_height,
+    jos_emundus_setup_attachments___video_max_length
+  ]);
+} else if(value == 2){ /* Si image */
+  showFabrikElt([
+    jos_emundus_setup_attachments___img_min_width,
+    jos_emundus_setup_attachments___img_max_width,
+    jos_emundus_setup_attachments___img_min_height,
+    jos_emundus_setup_attachments___img_max_height
+  ]);
+  hideFabrikElt([
+    jos_emundus_setup_attachments___min_pages_pdf,
+    jos_emundus_setup_attachments___max_pages_pdf,
+    jos_emundus_setup_attachments___video_max_length
+  ]);
+} else if(value == 6){ /* Si Vidéo */
+  showFabrikElt(jos_emundus_setup_attachments___video_max_length);
+  hideFabrikElt([
+    jos_emundus_setup_attachments___min_pages_pdf,
+    jos_emundus_setup_attachments___max_pages_pdf,
+    jos_emundus_setup_attachments___img_min_width,
+    jos_emundus_setup_attachments___img_max_width,
+    jos_emundus_setup_attachments___img_min_height,
+    jos_emundus_setup_attachments___img_max_height
+  ]);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group47&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4521</field>
+    <field name="element_id">8092</field>
+    <field name="action">change</field>
+    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+
+const allowed_types = this.form.elements.get(&amp;#039;jos_emundus_setup_attachments___allowed_types&amp;#039;);
+let {
+    jos_emundus_setup_attachments___img_min_width,
+    jos_emundus_setup_attachments___img_max_width,
+    jos_emundus_setup_attachments___img_min_height,
+    jos_emundus_setup_attachments___img_max_height,
+    jos_emundus_setup_attachments___video_max_length,
+    jos_emundus_setup_attachments___min_pages_pdf,
+    jos_emundus_setup_attachments___max_pages_pdf
+} = fab;
+
+hideFabrikElt([
+    jos_emundus_setup_attachments___img_min_width,
+    jos_emundus_setup_attachments___img_max_width,
+    jos_emundus_setup_attachments___img_min_height,
+    jos_emundus_setup_attachments___img_max_height,
+    jos_emundus_setup_attachments___video_max_length,
+    jos_emundus_setup_attachments___min_pages_pdf,
+    jos_emundus_setup_attachments___max_pages_pdf
+]);
+
+if(value == 1){ /* Si PDF */
+  showFabrikElt([
+    jos_emundus_setup_attachments___min_pages_pdf,
+    jos_emundus_setup_attachments___max_pages_pdf
+  ]);
+  hideFabrikElt([
+    jos_emundus_setup_attachments___img_min_width,
+    jos_emundus_setup_attachments___img_max_width,
+    jos_emundus_setup_attachments___img_min_height,
+    jos_emundus_setup_attachments___img_max_height,
+    jos_emundus_setup_attachments___video_max_length
+  ], true);
+
+  allowed_types.set(&amp;quot;pdf&amp;quot;);
+} 
+
+else if(value == 2){ /* Si image */
+  showFabrikElt([
+    jos_emundus_setup_attachments___img_min_width,
+    jos_emundus_setup_attachments___img_max_width,
+    jos_emundus_setup_attachments___img_min_height,
+    jos_emundus_setup_attachments___img_max_height
+  ]);
+  hideFabrikElt([
+    jos_emundus_setup_attachments___min_pages_pdf,
+    jos_emundus_setup_attachments___max_pages_pdf,
+    jos_emundus_setup_attachments___video_max_length
+  ], true);
+
+  allowed_types.set(&amp;quot;jpeg;jpg;png;gif&amp;quot;);
+} 
+
+else if(value == 3) {
+  allowed_types.set(&amp;quot;doc;docx;odt;ppt;pptx&amp;quot;);
+}
+
+
+else if(value == 4) {
+  allowed_types.set(&amp;quot;xls;xlsx;odf&amp;quot;);
+}
+
+
+else if(value == 5)  {
+  allowed_types.set(&amp;quot;mp3&amp;quot;);
+}
+
+
+else if(value == 6){ /* Si Vidéo */
+  showFabrikElt(jos_emundus_setup_attachments___video_max_length);
+  hideFabrikElt([
+    jos_emundus_setup_attachments___min_pages_pdf,
+    jos_emundus_setup_attachments___max_pages_pdf,
+    jos_emundus_setup_attachments___img_min_width,
+    jos_emundus_setup_attachments___img_max_width,
+    jos_emundus_setup_attachments___img_min_height,
+    jos_emundus_setup_attachments___img_max_height
+  ], true);
+
+  allowed_types.set(&amp;quot;mp4&amp;quot;);
+}
+
+else if(value == 7)  {
+  allowed_types.set(&amp;quot;zip&amp;quot;);
+}
+
+else {
+  allowed_types.set(&amp;quot;&amp;quot;);
+}
+
+
+</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group47&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4522</field>
+    <field name="element_id">7955</field>
+    <field name="action">load</field>
+    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_campaign_workflow___specific_documents,
+    jos_emundus_campaign_workflow_repeat_documents___id_0
+} = fab;
+
+if (value != &amp;#039;0&amp;#039;) {
+    showFabrikElt(jos_emundus_campaign_workflow___specific_documents)
+} else {
+    document.querySelector(&amp;#039;#jos_emundus_campaign_workflow___specific_documents0&amp;#039;).click();
+    hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0);
+    hideFabrikElt(jos_emundus_campaign_workflow___specific_documents)
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group760&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4523</field>
+    <field name="element_id">7955</field>
+    <field name="action">change</field>
+    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_campaign_workflow___specific_documents,
+    jos_emundus_campaign_workflow_repeat_documents___id_0
+} = fab;
+
+if (value != &amp;#039;0&amp;#039;) {
+    showFabrikElt(jos_emundus_campaign_workflow___specific_documents)
+} else {
+    document.querySelector(&amp;#039;#jos_emundus_campaign_workflow___specific_documents0&amp;#039;).click();
+    hideFabrikGroupByElt(jos_emundus_campaign_workflow_repeat_documents___id_0);
+    hideFabrikElt(jos_emundus_campaign_workflow___specific_documents, true)
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group760&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4528</field>
+    <field name="element_id">8028</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+
+if(value == 1) {
+  showFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_01_811_repeat___e_811_8030_0&amp;#039;));
+} else {
+  hideFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_01_811_repeat___e_811_8030_0&amp;#039;));
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group806&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4529</field>
+    <field name="element_id">8028</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+
+if(value == 1) {
+  showFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_01_811_repeat___e_811_8030_0&amp;#039;), true);
+} else {
+  hideFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_01_811_repeat___e_811_8030_0&amp;#039;), true);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group806&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4530</field>
+    <field name="element_id">8039</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+
+if(value == 1) {
+  showFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_01_814_repeat___e_814_8042_0&amp;#039;));
+} else {
+  hideFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_01_814_repeat___e_814_8042_0&amp;#039;));
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group806&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4531</field>
+    <field name="element_id">8039</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+
+if(value == 1) {
+  showFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_01_814_repeat___e_814_8042_0&amp;#039;));
+} else {
+  hideFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_01_814_repeat___e_814_8042_0&amp;#039;));
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group806&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4532</field>
+    <field name="element_id">8052</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+
+if(value == 1) {
+  showFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_04_817_repeat___e_817_8056_0&amp;#039;));
+} else {
+  hideFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_04_817_repeat___e_817_8056_0&amp;#039;));
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group815&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4533</field>
+    <field name="element_id">8052</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+
+if(value == 1) {
+  showFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_04_817_repeat___e_817_8056_0&amp;#039;));
+} else {
+  hideFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_04_817_repeat___e_817_8056_0&amp;#039;));
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group815&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4534</field>
+    <field name="element_id">8068</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_1001_06___e_819_8069
+} = fab;
+
+if(value == 7) {
+  showFabrikElt(jos_emundus_1001_06___e_819_8069);
+} else {
+  hideFabrikElt(jos_emundus_1001_06___e_819_8069);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group818&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4535</field>
+    <field name="element_id">8068</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_1001_06___e_819_8069
+} = fab;
+
+if(value == 7) {
+  showFabrikElt(jos_emundus_1001_06___e_819_8069);
+} else {
+  hideFabrikElt(jos_emundus_1001_06___e_819_8069, true);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group818&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4536</field>
+    <field name="element_id">8070</field>
+    <field name="action">load</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+
+if(value == 1) {
+  showFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_06_821_repeat___e_821_8071_0&amp;#039;));
+} else {
+  hideFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_06_821_repeat___e_821_8071_0&amp;#039;));
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group818&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4537</field>
+    <field name="element_id">8070</field>
+    <field name="action">change</field>
+    <field name="code">var value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+
+if(value == 1) {
+  showFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_06_821_repeat___e_821_8071_0&amp;#039;));
+} else {
+  hideFabrikGroupByElt(fab.get(&amp;#039;jos_emundus_1001_06_821_repeat___e_821_8071_0&amp;#039;), true);
+}</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group818&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4539</field>
+    <field name="element_id">8079</field>
+    <field name="action">load</field>
+    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_1001_08___e_823_8080
+} = fab;
+if (value.includes(&amp;#039;4&amp;#039;)) {
+  showFabrikElt(jos_emundus_1001_08___e_823_8080);
+} else {
+  hideFabrikElt(jos_emundus_1001_08___e_823_8080);
+}
+</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group822&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
+   </row>
+   <row>
+    <field name="id">4541</field>
+    <field name="element_id">8079</field>
+    <field name="action">change</field>
+    <field name="code">const value = this.get(&amp;#039;value&amp;#039;);
+const fab = this.form.elements;
+let {
+    jos_emundus_1001_08___e_823_8080
+} = fab;
+if (value.includes(&amp;#039;4&amp;#039;)) {
+  showFabrikElt(jos_emundus_1001_08___e_823_8080);
+} else {
+  hideFabrikElt(jos_emundus_1001_08___e_823_8080, true);
+}
+</field>
+    <field name="params">{&quot;js_e_event&quot;:&quot;&quot;,&quot;js_e_trigger&quot;:&quot;fabrik_trigger_group_group822&quot;,&quot;js_e_condition&quot;:&quot;&quot;,&quot;js_e_value&quot;:&quot;&quot;,&quot;js_published&quot;:&quot;1&quot;}</field>
    </row>
   </table_data>
  </database>
