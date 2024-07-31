@@ -3,7 +3,10 @@
     <div id="header">
       <div class="tw-flex tw-flex-row tw-flex-space-between">
         <input type="text" v-model="workflow.label" />
-        <a class="tw-btn-primary" href="#" @click="save"> {{ translate('SAVE') }} </a>
+        <a class="tw-btn-primary tw-flex tw-items-center tw-gap-1" href="#" @click="save">
+          <span class="material-icons-outlined">check</span>
+          <span>{{ translate('SAVE') }}</span>
+        </a>
       </div>
 
       <div>
@@ -39,7 +42,9 @@
               hide-time-header
               title-position="left"
               :input-debounce="500"
-              :popover="{visibility: 'focus'}">
+              :popover="{visibility: 'focus'}"
+              locale="fr"
+          >
             <template #default="{ inputValue, inputEvents }">
               <input
                   :value="inputValue"
@@ -61,7 +66,9 @@
               hide-time-header
               title-position="left"
               :input-debounce="500"
-              :popover="{visibility: 'focus'}">
+              :popover="{visibility: 'focus'}"
+              locale="fr"
+          >
             <template #default="{ inputValue, inputEvents }">
               <input
                   :value="inputValue"
@@ -122,12 +129,12 @@ export default {
       steps: [],
       programs: [],
       newStep: {
-        label: '',
-        type: '',
+        label: 'NEW_STEP',
+        type: 'applicant',
         start_date: '',
         end_date: '',
         roles: [],
-        profile_id: 0,
+        profile_id: 9,
         entry_status: [],
         output_status: 0,
       },
@@ -138,9 +145,9 @@ export default {
     }
   },
   mounted() {
+    this.getPrograms();
     this.getWorkflow();
     this.getStatuses();
-    this.getPrograms();
   },
   methods: {
     getWorkflow() {
@@ -148,7 +155,9 @@ export default {
         .then(response => {
           this.workflow = response.data.workflow;
           this.steps = response.data.steps;
-          this.programs = response.data.programs;
+
+          let program_ids = response.data.programs;
+          this.programs = this.programsOptions.filter(program => program_ids.includes(program.id));
         })
         .catch(e => {
           console.log(e);

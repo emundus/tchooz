@@ -53,6 +53,90 @@ class EmundusModelWorkflow extends JModelList
 		return $new_workflow_id;
 	}
 
+	public function updateWorkflow($workflow, $steps, $programs)
+	{
+		$updated = false;
+
+		if (!empty($workflow['id'])) {
+			$query = $this->db->getQuery(true);
+
+			$query->update($this->db->quoteName('#__emundus_setup_workflows'))
+				->set($this->db->quoteName('label') . ' = ' . $this->db->quote($workflow['label']))
+				->set($this->db->quoteName('published') . ' = ' . $this->db->quote($workflow['published']))
+				->where($this->db->quoteName('id') . ' = ' . $workflow['id']);
+
+			try {
+				$this->db->setQuery($query);
+				$this->db->execute();
+				$updated = true;
+			} catch (Exception $e) {
+				Log::add('Error while updating workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+
+			if (!empty($steps)) {
+				$query->clear()
+					->delete($this->db->quoteName('#__emundus_setup_workflows_steps'))
+					->where($this->db->quoteName('workflow_id') . ' = ' . $workflow['id']);
+
+				try {
+					$this->db->setQuery($query);
+					$this->db->execute();
+				} catch (Exception $e) {
+					Log::add('Error while deleting workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+
+				foreach ($steps as $step) {
+					$step['workflow_id'] = $workflow['id'];
+					$step_object = (object)$step;
+
+					try {
+						$inserted = $this->db->insertObject('#__emundus_setup_workflows_steps', $step_object);
+					} catch (Exception $e) {
+						var_dump($e->getMessage());exit;
+						Log::add('Error while adding workflow step: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					}
+				}
+
+			} else {
+				$query->clear()
+					->delete($this->db->quoteName('#__emundus_setup_workflows_steps'))
+					->where($this->db->quoteName('workflow_id') . ' = ' . $workflow['id']);
+
+				try {
+					$this->db->setQuery($query);
+					$this->db->execute();
+				} catch (Exception $e) {
+					Log::add('Error while deleting workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+			}
+
+			$query->clear()
+				->delete($this->db->quoteName('#__emundus_setup_workflows_programs'))
+				->where($this->db->quoteName('workflow_id') . ' = ' . $workflow['id']);
+
+			try {
+				$this->db->setQuery($query);
+				$this->db->execute();
+			} catch (Exception $e) {
+				Log::add('Error while deleting workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+
+			foreach ($programs as $program) {
+				$programData = new stdClass();
+				$programData->workflow_id = $workflow['id'];
+				$programData->program_id = $program['id'];
+
+				try {
+					$this->db->insertObject('#__emundus_setup_workflows_programs', $programData);
+				} catch (Exception $e) {
+					Log::add('Error while adding workflow program: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+			}
+		}
+
+		return $updated;
+	}
+
 	public function getWorkflows($ids = [], $limit = 0, $page = 0) {
 		$workflows = [];
 
