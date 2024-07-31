@@ -38,7 +38,7 @@
       </div>
 
       <!-- CUSTOM CONFIGURATION -->
-      <div class="tw-flex tw-items-center tw-mb-3 tw-mt-2" v-if="enableEmail && computedEnableEmail">
+      <div class="tw-flex tw-items-center tw-mb-3 tw-mt-2" v-if="enableEmail && computedEnableEmail" v-show="config.emundus.default_email_fromname !== '' && config.emundus.default_email_mailfrom != null">
         <div class="em-toggle">
           <input type="checkbox"
                  class="em-toggle-check"
@@ -201,43 +201,43 @@ export default {
 
     getEmundusParamsJoomlaConfiguration() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
-          .then(response => {
-            this.config = response.data;
-            Object.values(this.params).forEach((param) => {
+        .then(response => {
+          this.config = response.data;
+          Object.values(this.params).forEach((param) => {
 
-              param.value = this.config[param.component][param.param];
-              if ((param.value === "1") || (param.value === true) || (param.value === "true")) {
-                param.value = 1;
-              }
-              if ((param.value === "0") || (param.value === false) || (param.value === "false")) {
-                param.value = 0;
-              }
-            });
-            this.loading = false;
-
-            this.enableEmail = this.getEmundusparamsEmailValue('mailonline', 'boolean')
-            this.AuthSMTP = this.config["joomla"]['smtpauth'];
-            this.customConfigurationToggle = this.config['emundus']['custom_email_conf'];
-            this.customConfigurationToggle = this.customConfigurationToggle == 1 ? true : false;
-            this.putValueIntoInputs(this.customConfigurationToggle);
-
-            for (let index in this.customInformations) {
-              if (this.customInformations[index].param === 'smtpauth') {
-                this.customInformations[index].value = this.AuthSMTP;
-              }
+            param.value = this.config[param.component][param.param];
+            if ((param.value === "1") || (param.value === true) || (param.value === "true")) {
+              param.value = 1;
+            }
+            if ((param.value === "0") || (param.value === false) || (param.value === "false")) {
+              param.value = 0;
             }
           });
+          this.loading = false;
+
+          this.enableEmail = this.getEmundusparamsEmailValue('mailonline', 'boolean')
+          this.AuthSMTP = this.config["joomla"]['smtpauth'];
+          this.customConfigurationToggle = this.config['emundus']['custom_email_conf'];
+          this.customConfigurationToggle = this.customConfigurationToggle == 1 ? true : false;
+          this.putValueIntoInputs(this.customConfigurationToggle);
+
+          for (let index in this.customInformations) {
+            if (this.customInformations[index].param === 'smtpauth') {
+              this.customInformations[index].value = this.AuthSMTP;
+            }
+          }
+        });
 
     },
     putValueIntoInputs(customConfigurationToggle) {
       for (let index in this.globalInformations) {
         switch (this.globalInformations[index].param) {
-          case 'replyto':
-            this.globalInformations[index].value = this.config['emundus']['custom_email_replyto'];
-            break;
-          case 'replytoname':
-            this.globalInformations[index].value = this.config['emundus']['custom_email_replytoname'];
-            break;
+        case 'replyto':
+          this.globalInformations[index].value = this.config['emundus']['custom_email_replyto'];
+          break;
+        case 'replytoname':
+          this.globalInformations[index].value = this.config['emundus']['custom_email_replytoname'];
+          break;
         }
       }
       if (customConfigurationToggle == 1) {
@@ -328,40 +328,40 @@ export default {
       });
 
       settingsService.saveParams(params)
-          .then(() => {
-            this.parametersUpdated = [];
-            Swal.fire({
-              title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
-              text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_SUCCESS"),
-              showCancelButton: false,
-              showConfirmButton: false,
-              customClass: {
-                title: 'em-swal-title'
-              },
-              timer: 1500,
-            }).then(() => {
-              this.updatable = false;
-              this.allgood = true;
-              return this.allgood;
-            });
-          })
-          .catch(() => {
-            this.allgood = false;
-            Swal.fire({
-              title: this.translate("COM_EMUNDUS_ERROR"),
-              text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_ERROR"),
-              showCancelButton: false,
-              confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
-              reverseButtons: true,
-              allowOutsideClick: false,
-              customClass: {
-                title: 'em-swal-title',
-                confirmButton: 'em-swal-confirm-button',
-                actions: "em-swal-single-action",
-              },
-            });
+        .then(() => {
+          this.parametersUpdated = [];
+          Swal.fire({
+            title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
+            text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_SUCCESS"),
+            showCancelButton: false,
+            showConfirmButton: false,
+            customClass: {
+              title: 'em-swal-title'
+            },
+            timer: 1500,
+          }).then(() => {
+            this.updatable = false;
+            this.allgood = true;
             return this.allgood;
           });
+        })
+        .catch(() => {
+          this.allgood = false;
+          Swal.fire({
+            title: this.translate("COM_EMUNDUS_ERROR"),
+            text: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE_ERROR"),
+            showCancelButton: false,
+            confirmButtonText: this.translate("COM_EMUNDUS_SWAL_OK_BUTTON"),
+            reverseButtons: true,
+            allowOutsideClick: false,
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+              actions: "em-swal-single-action",
+            },
+          });
+          return this.allgood;
+        });
     },
 
     async CheckSendMail() {
@@ -372,12 +372,12 @@ export default {
       params = [...params, ...this.customInformations];
       this.loadingMail = true;
       axios.post('index.php?option=com_emundus&controller=settings&task=sendTestMail', params)
-          .then(async response => {
-            this.loadingMail = false;
-            let colorBT = response.data.data[3] == 'success' ? 'green' : 'red';
-            response.data.data[3] === 'success' ? this.updatable = true : this.updatable = false;
-            await this.generateSweetAlert(response, colorBT);
-          });
+        .then(async response => {
+          this.loadingMail = false;
+          let colorBT = response.data.data[3] == 'success' ? 'green' : 'red';
+          response.data.data[3] === 'success' ? this.updatable = true : this.updatable = false;
+          await this.generateSweetAlert(response, colorBT);
+        });
     },
     generateSweetAlert: async function (response, colorBT) {
       Swal.fire({

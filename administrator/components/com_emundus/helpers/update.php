@@ -71,22 +71,6 @@ class EmundusHelperUpdate
 		return true;
 	}
 
-	public static function recompileGantry5()
-	{
-		$dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
-		if (is_dir($dir) && !empty($dir))
-		{
-			foreach (glob($dir . '/*') as $file)
-			{
-				unlink($file);
-			}
-
-			rmdir($dir);
-		}
-
-		return true;
-	}
-
 	/**
 	 * Get all emundus plugins
 	 *

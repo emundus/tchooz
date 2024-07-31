@@ -175,7 +175,7 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour des fichiers de langue.', 'error');
 	    }
 
-	    if(!EmundusHelperUpdate::recompileGantry5()) {
+	    if(!$this->recompileGantry5()) {
 			EmundusHelperUpdate::displayMessage('Erreur lors de la recompilation de Gantry5.', 'error');
 	    }
 
@@ -224,6 +224,22 @@ class Com_EmundusInstallerScript
 
 		return true;
     }
+
+	private function recompileGantry5()
+	{
+		$dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
+		if (is_dir($dir) && !empty($dir))
+		{
+			foreach (glob($dir . '/*') as $file)
+			{
+				unlink($file);
+			}
+
+			rmdir($dir);
+		}
+
+		return true;
+	}
 
 	private function setSitename() {
 		$updated = false;
