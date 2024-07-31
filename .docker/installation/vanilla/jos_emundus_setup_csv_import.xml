@@ -9,6 +9,7 @@
    <field Field="profile" Type="int" Null="YES" Key="" Extra="" />
    <field Field="import_file_model" Type="text" Null="YES" Key="" Extra="" />
    <field Field="create_new_fnum" Type="int" Null="YES" Key="" Extra="" />
+   <field Field="send_email" Type="int" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_setup_csv_import" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
  </database>

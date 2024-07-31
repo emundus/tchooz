@@ -13,18 +13,6 @@
   </table_structure>
   <table_data name="#__fabrik_formgroup">
    <row>
-    <field name="id">713</field>
-    <field name="form_id">41</field>
-    <field name="group_id">60</field>
-    <field name="ordering">1</field>
-   </row>
-   <row>
-    <field name="id">1454</field>
-    <field name="form_id">77</field>
-    <field name="group_id">133</field>
-    <field name="ordering">1</field>
-   </row>
-   <row>
     <field name="id">1745</field>
     <field name="form_id">87</field>
     <field name="group_id">151</field>
@@ -52,12 +40,6 @@
     <field name="id">2235</field>
     <field name="form_id">34</field>
     <field name="group_id">47</field>
-    <field name="ordering">1</field>
-   </row>
-   <row>
-    <field name="id">2236</field>
-    <field name="form_id">44</field>
-    <field name="group_id">63</field>
     <field name="ordering">1</field>
    </row>
    <row>
@@ -121,12 +103,6 @@
     <field name="ordering">1</field>
    </row>
    <row>
-    <field name="id">3232</field>
-    <field name="form_id">122</field>
-    <field name="group_id">208</field>
-    <field name="ordering">1</field>
-   </row>
-   <row>
     <field name="id">3238</field>
     <field name="form_id">169</field>
     <field name="group_id">346</field>
@@ -181,18 +157,6 @@
     <field name="ordering">1</field>
    </row>
    <row>
-    <field name="id">3889</field>
-    <field name="form_id">293</field>
-    <field name="group_id">625</field>
-    <field name="ordering">1</field>
-   </row>
-   <row>
-    <field name="id">3900</field>
-    <field name="form_id">303</field>
-    <field name="group_id">636</field>
-    <field name="ordering">1</field>
-   </row>
-   <row>
     <field name="id">3904</field>
     <field name="form_id">307</field>
     <field name="group_id">640</field>
@@ -202,12 +166,6 @@
     <field name="id">3911</field>
     <field name="form_id">310</field>
     <field name="group_id">647</field>
-    <field name="ordering">1</field>
-   </row>
-   <row>
-    <field name="id">3969</field>
-    <field name="form_id">334</field>
-    <field name="group_id">704</field>
     <field name="ordering">1</field>
    </row>
    <row>
@@ -262,18 +220,6 @@
     <field name="id">4030</field>
     <field name="form_id">361</field>
     <field name="group_id">765</field>
-    <field name="ordering">1</field>
-   </row>
-   <row>
-    <field name="id">4031</field>
-    <field name="form_id">362</field>
-    <field name="group_id">766</field>
-    <field name="ordering">1</field>
-   </row>
-   <row>
-    <field name="id">4032</field>
-    <field name="form_id">363</field>
-    <field name="group_id">767</field>
     <field name="ordering">1</field>
    </row>
    <row>
@@ -361,12 +307,6 @@
     <field name="ordering">1</field>
    </row>
    <row>
-    <field name="id">4064</field>
-    <field name="form_id">379</field>
-    <field name="group_id">799</field>
-    <field name="ordering">0</field>
-   </row>
-   <row>
     <field name="id">4065</field>
     <field name="form_id">380</field>
     <field name="group_id">800</field>
@@ -413,24 +353,6 @@
     <field name="form_id">382</field>
     <field name="group_id">807</field>
     <field name="ordering">2</field>
-   </row>
-   <row>
-    <field name="id">4073</field>
-    <field name="form_id">383</field>
-    <field name="group_id">808</field>
-    <field name="ordering">1</field>
-   </row>
-   <row>
-    <field name="id">4074</field>
-    <field name="form_id">383</field>
-    <field name="group_id">809</field>
-    <field name="ordering">2</field>
-   </row>
-   <row>
-    <field name="id">4075</field>
-    <field name="form_id">383</field>
-    <field name="group_id">810</field>
-    <field name="ordering">3</field>
    </row>
    <row>
     <field name="id">4076</field>
@@ -511,16 +433,82 @@
     <field name="ordering">2</field>
    </row>
    <row>
-    <field name="id">4089</field>
-    <field name="form_id">387</field>
-    <field name="group_id">824</field>
+    <field name="id">4093</field>
+    <field name="form_id">34</field>
+    <field name="group_id">827</field>
+    <field name="ordering">2</field>
+   </row>
+   <row>
+    <field name="id">4094</field>
+    <field name="form_id">34</field>
+    <field name="group_id">828</field>
+    <field name="ordering">3</field>
+   </row>
+   <row>
+    <field name="id">4095</field>
+    <field name="form_id">390</field>
+    <field name="group_id">829</field>
     <field name="ordering">1</field>
    </row>
    <row>
-    <field name="id">4090</field>
-    <field name="form_id">387</field>
-    <field name="group_id">825</field>
+    <field name="id">4096</field>
+    <field name="form_id">390</field>
+    <field name="group_id">830</field>
+    <field name="ordering">3</field>
+   </row>
+   <row>
+    <field name="id">4097</field>
+    <field name="form_id">390</field>
+    <field name="group_id">831</field>
     <field name="ordering">2</field>
+   </row>
+   <row>
+    <field name="id">4098</field>
+    <field name="form_id">391</field>
+    <field name="group_id">832</field>
+    <field name="ordering">1</field>
+   </row>
+   <row>
+    <field name="id">4099</field>
+    <field name="form_id">392</field>
+    <field name="group_id">833</field>
+    <field name="ordering">1</field>
+   </row>
+   <row>
+    <field name="id">4100</field>
+    <field name="form_id">392</field>
+    <field name="group_id">834</field>
+    <field name="ordering">2</field>
+   </row>
+   <row>
+    <field name="id">4101</field>
+    <field name="form_id">392</field>
+    <field name="group_id">835</field>
+    <field name="ordering">4</field>
+   </row>
+   <row>
+    <field name="id">4102</field>
+    <field name="form_id">392</field>
+    <field name="group_id">836</field>
+    <field name="ordering">3</field>
+   </row>
+   <row>
+    <field name="id">4103</field>
+    <field name="form_id">391</field>
+    <field name="group_id">837</field>
+    <field name="ordering">2</field>
+   </row>
+   <row>
+    <field name="id">4104</field>
+    <field name="form_id">379</field>
+    <field name="group_id">838</field>
+    <field name="ordering">1</field>
+   </row>
+   <row>
+    <field name="id">4105</field>
+    <field name="form_id">393</field>
+    <field name="group_id">839</field>
+    <field name="ordering">0</field>
    </row>
   </table_data>
  </database>

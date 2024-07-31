@@ -46,7 +46,7 @@
    </row>
    <row>
     <field name="id">2</field>
-    <field name="label">Gestionnaire de plateforme</field>
+    <field name="label">Administrateur de plateforme</field>
     <field name="description">Rôle de paramétrage de gestion de la plateforme avec tous les accès</field>
     <field name="published">0</field>
     <field name="schoolyear"></field>
@@ -61,7 +61,7 @@
     <field name="evaluation" value_is_null="true"></field>
     <field name="status">1</field>
     <field name="class">label-green-2</field>
-    <field name="display_description" value_is_null="true"></field>
+    <field name="display_description">0</field>
    </row>
    <row>
     <field name="id">5</field>
