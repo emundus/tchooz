@@ -24,7 +24,7 @@
                   name="SubtitleArrows"
                   :class="activeSection === indexSection ? 'tw-rotate-180' : ''">expand_more</span>
           </div>
-          <span v-if="section.intro" class="tw-text-sm tw-text-neutral-800 tw-pb-5 tw-px-5">{{ translate(section.intro) }}</span>
+          <span v-if="section.intro" class="tw-text-sm tw-text-neutral-800 tw--mt-5 tw-pb-5 tw-px-5">{{ translate(section.intro) }}</span>
         </div>
 
         <!-- The content of the section -->

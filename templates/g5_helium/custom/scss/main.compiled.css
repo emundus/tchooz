@@ -3341,6 +3341,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .-tw-mt-px {
     margin-top: -1px;
 }
+.tw--mt-5 {
+    margin-top: calc(var(--em-spacing-5) * -1);
+}
 .tw-mb-0 {
     margin-bottom: 0px;
 }
@@ -6134,6 +6137,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
