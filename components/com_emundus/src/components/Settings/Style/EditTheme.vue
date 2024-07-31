@@ -1,58 +1,171 @@
 <template>
     <div v-if="primary && secondary">
         <div class="tw-flex tw-flex-row tw-gap-6">
-            <div class="tw-flex tw-flex-col tw-gap-3" style="display: flex; flex-direction: row;">
-                <div class="tw-flex-row" style="display: flex; flex-direction: row; align-items: center; gap: 12px;">
+            <div class="tw-flex tw-flex-col tw-gap-3">
+                <div class="tw-flex tw-items-center tw-gap-3">
                     <div>
-                      <input type="color" class="custom-color-picker" style="width: 48px !important; border-radius: 100px;" v-model="primary" id="primary_color" />
+                        <input
+                            type="color"
+                            class="custom-color-picker tw-rounded-full"
+                            v-model="primary"
+                            id="primary_color"
+                        />
                     </div>
-                    <label class="tw-font-medium tw-mb-0" style="max-width: 100px;">{{ translate('COM_EMUNDUS_ONBOARD_PRIMARY_COLOR') }}</label>
+                    <label class="tw-font-medium tw-mb-0" style="max-width: 100px">{{
+                        translate('COM_EMUNDUS_ONBOARD_PRIMARY_COLOR')
+                    }}</label>
                 </div>
 
-                <div style="display: flex; flex-direction: row; align-items: center; gap: 12px;">
+                <div class="tw-flex tw-items-center tw-gap-3">
                     <div>
-                      <input type="color" v-model="secondary" class="custom-color-picker" style="width: 48px !important; border-radius: 100px;" id="secondary_color" />
+                        <input
+                            type="color"
+                            v-model="secondary"
+                            class="custom-color-picker tw-rounded-full"
+                            id="secondary_color"
+                        />
                     </div>
-                    <label class="tw-font-medium tw-mb-0" style="max-width: 100px;">{{ translate('COM_EMUNDUS_ONBOARD_SECONDARY_COLOR') }}</label>
+                    <label class="tw-font-medium tw-mb-0" style="max-width: 100px">{{
+                        translate('COM_EMUNDUS_ONBOARD_SECONDARY_COLOR')
+                    }}</label>
                 </div>
-            </div>
-            <div class="tw-gap-8" style="display: flex; flex-direction: row;">
-                <div>
-                    <label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_THEME_ACCESSIBILITY') }}</label>
-                    <div
-                        class="tw-mt-2 tw-w-full tw-rounded-md tw-p-3 tw-cursor-help tw-gap-4" style="display: flex; flex-direction: row"
-                        :class="contrastRatio < 3.1 ? 'tw-bg-main-50' : 'tw-bg-red-50'"
-                    >
-                        <div
-                            class="tw-flex tw-items-center tw-justify-between tw-gap-2"
-                            :class="contrastRatio < 3.1 ? 'tw-text-green-500' : 'tw-text-red-500'"
-                        >
-                          <label class="!tw-mb-0" style="font-size: var(--em-applicant-font-size)">RGAA :</label>
-                          <span class="material-icons-outlined tw-text-green-500" style="font-size: var(--em-applicant-font-size)" v-if="contrastRatio < 3.1"
-                          >check_circle</span
-                          >
-                          <span class="material-icons-outlined tw-text-red-500" style="font-size: var(--em-applicant-font-size)" v-else>report_problem</span>
-                        </div>
-                        <div
-                            class="tw-flex tw-items-start tw-justify-between tw-gap-2"
-                            :class="contrastRatio < 3.1 ? 'tw-text-green-500' : 'tw-text-red-500'"
-                        >
-                          <label class="!tw-mb-0" style="font-size: var(--em-applicant-font-size)">Contrast ratio :</label>
-                          <span style="font-size: var(--em-applicant-font-size)">{{ Math.round(contrastRatio * 100) / 100 }}</span>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
-        <div>
-          <Info
-              v-if="errorMessage"
-              :text="errorMessage"
-              :icon="'warning'" :bg-color="'tw-bg-orange-100'"
-              :icon-type="'material-icons'" :icon-color="'tw-text-orange-600'"
-              :class="'tw-mt-2'"
-          ></Info>
+        <div class="tw-mt-4 tw-w-full">
+            <h3 class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_THEME_ACCESSIBILITY') }}</h3>
+            <div class="tw-w-full" v-if="contrastPrimary && contrastSecondary">
+                <Info
+                    v-if="contrastPrimary.ratio > 4.5 && contrastSecondary.ratio > 4.5"
+                    :text="'COM_EMUNDUS_ONBOARD_RGAA_OK'"
+                    :bg-color="'tw-bg-main-50'"
+                    :icon="'check_circle'"
+                    :icon-type="'material-icons'"
+                    :icon-color="'tw-text-green-500'"
+                    :class="'tw-mt-2'"
+                ></Info>
+                <Info
+                    v-if="contrastPrimary.ratio < 4.5"
+                    s
+                    :text="'COM_EMUNDUS_SETTINGS_CONTRAST_ERROR_PRIMARY'"
+                    :icon="'warning'"
+                    :bg-color="'tw-bg-orange-100'"
+                    :icon-type="'material-icons'"
+                    :icon-color="'tw-text-orange-600'"
+                    :class="'tw-mt-2'"
+                ></Info>
+                <Info
+                    v-if="contrastSecondary.ratio < 4.5"
+                    :text="'COM_EMUNDUS_SETTINGS_CONTRAST_ERROR_SECONDARY'"
+                    :icon="'warning'"
+                    :bg-color="'tw-bg-orange-100'"
+                    :icon-type="'material-icons'"
+                    :icon-color="'tw-text-orange-600'"
+                    :class="'tw-mt-2'"
+                ></Info>
+                <Info
+                    v-if="rgaaState === 0"
+                    :text="'COM_EMUNDUS_ONBOARD_ERROR_COLORS_SAME'"
+                    :icon="'warning'"
+                    :bg-color="'tw-bg-orange-100'"
+                    :icon-type="'material-icons'"
+                    :icon-color="'tw-text-orange-600'"
+                    :class="'tw-mt-2'"
+                ></Info>
+                <div class="tw-mt-3">
+                    <h4
+                        @click="showDetails = !showDetails"
+                        class="tw-flex tw-items-center tw-font-semibold tw-cursor-pointer"
+                    >
+                        {{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS') }}
+                        <span class="material-icons-outlined tw-font-sm" v-if="!showDetails">add</span>
+                        <span class="material-icons-outlined tw-font-sm" v-if="showDetails">remove</span>
+                    </h4>
+                    <div v-if="showDetails" class="tw-mt-2">
+                        <div>
+                            <h5>{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_NORMAL_TEXT') }}</h5>
+                            <div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
+                                <span
+                                    class="material-icons-outlined tw-text-green-500"
+                                    v-if="contrastPrimary.AA === 'pass'"
+                                    >check_circle</span
+                                >
+                                <span
+                                    class="material-icons-outlined tw-text-red-500"
+                                    v-if="contrastPrimary.AA === 'fail'"
+                                    >highlight_off</span
+                                >
+                                <button
+                                    class="tw-rounded-coordinator tw-px-3 tw-py-2 tw-text-white"
+                                    type="button"
+                                    :style="{ backgroundColor: primary, borderColor: primary }"
+                                >
+                                    {{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT') }}
+                                </button>
+                            </div>
+                            <div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
+                                <span
+                                    class="material-icons-outlined tw-text-green-500"
+                                    v-if="contrastSecondary.AA === 'pass'"
+                                    >check_circle</span
+                                >
+                                <span
+                                    class="material-icons-outlined tw-text-red-500"
+                                    v-if="contrastSecondary.AA === 'fail'"
+                                    >highlight_off</span
+                                >
+                                <button
+                                    class="tw-btn-secondary tw-text-white"
+                                    type="button"
+                                    :style="{ backgroundColor: secondary, borderColor: secondary }"
+                                >
+                                    {{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT') }}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="tw-mt-2">
+                            <h5>{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LARGE_TEXT') }}</h5>
+                            <div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
+                                <span
+                                    class="material-icons-outlined tw-text-green-500"
+                                    v-if="contrastPrimary.AALarge === 'pass'"
+                                    >check_circle</span
+                                >
+                                <span
+                                    class="material-icons-outlined tw-text-red-500"
+                                    v-if="contrastPrimary.AALarge === 'fail'"
+                                    >highlight_off</span
+                                >
+                                <button
+                                    class="tw-rounded-coordinator tw-px-3 tw-py-2 tw-text-white tw-font-bold"
+                                    :style="{ backgroundColor: primary, borderColor: primary }"
+                                    type="button"
+                                >
+                                    {{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT') }}
+                                </button>
+                            </div>
+                            <div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
+                                <span
+                                    class="material-icons-outlined tw-text-green-500"
+                                    v-if="contrastSecondary.AALarge === 'pass'"
+                                    >check_circle</span
+                                >
+                                <span
+                                    class="material-icons-outlined tw-text-red-500"
+                                    v-if="contrastSecondary.AALarge === 'fail'"
+                                    >highlight_off</span
+                                >
+                                <button
+                                    class="tw-btn-secondary tw-font-bold tw-text-white"
+                                    :style="{ backgroundColor: secondary, borderColor: secondary }"
+                                    type="button"
+                                >
+                                    {{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <button class="tw-mt-3 btn btn-primary tw-float-right" v-if="changes" @click="saveColors">
@@ -82,13 +195,15 @@ export default {
       GAMMA: 2.4,
 
       loading: false,
+      showDetails: false,
 
       primary: null,
       secondary: null,
       changes: false,
 
       rgaaState: 0,
-      contrastRatio: 0.0,
+      contrastPrimary: null,
+      contrastSecondary: null,
     }
   },
 
@@ -108,7 +223,7 @@ export default {
         axios({
           method: 'get',
           url: 'index.php?option=com_emundus&controller=settings&task=getappVariablegantry',
-        }).then((rep) => {
+        }).then(() => {
           resolve(true)
         })
       })
@@ -138,10 +253,12 @@ export default {
           this.secondary = rep.data.secondary
 
           this.rgaaState = this.checkSimilarity(this.primary, this.secondary)
-          this.contrastRatio = this.checkContrast('#FFFFFF', this.primary)
-          if (this.contrastRatio > 3.1) {
-            this.contrastRatio = this.checkContrast('#FFFFFF', this.secondary)
-          }
+          this.checkContrast('#FFFFFF', this.primary).then((response) => {
+            this.contrastPrimary = response
+          })
+          this.checkContrast('#FFFFFF', this.secondary).then((response) => {
+            this.contrastSecondary = response
+          })
 
           resolve(true)
         })
@@ -152,7 +269,7 @@ export default {
       let preset = { id: 7, primary: this.primary, secondary: this.secondary }
       settingsService.saveColors(preset).then((response) => {
         if (response.status == 1) {
-          this.changes = false;
+          this.changes = false
           Swal.fire({
             title: this.translate('COM_EMUNDUS_ONBOARD_SUCCESS'),
             text: this.translate('COM_EMUNDUS_ONBOARD_SETTINGS_THEME_SAVE_SUCCESS'),
@@ -172,7 +289,7 @@ export default {
       return true
     },
 
-    checkSimilarity(hex1, hex2, container) {
+    checkSimilarity(hex1, hex2) {
       let rgb1 = this.hexToRgb(hex1)
       let rgb2 = this.hexToRgb(hex2)
       const deltaECalc = this.deltaE(rgb1, rgb2)
@@ -184,10 +301,22 @@ export default {
       }
     },
 
-    checkContrast(hex1, hex2, container) {
-      let rgb1 = this.hexToRgb(hex1)
-      let rgb2 = this.hexToRgb(hex2)
-      return this.contrast(rgb1, rgb2)
+    checkContrast(hex1, hex2) {
+      return new Promise((resolve) => {
+        fetch(
+          'https://webaim.org/resources/contrastchecker/?fcolor=' +
+                        hex1.replace('#', '') +
+                        '&bcolor=' +
+                        hex2.replace('#', '') +
+                        '&api',
+        )
+          .then((response) => {
+            return response.json()
+          })
+          .then((data) => {
+            resolve(data)
+          })
+      })
     },
 
     /* Utilities function */
@@ -235,20 +364,6 @@ export default {
         .match(/.{2}/g)
         .map((x) => parseInt(x, 16))
     },
-    luminance(r, g, b) {
-      var a = [r, g, b].map((v) => {
-        v /= 255
-        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, GAMMA)
-      })
-      return a[0] * RED + a[1] * GREEN + a[2] * BLUE
-    },
-    contrast(rgb1, rgb2) {
-      var lum1 = this.luminance(...rgb1)
-      var lum2 = this.luminance(...rgb2)
-      var brightest = Math.max(lum1, lum2)
-      var darkest = Math.min(lum1, lum2)
-      return (brightest + 0.05) / (darkest + 0.05)
-    },
   },
   watch: {
     primary: function (val, oldVal) {
@@ -256,7 +371,9 @@ export default {
         this.$emit('needSaving', true)
         this.changes = true
         this.rgaaState = this.checkSimilarity(val, this.secondary)
-        this.contrastRatio = this.checkContrast('#FFFFFF', val)
+        this.checkContrast('#FFFFFF', val).then((response) => {
+          this.contrastPrimary = response
+        })
       }
     },
     secondary: function (val, oldVal) {
@@ -264,20 +381,12 @@ export default {
         this.$emit('needSaving', true)
         this.changes = true
         this.rgaaState = this.checkSimilarity(val, this.primary)
-        this.contrastRatio = this.checkContrast('#FFFFFF', val)
+        this.checkContrast('#FFFFFF', val).then((response) => {
+          this.contrastSecondary = response
+        })
       }
     },
   },
-  computed: {
-    errorMessage() {
-      if (this.contrastRatio > 3.1) {
-        return this.translate('COM_EMUNDUS_SETTINGS_CONTRAST_ERROR')
-      } else if (this.rgaaState === 0) {
-        return this.translate('COM_EMUNDUS_ONBOARD_ERROR_COLORS_SAME')
-      }
-      return ''
-    },
-  }
 }
 </script>
 
@@ -290,6 +399,7 @@ export default {
     outline: none;
     cursor: pointer;
 }
+
 .custom-color-picker::-webkit-color-swatch {
     border-radius: 100%;
 }

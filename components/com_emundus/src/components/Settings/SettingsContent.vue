@@ -12,13 +12,13 @@
            aria-controls="accordion-collapse-body-1">
         <div @click="handleSection(indexSection)" class="tw-cursor-pointer">
           <div class="tw-flex tw-items-center tw-justify-between">
-            <h1 id="accordion-collapse-heading-1" class="tw-user-select-none tw-flex tw-justify-between">
+            <h2 id="accordion-collapse-heading-1" class="tw-user-select-none tw-flex tw-justify-between">
               <span :id="'Subtile' + indexSection" class="tw-text-2xl tw-user-select-none">{{ translate(section.label) }}</span>
               <div :key="countNotifUpdate" v-if="sectionsToNotif.includes(indexSection) && numberNotif > 0"
                    class="tw-inline-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-bg-red-500 tw-box-border-2 tw-border-white tw-rounded-full -top-2 -end-2">
                 <span class="tw-text-white tw-text-xs tw-font-bold">{{ numberNotif }}</span>
               </div>
-            </h1>
+            </h2>
             <!-- The expand icon of the section which rotates -->
             <span class="material-icons-outlined tw-scale-150 tw-user-select-none" :id="'SubtitleArrow' + indexSection"
                   name="SubtitleArrows"
