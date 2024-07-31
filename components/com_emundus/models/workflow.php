@@ -79,4 +79,58 @@ class EmundusModelWorkflow extends JModelList
 
 		return $workflows;
 	}
+
+	public function getWorkflow($id)
+	{
+		$workflowData = [];
+
+		if (!empty($id)) {
+			$query = $this->db->getQuery(true);
+
+			$query->select('*')
+				->from($this->db->quoteName('#__emundus_setup_workflows'))
+				->where($this->db->quoteName('id') . ' = ' . $id);
+
+			try {
+				$this->db->setQuery($query);
+				$workflow = $this->db->loadObject();
+			} catch (Exception $e) {
+				Log::add('Error while fetching workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+
+			if (!empty($workflow->id)) {
+				$workflowData = [
+					'workflow' => $workflow,
+					'steps' => [],
+					'programs' => []
+				];
+
+				$query->clear()
+					->select('*')
+					->from($this->db->quoteName('#__emundus_setup_workflows_steps'))
+					->where($this->db->quoteName('workflow_id') . ' = ' . $id);
+
+				try {
+					$this->db->setQuery($query);
+					$workflowData['steps'] = $this->db->loadObjectList();
+				} catch (Exception $e) {
+					Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+
+				$query->clear()
+					->select('program_id')
+					->from($this->db->quoteName('#__emundus_setup_workflows_programs'))
+					->where($this->db->quoteName('workflow_id') . ' = ' . $id);
+
+				try {
+					$this->db->setQuery($query);
+					$workflowData['programs'] = $this->db->loadColumn();
+				} catch (Exception $e) {
+					Log::add('Error while fetching workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+			}
+		}
+
+		return $workflowData;
+	}
 }
