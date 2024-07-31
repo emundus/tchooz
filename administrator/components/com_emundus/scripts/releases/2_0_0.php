@@ -351,7 +351,7 @@ class Release2_0_0Installer extends ReleaseInstaller
 
 			if ($existing_cron !== null)
 			{
-				echo "Plugin cron already created.";
+				EmundusHelperUpdate::displayMessage('Plugin cron already created.');
 			}
 			else
 			{

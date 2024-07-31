@@ -628,7 +628,7 @@ class EmundusHelperUpdate
 		}
 		else
 		{
-			echo("Key " . $key1 . ' not found in file ' . $file);
+			EmundusHelperUpdate::displayMessage('Key ' . $key1 . ' not found in file ' . $file, 'error');
 		}
 
 		return $result;
@@ -666,7 +666,7 @@ class EmundusHelperUpdate
 			}
 			else
 			{
-				echo("Key " . $key1 . ' not found in file ' . $file);
+				EmundusHelperUpdate::displayMessage('Key ' . $key1 . ' not found in file ' . $file, 'error');
 			}
 		}
 
@@ -733,7 +733,7 @@ class EmundusHelperUpdate
 		}
 		else
 		{
-			echo("Key " . $parent . ' not found in file ' . $file);
+			EmundusHelperUpdate::displayMessage('Key ' . $parent . ' not found in file ' . $file, 'error');
 		}
 
 		$new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 3, 2);
@@ -762,7 +762,7 @@ class EmundusHelperUpdate
 			}
 			else
 			{
-				echo("Key " . $key1 . ' not found in file ' . $file);
+				EmundusHelperUpdate::displayMessage('Key ' . $key1 . ' not found in file ' . $file, 'error');
 			}
 		}
 
@@ -3175,7 +3175,7 @@ class EmundusHelperUpdate
 			}
 			else
 			{
-				echo " - " . $title . " module already exists." . PHP_EOL;
+				EmundusHelperUpdate::displayMessage($title . ' module already exists.');
 				$created = true;
 			}
 		}
