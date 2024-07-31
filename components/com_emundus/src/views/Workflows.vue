@@ -1,8 +1,10 @@
 <template>
-  <list
-    :default-lists="workflowConfig"
-    :default-type="'workflow'"
-  ></list>
+  <div id="workflow_id">
+    <list
+        :default-lists="configString"
+        :default-type="'workflow'"
+    ></list>
+  </div>
 </template>
 
 <script>
@@ -30,7 +32,14 @@ export default {
       }
     };
   },
-
+  mounted() {
+    console.log('here');
+  },
+  computed: {
+    configString() {
+      return btoa(JSON.stringify(this.workflowConfig));
+    }
+  }
 }
 </script>
 

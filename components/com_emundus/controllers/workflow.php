@@ -58,7 +58,20 @@ class EmundusControllerWorkflow extends JControllerLegacy
 			$ids = $this->app->input->getString('ids', '[]');
 			$ids = json_decode($ids, true);
 
-			$response['data'] = $this->model->getWorkflows($ids);
+			$workflows = $this->model->getWorkflows($ids);
+
+			foreach ($workflows as $key => $workflow) {
+				$workflows[$key]->label = [
+					'fr' => $workflow->label,
+					'en' => $workflow->label
+				];
+			}
+
+			$data = [
+				'datas' => array_values($workflows)
+			];
+
+			$response['data'] = $data;
 			$response['code'] = 200;
 			$response['status'] = true;
 		}

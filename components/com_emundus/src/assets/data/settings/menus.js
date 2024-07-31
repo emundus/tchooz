@@ -73,5 +73,6 @@ export default
     "type": "component",
     "component": "Workflows",
     "published": true,
+    "props": {}
   }
 ]

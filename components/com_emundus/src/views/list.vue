@@ -251,12 +251,13 @@ export default {
     this.loading.lists = true;
     this.loading.tabs = true;
 
+    const globalStore = useGlobalStore();
     if (this.defaultType !== null) {
       this.params = {
-        'type': this.defaultType
+        'type': this.defaultType,
+        'shortlang': globalStore.getShortLang
       };
     } else {
-      const globalStore = useGlobalStore();
       const data = globalStore.getDatas;
       this.params = Object.assign({}, ...Array.from(data).map(({name, value}) => ({[name]: value})));
     }
@@ -705,7 +706,11 @@ export default {
     displayedItems() {
       let items = typeof this.items[this.selectedListTab] !== 'undefined' ? this.items[this.selectedListTab] : [];
       return items.filter((item) => {
-        return item.label[this.params.shortlang].toLowerCase().includes(this.searches[this.selectedListTab].search.toLowerCase());
+        if (item !== undefined && item !== null) {
+          return item.label[this.params.shortlang].toLowerCase().includes(this.searches[this.selectedListTab].search.toLowerCase());
+        } else {
+          return false;
+        }
       });
     },
     additionalColumns() {

@@ -14,10 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
-use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 
@@ -32,12 +29,12 @@ class EmundusModelWorkflow extends JModelList
 		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
-		$this->db = $this->app->getContainer()->get('DatabaseDriver');
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 		Log::addLogger(['text_file' => 'com_emundus.formbuilder.php'], Log::ALL, array('com_emundus.workflow'));
 	}
 
-	public function getWorkflows($ids = []) {
+	public function getWorkflows($ids = [], $limit = 0, $page = 0) {
 		$workflows = [];
 
 		$query = $this->db->getQuery(true);
@@ -48,6 +45,10 @@ class EmundusModelWorkflow extends JModelList
 
 		if (!empty($ids)) {
 			$query->where($this->db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+		}
+
+		if ($limit > 0) {
+			$query->setLimit($limit, $page * $limit);
 		}
 
 		try {

@@ -64,7 +64,6 @@ import EditFooter from "@/components/Settings/Content/EditFooter.vue";
 import Info from "@/components/info.vue";
 import SubSection from "@/components/Settings/SubSection.vue";
 import Tile from "@/components/Settings/Tile.vue";
-import Workflows from '@/views/Workflows.vue';
 import Swal from "sweetalert2";
 import settingsService from '@/services/settings.js';
 
@@ -87,8 +86,7 @@ export default {
     EditFooter,
     Info,
     SubSection,
-    Tile,
-    Workflows
+    Tile
   },
 
   props: {
