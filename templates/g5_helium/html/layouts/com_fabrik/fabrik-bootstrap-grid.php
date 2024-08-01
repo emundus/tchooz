@@ -36,7 +36,7 @@ foreach ($d->items as $i => $s)
 
     if ($newLine)
     {
-        $grid[] = '<div class="row">';
+        $grid[] = '<div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-'.$d->columns.' tw-gap-4">';
     }
 
     $grid[] = '<div class="' . $d->spanClass . ' col-sm-' . (12/$d->columns) . '"' . $id . '>' . $rowdata . '</div>';

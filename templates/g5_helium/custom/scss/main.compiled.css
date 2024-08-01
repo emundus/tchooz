@@ -1688,9 +1688,8 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
                     padding: var(--em-form-radio-padding);
                     border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
                     border-radius: var(--em-form-radio-br);
-}
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio.col-sm-6 {
-    flex: 1 1 0%;
+                    width: auto;
+                    height: auto;
 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio input {
                         accent-color: var(--em-form-radio-color-checked);
@@ -6137,9 +6136,6 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
-.\[-a-zA-Z\:0-9_\.\] {
-    -a-z-a--z: 0-9 .;
-}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -6498,12 +6494,131 @@ small {
 :is([dir="rtl"] .rtl\:tw-text-right) {
     text-align: right;
 }
+@media (min-width: 640px) {
+    .sm\:tw-grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-10 {
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-11 {
+        grid-template-columns: repeat(11, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-12 {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-6 {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-7 {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-8 {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-9 {
+        grid-template-columns: repeat(9, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-none {
+        grid-template-columns: none;
+    }
+}
 @media (min-width: 768px) {
+    .md\:tw-grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-10 {
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-11 {
+        grid-template-columns: repeat(11, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-12 {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-6 {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-7 {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-8 {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-9 {
+        grid-template-columns: repeat(9, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-none {
+        grid-template-columns: none;
+    }
     .md\:tw-justify-center {
         justify-content: center;
     }
 }
 @media (min-width: 1024px) {
+    .lg\:tw-grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-10 {
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-11 {
+        grid-template-columns: repeat(11, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-12 {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-6 {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-7 {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-8 {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-9 {
+        grid-template-columns: repeat(9, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-none {
+        grid-template-columns: none;
+    }
     .lg\:tw-justify-start {
         justify-content: flex-start;
     }
