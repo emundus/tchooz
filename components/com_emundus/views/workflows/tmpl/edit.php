@@ -7,8 +7,19 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\LanguageHelper;
 
+Text::script('SAVE');
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WORKFLOWS');
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_WORKFLOWS');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_LABEL');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_TYPE');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_START_DATE');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_END_DATE');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_ROLES');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_PROFILE');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS');
+Text::script('COM_EMUNDUS_WORKFLOW_ADD_STEP');
+Text::script('COM_EMUNDUS_WORKFLOW_NEW_STEP_LABEL');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();

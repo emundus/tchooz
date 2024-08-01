@@ -23,64 +23,71 @@
     </div>
     <div id="workflow-steps" class="tw-my-4 tw-flex tw-flex-row tw-gap-3">
       <div v-for="step in steps" :key="step.id" class="workflow-step tw-rounded tw-border-2 tw-shadow-sm tw-p-4 em-white-bg">
-        <div class="workflow-step-header">
+        <div class="workflow-step-header tw-mb-4 tw-flex tw-flex-col">
+          <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL') }}</label>
           <input type="text" v-model="step.label" />
         </div>
 
         <div class="workflow-step-content">
-          <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
-          <input type="text" v-model="step.type">
+          <div class="tw-mb-4 tw-flex tw-flex-col">
+            <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
+            <input type="text" v-model="step.type">
+          </div>
 
-          <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_START_DATE') }}</label>
-          <DatePicker
-              :id="'step_' + step.id + '_start_date'"
-              v-model="step.start_date"
-              :keepVisibleOnInput="true"
-              :time-accuracy="2"
-              mode="dateTime"
-              is24hr
-              hide-time-header
-              title-position="left"
-              :input-debounce="500"
-              :popover="{visibility: 'focus'}"
-              :locale="{data: 'YYYY-MM-DD HH:mm'}"
-          >
-            <template #default="{ inputValue, inputEvents }">
-              <input
-                  :value="inputValue"
-                  v-on="inputEvents"
-                  class="tw-mt-2 form-control fabrikinput tw-w-full"
-                  :id="'step_' + step.id + '_start_date'"
-              />
-            </template>
-          </DatePicker>
+          <div class="tw-mb-4 tw-flex tw-flex-col">
+            <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_START_DATE') }}</label>
+            <DatePicker
+                :id="'step_' + step.id + '_start_date'"
+                v-model="step.start_date"
+                :keepVisibleOnInput="true"
+                :time-accuracy="2"
+                mode="dateTime"
+                is24hr
+                hide-time-header
+                title-position="left"
+                :input-debounce="500"
+                :popover="{visibility: 'focus'}"
+                :locale="{data: 'YYYY-MM-DD HH:mm'}"
+            >
+              <template #default="{ inputValue, inputEvents }">
+                <input
+                    :value="inputValue"
+                    v-on="inputEvents"
+                    class="form-control fabrikinput tw-w-full"
+                    :id="'step_' + step.id + '_start_date'"
+                />
+              </template>
+            </DatePicker>
+          </div>
 
-          <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_END_DATE') }}</label>
-          <DatePicker
-              :id="'step_' + step.id + '_end_date'"
-              v-model="step.end_date"
-              :keepVisibleOnInput="true"
-              :time-accuracy="2"
-              mode="dateTime"
-              is24hr
-              hide-time-header
-              title-position="left"
-              :input-debounce="500"
-              :popover="{visibility: 'focus'}"
-              :locale="{data: 'YYYY-MM-DD HH:mm'}"
-          >
-            <template #default="{ inputValue, inputEvents }">
-              <input
-                  :value="inputValue"
-                  v-on="inputEvents"
-                  class="tw-mt-2 form-control fabrikinput tw-w-full"
-                  :id="'step_' + step.id + '_end_date'"
-              />
-            </template>
-          </DatePicker>
+          <div class="tw-mb-4 tw-flex tw-flex-col">
+            <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_END_DATE') }}</label>
+            <DatePicker
+                :id="'step_' + step.id + '_end_date'"
+                v-model="step.end_date"
+                :keepVisibleOnInput="true"
+                :time-accuracy="2"
+                mode="dateTime"
+                is24hr
+                hide-time-header
+                title-position="left"
+                :input-debounce="500"
+                :popover="{visibility: 'focus'}"
+                :locale="{data: 'YYYY-MM-DD HH:mm'}"
+            >
+              <template #default="{ inputValue, inputEvents }">
+                <input
+                    :value="inputValue"
+                    v-on="inputEvents"
+                    class="form-control fabrikinput tw-w-full"
+                    :id="'step_' + step.id + '_end_date'"
+                />
+              </template>
+            </DatePicker>
+          </div>
 
-          <div v-if="step.type !== 'applicant'">
-            <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ROLES') }}</label>
+          <div v-if="step.type !== 'applicant'" class="tw-mb-4 tw-flex tw-flex-col">
+            <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ROLES') }}</label>
             <Multiselect
                 :options="nonApplicantProfiles"
                 v-model="step.roles"
@@ -91,27 +98,31 @@
             </Multiselect>
           </div>
 
-          <div>
-            <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
+          <div class="tw-mb-4 tw-flex tw-flex-col">
+            <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
             <select v-model="step.profile_id">
               <option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">{{ profile.label }}</option>
             </select>
           </div>
 
-          <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS') }}</label>
-          <Multiselect
-              :options="statuses"
-              v-model="step.entry_status"
-              label="label"
-              track-by="id"
-              placeholder="Select a status"
-              :multiple="true">
-          </Multiselect>
+          <div class="tw-mb-4 tw-flex tw-flex-col">
+            <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS') }}</label>
+            <Multiselect
+                :options="statuses"
+                v-model="step.entry_status"
+                label="label"
+                track-by="id"
+                placeholder="Select a status"
+                :multiple="true">
+            </Multiselect>
+          </div>
 
-          <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
-          <select v-model="step.output_status">
-            <option v-for="status in statuses" :key="status.id" :value="status.id">{{ status.label }}</option>
-          </select>
+          <div class="tw-mb-4 tw-flex tw-flex-col">
+            <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
+            <select v-model="step.output_status">
+              <option v-for="status in statuses" :key="status.id" :value="status.id">{{ status.label }}</option>
+            </select>
+          </div>
         </div>
       </div>
       <p v-if="steps.length < 1"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_STEPS') }} </p>
@@ -151,7 +162,7 @@ export default {
       programs: [],
       newStep: {
         id: 0,
-        label: 'NEW_STEP',
+        label: this.translate('COM_EMUNDUS_WORKFLOW_NEW_STEP_LABEL'),
         type: 'applicant',
         start_date: '',
         end_date: '',
