@@ -4714,6 +4714,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
 .hikashop_field_dropdown {
   height: 41px !important;
   width: 100% !important;
+  border-radius: var(--em-form-br);
 }
 
 .hikashop_field_required_label {

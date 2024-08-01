@@ -168,7 +168,7 @@ if(!empty($this->options['display'])) {
                 <?php
                 if(!empty($this->options['display_cancel'])) {
                     ?>
-                    <a onclick="return window.checkout.refreshAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>);" class="em-ml-8 em-pointer hikashop_checkout_address_cancel_button"><?php echo JText::_('HIKA_CANCEL'); ;?></a>
+                    <a onclick="return window.checkout.refreshAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>);" class="em-ml-8 em-pointer hikashop_checkout_address_cancel_button tw-btn-cancel"><?php echo JText::_('HIKA_CANCEL'); ;?></a>
                     <?php
                 }
                 ?>
@@ -253,11 +253,11 @@ if(!empty($this->options['display'])) {
                         <label class="em-text-neutral-600"><?php echo JText::_('ADDRESS') ?></label>
 						<input style="display: none" type="<?php echo $input_type; ?>" name="checkout[address][billing]" value="<?php echo (int)$address->address_id; ?>" onchange="window.checkout.submitAddress(<?php echo (int)$this->step; ?>,<?php echo (int)$this->module_position; ?>);" <?php echo $checked; ?>/>
                         <div class="em-flex-row">
-						<a href="<?php echo hikashop_completeLink($update_url);?>" onclick="return window.checkout.editAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$address->address_id; ?>);" title="<?php echo JText::_('HIKA_EDIT'); ?>"><span style="display:block;font-size: 16px" class="material-icons-outlined">edit</span></a>
+						<a href="<?php echo hikashop_completeLink($update_url);?>" onclick="return window.checkout.editAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$address->address_id; ?>);" title="<?php echo JText::_('HIKA_EDIT'); ?>"><span style="display:block;font-size: 16px" class="material-icons-outlined tw-text-neutral-600">edit</span></a>
 <?php
 				if(!empty($this->options['multi_address'])) {
 ?>
-						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$address->address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><span style="display:block;font-size: 16px" class="material-icons-outlined em-ml-8 em-red-500-color">delete</span></a>
+						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$address->address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><span style="display:block;font-size: 16px" class="material-icons-outlined em-ml-8 tw-text-red-500">delete</span></a>
                         </div>
 <?php
 			}
