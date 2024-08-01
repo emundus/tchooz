@@ -152,8 +152,8 @@
     <transition name="fade">
       <div v-show="currentView === 'gantt'" class="tw-my-4">
         <g-gantt-chart
-            :chart-start="mostRecentStepFirstDayOfYear"
-            :chart-end="furthestStepLastDayOfYear"
+            :chart-start="furthestPastStepFirstDayOfYear"
+            :chart-end="furthestFutureStepLastDayOfYear"
             precision="month"
             bar-start="start_date"
             bar-end="end_date"
@@ -354,7 +354,7 @@ export default {
         }]
       });
     },
-    mostRecentStepFirstDayOfYear() {
+    furthestPastStepFirstDayOfYear() {
       const year = this.steps.reduce((acc, step) => {
         const stepDate = step.start_date instanceof Date ? step.start_date : new Date(step.start_date);
         const stepYear = stepDate.getFullYear();
@@ -369,7 +369,7 @@ export default {
       return year + '-01-01 00:00';
     },
 
-    furthestStepLastDayOfYear() {
+    furthestFutureStepLastDayOfYear() {
       const year = this.steps.reduce((acc, step) => {
         const stepDate = step.end_date instanceof Date ? step.end_date : new Date(step.end_date);
         const stepYear = stepDate.getFullYear();
