@@ -4249,4 +4249,21 @@ class EmundusControllerFiles extends JControllerLegacy
 		echo json_encode($response);
 		exit;
 	}
+
+	public function getProfiles()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
+		$user = $this->app->getIdentity();
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			$m_files = new EmundusModelFiles();
+			$response['data'] = array_values($m_files->getProfiles());
+
+			$response['status'] = true;
+			$response['msg'] = Text::_('SUCCESS');
+		}
+
+		echo json_encode($response);
+		exit;
+	}
 }

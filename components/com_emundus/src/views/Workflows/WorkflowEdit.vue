@@ -43,7 +43,7 @@
               title-position="left"
               :input-debounce="500"
               :popover="{visibility: 'focus'}"
-              locale="fr"
+              :locale="{data: 'YYYY-MM-DD HH:mm'}"
           >
             <template #default="{ inputValue, inputEvents }">
               <input
@@ -67,7 +67,7 @@
               title-position="left"
               :input-debounce="500"
               :popover="{visibility: 'focus'}"
-              locale="fr"
+              :locale="{data: 'YYYY-MM-DD HH:mm'}"
           >
             <template #default="{ inputValue, inputEvents }">
               <input
@@ -79,6 +79,26 @@
             </template>
           </DatePicker>
 
+          <div v-if="step.type !== 'applicant'">
+            <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ROLES') }}</label>
+            <Multiselect
+                :options="nonApplicantProfiles"
+                v-model="step.roles"
+                label="label"
+                track-by="id"
+                placeholder="Select a role"
+                :multiple="true">
+            </Multiselect>
+          </div>
+
+          <div>
+            <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
+            <select v-model="step.profile_id">
+              <option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">{{ profile.label }}</option>
+            </select>
+          </div>
+
+          <label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS') }}</label>
           <Multiselect
               :options="statuses"
               v-model="step.entry_status"
@@ -104,6 +124,7 @@
 import workflowService from '@/services/workflow.js';
 import settingsService from '@/services/settings.js';
 import programmeService from '@/services/programme.js';
+import fileService from '@/services/file.js';
 
 import { DatePicker } from 'v-calendar';
 import Multiselect from "vue-multiselect";
@@ -129,6 +150,7 @@ export default {
       steps: [],
       programs: [],
       newStep: {
+        id: 0,
         label: 'NEW_STEP',
         type: 'applicant',
         start_date: '',
@@ -145,17 +167,26 @@ export default {
     }
   },
   mounted() {
-    this.getPrograms().then(() => {
-      this.getWorkflow();
+    this.getStatuses().then(() => {
+      this.getPrograms().then(() => {
+        this.getWorkflow();
+      });
     });
-    this.getStatuses();
+    this.getProfiles();
   },
   methods: {
     getWorkflow() {
       workflowService.getWorkflow(this.workflowId)
         .then(response => {
           this.workflow = response.data.workflow;
-          this.steps = response.data.steps;
+          let tmpSteps = response.data.steps;
+          tmpSteps.forEach((step) => {
+            step.start_date = new Date(step.start_date);
+            step.end_date = new Date(step.end_date);
+
+            step.entry_status = this.statuses.filter(status => step.entry_status.includes(status.id.toString()));
+          });
+          this.steps = tmpSteps;
 
           let program_ids = response.data.programs;
           this.programs = this.programsOptions.filter(program => program_ids.includes(program.id));
@@ -164,10 +195,10 @@ export default {
           console.log(e);
         });
     },
-    getStatuses() {
-      settingsService.getStatus()
+    async getStatuses() {
+      return await settingsService.getStatus()
         .then(response => {
-          this.statuses = response.data.map(status => {
+          return this.statuses = response.data.map(status => {
             return {
               id: status.step,
               label: status.label.fr
@@ -192,17 +223,72 @@ export default {
           console.log(e);
         });
     },
-    addStep() {
-      this.steps.push(this.newStep);
-    },
-    save() {
-      workflowService.saveWorkflow(this.workflow, this.steps, this.programs)
+    getProfiles() {
+      fileService.getProfiles()
         .then(response => {
-          console.log(response);
+          this.profiles = response.data.map(profile => {
+            return {
+              id: profile.id,
+              label: profile.label,
+              applicantProfile: profile.published
+            }
+          });
         })
         .catch(e => {
           console.log(e);
         });
+    },
+    addStep() {
+      this.steps.push(this.newStep);
+    },
+    save() {
+      console.log(this.steps);
+      this.steps.forEach((step) => {
+        if (step.start_date !== '') {
+          step.start_date = this.formatDate(step.start_date);
+        } else {
+          step.start_date = '0000-00-00 00:00:00';
+        }
+
+        if (step.end_date !== '') {
+          step.end_date = this.formatDate(step.end_date);
+        } else {
+          step.end_date = '0000-00-00 00:00:00';
+        }
+      });
+
+      workflowService.saveWorkflow(this.workflow, this.steps, this.programs)
+        .then(response => {
+          if (response.status) {
+            this.getWorkflow();
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    formatDate(date, format = 'YYYY-MM-DD HH:mm:ss') {
+      let year = date.getFullYear();
+      let month = (1 + date.getMonth()).toString().padStart(2, '0');
+      let day = date.getDate().toString().padStart(2, '0');
+      let hours = date.getHours().toString().padStart(2, '0');
+      let minutes = date.getMinutes().toString().padStart(2, '0');
+      let seconds = date.getSeconds().toString().padStart(2, '0');
+
+      return format.replace('YYYY', year)
+        .replace('MM', month)
+        .replace('DD', day)
+        .replace('HH', hours)
+        .replace('mm', minutes)
+        .replace('ss', seconds);
+    }
+  },
+  computed: {
+    nonApplicantProfiles() {
+      return this.profiles.filter(profile => !profile.applicantProfile);
+    },
+    applicantProfiles() {
+      return this.profiles.filter(profile => profile.applicantProfile);
     }
   }
 }

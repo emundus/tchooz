@@ -73,41 +73,45 @@ class EmundusModelWorkflow extends JModelList
 				Log::add('Error while updating workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 			}
 
+			$query->clear()
+				->delete($this->db->quoteName('#__emundus_setup_workflows_steps'))
+				->where($this->db->quoteName('workflow_id') . ' = ' . $workflow['id']);
+
+			try {
+				$this->db->setQuery($query);
+				$this->db->execute();
+			} catch (Exception $e) {
+				Log::add('Error while deleting workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+
 			if (!empty($steps)) {
-				$query->clear()
-					->delete($this->db->quoteName('#__emundus_setup_workflows_steps'))
-					->where($this->db->quoteName('workflow_id') . ' = ' . $workflow['id']);
-
-				try {
-					$this->db->setQuery($query);
-					$this->db->execute();
-				} catch (Exception $e) {
-					Log::add('Error while deleting workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
-				}
-
 				foreach ($steps as $step) {
 					$step['workflow_id'] = $workflow['id'];
 					$step_object = (object)$step;
 
 					try {
 						$inserted = $this->db->insertObject('#__emundus_setup_workflows_steps', $step_object);
+
+						if ($inserted) {
+							$step['id'] = $this->db->insertid();
+							$step['entry_status'] = array_filter($step['entry_status']);
+
+							if (!empty($step['entry_status'])) {
+								foreach ($step['entry_status'] as $status) {
+									$entry_status = new stdClass();
+									$entry_status->step_id = $step['id'];
+									$entry_status->status = $status['id'];
+
+									$this->db->insertObject('#__emundus_setup_workflows_steps_entry_status', $entry_status);
+								}
+							}
+						}
 					} catch (Exception $e) {
 						var_dump($e->getMessage());exit;
 						Log::add('Error while adding workflow step: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 					}
 				}
 
-			} else {
-				$query->clear()
-					->delete($this->db->quoteName('#__emundus_setup_workflows_steps'))
-					->where($this->db->quoteName('workflow_id') . ' = ' . $workflow['id']);
-
-				try {
-					$this->db->setQuery($query);
-					$this->db->execute();
-				} catch (Exception $e) {
-					Log::add('Error while deleting workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
-				}
 			}
 
 			// select programs from the workflow
@@ -215,13 +219,20 @@ class EmundusModelWorkflow extends JModelList
 				];
 
 				$query->clear()
-					->select('*')
-					->from($this->db->quoteName('#__emundus_setup_workflows_steps'))
-					->where($this->db->quoteName('workflow_id') . ' = ' . $id);
+					->select('esws.*, GROUP_CONCAT(eswses.status) AS entry_status')
+					->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id)
+					->group($this->db->quoteName('esws.id'));
 
 				try {
 					$this->db->setQuery($query);
 					$workflowData['steps'] = $this->db->loadObjectList();
+					$workflowData['steps'] = array_values($workflowData['steps']);
+
+					foreach ($workflowData['steps'] as $key => $step) {
+						$workflowData['steps'][$key]->entry_status = explode(',', $step->entry_status);
+					}
 				} catch (Exception $e) {
 					Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				}

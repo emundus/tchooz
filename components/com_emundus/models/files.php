@@ -889,15 +889,29 @@ class EmundusModelFiles extends JModelLegacy
 	/**
 	 * @return mixed
 	 */
-	public function getProfiles()
+	public function getProfiles($ids = [])
 	{
-		
-		$query     = 'SELECT esp.id, esp.label, esp.acl_aro_groups, caag.lft FROM #__emundus_setup_profiles esp
-        INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
-        ORDER BY caag.lft, esp.label';
-		$this->_db->setQuery($query);
+		$profiles = [];
 
-		return $this->_db->loadObjectList('id');
+		$query = $this->_db->getQuery(true);
+		$query->select('esp.id, esp.label, esp.published, esp.acl_aro_groups, caag.lft')
+			->from($this->_db->quoteName('#__emundus_setup_profiles', 'esp'))
+			->join('INNER', $this->_db->quoteName('#__usergroups', 'caag') . ' ON (' . $this->_db->quoteName('esp.acl_aro_groups') . ' = ' . $this->_db->quoteName('caag.id') . ')');
+
+		if (!empty($ids)) {
+			$query->where('esp.id IN (' . implode(',', $ids) . ')');
+		}
+
+		$query->order('caag.lft, esp.label');
+
+		try {
+			$this->_db->setQuery($query);
+			$profiles = $this->_db->loadObjectList('id');
+		} catch (Exception $e) {
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' ' . $e->getMessage() . ' -> ' . $query, Log::ERROR, 'com_emundus.error');
+		}
+
+		return $profiles;
 	}
 
 	/**
