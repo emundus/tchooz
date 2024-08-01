@@ -6136,6 +6136,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
@@ -6436,9 +6439,6 @@ small {
 .em-goback-btn {
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
-.em-goback-btn .material-icons-outlined {
-        color: var(--em-secondary-color);
-    }
 .em-goback-btn button.btn.goback-btn {
         text-shadow: none;
         text-transform: none;

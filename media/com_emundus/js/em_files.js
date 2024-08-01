@@ -1836,8 +1836,6 @@ $(document).ready(function() {
              */
 
             // IFRAME
-            case 1 :
-            case 4 :
             case 5 :
             case 29 :
             case 32 :
@@ -1847,6 +1845,26 @@ $(document).ready(function() {
                 verb = 'c';
 
                 html = '<iframe src="'+url+'" style="width:'+$(window).width()*0.8+'px; height:'+$(window).height()*0.8+'px; border:none"></iframe>';
+
+                removeLoader();
+                break;
+
+
+            case 1 :
+            case 4 :
+                addLoader();
+                swal_popup_class = 'em-w-auto'
+                swal_actions_class = 'em-actions-none'
+                verb = 'c';
+
+                html = '<iframe src="' + url + '" style="width:' + $(window).width() * 0.8 + 'px; height:' + $(window).height() * 0.8 + 'px; border:none" id="em-modal-color"></iframe>';
+
+                setTimeout(function() {
+                    var iframe = document.getElementById('em-modal-color');
+                    var iframeDocument = iframe.contentDocument;
+                    var iframeContent = iframeDocument.getElementsByTagName('body')[0];
+                    iframeContent.classList.add('tw-bg-white');
+                }, 1000);
 
                 removeLoader();
                 break;
