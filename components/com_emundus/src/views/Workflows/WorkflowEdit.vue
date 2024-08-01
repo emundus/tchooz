@@ -2,7 +2,7 @@
   <div class="tw-m-2">
     <div id="header">
       <div class="tw-flex tw-flex-row tw-justify-between">
-        <input type="text" v-model="workflow.label" />
+        <input id="workflow-label" name="workflow-label" class="!tw-w-[350px]" type="text" v-model="workflow.label" />
         <a class="tw-btn-primary tw-flex tw-items-center tw-gap-1" href="#" @click="save">
           <span class="material-icons-outlined">check</span>
           <span>{{ translate('SAVE') }}</span>
@@ -28,16 +28,16 @@
             >
             </Multiselect>
           </div>
-          <div class="tw-flex tw-flex-row tw-items-center">
-            <span class="material-icons-outlined" @click="currentView = 'steps'">label</span>
-            <span class="material-icons-outlined" @click="currentView = 'gantt'">account_tree</span>
+          <div class="tw-flex tw-flex-row tw-items-center tw-gap-1 tw-ml-4">
+            <span class="material-icons-outlined tw-cursor-pointer tw-p-2 tw-rounded tw-border" @click="currentView = 'steps'">label</span>
+            <span class="material-icons-outlined tw-cursor-pointer tw-p-2 tw-rounded tw-border" @click="currentView = 'gantt'">account_tree</span>
           </div>
         </div>
       </div>
     </div>
-    <transition>
-      <div id="workflow-steps-wrapper" v-show="currentView === 'steps'">
-        <div id="workflow-steps" class="tw-my-4 tw-flex tw-flex-row tw-gap-3">
+    <transition name="fade">
+      <div v-show="currentView === 'steps'" id="workflow-steps-wrapper" class="tw-my-4">
+        <div id="workflow-steps" class=" tw-flex tw-flex-row tw-gap-3">
           <div v-for="step in steps" :key="step.id" class="workflow-step tw-rounded tw-border-2 tw-shadow-sm tw-p-4 em-white-bg">
             <div class="workflow-step-header tw-mb-4 tw-flex tw-flex-col">
               <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL') }}</label>
@@ -145,12 +145,12 @@
             </div>
           </div>
           <p v-if="steps.length < 1"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_STEPS') }} </p>
+          <a class="tw-btn-primary tw-h-fit" href="#" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
         </div>
-        <a class="tw-btn-primary" href="#" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
       </div>
     </transition>
-    <transition>
-      <div v-show="currentView === 'gantt'">
+    <transition name="fade">
+      <div v-show="currentView === 'gantt'" class="tw-my-4">
         <g-gantt-chart
             chart-start="2024-01-01 00:00"
             chart-end="2024-12-31 23:59"
