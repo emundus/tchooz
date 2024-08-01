@@ -804,7 +804,7 @@
                     padding: var(--em-form-radio-padding);
                     border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
                     border-radius: var(--em-form-radio-br);
-                    width: auto;
+                    width: fit-content;
                     height: auto;
 
                     input {
@@ -853,10 +853,15 @@
 
         .plg-checkbox {
             .fabrikElement {
+                padding-left: 1.5em;
+
                 .fabrikSubElementContainer {
                     border-top: solid var(--em-form-checkbox-bw) var(--em-form-checkbox-bc);
                     padding: var(--em-form-checkbox-padding) 0 0 0;
 
+                    &>div {
+                        margin-bottom: 8px;
+                    }
                     .row {
                         margin-top: 0;
                         margin-bottom: var(--em-form-checkbox-padding);

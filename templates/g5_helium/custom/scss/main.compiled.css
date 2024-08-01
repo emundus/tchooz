@@ -1688,7 +1688,8 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
                     padding: var(--em-form-radio-padding);
                     border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
                     border-radius: var(--em-form-radio-br);
-                    width: auto;
+                    width: -moz-fit-content;
+                    width: fit-content;
                     height: auto;
 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio input {
@@ -1725,10 +1726,16 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
 form.fabrikForm .form-check-input:focus {
             box-shadow: none;
         }
+form.fabrikForm .plg-checkbox .fabrikElement {
+                padding-left: 1.5em;
+            }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer {
                     border-top: solid var(--em-form-checkbox-bw) var(--em-form-checkbox-bc);
                     padding: var(--em-form-checkbox-padding) 0 0 0;
                 }
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer>div {
+                        margin-bottom: 8px;
+                    }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row {
                         margin-top: 0;
                         margin-bottom: var(--em-form-checkbox-padding);

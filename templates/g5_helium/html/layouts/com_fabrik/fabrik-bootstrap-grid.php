@@ -49,3 +49,4 @@ if (!empty($d->items))
 }
 
 echo implode("\n", $grid);
+
