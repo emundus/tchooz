@@ -78,6 +78,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'PhpOffice\\PhpWord\\' => 18,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
             'PhpOffice\\Math\\' => 15,
+            'PhpDocumentorMarkdown\\' => 22,
         ),
         'M' => 
         array (
@@ -196,6 +197,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'PhpOffice\\Math\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoffice/math/src/Math',
+        ),
+        'PhpDocumentorMarkdown\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/saggre/phpdocumentor-markdown/src',
         ),
         'Matrix\\' => 
         array (
