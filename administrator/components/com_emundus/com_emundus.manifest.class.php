@@ -211,6 +211,10 @@ class Com_EmundusInstallerScript
 		    EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de l\'icone détails des listes Fabrik', 'error');
 	    }
 
+	    if(!$this->checkFabrikTemplate()) {
+		    EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des templates Fabrik', 'error');
+	    }
+
 		$query->clear()
 			->update($db->quoteName('#__extensions'))
 			->set($db->quoteName('enabled') . ' = 0')
@@ -479,6 +483,40 @@ class Com_EmundusInstallerScript
 				$this->db->setQuery($query);
 				$checked = $this->db->execute();
 			}
+		}
+		catch (Exception $e) {
+			$checked = false;
+		}
+
+		return $checked;
+	}
+
+	private function checkFabrikTemplate()
+	{
+		$checked = true;
+		$query = $this->db->getQuery(true);
+
+		try {
+			$query->clear()
+				->update($this->db->quoteName('#__fabrik_lists'))
+				->set($this->db->quoteName('template') . ' = ' . $this->db->quote('emundus'))
+				->where($this->db->quoteName('template') . ' = ' . $this->db->quote('bootstrap'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			$query->clear()
+				->update($this->db->quoteName('#__fabrik_forms'))
+				->set($this->db->quoteName('form_template') . ' = ' . $this->db->quote('emundus'))
+				->where($this->db->quoteName('form_template') . ' = ' . $this->db->quote('bootstrap'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			$query->clear()
+				->update($this->db->quoteName('#__fabrik_forms'))
+				->set($this->db->quoteName('view_only_template') . ' = ' . $this->db->quote('emundus'))
+				->where($this->db->quoteName('view_only_template') . ' = ' . $this->db->quote('bootstrap'));
+			$this->db->setQuery($query);
+			$checked = $this->db->execute();
 		}
 		catch (Exception $e) {
 			$checked = false;
