@@ -38,5 +38,8 @@
         "php-http/guzzle7-adapter": "^1.0",
         "emundus/oauth2": "dev-3.x-dev",
         "giggsey/libphonenumber-for-php": "^8.13"
+    },
+    "require-dev": {
+        "saggre/phpdocumentor-markdown": "^0.1.4"
     }
 }

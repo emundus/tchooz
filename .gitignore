@@ -1,7 +1,18 @@
 # DOCKER AND CI
 .docker/data/*
 docker-compose-*.yml
-## UNIT TESTS
+
+# VITEPRESS
+public/
+!public/logo.png
+!public/logo_black.png
+!public/favicon.ico
+components/com_emundus/docs/.vitepress/cache/
+
+# PHPDOC
+.phpdoc/
+
+# UNIT TESTS
 /components/com_emundus/unittest/logs/
 /components/coverage/
 .phpunit.result.cache

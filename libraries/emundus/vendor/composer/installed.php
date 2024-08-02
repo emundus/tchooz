@@ -3,7 +3,7 @@
         'name' => 'emundus/tchooz',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '6d8367230885fa822e91ac17a29d027eb7163d3e',
+        'reference' => 'a6a0e463fb8cffa41adbf6c7cc9498ecff1fa1ef',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -42,7 +42,7 @@
         'emundus/tchooz' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '6d8367230885fa822e91ac17a29d027eb7163d3e',
+            'reference' => 'a6a0e463fb8cffa41adbf6c7cc9498ecff1fa1ef',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -430,6 +430,15 @@
             'install_path' => __DIR__ . '/../sabberworm/php-css-parser',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'saggre/phpdocumentor-markdown' => array(
+            'pretty_version' => '0.1.4',
+            'version' => '0.1.4.0',
+            'reference' => 'f9bb90abde2c7c7c740265ae5e3bab5cfa2d9ed4',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../saggre/phpdocumentor-markdown',
+            'aliases' => array(),
+            'dev_requirement' => true,
         ),
         'setasign/fpdf' => array(
             'pretty_version' => '1.8.6',
