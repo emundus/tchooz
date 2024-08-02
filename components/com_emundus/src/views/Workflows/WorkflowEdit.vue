@@ -159,7 +159,7 @@
               </div>
             </div>
           </div>
-          <p v-if="steps.length < 1"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_STEPS') }} </p>
+          <p v-if="steps.length < 1" class="tw-w-full tw-text-center"> {{ translate('COM_EMUNDUS_WORKFLOW_NO_STEPS') }} </p>
         </div>
       </div>
     </transition>

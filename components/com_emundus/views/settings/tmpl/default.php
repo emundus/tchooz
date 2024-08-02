@@ -447,6 +447,8 @@ Text::script('COM_EMUNDUS_TAGS_INTRO');
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WORKFLOWS');
 Text::script('COM_EMUNDUS_ONBOARD_WORKFLOWS');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_WORKFLOW');
+Text::script('COM_EMUNDUS_ONBOARD_RESULTS');
+Text::script('COM_EMUNDUS_ONBOARD_LABEL');
 ## END ##
 
 $lang         = Factory::getApplication()->getLanguage();
