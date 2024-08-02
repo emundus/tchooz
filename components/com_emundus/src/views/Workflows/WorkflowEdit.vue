@@ -1,5 +1,9 @@
 <template>
   <div class="tw-m-2">
+    <div class="tw-flex tw-items-center tw-cursor-pointer tw-mb-4" @click="history.go(-1)">
+      <span class="material-icons-outlined">navigate_before</span>
+      <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
+    </div>
     <div id="header">
       <div class="tw-flex tw-flex-row tw-justify-between">
         <input id="workflow-label" name="workflow-label" class="!tw-w-[350px]" type="text" v-model="workflow.label" />
@@ -36,7 +40,7 @@
       </div>
     </div>
     <transition>
-      <div v-show="currentView === 'steps'" id="workflow-steps-wrapper" class="tw-my-4 tw-flex tw-flex-col">
+      <div v-show="currentView === 'steps'" id="workflow-steps-wrapper" class="tw-my-4 tw-flex tw-flex-col tw-p-2 tw-border tw-rounded">
         <a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4" href="#" @click="addStep"> {{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }} </a>
 
         <div id="workflow-steps" class="tw-flex tw-flex-row tw-gap-3 tw-overflow-auto">
@@ -45,7 +49,7 @@
               <h4>{{ step.label }}</h4>
               <popover>
                 <ul class="tw-list-none !tw-p-0">
-                  <li class="delete-workflow-step tw-cursor-pointer tw-p-2" @click="deleteStep(step.id)">{{ translate('DELETE') }}</li>
+                  <li class="delete-workflow-step tw-cursor-pointer tw-p-2" @click="deleteStep(step.id)">{{ translate('COM_EMUNDUS_ACTIONS_DELETE') }}</li>
                 </ul>
               </popover>
             </div>
@@ -162,6 +166,7 @@
     <transition>
       <div v-show="currentView === 'gantt'" class="tw-my-4">
         <g-gantt-chart
+            :currentTimeLabel="'fr'"
             :chart-start="furthestPastStepFirstDayOfYear"
             :chart-end="furthestFutureStepLastDayOfYear"
             precision="month"
@@ -390,7 +395,8 @@ export default {
           end_date: step.end_date,
           ganttBarConfig: {
             id: step.id,
-            label: step.label
+            label: step.label,
+            class: 'em-bg-main-500 em-text-neutral-300 tw-rounded'
           }
         }]
       });
