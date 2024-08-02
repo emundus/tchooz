@@ -285,11 +285,14 @@ export default {
       fileService.getProfiles()
         .then(response => {
           this.profiles = response.data.map(profile => {
-            return {
-              id: profile.id,
-              label: profile.label,
-              applicantProfile: profile.published
+            if (profile.label !== 'noprofile') {
+              return {
+                id: profile.id,
+                label: profile.label,
+                applicantProfile: profile.published
+              }
             }
+            return false;
           });
         })
         .catch(e => {
