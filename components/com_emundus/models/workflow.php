@@ -87,6 +87,12 @@ class EmundusModelWorkflow extends JModelList
 			if (!empty($steps)) {
 				foreach ($steps as $step) {
 					$step['workflow_id'] = $workflow['id'];
+
+					// if the step is new, we need to unset the id
+					// if it is new, the id will be under 1
+					if ($step['id'] < 1) {
+						unset($step['id']);
+					}
 					$step_object = (object)$step;
 
 					try {

@@ -205,18 +205,6 @@ export default {
       },
       steps: [],
       programs: [],
-      newStep: {
-        id: 0,
-        label: this.translate('COM_EMUNDUS_WORKFLOW_NEW_STEP_LABEL'),
-        type: 'applicant',
-        start_date: '',
-        end_date: '',
-        roles: [],
-        profile_id: 9,
-        entry_status: [],
-        output_status: 0,
-      },
-
       currentView: 'steps', // steps, gantt
       stepTypes: [
         { id: 'applicant', label: this.translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT') },
@@ -301,7 +289,27 @@ export default {
         });
     },
     addStep() {
-      this.steps.push(this.newStep);
+      const newStep = {
+        id: 0,
+        label: this.translate('COM_EMUNDUS_WORKFLOW_NEW_STEP_LABEL'),
+        type: 'applicant',
+        start_date: '',
+        end_date: '',
+        roles: [],
+        profile_id: 9,
+        entry_status: [],
+        output_status: 0,
+      };
+
+      // set a new id inferior to 0 to be able to delete it without calling the API
+      newStep.id = this.steps.reduce((acc, step) => {
+        if (step.id < acc) {
+          acc = step.id;
+        }
+        return acc;
+      }, 0) - 1;
+
+      this.steps.push(newStep);
     },
     async deleteStep(stepId) {
       let deleted = false;
