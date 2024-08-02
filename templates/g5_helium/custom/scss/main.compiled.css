@@ -4289,6 +4289,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-self-stretch {
     align-self: stretch;
 }
+.tw-overflow-auto {
+    overflow: auto;
+}
 .tw-overflow-hidden {
     overflow: hidden;
 }
@@ -4333,9 +4336,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-border {
     border-width: 1px;
-}
-.tw-border-2 {
-    border-width: 2px;
 }
 .tw-border-b {
     border-bottom-width: 1px;
