@@ -376,6 +376,7 @@ isClient('administrator'))
 		{
 			$editor = Editor::getInstance($this->config->get('editor'));
 			$buttons = (bool) $params->get('wysiwyg_extra_buttons', true);
+			$value = htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
 			$layoutData->editor = $editor->display($name, $value, '100%', 100+$rows * 15, $cols, $rows, $buttons, $id, 'com_fabrik');
 			$layout = $this->getLayout('wysiwyg');
 		}

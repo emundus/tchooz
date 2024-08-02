@@ -802,13 +802,13 @@ class Worker
 				// Merge in request and specified search data
 				$f                 = InputFilter::getInstance();
 				$post              = $f->clean($_REQUEST, 'array');
-
+				
 				//J!4 & SEF: $_REQUEST is empty, take also inputVars
                 $app = Factory::getApplication();
                 $inputVars = $app->getInput()->getArray();
                 $inputVars = $f->clean($inputVars,'string');
 				$searchData = is_null($searchData) ? $inputVars : array_merge($inputVars, $searchData);
-
+				
 				$this->_searchData = is_null($searchData) ? $post : array_merge($post, $searchData);
 
 				// Enable users to use placeholder to insert session token
@@ -2683,7 +2683,9 @@ class Worker
 	{
 		$config = ComponentHelper::getParams('com_fabrik');
 
-		if ($config->get('fabrik_pdf_lib', 'dompdf') === 'dompdf')
+		$pdfLibrary = $config->get('fabrik_pdf_lib', 'dompdf');
+
+		if ($pdfLibrary === 'dompdf')
 		{
 			$file = COM_FABRIK_LIBRARY . '/vendor/vendor/dompdf/dompdf/composer.json';
 		}
@@ -2696,7 +2698,7 @@ class Worker
 		{
 			if ($puke)
 			{
-				throw new \RuntimeException(Text::_('COM_FABRIK_NOTICE_DOMPDF_NOT_FOUND'));
+				throw new \RuntimeException(Text::_($pdfLibrary === 'dompdf' ? 'COM_FABRIK_NOTICE_DOMPDF_NOT_FOUND' : 'COM_FABRIK_NOTICE_MPDF_NOT_FOUND'));
 			}
 			else
 			{

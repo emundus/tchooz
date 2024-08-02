@@ -867,11 +867,26 @@ class EmundusControllerFiles extends JControllerLegacy
 	{
 		$m_files = $this->getModel('Files');
 		$states  = $m_files->getAllStatus();
+		$selected_state = $this->app->getSession()->get('last_status_selected',0);
 
-		echo json_encode((object) (array('status'       => true,
-		                                 'states'       => $states,
-		                                 'state'        => JText::_('COM_EMUNDUS_STATE'),
-		                                 'select_state' => JText::_('PLEASE_SELECT_STATE'))));
+		if(empty($selected_state)) {
+			$fnum = $this->input->getString('fnum', null);
+			if (!empty($fnum)) {
+				$state          = $m_files->getStatusByFnums([$fnum]);
+				$selected_state = $state[$fnum]['status'];
+			}
+		}
+
+		echo json_encode((object)
+		(
+			array(
+				'status'       => true,
+				'states'       => $states,
+				'state'        => Text::_('COM_EMUNDUS_STATE'),
+				'select_state' => Text::_('PLEASE_SELECT_STATE'),
+				'selected_state' => $selected_state
+			)
+		));
 		exit;
 	}
 
@@ -969,6 +984,7 @@ class EmundusControllerFiles extends JControllerLegacy
 	{
 		$fnums = $this->input->getString('fnums', null);
 		$state = $this->input->getInt('state', null);
+		$this->app->getSession()->set('last_status_selected', $state);
 
 		$m_files = $this->getModel('Files');
 

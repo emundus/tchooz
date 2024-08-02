@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension group="fabrik_visualization" method="upgrade" type="plugin" version="4">
-	<name>plg_fabrik_visualization_slideshow</name>
-	<author>Fabrikar</author>
-	<creationDate>February 2024</creationDate>
-	<copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
-	<license>GNU General Public License version 3 or later; see software_license.txt</license>
-	<authorEmail>team@fabrikar.com</authorEmail>
-	<authorUrl>https://www.fabrikar.com</authorUrl>
-	<version>4.0</version>
-	<help url="PLG_VISUALIZATION_SLIDESHOW_HELP_SERVER"/>
-	<description>PLG_VISUALIZATION_SLIDESHOW_DESCRIPTION</description>
-	<files>
-		<filename plugin="slideshow">slideshow.php</filename>
-		<folder>forms</folder>
-		<filename>index.html</filename>
-		<filename>slideshow.js</filename>
-		<filename>slideshow-min.js</filename>
-		<folder>controllers</folder>
-		<folder>language</folder>
-		<folder>models</folder>
-		<folder>views</folder>
-	</files>
+  <name>plg_fabrik_visualization_slideshow</name>
+  <author>Fabrikar</author>
+  <creationDate>2024-06-26</creationDate>
+  <copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see software_license.txt</license>
+  <authorEmail>team@fabrikar.com</authorEmail>
+  <authorUrl>https://www.fabrikar.com</authorUrl>
+  <version>4.2</version>
+  <help url="PLG_VISUALIZATION_SLIDESHOW_HELP_SERVER"></help>
+  <description>PLG_VISUALIZATION_SLIDESHOW_DESCRIPTION</description>
+  <files>
+    <filename plugin="slideshow">slideshow.php</filename>
+    <filename>index.html</filename>
+    <filename>slideshow.js</filename>
+    <filename>slideshow-min.js</filename>
+    <folder>forms</folder>
+    <folder>controllers</folder>
+    <folder>language</folder>
+    <folder>models</folder>
+    <folder>views</folder>
+  </files>
 </extension>

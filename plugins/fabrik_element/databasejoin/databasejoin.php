@@ -671,7 +671,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		{
 			foreach ($this->optionVals[$sqlKey] as $key => &$opt)
 			{
-				$opt->text = strip_tags($opt->text);
+				$opt->text = strip_tags($opt->text??'');
 			}
 		}
 
@@ -779,7 +779,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		if ($this->showPleaseSelect())
 		{
-			array_unshift($tmp, HTMLHelper::_('select.option', $params->get('database_join_noselectionvalue', ''), $this->_getSelectLabel()));
+			array_unshift($tmp, HTMLHelper::_('select.option', $params->get('database_join_noselectionvalue', 0), $this->_getSelectLabel()));
 			if ($params->get('join_desc_column', '') !== '')
 			{
 				$tmp[0]->description = '';

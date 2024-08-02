@@ -15,6 +15,7 @@ jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\View\HtmlView;
 use Joomla\CMS\User\UserHelper;
 
 /**
@@ -22,7 +23,7 @@ use Joomla\CMS\User\UserHelper;
  *
  * @package    Emundus
  */
-class EmundusViewApplication extends JViewLegacy
+class EmundusViewApplication extends HtmlView
 {
 
 	private $app;
