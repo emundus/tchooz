@@ -8,6 +8,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\LanguageHelper;
 
 Text::script('SAVE');
+Text::script('DELETE');
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WORKFLOWS');
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_WORKFLOWS');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_LABEL');

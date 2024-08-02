@@ -166,6 +166,26 @@ class EmundusModelWorkflow extends JModelList
 		return $updated;
 	}
 
+	public function deleteWorkflowStep($stepId) {
+		$deleted = false;
+
+		if (!empty($stepId)) {
+			$query = $this->db->getQuery(true);
+
+			$query->delete($this->db->quoteName('#__emundus_setup_workflows_steps'))
+				->where($this->db->quoteName('id') . ' = ' . $stepId);
+
+			try {
+				$this->db->setQuery($query);
+				$deleted = $this->db->execute();
+			} catch (Exception $e) {
+				Log::add('Error while deleting workflow step: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+		}
+
+		return $deleted;
+	}
+
 	public function getWorkflows($ids = [], $limit = 0, $page = 0) {
 		$workflows = [];
 
@@ -223,7 +243,8 @@ class EmundusModelWorkflow extends JModelList
 					->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 					->where($this->db->quoteName('esws.workflow_id') . ' = ' . $id)
-					->group($this->db->quoteName('esws.id'));
+					->group($this->db->quoteName('esws.id'))
+					->order($this->db->quoteName('esws.start_date') . ' ASC');
 
 				try {
 					$this->db->setQuery($query);

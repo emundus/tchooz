@@ -4446,6 +4446,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-bg-no-repeat {
     background-repeat: no-repeat;
 }
+.\!tw-p-0 {
+    padding: 0px !important;
+}
 .tw-p-0 {
     padding: 0px;
 }

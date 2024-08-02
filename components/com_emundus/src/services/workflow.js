@@ -26,5 +26,14 @@ export default {
         status: false, msg: e.message
       };
     }
+  },
+  async deleteWorkflowStep(stepId) {
+    if (stepId > 0) {
+      return await client.post('deleteworkflowstep', {step_id: stepId});
+    } else {
+      return {
+        status: false, msg: 'Invalid step id.'
+      };
+    }
   }
 };

@@ -11,7 +11,7 @@
 
       <div class="tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
         <div>
-          <select>
+          <select v-if="sortByOptions.length > 0">
             <option value="0">{{ translate('SORT_BY') }}</option>
           </select>
         </div>
@@ -35,16 +35,25 @@
         </div>
       </div>
     </div>
-    <transition name="fade">
+    <transition>
       <div v-show="currentView === 'steps'" id="workflow-steps-wrapper" class="tw-my-4">
         <div id="workflow-steps" class=" tw-flex tw-flex-row tw-gap-3">
-          <div v-for="step in steps" :key="step.id" class="workflow-step tw-rounded tw-border-2 tw-shadow-sm tw-p-4 em-white-bg">
-            <div class="workflow-step-header tw-mb-4 tw-flex tw-flex-col">
-              <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL') }}</label>
-              <input type="text" v-model="step.label" />
+          <div v-for="step in steps" :key="step.id" class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4 em-white-bg">
+            <div class="workflow-step-head tw-flex tw-flex-row tw-justify-between">
+              <h4>{{ step.label }}</h4>
+              <popover>
+                <ul class="tw-list-none !tw-p-0">
+                  <li class="delete-workflow-step tw-cursor-pointer tw-p-2" @click="deleteStep(step.id)">{{ translate('DELETE') }}</li>
+                </ul>
+              </popover>
             </div>
 
             <div class="workflow-step-content">
+              <div class="tw-mb-4 tw-flex tw-flex-col">
+                <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL') }}</label>
+                <input type="text" v-model="step.label" />
+              </div>
+
               <div class="tw-mb-4 tw-flex tw-flex-col">
                 <label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
                 <select v-model="step.type">
@@ -149,7 +158,7 @@
         </div>
       </div>
     </transition>
-    <transition name="fade">
+    <transition>
       <div v-show="currentView === 'gantt'" class="tw-my-4">
         <g-gantt-chart
             :chart-start="furthestPastStepFirstDayOfYear"
@@ -171,6 +180,7 @@ import settingsService from '@/services/settings.js';
 import programmeService from '@/services/programme.js';
 import fileService from '@/services/file.js';
 
+import Popover from '@/components/Popover.vue';
 import { DatePicker } from 'v-calendar';
 import Multiselect from "vue-multiselect";
 
@@ -184,7 +194,8 @@ export default {
   },
   components: {
     DatePicker,
-    Multiselect
+    Multiselect,
+    Popover
   },
   data() {
     return {
@@ -211,6 +222,7 @@ export default {
         { id: 'applicant', label: this.translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT') },
         { id: 'evaluator', label: this.translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR') },
       ],
+      sortByOptions: [],
       statuses : [],
       profiles: [],
       programsOptions: []
@@ -291,8 +303,28 @@ export default {
     addStep() {
       this.steps.push(this.newStep);
     },
+    async deleteStep(stepId) {
+      let deleted = false;
+
+      if (stepId < 1) {
+        this.steps = this.steps.filter((step) => {
+          return step.id != stepId;
+        });
+        deleted = true;
+      } else {
+        const response = await workflowService.deleteWorkflowStep(stepId);
+
+        if (response.status) {
+          this.steps = this.steps.filter((step) => {
+            return step.id != stepId;
+          });
+          deleted = true;
+        }
+      }
+
+      return deleted;
+    },
     save() {
-      console.log(this.steps);
       this.steps.forEach((step) => {
         if (step.start_date !== '') {
           step.start_date = this.formatDate(step.start_date);
@@ -373,14 +405,12 @@ export default {
       const year = this.steps.reduce((acc, step) => {
         const stepDate = step.end_date instanceof Date ? step.end_date : new Date(step.end_date);
         const stepYear = stepDate.getFullYear();
-
-        if (stepYear < acc) {
+        if (stepYear > acc) {
           acc = stepYear;
         }
 
         return acc;
-      }, 9999);
-      console.log(year);
+      }, 0);
 
       return year + '-12-31 23:59';
     }
