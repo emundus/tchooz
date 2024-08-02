@@ -524,4 +524,68 @@ class Com_EmundusInstallerScript
 
 		return $checked;
 	}
+
+	private function convertDateToJDate() {
+		$converted = true;
+
+		$query = $this->db->getQuery(true);
+
+		try {
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_elements'))
+				->where($this->db->quoteName('plugin') . ' LIKE ' . $this->db->quote('date'))
+				->where('json_valid(`params`)');
+			$this->db->setQuery($query);
+			$date_elements = $this->db->loadObjectList();
+
+			foreach ($date_elements as $date_element) {
+				$params = json_decode($date_element->params, true);
+
+				$params['jdate_showtime'] = $params['date_showtime'];
+				$params['jdate_time_24'] = $params['date_24hour'];
+				$params['jdate_show_week_numbers'] = "0";
+				$params['jdate_time_format'] = "";
+				$params['jdate_store_as_local'] = $params['date_store_as_local'];
+				$params['jdate_table_format'] = $params['date_table_format'];
+				$params['jdate_form_format'] = $params['date_form_format'];
+				$params['jdate_defaulttotoday'] = $params['date_defaulttotoday'];
+				$params['jdate_alwaystoday'] = $params['date_alwaystoday'];
+				$params['jdate_allow_typing_in_field'] = $params['date_allow_typing_in_field'];
+				$params['jdate_csv_offset_tz'] = $params['date_csv_offset_tz'];
+
+				unset($params['date_which_time_picker']);
+				unset($params['date_showtime']);
+				unset($params['date_show_seconds']);
+				unset($params['date_24hour']);
+				unset($params['bootstrap_time_class']);
+				unset($params['date_store_as_local']);
+				unset($params['date_table_format']);
+				unset($params['date_form_format']);
+				unset($params['date_defaulttotoday']);
+				unset($params['date_alwaystoday']);
+				unset($params['date_allow_typing_in_field']);
+				unset($params['date_csv_offset_tz']);
+				unset($params['date_firstday']);
+				unset($params['date_advanced']);
+				unset($params['date_allow_func']);
+				unset($params['date_allow_php_func']);
+				unset($params['date_observe']);
+
+				$query->clear()
+					->update($this->db->quoteName('#__fabrik_elements'))
+					->set($this->db->quoteName('plugin') . ' = ' . $this->db->quote('jdate'))
+					->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($date_element->id));
+				$this->db->setQuery($query);
+				$converted = $this->db->execute();
+			}
+
+		}
+		catch (Exception $e) {
+			$converted = false;
+		}
+
+		return $converted;
+	}
 }

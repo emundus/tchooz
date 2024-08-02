@@ -323,8 +323,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 			$format .= ' ' . $timeFormat;
 		}
 
-		// J!4.4.0 issue breaks the time picker if 24h enabled; showing week number will make it work again
-		$calOpts['weekNumbers'] = true; //$params->get('jdate_show_week_numbers', '0') === '1';
+		$calOpts['weekNumbers'] = $params->get('jdate_show_week_numbers', '0') === '1';
 
 		$str[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
 		$str[] = $this->calendar($this->offsetDate, $name, $id . '_cal', $format, $calOpts, $repeatCounter);

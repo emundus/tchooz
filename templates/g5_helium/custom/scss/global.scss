@@ -4546,18 +4546,19 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
         .fabrikSubGroupElements,
         .fabrikSubGroup {
 
-          div[data-role="group-repeat-intro"] {
-            margin-top: 12px;
-          }
+            div[data-role="group-repeat-intro"] {
+              margin-top: 12px;
+            }
 
-          /* TABLEAU */
-          td,
-          th {
-            background: var(--neutral-0);
-            @include body-16-medium;
-            color: var(--neutral-800);
-            margin-bottom: 0;
-          }
+            /* TABLEAU */
+          /*
+            td,
+            th {
+              background: var(--neutral-0);
+              @include body-16-medium;
+              color: var(--neutral-800);
+              margin-bottom: 0;
+            }*/
         }
       }
     }
