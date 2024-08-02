@@ -16,10 +16,10 @@
     <div>
       <form @submit.prevent="submit" v-if="ready" class="emundus-form fabrikForm">
         <div>
-          <div class="tw-text-red-500 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
+          <div class="tw-text-red-600 tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
           <div class="tw-mb-4" id="campaign-label-wrapper">
-            <label for="campLabel">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span class="tw-text-red-500">*</span></label>
+            <label for="campLabel">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span class="tw-text-red-600">*</span></label>
             <input
                 id="campLabel"
                 type="text"
@@ -30,13 +30,13 @@
                 @focusout="onFormChange()"
                 @keyup="updateAlias()"
             />
-            <span v-if="errors.label" id="error-campaign-name" class="tw-text-red-500 tw-mb-2">
+            <span v-if="errors.label" id="error-campaign-name" class="tw-text-red-600 tw-mb-2">
               {{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}
             </span>
           </div>
 
           <div class="tw-mb-4">
-            <label for="alias">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS') }} <span class="em-red-500-color">*</span></label>
+            <label for="alias">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS') }} <span class="em-red-600-color">*</span></label>
             <div class="tw-flex tw-items-center tw-gap-2">
               <span>{{ baseUrl }}/</span>
               <input
@@ -51,15 +51,15 @@
               />
               <span class="material-icons-outlined tw-cursor-pointer" @click="copyAliasToClipboard();">content_copy</span>
             </div>
-            <span v-if="errors.alias" class="em-red-500-color tw-mb-2">
-              <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK') }}</span>
+            <span v-if="errors.alias" class="em-red-600-color tw-mb-2">
+              <span class="em-red-600-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK') }}</span>
             </span>
           </div>
 
           <div class="tw-grid tw-grid-cols-2 tw-mb-4 tw-gap-1.5">
             <div>
                 <label for="startDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span
-                    class="tw-text-red-500">*</span></label>
+                    class="tw-text-red-600">*</span></label>
               <DatePicker
                   id="campaign_start_date"
                   v-model="form.start_date"
@@ -85,7 +85,7 @@
             <div>
               <div>
                 <label for="endDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') }} <span
-                    class="tw-text-red-500">*</span></label>
+                    class="tw-text-red-600">*</span></label>
                 <DatePicker
                     id="campaign_end_date"
                     v-model="form.end_date"
@@ -115,7 +115,7 @@
 
           <div class="tw-mb-4">
             <label for="year">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR') }} <span
-                class="tw-text-red-500">*</span></label>
+                class="tw-text-red-600">*</span></label>
             <autocomplete
                 :id="'year'"
                 @searched="onSearchYear"
@@ -171,7 +171,7 @@
 
           <div id="campResume" class="tw-mb-4">
             <label style="top: 5em">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }} <span
-                class="tw-text-red-500">*</span></label>
+                class="tw-text-red-600">*</span></label>
             <tip-tap-editor
                 v-model="form.short_description"
                 :editor-content-height="'5em'"
@@ -208,7 +208,7 @@
             <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
           </div>
           <div class="tw-mb-4">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC') }}<span
-              class="tw-text-red-500">*</span></div>
+              class="tw-text-red-600">*</span></div>
 
           <div class="tw-flex tw-items-center tw-mb-4">
             <select
@@ -240,7 +240,7 @@
               <div>
                 <div class="tw-mb-4">
                   <label for="prog_label">{{ translate('COM_EMUNDUS_ONBOARD_PROGNAME') }} <span
-                      class="tw-text-red-500">*</span></label>
+                      class="tw-text-red-600">*</span></label>
                   <input
                       type="text"
                       id="prog_label"
@@ -250,8 +250,8 @@
                       :class="{ 'is-invalid': errors.progLabel }"
                   />
                 </div>
-                <p v-if="errors.progLabel" class="tw-text-red-500 tw-mb-2">
-                  <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
+                <p v-if="errors.progLabel" class="tw-text-red-600 tw-mb-2">
+                  <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
                 </p>
 
                 <div class="tw-mb-4" style="display: none">

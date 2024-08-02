@@ -14,7 +14,7 @@
                     title="Move section upwards">keyboard_double_arrow_up</span>
               <span class="material-icons-outlined tw-cursor-pointer hover-opacity" @click="moveDocument('down')"
                     title="Move section downwards">keyboard_double_arrow_down</span>
-              <span v-if="canBeRemoved" class="material-icons-outlined tw-text-red-500 tw-cursor-pointer hover-opacity"
+              <span v-if="canBeRemoved" class="material-icons-outlined tw-text-red-600 tw-cursor-pointer hover-opacity"
                     @click="deleteDocument">delete</span>
             </div>
           </div>

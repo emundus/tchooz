@@ -5325,8 +5325,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-text-profile-full {
     color: var(--em-profile-color);
 }
-.tw-text-red-500 {
-    color: var(--red-500);
+.tw-text-red-600 {
+    color: var(--red-600);
 }
 .tw-text-red-700 {
     color: var(--red-700);

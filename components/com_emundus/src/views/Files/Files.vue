@@ -100,12 +100,12 @@
               >
                 <span slot="noResult">{{translate('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND')}}</span>
               </multiselect>
-              <span class="material-icons-outlined tw-cursor-pointer tw-text-red-500 tw-ml-3" @click="removeFilter(filter)">close</span>
+              <span class="material-icons-outlined tw-cursor-pointer tw-text-red-600 tw-ml-3" @click="removeFilter(filter)">close</span>
             </div>
           </div>
         </div>
         <div v-if="defaultFilters.length > 0" class="tw-flex tw-items-center">
-          <span class="material-icons-outlined tw-mr-4 tw-text-red-500"
+          <span class="material-icons-outlined tw-mr-4 tw-text-red-600"
                 :class="{'tw-cursor-pointer': filters.length > 0, 'tw-cursor-pointer-disbabled': filters.length < 1 }"
                 :alt="translate('COM_EMUNDUS_FILES_RESET_FILTERS')" @click="resetFilters">filter_alt_off</span>
           <button class="tw-btn-primary tw-cusor-pointer" @click="applyFilters">

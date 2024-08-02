@@ -22,7 +22,7 @@
                 <transition :name="'slide-down'" type="transition">
                   <div>
                     <nav aria-label="action" class="em-flex-col-start">
-                      <p @click="deletePage(page)" class="tw-cursor-pointer tw-p-2 tw-text-base tw-text-red-500">
+                      <p @click="deletePage(page)" class="tw-cursor-pointer tw-p-2 tw-text-base tw-text-red-600">
                         {{ translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE') }}
                       </p>
                       <p @click="createModelFrom(page)" class="tw-cursor-pointer tw-p-2 tw-text-base">

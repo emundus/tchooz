@@ -89,7 +89,7 @@
                                     >check_circle</span
                                 >
                                 <span
-                                    class="material-icons-outlined tw-text-red-500"
+                                    class="material-icons-outlined tw-text-red-600"
                                     v-if="contrastPrimary.AA === 'fail'"
                                     >highlight_off</span
                                 >
@@ -108,7 +108,7 @@
                                     >check_circle</span
                                 >
                                 <span
-                                    class="material-icons-outlined tw-text-red-500"
+                                    class="material-icons-outlined tw-text-red-600"
                                     v-if="contrastSecondary.AA === 'fail'"
                                     >highlight_off</span
                                 >
@@ -130,7 +130,7 @@
                                     >check_circle</span
                                 >
                                 <span
-                                    class="material-icons-outlined tw-text-red-500"
+                                    class="material-icons-outlined tw-text-red-600"
                                     v-if="contrastPrimary.AALarge === 'fail'"
                                     >highlight_off</span
                                 >
@@ -149,7 +149,7 @@
                                     >check_circle</span
                                 >
                                 <span
-                                    class="material-icons-outlined tw-text-red-500"
+                                    class="material-icons-outlined tw-text-red-600"
                                     v-if="contrastSecondary.AALarge === 'fail'"
                                     >highlight_off</span
                                 >

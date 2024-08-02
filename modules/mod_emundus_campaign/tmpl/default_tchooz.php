@@ -569,7 +569,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             </select>
                                         </div>
                                         <div class="em-flex-row">
-                                            <span class="material-icons-outlined em-red-500-color em-pointer"
+                                            <span class="material-icons-outlined em-red-600-color em-pointer"
                                                   onclick="deleteFilter('<?php echo $i ?>')"
                                                   title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</span>
                                         </div>
@@ -600,7 +600,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             </select>
                                         </div>
                                         <div class="em-flex-row">
-                                            <span class="material-icons-outlined em-red-500-color em-pointer"
+                                            <span class="material-icons-outlined em-red-600-color em-pointer"
                                                   onclick="deleteFilter('<?php echo $i ?>')"
                                                   title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</span>
                                         </div>
@@ -631,7 +631,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             </select>
                                         </div>
                                         <div class="em-flex-row">
-                                            <span class="material-icons-outlined em-red-500-color em-pointer"
+                                            <span class="material-icons-outlined em-red-600-color em-pointer"
                                                   onclick="deleteFilter('<?php echo $i ?>')"
                                                   title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</span>
                                         </div>
@@ -920,8 +920,8 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                                             </p>
                                                             <span class="em-camp-end em-text-neutral-600"> <?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
 														<?php else : ?>
-                                                            <span class="material-icons em-text-neutral-600 em-red-500-color em-mr-4">schedule</span>
-                                                            <p class="em-red-500-color"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_LAST_DAY'); ?>
+                                                            <span class="material-icons em-text-neutral-600 em-red-600-color em-mr-4">schedule</span>
+                                                            <p class="em-red-600-color"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_LAST_DAY'); ?>
 																<?php if ($interval->h > 0)
 																{
 																	echo $interval_h . 'h' . $interval_i;
@@ -1150,7 +1150,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             '<span class="em-text-neutral-800"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span> ' +
             '<div id="filters_options_' + index + '"></div>' +
             '<div class="em-flex-row">' +
-            '<span class="material-icons-outlined em-red-500-color em-pointer" onclick="deleteFilter(' + index + ')">delete</span>' +
+            '<span class="material-icons-outlined em-red-600-color em-pointer" onclick="deleteFilter(' + index + ')">delete</span>' +
             '</div>' +
             '</div>';
         document.getElementById('filters_list').insertAdjacentHTML('beforeend', html);

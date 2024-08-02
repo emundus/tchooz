@@ -7,7 +7,7 @@
         <span @mouseenter="resetHover = true" @mouseleave="resetHover = false"
               class="material-icons-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}"
               @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
-        <span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer remove-filter-btn"
+        <span v-if="!filter.default" class="material-icons-outlined em-red-600-color em-pointer remove-filter-btn"
               @click="$.emit('remove-filter')">close</span>
       </div>
     </div>

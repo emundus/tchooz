@@ -62,7 +62,7 @@
                 <span class="material-icons-outlined">edit</span>
               </a>
               <a class="tw-cursor-pointer" @click="removeTrigger(trigger.trigger_id)" :title="removeTrig">
-                <span class="material-icons-outlined tw-text-red-500">close</span>
+                <span class="material-icons-outlined tw-text-red-600">close</span>
               </a>
             </div>
           </div>
@@ -108,7 +108,7 @@
                 <span class="material-icons-outlined">edit</span>
               </a>
               <a class="tw-cursor-pointer" @click="removeTrigger(trigger.trigger_id)">
-                <span class="material-icons-outlined tw-text-red-500">close</span>
+                <span class="material-icons-outlined tw-text-red-600">close</span>
               </a>
             </div>
           </div>

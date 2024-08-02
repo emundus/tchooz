@@ -71,7 +71,7 @@
           <div class="tw-flex tw-justify-between tw-items-center">
             <label>-- {{ (key+1) }} --</label>
             <button v-if="key != 0 && (key+1) == Object.entries(element.params[param.name]).length" type="button" @click="removeRepeatableField(param.name,key)" class="mt-2 w-auto">
-              <span class="material-icons-outlined tw-text-red-500">close</span>
+              <span class="material-icons-outlined tw-text-red-600">close</span>
             </button>
           </div>
 

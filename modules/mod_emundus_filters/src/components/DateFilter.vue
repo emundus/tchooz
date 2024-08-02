@@ -4,7 +4,7 @@
 			<p class="recap-label" :title="filter.label">{{ filter.label }}</p>
 			<div>
 				<span @mouseenter="resetHover = true" @mouseleave="resetHover = false" class="material-icons-outlined em-pointer reset-filter-btn" :class="{'em-blue-400-color': resetHover}" @click="resetFilter" :alt="translate('MOD_EMUNDUS_FILTERS_RESET')">refresh</span>
-				<span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer remove-filter-btn" @click="$.emit('remove-filter')">close</span>
+				<span v-if="!filter.default" class="material-icons-outlined em-red-600-color em-pointer remove-filter-btn" @click="$.emit('remove-filter')">close</span>
 			</div>
 		</div>
 		<div class="date-filter-card em-border-radius-8 em-border-neutral-400 em-box-shadow em-white-bg em-p-8">

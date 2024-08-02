@@ -3,7 +3,7 @@
 		<div class="em-flex-row em-flex-space-between">
 			<p class="recap-label" :title="filter.label">{{ filter.label }}</p>
 			<div>
-				<span v-if="!filter.default" class="material-icons-outlined em-red-500-color em-pointer" @click="$.emit('remove-filter')">close</span>
+				<span v-if="!filter.default" class="material-icons-outlined em-red-600-color em-pointer" @click="$.emit('remove-filter')">close</span>
 				<span v-if="opened === false" class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_down</span>
 				<span v-else class="material-icons-outlined em-pointer" @click="opened = !opened">keyboard_arrow_up</span>
 			</div>

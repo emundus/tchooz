@@ -5,7 +5,7 @@
                 <div>
                     <div class="tw-mb-4">
                         <h1 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
-                        <span class="tw-text-red-500 tw-mb-2">{{
+                        <span class="tw-text-red-600 tw-mb-2">{{
                             translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE')
                         }}</span>
                     </div>
@@ -23,8 +23,8 @@
                                 :class="{ 'is-invalid': errors.subject }"
                             />
                         </div>
-                        <span v-if="errors.subject" class="tw-text-red-500 tw-mb-2">
-                            <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED') }}</span>
+                        <span v-if="errors.subject" class="tw-text-red-600 tw-mb-2">
+                            <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED') }}</span>
                         </span>
 
                         <div class="tw-mb-4">
@@ -57,8 +57,8 @@
                                 >
                             </div>
                         </div>
-                        <p v-if="errors.message" class="tw-text-red-500 tw-mb-2">
-                            <span class="tw-text-red-500">{{ translate('COM_EMUNDUS_ONBOARD_BODY_REQUIRED') }}</span>
+                        <p v-if="errors.message" class="tw-text-red-600 tw-mb-2">
+                            <span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_BODY_REQUIRED') }}</span>
                         </p>
 
                         <div class="form-group">

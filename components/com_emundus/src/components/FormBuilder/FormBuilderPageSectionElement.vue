@@ -6,7 +6,7 @@
     <div class="tw-flex tw-items-start tw-justify-between tw-w-full tw-mb-2">
       <div class="tw-w-11/12">
         <label class="tw-w-full tw-flex tw-items-center fabrikLabel control-label tw-mb-0" @click="triggerElementProperties">
-          <span v-if="element.FRequire" class="material-icons !tw-text-xs tw-text-red-500 tw-mr-0" style="top: -5px;position: relative">emergency</span>
+          <span v-if="element.FRequire" class="material-icons !tw-text-xs tw-text-red-600 tw-mr-0" style="top: -5px;position: relative">emergency</span>
         <input
             v-if="element.label_value && element.labelsAbove != 2"
             :ref="'element-label-' + element.id"
@@ -24,7 +24,7 @@
       </div>
       <div id="element-action-icons" class="tw-flex tw-items-end tw-mt-2">
         <span class="material-icons-outlined handle tw-cursor-grab">drag_indicator</span>
-        <span id="delete-element" class="material-icons-outlined tw-text-red-500 tw-cursor-pointer" @click="deleteElement">delete</span>
+        <span id="delete-element" class="material-icons-outlined tw-text-red-600 tw-cursor-pointer" @click="deleteElement">delete</span>
         <span v-if="sysadmin" class="material-icons-outlined tw-cursor-pointer tw-ml-2" @click="openAdmin">content_copy</span>
       </div>
     </div>

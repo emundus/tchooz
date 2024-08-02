@@ -29,7 +29,7 @@
                v-if="node.level < level_max" @click="$emit('addNode',node)">
             {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_ADD_MENU') }}
           </div>
-          <div class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300 tw-text-red-500"
+          <div class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300 tw-text-red-600"
                @click="$emit('deleteNode', node);">
             {{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_DELETE') }}
           </div>

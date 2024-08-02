@@ -497,8 +497,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                     <span class="material-icons em-text-neutral-600 em-mr-8">schedule</span>
                                                                     <p class="em-text-neutral-600 em-applicant-default-font"> <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?><?php echo JFactory::getDate(new JDate($end_date, $site_offset))->format($date_format); ?></p>
 																<?php elseif ($displayInterval && !$closed) : ?>
-                                                                    <span class="material-icons-outlined em-text-neutral-600 em-red-500-color em-mr-8">schedule</span>
-                                                                    <p class="em-red-500-color"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
+                                                                    <span class="material-icons-outlined em-text-neutral-600 em-red-600-color em-mr-8">schedule</span>
+                                                                    <p class="em-red-600-color"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
 																		<?php if ($interval->h > 0) {
 																			echo $interval->h . 'h' . $interval->i;
 																		}
@@ -507,8 +507,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 																		} ?>
                                                                     </p>
 																<?php elseif ($closed) : ?>
-                                                                    <span class="material-icons em-mr-8 em-red-500-color">schedule</span>
-                                                                    <p class="em-applicant-default-font em-red-500-color"> <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_CLOSED'); ?></p>
+                                                                    <span class="material-icons em-mr-8 em-red-600-color">schedule</span>
+                                                                    <p class="em-applicant-default-font em-red-600-color"> <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_CLOSED'); ?></p>
 																<?php endif; ?>
                                                             </div>
 														<?php endif; ?>
@@ -610,10 +610,10 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 	                                                <?php endif; ?>
 
 		                                            <?php if (in_array($application->status, $status_for_delete)) : ?>
-                                                        <a class="em-red-500-color em-flex-row em-pointer"
+                                                        <a class="em-red-600-color em-flex-row em-pointer"
                                                            onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                            id="actions_block_delete_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-icons-outlined em-red-500-color em-mr-8">delete</span>
+                                                            <span class="material-icons-outlined em-red-600-color em-mr-8">delete</span>
 				                                            <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                         </a>
 		                                            <?php endif; ?>
@@ -869,10 +869,10 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 	                                                        <?php endif; ?>
 
 															<?php if (in_array($application->status, $status_for_delete) && ($application->applicant_id === $user->id)) : ?>
-                                                                <a class="em-red-500-color em-flex-row em-pointer"
+                                                                <a class="em-red-600-color em-flex-row em-pointer"
                                                                    onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                                    id="actions_block_delete_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-icons-outlined em-red-500-color em-mr-8">delete</span>
+                                                                    <span class="material-icons-outlined em-red-600-color em-mr-8">delete</span>
 																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                 </a>
 															<?php endif; ?>
@@ -1245,7 +1245,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 let item = document.createElement('li');
                 item.classList.add('em-flex-row', 'em-mb-12', 'em-grab', 'em-flex-space-between');
                 item.id = 'tab_li_' + tab.id;
-                item.innerHTML = '<div class="em-flex-row"><span class="material-icons-outlined em-font-size-14 em-mr-4">drag_indicator</span><span contenteditable="true" class="em-cursor-text" id="' + tab.id + '">' + tab.name + '</span></div><span class="material-icons-outlined em-mr-4 em-pointer em-red-500-color" onclick="deleteTab(' + tab.id + ',\'' + tab.name + '\')">close</span>';
+                item.innerHTML = '<div class="em-flex-row"><span class="material-icons-outlined em-font-size-14 em-mr-4">drag_indicator</span><span contenteditable="true" class="em-cursor-text" id="' + tab.id + '">' + tab.name + '</span></div><span class="material-icons-outlined em-mr-4 em-pointer em-red-600-color" onclick="deleteTab(' + tab.id + ',\'' + tab.name + '\')">close</span>';
                 document.getElementById('items').appendChild(item);
             });
             let link_to_add = document.createElement('a');

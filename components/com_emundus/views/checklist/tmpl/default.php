@@ -128,7 +128,7 @@ if (!empty($this->custom_title)) :?>
 		<?php if ($this->show_info_legend) : ?>
             <div id="legend" class="em-mt-4">
                 <div class="em-flex-row em-mb-4">
-                    <span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>
+                    <span class="material-icons-outlined em-red-600-color em-mr-4">highlight_off</span>
                     <p><?= Text::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></p>
                 </div>
                 <div class="em-flex-row em-mb-4">
@@ -158,7 +158,7 @@ if (!empty($this->custom_title)) :?>
                 <div id="l' . $attachment->id . '" class="tw-flex tw-items-center em-ml-8 em-mt-8">';
 			if ($attachment->nb == 0) {
 				if ($this->show_info_legend) {
-					$div .= $attachment->mandatory ? '<span class="material-icons-outlined em-red-500-color em-mr-4">highlight_off</span>' : '<span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>';
+					$div .= $attachment->mandatory ? '<span class="material-icons-outlined em-red-600-color em-mr-4">highlight_off</span>' : '<span class="material-icons-outlined em-yellow-600-color em-mr-4">error_outline</span>';
 				}
 			}
 			else {

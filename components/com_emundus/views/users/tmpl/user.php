@@ -186,7 +186,7 @@ $timezone      = new DateTimeZone($offset);
                             <?php else : ?>
                                 <td>
                                     <div class="em-cell">
-                                        <span class="material-icons em-red-500-color"
+                                        <span class="material-icons em-red-600-color"
                                               title="<?php echo JText::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_SINGLE') ?>">block</span>
                                     </div>
                                 </td>

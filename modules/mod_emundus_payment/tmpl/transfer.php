@@ -50,12 +50,12 @@ else {
                     <td><?= $params['beneficiary_bank'] ?></td>
                 </tr>
                 <tr>
-                    <th><?= JText::_('MOD_EMUNDUS_PAYMENT_PERSONAL_REFERENCE') ?><b class="em-red-500-color">*</b></th>
+                    <th><?= JText::_('MOD_EMUNDUS_PAYMENT_PERSONAL_REFERENCE') ?><b class="em-red-600-color">*</b></th>
                     <td><?= $reference ?></td>
                 </tr>
                 </tbody>
             </table>
-            <p class="em-red-500-color">* <?= JText::_('MOD_EMUNDUS_PAYMENT_PLEASE_REPORT_REFERENCE') ?></p>
+            <p class="em-red-600-color">* <?= JText::_('MOD_EMUNDUS_PAYMENT_PLEASE_REPORT_REFERENCE') ?></p>
         </div>
         <div id="upload-proof-file" class="em-mt-16 em-mb-16">
             <label for="proof-file"> <?= JText::_('MOD_EMUNDUS_PAYMENT_UPLOAD_PROOF_FILE') ?></label>

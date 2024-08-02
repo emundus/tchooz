@@ -12,7 +12,7 @@
             translate('COM_EMUNDUS_FORM_BUILDER_MODEL_INPUT_LABEL')
           }}</label>
         <input id="page-model-title" class="tw-w-full tw-mb-4" type="text" v-model="modelTitle"/>
-        <p v-if="alreadyExists" class="tw-text-red-500">
+        <p v-if="alreadyExists" class="tw-text-red-600">
           {{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_WITH_SAME_TITLE_EXISTS') }}</p>
       </div>
       <div v-else class="tw-w-full tw-flex tw-items-center tw-justify-center">

@@ -3,7 +3,7 @@
     <div class="tw-flex tw-justify-between tw-items-center">
       <h2>{{ actionLabel }}</h2>
       <button v-if="index !== 0" type="button" @click="$emit('remove-action', index)" class="tw-w-auto">
-        <span class="material-icons-outlined tw-text-red-500">close</span>
+        <span class="material-icons-outlined tw-text-red-600">close</span>
       </button>
     </div>
 

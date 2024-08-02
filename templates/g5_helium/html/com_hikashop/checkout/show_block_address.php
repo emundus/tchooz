@@ -257,7 +257,7 @@ if(!empty($this->options['display'])) {
 <?php
 				if(!empty($this->options['multi_address'])) {
 ?>
-						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$address->address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><span style="display:block;font-size: 16px" class="material-icons-outlined em-ml-8 tw-text-red-500">delete</span></a>
+						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$address->address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><span style="display:block;font-size: 16px" class="material-icons-outlined em-ml-8 tw-text-red-600">delete</span></a>
                         </div>
 <?php
 			}

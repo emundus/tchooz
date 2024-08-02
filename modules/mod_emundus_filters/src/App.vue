@@ -32,7 +32,7 @@
               <option value="0">{{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</option>
               <option v-for="registeredFilter in registeredFilters" :key="registeredFilter.id" :value="registeredFilter.id">{{ registeredFilter.name }}</option>
             </select>
-            <span v-if="selectedRegisteredFilter > 0" class="material-icons-outlined em-red-500-color em-pointer" @click="deleteRegisteredFilter">delete</span>
+            <span v-if="selectedRegisteredFilter > 0" class="material-icons-outlined em-red-600-color em-pointer" @click="deleteRegisteredFilter">delete</span>
           </div>
         </div>
       </div>
