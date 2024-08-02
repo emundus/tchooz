@@ -1,6 +1,6 @@
 <template>
   <div class="tw-m-2">
-    <div class="tw-flex tw-items-center tw-cursor-pointer tw-mb-4" @click="history.go(-1)">
+    <div class="tw-flex tw-items-center tw-cursor-pointer tw-mb-4" @click="goBack">
       <span class="material-icons-outlined">navigate_before</span>
       <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
     </div>
@@ -377,6 +377,9 @@ export default {
         .replace('HH', hours)
         .replace('mm', minutes)
         .replace('ss', seconds);
+    },
+    goBack() {
+      window.history.go(-1);
     }
   },
   computed: {
