@@ -27,6 +27,8 @@ Text::script('COM_EMUNDUS_WORKFLOW_ASSOCIATED_PROGRAMS');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR');
 Text::script('COM_EMUNDUS_WORKFLOW_NO_STEPS');
+Text::script('COM_EMUNDUS_WORKFLOW_SAVE_FAILED');
+Text::script('COM_EMUNDUS_WORKFLOW_SAVE_SUCCESS');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();

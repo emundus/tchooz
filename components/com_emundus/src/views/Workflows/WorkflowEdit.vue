@@ -189,6 +189,7 @@ import fileService from '@/services/file.js';
 import Popover from '@/components/Popover.vue';
 import { DatePicker } from 'v-calendar';
 import Multiselect from "vue-multiselect";
+import errors from '@/mixins/mixin.js'
 
 export default {
   name: 'WorkflowEdit',
@@ -203,6 +204,7 @@ export default {
     Multiselect,
     Popover
   },
+  mixins: [errors],
   data() {
     return {
       workflow: {
@@ -356,7 +358,15 @@ export default {
       workflowService.saveWorkflow(this.workflow, this.steps, this.programs)
         .then(response => {
           if (response.status) {
+            Swal.fire({
+              icon: 'success',
+              title: this.translate('COM_EMUNDUS_WORKFLOW_SAVE_SUCCESS'),
+              showConfirmButton: false,
+              timer: 1500
+            })
             this.getWorkflow();
+          } else {
+            this.displayError('COM_EMUNDUS_WORKFLOW_SAVE_FAILED', response.message);
           }
         })
         .catch(e => {
