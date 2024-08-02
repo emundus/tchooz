@@ -49,7 +49,7 @@
               <h4>{{ step.label }}</h4>
               <popover>
                 <ul class="tw-list-none !tw-p-0">
-                  <li class="delete-workflow-step tw-cursor-pointer tw-p-2" @click="deleteStep(step.id)">{{ translate('COM_EMUNDUS_ACTIONS_DELETE') }}</li>
+                  <li class="delete-workflow-step tw-cursor-pointer tw-p-2" @click="beforeDeleteStep(step.id)">{{ translate('COM_EMUNDUS_ACTIONS_DELETE') }}</li>
                 </ul>
               </popover>
             </div>
@@ -321,6 +321,27 @@ export default {
       }, 0) - 1;
 
       this.steps.push(newStep);
+    },
+
+    beforeDeleteStep(stepId) {
+      Swal.fire({
+        title: this.translate('COM_EMUNDUS_WORKFLOW_DELETE_STEP_CONFIRMATION'),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: this.translate('COM_EMUNDUS_ACTIONS_DELETE'),
+        cancelButtonText: this.translate('CANCEL'),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
+          cancelButton: 'em-swal-cancel-button',
+          actions: 'em-swal-double-action'
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.deleteStep(stepId);
+        }
+      });
     },
     async deleteStep(stepId) {
       let deleted = false;

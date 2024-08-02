@@ -8,8 +8,9 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\LanguageHelper;
 
 Text::script('SAVE');
-Text::script('COM_EMUNDUS_ACTIONS_DELETE');
 Text::script('BACK');
+Text::script('CANCEL');
+Text::script('COM_EMUNDUS_ACTIONS_DELETE');
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WORKFLOWS');
 Text::script('COM_EMUNDUS_GLOBAL_PARAMS_WORKFLOWS');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_LABEL');
@@ -29,6 +30,7 @@ Text::script('COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR');
 Text::script('COM_EMUNDUS_WORKFLOW_NO_STEPS');
 Text::script('COM_EMUNDUS_WORKFLOW_SAVE_FAILED');
 Text::script('COM_EMUNDUS_WORKFLOW_SAVE_SUCCESS');
+Text::script('COM_EMUNDUS_WORKFLOW_DELETE_STEP_CONFIRMATION');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();
