@@ -145,7 +145,7 @@ function clearchosen(target){
     $(target)[0].sumo.unSelectAll();
 }
 
-function reloadData(view) {
+function reloadData(view,fnums = null) {
     view = (typeof view === 'undefined') ? 'files' : view;
 
     addLoader();
@@ -155,7 +155,7 @@ function reloadData(view) {
         url: 'index.php?option=com_emundus&view='+view+'&layout=data&format=raw&Itemid=' + itemId + '&cfnum=' + cfnum,
         async: false,
         dataType: 'html',
-        success: function(data) {
+        success: (data) => {
             removeLoader();
 
             let col9 = $('.col-md-9 .panel.panel-default');
@@ -172,6 +172,21 @@ function reloadData(view) {
                 if($('.col-md-12')) {
                     $('.col-md-12').append(data);
                 }
+            }
+
+            if(fnums) {
+                fnums = JSON.parse(fnums);
+                if(fnums) {
+                    fnums = Object.values(fnums);
+                }
+
+                for(let i = 0; i < fnums.length; i++) {
+                    let checkbox = $('#'+fnums[i]+'_check');
+                    if(checkbox) {
+                        checkbox.prop('checked', true);
+                    }
+                }
+                reloadActions(view, undefined, true);
             }
         },
         error: function(jqXHR) {
@@ -1143,7 +1158,7 @@ function runAction(action, url = '', option = '') {
 
                                 Swal.fire({
                                     title: Joomla.Text._('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS'),
-                                    text: Joomla.Text._('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS_OF_NB_FILES') + ' ' + nbFiles + ' ' + Joomla.JText._('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS_OF_NB_FILES_2'),
+                                    html: Joomla.Text._('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS_OF_NB_FILES') + ' <strong>' + newState + '</strong>' + Joomla.JText._('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS_OF_NB_FILES_3') +  nbFiles + ' ' + Joomla.JText._('COM_EMUNDUS_APPLICATION_WARNING_CHANGE_STATUS_OF_NB_FILES_2'),
                                     type: 'warning',
                                     showCancelButton: true,
                                     confirmButtonText: Joomla.Text._('COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT'),
@@ -1558,8 +1573,8 @@ function updateState(fnums, state)
 
             $('#em-modal-actions').modal('hide');
 
-            reloadData($('#view').val());
-            reloadActions($('#view').val(), undefined, false);
+            reloadData($('#view').val(),fnums);
+            //reloadActions($('#view').val(), undefined, false);
             $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
             $('body').removeClass('modal-open');
         },
@@ -4200,6 +4215,9 @@ $(document).ready(function() {
                 addLoader();
 
                 nbFiles = await countFilesBeforeAction(checkInput, id, verb);
+                if(nbFiles === 1) {
+                    url += '&fnum=' + JSON.parse(checkInput)[1];
+                }
 
                 await $.ajax({
                     type:'get',
@@ -4209,12 +4227,18 @@ $(document).ready(function() {
                         title = 'COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT'
 
                         // Build HTML for SweetAlert
-                        html = '<div class="em-flex-column em-flex-align-start"><label>'+result.state+'</label><select class="modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
+                        html = '<div class="em-flex-column em-flex-align-start"><label>'+result.state+'</label><select class="modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="'+result.selected_state+'">';
 
                         for (var i in result.states) {
-                            if (isNaN(parseInt(i)))
+                            if (isNaN(parseInt(i))) {
                                 break;
-                            html += '<option value="'+result.states[i].step+'" >'+result.states[i].value+'</option>';
+                            }
+
+                            if(result.states[i].step == result.selected_state) {
+                                html += '<option value="'+result.states[i].step+'" selected>'+result.states[i].value+'</option>';
+                            } else {
+                                html += '<option value="'+result.states[i].step+'" >'+result.states[i].value+'</option>';
+                            }
                         }
                         html += '</select></div>';
 
@@ -5172,7 +5196,6 @@ $(document).ready(function() {
                 reloadActions('files', undefined, true);
 
             } else {
-                console.log('here');
                 $(this).prop('checked', false);
                 $('.em-check').prop('checked', false);
                 $('.em-actions[multi="0"]').show();
