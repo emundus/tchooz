@@ -12,6 +12,7 @@
    <field Field="d" Type="tinyint" Null="NO" Key="" Default="1" Extra="" />
    <field Field="ordering" Type="int" Null="NO" Key="" Default="0" Extra="" />
    <field Field="status" Type="tinyint(1)" Null="NO" Key="" Default="1" Extra="" />
+   <field Field="description" Type="varchar(255)" Null="YES" Key="" Extra="" />
    <key Table="#__emundus_setup_actions" Non_unique="0" Key_name="PRIMARY" Seq_in_index="1" Column_name="id" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
    <key Table="#__emundus_setup_actions" Non_unique="0" Key_name="label" Seq_in_index="1" Column_name="label" Collation="A" Null="" Index_type="BTREE" Sub_part="" Comment="" />
   </table_structure>
@@ -27,6 +28,7 @@
     <field name="d">1</field>
     <field name="ordering">0</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_FILE_DESC</field>
    </row>
    <row>
     <field name="id">4</field>
@@ -39,6 +41,7 @@
     <field name="d">1</field>
     <field name="ordering">6</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_ATTACHMENT_DESC</field>
    </row>
    <row>
     <field name="id">5</field>
@@ -51,6 +54,7 @@
     <field name="d">1</field>
     <field name="ordering">8</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_EVALUATION_DESC</field>
    </row>
    <row>
     <field name="id">6</field>
@@ -63,6 +67,7 @@
     <field name="d">0</field>
     <field name="ordering">10</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_EXPORT_EXCEL_DESC</field>
    </row>
    <row>
     <field name="id">7</field>
@@ -75,6 +80,7 @@
     <field name="d">0</field>
     <field name="ordering">11</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_EXPORT_ZIP_DESC</field>
    </row>
    <row>
     <field name="id">8</field>
@@ -87,6 +93,7 @@
     <field name="d">0</field>
     <field name="ordering">9</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_EXPORT_PDF_DESC</field>
    </row>
    <row>
     <field name="id">9</field>
@@ -99,6 +106,7 @@
     <field name="d">0</field>
     <field name="ordering">2</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_MAIL_APPLICANT_DESC</field>
    </row>
    <row>
     <field name="id">10</field>
@@ -111,6 +119,7 @@
     <field name="d">1</field>
     <field name="ordering">7</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_COMMENT_FILE_DESC</field>
    </row>
    <row>
     <field name="id">11</field>
@@ -123,6 +132,7 @@
     <field name="d">1</field>
     <field name="ordering">13</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_ACCESS_FILE_DESC</field>
    </row>
    <row>
     <field name="id">12</field>
@@ -135,6 +145,7 @@
     <field name="d">1</field>
     <field name="ordering">14</field>
     <field name="status">2</field>
+    <field name="description">COM_EMUNDUS_ACCESS_USER_DESC</field>
    </row>
    <row>
     <field name="id">13</field>
@@ -147,6 +158,7 @@
     <field name="d">0</field>
     <field name="ordering">1</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_STATUS_DESC</field>
    </row>
    <row>
     <field name="id">14</field>
@@ -159,6 +171,7 @@
     <field name="d">1</field>
     <field name="ordering">12</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_TAGS_DESC</field>
    </row>
    <row>
     <field name="id">15</field>
@@ -171,6 +184,7 @@
     <field name="d">0</field>
     <field name="ordering">3</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_MAIL_EVALUATOR_DESC</field>
    </row>
    <row>
     <field name="id">16</field>
@@ -183,6 +197,7 @@
     <field name="d">0</field>
     <field name="ordering">4</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_MAIL_GROUP_DESC</field>
    </row>
    <row>
     <field name="id">18</field>
@@ -195,6 +210,7 @@
     <field name="d">0</field>
     <field name="ordering">5</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_MAIL_EXPERT_DESC</field>
    </row>
    <row>
     <field name="id">19</field>
@@ -207,6 +223,7 @@
     <field name="d">1</field>
     <field name="ordering">15</field>
     <field name="status">2</field>
+    <field name="description">COM_EMUNDUS_ACCESS_GROUPS_DESC</field>
    </row>
    <row>
     <field name="id">20</field>
@@ -219,6 +236,7 @@
     <field name="d">1</field>
     <field name="ordering">16</field>
     <field name="status">0</field>
+    <field name="description">COM_EMUNDUS_ADD_USER_DESC</field>
    </row>
    <row>
     <field name="id">21</field>
@@ -231,6 +249,7 @@
     <field name="d">1</field>
     <field name="ordering">17</field>
     <field name="status">0</field>
+    <field name="description">COM_EMUNDUS_ACTIVATE_DESC</field>
    </row>
    <row>
     <field name="id">22</field>
@@ -243,6 +262,7 @@
     <field name="d">1</field>
     <field name="ordering">18</field>
     <field name="status">0</field>
+    <field name="description">COM_EMUNDUS_DEACTIVATE_DESC</field>
    </row>
    <row>
     <field name="id">23</field>
@@ -255,6 +275,7 @@
     <field name="d">1</field>
     <field name="ordering">19</field>
     <field name="status">0</field>
+    <field name="description">COM_EMUNDUS_AFFECT_DESC</field>
    </row>
    <row>
     <field name="id">24</field>
@@ -267,6 +288,7 @@
     <field name="d">1</field>
     <field name="ordering">20</field>
     <field name="status">0</field>
+    <field name="description">COM_EMUNDUS_EDIT_USER_DESC</field>
    </row>
    <row>
     <field name="id">25</field>
@@ -279,6 +301,7 @@
     <field name="d">0</field>
     <field name="ordering">21</field>
     <field name="status">0</field>
+    <field name="description">COM_EMUNDUS_SHOW_RIGHT_DESC</field>
    </row>
    <row>
     <field name="id">26</field>
@@ -291,6 +314,7 @@
     <field name="d">1</field>
     <field name="ordering">22</field>
     <field name="status">0</field>
+    <field name="description">COM_EMUNDUS_DELETE_USER_DESC</field>
    </row>
    <row>
     <field name="id">27</field>
@@ -303,6 +327,7 @@
     <field name="d">0</field>
     <field name="ordering">23</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_LETTERS_DESC</field>
    </row>
    <row>
     <field name="id">28</field>
@@ -315,6 +340,7 @@
     <field name="d">0</field>
     <field name="ordering">24</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_PUBLISH_DESC</field>
    </row>
    <row>
     <field name="id">29</field>
@@ -327,6 +353,7 @@
     <field name="d">1</field>
     <field name="ordering">25</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_DECISION_DESC</field>
    </row>
    <row>
     <field name="id">30</field>
@@ -339,6 +366,7 @@
     <field name="d">0</field>
     <field name="ordering">26</field>
     <field name="status">0</field>
+    <field name="description">COM_EMUNDUS_COPY_FILE_DESC</field>
    </row>
    <row>
     <field name="id">31</field>
@@ -351,6 +379,7 @@
     <field name="d">0</field>
     <field name="ordering">26</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_MULTI_LETTERS_DESC</field>
    </row>
    <row>
     <field name="id">32</field>
@@ -363,6 +392,7 @@
     <field name="d">1</field>
     <field name="ordering">28</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ADMISSION_DESC</field>
    </row>
    <row>
     <field name="id">33</field>
@@ -375,6 +405,7 @@
     <field name="d">0</field>
     <field name="ordering">0</field>
     <field name="status">0</field>
+    <field name="description">COM_EMUNDUS_EXTENAL_EXPORT_DESC</field>
    </row>
    <row>
     <field name="id">34</field>
@@ -387,6 +418,7 @@
     <field name="d">1</field>
     <field name="ordering">0</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_INTERVIEW_DESC</field>
    </row>
    <row>
     <field name="id">35</field>
@@ -399,6 +431,7 @@
     <field name="d">0</field>
     <field name="ordering">12</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_FICHE_DE_SYNTHESE_DESC</field>
    </row>
    <row>
     <field name="id">36</field>
@@ -411,6 +444,7 @@
     <field name="d">0</field>
     <field name="ordering">29</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_MESSENGER_DESC</field>
    </row>
    <row>
     <field name="id">37</field>
@@ -423,6 +457,7 @@
     <field name="d">0</field>
     <field name="ordering">30</field>
     <field name="status">1</field>
+    <field name="description">COM_EMUNDUS_ACCESS_LOGS_DESC</field>
    </row>
   </table_data>
  </database>

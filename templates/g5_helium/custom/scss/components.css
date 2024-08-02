@@ -41,12 +41,12 @@
 
     .tw-btn-cancel {
         p,span {
-            color: var(--neutral-0);
+            color: var(--em-coordinator-secondary-color);
         }
 
         &:hover, &:focus, &:active {
             p,span {
-                color: var(--em-coordinator-secondary-color);
+                color: var(--neutral-0);
             }
         }
     }

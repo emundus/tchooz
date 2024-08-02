@@ -7,7 +7,7 @@ $current_user = JFactory::getUser();
 <div class="em-activation-header">
     <p><a class="em-back-button em-pointer em-w-auto em-float-left" style="text-decoration: unset"
           href="<?php echo JUri::base() ?>index.php?option=com_users&task=user.logout&<?php echo JSession::getFormToken() ?>=1"><span
-                    class="material-icons em-mr-4">navigate_before</span><?= JText::_('COM_EMUNDUS_MAIL_GB_BUTTON'); ?>
+                    class="material-icons em-mr-4 tw-text-neutral-600">navigate_before</span><?= JText::_('COM_EMUNDUS_MAIL_GB_BUTTON'); ?>
         </a></p>
 </div>
 

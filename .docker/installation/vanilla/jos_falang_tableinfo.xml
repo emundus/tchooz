@@ -29,26 +29,6 @@
     <field name="tablepkID">id</field>
    </row>
    <row>
-    <field name="id">161</field>
-    <field name="joomlatablename">fabrik_elements</field>
-    <field name="tablepkID">id</field>
-   </row>
-   <row>
-    <field name="id">162</field>
-    <field name="joomlatablename">fabrik_forms</field>
-    <field name="tablepkID">id</field>
-   </row>
-   <row>
-    <field name="id">163</field>
-    <field name="joomlatablename">fabrik_groups</field>
-    <field name="tablepkID">id</field>
-   </row>
-   <row>
-    <field name="id">164</field>
-    <field name="joomlatablename">fabrik_lists</field>
-    <field name="tablepkID">id</field>
-   </row>
-   <row>
     <field name="id">165</field>
     <field name="joomlatablename">fields</field>
     <field name="tablepkID">id</field>
@@ -159,11 +139,6 @@
     <field name="tablepkID">id</field>
    </row>
    <row>
-    <field name="id">187</field>
-    <field name="joomlatablename">emundus_setup_checklist</field>
-    <field name="tablepkID">id</field>
-   </row>
-   <row>
     <field name="id">188</field>
     <field name="joomlatablename">emundus_setup_emails</field>
     <field name="tablepkID">id</field>
@@ -171,11 +146,6 @@
    <row>
     <field name="id">189</field>
     <field name="joomlatablename">emundus_setup_groups</field>
-    <field name="tablepkID">id</field>
-   </row>
-   <row>
-    <field name="id">190</field>
-    <field name="joomlatablename">emundus_setup_mobility</field>
     <field name="tablepkID">id</field>
    </row>
    <row>
@@ -194,7 +164,22 @@
     <field name="tablepkID">step</field>
    </row>
    <row>
-    <field name="id">194</field>
+    <field name="id">195</field>
+    <field name="joomlatablename">emundus_setup_tags</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">199</field>
+    <field name="joomlatablename">emundus_setup_checklist</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">200</field>
+    <field name="joomlatablename">emundus_setup_mobility</field>
+    <field name="tablepkID">id</field>
+   </row>
+   <row>
+    <field name="id">201</field>
     <field name="joomlatablename">emundus_setup_tags,emundus_widgets</field>
     <field name="tablepkID">id</field>
    </row>

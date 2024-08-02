@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension group="fabrik_visualization" method="upgrade" type="plugin" version="4">
-	<name>PLG_FABRIK_VISUALIZATION_FULLCALENDAR</name>
-	<author>Fabrikar</author>
-	<creationDate>February 2024</creationDate>
-	<copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
-	<license>GNU General Public License version 3 or later; see software_license.txt</license>
-	<authorEmail>team@fabrikar.com</authorEmail>
-	<authorUrl>https://www.fabrikar.com</authorUrl>
-	<version>4.0</version>
-	<help url="PLG_VISUALIZATION_FULLCALENDAR_HELP_SERVER"/>
-	<description>PLG_VISUALIZATION_FULLCALENDAR_DESCRIPTION</description>
-	<files>
-		<filename plugin="fullcalendar">fullcalendar.js</filename>
-		<filename>fullcalendar.php</filename>
-		<filename>fullcalendar-min.js</filename>
-		<filename>index.html</filename>
-		<folder>controllers</folder>
-		<folder>forms</folder>
-		<folder>language</folder>
-		<folder>layouts</folder>
-		<folder>libs</folder>
-		<folder>models</folder>
-		<folder>views</folder>
-	</files>
+  <name>PLG_FABRIK_VISUALIZATION_FULLCALENDAR</name>
+  <author>Fabrikar</author>
+  <creationDate>2024-06-26</creationDate>
+  <copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see software_license.txt</license>
+  <authorEmail>team@fabrikar.com</authorEmail>
+  <authorUrl>https://www.fabrikar.com</authorUrl>
+  <version>4.2</version>
+  <help url="PLG_VISUALIZATION_FULLCALENDAR_HELP_SERVER"></help>
+  <description>PLG_VISUALIZATION_FULLCALENDAR_DESCRIPTION</description>
+  <files>
+    <filename plugin="fullcalendar">fullcalendar.js</filename>
+    <filename>fullcalendar.php</filename>
+    <filename>fullcalendar-min.js</filename>
+    <filename>index.html</filename>
+    <folder>controllers</folder>
+    <folder>forms</folder>
+    <folder>language</folder>
+    <folder>layouts</folder>
+    <folder>libs</folder>
+    <folder>models</folder>
+    <folder>views</folder>
+  </files>
 </extension>

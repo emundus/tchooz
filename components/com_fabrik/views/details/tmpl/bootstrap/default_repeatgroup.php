@@ -12,32 +12,22 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\CMS\Language\Text;
+use Joomla\CMS\Factory;
 
+$input = Factory::getApplication()->input;
 $group = $this->group;
 if (!$group->newGroup) :
+	$i = 1;
+	$w = new FabrikWorker;
+
 	foreach ($group->subgroups as $subgroup) :
+		$introData = array_merge($input->getArray(), array('i' => $i));
 		?>
 		<div class="fabrikSubGroup">
-		<?php
-			// Add the add/remove repeat group buttons
-			if ($group->editable) : ?>
-				<div class="fabrikGroupRepeater pull-right">
-					<?php if ($group->canAddRepeat) :?>
-					<a class="addGroup" href="#">
-						<?php echo FabrikHelperHTML::image('plus', 'form', $this->tmpl, array('class' => 'fabrikTip tip-small', 'opts' => '{"trigger": "hover"}', 'title' => Text::_('COM_FABRIK_ADD_GROUP')));?>
-					</a>
-					<?php
-					endif;
-					if ($group->canDeleteRepeat) :?>
-					<a class="deleteGroup" href="#">
-						<?php echo FabrikHelperHTML::image('minus', 'form', $this->tmpl, array('class' => 'fabrikTip tip-small', 'opts' => '{"trigger": "hover"}', 'title' => Text::_('COM_FABRIK_DELETE_GROUP')));?>
-					</a>
-					<?php endif;?>
-				</div>
-			<?php
-			endif;
-			?>
+			<div data-role="group-repeat-intro">
+				<?php echo $w->parseMessageForPlaceHolder($group->repeatIntro, $introData);?>
+			</div>
+
 			<div class="fabrikSubGroupElements">
 				<?php
 
@@ -48,5 +38,6 @@ if (!$group->newGroup) :
 			</div><!-- end fabrikSubGroupElements -->
 		</div><!-- end fabrikSubGroup -->
 		<?php
+		$i ++;
 	endforeach;
 endif;

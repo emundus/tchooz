@@ -207,7 +207,7 @@ function fabrikBuildRoute(&$query)
  */
 function _fabrikRouteMatchesMenuItem($query, $menuItem)
 {
-	if (!$menuItem instanceof stdClass || !isset($query['view']))
+	if (!$menuItem instanceof Joomla\CMS\Menu\MenuItem || !isset($query['view']))
 	{
 		return false;
 	}
@@ -219,6 +219,7 @@ function _fabrikRouteMatchesMenuItem($query, $menuItem)
 		return false;
 	}
 	unset($query['Itemid']);
+	if (isset($query['lang'])) unset($query['lang']);
 
 	switch ($queryView)
 	{

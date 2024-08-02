@@ -33,16 +33,6 @@ export default
   {
     "displayed": true,
     "component": "joomla",
-    "label": "COM_EMUNDUS_ATTACHMENTS_KEYWORDS",
-    "param": "MetaKeys",
-    "type": "keywords",
-    "placeholder": "",
-    "options": [],
-    "optional": 1
-  },
-  {
-    "displayed": true,
-    "component": "joomla",
     "label": "COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_LIST_LIMIT",
     "param": "list_limit",
     "type": "select",

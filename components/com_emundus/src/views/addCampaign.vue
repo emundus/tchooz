@@ -3,7 +3,7 @@
     <div v-if="typeof campaignId == 'undefined' || campaignId == 0">
       <div class="tw-flex tw-items-center tw-cursor-pointer"
            @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-        <span class="material-icons-outlined">navigate_before</span>
+        <span class="material-icons-outlined tw-text-neutral-600">navigate_before</span>
         <span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
       </div>
 

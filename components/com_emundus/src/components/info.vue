@@ -56,7 +56,11 @@ export default {
   },
   mounted() {},
   methods: {},
-  watch: {},
+  watch: {
+    text: function (val) {
+      this.textValueExtracted = this.translate(val);
+    },
+  },
 }
 </script>
 

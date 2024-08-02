@@ -7,28 +7,28 @@
       </div>
 
       <div v-else
-           class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-p-5 tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-gray-200 tw-rounded-[15px] tw-bg-white tw-mb-6 tw-gap-3 tw-shadow"
+           class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-gray-200 tw-rounded-[15px] tw-bg-white tw-mb-6 tw-gap-3 tw-shadow"
            data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
            aria-controls="accordion-collapse-body-1">
-        <div @click="handleSection(indexSection)" class="tw-cursor-pointer">
-          <div class="tw-flex tw-items-center tw-justify-between">
-            <h1 id="accordion-collapse-heading-1" class="tw-user-select-none tw-flex tw-justify-between">
+        <div @click="handleSection(indexSection)" class="tw-cursor-pointer tw-flex-col tw-flex" >
+          <div class="tw-flex tw-items-center tw-justify-between tw-p-5">
+            <h2 id="accordion-collapse-heading-1" class="tw-user-select-none tw-flex tw-justify-between">
               <span :id="'Subtile' + indexSection" class="tw-text-2xl tw-user-select-none">{{ translate(section.label) }}</span>
               <div :key="countNotifUpdate" v-if="sectionsToNotif.includes(indexSection) && numberNotif > 0"
                    class="tw-inline-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-bg-red-500 tw-box-border-2 tw-border-white tw-rounded-full -top-2 -end-2">
                 <span class="tw-text-white tw-text-xs tw-font-bold">{{ numberNotif }}</span>
               </div>
-            </h1>
+            </h2>
             <!-- The expand icon of the section which rotates -->
             <span class="material-icons-outlined tw-scale-150 tw-user-select-none" :id="'SubtitleArrow' + indexSection"
                   name="SubtitleArrows"
                   :class="activeSection === indexSection ? 'tw-rotate-180' : ''">expand_more</span>
           </div>
-          <span v-if="section.intro" class="tw-text-sm tw-text-neutral-800">{{ translate(section.intro) }}</span>
+          <span v-if="section.intro" class="tw-text-sm tw-text-neutral-800 tw--mt-5 tw-pb-5 tw-px-5">{{ translate(section.intro) }}</span>
         </div>
 
         <!-- The content of the section -->
-        <div name="SubMenuContent" class="tw-flex tw-flex-col" v-if="activeSection === indexSection">
+        <div name="SubMenuContent" class="tw-flex tw-flex-col tw-px-5 tw-pb-5" v-if="activeSection === indexSection">
           <Info v-if="section.helptext" :text="section.helptext" class="tw-mb-4"></Info>
           <div v-if="section.component !== 'SubSection'">
             <component :ref="'component_' + section.name" :is="section.component" :key="activeSection"

@@ -1081,7 +1081,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 		}
 
 		// in some corner cases, date will be db name quoted, like in CSV export after an advanced search!
-		$value = $value ?? trim($value, "'");
+		$value = trim($value??"", "'");
         $value = $value == "" ? null : $value;
 
 		//if ($input->get('task') == 'form.process' || ($app->isClient('administrator') && $input->get('task') == 'process'))

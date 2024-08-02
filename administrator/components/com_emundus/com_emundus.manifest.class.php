@@ -106,23 +106,32 @@ class Com_EmundusInstallerScript
 
 		$query = $this->db->getQuery(true);
 
-        if ($this->manifest_cache) {
-            if (version_compare($cache_version, '2.0.0', '<=') || $firstrun) {
-	            EmundusHelperUpdate::displayMessage('Installation de la version 2.0.0...');
+	    $releases_available = scandir($releases_path);
 
-	            require_once $releases_path . '2_0_0.php';
+	    if ($this->manifest_cache) {
+		    foreach ($releases_available as $release) {
+			    if (pathinfo($release, PATHINFO_EXTENSION) === 'php') {
+					$release_with_underscores = str_replace('.php', '', $release);
+				    $release_version = str_replace('_', '.', $release_with_underscores);
 
-	            $release_installer = new Release2_0_0Installer();
-	            $release_installed = $release_installer->install();
-	            if($release_installed['status']) {
-					EmundusHelperUpdate::displayMessage('Installation de la version 2.0.0 réussi.', 'success');
-	            }
-	            else {
-		            EmundusHelperUpdate::displayMessage($release_installed['message'], 'error');
-		            $succeed = false;
-	            }
-            }
-        }
+				    if (version_compare($cache_version, $release_version, '<=') || $firstrun) {
+					    EmundusHelperUpdate::displayMessage('-- Installation de la version ' . $release_version . '... --');
+
+						require_once $releases_path . $release;
+					    $class = '\scripts\Release'.$release_with_underscores.'Installer';
+					    $release_installer = new $class();
+					    $release_installed = $release_installer->install();
+					    if ($release_installed['status']) {
+						    EmundusHelperUpdate::displayMessage('-- Installation de la version ' . $release . ' réussi --', 'success');
+					    }
+					    else {
+						    EmundusHelperUpdate::displayMessage($release_installed['message'], 'error');
+						    $succeed = false;
+					    }
+				    }
+			    }
+		    }
+	    }
 
         return $succeed;
     }
@@ -166,7 +175,7 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour des fichiers de langue.', 'error');
 	    }
 
-	    if(!EmundusHelperUpdate::recompileGantry5()) {
+	    if(!$this->recompileGantry5()) {
 			EmundusHelperUpdate::displayMessage('Erreur lors de la recompilation de Gantry5.', 'error');
 	    }
 
@@ -198,6 +207,14 @@ class Com_EmundusInstallerScript
 		    EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du stockage des champs mot de passe.', 'error');
 	    }
 
+	    if(!$this->checkFabrikIcon()) {
+		    EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de l\'icone détails des listes Fabrik', 'error');
+	    }
+
+	    if(!$this->checkFabrikTemplate()) {
+		    EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des templates Fabrik', 'error');
+	    }
+
 		$query->clear()
 			->update($db->quoteName('#__extensions'))
 			->set($db->quoteName('enabled') . ' = 0')
@@ -211,6 +228,22 @@ class Com_EmundusInstallerScript
 
 		return true;
     }
+
+	private function recompileGantry5()
+	{
+		$dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
+		if (is_dir($dir) && !empty($dir))
+		{
+			foreach (glob($dir . '/*') as $file)
+			{
+				unlink($file);
+			}
+
+			rmdir($dir);
+		}
+
+		return true;
+	}
 
 	private function setSitename() {
 		$updated = false;
@@ -415,6 +448,75 @@ class Com_EmundusInstallerScript
 				$this->db->setQuery($query);
 				$checked = $this->db->execute();
 			}
+		}
+		catch (Exception $e) {
+			$checked = false;
+		}
+
+		return $checked;
+	}
+
+	private function checkFabrikIcon()
+	{
+		$checked = true;
+
+		$query = $this->db->getQuery(true);
+
+		try {
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__fabrik_lists'))
+				->where('json_valid(`params`)')
+				->where('json_extract(`params`, "$.list_detail_link_icon") IS NULL OR json_extract(`params`, "$.list_detail_link_icon") = "search"');
+			$this->db->setQuery($query);
+			$fabrik_lists = $this->db->loadObjectList();
+
+			// Update list_detail_link_icon by visibility
+			foreach ($fabrik_lists as $fabrik_list) {
+				$params = json_decode($fabrik_list->params, true);
+				$params['list_detail_link_icon'] = "visibility";
+
+				$query->clear()
+					->update($this->db->quoteName('#__fabrik_lists'))
+					->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($fabrik_list->id));
+				$this->db->setQuery($query);
+				$checked = $this->db->execute();
+			}
+		}
+		catch (Exception $e) {
+			$checked = false;
+		}
+
+		return $checked;
+	}
+
+	private function checkFabrikTemplate()
+	{
+		$checked = true;
+		$query = $this->db->getQuery(true);
+
+		try {
+			$query->clear()
+				->update($this->db->quoteName('#__fabrik_lists'))
+				->set($this->db->quoteName('template') . ' = ' . $this->db->quote('emundus'))
+				->where($this->db->quoteName('template') . ' = ' . $this->db->quote('bootstrap'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			$query->clear()
+				->update($this->db->quoteName('#__fabrik_forms'))
+				->set($this->db->quoteName('form_template') . ' = ' . $this->db->quote('emundus'))
+				->where($this->db->quoteName('form_template') . ' = ' . $this->db->quote('bootstrap'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			$query->clear()
+				->update($this->db->quoteName('#__fabrik_forms'))
+				->set($this->db->quoteName('view_only_template') . ' = ' . $this->db->quote('emundus'))
+				->where($this->db->quoteName('view_only_template') . ' = ' . $this->db->quote('bootstrap'));
+			$this->db->setQuery($query);
+			$checked = $this->db->execute();
 		}
 		catch (Exception $e) {
 			$checked = false;

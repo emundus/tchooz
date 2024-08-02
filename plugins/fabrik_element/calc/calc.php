@@ -91,7 +91,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
 			//  $$$ hugh - standardizing on $data but need need $d here for backward compat
 			$d = $data;
 			FabrikWorker::clearEval();
-			$res = Php::Eval(['code' => $default, 'vars'=>['data'=>$data, 'd'=>$data, 'formModel'=>$formModel]]);
+			$res = Php::Eval(['code' => $default, 'vars'=>['data'=>$data, 'd'=>$data, 'repeatCounter'=>$repeatCounter, 'formModel'=>$formModel]]);
 			FabrikWorker::logEval($res, 'Eval exception : ' . $this->getElement()->name . ' (id ' . $this->getId() . ')::_getV() : ' . str_replace('%','%%',$default) . ' : %s');
 
 			return $res;
@@ -489,7 +489,7 @@ class PlgFabrik_ElementCalc extends PlgFabrik_Element
         $calc = $w->parseMessageForRepeats($calc, $data, $this, $repeatCounter);
         $calc = $w->parseMessageForPlaceHolder($calc, $d);
 		FabrikWorker::clearEval();
-		$c 	  = Php::Eval(['code' => $calc, 'vars'=>['data'=>$data, 'd'=>$data, 'formModel'=>$formModel]]);
+		$c 	  = Php::Eval(['code' => $calc, 'vars'=>['data'=>$data, 'd'=>$data, 'repeatCounter'=>$repeatCounter, 'formModel'=>$formModel]]);
 		FabrikWorker::logEval($c, 'Caught exception on ajax eval of calc ' . $this->getElement()->name . ': %s');
 		$c    = preg_replace('#(\/\*.*?\*\/)#', '', $c);
 		$c    = $this->getFormattedValue($c);

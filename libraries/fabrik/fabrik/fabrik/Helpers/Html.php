@@ -573,13 +573,16 @@ EOD;
 	 *
 	 * @return  null
 	 */
-	public static function stylesheet($file, $attribs = array())
+	public static function stylesheet($file, $attribs = [])
 	{
 		// $$$ hugh - moved this to top of function, as we now apply livesite in either usage cases below.
 		if (!strstr($file, COM_FABRIK_LIVESITE))
 		{
 			$file = COM_FABRIK_LIVESITE . $file;
 		}
+
+		$opts = http_build_query($attribs);
+		if (!empty($opts)) $file .= $opts;
 
 		if (self::cssAsAsset())
 		{
@@ -591,7 +594,14 @@ EOD;
 				{
 					$opts = new stdClass;
 					echo "<script type=\"text/javascript\">
-				var v = new Asset.css('" . $file . "', " . json_encode($opts) . ");
+					function loadMyJs(file) {
+						let s = document.createElement('script');
+						s.setAttribute('src', file);
+						s.setAttribute('async', true);
+						document.head.appendChild(s);
+						return;
+					}
+				loadMyJs('".$file."');
     		</script>\n";
 					self::$ajaxCssFiles[] = $file;
 				}

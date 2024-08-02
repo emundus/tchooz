@@ -85,7 +85,7 @@ $listDirn  = $this->state->get('list.direction');
 				</tr>
 				</tfoot>
 				<tbody>
-				<?php
+				<?php 
 				//Select group form_ids for marking invalid forms
 				$fdb    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $fdb->getQuery(true);
@@ -93,7 +93,7 @@ $listDirn  = $this->state->get('list.direction');
 				$query->from('#__fabrik_formgroup');
 				$fdb->setQuery($query);
 				$group_form_ids = $fdb->loadColumn();
-
+				
 				foreach ($this->items as $i => $item) :
 					$ordering    = ($listOrder == 'ordering');
 					$link       = Route::_('index.php?option=com_fabrik&task=form.edit&id=' . (int) $item->id);

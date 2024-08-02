@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension group="system" method="upgrade" type="plugin" version="4">
-	<name>System - Fabrik Scheduled Tasks</name>
-	<author>Fabrikar</author>
-	<creationDate>February 2024</creationDate>
-	<copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
-	<license>GNU General Public License version 3 or later; see software_license.txt</license>
-	<authorEmail>team@fabrikar.com</authorEmail>
-	<authorUrl>https://www.fabrikar.com</authorUrl>
-	<version>4.0</version>
-	<description>Runs Fabrik scheduled tasks</description>
-	<files>
-		<filename plugin="fabrikcron">fabrikcron.php</filename>
-	</files>
-	<config>
-	</config>
+  <name>System - Fabrik Scheduled Tasks</name>
+  <author>Fabrikar</author>
+  <creationDate>2024-06-26</creationDate>
+  <copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see software_license.txt</license>
+  <authorEmail>team@fabrikar.com</authorEmail>
+  <authorUrl>https://www.fabrikar.com</authorUrl>
+  <version>4.2</version>
+  <description>Runs Fabrik scheduled tasks</description>
+  <files>
+    <filename plugin="fabrikcron">fabrikcron.php</filename>
+  </files>
+  <config></config>
 </extension>

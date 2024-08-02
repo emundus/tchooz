@@ -184,9 +184,9 @@ class TchoozUpdateCommand extends AbstractCommand
 				preg_match_all($regex, $manifest_cache['version'], $matches, PREG_SET_ORDER, 0);
 
 				# Check if this is the first run for emundus component
-				if ($elementArr['element'] == "com_emundus" and (!empty($matches) || $manifest_cache['version'] <= "2.0.0")) {
+				if ($elementArr['element'] == "com_emundus" and (!empty($matches) || version_compare($manifest_cache['version'],'2.0.0','<'))) {
 					$this->firstrun = true;
-					$this->ioStyle->text("** Script first run **");
+					$this->ioStyle->text("\033[33m--- Script first run ---");
 
 					# Set schema version and align manifest cache version
 					$schema_version            = '2.0.0';
@@ -195,7 +195,7 @@ class TchoozUpdateCommand extends AbstractCommand
 				}
 
 				if ($this->firstrun or version_compare($manifest_cache['version'], $this->manifest_xml->version, '<=')) {
-					$this->ioStyle->text("UPDATE " . $manifest_cache['name'] . ' (' . $manifest_cache['version'] . ' to ' . $this->manifest_xml->version . ')');
+					$this->ioStyle->text("\033[33m--- UPDATE " . $manifest_cache['name'] . ' (' . $manifest_cache['version'] . ' to ' . $this->manifest_xml->version . ') ---');
 
 					if ($this->manifest_xml->scriptfile) {
 						$scriptfile = JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' . $this->manifest_xml->scriptfile;
@@ -314,6 +314,10 @@ class TchoozUpdateCommand extends AbstractCommand
 			}
 
 			$schema_version = $this->getSchemaVersion($elementArr['extension_id']);
+
+			if($success) {
+				$manifest_cache['version'] = $this->refreshManifestCache($elementArr['extension_id'], $elementArr['element']);
+			}
 		}
 		
 		return $success;

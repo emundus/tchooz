@@ -6,6 +6,21 @@ TRUNCATE TABLE jos_dropfiles;
 TRUNCATE TABLE jos_dropfiles_statistics;
 TRUNCATE TABLE jos_dropfiles_files;
 TRUNCATE TABLE jos_emundus_9_00;
+TRUNCATE TABLE jos_emundus_1001_00;
+TRUNCATE TABLE jos_emundus_1001_01;
+TRUNCATE TABLE jos_emundus_1001_01_811_repeat;
+TRUNCATE TABLE jos_emundus_1001_01_814_repeat;
+TRUNCATE TABLE jos_emundus_1001_04;
+TRUNCATE TABLE jos_emundus_1001_04_817_repeat;
+TRUNCATE TABLE jos_emundus_1001_06;
+TRUNCATE TABLE jos_emundus_1001_06_821_repeat;
+TRUNCATE TABLE jos_emundus_1001_08;
+TRUNCATE TABLE jos_emundus_project_progress;
+TRUNCATE TABLE jos_emundus_project_progress_835_repeat;
+TRUNCATE TABLE jos_emundus_project_recipe;
+TRUNCATE TABLE jos_emundus_project_recipe_830_repeat;
+TRUNCATE TABLE jos_emundus_project_rida;
+TRUNCATE TABLE jos_emundus_project_rida_837_repeat;
 TRUNCATE TABLE jos_emundus_admission;
 TRUNCATE TABLE jos_emundus_campaign_candidature;
 TRUNCATE TABLE jos_emundus_campaign_candidature_links;
@@ -165,6 +180,6 @@ ALTER TABLE `jos_emundus_users` auto_increment = 100 ROW_FORMAT = COMPACT;
 
 TRUNCATE TABLE `jos_emundus_users_profiles`;
 
-DELETE FROM jos_menu WHERE menutype LIKE 'campaigns'
+DELETE FROM jos_menu WHERE menutype LIKE 'campaigns';
 
 SET FOREIGN_KEY_CHECKS=1;

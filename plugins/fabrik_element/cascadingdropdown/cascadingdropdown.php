@@ -562,7 +562,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 		if ($filterView == 'table')
 		{
-			array_unshift($this->optionVals[$sqlKey], HTMLHelper::_('select.option', $params->get('cascadingdropdown_noselectionvalue', ''), $this->filterSelectLabel()));
+			array_unshift($this->optionVals[$sqlKey], HTMLHelper::_('select.option', $params->get('cascadingdropdown_noselectionvalue', 0), $this->filterSelectLabel()));
 		}
 		else
 		{
@@ -592,7 +592,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 	private function selectOption()
 	{
 		$params = $this->getParams();
-		return HTMLHelper::_('select.option', $params->get('cascadingdropdown_noselectionvalue', ''), $this->_getSelectLabel());
+		return HTMLHelper::_('select.option', $params->get('cascadingdropdown_noselectionvalue', 0), $this->_getSelectLabel());
 	}
 
 	/**
@@ -1075,7 +1075,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 			if ($default === '')
 			{
-				$default = $params->get('cascadingdropdown_noselectionvalue', '');
+				$default = $params->get('cascadingdropdown_noselectionvalue', 0);
 			}
 
 			$filterId = $this->getHTMLId() . 'value';
@@ -1086,7 +1086,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			$opts->elid = $this->getId();
 			$opts->def = $default;
 			$opts->advanced = $this->getAdvancedSelectClass();
-			$opts->noselectionvalue = $params->get('cascadingdropdown_noselectionvalue', '');
+			$opts->noselectionvalue = $params->get('cascadingdropdown_noselectionvalue', 0);
 			$opts->filterobj = 'Fabrik.filter_' . $container;
 			$opts->lang           = FabrikWorker::getMultiLangURLCode();
 			$opts = json_encode($opts);

@@ -113,7 +113,7 @@ if(!empty($mod_em_campaign_go_back_campaigns_link)) {
                 onclick="window.location.href='<?php echo $mod_em_campaign_go_back_external_url; ?>'"
 		    <?php endif; ?>
         >
-            <span class="material-icons">navigate_before</span><span
+            <span class="material-icons tw-text-neutral-600">navigate_before</span><span
                     class="em-ml-8 em-text-neutral-900"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
         </div>
 		<?php if ($mod_em_campaign_details_show_programme == 1) : ?>

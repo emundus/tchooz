@@ -8,7 +8,10 @@
     "build": "vite build",
     "watch": "vite build --watch --mode development",
     "preview": "vite preview",
-    "lint": "eslint src/**/*.{vue,js} --fix --ignore-path .gitignore"
+    "lint": "eslint src/**/*.{vue,js} --fix --ignore-path .gitignore",
+    "docs:dev": "vitepress dev docs --port 5555",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "@infectoone/vue-ganttastic": "^2.3.2",
@@ -37,7 +40,8 @@
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-vue": "^9.27.0",
     "prettier": "^3.3.2",
-    "vite": "^4.4.9"
+    "vite": "^4.4.9",
+    "vitepress": "^1.3.1"
   },
   "postcss": {
     "plugins": {

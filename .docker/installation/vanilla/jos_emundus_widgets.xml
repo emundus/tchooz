@@ -476,7 +476,7 @@ try {
         $styles_files = JPATH_SITE . '/templates/g5_helium/custom/config/default/styles.yaml';
         $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($styles_files));
 
-        $file->color = $yaml['accent'][substr($tag->class, 6, strlen($tag->class))];
+        $file-&gt;color = $yaml['accent'][substr($tag-&gt;class, 6, strlen($tag-&gt;class))];
 
 		$query-&gt;clear()
 			-&gt;select('COUNT(distinct eta.fnum) as files')

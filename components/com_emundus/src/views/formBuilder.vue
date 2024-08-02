@@ -17,7 +17,7 @@
         <div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
           <p class="tw-flex tw-items-center tw-cursor-pointer" @click="clickGoBack">
             <span id="go-back"
-                  class="material-icons-outlined tw-py-3 tw-pl-5 tw-pr-1 em-pointer">
+                  class="material-icons-outlined tw-text-neutral-600 tw-py-3 tw-pl-5 tw-pr-1 em-pointer">
               navigate_before
             </span>
             {{ translate('COM_EMUNDUS_ACTIONS_BACK') }}

@@ -1,0 +1,109 @@
+import { defineConfig } from 'vitepress'
+
+// https://vitepress.dev/reference/site-config
+export default defineConfig({
+  title: "Tchooz",
+  description: "A website to learn how to develop on Tchooz project",
+  head: [
+      ['link', { rel: 'icon', href: 'favicon.ico' }]
+  ],
+  locales: {
+    root: {
+      label: 'French',
+      lang: 'fr',
+      themeConfig: {
+        // https://vitepress.dev/reference/default-theme-config
+        siteTitle: 'Tchooz',
+        search: {
+          provider: 'local',
+          options: {
+            locales: {
+              root: {
+                translations: {
+                  button: {
+                    buttonText: 'Rechercher',
+                    buttonAriaLabel: 'Cliquez pour rechercher',
+                  },
+                  modal: {
+                    displayDetails: 'Afficher les détails',
+                    resetButtonTitle: 'Réinitialiser la recherche',
+                    backButtonTitle: 'Retour à la recherche',
+                    noResultsText: 'Aucun résultat trouvé',
+                    footer: {
+                      selectText: 'Sélectionner',
+                      selectKeyAriaLabel: 'espace',
+                      navigateText: 'Naviguer',
+                      navigateUpKeyAriaLabel: 'haut',
+                      navigateDownKeyAriaLabel: 'bas',
+                      closeText: 'Fermer',
+                      closeKeyAriaLabel: 'esc',
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        nav: [
+          { text: 'Accueil', link: '/' },
+          { text: 'Documentation', link: '/documentation' }
+        ],
+
+        sidebar: [
+          {
+            text: 'Concepts principaux',
+            items: [
+              {
+                text: 'Créer une vue',
+                link: 'general/create-view'
+              },
+              {
+                text: 'Créer un module',
+                link: 'general/create-module'
+              },
+              {
+                text: 'Créer un plugin',
+                link: 'general/create-plugin'
+              },
+              {
+                text: 'Base de données',
+                link: 'general/database'
+              }
+            ]
+          },
+          {
+            text: 'Vue components',
+            items: [
+              {
+                text: 'Campaigns',
+                items: [
+                  { text: 'AddCampaign', link: '/front/addCampaign' },
+                  { text: 'CampaignEdition', link: '/front/CampaignEdition' },
+                ]
+              }
+            ]
+          },
+          {
+            text: 'Back-end',
+            items: [
+              {
+                text: 'Sommaire',
+                link: '/back/Home'
+              }
+            ]
+          },
+        ],
+
+        socialLinks: []
+      },
+    }
+  },
+  themeConfig: {
+    // https://vitepress.dev/reference/default-theme-config
+    search: {
+      provider: 'local'
+    },
+  },
+  outDir: '../../../public',
+  ignoreDeadLinks: true
+})

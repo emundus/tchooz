@@ -433,19 +433,4 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 
 		return $str;
 	}
-
-	/**
-	 * Used by elements with sub-options, given a value, return its label
-	 * Fabrik dropdown value is string. In case of linking to external tables with int column force $v to string
-	 *
-	 * @param   string $v            Value
-	 * @param   string $defaultLabel Default label
-	 * @param   bool   $forceCheck   Force check even if $v === $defaultLabel
-	 *
-	 * @return  string    Label
-	 */
-	public function getLabelForValue($v, $defaultLabel = null, $forceCheck = false)
-	{
-		return parent::getLabelForValue((string)$v, $defaultLabel, $forceCheck);
-	}
 }

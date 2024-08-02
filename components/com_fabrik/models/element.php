@@ -2265,10 +2265,6 @@ class PlgFabrik_Element extends FabrikPlugin
 		$groupModel = $this->getGroup();
 		$group      = $groupModel->getGroupProperties($model);
 
-		if(is_null($model->data)) {
-			$model->data = array();
-		}
-
 		if (!$this->canUse() && !$this->canView())
 		{
 			return false;
@@ -4887,6 +4883,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		$params = $this->getParams();
 		$values = $this->getSubOptionValues();
 		$labels = $this->getSubOptionLabels();
+		
 		//F4: Don't use strict search, in F4 values may be integer or string
 		$key    = array_search($v, $values, false);
 		/**
@@ -5562,7 +5559,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			if ($plugin->hasSubElements)
 			{
 				// http://fabrikar.com/forums/index.php?threads/calculation-split-on-problem.40122/
-				$labelParts = explode(' & ', $val->label);
+				$labelParts = explode(' & ', $val->label??'');
 				if (count($labelParts) > 1)
 				{
 					$label = $labelParts[1];

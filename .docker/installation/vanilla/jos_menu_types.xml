@@ -166,6 +166,15 @@
     <field name="client_id">0</field>
     <field name="ordering">0</field>
    </row>
+   <row>
+    <field name="id">19</field>
+    <field name="asset_id">133</field>
+    <field name="menutype">project-management</field>
+    <field name="title">Project management</field>
+    <field name="description">Accès à la partie gestion de projet</field>
+    <field name="client_id">0</field>
+    <field name="ordering">0</field>
+   </row>
   </table_data>
  </database>
 </mysqldump>

@@ -37,8 +37,9 @@ module.exports = {
             pattern: /tw-flex-/
         },
         {
-            pattern: /tw-grid-cols-/
-        }
+            pattern: /tw-grid-cols-/,
+            variants: ['sm', 'md', 'lg'],
+        },
     ],
     theme: {
         extend: {
@@ -191,6 +192,9 @@ module.exports = {
                     lineHeight: '1.25',
                     borderRadius: 'var(--em-applicant-br)',
                     transition: 'all 0.3s ease-in-out',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
 
                     '&:hover': {
                         backgroundColor: 'var(--neutral-0)',
@@ -212,6 +216,9 @@ module.exports = {
                     lineHeight: '1.25',
                     borderRadius: 'var(--em-applicant-br)',
                     transition: 'all 0.3s ease-in-out',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
 
                     '&:hover': {
                         backgroundColor: 'var(--em-secondary-color)',
@@ -234,6 +241,9 @@ module.exports = {
                     lineHeight: '1.25',
                     borderRadius: 'var(--em-applicant-br)',
                     transition: 'all 0.3s ease-in-out',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
 
                     '&:hover': {
                         backgroundColor: 'var(--em-tertiary-color)',
@@ -255,6 +265,9 @@ module.exports = {
                     lineHeight: '1.25',
                     borderRadius: 'var(--em-coordinator-br)',
                     transition: 'all 0.3s ease-in-out',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
 
                     '&:hover': {
                         backgroundColor: 'var(--em-coordinator-secondary-color)',

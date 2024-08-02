@@ -790,6 +790,9 @@ video {
     line-height: 1.25;
     border-radius: var(--em-applicant-br);
     transition: all 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .tw-btn-primary:hover {
     background-color: var(--neutral-0);
@@ -809,6 +812,9 @@ video {
     line-height: 1.25;
     border-radius: var(--em-applicant-br);
     transition: all 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .tw-btn-secondary:hover {
     background-color: var(--em-secondary-color);
@@ -828,6 +834,9 @@ video {
     line-height: 1.25;
     border-radius: var(--em-applicant-br);
     transition: all 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .tw-btn-tertiary:hover {
     background-color: var(--em-tertiary-color);
@@ -847,6 +856,9 @@ video {
     line-height: 1.25;
     border-radius: var(--em-coordinator-br);
     transition: all 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .tw-btn-cancel:hover {
     background-color: var(--em-coordinator-secondary-color);
@@ -873,10 +885,10 @@ video {
                 color: var(--neutral-0);
             }
 .tw-btn-cancel p,.tw-btn-cancel span {
-            color: var(--neutral-0);
+            color: var(--em-coordinator-secondary-color);
         }
 .tw-btn-cancel:hover p,.tw-btn-cancel:hover span,.tw-btn-cancel:focus p,.tw-btn-cancel:focus span,.tw-btn-cancel:active p,.tw-btn-cancel:active span {
-                color: var(--em-coordinator-secondary-color);
+                color: var(--neutral-0);
             }
 /** DROPFILES **/
 .dropfiles-page .breadcrumbs {
@@ -1676,9 +1688,9 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio {
                     padding: var(--em-form-radio-padding);
                     border: var(--em-form-radio-bw) solid var(--em-form-radio-bc);
                     border-radius: var(--em-form-radio-br);
-}
-form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio.col-sm-6 {
-    flex: 1 1 0%;
+                    width: -moz-fit-content;
+                    width: fit-content;
+                    height: auto;
 }
 form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio input {
                         accent-color: var(--em-form-radio-color-checked);
@@ -1714,10 +1726,16 @@ form.fabrikForm .plg-radiobutton .fabrikSubElementContainer .fabrikgrid_radio la
 form.fabrikForm .form-check-input:focus {
             box-shadow: none;
         }
+form.fabrikForm .plg-checkbox .fabrikElement {
+                padding-left: 1.5em;
+            }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer {
                     border-top: solid var(--em-form-checkbox-bw) var(--em-form-checkbox-bc);
                     padding: var(--em-form-checkbox-padding) 0 0 0;
                 }
+form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer>div {
+                        margin-bottom: 8px;
+                    }
 form.fabrikForm .plg-checkbox .fabrikElement .fabrikSubElementContainer .row {
                         margin-top: 0;
                         margin-bottom: var(--em-form-checkbox-padding);
@@ -3332,6 +3350,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .-tw-mt-px {
     margin-top: -1px;
 }
+.tw--mt-5 {
+    margin-top: calc(var(--em-spacing-5) * -1);
+}
 .tw-mb-0 {
     margin-bottom: 0px;
 }
@@ -4125,6 +4146,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-rotate: 180deg;
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
+.tw-rotate-90 {
+    --tw-rotate: 90deg;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
 .tw-scale-150 {
     --tw-scale-x: 1.5;
     --tw-scale-y: 1.5;
@@ -4148,9 +4173,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-cursor-grab {
     cursor: grab;
-}
-.tw-cursor-help {
-    cursor: help;
 }
 .tw-cursor-move {
     cursor: move;
@@ -4343,6 +4365,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-border-r {
     border-right-width: 1px;
 }
+.tw-border-s-4 {
+    border-inline-start-width: 4px;
+}
 .tw-border-t {
     border-top-width: 1px;
 }
@@ -4426,9 +4451,6 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-bg-profile-medium {
     background-color: hsl(from var(--em-profile-color) h s l / 30%);
-}
-.tw-bg-red-50 {
-    background-color: var(--red-50);
 }
 .tw-bg-red-500 {
     background-color: var(--red-500);
@@ -5677,15 +5699,15 @@ button.swal2-styled.swal2-confirm {
     }
 button.swal2-styled.swal2-cancel {
         background: #FFFFFF;
-       /* border: 1px solid var(--blue-500);*/
+        border: 1px solid var(--blue-500);
         border-radius: var(--em-coordinator-br);
-       /* color: var(--blue-500); */
+        color: var(--blue-500);
         padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     }
 button.swal2-styled.swal2-cancel:hover,
     button.swal2-styled.swal2-cancel:active,
     button.swal2-styled.swal2-cancel:focus {
-      /*  background: var(--blue-500);*/
+        background: var(--blue-500);
         color: #FFFFFF;
         background-image: none !important;
     }
@@ -6440,9 +6462,6 @@ small {
 .em-goback-btn {
     padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
 }
-.em-goback-btn .material-icons-outlined {
-        color: var(--em-secondary-color);
-    }
 .em-goback-btn button.btn.goback-btn {
         text-shadow: none;
         text-transform: none;
@@ -6498,12 +6517,131 @@ small {
 :is([dir="rtl"] .rtl\:tw-text-right) {
     text-align: right;
 }
+@media (min-width: 640px) {
+    .sm\:tw-grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-10 {
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-11 {
+        grid-template-columns: repeat(11, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-12 {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-6 {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-7 {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-8 {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-9 {
+        grid-template-columns: repeat(9, minmax(0, 1fr));
+    }
+    .sm\:tw-grid-cols-none {
+        grid-template-columns: none;
+    }
+}
 @media (min-width: 768px) {
+    .md\:tw-grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-10 {
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-11 {
+        grid-template-columns: repeat(11, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-12 {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-6 {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-7 {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-8 {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-9 {
+        grid-template-columns: repeat(9, minmax(0, 1fr));
+    }
+    .md\:tw-grid-cols-none {
+        grid-template-columns: none;
+    }
     .md\:tw-justify-center {
         justify-content: center;
     }
 }
 @media (min-width: 1024px) {
+    .lg\:tw-grid-cols-1 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-10 {
+        grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-11 {
+        grid-template-columns: repeat(11, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-12 {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-6 {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-7 {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-8 {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-9 {
+        grid-template-columns: repeat(9, minmax(0, 1fr));
+    }
+    .lg\:tw-grid-cols-none {
+        grid-template-columns: none;
+    }
     .lg\:tw-justify-start {
         justify-content: flex-start;
     }

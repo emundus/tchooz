@@ -120,46 +120,7 @@ class PlgFabrik_ElementUsergroup extends PlgFabrik_ElementList
 		return $layout->render($layoutData);
 	}
 
-	/**
-	 * Shows the data formatted for the list view
-	 * F4: Usergroup names vanished in list view, get them again
-	 *
-	 * @param   string    $data      Elements data
-	 * @param   stdClass  &$thisRow  All the data in the lists current row
-	 * @param   array     $opts      Rendering options
-	 *
-	 * @return  string	formatted value
-	 */	
-	public function renderListData($data, stdClass &$thisRow, $opts = array()) {
-		
-		if (!empty($data))
-			{
-				$ugroups= (array)json_decode($data);
-				$isRepeat = false;
-				
-				foreach ($ugroups as $group) {
-					if (is_array($group)) $isRepeat = true;
-				}
-				
-				$allGroups = $this->allOpts();
-				$groupdata = [];
-				
-				if ($isRepeat) {
-					//for now do nothing (returns usergroup numbers)
-					return parent::renderListData($data, $thisRow, $opts);
-				}
-				else {
-					foreach ($ugroups as $group) {
-							if (array_key_exists($group,$allGroups)) $groupdata[] = $allGroups[$group]->title;
-							else $groupdata[] = $group;
-					}
-				}
-				
-				$data = json_encode($groupdata);
-			}
-		return parent::renderListData($data, $thisRow, $opts);
-	}
-
+	
 	/**
 	 * Get sub option values
 	 *

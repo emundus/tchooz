@@ -176,13 +176,13 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
 
     echo >&2 "Create super administrator user..."
 
-    #php cli/joomla.php tchooz:user:add --username="sysadmin" --lastname="ADMINISTRATOR" --firstname="Emundus" --password="password" --email="dev@emundus.io" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Tous les droits" -n
-    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_SYSADMIN_USERNAME" --lastname="$TCHOOZ_SYSADMIN_LAST_NAME" --firstname="$TCHOOZ_SYSADMIN_FIRST_NAME" --password="$TCHOOZ_SYSADMIN_PASSWORD" --email="$TCHOOZ_SYSADMIN_MAIL" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Tous les droits" -n
+    #php cli/joomla.php tchooz:user:add --username="sysadmin" --lastname="ADMINISTRATOR" --firstname="Emundus" --password="password" --email="dev@emundus.io" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Administrateur de plateforme" -n
+    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_SYSADMIN_USERNAME" --lastname="$TCHOOZ_SYSADMIN_LAST_NAME" --firstname="$TCHOOZ_SYSADMIN_FIRST_NAME" --password="$TCHOOZ_SYSADMIN_PASSWORD" --email="$TCHOOZ_SYSADMIN_MAIL" --usergroup="Registered,Super Users" --userprofiles="System administrator" --useremundusgroups="Administrateur de plateforme" -n
 
     echo >&2 "Create coordinator user..."
 
-    #php cli/joomla.php tchooz:user:add --username="dev@emundus.fr" --lastname="DEV" --firstname="Coordinator" --password="password" --email="dev@emundus.fr" --usergroup="Registered,Administrator" --userprofiles="Gestionnaire de plateforme,Formulaire de base" --useremundusgroups="Tous les droits" -n
-    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_COORD_USERNAME" --lastname="$TCHOOZ_COORD_LAST_NAME" --firstname="$TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" --userprofiles="Gestionnaire de plateforme,Formulaire de base" --useremundusgroups="Tous les droits" -n
+    #php cli/joomla.php tchooz:user:add --username="coord@emundus.fr" --lastname="DEV" --firstname="Coordinator" --password="password" --email="coord@emundus.fr" --usergroup="Registered,Administrator" --userprofiles="Administrateur de plateforme,Formulaire de base" --useremundusgroups="Administrateur de plateforme" -n
+    php cli/joomla.php tchooz:user:add --username="$TCHOOZ_COORD_USERNAME" --lastname="$TCHOOZ_COORD_LAST_NAME" --firstname="$TCHOOZ_COORD_FIRST_NAME" --password="$TCHOOZ_COORD_PASSWORD" --email="$TCHOOZ_COORD_MAIL" --usergroup="Registered,Administrator" --userprofiles="Administrateur de plateforme,Formulaire de base" --useremundusgroups="Administrateur de plateforme" -n
 
     echo >&2 "Set Fabrik connection..."
 
@@ -202,6 +202,11 @@ if [[ "$1" == apache2* ]] || [ "$1" == php-fpm ]; then
     echo >&2
     echo >&2 "========================================================================"
   fi
+
+  echo >&2 "Build documentation..."
+  npm install
+  npm install --prefix components/com_emundus
+  npm run docs:build --prefix components/com_emundus
 
   echo >&2 "========================================================================"
   echo >&2
