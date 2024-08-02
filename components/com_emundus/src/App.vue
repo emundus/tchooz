@@ -50,6 +50,7 @@ import messages from "@/components/Messages/Messages.vue";
 import ApplicationSingle from "@/components/Files/ApplicationSingle.vue";
 import TranslationTool from "@/components/Settings/Translation/TranslationTool.vue";
 import WorkflowEdit from "@/views/Workflows/WorkflowEdit.vue";
+import Workflows  from "@/views/Workflows.vue";
 
 import settingsService from "@/services/settings.js";
 import { useGlobalStore } from '@/stores/global.js';
@@ -88,7 +89,8 @@ export default {
     Files,
     list_v2,
     TranslationTool,
-    WorkflowEdit
+    WorkflowEdit,
+    Workflows
   },
 
   created() {
