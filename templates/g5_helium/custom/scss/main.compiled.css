@@ -5683,15 +5683,15 @@ button.swal2-styled.swal2-confirm {
     }
 button.swal2-styled.swal2-cancel {
         background: #FFFFFF;
-       /* border: 1px solid var(--blue-500);*/
+        border: 1px solid var(--blue-500);
         border-radius: var(--em-coordinator-br);
-       /* color: var(--blue-500); */
+        color: var(--blue-500);
         padding: var(--em-coordinator-vertical) var(--em-coordinator-horizontal);
     }
 button.swal2-styled.swal2-cancel:hover,
     button.swal2-styled.swal2-cancel:active,
     button.swal2-styled.swal2-cancel:focus {
-      /*  background: var(--blue-500);*/
+        background: var(--blue-500);
         color: #FFFFFF;
         background-image: none !important;
     }

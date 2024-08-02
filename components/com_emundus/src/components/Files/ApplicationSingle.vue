@@ -10,11 +10,11 @@
     <div class="em-modal-header tw-w-full tw-px-3 tw-py-4 tw-bg-profile-full tw-flex tw-items-center">
       <div class="tw-flex tw-items-center tw-cursor-pointer tw-justify-between tw-w-full" id="evaluation-modal-close">
         <div class="tw-flex tw-items-center tw-gap-2">
-          <div class="tw-w-max tw-flex tw-items-center">
-          <span class="material-icons-outlined tw-text-base"
-                @click="onClose" style="color: white">arrow_back</span>
+          <div  @click="onClose" class="tw-w-max tw-flex tw-items-center">
+               <span class="material-icons-outlined tw-text-base" style="color: white">navigate_before</span>
+              <span class="tw-ml-2 tw-text-neutral-900 tw-text-white tw-text-sm">{{ translate('BACK') }}</span>
           </div>
-          <span class="tw-text-neutral-500">|</span>
+          <span class="tw-text-white">|</span>
           <p class="tw-text-sm" style="color: white" v-if="selectedFile.applicant_name != ''">
             {{ selectedFile.applicant_name }} - {{ selectedFile.fnum }}
           </p>
