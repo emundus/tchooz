@@ -81,7 +81,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 			"CREATE TABLE IF NOT EXISTS `#__fabrik_change_log` (
 			    `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 			    `user_id` INT( 11 ) NOT NULL DEFAULT 0 ,
-			    `ip_address` CHAR( 14 ) NOT NULL DEFAULT '' ,
+			    `ip_address` CHAR( 24 ) NOT NULL DEFAULT '' ,
 			    `referrer` TEXT,
 			    `time_date` DATETIME NOT NULL ,
 			    `form_id` INT( 11 ) NOT NULL DEFAULT 0,
@@ -112,6 +112,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 			"ALTER TABLE `#__fabrik_change_log_fields` ALTER `field_name` SET DEFAULT '';",
 			"ALTER TABLE `#__fabrik_change_log_fields` ALTER `log_type_id` SET DEFAULT 0;",
 			"ALTER TABLE `#__fabrik_change_log` ALTER `user_id` SET DEFAULT 0;",
+			"ALTER TABLE `#__fabrik_change_log` MODIFY `ip_address` CHAR(24);",
 			"ALTER TABLE `#__fabrik_change_log` ALTER `ip_address` SET DEFAULT '';",
 			"ALTER TABLE `#__fabrik_change_log` MODIFY `time_date` datetime NOT NULL;",
 			"UPDATE `#__fabrik_change_log` SET `time_date` = '1980-01-01 00:00:00' WHERE `time_date` < '1000-01-01' OR `time_date` IS NULL;",

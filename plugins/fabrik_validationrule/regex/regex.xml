@@ -1,29 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension group="fabrik_validationrule" method="upgrade" type="plugin" version="4">
-	<name>plg_fabrik_validationrule_regex</name>
-	<author>Fabrikar</author>
-	<creationDate>February 2024</creationDate>
-	<copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
-	<license>GNU General Public License version 3 or later; see software_license.txt</license>
-	<authorEmail>team@fabrikar.com</authorEmail>
-	<authorUrl>https://www.fabrikar.com</authorUrl>
-	<version>4.0</version>
-	<help url="PLG_VALIDATIONRULE_REGEX_HELP_SERVER"/>
-	<description>PLG_VALIDATIONRULE_REGEX_DESCRIPTION</description>
-	<files>
-		<filename plugin="regex">regex.php</filename>
-		<filename>index.html</filename>
-		<folder>forms</folder>
-		<folder>language</folder>
-	</files>
-
-	<config>
-		<fields name="params">
-			<fieldset label="PLG_FABRIK_OPTIONS" name="params">
-
-				<field name="icon" type="text" default="star" description="PLG_FABRIK_VALIDATION_ICON_DESC" label="PLG_FABRIK_VALIDATION_ICON_LABEL"/>
-			</fieldset>
-		</fields>
-	</config>
-
+  <name>plg_fabrik_validationrule_regex</name>
+  <author>Fabrikar</author>
+  <creationDate>2024-06-26</creationDate>
+  <copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see software_license.txt</license>
+  <authorEmail>team@fabrikar.com</authorEmail>
+  <authorUrl>https://www.fabrikar.com</authorUrl>
+  <version>4.2</version>
+  <help url="PLG_VALIDATIONRULE_REGEX_HELP_SERVER"></help>
+  <description>PLG_VALIDATIONRULE_REGEX_DESCRIPTION</description>
+  <files>
+    <filename plugin="regex">regex.php</filename>
+    <filename>index.html</filename>
+    <folder>forms</folder>
+    <folder>language</folder>
+  </files>
+  <config>
+    <fields name="params">
+      <fieldset label="PLG_FABRIK_OPTIONS" name="params">
+        <field name="icon" type="text" default="star" description="PLG_FABRIK_VALIDATION_ICON_DESC" label="PLG_FABRIK_VALIDATION_ICON_LABEL"></field>
+      </fieldset>
+    </fields>
+  </config>
 </extension>

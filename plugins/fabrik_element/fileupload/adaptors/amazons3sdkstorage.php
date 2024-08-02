@@ -209,7 +209,7 @@ class Amazons3sdkstorage extends FabrikStorageAdaptor
 	public function upload($tmpFile, $filepath)
 	{
 		$filepath = str_replace("\\", '/', $filepath);
-		$mimeType = GuzzleHttp\Psr7\mimetype_from_filename($filepath);
+		$mimeType = GuzzleHttp\Psr7\MimeType::fromFilename($filepath);
 
 		if (!$this->bucketExists())
 		{

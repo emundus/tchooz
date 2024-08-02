@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension client="administrator" method="upgrade" type="module" version="4">
-	<name>Fabrik Visualization</name>
-	<author>Fabrikar</author>
-	<creationDate>February 2024</creationDate>
-	<copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
-	<license>GNU General Public License version 3 or later; see software_license.txt</license>
-	<authorEmail>team@fabrikar.com</authorEmail>
-	<authorUrl>https://www.fabrikar.com</authorUrl>
-	<version>4.0</version>
-	<description>This module shows a Fabrik visualization in Joomla's administration pages.</description>
-	<files>
-		<filename module="mod_fabrik_visualization">mod_fabrik_visualization.php</filename>
-		<filename>index.html</filename>
-		<filename>mod_fabrik_visualization.xml</filename>
-	</files>
-	<config>
-		<fields name="params">
-			<fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="advanced">
-				<field default="0" description="" label="Select Instance" name="id" type="visualizationlist"/>
-			</fieldset>
-		</fields>
-	</config>
+  <name>Fabrik Visualization</name>
+  <author>Fabrikar</author>
+  <creationDate>2024-06-26</creationDate>
+  <copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see software_license.txt</license>
+  <authorEmail>team@fabrikar.com</authorEmail>
+  <authorUrl>https://www.fabrikar.com</authorUrl>
+  <version>4.2</version>
+  <description>This module shows a Fabrik visualization in Joomla&apos;s administration pages.</description>
+  <files>
+    <filename module="mod_fabrik_visualization">mod_fabrik_visualization.php</filename>
+    <filename>index.html</filename>
+    <filename>mod_fabrik_visualization.xml</filename>
+  </files>
+  <config>
+    <fields name="params">
+      <fieldset addfieldpath="/administrator/components/com_fabrik/models/fields" name="advanced">
+        <field default="0" description="" label="Select Instance" name="id" type="visualizationlist"></field>
+      </fieldset>
+    </fields>
+  </config>
 </extension>

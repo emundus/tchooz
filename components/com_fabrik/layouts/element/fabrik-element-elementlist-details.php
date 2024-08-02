@@ -4,7 +4,7 @@ defined('JPATH_BASE') or die;
 $d = $displayData;
 
 $condensed = array();
-
+$d->addHtml = $d->addHtml && count($d->uls)>1;
 if ($d->condense) :
 	foreach ($d->uls as $ul) :
 		$condensed[] = $ul[0];

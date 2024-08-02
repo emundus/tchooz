@@ -1430,6 +1430,14 @@ if(value == 1) {
 			$this->db->execute();
 			//
 
+			$query = $this->db->getQuery(true);
+			$query->clear()
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('element') . ' = ' . $this->db->quote('pkg_fabrikbase'))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('pkg_fabrik'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+
 			$result['status'] = true;
 		}
 		catch (\Exception $e)

@@ -84,6 +84,8 @@ class PlgFabrik_FormEmail extends PlgFabrik_Form
 		$input  = $this->app->input;
 		jimport('joomla.mail.helper');
 		$w = new Worker;
+		//Reset attachments in case of multiple email plugins
+		$this->attachments = [];
 
 		/** @var \FabrikFEModelForm $formModel */
 		$formModel     = $this->getModel();
