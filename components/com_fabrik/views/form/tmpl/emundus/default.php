@@ -72,7 +72,7 @@ endif;
         </div>
 
 
-	    <?php if(!empty($form->intro)) : ?>
+	    <?php if(!empty(strip_tags($form->intro))) : ?>
         <div class="em-form-intro tw-mt-4">
             <?php
             echo trim($form->intro);
@@ -110,7 +110,7 @@ endif;
 			$this->group = $group;
 			?>
 
-            <div class="tw-mt-0 tw-mb-6 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
+            <div class="tw-mt-0 tw-mb-8 <?php echo $group->class; ?> <?php if ($group->columns > 1) {
 				echo 'fabrikGroupColumns-' . $group->columns . ' fabrikGroupColumns';
 			} ?>" id="group<?php echo $group->id; ?>" style="<?php echo $group->css; ?>">
                 <?php if(($group->showLegend && !empty($group->title)) || !empty($group->intro)) : ?>
