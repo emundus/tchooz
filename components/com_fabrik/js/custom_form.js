@@ -120,6 +120,7 @@ requirejs(['fab/fabrik'], function () {
     });
 
     Fabrik.addEvent('fabrik.form.elements.added', function (form, event) {
+        let formHeight = document.getElementById(form.getBlock()).offsetHeight;
         if(!form_loaded) {
             setTimeout(() => {
                 fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
@@ -143,6 +144,15 @@ requirejs(['fab/fabrik'], function () {
                     form_loaded = true;
                 });
             }, 500);
+
+            form.elements.forEach(function (element) {
+                if(element.plugin === 'fabrikdate') {
+                    var elementOffset = element.element.parentElement.parentElement.offsetTop;
+                    if(formHeight - elementOffset < 400) {
+                        element.element.getElementsByClassName('js-calendar')[0].style.bottom = 'var(--em-form-height)';
+                    }
+                }
+            });
         }
     });
 

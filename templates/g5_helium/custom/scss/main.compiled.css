@@ -1021,6 +1021,7 @@ video {
                 }
 .fabrikElement .field-calendar .js-calendar {
                 margin-top: 6px !important;
+                margin-bottom: 6px !important;
             }
 .fabrikElement .field-calendar .js-calendar .calendar-container table {
                         border: unset;

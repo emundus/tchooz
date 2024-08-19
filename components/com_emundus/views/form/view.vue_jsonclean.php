@@ -289,7 +289,7 @@ class EmundusViewForm extends FabrikViewFormBase
 								${"element" . $o_element->id}->tipAbove = $content_element->tipAbove;
 							endif;
 							if ($content_element->element) :
-								if ($o_element->plugin == 'date') {
+								if (in_array($o_element->plugin,['date','jdate'])) {
 									${"element" . $o_element->id}->element = '<input data-v-8d3bb2fa="" class="form-control" type="date">';
 								}
 								else {
@@ -314,7 +314,7 @@ class EmundusViewForm extends FabrikViewFormBase
 								${"element" . $o_element->id}->tipAbove = $content_element->tipAbove;
 							endif;
 							if ($content_element->element) :
-								if ($o_element->plugin == 'date') {
+								if (in_array($o_element->plugin,['date','jdate'])) {
 									${"element" . $o_element->id}->element = '<input data-v-8d3bb2fa="" class="form-control" type="date">';
 								}
 								else {

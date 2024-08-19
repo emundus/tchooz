@@ -624,7 +624,7 @@ class PlgFabrik_FormEmundusimportcsv extends plgFabrik_Form {
 									$this->_db->setQuery($query_element);
 									$plugin = $this->_db->loadResult();
 
-									if($plugin == 'date' || $plugin == 'birthday') {
+									if($plugin == 'date' || $plugin == 'birthday' || $plugin == 'jdate') {
 										$dt = DateTime::createFromFormat("d/m/Y", $data);
 										$ts = $dt->getTimestamp();
 										$query->set($this->_db->quoteName($key) . ' = ' . $this->_db->quote(date('Y-m-d H:i:s',$ts)));

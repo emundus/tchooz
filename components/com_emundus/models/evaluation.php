@@ -177,9 +177,9 @@ class EmundusModelEvaluation extends JModelList
 					}
 				}
 
-				if ($def_elmt->element_plugin == 'date')
+				if (in_array($def_elmt->element_plugin,['date','jdate']))
 				{
-					if (@$group_params->repeat_group_button == 1)
+					if ($group_params->repeat_group_button == 1)
 					{
 						$this->_elements_default[] = '(
                                                         SELECT  GROUP_CONCAT(DATE_FORMAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
@@ -2661,6 +2661,10 @@ class EmundusModelEvaluation extends JModelList
 									else if ($elt['plugin'] == 'date')
 									{
 										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->date_form_format);
+									}
+									else if ($elt['plugin'] == 'jdate')
+									{
+										$fabrikValues[$elt['id']] = $_mFile->getFabrikValue([$fnum], $elt['db_table_name'], $elt['name'], $params->jdate_form_format);
 									}
 									else if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton")
 									{

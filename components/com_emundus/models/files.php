@@ -192,7 +192,7 @@ class EmundusModelFiles extends JModelLegacy
 					}
 				}
 
-				if ($def_elmt->element_plugin == 'date') {
+				if (in_array($def_elmt->element_plugin,['date','jdate'])) {
 					if ($group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
                                                         SELECT  GROUP_CONCAT(DATE_FORMAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")
@@ -4105,6 +4105,11 @@ class EmundusModelFiles extends JModelLegacy
 		$group = '';
 		if ($plugin === 'date') {
 			$date_form_format = $this->dateFormatToMysql($params->date_form_format);
+
+			$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
+		}
+		elseif ($plugin === 'jdate') {
+			$date_form_format = $this->dateFormatToMysql($params->jdate_form_format);
 
 			$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
 		}

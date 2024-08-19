@@ -55,6 +55,7 @@
             }
             .js-calendar {
                 margin-top: 6px !important;
+                margin-bottom: 6px !important;
 
                 .calendar-container {
                     table {

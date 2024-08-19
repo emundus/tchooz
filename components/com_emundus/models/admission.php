@@ -125,7 +125,7 @@ class EmundusModelAdmission extends JModelList
 			foreach ($this->_elements as $def_elmt) {
 				$group_params = json_decode($def_elmt->group_attribs);
 
-				if ($def_elmt->element_plugin == 'date') {
+				if (in_array($def_elmt->element_plugin,['date','jdate'])) {
 					if ($group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
 														SELECT  GROUP_CONCAT(DATE_FORMAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ', "%d/%m/%Y %H:%i:%m") SEPARATOR ", ")

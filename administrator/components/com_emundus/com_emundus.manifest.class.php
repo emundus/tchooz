@@ -215,6 +215,10 @@ class Com_EmundusInstallerScript
 		    EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des templates Fabrik', 'error');
 	    }
 
+	    if(!$this->convertDateToJDate()) {
+		    EmundusHelperUpdate::displayMessage('Erreur lors de la conversion des champs Fabrik de date à jdate', 'error');
+	    }
+
 		$query->clear()
 			->update($db->quoteName('#__extensions'))
 			->set($db->quoteName('enabled') . ' = 0')

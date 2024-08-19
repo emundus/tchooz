@@ -635,10 +635,10 @@ class EmundusHelperEvents
 										$elt = $db->loadObject();
 
 										// if this element is date plugin, we need to check the time storage format (UTC of Local time)
-										if ($elt->plugin === 'date')
+										if (in_array($elt->plugin, ['date','jdate']))
 										{
 											// storage format (UTC [0], Local [1])
-											$timeStorageFormat = json_decode($elt->params)->date_store_as_local;
+											$timeStorageFormat = EmundusHelperFabrik::getFabrikDateParam($elt, 'date_store_as_local');
 
 											$store = EmundusHelperDate::displayDate($store, 'Y-m-d H:i:s', $timeStorageFormat);
 										}

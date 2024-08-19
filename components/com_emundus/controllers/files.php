@@ -1666,9 +1666,13 @@ class EmundusControllerFiles extends JControllerLegacy
 						}
 						else {
 
-							if ($fLine->element_plugin == 'date') {
+							if (in_array($fLine->element_plugin,['date','jdate'])) {
 								$params                                                         = json_decode($fLine->element_attribs);
-								$date_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->date_form_format;
+								if($fLine->element_plugin == 'jdate') {
+									$date_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->jdate_form_format;
+								} else {
+									$date_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->date_form_format;
+								}
 							}
 
 							if ($fLine->element_plugin == 'textarea') {
@@ -1727,9 +1731,13 @@ class EmundusControllerFiles extends JControllerLegacy
 				// On définit les bons formats
 				$date_elements = [];
 				foreach ($ordered_elements as $fLine) {
-					if ($fLine->element_plugin == 'date') {
+					if (in_array($fLine->element_plugin,['date','jdate'])) {
 						$params = json_decode($fLine->element_attribs);
-						$date_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->date_form_format;
+						if($fLine->element_plugin == 'jdate') {
+							$date_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->jdate_form_format;
+						} else {
+							$date_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->date_form_format;
+						}
 					}
 
 					if ($fLine->element_plugin == 'textarea') {
@@ -3712,7 +3720,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
 			$params         = json_decode($elt['params']);
 			$groupParams    = json_decode($elt['group_params']);
-			$isDate         = ($elt['plugin'] == 'date');
+			$isDate         = (in_array($elt['plugin'], ['date','jdate']));
 			$isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
 
 			if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
@@ -3720,7 +3728,11 @@ class EmundusControllerFiles extends JControllerLegacy
 			}
 			else {
 				if ($isDate) {
-					$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+					if($elt['plugin'] == 'jdate') {
+						$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->jdate_form_format);
+					} else {
+						$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name'], $params->date_form_format);
+					}
 				}
 				else {
 					$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
