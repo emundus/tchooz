@@ -33,7 +33,7 @@ if (isset($user->fnum) && !empty($user->fnum))
 	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
-	require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+	require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 
 	// Load Joomla framework classes
 	$document = $app->getDocument();
@@ -103,7 +103,7 @@ if (isset($user->fnum) && !empty($user->fnum))
 	$m_files       = new EmundusModelFiles();
 	$m_profile     = new EmundusModelProfile();
 	$m_emails      = new EmundusModelEmails();
-	$m_campaign    = new EmundusModelCampaign();
+	$m_workflow    = new EmundusModelWorkflow();
 
 	$current_application = $m_application->getApplication($user->fnum);
 
@@ -241,7 +241,7 @@ if (isset($user->fnum) && !empty($user->fnum))
 		}
 	}
 
-	$current_phase = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
+	$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($user->fnum);
 	if (!empty($current_phase) && !empty($current_phase->end_date))
 	{
 		$deadline = new JDate($current_phase->end_date);

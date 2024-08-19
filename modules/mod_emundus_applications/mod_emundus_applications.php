@@ -15,7 +15,7 @@ use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 
-include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 $m_profile = new EmundusModelProfile();
 
 $app = Factory::getApplication();
@@ -45,13 +45,13 @@ else {
 
 if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!empty($specific_profiles) && in_array($user->profile, $specific_profiles))) {
 	require_once dirname(__FILE__) . '/helper.php';
-	include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
-	include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
-	require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-	include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
-	include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
-	include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-	include_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
+	include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+	include_once(JPATH_ROOT . '/components/com_emundus/helpers/list.php');
+	require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+	include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+	include_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+	include_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+	include_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 	$m_application = new EmundusModelApplication();
 
 	$document->addCustomTag('<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script><![endif]-->');
@@ -177,7 +177,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$m_application = new EmundusModelApplication();
 	$m_email       = new EmundusModelEmails();
 	$m_files       = new EmundusModelFiles();
-	$m_campaign    = new EmundusModelCampaign();
+	$m_workflow    = new EmundusModelWorkflow();
 
 	$fnums = array_keys($applications);
 

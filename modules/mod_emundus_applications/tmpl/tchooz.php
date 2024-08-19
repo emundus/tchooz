@@ -398,7 +398,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 												$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
 											}
 
-											$current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
+											$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($application->fnum);
 
 											?>
                                             <div class="hover-and-tile-container" id="application_content<?php echo $application->fnum ?>">
@@ -740,7 +740,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 												$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
 											}
 
-											$current_phase = $m_campaign->getCurrentCampaignWorkflow($application->fnum);
+											$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($application->fnum);
 
 											?>
                                             <tr class="em-pointer"
