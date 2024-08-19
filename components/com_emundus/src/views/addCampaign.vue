@@ -184,20 +184,22 @@
             />
           </div>
 
-          <label class="tw-mt-4">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
-          <div id="campDescription" class="tw-mb-4" v-if="typeof form.description != 'undefined'">
-            <tip-tap-editor
-                v-model="form.description"
-                :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
-                :editor-content-height="'30em'"
-                :class="'tw-mt-1'"
-                :locale="'fr'"
-                :preset="'custom'"
-                :plugins="editorPlugins"
-                :toolbar-classes="['tw-bg-white']"
-                :editor-content-classes="['tw-bg-white']"
-                :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION')"
-            />
+          <div class="tw-mb-4">
+            <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
+            <div id="campDescription" class="tw-mb-4" v-if="typeof form.description != 'undefined'">
+              <tip-tap-editor
+                  v-model="form.description"
+                  :upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
+                  :editor-content-height="'30em'"
+                  :class="'tw-mt-1'"
+                  :locale="'fr'"
+                  :preset="'custom'"
+                  :plugins="editorPlugins"
+                  :toolbar-classes="['tw-bg-white']"
+                  :editor-content-classes="['tw-bg-white']"
+                  :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION')"
+              />
+            </div>
           </div>
         </div>
 
@@ -872,10 +874,6 @@ export default {
   height: 24px;
   width: 24px;
   padding: unset;
-}
-
-#campResume {
-  height: 130px !important;
 }
 
 .em-color-round {

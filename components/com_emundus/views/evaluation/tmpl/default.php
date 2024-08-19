@@ -50,6 +50,7 @@ if ($this->open_file_in_modal) {
 	Text::script('COM_EMUNDUS_ACTIONS_CANCEL');
 	Text::script('COM_EMUNDUS_OK');
 	Text::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
+	Text::script('COM_EMUNDUS_EVALUATION_NO_FORM_FOUND');
 }
 ?>
 

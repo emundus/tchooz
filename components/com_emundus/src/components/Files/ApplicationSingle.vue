@@ -1,6 +1,7 @@
 <template>
   <modal
       v-show="showModal"
+      :click-to-close="false"
       id="application-modal"
       name="application-modal"
       ref="modal"
@@ -61,7 +62,7 @@
       </div>
 
       <div id="modal-evaluationgrid">
-        <div class="tw-flex tw-flex-col" v-if="!loading" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
+        <div class="tw-flex tw-flex-col" v-if="!loading && url" style="width: 40px;height: 40px;margin: 24px 0 12px 24px;">
           <div class="tw-bg-profile-light tw-rounded-full tw-flex tw-justify-center tw-items-center" style="width: 40px; height: 40px;">
             <div class="tw-bg-profile-medium tw-rounded-full  tw-flex tw-justify-center tw-items-center" style="width: 24px; height: 24px">
               <span class="material-icons-outlined tw-rounded-full tw-text-profile-full" style="font-size: 14px">troubleshoot</span>
@@ -70,6 +71,9 @@
         </div>
         <iframe v-if="url" :src="url" class="iframe-evaluation" id="iframe-evaluation" @load="iframeLoaded($event);"
                 title="Evaluation form"/>
+        <div v-else>
+          {{ translate('COM_EMUNDUS_EVALUATION_NO_FORM_FOUND') }}
+        </div>
         <div class="em-page-loader" v-if="loading"></div>
       </div>
     </div>
@@ -270,7 +274,7 @@ export default {
       let view = 'form';
 
       filesService.getEvaluationFormByFnum(this.selectedFile.fnum, this.$props.type).then((response) => {
-        if (response.data !== 0) {
+        if (response.data !== 0 && response.data !== null) {
           if (typeof this.selectedFile.id === 'undefined') {
             filesService.getMyEvaluation(this.selectedFile.fnum).then((data) => {
               this.rowid = data.data;
