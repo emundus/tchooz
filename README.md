@@ -120,9 +120,13 @@ docker-compose up --build -d
 ```
 
 ## Mise à jour du projet
-### Via docker
 ```shell
 php cli/joomla.php tchooz:update
+```
+
+## Générer la documentation Back
+```shell
+phpDocumentor
 ```
 
 <!-- ROADMAP -->

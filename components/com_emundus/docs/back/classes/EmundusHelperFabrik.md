@@ -635,6 +635,34 @@ public static migrateEncryptDatas(mixed $old_cipher, mixed $new_cipher, mixed $o
 
 ***
 
+### getFabrikDateParam
+
+
+
+```php
+public static getFabrikDateParam(mixed $elt, mixed $param): mixed
+```
+
+
+
+* This method is **static**.
+
+
+
+
+**Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$elt` | **mixed** |  |
+| `$param` | **mixed** |  |
+
+
+
+
 
 ***
-> Automatically generated on 2024-08-02
+
+
+***
+> Automatically generated on 2024-08-19

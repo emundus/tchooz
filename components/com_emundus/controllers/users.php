@@ -19,6 +19,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\User;
 
 
+
 /**
  * users Controller
  *
@@ -33,6 +34,14 @@ class EmundusControllerUsers extends JControllerLegacy
 	private $euser;
 	private ?User $user;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct($config = array())
 	{
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/helpers/filters.php');
@@ -52,7 +61,17 @@ class EmundusControllerUsers extends JControllerLegacy
 		parent::__construct($config);
 	}
 
-
+	/**
+	 * Method to display a view.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
+	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
+	 *
+	 * @return  DisplayController  This object to support chaining.
+	 *
+	 * @since   1.0.0
+	 */
 	public function display($cachable = false, $urlparams = false)
 	{
 		if (!$this->input->get('view')) {

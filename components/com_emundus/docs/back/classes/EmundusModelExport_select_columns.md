@@ -76,4 +76,4 @@ public getAllTags(): mixed
 
 
 ***
-> Automatically generated on 2024-08-02
+> Automatically generated on 2024-08-19

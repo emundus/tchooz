@@ -2080,4 +2080,4 @@ public isTableLinkedToCampaignCandidature(mixed $table_name): mixed
 
 
 ***
-> Automatically generated on 2024-08-02
+> Automatically generated on 2024-08-19

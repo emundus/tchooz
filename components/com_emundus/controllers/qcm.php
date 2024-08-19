@@ -30,9 +30,12 @@ class EmundusControllerQcm extends JControllerLegacy
 	private $model;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
-	 * @since 3.8.6
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
 	 */
 	function __construct($config = array())
 	{

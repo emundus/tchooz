@@ -20,7 +20,15 @@ class EmundusControllerPayment extends JControllerLegacy
 {
 	protected $app;
 
-	public function __construct()
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
+	public function __construct($config = array())
 	{
 		parent::__construct();
 

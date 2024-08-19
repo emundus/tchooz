@@ -8,6 +8,8 @@
  * @author      emundus <dev@emundus.fr> - http://www.emundus.fr
  */
 // No direct access
+
+
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.controller');
@@ -52,10 +54,15 @@ class EmundusControllerJob extends EmundusController
 	}
 
 	/**
-	 * Method to display application on a Job.
+	 * Method to display a view.
 	 *
-	 * @return  void
-	 * @since   1.6
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
+	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
+	 *
+	 * @return  DisplayController  This object to support chaining.
+	 *
+	 * @since   1.0.0
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{

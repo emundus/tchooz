@@ -7,6 +7,8 @@
  */
 
 // ensure this file is being included by a parent file
+
+
 defined('_JEXEC') or die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
 /**
@@ -18,6 +20,17 @@ class EmundusControllerRenew_application extends JControllerLegacy
 	//var $_model = null;
 	//$this->_model = $this->getModel( 'renew_application' );
 
+	/**
+	 * Method to display a view.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
+	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
+	 *
+	 * @return  DisplayController  This object to support chaining.
+	 *
+	 * @since   1.0.0
+	 */
 	function display($cachable = false, $urlparams = false)
 	{
 		$user = JFactory::getUser();

@@ -2,39 +2,24 @@
 
 # EmundusControllerAdmission
 
-eMundus Component Controller
+Emundus Admission Class
 
 
 
 * Full name: `\EmundusControllerAdmission`
-* Parent class: [`JControllerLegacy`](./JControllerLegacy.md)
+* Parent class: [`BaseController`](./Joomla/CMS/MVC/Controller/BaseController.md)
 
 
 
 ## Properties
 
 
-### app
-
-
-
-```php
-protected $app
-```
-
-
-
-
-
-
-***
-
 ### user
 
-
+User object
 
 ```php
-private $user
+private \Joomla\CMS\User\User|\JUser|mixed|null $user
 ```
 
 
@@ -46,10 +31,10 @@ private $user
 
 ### _db
 
-
+Database object
 
 ```php
-private $_db
+private \JDatabaseDriver|\Joomla\Database\DatabaseDriver|null $_db
 ```
 
 
@@ -61,10 +46,10 @@ private $_db
 
 ### session
 
-
+Session object
 
 ```php
-private $session
+private \Joomla\Session\SessionInterface|\JSession $session
 ```
 
 
@@ -79,10 +64,10 @@ private $session
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -96,20 +81,24 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+**See Also:**
+
+* \JController - 
 
 ***
 
 ### display
 
-
+Method to display a view.
 
 ```php
-public display(mixed $cachable = false, mixed $urlparams = false): mixed
+public display(bool $cachable = false, bool $urlparams = false): \EmundusControllerAdmission
 ```
 
 
@@ -123,30 +112,13 @@ public display(mixed $cachable = false, mixed $urlparams = false): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$cachable` | **mixed** |  |
-| `$urlparams` | **mixed** |  |
+| `$cachable` | **bool** | If true, the view output will be cached. |
+| `$urlparams` | **bool** | An array of safe URL parameters and their variable types.<br />@see        \Joomla\CMS\Filter\InputFilter::clean() for valid values. |
 
 
+**Return Value:**
 
-
-
-***
-
-### applicantEmail
-
-
-
-```php
-public applicantEmail(): mixed
-```
-
-
-
-
-
-
-
-
+This object to support chaining.
 
 
 
@@ -155,7 +127,7 @@ public applicantEmail(): mixed
 
 ### clear
 
-
+Clear session and reinit values by default
 
 ```php
 public clear(): mixed
@@ -176,7 +148,7 @@ public clear(): mixed
 
 ### setfilters
 
-
+Set filters of admission view
 
 ```php
 public setfilters(): mixed
@@ -197,7 +169,7 @@ public setfilters(): mixed
 
 ### loadfilters
 
-
+Load filters of admission view
 
 ```php
 public loadfilters(): mixed
@@ -218,7 +190,7 @@ public loadfilters(): mixed
 
 ### order
 
-
+Reorder the list of applications in admission view
 
 ```php
 public order(): mixed
@@ -239,7 +211,7 @@ public order(): mixed
 
 ### setlimit
 
-
+Set the limit of applications in admission view
 
 ```php
 public setlimit(): mixed
@@ -260,7 +232,7 @@ public setlimit(): mixed
 
 ### savefilters
 
-
+Save a custom filter
 
 ```php
 public savefilters(): mixed
@@ -281,7 +253,7 @@ public savefilters(): mixed
 
 ### deletefilters
 
-
+Delete a saved filter
 
 ```php
 public deletefilters(): mixed
@@ -302,7 +274,7 @@ public deletefilters(): mixed
 
 ### setlimitstart
 
-
+Set the start of the list of applications in admission view
 
 ```php
 public setlimitstart(): mixed
@@ -323,7 +295,7 @@ public setlimitstart(): mixed
 
 ### getadvfilters
 
-
+Get the list of advanced filters
 
 ```php
 public getadvfilters(): mixed
@@ -344,7 +316,7 @@ public getadvfilters(): mixed
 
 ### addcomment
 
-
+Add a comment
 
 ```php
 public addcomment(): mixed
@@ -365,7 +337,7 @@ public addcomment(): mixed
 
 ### getevsandgroups
 
-
+Get list of evaluation groups and users
 
 ```php
 public getevsandgroups(): mixed
@@ -386,7 +358,7 @@ public getevsandgroups(): mixed
 
 ### gettags
 
-
+Get list of tags for applications
 
 ```php
 public gettags(): mixed
@@ -407,7 +379,7 @@ public gettags(): mixed
 
 ### tagfile
 
-Add a tag to an application
+Add a tag to applications
 
 ```php
 public tagfile(): mixed
@@ -428,7 +400,7 @@ public tagfile(): mixed
 
 ### deletetags
 
-
+Delete a tag from applications
 
 ```php
 public deletetags(): mixed
@@ -449,7 +421,7 @@ public deletetags(): mixed
 
 ### share
 
-
+Share files with groups or/and users
 
 ```php
 public share(): mixed
@@ -470,7 +442,7 @@ public share(): mixed
 
 ### getstate
 
-
+Get list of status available for applications
 
 ```php
 public getstate(): mixed
@@ -491,7 +463,7 @@ public getstate(): mixed
 
 ### updatestate
 
-
+Update the status of applications
 
 ```php
 public updatestate(): mixed
@@ -512,7 +484,7 @@ public updatestate(): mixed
 
 ### unlinkevaluators
 
-
+Unlink evaluators from a single application file
 
 ```php
 public unlinkevaluators(): mixed
@@ -533,7 +505,7 @@ public unlinkevaluators(): mixed
 
 ### getfnuminfos
 
-
+Get details of a single application file
 
 ```php
 public getfnuminfos(): mixed
@@ -554,7 +526,7 @@ public getfnuminfos(): mixed
 
 ### deletefile
 
-
+Move an application file to trash
 
 ```php
 public deletefile(): mixed
@@ -575,7 +547,7 @@ public deletefile(): mixed
 
 ### getformelem
 
-
+Get elements from a program
 
 ```php
 public getformelem(): mixed
@@ -596,7 +568,7 @@ public getformelem(): mixed
 
 ### pdf_admission
 
-
+Export a single application in PDF format
 
 ```php
 public pdf_admission(): mixed
@@ -617,10 +589,10 @@ public pdf_admission(): mixed
 
 ### return_bytes
 
-
+Return size in bytes
 
 ```php
-public return_bytes(mixed $val): mixed
+public return_bytes(mixed $val): int|string
 ```
 
 
@@ -644,10 +616,10 @@ public return_bytes(mixed $val): mixed
 
 ### sortArrayByArray
 
-
+Sort an array by another array
 
 ```php
-public sortArrayByArray(mixed $array, mixed $orderArray): mixed
+public sortArrayByArray(mixed $array, mixed $orderArray): array
 ```
 
 
@@ -672,10 +644,10 @@ public sortArrayByArray(mixed $array, mixed $orderArray): mixed
 
 ### sortObjectByArray
 
-
+Sort an object by another array
 
 ```php
-public sortObjectByArray(mixed $object, mixed $orderArray): mixed
+public sortObjectByArray(mixed $object, mixed $orderArray): array
 ```
 
 
@@ -700,7 +672,7 @@ public sortObjectByArray(mixed $object, mixed $orderArray): mixed
 
 ### create_file_csv
 
-
+Export applications in CSV format
 
 ```php
 public create_file_csv(): mixed
@@ -721,7 +693,7 @@ public create_file_csv(): mixed
 
 ### getfnums_csv
 
-
+Prepare the list of applications to export in CSV format
 
 ```php
 public getfnums_csv(): mixed
@@ -742,10 +714,10 @@ public getfnums_csv(): mixed
 
 ### getcolumn
 
-
+Get column from elements for CSV export
 
 ```php
-public getcolumn(mixed $elts): mixed
+public getcolumn(mixed $elts): array
 ```
 
 
@@ -769,7 +741,7 @@ public getcolumn(mixed $elts): mixed
 
 ### generate_array
 
-
+Generate array to export in CSV format
 
 ```php
 public generate_array(): mixed
@@ -790,10 +762,10 @@ public generate_array(): mixed
 
 ### get_mime_type
 
-
+Get mime type of a file
 
 ```php
-public get_mime_type(mixed $filename, mixed $mimePath = &#039;../etc&#039;): mixed
+public get_mime_type(mixed $filename, mixed $mimePath = &#039;../etc&#039;): false|string
 ```
 
 
@@ -818,7 +790,7 @@ public get_mime_type(mixed $filename, mixed $mimePath = &#039;../etc&#039;): mix
 
 ### download
 
-
+Download tmp file (from exports)
 
 ```php
 public download(): mixed
@@ -839,10 +811,10 @@ public download(): mixed
 
 ### export_zip
 
-
+Export applications in ZIP format
 
 ```php
-public export_zip(mixed $fnums): mixed
+public export_zip(mixed $fnums): string|void
 ```
 
 
@@ -861,25 +833,9 @@ public export_zip(mixed $fnums): mixed
 
 
 
+**Throws:**
 
-***
-
-### changeadmissionvalue
-
-
-
-```php
-public changeadmissionvalue(): mixed
-```
-
-
-
-
-
-
-
-
-
+- [`Exception`](./Exception.md)
 
 
 
@@ -887,4 +843,4 @@ public changeadmissionvalue(): mixed
 
 
 ***
-> Automatically generated on 2024-08-02
+> Automatically generated on 2024-08-19

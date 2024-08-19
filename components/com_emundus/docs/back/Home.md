@@ -17,8 +17,8 @@ This is an automatically generated documentation for **phpDocumentor**.
 
 | Class | Description |
 |-------|-------------|
-| [`EmundusControllerAdmission`](./classes/EmundusControllerAdmission.md) | eMundus Component Controller|
-| [`EmundusControllerApplication`](./classes/EmundusControllerApplication.md) | Custom report controller|
+| [`EmundusControllerAdmission`](./classes/EmundusControllerAdmission.md) | Emundus Admission Class|
+| [`EmundusControllerApplication`](./classes/EmundusControllerApplication.md) | Emundus Application Class|
 | [`EmundusControllerCampaign`](./classes/EmundusControllerCampaign.md) | Campaign Controller|
 | [`EmundusControllerDashboard`](./classes/EmundusControllerDashboard.md) | Campaign Controller|
 | [`EmundusControllerDecision`](./classes/EmundusControllerDecision.md) | eMundus Component Controller|
@@ -121,4 +121,4 @@ This is an automatically generated documentation for **phpDocumentor**.
 
 
 ***
-> Automatically generated on 2024-08-02
+> Automatically generated on 2024-08-19

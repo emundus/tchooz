@@ -17,10 +17,10 @@ Custom report controller
 
 ### display
 
-
+Method to display a view.
 
 ```php
-public display(mixed $cachable = false, mixed $urlparams = false): mixed
+public display(bool $cachable = false, bool $urlparams = false): \DisplayController
 ```
 
 
@@ -34,9 +34,13 @@ public display(mixed $cachable = false, mixed $urlparams = false): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$cachable` | **mixed** |  |
-| `$urlparams` | **mixed** |  |
+| `$cachable` | **bool** | If true, the view output will be cached. |
+| `$urlparams` | **bool** | An array of safe URL parameters and their variable types.<br />@see        \Joomla\CMS\Filter\InputFilter::clean() for valid values. |
 
+
+**Return Value:**
+
+This object to support chaining.
 
 
 
@@ -192,4 +196,4 @@ public deleteInformations(): mixed
 
 
 ***
-> Automatically generated on 2024-08-02
+> Automatically generated on 2024-08-19

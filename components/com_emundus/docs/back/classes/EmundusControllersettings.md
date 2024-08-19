@@ -64,10 +64,10 @@ private $m_settings
 
 ### __construct
 
-
+Constructor.
 
 ```php
-public __construct(mixed $config = array()): mixed
+public __construct(array $config = array()): mixed
 ```
 
 
@@ -81,11 +81,15 @@ public __construct(mixed $config = array()): mixed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `$config` | **mixed** |  |
+| `$config` | **array** | An optional associative array of configuration settings. |
 
 
 
 
+
+**See Also:**
+
+* \JController - 
 
 ***
 
@@ -1288,4 +1292,4 @@ public deletemedia(): mixed
 
 
 ***
-> Automatically generated on 2024-08-02
+> Automatically generated on 2024-08-19

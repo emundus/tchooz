@@ -371,4 +371,4 @@ Used for defining articles as PDF templates.
 
 
 ***
-> Automatically generated on 2024-08-02
+> Automatically generated on 2024-08-19

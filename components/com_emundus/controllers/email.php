@@ -15,6 +15,7 @@ jimport('joomla.application.component.controller');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
+
 /**
  * eMundus Component Controller
  *
@@ -29,6 +30,14 @@ class EmundusControllerEmail extends JControllerLegacy
 	private $_user;
 	private $m_emails;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -43,6 +52,17 @@ class EmundusControllerEmail extends JControllerLegacy
 		$this->m_emails = $this->getModel('emails');
 	}
 
+	/**
+	 * Method to display a view.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
+	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
+	 *
+	 * @return  DisplayController  This object to support chaining.
+	 *
+	 * @since   1.0.0
+	 */
 	function display($cachable = false, $urlparams = false)
 	{
 		// Set a default view if none exists

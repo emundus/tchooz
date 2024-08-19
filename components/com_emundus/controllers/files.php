@@ -11,6 +11,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
+
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -40,7 +41,12 @@ class EmundusControllerFiles extends JControllerLegacy
 	private $_db;
 
 	/**
-	 * @param   array  $config
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
 	 */
 	public function __construct($config = array())
 	{
@@ -63,8 +69,15 @@ class EmundusControllerFiles extends JControllerLegacy
 	}
 
 	/**
-	 * @param   bool  $cachable
-	 * @param   bool  $urlparams
+	 * Method to display a view.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
+	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
+	 *
+	 * @return  DisplayController  This object to support chaining.
+	 *
+	 * @since   1.0.0
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{

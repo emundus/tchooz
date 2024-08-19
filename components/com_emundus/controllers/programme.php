@@ -17,6 +17,7 @@ jimport('joomla.application.component.controller');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
+
 /**
  * campaign Controller
  *
@@ -31,6 +32,14 @@ class EmundusControllerProgramme extends JControllerLegacy
 	private $_user;
 	private $m_programme;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -41,6 +50,17 @@ class EmundusControllerProgramme extends JControllerLegacy
 		$this->m_programme = $this->getModel('programme');
 	}
 
+	/**
+	 * Method to display a view.
+	 *
+	 * @param   boolean  $cachable   If true, the view output will be cached.
+	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
+	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
+	 *
+	 * @return  DisplayController  This object to support chaining.
+	 *
+	 * @since   1.0.0
+	 */
 	function display($cachable = false, $urlparams = false)
 	{
 		// Set a default view if none exists

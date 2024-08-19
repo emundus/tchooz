@@ -269,4 +269,4 @@ public getUserFormationByRH(null $user_id = null, mixed $user_rh = null): mixed
 
 
 ***
-> Automatically generated on 2024-08-02
+> Automatically generated on 2024-08-19

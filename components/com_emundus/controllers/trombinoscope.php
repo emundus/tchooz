@@ -28,7 +28,12 @@ class EmundusControllerTrombinoscope extends EmundusController
 	protected $app;
 
 	/**
-	 * @param   array  $config
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
 	 */
 	public function __construct($config = array())
 	{

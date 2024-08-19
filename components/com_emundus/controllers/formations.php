@@ -27,6 +27,14 @@ class EmundusControllerFormations extends JControllerLegacy
 	private $user;
 
 
+	/**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     \JController
+	 * @since   1.0.0
+	 */
 	public function __construct(array $config = array())
 	{
 
