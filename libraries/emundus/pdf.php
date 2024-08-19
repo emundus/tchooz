@@ -1017,7 +1017,6 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         else {
 	        $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, null, $attachments);
         }
-		
         /*** Applicant   ***/
 	    $htmldata .= "
 			<style>
