@@ -56,9 +56,6 @@ export default {
       }
     };
   },
-  mounted() {
-    console.log('here');
-  },
   computed: {
     configString() {
       return btoa(JSON.stringify(this.workflowConfig));
