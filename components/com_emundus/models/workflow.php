@@ -350,4 +350,66 @@ class EmundusModelWorkflow extends JModelList
 
 		return $workflowData;
 	}
+
+	/**
+	 * @param $fnum
+	 *
+	 * @return null|object if a step is found, it returns a workflow step object, otherwise null
+	 */
+	public function getCurrentWorkflowStepFromFile($fnum) {
+		$step = null;
+
+		if (!empty($fnum)) {
+			$query = $this->db->createQuery();
+
+			$query->select('ecc.status, esp.id as program_id, ecc.published')
+				->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
+				->where('ecc.fnum LIKE ' . $this->db->quote($fnum));
+
+			$this->db->setQuery($query);
+			$file_infos = $this->db->loadAssoc();
+
+			if (!empty($file_infos['program_id']) && $file_infos['published']) {
+				// get workflows associated to this program
+				$query->clear()
+					->select('workflow_id')
+					->from($this->db->quoteName('#__emundus_setup_workflows_programs'))
+					->where('program_id = ' . $this->db->quote($file_infos['program_id']));
+
+				try {
+					$this->db->setQuery($query);
+					$workflow_ids = $this->db->loadColumn();
+				} catch (Exception $e) {
+				}
+
+				if (!empty($workflow_ids)) {
+					$query->clear()
+						->select('esws.*')
+						->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
+						->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+						->where('esws.workflow_id IN (' . implode(',', $workflow_ids) . ')')
+						->andWhere('eswses.status = ' . $file_infos['status']);
+
+					$this->db->setQuery($query);
+					$step = $this->db->loadObject();
+
+					$step->profile = $step->profile_id;
+					$step->display_preliminary_documents = false;
+					$step->specific_documents = [];
+
+					$query->clear()
+						->select('status')
+						->from('#__emundus_setup_workflows_steps_entry_status')
+						->where('step_id = ' . $step->id);
+
+					$this->db->setQuery($query);
+					$step->entry_status = $this->db->loadColumn();
+				}
+			}
+		}
+
+		return $step;
+	}
 }
