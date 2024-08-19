@@ -231,6 +231,29 @@ class EmundusModelWorkflow extends JModelList
 		return $deleted;
 	}
 
+	public function countWorkflows($ids = []) {
+		$nb_workflows = 0;
+
+		$query = $this->db->createQuery();
+
+		$query->select('COUNT(esw.id)')
+			->from($this->db->quoteName('#__emundus_setup_workflows', 'esw'))
+			->where($this->db->quoteName('esw.published') . ' = 1');
+
+		if (!empty($ids)) {
+			$query->where($this->db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+		}
+
+		try {
+			$this->db->setQuery($query);
+			$nb_workflows = $this->db->loadResult();
+		} catch (Exception $e) {
+			Log::add('Error counting published workflows : ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+		}
+
+		return $nb_workflows;
+	}
+
 	public function getWorkflows($ids = [], $limit = 0, $page = 0) {
 		$workflows = [];
 
@@ -248,7 +271,8 @@ class EmundusModelWorkflow extends JModelList
 		$query->group('esw.id');
 
 		if ($limit > 0) {
-			$query->setLimit($limit, $page * $limit);
+			$offset = ($page - 1) * $limit;
+			$query->setLimit($limit, $offset);
 		}
 
 		try {

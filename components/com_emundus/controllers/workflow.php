@@ -57,8 +57,9 @@ class EmundusControllerWorkflow extends JControllerLegacy
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
 			$ids = $this->app->input->getString('ids', '[]');
 			$ids = json_decode($ids, true);
-
-			$workflows = $this->model->getWorkflows($ids);
+			$lim = $this->app->input->getInt('lim', 0);
+			$page = $this->app->input->getInt('page', 0);
+			$workflows = $this->model->getWorkflows($ids, $lim, $page);
 
 			if (!empty($workflows)) {
 				$db = Factory::getContainer()->get('DatabaseDriver');
@@ -97,7 +98,7 @@ class EmundusControllerWorkflow extends JControllerLegacy
 				}
 			}
 
-			$response['data'] = ['datas' => array_values($workflows)];
+			$response['data'] = ['datas' => array_values($workflows), 'count' => $this->model->countWorkflows($ids)];
 			$response['code'] = 200;
 			$response['status'] = true;
 		}
