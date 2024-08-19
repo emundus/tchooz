@@ -2632,9 +2632,7 @@ class EmundusModelCampaign extends JModelList
 	{
 		require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 		$m_workflow = new EmundusModelWorkflow();
-		$step = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
-
-		return $step;
+		return $m_workflow->getCurrentWorkflowStepFromFile($fnum);
 	}
 
 	/**
