@@ -1012,54 +1012,6 @@ video {
         color: #000 !important;
         background: inherit;
     }
-.fabrikElement .field-calendar .input-group button.btn.btn-primary {
-                    background: transparent;
-                    color: black;
-                    border-top-left-radius: 0 !important;
-                    border-bottom-left-radius: 0 !important;
-                    border-color: var(--em-form-bc);
-                }
-.fabrikElement .field-calendar .js-calendar {
-                margin-top: 6px !important;
-                margin-bottom: 6px !important;
-            }
-.fabrikElement .field-calendar .js-calendar .calendar-container table {
-                        border: unset;
-                        margin-top: 8px;
-                    }
-.fabrikElement .field-calendar .js-calendar .calendar-container table thead.calendar-header td.nav a {
-                                    color: var(--em-primary-color);
-                                }
-.fabrikElement .field-calendar .js-calendar .calendar-container table thead.calendar-header td.\!nav a {
-                                    color: var(--em-primary-color) !important;
-                                }
-.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day:hover {
-                                border-radius: 99px;
-                            }
-.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.day.selected {
-                                border-radius: 99px;
-                            }
-.fabrikElement .field-calendar .js-calendar .calendar-container table tbody td.today:after {
-                                content: unset;
-                            }
-.fabrikElement .field-calendar .js-calendar .calendar-container table tbody tr.time td.time.time-title {
-                                    margin-top: 12px;
-                                    height: 40px;
-                                    padding: 0;
-                                }
-.fabrikElement .field-calendar .js-calendar .calendar-container table tbody tr.time td.time.hours-select, .fabrikElement .field-calendar .js-calendar .calendar-container table tbody tr.time td.time.minutes-select {
-                                    border-top: solid 1px black;
-                                    height: 40px;
-                                    padding-top: 12px;
-                                }
-.fabrikElement .field-calendar .js-calendar .calendar-container .buttons-wrapper {
-                        gap: 8px;
-                    }
-.fabrikElement .field-calendar .js-calendar .calendar-container .buttons-wrapper button {
-                            background: transparent;
-                            border: solid 1px black;
-                            box-shadow: unset;
-                        }
 /** REGISTRATION FORM **/
 @media all and (min-width: 768px) {
 
@@ -1422,7 +1374,7 @@ form.fabrikForm .fabrikGroup table .fabrikSubGroup td {
             margin-top: 0 !important;
         }
 form.fabrikForm .fabrikGroup table th:last-of-type,
-        form.fabrikForm .fabrikGroup table td:last-of-type:not(.nav) {
+        form.fabrikForm .fabrikGroup table td:last-of-type {
             width: 64px;
         }
 form.fabrikForm .fabrikGroup table .fabrikSubGroup .fabrikGroupRepeater .pull-right {
@@ -6191,6 +6143,9 @@ button.swal2-cancel.goback-btn:hover,
 .label-border-black {
         border-color: var(--em-black);
     }
+.\[-a-zA-Z\:0-9_\.\] {
+    -a-z-a--z: 0-9 .;
+}
 @font-face {
     font-family: 'Material Icons';
     font-style: normal;
